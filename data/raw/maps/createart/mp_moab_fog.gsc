@@ -1,0 +1,124 @@
+// _createart generated.  modify at your own risk. 
+main()
+{
+	ent = maps\_utility::create_vision_set_fog( "mp_moab" );
+	ent.startDist = 300;
+	ent.halfwayDist = 12500.1;
+	ent.red = 0.94;
+	ent.green = 0.94;
+	ent.blue = 1;
+	ent.maxOpacity = 0.21;
+	ent.transitionTime = 0;
+	ent.sunFogEnabled = 1;
+	ent.sunRed = 0.99;
+	ent.sunGreen = 0.97;
+	ent.sunBlue = 0.92;
+	ent.sunDir = (-0.34, 0.002, 0.93);
+	ent.sunBeginFadeAngle = 36;
+	ent.sunEndFadeAngle = 56;
+	ent.normalFogScale = 1.88;
+	
+	ent = maps\_utility::create_vision_set_fog( "mp_moab_indoor" );
+	ent.startDist = 300;
+	ent.halfwayDist = 12500.1;
+	ent.red = 0.94;
+	ent.green = 0.94;
+	ent.blue = 1;
+	ent.maxOpacity = 0.21;
+	ent.transitionTime = 0;
+	ent.sunFogEnabled = 1;
+	ent.sunRed = 0.99;
+	ent.sunGreen = 0.97;
+	ent.sunBlue = 0.92;
+	ent.sunDir = (-0.34, 0.002, 0.93);
+	ent.sunBeginFadeAngle = 36;
+	ent.sunEndFadeAngle = 56;
+	ent.normalFogScale = 1.88;
+	
+	ent = maps\_utility::create_vision_set_fog( "mp_moab_barn" );
+	ent.startDist = 300;
+	ent.halfwayDist = 12500.1;
+	ent.red = 0.94;
+	ent.green = 0.94;
+	ent.blue = 1;
+	ent.maxOpacity = 0.21;
+	ent.transitionTime = 0;
+	ent.sunFogEnabled = 1;
+	ent.sunRed = 0.99;
+	ent.sunGreen = 0.97;
+	ent.sunBlue = 0.92;
+	ent.sunDir = (-0.34, 0.002, 0.93);
+	ent.sunBeginFadeAngle = 36;
+	ent.sunEndFadeAngle = 56;
+	ent.normalFogScale = 1.88;
+	
+	ent = maps\_utility::create_vision_set_fog( "mp_moab_cave" );
+	ent.startDist = 300;
+	ent.halfwayDist = 12500.1;
+	ent.red = 0.94;
+	ent.green = 0.94;
+	ent.blue = 1;
+	ent.maxOpacity = 0.21;
+	ent.transitionTime = 0;
+	ent.sunFogEnabled = 1;
+	ent.sunRed = 0.99;
+	ent.sunGreen = 0.97;
+	ent.sunBlue = 0.92;
+	ent.sunDir = (-0.34, 0.002, 0.93);
+	ent.sunBeginFadeAngle = 36;
+	ent.sunEndFadeAngle = 56;
+	ent.normalFogScale = 1.88;
+	
+	ent = maps\_utility::create_vision_set_fog( "mp_moab_tent" );
+	ent.startDist = 300;
+	ent.halfwayDist = 12500.1;
+	ent.red = 0.94;
+	ent.green = 0.94;
+	ent.blue = 1;
+	ent.maxOpacity = 0.21;
+	ent.transitionTime = 0;
+	ent.sunFogEnabled = 1;
+	ent.sunRed = 0.99;
+	ent.sunGreen = 0.97;
+	ent.sunBlue = 0.92;
+	ent.sunDir = (-0.34, 0.002, 0.93);
+	ent.sunBeginFadeAngle = 36;
+	ent.sunEndFadeAngle = 56;
+	ent.normalFogScale = 1.88;
+		
+	ent = maps\_utility::create_vision_set_fog( "mp_moab_arch" );
+	ent.startDist = 300;
+	ent.halfwayDist = 12500.1;
+	ent.red = 0.94;
+	ent.green = 0.94;
+	ent.blue = 1;
+	ent.maxOpacity = 0.21;
+	ent.transitionTime = 0;
+	ent.sunFogEnabled = 1;
+	ent.sunRed = 0.99;
+	ent.sunGreen = 0.97;
+	ent.sunBlue = 0.92;
+	ent.sunDir = (-0.34, 0.002, 0.93);
+	ent.sunBeginFadeAngle = 36;
+	ent.sunEndFadeAngle = 56;
+	ent.normalFogScale = 1.88;
+	
+	ent = maps\_utility::create_vision_set_fog( "mp_moab_waterfall" );
+	ent.startDist = 300;
+	ent.halfwayDist = 12500.1;
+	ent.red = 0.94;
+	ent.green = 0.94;
+	ent.blue = 1;
+	ent.maxOpacity = 0.21;
+	ent.transitionTime = 0;
+	ent.sunFogEnabled = 1;
+	ent.sunRed = 0.99;
+	ent.sunGreen = 0.97;
+	ent.sunBlue = 0.92;
+	ent.sunDir = (-0.34, 0.002, 0.93);
+	ent.sunBeginFadeAngle = 36;
+	ent.sunEndFadeAngle = 56;
+	ent.normalFogScale = 1.88;
+	
+	maps\_utility::vision_set_fog_changes( "mp_moab", 0 );
+}
