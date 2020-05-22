@@ -6,10 +6,13 @@ _GSC_BEGIN
 class compiler
 {
 public:
-	void compile(sval_u rootnode);
+	void compile(std::string file);
 	void output();
 
 private:
+	void parse();
+	void compile_internal(sval_u rootnode);
+
 	void emit_function_list();
 	void emit_function();
 	void emit_parameter_list();

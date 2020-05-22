@@ -1,5 +1,11 @@
 #pragma once
 
+enum node_type
+{
+	NODE_INCLUDE,
+
+};
+
 union sval_u
 {
 	sval_u* node;

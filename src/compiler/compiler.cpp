@@ -3,12 +3,22 @@
 
 _GSC_BEGIN
 
-void compiler::compile(sval_u rootnode)
+void compiler::compile(std::string file)
 {
 
 }
 
 void compiler::output(/*out function structure to assembler*/)
+{
+
+}
+
+void compiler::parse()
+{
+
+}
+
+void compiler::compile_internal(sval_u rootnode)
 {
 
 }
