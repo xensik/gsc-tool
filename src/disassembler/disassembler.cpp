@@ -15,8 +15,7 @@ void disassembler::disassemble(std::shared_ptr<byte_buffer> script, std::shared_
 	m_stack = stack;
 	m_output->clear();
 	m_functions.clear();
-	m_labels.clear();
-	
+
 	m_script->seek(1); // skip opcode 00
 
 	while (m_stack->is_avail() && m_script->is_avail())
@@ -29,28 +28,29 @@ void disassembler::disassemble(std::shared_ptr<byte_buffer> script, std::shared_
 		m_functions.push_back(func);
 
 		this->dissasemble_function(func);
-
-		func->m_labels = m_labels;
-		m_labels.clear();
 	}
 
-	this->print_script_name(""); // xensik: need to add file name conversor
-
-	for (auto& function : m_functions)
+	// fix local function calls here once we have all function names created
+	for (auto& func : m_functions)
 	{
-		this->print_function(function);
-
-		for (auto& instruction : function->m_instructions)
+		for (auto& inst : func->m_instructions)
 		{
-			if (function->m_labels.find(instruction->m_index) != function->m_labels.end())
+			switch (inst->m_opcode)
 			{
-				this->print_label(function->m_labels[instruction->m_index]);
+			case OP_GetLocalFunction:
+			case OP_ScriptLocalFunctionCall: 
+			case OP_ScriptLocalFunctionCall2:
+			case OP_ScriptLocalMethodCall:
+			case OP_ScriptLocalThreadCall:
+			case OP_ScriptLocalChildThreadCall:
+			case OP_ScriptLocalMethodThreadCall:
+			case OP_ScriptLocalMethodChildThreadCall:
+				inst->m_data.at(0) = this->resolve_function(inst->m_data[0]);
+				break;
+			default:
+				break;
 			}
-
-			this->print_instruction(instruction);
 		}
-
-		m_output->write_cpp_string("\n");
 	}
 }
 
@@ -63,6 +63,7 @@ void disassembler::dissasemble_function(std::shared_ptr<function> func)
 		auto inst = std::make_shared<instruction>();
 		inst->m_index = m_script->get_pos();
 		inst->m_opcode = m_script->read<std::uint8_t>();
+		inst->m_parent = func;
 		func->m_instructions.push_back(inst);
 		
 		this->dissasemble_instruction(inst);
@@ -580,7 +581,7 @@ void disassembler::disassemble_jump(std::shared_ptr<instruction> inst, bool expr
 		inst->m_data.push_back(label);
 	}
 
-	m_labels[addr] = label;
+	inst->m_parent->m_labels[addr] = label;
 }
 
 void disassembler::disassemble_field_variable(std::shared_ptr<instruction> inst)
@@ -636,7 +637,7 @@ void disassembler::disassemble_end_switch(std::shared_ptr<instruction> inst)
 			std::string label = va("loc_%X", addr);
 			inst->m_data.push_back(label);
 			
-			m_labels[addr] = label;
+			inst->m_parent->m_labels[addr] = label;
 
 			inst->m_size += 3;
 			internal_index += 3;
@@ -755,22 +756,6 @@ void disassembler::print_instruction(std::shared_ptr<instruction> inst)
 			}
 		}
 		break;
-	case OP_GetLocalFunction:
-	case OP_ScriptLocalFunctionCall: // fix local function calls here once we have all function names created
-	case OP_ScriptLocalFunctionCall2:
-	case OP_ScriptLocalMethodCall:
-	case OP_ScriptLocalThreadCall:
-	case OP_ScriptLocalChildThreadCall:
-	case OP_ScriptLocalMethodThreadCall:
-	case OP_ScriptLocalMethodChildThreadCall:
-		this->print_opcodes(inst->m_index, inst->m_size);
-		m_output->write_cpp_string(va("%s", GetOpCodeName(inst->m_opcode).data()));
-		m_output->write_cpp_string(va(" %s", this->resolve_function(inst->m_data[0]).data()));
-		if (inst->m_data.size() > 1)
-		{
-			m_output->write_cpp_string(va(" %s", inst->m_data[1].data()));
-		}
-		break;
 	default:
 		this->print_opcodes(inst->m_index, inst->m_size);
 		m_output->write_cpp_string(va("%s", GetOpCodeName(inst->m_opcode).data()));
@@ -795,8 +780,32 @@ void disassembler::print_label(const std::string& label)
 	m_output->write_cpp_string(va("\t%s\n", label.data()));
 }
 
-std::vector<std::uint8_t> disassembler::output()
+std::vector<std::shared_ptr<function>> disassembler::output()
 {
+	return m_functions;
+}
+
+std::vector<std::uint8_t> disassembler::output_buffer()
+{
+	this->print_script_name(""); // need to add file name conversor
+
+	for (auto& func : m_functions)
+	{
+		this->print_function(func);
+
+		for (auto& inst : func->m_instructions)
+		{
+			if (func->m_labels.find(inst->m_index) != func->m_labels.end())
+			{
+				this->print_label(func->m_labels[inst->m_index]);
+			}
+
+			this->print_instruction(inst);
+		}
+
+		m_output->write_cpp_string("\n");
+	}
+
 	std::vector<std::uint8_t> output;
 	output.resize(m_output->get_pos());
 	memcpy(output.data(), m_output->get_buffer().data(), output.size());

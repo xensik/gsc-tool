@@ -2,6 +2,8 @@
 
 _GSC_BEGIN
 
+class function;
+
 class instruction
 {
 public:
@@ -9,7 +11,7 @@ public:
 	std::uint32_t m_size;
 	std::uint8_t m_opcode;
 	std::vector<std::string> m_data;
-
+	std::shared_ptr<function> m_parent;
 	instruction();
 };
 

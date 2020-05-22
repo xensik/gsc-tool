@@ -13,6 +13,7 @@ void assembler::assemble(std::string& buffer)
 {
 	std::vector<std::string> assembly = clean_buffer_lines(buffer);
 	
+	std::vector<std::shared_ptr<function>> functions;
 	std::uint32_t count = 1;
 	std::uint32_t index = 0;
 	std::shared_ptr<function> func = nullptr;
@@ -47,7 +48,7 @@ void assembler::assemble(std::string& buffer)
 			func = std::make_shared<function>();
 			func->m_index = index;
 			func->m_name = line;
-			m_functions.push_back(func);
+			functions.push_back(func);
 		}
 		else if (line.substr(0, 4) == "loc_")
 		{
@@ -87,8 +88,8 @@ void assembler::assemble(std::string& buffer)
 				inst->m_index = index;
 				inst->m_opcode = GetOpCodeId(to_lower(data[0]));
 				inst->m_size = GetInstructionSize(inst->m_opcode);
-
 				inst->m_data = data;
+				inst->m_parent = func;
 
 				func->m_instructions.push_back(inst);
 				index += inst->m_size;
@@ -106,20 +107,24 @@ void assembler::assemble(std::string& buffer)
 		}
 	}
 
+	this->assemble(functions);
+}
+
+void assembler::assemble(std::vector<std::shared_ptr<function>>& functions)
+{
+	m_functions = functions;
+
 	// script start opcode 00
 	m_script->write<std::uint8_t>(0);
 
-	for (auto f : m_functions)
+	for (auto func : m_functions)
 	{
-		this->assemble_function(f);
+		this->assemble_function(func);
 	}
 }
 
 void assembler::assemble_function(std::shared_ptr<function> func)
 {
-	// set label resolver for current function
-	m_labels = func->m_labels;
-
 	// write function size
 	m_stack->write<std::uint32_t>(func->m_size);
 	// write function id or name
@@ -442,7 +447,7 @@ void assembler::assemble_end_switch(std::shared_ptr<instruction> inst)
 			m_stack->write_string("\x01");
 
 			internal_index += 4;
-			std::int32_t addr = this->resolve_label(inst->m_data[3 + (2 * i) + 1]);
+			std::int32_t addr = this->resolve_label(inst, inst->m_data[3 + (2 * i) + 1]);
 
 			this->assemble_offset(addr - internal_index);
 
@@ -484,7 +489,7 @@ void assembler::assemble_jump(std::shared_ptr<instruction> inst, bool expr, bool
 {
 	m_script->write<std::uint8_t>(inst->m_opcode);
 	
-	std::int32_t addr = this->resolve_label(inst->m_data[1]);
+	std::int32_t addr = this->resolve_label(inst, inst->m_data[1]);
 
 	if (expr)
 	{
@@ -531,9 +536,9 @@ std::uint32_t assembler::resolve_function(const std::string& name)
 	return 0;
 }
 
-std::uint32_t assembler::resolve_label(const std::string& name)
+std::uint32_t assembler::resolve_label(std::shared_ptr<instruction> inst, const std::string& name)
 {
-	for (auto& func : m_labels)
+	for (auto& func : inst->m_parent->m_labels)
 	{
 		if (func.second == name)
 		{

@@ -9,13 +9,6 @@ long flength(FILE* fp)
 	return ret;
 }
 
-void fsave(const std::string& name, const std::vector<std::uint8_t>& data)
-{
-	FILE* fp = fopen(name.data(), "wb");
-	fwrite(data.data(), 1, data.size(), fp);
-	fclose(fp);
-}
-
 byte_buffer::byte_buffer()
 {
 	m_data.resize(0x100000);
@@ -141,36 +134,4 @@ std::size_t byte_buffer::get_pos()
 std::vector<std::uint8_t>& byte_buffer::get_buffer()
 {
 	return m_data;
-}
-
-std::string ReadFile(std::string file)
-{
-	std::string buffer;
-
-	std::ifstream stream(file, std::ios::binary);
-	if (stream.good())
-	{
-		if (!stream.is_open()) return buffer;
-
-		stream.seekg(0, std::ios::end);
-		std::streamsize size = stream.tellg();
-		stream.seekg(0, std::ios::beg);
-
-		if (size > -1)
-		{
-			buffer.clear();
-			buffer.resize(static_cast<uint32_t>(size));
-
-			stream.read(const_cast<char*>(buffer.data()), size);
-		}
-
-		stream.close();
-	}
-
-	return buffer;
-}
-
-void SaveFile(std::string file, std::vector<std::uint8_t> buffer)
-{
-	fsave(file, buffer);
 }

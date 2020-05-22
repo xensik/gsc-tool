@@ -8,6 +8,7 @@ class assembler
 public:
 	assembler();
 	void assemble(std::string& buffer);
+	void assemble(std::vector<std::shared_ptr<function>>& functions);
 	std::vector<std::uint8_t> output_script();
 	std::vector<std::uint8_t> output_stack();
 
@@ -15,7 +16,6 @@ private:
 	std::unique_ptr<byte_buffer> m_script;
 	std::unique_ptr<byte_buffer> m_stack;
 	std::vector<std::shared_ptr<function>> m_functions;
-	std::unordered_map<std::uint32_t, std::string> m_labels;
 
 	void assemble_function(std::shared_ptr<function> func);
 	void assemble_instruction(std::shared_ptr<instruction> inst);
@@ -27,7 +27,7 @@ private:
 	void assemble_jump(std::shared_ptr<instruction> inst, bool expr, bool back);
 	void assemble_offset(std::int32_t offset);
 	std::uint32_t resolve_function(const std::string& name);
-	std::uint32_t resolve_label(const std::string& name);
+	std::uint32_t resolve_label(std::shared_ptr<instruction> inst, const std::string& name);
 };
 
 _GSC_END

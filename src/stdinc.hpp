@@ -14,8 +14,9 @@
 #include <stdio.h>
 #include <tchar.h>
 
-#include "utils/byte_buffer.hpp"
 #include "utils/string.hpp"
+#include "utils/file.hpp"
+#include "utils/byte_buffer.hpp"
 
 #define _GSC_BEGIN namespace gsc {
 #define _GSC_END }

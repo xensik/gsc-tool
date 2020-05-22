@@ -1,17 +1,17 @@
 #include "stdinc.hpp"
-#include "assembler.hpp"
-#include "disassembler.hpp"
+#include "assembler/assembler.hpp"
+#include "disassembler/disassembler.hpp"
 
 void AssembleFile(std::string file)
 {
-	std::string scriptfile = ReadFile(file);
+	std::string scriptfile = utils::file::read(file);
 
 	auto assembler_ = gsc::assembler();
 
 	assembler_.assemble(scriptfile);
 
-	SaveFile(file + ".out.cgsc", assembler_.output_script());
-	SaveFile(file + ".out.cgsc.stack", assembler_.output_stack());
+	utils::file::save(file + ".out.cgsc", assembler_.output_script());
+	utils::file::save(file + ".out.cgsc.stack", assembler_.output_stack());
 }
 
 void DisassembleFile(std::string file)
@@ -37,7 +37,7 @@ void DisassembleFile(std::string file)
 
 	disasembler_.disassemble(script, stack);
 	
-	SaveFile(file + ".gscasm", disasembler_.output());
+	utils::file::save(file + ".gscasm", disasembler_.output_buffer());
 }
 
 int main(int argc, char** argv)
@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		printf("usage: ScriptfileDisasm.exe <options> <file>\n");
+		printf("usage: gsc-tool.exe <options> <file>\n");
 		return 0;
 	}
 

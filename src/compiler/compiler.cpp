@@ -3,7 +3,7 @@
 
 _GSC_BEGIN
 
-void compiler::compile(/* node list*/)
+void compiler::compile(sval_u rootnode)
 {
 
 }

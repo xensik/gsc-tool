@@ -1,5 +1,5 @@
 #pragma once
-#include "common.hpp"
+#include "assembler/common.hpp"
 
 _GSC_BEGIN
 
@@ -8,15 +8,15 @@ class disassembler
 public:
 	disassembler(bool ida_output);
 	void disassemble(std::shared_ptr<byte_buffer> script, std::shared_ptr<byte_buffer> stack);
-	std::vector<std::uint8_t> output();
+	std::vector<std::shared_ptr<function>> output();
+	std::vector<std::uint8_t> output_buffer();
 
 private:
 	std::shared_ptr<byte_buffer> m_script;
 	std::shared_ptr<byte_buffer> m_stack;
 	std::unique_ptr<byte_buffer> m_output;
-	bool m_ida_output;
 	std::vector<std::shared_ptr<function>> m_functions;
-	std::unordered_map<std::uint32_t, std::string> m_labels;
+	bool m_ida_output;
 
 	void dissasemble_function(std::shared_ptr<function> func);
 	void dissasemble_instruction(std::shared_ptr<instruction> inst);

@@ -1,11 +1,12 @@
 #pragma once
+#include "parsetree.hpp"
 
 _GSC_BEGIN
 
 class compiler
 {
 public:
-	void compile();
+	void compile(sval_u rootnode);
 	void output();
 
 private:
