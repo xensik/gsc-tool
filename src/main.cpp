@@ -1,16 +1,40 @@
 #include "stdinc.hpp"
+#include <filesystem>
 #include "assembler/assembler.hpp"
 #include "disassembler/disassembler.hpp"
 
 void assemble_file(std::string file)
 {
-	auto scriptfile = utils::file::read(file);
+	auto scriptfile = utils::file::read(file + ".gscasm");
 	gsc::assembler assembler;
 
 	assembler.assemble(scriptfile);
 
-	utils::file::save(file + ".out.cgsc", assembler.output_script());
-	utils::file::save(file + ".out.cgsc.stack", assembler.output_stack());
+	auto overwrite = true;
+	if (std::filesystem::exists(file + ".cgsc"))
+	{
+		do
+		{
+			printf("File \"%s.cgsc\" already exists, overwrite? [Y/n]: ", file.data());
+			auto result = std::getchar();
+
+			if (result == '\n' || result == 'Y' || result == 'y')
+			{
+				break;
+			}
+			else if (result == 'N' || result == 'n')
+			{
+				overwrite = false;
+				break;
+			}
+		} while (true);
+	}
+
+	if (overwrite)
+	{
+		utils::file::save(file + ".cgsc", assembler.output_script());
+		utils::file::save(file + ".cgsc.stack", assembler.output_stack());
+	}
 }
 
 void disassemble_file(std::string file)
