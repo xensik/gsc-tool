@@ -2,19 +2,18 @@
 #include "assembler/assembler.hpp"
 #include "disassembler/disassembler.hpp"
 
-void AssembleFile(std::string file)
+void assemble_file(std::string file)
 {
-	std::string scriptfile = utils::file::read(file);
+	auto scriptfile = utils::file::read(file);
+	gsc::assembler assembler;
 
-	auto assembler_ = gsc::assembler();
+	assembler.assemble(scriptfile);
 
-	assembler_.assemble(scriptfile);
-
-	utils::file::save(file + ".out.cgsc", assembler_.output_script());
-	utils::file::save(file + ".out.cgsc.stack", assembler_.output_stack());
+	utils::file::save(file + ".out.cgsc", assembler.output_script());
+	utils::file::save(file + ".out.cgsc.stack", assembler.output_stack());
 }
 
-void DisassembleFile(std::string file)
+void disassemble_file(std::string file)
 {
 	if (file.find(".stack") != std::string::npos)
 	{
@@ -33,11 +32,11 @@ void DisassembleFile(std::string file)
 	auto script = std::make_shared<byte_buffer>(file + ".cgsc");
 	auto stack = std::make_shared<byte_buffer>(file + ".cgsc.stack");
 
-	auto disasembler_ = gsc::disassembler(false);
+	gsc::disassembler disassembler(false);
 
-	disasembler_.disassemble(script, stack);
+	disassembler.disassemble(script, stack);
 	
-	utils::file::save(file + ".gscasm", disasembler_.output_buffer());
+	utils::file::save(file + ".gscasm", disassembler.output_buffer());
 }
 
 int main(int argc, char** argv)
@@ -69,11 +68,11 @@ int main(int argc, char** argv)
 
 	if (mode == "-asm")
 	{
-		AssembleFile(file);
+		assemble_file(file);
 	}
 	else
 	{
-		DisassembleFile(file);
+		disassemble_file(file);
 	}
 
 	return 0;

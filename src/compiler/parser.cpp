@@ -5,7 +5,7 @@ _GSC_BEGIN
 
 sval_u parser::parse(std::string file)
 {
-
+	return sval_u();
 }
 
 _GSC_END

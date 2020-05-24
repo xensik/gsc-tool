@@ -523,7 +523,9 @@ void assembler::assemble_offset(std::int32_t offset)
 std::uint32_t assembler::resolve_function(const std::string& name)
 {
 	if (name.find("func_") == std::string::npos)
+	{
 		return std::stol(name, nullptr, 16);
+	}
 
 	for (auto func : m_functions)
 	{
@@ -547,7 +549,9 @@ std::uint32_t assembler::resolve_label(std::shared_ptr<instruction> inst, const 
 	}
 
 	if (is_hex_number(name))
+	{
 		return std::stol(name, nullptr, 16);
+	}
 
 	printf("[ERROR] Couldn't resolve label address of \"%s\"!\n", name.c_str());
 	return 0;
