@@ -1,7 +1,5 @@
 #include "stdinc.hpp"
 #include <filesystem>
-#include "assembler/assembler.hpp"
-#include "disassembler/disassembler.hpp"
 
 void assemble_file(std::string file)
 {

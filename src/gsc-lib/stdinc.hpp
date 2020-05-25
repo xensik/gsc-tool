@@ -23,3 +23,7 @@
 
 #define IW5
 #include "game/IW5_PC.hpp"
+
+#include "assembler/common.hpp"
+#include "assembler/assembler.hpp"
+#include "disassembler/disassembler.hpp"

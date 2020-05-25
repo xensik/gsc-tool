@@ -59,19 +59,23 @@ workspace "gsc-tool"
 		}
 	configuration {}
 
-	startproject "gsc-tool"
+	startproject "gsc-app"
 
-	project "gsc-tool"
-		kind "ConsoleApp"
+	-- ========================
+	-- Projects
+	-- ========================
+
+	project "gsc-lib"
+		kind "StaticLib"
 		language "C++"
 		
 		pchheader "stdinc.hpp"
-		pchsource "src/stdinc.cpp"
+		pchsource "stdinc.cpp"
 
 		files {
-			"./src/**.h",
-			"./src/**.hpp",
-			"./src/**.cpp",
+			"./src/gsc-lib/**.h",
+			"./src/gsc-lib/**.hpp",
+			"./src/gsc-lib/**.cpp",
 		}
 
 		syslibdirs {
@@ -79,6 +83,30 @@ workspace "gsc-tool"
 		}
 
 		includedirs {
-			"./src",
+			"./src/gsc-lib",
+			"%{prj.location}/src/gsc-lib",
+		}
+
+	project "gsc-app"
+		kind "ConsoleApp"
+		language "C++"
+		
+		files {
+			"./src/gsc-app/**.h",
+			"./src/gsc-app/**.hpp",
+			"./src/gsc-app/**.cpp",
+		}
+
+		links {
+			"gsc-lib"
+		}
+
+		syslibdirs {
+			"./build/bin",
+		}
+
+		includedirs {
+			"./src/gsc-app",
+			"./src/gsc-lib",
 			"%{prj.location}/src",
 		}
