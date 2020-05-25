@@ -151,6 +151,7 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 	case OP_Return:
 	case OP_GetUndefined:
 	case OP_GetZero:
+	case OP_waittillFrameEnd:
 	case OP_EvalLocalVariableCached0:
 	case OP_EvalLocalVariableCached1:
 	case OP_EvalLocalVariableCached2:
