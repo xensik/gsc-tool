@@ -263,9 +263,11 @@ void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 	case OP_GetAnim:
 		inst->m_size = 1;
 	case OP_GetAnimation:
-		inst->m_size = 1;
-		inst->m_data.push_back(va("\"%s\"", m_stack->read_string().data()));
-		inst->m_data.push_back(va("\"%s\"", m_stack->read_string().data()));
+		inst->m_size = 5;
+		m_script->seek(4); // placeholder 4 bytes?
+		//bool using_tree = m_stack->read<std::uint8_t>() != 0; // using_tree?
+		inst->m_data.push_back(va("\"%s\"", m_stack->read_string().data())); // read animtree identifier from stack
+		inst->m_data.push_back(va("\"%s\"", m_stack->read_string().data())); // read animation from stack
 		break;
 	case OP_GetGameRef:
 		inst->m_size = 1;

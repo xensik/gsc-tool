@@ -332,6 +332,7 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 		break;
 	case OP_GetAnimation:
 		m_script->write<std::uint8_t>(inst->m_opcode);
+		m_script->write<std::uint32_t>(0); // placeholder 4 bytes?
 		m_stack->write_string(get_string_literal(inst->m_data[1]));
 		m_stack->write_string(get_string_literal(inst->m_data[2]));
 		break;

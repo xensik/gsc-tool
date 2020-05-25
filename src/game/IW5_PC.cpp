@@ -1784,7 +1784,6 @@ std::size_t GetInstructionSize(std::uint8_t opcode)
 	case OP_CastBool:
 	case OP_BoolNot:
 	case OP_BoolComplement:
-	case OP_GetAnimation:
 		return 1;
 		break;
 	case OP_GetByte:
@@ -1875,6 +1874,7 @@ std::size_t GetInstructionSize(std::uint8_t opcode)
 	case OP_ScriptFarChildThreadCall:
 	case OP_ScriptFarMethodThreadCall:
 	case OP_ScriptFarMethodChildThreadCall:
+	case OP_GetAnimation:
 		return 5;
 		break;
 	case OP_GetVector:
