@@ -123,6 +123,9 @@ void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 	case OP_GetZero:
 		inst->m_size = 1;
 		break;
+	case OP_waittillFrameEnd:
+		inst->m_size = 1;
+		break;
 	case OP_CreateLocalVariable:
 		inst->m_size = 2;
 		inst->m_data.push_back(va("%X", m_script->read<std::uint8_t>()));
