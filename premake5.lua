@@ -68,9 +68,6 @@ workspace "gsc-tool"
 	project "gsc-lib"
 		kind "StaticLib"
 		language "C++"
-		
-		pchheader "stdinc.hpp"
-		pchsource "stdinc.cpp"
 
 		files {
 			"./src/gsc-lib/**.h",

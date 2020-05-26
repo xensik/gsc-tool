@@ -1,15 +1,14 @@
 #pragma once
 
-_GSC_BEGIN
-
-class decompiler
+namespace gsc
 {
-public:
-	void decompile(std::vector<std::shared_ptr<function>>& functions);
-	std::vector<std::uint8_t> output();
+	class decompiler
+	{
+	public:
+		void decompile(std::vector<std::shared_ptr<function>>& functions);
+		auto output() -> std::vector<std::uint8_t>;
 
-private:
-	std::vector<std::shared_ptr<function>> m_functions;
-};
-
-_GSC_END
+	private:
+		std::vector<std::shared_ptr<function>> m_functions;
+	};
+}

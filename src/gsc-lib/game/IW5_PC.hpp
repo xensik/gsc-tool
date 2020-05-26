@@ -1,168 +1,173 @@
-#define OP_End								0x0
-#define OP_Return							0x1
-#define OP_GetByte							0x2
-#define OP_GetNegByte						0x3
-#define OP_GetUnsignedShort					0x4
-#define OP_GetNegUnsignedShort				0x5
-#define OP_GetInteger						0x6
-#define OP_GetBuiltinFunction				0x7
-#define OP_GetBuiltinMethod					0x8
-#define OP_GetFloat							0x9
-#define OP_GetString						0xA
-#define OP_GetUndefined						0xB
-#define OP_GetZero							0xC
-#define OP_waittillFrameEnd					0xD
-#define OP_CreateLocalVariable				0xE
-#define OP_RemoveLocalVariables				0xF
-#define OP_EvalLocalVariableCached0			0x10
-#define OP_EvalLocalVariableCached1			0x11
-#define OP_EvalLocalVariableCached2			0x12
-#define OP_EvalLocalVariableCached3			0x13
-#define OP_EvalLocalVariableCached4			0x14
-#define OP_EvalLocalVariableCached5			0x15
-#define OP_EvalLocalVariableCached			0x16
-#define OP_EvalLocalArrayCached				0x17
-#define OP_EvalArray						0x18
-#define OP_EvalNewLocalArrayRefCached0		0x19
-#define OP_EvalLocalArrayRefCached0			0x1A
-#define OP_EvalLocalArrayRefCached			0x1B
-#define OP_EvalArrayRef						0x1C
-#define OP_ClearArray						0x1D
-#define OP_EmptyArray						0x1E
-#define OP_AddArray							0x1F
-#define OP_PreScriptCall					0x20
-#define OP_ScriptLocalFunctionCall2			0x21
-#define OP_ScriptLocalFunctionCall			0x22
-#define OP_ScriptLocalMethodCall			0x23
-#define OP_ScriptLocalThreadCall			0x24
-#define OP_ScriptLocalChildThreadCall		0x25
-#define OP_ScriptLocalMethodThreadCall		0x26
-#define OP_ScriptLocalMethodChildThreadCall	0x27
-#define OP_ScriptFarFunctionCall2			0x28
-#define OP_ScriptFarFunctionCall			0x29
-#define OP_ScriptFarMethodCall				0x2A
-#define OP_ScriptFarThreadCall				0x2B
-#define OP_ScriptFarChildThreadCall			0x2C
-#define OP_ScriptFarMethodThreadCall		0x2D
-#define OP_ScriptFarMethodChildThreadCall	0x2E
-#define OP_ScriptFunctionCallPointer		0x2F
-#define OP_ScriptMethodCallPointer			0x30
-#define OP_ScriptThreadCallPointer			0x31
-#define OP_ScriptMethodChildThreadCallPointer_0 0x32
-#define OP_ScriptMethodThreadCallPointer 0x33
-#define OP_ScriptMethodChildThreadCallPointer 0x34
-#define OP_CallBuiltinPointer				0x35
-#define OP_CallBuiltinMethodPointer			0x36
-#define OP_GetIString						0x37
-#define OP_GetVector						0x38
-#define OP_GetLevelObject					0x39
-#define OP_GetAnimObject					0x3A
-#define OP_GetSelf							0x3B
-#define OP_GetThisthread					0x3C
-#define OP_GetLevel							0x3D
-#define OP_GetGame							0x3E
-#define OP_GetAnim							0x3F
-#define OP_GetAnimation						0x40
-#define OP_GetGameRef						0x41
-#define OP_inc								0x42
-#define OP_dec								0x43
-#define OP_bit_or							0x44
-#define OP_JumpOnFalseExpr					0x45
-#define OP_bit_ex_or						0x46
-#define OP_bit_and							0x47
-#define OP_equality							0x48
-#define OP_inequality						0x49
-#define OP_less								0x4A
-#define OP_greater							0x4B
-#define OP_JumpOnTrueExpr					0x4C
-#define OP_less_equal						0x4D
-#define OP_jumpback							0x4E
-#define OP_waittillmatch2					0x4F // nop
-#define OP_waittill							0x50
-#define OP_notify							0x51
-#define OP_endon							0x52
-#define OP_voidCodepos						0x53
-#define OP_switch							0x54
-#define OP_endswitch						0x55
-#define OP_vector							0x56
-#define OP_JumpOnFalse						0x57
-#define OP_greater_equal					0x58
-#define OP_shift_left						0x59
-#define OP_shift_right						0x5A
-#define OP_plus								0x5B
-#define OP_jump								0x5C
-#define OP_minus							0x5D
-#define OP_multiply							0x5E
-#define OP_divide							0x5F
-#define OP_mod								0x60
-#define OP_JumpOnTrue						0x61
-#define OP_size								0x62
-#define OP_waittillmatch					0x63
-#define OP_GetLocalFunction					0x64
-#define OP_GetFarFunction					0x65
-#define OP_GetSelfObject					0x66
-#define OP_EvalLevelFieldVariable			0x67
-#define OP_EvalAnimFieldVariable			0x68
-#define OP_EvalSelfFieldVariable			0x69
-#define OP_EvalFieldVariable				0x6A
-#define OP_EvalLevelFieldVariableRef		0x6B
-#define OP_EvalAnimFieldVariableRef			0x6C
-#define OP_EvalSelfFieldVariableRef			0x6D
-#define OP_EvalFieldVariableRef				0x6E
-#define OP_ClearFieldVariable				0x6F
-#define OP_SafeCreateVariableFieldCached	0x70
-#define OP_SafeSetVariableFieldCached0		0x71
-#define OP_SafeSetVariableFieldCached		0x72
-#define OP_SafeSetWaittillVariableFieldCached	0x73
-#define OP_GetAnimTree						0x74
-#define OP_clearparams						0x75
-#define OP_checkclearparams					0x76
-#define OP_EvalLocalVariableRefCached0		0x77
-#define OP_EvalNewLocalVariableRefCached0	0x78 // nop
-#define OP_EvalLocalVariableRefCached		0x79
-#define OP_SetLevelFieldVariableField		0x7A
-#define OP_SetVariableField					0x7B
-#define OP_ClearVariableField				0x7C // nop
-#define OP_SetAnimFieldVariableField		0x7D
-#define OP_SetSelfFieldVariableField		0x7E
-#define OP_SetLocalVariableFieldCached0		0x7F
-#define OP_SetNewLocalVariableFieldCached0	0x80
-#define OP_SetLocalVariableFieldCached		0x81
-#define OP_ClearLocalVariableFieldCached	0x82
-#define OP_ClearLocalVariableFieldCached0	0x83
-#define OP_CallBuiltin0						0x84
-#define OP_CallBuiltin1						0x85
-#define OP_CallBuiltin2						0x86
-#define OP_CallBuiltin3						0x87
-#define OP_CallBuiltin4						0x88
-#define OP_CallBuiltin5						0x89
-#define OP_CallBuiltin						0x8A
-#define OP_CallBuiltinMethod0				0x8B
-#define OP_CallBuiltinMethod1				0x8C
-#define OP_CallBuiltinMethod2				0x8D
-#define OP_CallBuiltinMethod3				0x8E
-#define OP_CallBuiltinMethod4				0x8F
-#define OP_CallBuiltinMethod5				0x90
-#define OP_CallBuiltinMethod				0x91
-#define OP_wait								0x92
-#define OP_DecTop							0x93
-#define OP_CastFieldObject					0x94
-#define OP_EvalLocalVariableObjectCached	0x95
-#define OP_CastBool							0x96
-#define OP_BoolNot							0x97
-#define OP_BoolComplement					0x98
+#pragma once
 
-std::size_t GetInstructionSize(std::uint8_t opcode);
+namespace iw5
+{
+	enum class opcode : std::uint8_t
+	{
+		OP_End = 0x0,
+		OP_Return = 0x1,
+		OP_GetByte = 0x2,
+		OP_GetNegByte = 0x3,
+		OP_GetUnsignedShort = 0x4,
+		OP_GetNegUnsignedShort = 0x5,
+		OP_GetInteger = 0x6,
+		OP_GetBuiltinFunction = 0x7,
+		OP_GetBuiltinMethod = 0x8,
+		OP_GetFloat = 0x9,
+		OP_GetString = 0xA,
+		OP_GetUndefined = 0xB,
+		OP_GetZero = 0xC,
+		OP_waittillFrameEnd = 0xD,
+		OP_CreateLocalVariable = 0xE,
+		OP_RemoveLocalVariables = 0xF,
+		OP_EvalLocalVariableCached0 = 0x10,
+		OP_EvalLocalVariableCached1 = 0x11,
+		OP_EvalLocalVariableCached2 = 0x12,
+		OP_EvalLocalVariableCached3 = 0x13,
+		OP_EvalLocalVariableCached4 = 0x14,
+		OP_EvalLocalVariableCached5 = 0x15,
+		OP_EvalLocalVariableCached = 0x16,
+		OP_EvalLocalArrayCached = 0x17,
+		OP_EvalArray = 0x18,
+		OP_EvalNewLocalArrayRefCached0 = 0x19,
+		OP_EvalLocalArrayRefCached0 = 0x1A,
+		OP_EvalLocalArrayRefCached = 0x1B,
+		OP_EvalArrayRef = 0x1C,
+		OP_ClearArray = 0x1D,
+		OP_EmptyArray = 0x1E,
+		OP_AddArray = 0x1F,
+		OP_PreScriptCall = 0x20,
+		OP_ScriptLocalFunctionCall2 = 0x21,
+		OP_ScriptLocalFunctionCall = 0x22,
+		OP_ScriptLocalMethodCall = 0x23,
+		OP_ScriptLocalThreadCall = 0x24,
+		OP_ScriptLocalChildThreadCall = 0x25,
+		OP_ScriptLocalMethodThreadCall = 0x26,
+		OP_ScriptLocalMethodChildThreadCall = 0x27,
+		OP_ScriptFarFunctionCall2 = 0x28,
+		OP_ScriptFarFunctionCall = 0x29,
+		OP_ScriptFarMethodCall = 0x2A,
+		OP_ScriptFarThreadCall = 0x2B,
+		OP_ScriptFarChildThreadCall = 0x2C,
+		OP_ScriptFarMethodThreadCall = 0x2D,
+		OP_ScriptFarMethodChildThreadCall = 0x2E,
+		OP_ScriptFunctionCallPointer = 0x2F,
+		OP_ScriptMethodCallPointer = 0x30,
+		OP_ScriptThreadCallPointer = 0x31,
+		OP_ScriptMethodChildThreadCallPointer_0 = 0x32,
+		OP_ScriptMethodThreadCallPointer = 0x33,
+		OP_ScriptMethodChildThreadCallPointer = 0x34,
+		OP_CallBuiltinPointer = 0x35,
+		OP_CallBuiltinMethodPointer = 0x36,
+		OP_GetIString = 0x37,
+		OP_GetVector = 0x38,
+		OP_GetLevelObject = 0x39,
+		OP_GetAnimObject = 0x3A,
+		OP_GetSelf = 0x3B,
+		OP_GetThisthread = 0x3C,
+		OP_GetLevel = 0x3D,
+		OP_GetGame = 0x3E,
+		OP_GetAnim = 0x3F,
+		OP_GetAnimation = 0x40,
+		OP_GetGameRef = 0x41,
+		OP_inc = 0x42,
+		OP_dec = 0x43,
+		OP_bit_or = 0x44,
+		OP_JumpOnFalseExpr = 0x45,
+		OP_bit_ex_or = 0x46,
+		OP_bit_and = 0x47,
+		OP_equality = 0x48,
+		OP_inequality = 0x49,
+		OP_less = 0x4A,
+		OP_greater = 0x4B,
+		OP_JumpOnTrueExpr = 0x4C,
+		OP_less_equal = 0x4D,
+		OP_jumpback = 0x4E,
+		OP_waittillmatch2 = 0x4F, // nop
+		OP_waittill = 0x50,
+		OP_notify = 0x51,
+		OP_endon = 0x52,
+		OP_voidCodepos = 0x53,
+		OP_switch = 0x54,
+		OP_endswitch = 0x55,
+		OP_vector = 0x56,
+		OP_JumpOnFalse = 0x57,
+		OP_greater_equal = 0x58,
+		OP_shift_left = 0x59,
+		OP_shift_right = 0x5A,
+		OP_plus = 0x5B,
+		OP_jump = 0x5C,
+		OP_minus = 0x5D,
+		OP_multiply = 0x5E,
+		OP_divide = 0x5F,
+		OP_mod = 0x60,
+		OP_JumpOnTrue = 0x61,
+		OP_size = 0x62,
+		OP_waittillmatch = 0x63,
+		OP_GetLocalFunction = 0x64,
+		OP_GetFarFunction = 0x65,
+		OP_GetSelfObject = 0x66,
+		OP_EvalLevelFieldVariable = 0x67,
+		OP_EvalAnimFieldVariable = 0x68,
+		OP_EvalSelfFieldVariable = 0x69,
+		OP_EvalFieldVariable = 0x6A,
+		OP_EvalLevelFieldVariableRef = 0x6B,
+		OP_EvalAnimFieldVariableRef = 0x6C,
+		OP_EvalSelfFieldVariableRef = 0x6D,
+		OP_EvalFieldVariableRef = 0x6E,
+		OP_ClearFieldVariable = 0x6F,
+		OP_SafeCreateVariableFieldCached = 0x70,
+		OP_SafeSetVariableFieldCached0 = 0x71,
+		OP_SafeSetVariableFieldCached = 0x72,
+		OP_SafeSetWaittillVariableFieldCached = 0x73,
+		OP_GetAnimTree = 0x74,
+		OP_clearparams = 0x75,
+		OP_checkclearparams = 0x76,
+		OP_EvalLocalVariableRefCached0 = 0x77,
+		OP_EvalNewLocalVariableRefCached0 = 0x78,// nop
+		OP_EvalLocalVariableRefCached = 0x79,
+		OP_SetLevelFieldVariableField = 0x7A,
+		OP_SetVariableField = 0x7B,
+		OP_ClearVariableField = 0x7C,// nop
+		OP_SetAnimFieldVariableField = 0x7D,
+		OP_SetSelfFieldVariableField = 0x7E,
+		OP_SetLocalVariableFieldCached0 = 0x7F,
+		OP_SetNewLocalVariableFieldCached0 = 0x80,
+		OP_SetLocalVariableFieldCached = 0x81,
+		OP_ClearLocalVariableFieldCached = 0x82,
+		OP_ClearLocalVariableFieldCached0 = 0x83,
+		OP_CallBuiltin0 = 0x84,
+		OP_CallBuiltin1 = 0x85,
+		OP_CallBuiltin2 = 0x86,
+		OP_CallBuiltin3 = 0x87,
+		OP_CallBuiltin4 = 0x88,
+		OP_CallBuiltin5 = 0x89,
+		OP_CallBuiltin = 0x8A,
+		OP_CallBuiltinMethod0 = 0x8B,
+		OP_CallBuiltinMethod1 = 0x8C,
+		OP_CallBuiltinMethod2 = 0x8D,
+		OP_CallBuiltinMethod3 = 0x8E,
+		OP_CallBuiltinMethod4 = 0x8F,
+		OP_CallBuiltinMethod5 = 0x90,
+		OP_CallBuiltinMethod = 0x91,
+		OP_wait = 0x92,
+		OP_DecTop = 0x93,
+		OP_CastFieldObject = 0x94,
+		OP_EvalLocalVariableObjectCached = 0x95,
+		OP_CastBool = 0x96,
+		OP_BoolNot = 0x97,
+		OP_BoolComplement = 0x98,
+		OP_Count = 0x99,
+	};
 
-std::string GetOpCodeName(std::uint8_t id);
-std::uint8_t GetOpCodeId(const std::string& name);
-
-std::string GetBuiltinFuncName(std::uint16_t id);
-std::uint16_t GetBuiltinFuncId(const std::string& name);
-
-std::string GetBuiltinMethodName(std::uint16_t id);
-std::uint16_t GetBuiltinMethodId(const std::string& name);
-
-std::string GetFileName(std::uint16_t id);
-std::string GetFunctionName(std::uint16_t id);
-std::string GetFieldName(std::uint16_t id);
+	auto GetInstructionSize(opcode op) -> std::size_t;
+	auto GetOpCodeName(opcode op) -> std::string;
+	auto GetOpCodeId(const std::string& name) -> opcode;
+	auto GetBuiltinFuncName(std::uint16_t id) -> std::string;
+	auto GetBuiltinFuncId(const std::string& name) -> std::uint16_t;
+	auto GetBuiltinMethodName(std::uint16_t id) -> std::string;
+	auto GetBuiltinMethodId(const std::string& name) -> std::uint16_t;
+	auto GetFileName(std::uint16_t id) -> std::string;
+	auto GetFunctionName(std::uint16_t id) -> std::string;
+	auto GetFieldName(std::uint16_t id) -> std::string;
+}

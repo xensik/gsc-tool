@@ -87,7 +87,6 @@ void byte_buffer::write_cpp_string(const std::string& data)
 
 void byte_buffer::write_string(const std::string& data)
 {
-	//printf("string: '%s'\n", data.c_str());
 	strcpy(reinterpret_cast<char*>(m_data.data() + m_pos), data.data());
 	m_pos += data.size() + 1;
 }
@@ -121,7 +120,7 @@ std::string byte_buffer::get_bytes_print(std::size_t index, std::size_t count)
 	std::string shit = "";
 	for (int i = index; i < index + count; i++)
 	{
-		shit = va("%s %02X", shit.data(), (*reinterpret_cast<std::uint8_t*>(m_data.data() + i)));
+		shit = utils::string::va("%s %02X", shit.data(), (*reinterpret_cast<std::uint8_t*>(m_data.data() + i)));
 	}
 	return shit;
 }

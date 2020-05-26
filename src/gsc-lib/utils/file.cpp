@@ -2,7 +2,7 @@
 
 namespace utils::file
 {
-	std::string read(std::string file)
+	auto read(std::string file) -> std::string
 	{
 		std::string buffer;
 

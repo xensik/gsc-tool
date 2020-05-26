@@ -18,12 +18,11 @@
 #include "utils/file.hpp"
 #include "utils/byte_buffer.hpp"
 
-#define _GSC_BEGIN namespace gsc {
-#define _GSC_END }
-
 #define IW5
 #include "game/IW5_PC.hpp"
+using namespace iw5;
 
-#include "assembler/common.hpp"
-#include "assembler/assembler.hpp"
-#include "disassembler/disassembler.hpp"
+#include "assembly/instruction.hpp"
+#include "assembly/function.hpp"
+#include "assembly/assembler.hpp"
+#include "assembly/disassembler.hpp"
