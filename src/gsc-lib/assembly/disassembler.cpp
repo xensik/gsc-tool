@@ -75,8 +75,6 @@ namespace gsc
 
 				this->print_instruction(inst);
 			}
-
-			m_output->write_cpp_string("\n");
 		}
 
 		std::vector<std::uint8_t> output;
@@ -299,8 +297,7 @@ namespace gsc
 			inst->m_size = 1;
 		case opcode::OP_GetAnimation:
 			inst->m_size = 5;
-			m_script->seek(4); // placeholder 4 bytes?
-			//bool using_tree = m_stack->read<std::uint8_t>() != 0; // using_tree?
+			m_script->seek(4);
 			inst->m_data.push_back(utils::string::va("\"%s\"", m_stack->read_string().data())); // read animtree identifier from stack
 			inst->m_data.push_back(utils::string::va("\"%s\"", m_stack->read_string().data())); // read animation from stack
 			break;
@@ -534,7 +531,7 @@ namespace gsc
 			inst->m_size = 1;
 			break;
 		default:
-			printf("[ERROR] %04X UNHANDLED OPCODE (%X)!\n", inst->m_index, inst->m_opcode);
+			LOG_ERROR("%04X UNHANDLED OPCODE (%X)!", inst->m_index, inst->m_opcode);
 			break;
 		}
 	}
@@ -732,12 +729,12 @@ namespace gsc
 				}
 			}
 
-			printf("[ERROR] Couldn't resolve function name of 0x%X!\n", idx);
+			LOG_ERROR("Couldn't resolve function name of 0x%X!", idx);
 			return index;
 		}
 		else
 		{
-			printf("[ERROR] \"%s\" is not valid function address!\n", index.data());
+			LOG_ERROR("\"%s\" is not valid function address!", index.data());
 			return index;
 		}
 	}
@@ -762,10 +759,11 @@ namespace gsc
 
 	void disassembler::print_function(std::shared_ptr<function> func)
 	{
+		m_output->write_cpp_string("\n");
+
 		if (m_ida_output)
 		{
-			m_output->write_cpp_string("\n\t");
-			m_output->write_cpp_string(utils::string::va("%-20s", ""));
+			m_output->write_cpp_string(utils::string::va("\t%-20s", ""));
 		}
 
 		if (func->m_id == 0)

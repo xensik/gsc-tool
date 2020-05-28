@@ -10,37 +10,25 @@ namespace gsc
 
 	void assembler::assemble(std::string& buffer)
 	{
+		LOG_DEBUG("parsing assembly file...");
+
 		std::vector<std::string> assembly = utils::string::clean_buffer_lines(buffer);
 
 		std::vector<std::shared_ptr<function>> functions;
-		std::uint32_t count = 1;
-		std::uint32_t index = 0;
 		std::shared_ptr<function> func = nullptr;
 		std::shared_ptr<instruction> inst = nullptr;
-		bool in_switch = false;
-		std::uint16_t casenum = 0;
+		std::uint32_t index = 1;
+		std::uint16_t switchnum = 0;
 
 		for (auto& line : assembly)
 		{
-			count++;
-
-			if (line == "")
+			if (line == "" || line.at(0) == '#' || line.find("script_begin") != std::string::npos)
 			{
-				continue;
-			}
-
-			if (line.at(0) == '#')
-			{
-				continue;
-			}
-			else if (line.find("script_begin") != std::string::npos)
-			{
-				index += 1;
 				continue;
 			}
 			else if (line.substr(0, 5) == "func_")
 			{
-				if (func != nullptr) // save last function size
+				if (func != nullptr)
 				{
 					func->m_size = index - func->m_index;
 				}
@@ -60,20 +48,19 @@ namespace gsc
 				std::vector<std::string> data;
 				line.find(' ') != std::string::npos ? data = utils::string::split(line, ' ') : data.push_back(line);
 
-				if (casenum) // group switch in one instruction
+				if (switchnum)
 				{
 					if (line.substr(0, 4) == "case" || line.substr(0, 7) == "default")
 					{
 						for (auto& d : data)
+						{
 							inst->m_data.push_back(d);
+						}
 						inst->m_size += 7;
 						index += 7;
+						switchnum--;
 					}
-					else
-					{
-						printf("ERROR parsing switch: invalid instruction '%s'\n", line.c_str());
-					}
-					casenum--;
+					else return;
 				}
 				else
 				{
@@ -87,33 +74,33 @@ namespace gsc
 					func->m_instructions.push_back(inst);
 					index += inst->m_size;
 
+					// group switch in one instruction
 					if (inst->m_opcode == opcode::OP_endswitch)
 					{
 						if (utils::string::is_hex_number(data[1]))
 						{
-							casenum = std::stoul(data[1], nullptr, 16);
+							switchnum = std::stoul(data[1], nullptr, 16);
 						}
-						else
-						{
-							printf("ERROR, no switch case number\n");
-						}
+						else return;
 					}
 				}
 			}
-			// save last function size
-			if (count == assembly.size())
-			{
-				func->m_size = index - func->m_index;
-			}
+		}
+		if (func != nullptr)
+		{
+			func->m_size = index - func->m_index;
 		}
 
-		this->assemble(functions);
+		LOG_DEBUG("assembly file parse complete.", functions.size());
+		LOG_DEBUG("%d functions staged for assemble.", functions.size());
 
+		this->assemble(functions);
 	}
 
 	auto assembler::output_script() -> std::vector<std::uint8_t>
 	{
 		std::vector<std::uint8_t> script;
+
 		script.resize(m_script->get_pos());
 		memcpy(script.data(), m_script->get_buffer().data(), script.size());
 
@@ -123,6 +110,7 @@ namespace gsc
 	auto assembler::output_stack() -> std::vector<std::uint8_t>
 	{
 		std::vector<std::uint8_t> stack;
+
 		stack.resize(m_stack->get_pos());
 		memcpy(stack.data(), m_stack->get_buffer().data(), stack.size());
 
@@ -146,11 +134,14 @@ namespace gsc
 	{
 		// write function size
 		m_stack->write<std::uint32_t>(func->m_size);
+
 		// write function id or name
 		std::string func_name = func->m_name.substr(5);
 		std::uint16_t func_id = utils::string::is_hex_number(func_name) ? std::stoul(func_name, nullptr, 16) : 0;
 		func->m_id = func_id;
+		
 		m_stack->write<std::uint16_t>(func_id);
+		
 		if (func_id == 0)
 		{
 			m_stack->write_string(func_name);
@@ -381,7 +372,7 @@ namespace gsc
 			this->assemble_end_switch(inst);
 			break;
 		default:
-			printf("[ERROR] %04X UNHANDLED OPCODE (%X)!\n", inst->m_index, inst->m_opcode);
+			LOG_ERROR("%04X UNHANDLED OPCODE (%X)!", inst->m_index, inst->m_opcode);
 			break;
 		}
 	}
@@ -461,7 +452,7 @@ namespace gsc
 		}
 		else
 		{
-			printf("ERROR: invalid endswtich number!\n");
+			LOG_ERROR("invalid endswitch number!");
 		}
 
 		m_script->write<std::uint16_t>(casenum);
@@ -576,7 +567,7 @@ namespace gsc
 				return func->m_index;
 			}
 		}
-		printf("[ERROR] Couldn't resolve function address of \"%s\"!\n", name.c_str());
+		LOG_ERROR("Couldn't resolve function address of \"%s\"!", name.c_str());
 		return 0;
 	}
 
@@ -595,7 +586,7 @@ namespace gsc
 			return std::stol(name, nullptr, 16);
 		}
 
-		printf("[ERROR] Couldn't resolve label address of \"%s\"!\n", name.c_str());
+		LOG_ERROR("Couldn't resolve label address of \"%s\"!", name.c_str());
 		return 0;
 	}
 }
