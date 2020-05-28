@@ -56,23 +56,21 @@ namespace gsc
 						{
 							inst->m_data.push_back(d);
 						}
-						inst->m_size += 7;
-						index += 7;
 						switchnum--;
+						continue;
 					}
-					else return;
+
+					LOG_ERROR("invalid instruction inside endswitch \"%s\"!", line.c_str());
+					return;
 				}
 				else
 				{
 					inst = std::make_shared<instruction>();
 					inst->m_index = index;
 					inst->m_opcode = GetOpCodeId(utils::string::to_lower(data[0]));
-					inst->m_size = GetInstructionSize(inst->m_opcode);
+					inst->m_size = GetOpCodeSize(inst->m_opcode);
 					inst->m_data = data;
 					inst->m_parent = func;
-
-					func->m_instructions.push_back(inst);
-					index += inst->m_size;
 
 					// group switch in one instruction
 					if (inst->m_opcode == opcode::OP_endswitch)
@@ -80,9 +78,17 @@ namespace gsc
 						if (utils::string::is_hex_number(data[1]))
 						{
 							switchnum = std::stoul(data[1], nullptr, 16);
+							inst->m_size += 7 * switchnum;
 						}
-						else return;
+						else
+						{
+							LOG_ERROR("endswitch arg is not a number!", line.c_str());
+							return;
+						}
 					}
+					
+					index += inst->m_size;
+					func->m_instructions.push_back(inst);
 				}
 			}
 		}
@@ -91,7 +97,7 @@ namespace gsc
 			func->m_size = index - func->m_index;
 		}
 
-		LOG_DEBUG("assembly file parse complete.", functions.size());
+		LOG_DEBUG("assembly file parse complete.");
 		LOG_DEBUG("%d functions staged for assemble.", functions.size());
 
 		this->assemble(functions);

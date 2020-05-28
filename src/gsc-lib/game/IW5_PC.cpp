@@ -1722,7 +1722,7 @@ namespace iw5
 
 	};
 
-	auto GetInstructionSize(opcode opcode) -> std::size_t
+	auto GetOpCodeSize(opcode opcode) -> std::size_t
 	{
 		switch (opcode)
 		{
@@ -1884,7 +1884,7 @@ namespace iw5
 			return 13;
 			break;
 		default:
-			printf("[ERROR] Couldn't resolve instruction size 0x%X!\n", opcode);
+			LOG_ERROR("Couldn't resolve instruction size 0x%X!", opcode);
 			return 0;
 		}
 	}
@@ -1894,7 +1894,7 @@ namespace iw5
 		if (opcode_map.find(op) != opcode_map.end())
 			return opcode_map[op];
 
-		printf("[ERROR]: Couldn't resolve opcode 0x%X!\n", op);
+		LOG_ERROR("Couldn't resolve opcode 0x%X!", op);
 		return "";
 	}
 
@@ -1908,7 +1908,7 @@ namespace iw5
 			}
 		}
 
-		printf("[ERROR]: Couldn't resolve opcode \"%s\"!\n", name.data());
+		LOG_ERROR("Couldn't resolve opcode \"%s\"!", name.data());
 		return opcode::OP_Count;
 	}
 
@@ -1917,7 +1917,7 @@ namespace iw5
 		if (builtin_func_map.find(id) != builtin_func_map.end())
 			return builtin_func_map[id];
 
-		printf("[ERROR]: Couldn't resolve builtin function 0x%X!\n", id);
+		LOG_ERROR("Couldn't resolve builtin function 0x%X!", id);
 		return "";
 	}
 
@@ -1931,7 +1931,7 @@ namespace iw5
 			}
 		}
 
-		printf("[ERROR]: Couldn't resolve builtin function \"%s\"!\n", name.data());
+		LOG_ERROR("Couldn't resolve builtin function \"%s\"!", name.data());
 		return 0xFFFF;
 	}
 
@@ -1940,7 +1940,7 @@ namespace iw5
 		if (builtin_method_map.find(id) != builtin_method_map.end())
 			return builtin_method_map[id];
 
-		printf("[ERROR]: Couldn't resolve builtin method 0x%X!\n", id);
+		LOG_ERROR("Couldn't resolve builtin method 0x%X!", id);
 		return "";
 	}
 
@@ -1954,7 +1954,7 @@ namespace iw5
 			}
 		}
 
-		printf("[ERROR]: Couldn't resolve builtin method \"%s\"!\n", name.data());
+		LOG_ERROR("Couldn't resolve builtin method \"%s\"!", name.data());
 		return 0xFFFF;
 	}
 
@@ -1963,7 +1963,7 @@ namespace iw5
 		if (filename_map.find(id) != filename_map.end())
 			return filename_map[id];
 
-		printf("[ERROR]: Couldn't resolve file 0x%X!\n", id);
+		LOG_ERROR("Couldn't resolve file 0x%X!", id);
 		return "";
 	}
 
@@ -1972,7 +1972,7 @@ namespace iw5
 		if (functions_map.find(id) != functions_map.end())
 			return functions_map[id];
 
-		printf("[ERROR]: Couldn't resolve function 0x%X!\n", id);
+		LOG_ERROR("Couldn't resolve function 0x%X!", id);
 		return "";
 	}
 
@@ -1981,7 +1981,7 @@ namespace iw5
 		if (fields_map.find(id) != fields_map.end())
 			return fields_map[id];
 
-		printf("[ERROR]: Couldn't resolve field 0x%X!\n", id);
+		LOG_ERROR("Couldn't resolve field 0x%X!", id);
 		return "";
 	}
 }

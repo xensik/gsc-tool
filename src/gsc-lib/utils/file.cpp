@@ -1,8 +1,8 @@
 #include "stdinc.hpp"
 
-namespace utils::file
+namespace utils
 {
-	auto read(std::string file) -> std::string
+	auto file::read(std::string file) -> std::string
 	{
 		std::string buffer;
 
@@ -29,7 +29,7 @@ namespace utils::file
 		return buffer;
 	}
 
-	void save(std::string name, std::vector<std::uint8_t> data)
+	void file::save(std::string name, std::vector<std::uint8_t> data)
 	{
 		FILE* fp = fopen(name.data(), "wb");
 		fwrite(data.data(), 1, data.size(), fp);

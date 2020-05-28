@@ -39,12 +39,10 @@ using namespace iw5;
 #include "assembly/disassembler.hpp"
 
 #ifdef DEBUG
+
 #define LOG_DEBUG(__FMT__, ...) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); \
 								printf("[D][" __FUNCTION__ "]: " __FMT__ "\n", __VA_ARGS__); \
 								SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-#else
-#define LOG_DEBUG(__FMT__, ...)
-#endif
 
 #define LOG_ERROR(__FMT__, ...) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12); \
 								printf("[E][" __FUNCTION__ "]: " __FMT__ "\n", __VA_ARGS__); \
@@ -54,4 +52,16 @@ using namespace iw5;
 								printf("[W][" __FUNCTION__ "]: " __FMT__ "\n", __VA_ARGS__); \
 								SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 
+#define LOG_INFO(__FMT__, ...) printf("[I][" __FUNCTION__ "]: " __FMT__ "\n", __VA_ARGS__);
+
+#else
+
+#define LOG_DEBUG(__FMT__, ...)
+
+#define LOG_ERROR(__FMT__, ...) printf("[E]: " __FMT__ "\n", __VA_ARGS__);
+
+#define LOG_WARN(__FMT__, ...) printf("[W]: " __FMT__ "\n", __VA_ARGS__);
+
 #define LOG_INFO(__FMT__, ...) printf("[I]: " __FMT__ "\n", __VA_ARGS__);
+
+#endif

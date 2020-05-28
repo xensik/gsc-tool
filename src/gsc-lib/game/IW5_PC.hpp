@@ -160,7 +160,7 @@ namespace iw5
 		OP_Count = 0x99,
 	};
 
-	auto GetInstructionSize(opcode op) -> std::size_t;
+	auto GetOpCodeSize(opcode op) -> std::size_t;
 	auto GetOpCodeName(opcode op) -> std::string;
 	auto GetOpCodeId(const std::string& name) -> opcode;
 	auto GetBuiltinFuncName(std::uint16_t id) -> std::string;
