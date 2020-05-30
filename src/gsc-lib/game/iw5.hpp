@@ -160,14 +160,23 @@ namespace iw5
 		OP_Count = 0x99,
 	};
 
+	// opcodes
 	auto GetOpCodeSize(opcode op) -> std::size_t;
 	auto GetOpCodeName(opcode op) -> std::string;
 	auto GetOpCodeId(const std::string& name) -> opcode;
+
+	// builtins
 	auto GetBuiltinFuncName(std::uint16_t id) -> std::string;
+	auto GetBuiltinMethodName(std::uint16_t id)->std::string;
 	auto GetBuiltinFuncId(const std::string& name) -> std::uint16_t;
-	auto GetBuiltinMethodName(std::uint16_t id) -> std::string;
 	auto GetBuiltinMethodId(const std::string& name) -> std::uint16_t;
-	auto GetFileName(std::uint16_t id) -> std::string;
-	auto GetFunctionName(std::uint16_t id) -> std::string;
+
+	// original script files
+	auto GetFileId(std::string file) -> std::uint16_t;
+	auto GetFunctionId(std::string file, std::string func) -> std::uint16_t;
+	auto GetFileName(std::uint16_t file) -> std::string;
+	auto GetFunctionName(std::uint16_t file, std::uint16_t func) -> std::string;
+
+	// original fields
 	auto GetFieldName(std::uint16_t id) -> std::string;
 }

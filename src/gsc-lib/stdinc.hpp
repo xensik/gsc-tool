@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
 #include <unordered_map>
 #include <functional>
 #include <fstream>
@@ -30,7 +31,7 @@ using namespace std::literals;
 #include "utils/byte_buffer.hpp"
 
 #define IW5
-#include "game/IW5_PC.hpp"
+#include "game/iw5.hpp"
 using namespace iw5;
 
 #include "assembly/instruction.hpp"
