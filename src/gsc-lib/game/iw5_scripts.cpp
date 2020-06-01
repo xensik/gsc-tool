@@ -10,6 +10,231 @@ namespace iw5
 
 	std::unordered_map<std::string, scr_id_def> script_ids
 	{
+		{ "maps/mp/gametypes/arena",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/conf",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/ctf",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/ctfpro",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/dd",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/dm",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/dom",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/grnd",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/gtnw",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/gun",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/infect",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/ioc",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/jugg",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/koth",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/oneflag",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/sab",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/sd",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/tdef",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/tjugg",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/vip",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/war",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		{ "maps/mp/gametypes/faceoff",
+			{
+				0,
+				{
+					{ "init", 0 },
+				},
+			},
+		},
+
+		///////////////////////////////////////////////////////////
+		// empty 0-28
+		{ "maps/mp/gametypes/_tweakables",
+			{
+				29,
+				{
+					{ "getTweakableDVarValue", 11178 },
+					{ "getTweakableDVar", 11188 },
+					{ "getTweakableValue", 11189 },
+					{ "getTweakableLastValue", 11190 },
+					{ "setTweakableValue", 11192 },
+					{ "setTweakableLastValue", 11193 },
+					{ "registerTweakable", 11194 },
+					{ "init", 1664 },
+				},
+			},
+		},
+
+		{ "common_scripts/utility",
+			{
+				30,
+				{
+
+				},
+			},
+		},
+
 		///////////////////////////////////////////////////////////
 		// codescripts
 
@@ -46,8 +271,8 @@ namespace iw5
 			{
 				1345,
 				{
-					{"initstructs", 1661},
-					{"createstruct", 1662},
+					{"InitStructs", 1661},
+					{"CreateStruct", 1662},
 				},
 			},
 		},
@@ -145,14 +370,7 @@ namespace iw5
 			},
 		},
 
-		{ "common_scripts/utility",
-			{
-				30,
-				{
-
-				},
-			},
-		},
+		
 
 		///////////////////////////////////////////////////////////
 		// maps
@@ -846,14 +1064,7 @@ namespace iw5
 			},
 		},
 
-		{ "maps/mp/gametypes/_tweakables",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
+		
 
 		{ "maps/mp/gametypes/_weapons",
 			{
@@ -864,203 +1075,7 @@ namespace iw5
 			},
 		},
 
-		{ "maps/mp/gametypes/arena",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/conf",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/ctf",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/ctfpro",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/dd",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/dm",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/dom",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/grnd",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/gtnw",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/gun",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/infect",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/ioc",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/jugg",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/koth",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/oneflag",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/sab",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/sd",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/tdef",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/tjugg",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/vip",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/war",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
-
-		{ "maps/mp/gametypes/faceoff",
-			{
-				0,
-				{
-					{ "init", 0 },
-				},
-			},
-		},
+		
 
 		///////////////////////////////////////////////////////////
 		// maps/mp/killstreaks

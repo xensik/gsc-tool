@@ -104,6 +104,8 @@ namespace gsc
 
 	void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 	{
+		LOG_DEBUG("%04X %s\n", inst->m_index, GetOpCodeName(inst->m_opcode).c_str());
+
 		switch (inst->m_opcode)
 		{
 		case opcode::OP_End:
@@ -274,12 +276,10 @@ namespace gsc
 			inst->m_data.push_back(utils::string::va("%f", m_script->read<float>()));
 			break;
 		case opcode::OP_GetLevelObject:
-			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_size = 1;
 			break;
 		case opcode::OP_GetAnimObject:
-			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_size = 1;
 			break;
 		case opcode::OP_GetSelf:
 			inst->m_size = 1;
@@ -585,8 +585,8 @@ namespace gsc
 		auto func_id = m_stack->read<std::uint16_t>();
 		auto func_name = func_id == 0 ? m_stack->read_string() : ""; /*GetFunctionName(func_id)*/
 
-		inst->m_data.push_back(file_name != "" ? file_name : utils::string::va("%X", file_id));
-		inst->m_data.push_back(func_name != "" ? func_name : utils::string::va("%X", func_id));
+		inst->m_data.push_back(file_name != "" ? file_name : utils::string::va("%i", file_id));
+		inst->m_data.push_back(func_name != "" ? func_name : utils::string::va("%i", func_id));
 	}
 
 	void disassembler::disassemble_jump(std::shared_ptr<instruction> inst, bool expr, bool back)
@@ -725,11 +725,11 @@ namespace gsc
 					if (func->m_id == 0)
 						return utils::string::va("func_%s", func->m_name.data());
 					else
-						return utils::string::va("func_%X", func->m_id);
+						return utils::string::va("func_%i", func->m_id);
 				}
 			}
 
-			LOG_ERROR("Couldn't resolve function name of 0x%X!", idx);
+			LOG_ERROR("Couldn't resolve function name at index 0x%X!", idx);
 			return index;
 		}
 		else
@@ -772,7 +772,7 @@ namespace gsc
 		}
 		else
 		{
-			m_output->write_cpp_string(utils::string::va("func_%X\n", func->m_id));
+			m_output->write_cpp_string(utils::string::va("func_%i\n", func->m_id));
 		}
 	}
 

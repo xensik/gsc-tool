@@ -398,6 +398,8 @@ namespace iw5
 		case opcode::OP_CastBool:
 		case opcode::OP_BoolNot:
 		case opcode::OP_BoolComplement:
+		case opcode::OP_GetAnimObject: // fixed
+		case opcode::OP_GetLevelObject: // fixed
 			return 1;
 			break;
 		case opcode::OP_GetByte:
@@ -412,7 +414,6 @@ namespace iw5
 		case opcode::OP_ScriptMethodChildThreadCallPointer:
 		case opcode::OP_CallBuiltinPointer:
 		case opcode::OP_CallBuiltinMethodPointer:
-		case opcode::OP_GetAnimObject:
 		case opcode::OP_SafeCreateVariableFieldCached:
 		case opcode::OP_SafeSetVariableFieldCached:
 		case opcode::OP_SafeSetWaittillVariableFieldCached:
