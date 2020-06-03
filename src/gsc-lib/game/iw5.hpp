@@ -161,22 +161,22 @@ namespace iw5
 	};
 
 	// opcodes
-	auto GetOpCodeSize(opcode op) -> std::size_t;
-	auto GetOpCodeName(opcode op) -> std::string;
-	auto GetOpCodeId(const std::string& name) -> opcode;
+	auto get_opcode_id(const std::string& name) -> opcode;
+	auto get_opcode_name(opcode id) -> std::string;
+	auto get_opcode_size(opcode op) -> std::size_t;
 
 	// builtins
-	auto GetBuiltinFuncName(std::uint16_t id) -> std::string;
-	auto GetBuiltinMethodName(std::uint16_t id)->std::string;
-	auto GetBuiltinFuncId(const std::string& name) -> std::uint16_t;
-	auto GetBuiltinMethodId(const std::string& name) -> std::uint16_t;
+	auto get_builtin_func_id(const std::string& name) -> std::uint16_t;
+	auto get_builtin_func_name(std::uint16_t id) -> std::string;
 
-	// original script files
-	auto GetFileId(std::string file) -> std::uint16_t;
-	auto GetFunctionId(std::string file, std::string func) -> std::uint16_t;
-	auto GetFileName(std::uint16_t file) -> std::string;
-	auto GetFunctionName(std::uint16_t file, std::uint16_t func) -> std::string;
+	auto get_builtin_method_id(const std::string& name) -> std::uint16_t;
+	auto get_builtin_method_name(std::uint16_t id)->std::string;
 
-	// original fields
-	auto GetFieldName(std::uint16_t id) -> std::string;
+	//files
+	auto get_file_id(std::string name) -> std::uint16_t;
+	auto get_file_name(std::uint16_t id) -> std::string;
+
+	// functions & fields
+	auto get_token_id(std::string name) -> std::uint16_t;
+	auto get_token_name(std::uint16_t id) -> std::string;
 }

@@ -23,7 +23,7 @@ namespace gsc
 			func->m_index = m_script->get_pos();
 			func->m_size = m_stack->read<std::uint32_t>();
 			func->m_id = m_stack->read<std::uint16_t>();
-			func->m_name = func->m_id == 0 ? m_stack->read_string() : ""; /*GetFunctionName(func_id)*/
+			func->m_name = func->m_id == 0 ? m_stack->read_string() : get_token_name(func->m_id);
 			m_functions.push_back(func);
 
 			this->dissasemble_function(func);
@@ -104,7 +104,7 @@ namespace gsc
 
 	void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 	{
-		LOG_DEBUG("%04X %s\n", inst->m_index, GetOpCodeName(inst->m_opcode).c_str());
+		// LOG_DEBUG("%04X %s\n", inst->m_index, get_opcode_name(inst->m_opcode).c_str());
 
 		switch (inst->m_opcode)
 		{
@@ -116,23 +116,23 @@ namespace gsc
 			break;
 		case opcode::OP_GetByte:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_GetNegByte:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::int8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::int8_t>()));
 			break;
 		case opcode::OP_GetUnsignedShort:
 			inst->m_size = 3;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint16_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint16_t>()));
 			break;
 		case opcode::OP_GetNegUnsignedShort:
 			inst->m_size = 3;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::int16_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::int16_t>()));
 			break;
 		case opcode::OP_GetInteger:
 			inst->m_size = 5;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::int32_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::int32_t>()));
 			break;
 		case opcode::OP_GetBuiltinFunction:
 			this->disassemble_builtin_call(inst, false, false);
@@ -160,11 +160,11 @@ namespace gsc
 			break;
 		case opcode::OP_CreateLocalVariable:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_RemoveLocalVariables:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_EvalLocalVariableCached0:
 		case opcode::OP_EvalLocalVariableCached1:
@@ -176,11 +176,11 @@ namespace gsc
 			break;
 		case opcode::OP_EvalLocalVariableCached:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_EvalLocalArrayCached:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_EvalArray:
 			inst->m_size = 1;
@@ -190,11 +190,11 @@ namespace gsc
 			break;
 		case opcode::OP_EvalLocalArrayRefCached0:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_EvalLocalArrayRefCached:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_EvalArrayRef:
 			inst->m_size = 1;
@@ -241,28 +241,27 @@ namespace gsc
 			break;
 		case opcode::OP_ScriptThreadCallPointer:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_ScriptMethodChildThreadCallPointer_0:
-			printf("opcode 0x32 trigger!!\n");
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_ScriptMethodThreadCallPointer:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_ScriptMethodChildThreadCallPointer:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_CallBuiltinPointer:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_CallBuiltinMethodPointer:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_GetIString:
 			inst->m_size = 3;
@@ -298,8 +297,8 @@ namespace gsc
 		case opcode::OP_GetAnimation:
 			inst->m_size = 5;
 			m_script->seek(4);
-			inst->m_data.push_back(utils::string::va("\"%s\"", m_stack->read_string().data())); // read animtree identifier from stack
-			inst->m_data.push_back(utils::string::va("\"%s\"", m_stack->read_string().data())); // read animation from stack
+			inst->m_data.push_back(utils::string::va("\"%s\"", m_stack->read_string().data()));
+			inst->m_data.push_back(utils::string::va("\"%s\"", m_stack->read_string().data()));
 			break;
 		case opcode::OP_GetGameRef:
 			inst->m_size = 1;
@@ -343,7 +342,8 @@ namespace gsc
 		case opcode::OP_jumpback:
 			this->disassemble_jump(inst, false, true);
 			break;
-		case opcode::OP_waittillmatch2: // NOP
+		case opcode::OP_waittillmatch2:
+			// NOP
 			break;
 		case opcode::OP_waittill:
 			inst->m_size = 1;
@@ -404,7 +404,7 @@ namespace gsc
 			break;
 		case opcode::OP_waittillmatch:
 			inst->m_size = 3;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint16_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint16_t>()));
 			break;
 		case opcode::OP_GetLocalFunction:
 			this->disassemble_local_call(inst, false);
@@ -431,18 +431,18 @@ namespace gsc
 			break;
 		case opcode::OP_SafeCreateVariableFieldCached:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_SafeSetVariableFieldCached0:
 			inst->m_size = 1;
 			break;
 		case opcode::OP_SafeSetVariableFieldCached:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_SafeSetWaittillVariableFieldCached:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_GetAnimTree:
 			inst->m_size = 2;
@@ -463,7 +463,7 @@ namespace gsc
 			break;
 		case opcode::OP_EvalLocalVariableRefCached:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_SetVariableField:
 			inst->m_size = 1;
@@ -473,15 +473,15 @@ namespace gsc
 			break;
 		case opcode::OP_SetNewLocalVariableFieldCached0:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_SetLocalVariableFieldCached:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_ClearLocalVariableFieldCached:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_ClearLocalVariableFieldCached0:
 			inst->m_size = 1;
@@ -519,7 +519,7 @@ namespace gsc
 			break;
 		case opcode::OP_EvalLocalVariableObjectCached:
 			inst->m_size = 2;
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 			break;
 		case opcode::OP_CastBool:
 			inst->m_size = 1;
@@ -542,16 +542,16 @@ namespace gsc
 
 		if (arg_num)
 		{
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 		}
 
 		if (method)
 		{
-			inst->m_data.push_back(GetBuiltinMethodName(m_script->read<std::uint16_t>()));
+			inst->m_data.push_back(get_builtin_method_name(m_script->read<std::uint16_t>()));
 		}
 		else
 		{
-			inst->m_data.push_back(GetBuiltinFuncName(m_script->read<std::uint16_t>()));
+			inst->m_data.push_back(get_builtin_func_name(m_script->read<std::uint16_t>()));
 		}
 	}
 
@@ -565,7 +565,7 @@ namespace gsc
 
 		if (thread)
 		{
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 		}
 	}
 
@@ -577,14 +577,20 @@ namespace gsc
 
 		if (thread)
 		{
-			inst->m_data.push_back(utils::string::va("%X", m_script->read<std::uint8_t>()));
+			inst->m_data.push_back(utils::string::va("%i", m_script->read<std::uint8_t>()));
 		}
 
 		auto file_id = m_stack->read<std::uint16_t>();
-		auto file_name = file_id == 0 ? m_stack->read_string() : ""; /*GetFileName(file_id)*/
+		auto file_name = file_id == 0 ? m_stack->read_string() : get_file_name(file_id);
 		auto func_id = m_stack->read<std::uint16_t>();
-		auto func_name = func_id == 0 ? m_stack->read_string() : ""; /*GetFunctionName(func_id)*/
+		auto func_name = func_id == 0 ? m_stack->read_string() : get_token_name(func_id);
 
+
+		/*std::string call = "";
+		call.append(file_name != "" ? file_name : utils::string::va("%i", file_id));
+		call.append("::");
+		call.append(func_name != "" ? func_name : utils::string::va("%i", func_id));
+		inst->m_data.push_back(call);*/
 		inst->m_data.push_back(file_name != "" ? file_name : utils::string::va("%i", file_id));
 		inst->m_data.push_back(func_name != "" ? func_name : utils::string::va("%i", func_id));
 	}
@@ -623,14 +629,14 @@ namespace gsc
 		inst->m_size = 3;
 
 		std::uint16_t field_id = m_script->read<std::uint16_t>();
-		std::string field_name = "";
+		std::string field_name = field_id > 33386 ? m_stack->read_opaque_string() : get_token_name(field_id);
 
-		inst->m_data.push_back(utils::string::va("field_%X", field_id));
-
-		if (field_id > 33386)
+		inst->m_data.push_back(field_name != "" ? field_name : utils::string::va("%i", field_id));
+		
+		/*if (field_id > 33386)
 		{
-			inst->m_data.push_back(utils::string::va("\"%s\"", m_stack->read_opaque_string().data()));
-		}
+			field_name = m_stack->read_opaque_string().data();//utils::string::va("\"%s\"", m_stack->read_opaque_string().data());
+		}*/
 	}
 
 	void disassembler::disassemble_switch(std::shared_ptr<instruction> inst)
@@ -652,7 +658,7 @@ namespace gsc
 		inst->m_size = 3;
 
 		std::uint16_t case_num = m_script->read<std::uint16_t>();
-		inst->m_data.push_back(utils::string::va("%X", case_num));
+		inst->m_data.push_back(utils::string::va("%i", case_num));
 
 		std::uint32_t internal_index = inst->m_index + 3;
 
@@ -675,7 +681,7 @@ namespace gsc
 				else
 				{
 					inst->m_data.push_back("case");
-					inst->m_data.push_back(utils::string::va("%X", case_label & 0xFFFF));
+					inst->m_data.push_back(utils::string::va("%i", case_label & 0xFFFF));
 				}
 
 				inst->m_size += 4;
@@ -722,26 +728,26 @@ namespace gsc
 			{
 				if (func->m_index == idx)
 				{
-					if (func->m_id == 0)
-						return utils::string::va("func_%s", func->m_name.data());
+					if (func->m_name != "")
+						return utils::string::va("sub_%s", func->m_name.data());
 					else
-						return utils::string::va("func_%i", func->m_id);
+						return utils::string::va("sub_%i", func->m_id);
 				}
 			}
 
-			LOG_ERROR("Couldn't resolve function name at index 0x%X!", idx);
+			LOG_ERROR("Couldn't resolve function name at index '0x%04X'!", idx);
 			return index;
 		}
 		else
 		{
-			LOG_ERROR("\"%s\" is not valid function address!", index.data());
+			LOG_ERROR("\"%s\" is not valid function address!", index.c_str());
 			return index;
 		}
 	}
 
 	void disassembler::print_script_name(const std::string& name)
 	{
-		m_output->write_cpp_string(utils::string::va("script_begin %s\n", name.data()));
+		m_output->write_cpp_string(utils::string::va("script_asm %s\n", name.data()));
 	}
 
 	void disassembler::print_opcodes(std::uint32_t index, std::uint32_t size)
@@ -766,13 +772,13 @@ namespace gsc
 			m_output->write_cpp_string(utils::string::va("\t%-20s", ""));
 		}
 
-		if (func->m_id == 0)
+		if (func->m_name != "")
 		{
-			m_output->write_cpp_string(utils::string::va("func_%s\n", func->m_name.data()));
+			m_output->write_cpp_string(utils::string::va("sub_%s\n", func->m_name.data()));
 		}
 		else
 		{
-			m_output->write_cpp_string(utils::string::va("func_%i\n", func->m_id));
+			m_output->write_cpp_string(utils::string::va("sub_%i\n", func->m_id));
 		}
 	}
 
@@ -782,10 +788,10 @@ namespace gsc
 		{
 		case opcode::OP_endswitch:
 			this->print_opcodes(inst->m_index, 3);
-			m_output->write_cpp_string(utils::string::va("%s", GetOpCodeName(inst->m_opcode).data()));
+			m_output->write_cpp_string(utils::string::va("%s", get_opcode_name(inst->m_opcode).data()));
 			m_output->write_cpp_string(utils::string::va(" %s\n", inst->m_data[0].data()));
 			{
-				std::uint32_t totalcase = std::stoul(inst->m_data[0], nullptr, 16);
+				std::uint32_t totalcase = std::stoul(inst->m_data[0]);
 				auto index = 0;
 				for (auto casenum = 0; casenum < totalcase; casenum++)
 				{
@@ -807,7 +813,7 @@ namespace gsc
 			break;
 		default:
 			this->print_opcodes(inst->m_index, inst->m_size);
-			m_output->write_cpp_string(utils::string::va("%s", GetOpCodeName(inst->m_opcode).data()));
+			m_output->write_cpp_string(utils::string::va("%s", get_opcode_name(inst->m_opcode).data()));
 			for (auto& d : inst->m_data)
 			{
 				m_output->write_cpp_string(utils::string::va(" %s", d.data()));

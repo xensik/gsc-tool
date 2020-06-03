@@ -61,6 +61,36 @@ void disassemble_file(std::string file)
 	utils::file::save(file + ".gscasm", disassembler.output_buffer());
 }
 
+void decompile_file(std::string file)
+{
+	if (file.find(".stack") != std::string::npos)
+	{
+		printf("Cannot decompile stack files\n");
+		return;
+	}
+
+	const auto ext = std::string(".cgsc");
+	const auto extpos = file.find(ext);
+	if (extpos != std::string::npos)
+	{
+		file.replace(extpos, ext.length(), "");
+	}
+
+	// open files
+	auto script = std::make_shared<byte_buffer>(file + ".cgsc");
+	auto stack = std::make_shared<byte_buffer>(file + ".cgsc.stack");
+
+	gsc::disassembler disassembler(false);
+
+	disassembler.disassemble(script, stack);
+
+	gsc::decompiler decompiler;
+
+	decompiler.decompile(disassembler.output());
+
+	utils::file::save(file + ".gsc", decompiler.output());
+}
+
 int main(int argc, char** argv)
 {
 	std::string file = argv[argc - 1];
@@ -72,7 +102,7 @@ int main(int argc, char** argv)
 		{
 			std::string arg = argv[i];
 
-			if (arg == "-disasm" || arg == "-asm")
+			if (arg == "-asm" || arg == "-disasm" || arg == "-decomp")
 			{
 				mode = arg;
 			}
@@ -92,9 +122,13 @@ int main(int argc, char** argv)
 	{
 		assemble_file(file);
 	}
-	else
+	else if (mode == "-disasm")
 	{
 		disassemble_file(file);
+	}
+	else if (mode == "-decomp")
+	{
+		decompile_file(file);
 	}
 
 	return 0;

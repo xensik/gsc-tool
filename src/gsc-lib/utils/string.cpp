@@ -2,6 +2,11 @@
 
 namespace utils
 {
+	auto string::is_number(const std::string& s) -> bool
+	{
+		return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
+	}
+
 	auto string::is_hex_number(const std::string& s) -> bool
 	{
 		return !s.empty() && std::all_of(s.begin(), s.end(), ::isxdigit);

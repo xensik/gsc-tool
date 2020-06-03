@@ -38,6 +38,7 @@ using namespace iw5;
 #include "assembly/function.hpp"
 #include "assembly/assembler.hpp"
 #include "assembly/disassembler.hpp"
+#include "decompiler/decompiler.hpp"
 
 #ifdef DEBUG
 
@@ -61,8 +62,8 @@ using namespace iw5;
 
 #define LOG_ERROR(__FMT__, ...) printf("[E]: " __FMT__ "\n", __VA_ARGS__);
 
-#define LOG_WARN(__FMT__, ...) printf("[W]: " __FMT__ "\n", __VA_ARGS__);
+#define LOG_WARN(__FMT__, ...)// printf("[W]: " __FMT__ "\n", __VA_ARGS__);
 
-#define LOG_INFO(__FMT__, ...) printf("[I]: " __FMT__ "\n", __VA_ARGS__);
+#define LOG_INFO(__FMT__, ...)// printf("[I]: " __FMT__ "\n", __VA_ARGS__);
 
 #endif

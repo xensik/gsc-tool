@@ -22,11 +22,11 @@ namespace gsc
 
 		for (auto& line : assembly)
 		{
-			if (line == "" || line.at(0) == '#' || line.find("script_begin") != std::string::npos)
+			if (line == "" || line.at(0) == '#' || line.find("script_asm") != std::string::npos)
 			{
 				continue;
 			}
-			else if (line.substr(0, 5) == "func_")
+			else if (line.substr(0, 4) == "sub_")
 			{
 				if (func != nullptr)
 				{
@@ -35,7 +35,7 @@ namespace gsc
 
 				func = std::make_shared<function>();
 				func->m_index = index;
-				func->m_name = line;
+				func->m_name = line.substr(4);
 				functions.push_back(func);
 			}
 			else if (line.substr(0, 4) == "loc_")
@@ -67,8 +67,8 @@ namespace gsc
 				{
 					inst = std::make_shared<instruction>();
 					inst->m_index = index;
-					inst->m_opcode = GetOpCodeId(utils::string::to_lower(data[0]));
-					inst->m_size = GetOpCodeSize(inst->m_opcode);
+					inst->m_opcode = get_opcode_id(utils::string::to_lower(data[0]));
+					inst->m_size = get_opcode_size(inst->m_opcode);
 					inst->m_data = data;
 					inst->m_parent = func;
 
@@ -138,19 +138,17 @@ namespace gsc
 
 	void assembler::assemble_function(std::shared_ptr<function> func)
 	{
-		// write function size
+		// function size
 		m_stack->write<std::uint32_t>(func->m_size);
 
-		// write function id or name
-		std::string func_name = func->m_name.substr(5);
-		std::uint16_t func_id = utils::string::is_hex_number(func_name) ? std::stoul(func_name, nullptr, 16) : 0;
-		func->m_id = func_id;
+		// function id
+		func->m_id = utils::string::is_number(func->m_name) ? std::stoul(func->m_name) : 0; // get_function_id(func->m_name);
+		m_stack->write<std::uint16_t>(func->m_id);
 		
-		m_stack->write<std::uint16_t>(func_id);
-		
-		if (func_id == 0)
+		// function name
+		if (func->m_id == 0)
 		{
-			m_stack->write_string(func_name);
+			m_stack->write_string(func->m_name);
 		}
 
 		for (auto inst : func->m_instructions)
@@ -248,20 +246,20 @@ namespace gsc
 		case opcode::OP_ClearLocalVariableFieldCached:
 		case opcode::OP_EvalLocalVariableObjectCached:
 			m_script->write<std::uint8_t>(static_cast<std::uint8_t>(inst->m_opcode));
-			m_script->write<std::uint8_t>(std::stol(inst->m_data[1], nullptr, 16));
+			m_script->write<std::uint8_t>(std::stol(inst->m_data[1]));
 			break;
 		case opcode::OP_GetNegByte:
 			m_script->write<std::uint8_t>(static_cast<std::uint8_t>(inst->m_opcode));
-			m_script->write<std::int8_t>(std::stol(inst->m_data[1], nullptr, 16));
+			m_script->write<std::int8_t>(std::stol(inst->m_data[1]));
 			break;
 		case opcode::OP_GetUnsignedShort:
 		case opcode::OP_waittillmatch:
 			m_script->write<std::uint8_t>(static_cast<std::uint8_t>(inst->m_opcode));
-			m_script->write<std::uint16_t>(std::stol(inst->m_data[1], nullptr, 16));
+			m_script->write<std::uint16_t>(std::stol(inst->m_data[1]));
 			break;
 		case opcode::OP_GetNegUnsignedShort:
 			m_script->write<std::uint8_t>(static_cast<std::uint8_t>(inst->m_opcode));
-			m_script->write<std::int16_t>(std::stol(inst->m_data[1], nullptr, 16));
+			m_script->write<std::int16_t>(std::stol(inst->m_data[1]));
 		case opcode::OP_JumpOnFalseExpr:
 		case opcode::OP_JumpOnTrueExpr:
 		case opcode::OP_JumpOnFalse:
@@ -279,7 +277,7 @@ namespace gsc
 			break;
 		case opcode::OP_GetInteger:
 			m_script->write<std::uint8_t>(static_cast<std::uint8_t>(inst->m_opcode));
-			m_script->write<std::int32_t>(std::stol(inst->m_data[1], nullptr, 16));
+			m_script->write<std::int32_t>(std::stol(inst->m_data[1]));
 			break;
 		case opcode::OP_GetFloat:
 			m_script->write<std::uint8_t>(static_cast<std::uint8_t>(inst->m_opcode));
@@ -389,16 +387,16 @@ namespace gsc
 
 		if (arg_num)
 		{
-			m_script->write<std::uint8_t>(std::stol(inst->m_data[1], nullptr, 16));
+			m_script->write<std::uint8_t>(std::stol(inst->m_data[1]));
 		}
 
 		if (method)
 		{
-			m_script->write<std::uint16_t>(GetBuiltinMethodId(arg_num ? inst->m_data[2] : inst->m_data[1]));
+			m_script->write<std::uint16_t>(get_builtin_method_id(arg_num ? inst->m_data[2] : inst->m_data[1]));
 		}
 		else
 		{
-			m_script->write<std::uint16_t>(GetBuiltinFuncId(arg_num ? inst->m_data[2] : inst->m_data[1]));
+			m_script->write<std::uint16_t>(get_builtin_func_id(arg_num ? inst->m_data[2] : inst->m_data[1]));
 		}
 	}
 
@@ -414,7 +412,7 @@ namespace gsc
 
 		if (thread)
 		{
-			m_script->write<std::uint8_t>(std::stol(inst->m_data[2], nullptr, 16));
+			m_script->write<std::uint8_t>(std::stol(inst->m_data[2]));
 		}
 	}
 
@@ -426,11 +424,11 @@ namespace gsc
 
 		if (thread)
 		{
-			m_script->write<std::uint8_t>(std::stol(inst->m_data[1], nullptr, 16));
+			m_script->write<std::uint8_t>(std::stol(inst->m_data[1]));
 		}
 
-		auto file_id = std::stol(thread ? inst->m_data[2] : inst->m_data[1], nullptr, 16); //GetFileId(data[1]);
-		auto func_id = std::stol(thread ? inst->m_data[3] : inst->m_data[2], nullptr, 16); //GetFunctionId(data[2]);
+		auto file_id = std::stol(thread ? inst->m_data[2] : inst->m_data[1]); // get_file_id(data[1]);
+		auto func_id = std::stol(thread ? inst->m_data[3] : inst->m_data[2]); // get_function_id(data[2]);
 		m_stack->write<std::uint16_t>(file_id);
 		if (file_id == 0) m_stack->write_string(thread ? inst->m_data[2] : inst->m_data[1]);
 		m_stack->write<std::uint16_t>(func_id);
@@ -454,7 +452,7 @@ namespace gsc
 
 		if (utils::string::is_hex_number(inst->m_data[1]))
 		{
-			casenum = std::stol(inst->m_data[1], nullptr, 16);
+			casenum = std::stol(inst->m_data[1]);
 		}
 		else
 		{
@@ -505,14 +503,16 @@ namespace gsc
 		if (inst->m_data[1].find("field_") != std::string::npos)
 		{
 			field_name = inst->m_data[1].substr(6);
-			field_id = (std::uint16_t)std::stol(field_name, nullptr, 16);
+			field_id = (std::uint16_t)std::stol(field_name);
 		}
 		else
 		{
 			field_name = inst->m_data[1];
-			std::uint16_t field_id = 0; // resolve id
+			std::uint16_t field_id = 0; // get_field_id(field_name);
 			if (field_id == 0)
+			{
 				field_id = 0xFFFF;
+			}
 		}
 
 		m_script->write<std::uint16_t>(field_id);
@@ -561,19 +561,17 @@ namespace gsc
 
 	auto assembler::resolve_function(const std::string& name) -> std::uint32_t
 	{
-		if (name.find("func_") == std::string::npos)
-		{
-			return std::stol(name, nullptr, 16);
-		}
+		std::string temp = name.substr(4);
 
 		for (auto func : m_functions)
 		{
-			if (func->m_name == name)
+			if (func->m_name == temp)
 			{
 				return func->m_index;
 			}
 		}
-		LOG_ERROR("Couldn't resolve function address of \"%s\"!", name.c_str());
+
+		LOG_ERROR("Couldn't resolve local function address of '%s'!", name.c_str());
 		return 0;
 	}
 
@@ -587,12 +585,7 @@ namespace gsc
 			}
 		}
 
-		if (utils::string::is_hex_number(name))
-		{
-			return std::stol(name, nullptr, 16);
-		}
-
-		LOG_ERROR("Couldn't resolve label address of \"%s\"!", name.c_str());
+		LOG_ERROR("Couldn't resolve label address of '%s'!", name.c_str());
 		return 0;
 	}
 }
