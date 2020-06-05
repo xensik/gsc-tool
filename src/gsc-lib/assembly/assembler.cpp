@@ -75,9 +75,9 @@ namespace gsc
 					// group switch in one instruction
 					if (inst->m_opcode == opcode::OP_endswitch)
 					{
-						if (utils::string::is_hex_number(data[1]))
+						if (utils::string::is_number(data[1]))
 						{
-							switchnum = std::stoul(data[1], nullptr, 16);
+							switchnum = std::stoul(data[1]);
 							inst->m_size += 7 * switchnum;
 						}
 						else
@@ -142,7 +142,7 @@ namespace gsc
 		m_stack->write<std::uint32_t>(func->m_size);
 
 		// function id
-		func->m_id = utils::string::is_number(func->m_name) ? std::stoul(func->m_name) : 0; // get_function_id(func->m_name);
+		func->m_id = utils::string::is_number(func->m_name) ? std::stoul(func->m_name) : get_token_id(func->m_name);
 		m_stack->write<std::uint16_t>(func->m_id);
 		
 		// function name
@@ -450,7 +450,7 @@ namespace gsc
 
 		std::uint16_t casenum = 0;
 
-		if (utils::string::is_hex_number(inst->m_data[1]))
+		if (utils::string::is_number(inst->m_data[1]))
 		{
 			casenum = std::stol(inst->m_data[1]);
 		}
@@ -497,18 +497,17 @@ namespace gsc
 	{
 		m_script->write<std::uint8_t>(static_cast<std::uint8_t>(inst->m_opcode));
 
-		std::string field_name;
+		std::string field_name = inst->m_data[1];
 		std::uint16_t field_id = 0;
 
-		if (inst->m_data[1].find("field_") != std::string::npos)
+		if (utils::string::is_number(inst->m_data[1]))
 		{
-			field_name = inst->m_data[1].substr(6);
 			field_id = (std::uint16_t)std::stol(field_name);
 		}
 		else
 		{
-			field_name = inst->m_data[1];
-			std::uint16_t field_id = 0; // get_field_id(field_name);
+			field_id = get_token_id(field_name);
+
 			if (field_id == 0)
 			{
 				field_id = 0xFFFF;

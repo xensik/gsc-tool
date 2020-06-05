@@ -142,7 +142,7 @@ namespace gsc
 			break;
 		case opcode::OP_GetFloat:
 			inst->m_size = 5;
-			inst->m_data.push_back(utils::string::va("%f", m_script->read<float>()));
+			inst->m_data.push_back(utils::string::va("%g", m_script->read<float>()));
 			break;
 		case opcode::OP_GetString:
 			inst->m_size = 3;
@@ -270,9 +270,9 @@ namespace gsc
 			break;
 		case opcode::OP_GetVector:
 			inst->m_size = 13;
-			inst->m_data.push_back(utils::string::va("%f", m_script->read<float>()));
-			inst->m_data.push_back(utils::string::va("%f", m_script->read<float>()));
-			inst->m_data.push_back(utils::string::va("%f", m_script->read<float>()));
+			inst->m_data.push_back(utils::string::va("%g", m_script->read<float>()));
+			inst->m_data.push_back(utils::string::va("%g", m_script->read<float>()));
+			inst->m_data.push_back(utils::string::va("%g", m_script->read<float>()));
 			break;
 		case opcode::OP_GetLevelObject:
 			inst->m_size = 1;
