@@ -52,36 +52,58 @@ namespace iw5
 		{ "target", 1672 },
 		{ "targetname", 1673 },
 
+		{ "health", 1675 },
+
 		{ "angles", 1677 },
 
 		{ "script_linkname", 1679 },
 
 		{ "name", 1681 },
 		{ "sessionteam", 1682 },
+		{ "sessionstate", 1683 },
+		{ "maxHealth", 1684 },
+
+		{ "score", 1725 },
+		{ "deaths", 1726 },
+		{ "statusicon", 1727 },
+		{ "headicon", 1728 },
+		{ "headiconteam", 1729 },
 
 		{ "pers", 1742 },
 		{ "x", 1743 },
 		{ "y", 1744 },
 		{ "z", 1745 },
 		{ "fontScale", 1746 },
-		//{ "team", 1747 },
+		{ "font", 1747 },
 		{ "alignX", 1748 },
 		{ "alignY", 1749 },
 		{ "horzAlign", 1750 },
 		{ "vertAlign", 1751 },
 		{ "color", 1752 },
 		{ "alpha", 1753 },
-
+		{ "label", 1754 },
 		{ "sort", 1755 },
 		{ "foreground", 1756 },
 
+		{ "hideWhenInMenu", 1759 },
+
+		{ "glowColor", 1761 },
+		{ "glowAlpha", 1762 },
 		{ "archived", 1763 },
 
 		{ "script_noteworthy", 1774 },
 
+		{ "height", 1783 },
+
 		{ "script_delay", 1788 },
 
+		{ "type", 1805 },
+
 		{ "script", 1927 },
+
+		{ "team", 1947 },
+
+		{ "width", 1954 },
 
 		{ "owner", 1994 },
 		{ "create_lock", 1995 },
@@ -506,7 +528,49 @@ namespace iw5
 		{ "unlock_wait", 2414 },
 		{ "unlock", 2415 },
 		{ "unlock_thread", 2416 },
+
+		{ "setParent", 2418 },
+		{ "parent", 2419 },
+		{ "point", 2420 },
+		{ "yOffset", 2421 },
+		{ "xOffset", 2422 },
+		{ "relativePoint", 2423 },
+		{ "getParent", 2424 },
+		{ "addChild", 2425 },
+		{ "children", 2426 },
+		{ "index", 2427 },
+		{ "removeChild", 2428 },
+		{ "setPoint", 2429 },
+		{ "uiParent", 2430 },
+		{ "elemType", 2431 },
+		{ "setPointBar", 2432 },
+		{ "bar", 2433 },
 		//
+		{ "frac", 2435 },
+		{ "updateBar", 2436 },
+		{ "shader", 2437 },
+		//
+		{ "createFontString", 2440 },
+		{ "fontHeight", 2441 },
+		//
+		{ "createServerFontString", 2444 },
+		{ "createServerTimer", 2445 },
+		{ "createIcon", 2446 },
+
+		{ "createBar", 2449 },
+		{ "flashFrac", 2450 },
+
+		{ "setFlashFrac", 2453 },
+
+		{ "flashThread", 2455 },
+		{ "destroyElem", 2456 },
+		{ "setIconShader", 2457 },
+		{ "setWidth", 2458 },
+		{ "setHeight", 2459 },
+		{ "setSize", 2460 },
+
+		{ "updateChildren", 2461 },
+
 		{ "console", 2464 },
 		{ "players", 2577 },
 		{ "isPrimaryWeapon", 2623 },
@@ -515,15 +579,74 @@ namespace iw5
 
 		{ "isTeamSpeaking", 2944 },
 
+		{ "primaryWeapon", 3226 },
+		{ "isSniper", 3297 },
 		// 3460
 			
 		// 3640
 		{ "damageOwner", 3662 },
 
 		{ "hatModel", 3791 },
+
+		{ "secondaryWeapon", 4095 },
+
+		{ "scr_sound", 4538 },
+
+		{ "ch_getProgress", 4782 },
+		{ "ch_getState", 4783 },
+		{ "ch_setProgress", 4784 },
+		{ "ch_setState", 4785 },
+		{ "ch_getTarget", 4786 },
+
+		{ "challengeInfo", 4788 },
+
+		{ "challengeSplashNotify", 4790 },
+		{ "optionalNumber", 4791 },
+		{ "sound", 4792 },
+		{ "slot", 4793 },
+		{ "actionNotify", 4794 },
+		//
+		{ "initNotifyMessage", 4800 },
+
+		{ "notifyTitle", 4802 },
+		{ "notifyText", 4803 },
+		{ "notifyText2", 4804 },
+		{ "notifyIcon", 4805 },
+
+		{ "doingSplash", 4808 },
+		{ "splashQueue", 4809 },
+
+		{ "fontPulseInit", 4839 },
+		{ "baseFontScale", 4840 },
+		{ "maxFontScale", 4841 },
+		{ "inFrames", 4842 },
+		{ "outFrames", 4843 },
+		{ "fontPulse", 4844 },
+
+		{ "titleText", 4848 },
+		{ "iconName", 4849 },
+		{ "duration", 4850 },
+		{ "textLabel", 4851 },
+
+		{ "notifyMessage", 4854 },
 		{ "stringToFloat", 4855 },
+		{ "actionNotifyMessage", 4856 },
+		{ "removeTypeFromQueue", 4857 },
+		{ "showNotifyMessage", 4858 },
+		{ "titleLabel", 4859 },
+		{ "titleIsString", 4860 },
+		{ "text2Label", 4861 },
+		{ "resetOnCancel", 4862 },
+		{ "waitRequireVisibility", 4863 },
+		{ "canReadText", 4864 },
+		{ "isFlashbanged", 4865 },
+		{ "dispatchNotify", 4866 },
+
 		{ "hud_damagefeedback", 6695 },
 		{ "updateDamageFeedback", 6702 },
+
+		{ "hidden", 6797 },
+
 		{ "artStartVisionFileExport", 6858 },
 		{ "artEndVisionFileExport", 6859 },
 		{ "artStartFogFileExport", 6860 },
@@ -547,6 +670,7 @@ namespace iw5
 		{ "watchGrenadeUsage", 7163 },
 
 		{ "beginGrenadeTracking", 7177 },
+		{ "grenade_earthQuake", 7178 },
 
 		{ "beginC4Tracking", 7180 },
 		{ "watchC4", 7181 },
@@ -700,14 +824,75 @@ namespace iw5
 		{ "debugprint", 8745 },
 		//
 
+		{ "endOnDeath", 10226 },
+
+		{ "dirtEffect", 10234 },
+
+		{ "strip_suffix", 11082 },
+		{ "updateBarScale", 11083 },
+		{ "rateOfChange", 11084 },
+		{ "lastUpdateTime", 11085 },
+		{ "createTimer", 11086 },
+		{ "baseWidth", 11087 },
+		{ "baseHeight", 11088 },
+		{ "createServerIcon", 11089 },
+		{ "createServerBar", 11090 },
+		{ "getCurrentFraction", 11091 },
+		{ "createPrimaryProgressBar", 11092 },
+		{ "primaryProgressBarHeight", 11093 },
+		{ "primaryProgressBarWidth", 11094 },
+		{ "primaryProgressBarY", 11095 },
+		{ "primaryProgressBarX", 11096 },
+		{ "createPrimaryProgressBarText", 11097 },
+		{ "primaryProgressBarFontSize", 11098 },
+		{ "primaryProgressBarTextY", 11099 },
+		{ "primaryProgressBarTextX", 11100 },
+		{ "createTeamProgressBar", 11101 },
+		{ "teamProgressBarHeight", 11102 },
+		{ "teamProgressBarWidth", 11103 },
+		{ "teamProgressBarY", 11104 },
+		{ "createTeamProgressBarText", 11105 },
+		{ "teamProgressBarFontSize", 11106 },
+		{ "teamProgressBarTextY", 11107 },
+		{ "hideElem", 11108 },
+		{ "showElem", 11109 },
+		{ "getIconShader", 11110 },
+		{ "setIconSize", 11111 },
+		{ "transitionReset", 11112 },
+		{ "transitionZoomIn", 11113 },
+		{ "transitionPulseFXIn", 11114 },
+		{ "transitionSlideIn", 11115 },
+		{ "transitionSlideOut", 11116 },
+		{ "transitionZoomOut", 11117 },
+		{ "transitionFadeIn", 11118 },
+		{ "maxAlpha", 11119 },
+		{ "transitionFadeOut", 11120 },
+		{ "getWeeklyRef", 11121 },
+		{ "getDailyRef", 11122 },
+		{ "hud", 11123 },
 		{ "splitscreen", 11124 },
+		{ "lowerTextYAlign", 11125 },
+		{ "lowerTextY", 11126 },
+		{ "lowerTextFontSize", 11127 },
 			
+		{ "placement", 11129 },
 
 		{ "rankingEnabled", 11132 },
 		{ "hardcoreMode", 11133 },
 		{ "teamBased", 11137 },
+
+		{ "otherTeam", 11145 },
+
 		{ "isRoundBased", 11156 },
+		{ "isObjectiveBased", 11157 },
+		{ "_getTeamScore", 11158 },
+
 		{ "WaitTillSlowProcessAllowed", 11160 },
+
+		{ "onXPEvent", 11170 },
+		{ "incPlayerStat", 11173 },
+
+		{ "splashNotifyDelayed", 11177 },
 		{ "getTweakableDVarValue", 11178 },
 		{ "rules", 11179 },
 		{ "dVar", 11180 },
@@ -729,6 +914,8 @@ namespace iw5
 		{ "tweakablesInitialized", 11196 },
 		//
 		{ "Callback_HostMigration", 11224 },
+
+		{ "inGracePeriod", 11230 },
 		{ "isReallyAlive", 11235 },
 		{ "waitTillHostMigrationDone", 11238 },
 		//
@@ -814,13 +1001,26 @@ namespace iw5
 		{ "_hasPerk", 11351 },
 
 		{ "EMPPlayer", 11358 },
+
+		{ "shellshockOnDamage", 11411 },
+		{ "shellShockReduction", 11412 },
+		{ "isUsingRemote", 11413 },
+		{ "bloodEffect", 11414 },
+		{ "c4_earthQuake", 11415 },
+		{ "barrel_earthQuake", 11416 },
+		{ "artillery_earthQuake", 11417 },
 		{ "attachmentGroup", 11418 },
 		{ "getAttachmentList", 11419 },
+
+		{ "getIntProperty", 11422 },
 		{ "weaponList", 11424 },
 
 		{ "dumpIt", 11448 },
 		{ "bombSquadWaiter", 11449 },
 		{ "bombSquadVisibilityUpdater", 11450 },
+
+		{ "hasDoneCombat", 11452 },
+		{ "currentWeaponAtSpawn", 11453 },
 
 		{ "trackRiotShield", 11461 },
 
@@ -830,7 +1030,10 @@ namespace iw5
 		{ "WatchJavelinUsage", 11468 },
 		{ "changingWeapon", 11474 },
 		{ "class_num", 11475 },
+		{ "loadoutPrimaryBuff", 11476 },
 		{ "cac_getWeapon", 11477 },
+
+		{ "loadoutSecondaryBuff", 11479 },
 		{ "watchStartWeaponChange", 11480 },
 		{ "watchWeaponReload", 11481 },
 		{ "watchRangerUsage", 11482 },
@@ -889,10 +1092,13 @@ namespace iw5
 		{ "getWeaponRank", 11561 },
 		{ "clearEMPOnDeath", 11563 },
 		{ "updateMoveSpeedScale", 11564 },
+		{ "getBaseWeaponName", 11565 },
+
 		{ "stanceRecoilAdjuster", 11568 },
 		{ "buildWeaponData", 11570 },
 		{ "monitorSemtex", 11574 },
 
+		{ "playerCardSplashNotify", 11577 },
 		{ "splashNotify", 11578 },
 		{ "turret_monitorUse", 11579 },
 		{ "turret_playerThread", 11580 },
@@ -932,6 +1138,9 @@ namespace iw5
 		{ "table_getKillstreak", 11637 },
 		{ "getPerkUpgrade", 11681 },
 
+		{ "streakName", 11683 },
+		{ "available", 11684 },
+
 		{ "_giveWeapon", 11686 },
 
 		{ "validatePerk", 11806 },
@@ -955,7 +1164,11 @@ namespace iw5
 
 		// 12000
 		{ "giveKillstreak", 12019 },
+		{ "killstreakSplashNotify", 12020 },
+
 		{ "giveLoadout", 12026 },
+		{ "leaderDialogOnPlayer", 12040 },
+
 		{ "getOtherTeam", 12047 },
 		{ "spectateOverride", 12078 },
 		{ "onSpectatingClient", 12079 },
@@ -968,19 +1181,74 @@ namespace iw5
 		{ "killstreaks", 12104 },
 		{ "loadoutPrimary", 12110 },
 		{ "loadoutSecondary", 12111 },
+		{ "matchMakingGame", 12112 },
 
+		{ "giveRankXP", 12123 },
+
+		{ "quickcommands", 12144 },
+		{ "spamdelay", 12145 },
+		{ "quickstatements", 12146 },
+		{ "quickresponses", 12147 },
+		{ "doQuickMessage", 12148 },
+		{ "QuickMessageToAll", 12149 },
+		{ "saveHeadIcon", 12150 },
+		{ "oldheadicon", 12151 },
+		{ "oldheadiconteam", 12152 },
+		{ "restoreHeadIcon", 12153 },
+		{ "isOptionsMenu", 12154 },
+		{ "onMenuResponse", 12155 },
+		{ "forceEnd", 12156 },
+		{ "autoassign", 12157 },
+		{ "spectator", 12158 },
+		{ "selectedClass", 12159 },
 		{ "class", 12160 },
-
+		{ "getTeamAssignment", 12161 },
+		{ "menuAutoAssign", 12162 },
+		{ "closeMenus", 12163 },
+		{ "switching_teams", 12164 },
+		{ "joining_team", 12165 },
+		{ "leaving_team", 12166 },
+		{ "beginClassChoice", 12167 },
+		{ "allowClassChoice", 12168 },
+		{ "predictAboutToSpawnPlayerOverTime", 12169 },
+		{ "bypassClassChoice", 12170 },
+		{ "beginTeamChoice", 12171 },
+		{ "showMainMenuForTeam", 12172 },
+		{ "menuAllies", 12173 },
+		{ "hasSpawned", 12174 },
+		{ "menuAxis", 12175 },
+		{ "menuSpectator", 12176 },
+		{ "spawnSpectator", 12177 },
+		{ "menuClass", 12178 },
 		{ "getClassChoice", 12179 },
 		{ "getWeaponChoice", 12180 },
 		{ "lastClass", 12181 },
 		{ "setClass", 12182 },
+		{ "tag_stowed_back", 12183 },
+		{ "tag_stowed_hip", 12184 },
+		{ "isInKillcam", 12185 },
+		{ "spawnClient", 12186 },
+		{ "addToTeam", 12187 },
+		{ "removeFromTeamCount", 12188 },
+		{ "allowTeamChoice", 12189 },
+		{ "addToTeamCount", 12190 },
+		{ "updateObjectiveText", 12191 },
+		{ "updateMainMenu", 12192 },
+
+		{ "onRespawnDelay", 12201 },
 		{ "disableSpawning", 12205 },
 
 		{ "dieHardMode", 12218 },
 
+		{ "defconSplashNotify", 12224 },
+
 		{ "getSpawnPoint", 12230 },
 		{ "onSpawnPlayer", 12255 },
+
+		{ "oldNotifyMessage", 12260 },
+
+		{ "postGamePromotion", 12270 },
+
 		{ "Callback_PlayerDisconnect", 12275 },
 		{ "Callback_PlayerConnect", 12281 },
 
@@ -1131,16 +1399,40 @@ namespace iw5
 		{ "getStreakCost", 13109 },
 
 		{ "refillAmmo", 13126 },
+
+		{ "_beginLocationSelection", 13144 },
+
+		{ "default_onDeadEvent", 13204 },
+		{ "default_onOneLeftEvent", 13205 },
+
+		{ "default_onTimeLimit", 13207 },
+		{ "default_onHalfTime", 13208 },
+
 		{ "onDeadEvent", 13210 },
 		{ "onOneLeftEvent", 13212 },
+
+		{ "hintMessage", 13218 },
+
+		{ "matchBonus", 13228 },
+
+		{ "onHalfTime", 13233 },
 		{ "onTimeLimit", 13234 },
 		{ "updateGametypeDvars", 13238 },
+
+		{ "lowerMessage", 13251 },
+		{ "lowerTimer", 13252 },
+
+		{ "isDoingSplash", 13256 },
+
 		{ "Callback_StartGameType", 13258 },
 
 		{ "onPrecacheGameType", 13261 },
 		{ "killstreakRewards", 13262 },
 		{ "onStartGameType", 13267 },
 		{ "Callback_CodeEndGame", 13269 },
+
+		{ "teamOutcomeNotify", 13290 },
+		{ "outcomeNotify", 13291 },
 
 		{ "wasOnlyRound", 13297 },
 
@@ -1161,9 +1453,38 @@ namespace iw5
 		{ "spawnFxDelay", 13658 },
 		{ "update_ui_timers", 13780 },
 
+		{ "isSpecialist", 13996 },
+
+		{ "selectingLocation", 14010 },
+
 		{ "isPerkUpgraded", 14023 },
 
 		{ "_SetActionSlot", 14025 },
+
+		{ "getKillstreakSound", 14031 },
+
+		{ "leaderDialogOnPlayer", 14040 },
+		{ "leaderSound", 14041 },
+		{ "leaderSoundGroup", 14042 },
+
+		{ "notifyOverlay", 14052 },
+		{ "promotionSplashNotify", 14053 },
+		{ "weaponPromotionSplashNotify", 14054 },
+		{ "textGlowColor", 14055 },
+		{ "iconOverlay", 14056 },
+
+		{ "playerCardPlayer", 14058 },
+		{ "resetOnDeath", 14059 },
+		{ "resetNotify", 14060 },
+		{ "hintMessageDeathThink", 14061 },
+		{ "lowerMessageThink", 14062 },
+		{ "lowerMessages", 14063 },
+		{ "outcomeOverlay", 14064 },
+		{ "matchOutcomeNotify", 14065 },
+		{ "resetOutcomeNotify", 14066 },
+		{ "resetTeamOutcomeNotify", 14067 },
+		{ "updateOutcome", 14068 },
+		{ "canShowSplash", 14069 },
 
 		{ "isAttachmentUnlocked", 14146 },
 		{ "unk_field_14174", 14174 },
@@ -1190,6 +1511,10 @@ namespace iw5
 		{ "_clearPerks", 14217 },
 		{ "_detachAll", 14218 },
 		{ "loadoutAllPerks", 14219 },
+		{ "loadoutPerk1", 14220 },
+		{ "loadoutPerk2", 14221 },
+		{ "loadoutPerk3", 14222 },
+		{ "loadoutPerkEquipment", 14223 },
 		{ "tryAttach", 14224 },
 		{ "tryDetach", 14225 },
 		{ "buildWeaponName", 14226 },
@@ -1221,6 +1546,11 @@ namespace iw5
 		{ "weaponRefs", 14252 },
 		{ "isValidKillstreak", 14253 },
 		
+		{ "exploder_sound", 14262 },
+		{ "streakMsg", 14263 },
+		{ "endSelectionOnEMP", 14264 },
+		{ "endSelectionOnAction", 14265 },
+		{ "endSelectionOnEndGame", 14266 },
 
 		{ "audio", 14374 },
 		{ "init_reverb", 14375 },
@@ -1233,6 +1563,12 @@ namespace iw5
 		{ "set_whizby_radius", 14382 },
 		{ "set_whizby_spread", 14383 },
 		{ "apply_whizby", 14384 },
+
+		{ "registerDvars", 14636 },
+		{ "blank", 14637 },
+		{ "testMenu", 14638 },
+		{ "testShock", 14639 },
+		{ "fakeLag", 14640 },
 
 		{ "domFlags", 14647 },
 		{ "getUnownedFlagNearestStart", 14654 },

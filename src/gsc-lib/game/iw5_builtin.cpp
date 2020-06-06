@@ -61,8 +61,8 @@ namespace iw5
 		{ "asin", 159 },
 		{ "acos", 160 },
 		{ "atan", 161 },
-		{ "castint", 162 },
-		{ "castfloat", 163 },
+		{ "int", 162 }, // castint
+		{ "float", 163 }, // castfloat
 		{ "abs", 164 },
 		{ "min", 165 },
 		{ "max", 198 },

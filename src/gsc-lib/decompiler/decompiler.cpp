@@ -241,7 +241,7 @@ namespace gsc
 			case opcode::OP_EvalLocalArrayCached:
 			{
 				auto stmt = func->stack_.top();
-				stmt->data_ = utils::string::va("%s[ %s ]", func->local_vars_.at(std::stoul(inst->m_data[0])).data(), stmt->data_.data());
+				stmt->data_ = utils::string::va("%s[%s]", func->local_vars_.at(std::stoul(inst->m_data[0])).data(), stmt->data_.data());
 			}
 			break;
 			case opcode::OP_EvalArray:
@@ -249,26 +249,26 @@ namespace gsc
 				auto stmt2 = func->stack_.top();
 				func->stack_.pop();
 				auto stmt1 = func->stack_.top();
-				stmt1->data_ = utils::string::va("%s[ %s ]", stmt2->data_.data(), stmt1->data_.data());
+				stmt1->data_ = utils::string::va("%s[%s]", stmt2->data_.data(), stmt1->data_.data());
 			}
 			break;
 			case opcode::OP_EvalNewLocalArrayRefCached0:
 			{
 				auto stmt = func->stack_.top();
-				stmt->data_ = utils::string::va("%s[ %s ]", func->local_vars_.at(0).data(), stmt->data_.data());
+				stmt->data_ = utils::string::va("%s[%s]", func->local_vars_.at(0).data(), stmt->data_.data());
 			}
 			break;
 			case opcode::OP_EvalLocalArrayRefCached0:
 			{
 				auto stmt = func->stack_.top();
 				func->local_vars_.insert(func->local_vars_.begin(), utils::string::va("var%i", std::stoul(inst->m_data[0])));
-				stmt->data_ = utils::string::va("%s[ %s ]", func->local_vars_.at(0).data(), stmt->data_.data());
+				stmt->data_ = utils::string::va("%s[%s]", func->local_vars_.at(0).data(), stmt->data_.data());
 			}
 			break;
 			case opcode::OP_EvalLocalArrayRefCached:
 			{
 				auto stmt = func->stack_.top();
-				stmt->data_ = utils::string::va("%s[ %s ]", func->local_vars_.at(std::stoul(inst->m_data[0])).data(), stmt->data_.data());
+				stmt->data_ = utils::string::va("%s[%s]", func->local_vars_.at(std::stoul(inst->m_data[0])).data(), stmt->data_.data());
 			}
 			break;
 			case opcode::OP_EvalArrayRef:
@@ -276,7 +276,7 @@ namespace gsc
 				auto stmt2 = func->stack_.top();
 				func->stack_.pop();
 				auto stmt1 = func->stack_.top();
-				stmt1->data_ = utils::string::va("%s[ %s ]", stmt2->data_.data(), stmt1->data_.data());
+				stmt1->data_ = utils::string::va("%s[%s]", stmt2->data_.data(), stmt1->data_.data());
 			}
 			break;
 			case opcode::OP_ClearArray:
@@ -285,7 +285,7 @@ namespace gsc
 				func->stack_.pop();
 				auto stmt1 = func->stack_.top();
 				func->stack_.pop();
-				stmt1->data_ = utils::string::va("%s[ %s ] = undefined;", stmt->data_.data(), stmt1->data_.data());
+				stmt1->data_ = utils::string::va("%s[%s] = undefined;", stmt->data_.data(), stmt1->data_.data());
 				func->statements_.push_back(stmt1);
 			}
 			break;
@@ -361,7 +361,7 @@ namespace gsc
 			{
 				auto stmt = std::make_shared<statement>();
 				stmt->index_ = inst->m_index;
-				stmt->data_ = "thread " + inst->m_data[0].substr(4) + "(";
+				stmt->data_ = "self thread " + inst->m_data[0].substr(4) + "(";
 
 				auto argnum = std::stoul(inst->m_data[1]);
 
@@ -855,15 +855,25 @@ namespace gsc
 			break;
 			case opcode::OP_notify:
 			{
-				auto stmt2 = func->stack_.top();
-				func->stack_.pop();
 				auto stmt1 = func->stack_.top();
 				func->stack_.pop();
+				auto stmt = func->stack_.top();
+				func->stack_.pop();
+				auto data = stmt1->data_ + " notify(" + stmt->data_;
 
-				// TODO: pop arg list till void_codepos
+				stmt = func->stack_.top(); // params
+				func->stack_.pop();
 
-				stmt1->data_ = utils::string::va("%s notify(%s);", stmt2->data_.data(), stmt1->data_.data());
-				func->statements_.push_back(stmt1);
+				while (stmt->data_ != "voidcodepos")
+				{
+					data += ", " + stmt->data_;
+					stmt = func->stack_.top();
+					func->stack_.pop();
+				}
+
+				data += " );";
+				stmt->data_ = data;
+				func->statements_.push_back(stmt);
 			}
 			break;
 			case opcode::OP_endon:
@@ -878,20 +888,33 @@ namespace gsc
 			break;
 			case opcode::OP_voidCodepos:
 			{
-				// TODO
-				LOG_ERROR("missing handler 'OP_voidCodepos'!");
+				auto stmt = std::make_shared<statement>();
+				stmt->index_ = inst->m_index;
+				stmt->data_ = "voidcodepos";
+				func->stack_.push(stmt);
 			}
 			break;
 			case opcode::OP_switch:
 			{
 				// TODO
-				LOG_ERROR("missing handler 'OP_switch'!");
+				auto stmt = func->stack_.top();
+				func->stack_.pop();
+				stmt->data_ = utils::string::va("switch ( %s ) #%s", stmt->data_.data(), inst->m_data[0].data());
+				func->statements_.push_back(stmt);
 			}
 			break;
 			case opcode::OP_endswitch:
 			{
 				// TODO
-				LOG_ERROR("missing handler 'OP_endswitch'!");
+				auto stmt = std::make_shared<statement>();
+				stmt->index_ = inst->m_index;
+				stmt->data_ = get_opcode_name(inst->m_opcode);
+				for (auto d : inst->m_data)
+				{
+					stmt->data_.append(" " + d);
+				}
+				stmt->data_.append(";");
+				func->statements_.push_back(stmt);
 			}
 			break;
 			case opcode::OP_vector:
@@ -908,8 +931,16 @@ namespace gsc
 			{
 				auto stmt1 = func->stack_.top();
 				func->stack_.pop();
-				stmt1->data_ = utils::string::va("cond_false ( %s ) #%s", stmt1->data_.data(), inst->m_data[0].data());
+				stmt1->data_ = utils::string::va("cond ( %s ) #%s", stmt1->data_.data(), inst->m_data[0].data());
 				func->statements_.push_back(stmt1);
+
+				// dirty shit
+				if (func->labels_.find(inst->m_index) != func->labels_.end())
+				{
+					auto loc = func->labels_.extract(inst->m_index);
+					loc.key() = stmt1->index_;
+					func->labels_.insert(std::move(loc));
+				}
 			}
 			break;
 			case opcode::OP_greater_equal:
@@ -985,8 +1016,16 @@ namespace gsc
 			{
 				auto stmt1 = func->stack_.top();
 				func->stack_.pop();
-				stmt1->data_ = utils::string::va("cond_false ( !%s ) #%s", stmt1->data_.data(), inst->m_data[0].data());
+				stmt1->data_ = utils::string::va("cond ( !%s ) #%s", stmt1->data_.data(), inst->m_data[0].data());
 				func->statements_.push_back(stmt1);
+
+				// dirty shit
+				if (func->labels_.find(inst->m_index) != func->labels_.end())
+				{
+					auto loc = func->labels_.extract(inst->m_index);
+					loc.key() = stmt1->index_;
+					func->labels_.insert(std::move(loc));
+				}
 			}
 			break;
 			case opcode::OP_size:
@@ -1455,22 +1494,18 @@ namespace gsc
 			case opcode::OP_CallBuiltinMethod5:
 			{
 				auto stmt = func->stack_.top();
-
-				std::string params = utils::string::va("%s %s( ", stmt->data_.data(), inst->m_data[0].data());
+				std::string data = stmt->data_ + " " + inst->m_data[0] + "(";
 
 				for (size_t i = 0; i < 5; i++)
 				{
 					func->stack_.pop();
 					stmt = func->stack_.top();
-					params.append(stmt->data_);
-					if (i != 4)
-					{
-						params.append(", ");
-					}
+					data += " " + stmt->data_;
+					i != 4 ? data += "," : data += " ";
 				}
 
-				params.append(" )");
-				stmt->data_ = params.data();
+				data += ")";
+				stmt->data_ = data.data();
 			}
 			break;
 			case opcode::OP_CallBuiltinMethod:
@@ -1502,7 +1537,7 @@ namespace gsc
 			{
 				auto stmt = func->stack_.top();
 				func->stack_.pop();
-				stmt->data_ = utils::string::va("wait %s;", stmt->data_.data());
+				stmt->data_ = "wait " + stmt->data_ + ";";
 				func->statements_.push_back(stmt);
 			}
 			break;
@@ -1510,7 +1545,7 @@ namespace gsc
 			{
 				auto stmt = func->stack_.top();
 				func->stack_.pop();
-				stmt->data_ = utils::string::va("%s;", stmt->data_.data());
+				stmt->data_ = stmt->data_ + ";";
 				func->statements_.push_back(stmt);
 			}
 			break;
@@ -1538,7 +1573,7 @@ namespace gsc
 			case opcode::OP_BoolNot:
 			{
 				auto stmt = func->stack_.top();
-				stmt->data_ = utils::string::va("!%s", stmt->data_.data());
+				stmt->data_ = "!" + stmt->data_;
 			}
 			break;
 			case opcode::OP_BoolComplement:
