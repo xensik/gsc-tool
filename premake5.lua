@@ -70,9 +70,10 @@ workspace "gsc-tool"
 		language "C++"
 
 		files {
-			"./src/gsc-lib/**.h",
-			"./src/gsc-lib/**.hpp",
-			"./src/gsc-lib/**.cpp",
+			"./include/**.hpp",
+			"./src/lib/**.h",
+			"./src/lib/**.hpp",
+			"./src/lib/**.cpp",
 		}
 
 		syslibdirs {
@@ -80,8 +81,8 @@ workspace "gsc-tool"
 		}
 
 		includedirs {
-			"./src/gsc-lib",
-			"%{prj.location}/src/gsc-lib",
+			"./include",
+			"%{prj.location}/src/lib",
 		}
 
 	project "gsc-app"
@@ -89,9 +90,9 @@ workspace "gsc-tool"
 		language "C++"
 		
 		files {
-			"./src/gsc-app/**.h",
-			"./src/gsc-app/**.hpp",
-			"./src/gsc-app/**.cpp",
+			"./src/app/**.h",
+			"./src/app/**.hpp",
+			"./src/app/**.cpp",
 		}
 
 		links {
@@ -103,7 +104,7 @@ workspace "gsc-tool"
 		}
 
 		includedirs {
-			"./src/gsc-app",
-			"./src/gsc-lib",
-			"%{prj.location}/src",
+			"./src/app",
+			"./include",
+			"%{prj.location}/src/app",
 		}
