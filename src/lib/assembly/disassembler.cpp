@@ -1,6 +1,9 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-#include "xsk_gsc.hpp"
+#include "gsc_tool.hpp"
 
 namespace gsc
 {
@@ -33,27 +36,7 @@ void disassembler::disassemble(std::shared_ptr<xsk::byte_buffer> script, std::sh
 	}
 
 	// fix local function calls here once we have all function names created
-	for (auto& func : functions_)
-	{
-		for (auto& inst : func->instructions)
-		{
-			switch (inst->opcode)
-			{
-			case opcode::OP_GetLocalFunction:
-			case opcode::OP_ScriptLocalFunctionCall:
-			case opcode::OP_ScriptLocalFunctionCall2:
-			case opcode::OP_ScriptLocalMethodCall:
-			case opcode::OP_ScriptLocalThreadCall:
-			case opcode::OP_ScriptLocalChildThreadCall:
-			case opcode::OP_ScriptLocalMethodThreadCall:
-			case opcode::OP_ScriptLocalMethodChildThreadCall:
-				inst->data.at(0) = this->resolve_function(inst->data[0]);
-				break;
-			default:
-				break;
-			}
-		}
-	}
+	this->resolve_local_functions();
 }
 
 auto disassembler::output() -> std::vector<std::shared_ptr<function>>
@@ -107,8 +90,6 @@ void disassembler::dissasemble_function(std::shared_ptr<function> func)
 
 void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 {
-	// LOG_DEBUG("%04X %s\n", inst->index, get_opcode_name(inst->opcode).c_str());
-
 	switch (inst->opcode)
 	{
 	case opcode::OP_End:
@@ -635,13 +616,10 @@ void disassembler::disassemble_switch(std::shared_ptr<instruction> inst)
 {
 	inst->size = 5;
 
-	std::int32_t addr;
-	std::string label;
+	std::int32_t addr = inst->index + 4 + script_->read<std::int32_t>();
+	std::string label = xsk::string::va("loc_%X", addr);
 
-	addr = inst->index + 4 + script_->read<std::int32_t>();
-	label = xsk::string::va("loc_%X", addr);
 	inst->data.push_back(label);
-
 	inst->parent->labels[addr] = label;
 }
 
@@ -708,6 +686,31 @@ auto disassembler::disassemble_offset() -> std::int32_t
 	offset = (offset << 8) >> 10;
 
 	return offset;
+}
+
+void disassembler::resolve_local_functions()
+{
+	for (auto& func : functions_)
+	{
+		for (auto& inst : func->instructions)
+		{
+			switch (inst->opcode)
+			{
+			case opcode::OP_GetLocalFunction:
+			case opcode::OP_ScriptLocalFunctionCall:
+			case opcode::OP_ScriptLocalFunctionCall2:
+			case opcode::OP_ScriptLocalMethodCall:
+			case opcode::OP_ScriptLocalThreadCall:
+			case opcode::OP_ScriptLocalChildThreadCall:
+			case opcode::OP_ScriptLocalMethodThreadCall:
+			case opcode::OP_ScriptLocalMethodChildThreadCall:
+				inst->data.at(0) = this->resolve_function(inst->data[0]);
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
 
 auto disassembler::resolve_function(const std::string& index) -> std::string

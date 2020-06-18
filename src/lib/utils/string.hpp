@@ -1,7 +1,10 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-#ifndef XSK_UTILS_STRING_H_
-#define XSK_UTILS_STRING_H_
+#ifndef _XSK_UTILS_STRING_H_
+#define _XSK_UTILS_STRING_H_
 
 namespace xsk
 {
@@ -12,10 +15,10 @@ public:
 	template <typename ... Args>
 	static auto va(const std::string& format, Args ... args) -> std::string
 	{
-		size_t size = _snprintf(nullptr, 0, format.c_str(), args ...) + 1;
+		size_t size = _snprintf(nullptr, 0, format.data(), args ...) + 1;
 		std::vector<char> buf;
 		buf.resize(size);
-		_snprintf(buf.data(), size, format.c_str(), args ...);
+		_snprintf(buf.data(), size, format.data(), args ...);
 		return std::string(buf.data(), buf.data() + size - 1);
 	}
 
@@ -27,6 +30,6 @@ public:
 	static auto get_string_literal(std::string str) -> std::string;
 };
 
-} // namespace utils
+} // namespace xsk
 
-#endif // XSK_UTILS_STRING_H_
+#endif // _XSK_UTILS_STRING_H_

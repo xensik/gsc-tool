@@ -1,7 +1,10 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-#ifndef XSK_UTILS_BYTE_BUFFER_H_
-#define XSK_UTILS_BYTE_BUFFER_H_
+#ifndef _XSK_UTILS_BYTE_BUFFER_H_
+#define _XSK_UTILS_BYTE_BUFFER_H_
 
 namespace xsk
 {
@@ -52,6 +55,6 @@ public:
 	auto get_buffer() -> std::vector<std::uint8_t>&;
 };
 
-} // namespace utils
+} // namespace xsk
 
-#endif // XSK_UTILS_BYTE_BUFFER_H_
+#endif // _XSK_UTILS_BYTE_BUFFER_H_

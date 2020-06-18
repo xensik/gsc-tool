@@ -1,6 +1,9 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-#include "xsk_gsc.hpp"
+#include "gsc_tool.hpp"
 
 namespace xsk
 {
@@ -62,4 +65,4 @@ auto string::get_string_literal(std::string str) -> std::string
 	return str.substr(1, str.size() - 2);
 }
 
-} // namespace utils
+} // namespace xsk

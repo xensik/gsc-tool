@@ -1,7 +1,10 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-#ifndef XSK_GSC_DECOMPILER_H_
-#define XSK_GSC_DECOMPILER_H_
+#ifndef _XSK_GSC_DECOMPILER_H_
+#define _XSK_GSC_DECOMPILER_H_
 
 #include <stack>
 
@@ -10,25 +13,24 @@ namespace gsc
 
 struct statement
 {
-	std::uint32_t index_;
-	std::string data_;
+	std::uint32_t index;
+	std::string data;
 
-	statement() : index_(0) { }
+	statement() : index(0) { }
 };
 
-class decompiler_function
+struct decompiler_function
 {
-public:
-	std::string name_;
-	std::size_t params_ = 0;
-	std::size_t end_ = 0;
+	std::string name;
+	std::size_t params = 0;
+	std::size_t end = 0;
 	bool is_void = true;
-	std::vector<std::string> local_vars_;
-	std::stack<std::shared_ptr<statement>> stack_;
-	std::vector<std::shared_ptr<statement>> statements_;
+	std::vector<std::string> local_vars;
+	std::stack<std::shared_ptr<statement>> stack;
+	std::vector<std::shared_ptr<statement>> statements;
 
-	std::unordered_map<std::uint32_t, std::string> labels_;
-	std::vector<std::shared_ptr<instruction>> instructions_;
+	std::unordered_map<std::uint32_t, std::string> labels;
+	std::vector<std::shared_ptr<instruction>> instructions;
 };
 
 	
@@ -55,4 +57,4 @@ private:
 
 } // namespace gsc
 
-#endif // XSK_GSC_DECOMPILER_H_
+#endif // _XSK_GSC_DECOMPILER_H_

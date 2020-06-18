@@ -1,7 +1,9 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-#include "xsk_gsc.hpp"
-#include "decompiler.hpp"
+#include "gsc_tool.hpp"
 
 namespace gsc
 {
@@ -18,9 +20,9 @@ void decompiler::decompile(std::vector<std::shared_ptr<function>>& functions)
 		auto dfunc = std::make_shared<decompiler_function>();
 		functions_.push_back(dfunc);
 
-		dfunc->labels_ = func->labels;
-		dfunc->instructions_ = func->instructions;
-		dfunc->name_ = func->name != "" ? func->name : xsk::string::va("id_%i", func->id);
+		dfunc->labels = func->labels;
+		dfunc->instructions = func->instructions;
+		dfunc->name = func->name != "" ? func->name : xsk::string::va("id_%i", func->id);
 
 		this->decompile_function(dfunc);
 	}
@@ -49,10 +51,10 @@ void decompiler::decompile_function(std::shared_ptr<decompiler_function> func)
 	func->is_void = true;
 
 	// parameter list
-	func->params_ = 0;
+	func->params = 0;
 
 	// save last index for labels
-	func->end_ = (*(func->instructions_.end() - 1))->index;
+	func->end = (*(func->instructions.end() - 1))->index;
 		
 	// process instructions to generate statements
 	this->decompile_statements(func);
@@ -63,7 +65,7 @@ void decompiler::decompile_function(std::shared_ptr<decompiler_function> func)
 
 void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 {
-	for (auto inst : func->instructions_)
+	for (auto inst : func->instructions)
 	{
 		switch (inst->opcode)
 		{
@@ -71,29 +73,29 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		{
 			if (!func->is_void)
 			{
-				/*auto stmt = func->stack_.top();
-				if (stmt->data_.find("return") != std::string::npos)
+				/*auto stmt = func->stack.top();
+				if (stmt->data.find("return") != std::string::npos)
 				{
-					func->stack_.pop();
-					func->statements_.push_back(stmt);
+					func->stack.pop();
+					func->statements.push_back(stmt);
 				}	*/			
 			}
-			else if (inst->index != func->end_)
+			else if (inst->index != func->end)
 			{
 				auto stmt = std::make_shared<statement>();
-				stmt->index_ = inst->index;
-				stmt->data_ = xsk::string::va("return;");
-				func->statements_.push_back(stmt);
+				stmt->index = inst->index;
+				stmt->data = xsk::string::va("return;");
+				func->statements.push_back(stmt);
 			}
 		}
 		break;
 		case opcode::OP_Return:
 		{
 			func->is_void = false;
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			stmt->data_ = "return "+ stmt->data_ + ";";
-			func->statements_.push_back(stmt);
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			stmt->data = "return "+ stmt->data + ";";
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_GetByte:		
@@ -104,77 +106,77 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_GetFloat: // TODO: append .0 if integer / remove 0. if < 0
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = inst->data[0];
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = inst->data[0];
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_GetString:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = inst->data[0];
+			stmt->index = inst->index;
+			stmt->data = inst->data[0];
 
-			for (size_t i = 0; i < stmt->data_.size(); i++)
+			for (size_t i = 0; i < stmt->data.size(); i++)
 			{
-				if (stmt->data_.at(i) == '\\')
+				if (stmt->data.at(i) == '\\')
 				{
-					stmt->data_.insert(stmt->data_.begin() + i, '\\');
+					stmt->data.insert(stmt->data.begin() + i, '\\');
 					i++;
 				}
 			}
-			for (size_t i = 1; i < stmt->data_.size() - 1; i++)
+			for (size_t i = 1; i < stmt->data.size() - 1; i++)
 			{
-				if (stmt->data_.at(i) == '\"')
+				if (stmt->data.at(i) == '\"')
 				{
-					stmt->data_.insert(stmt->data_.begin() + i, '\\');
+					stmt->data.insert(stmt->data.begin() + i, '\\');
 					i++;
 				}
 			}
 
-			func->stack_.push(stmt);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_GetNegByte:
 		case opcode::OP_GetNegUnsignedShort:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "-" + inst->data[0];
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = "-" + inst->data[0];
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_GetUndefined:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "undefined";
+			stmt->index = inst->index;
+			stmt->data = "undefined";
 
-			func->stack_.push(stmt);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_GetZero:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "0";
+			stmt->index = inst->index;
+			stmt->data = "0";
 
-			func->stack_.push(stmt);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_waittillFrameEnd:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "waittillframeend;";
+			stmt->index = inst->index;
+			stmt->data = "waittillframeend;";
 
-			func->statements_.push_back(stmt);
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_CreateLocalVariable:
 		{
 			size_t index = std::stoul(inst->data[0]);
-			func->local_vars_.insert(func->local_vars_.begin(), xsk::string::va("var%i", index));
+			func->local_vars.insert(func->local_vars.begin(), xsk::string::va("var%i", index));
 		}
 		break;
 		case opcode::OP_RemoveLocalVariables:
@@ -188,117 +190,117 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_EvalLocalVariableCached0:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = func->local_vars_.at(0);
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = func->local_vars.at(0);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached1:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = func->local_vars_.at(1);
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = func->local_vars.at(1);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached2:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = func->local_vars_.at(2);
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = func->local_vars.at(2);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached3:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = func->local_vars_.at(3);
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = func->local_vars.at(3);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached4:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = func->local_vars_.at(4);
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = func->local_vars.at(4);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached5:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = func->local_vars_.at(5);
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = func->local_vars.at(5);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = func->local_vars_.at(std::stoul(inst->data[0]));
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = func->local_vars.at(std::stoul(inst->data[0]));
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalLocalArrayCached:
 		{
-			auto stmt = func->stack_.top();
-			stmt->data_ = xsk::string::va("%s[%s]", func->local_vars_.at(std::stoul(inst->data[0])).data(), stmt->data_.data());
+			auto stmt = func->stack.top();
+			stmt->data = xsk::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0])).data(), stmt->data.data());
 		}
 		break;
 		case opcode::OP_EvalArray:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s[%s]", stmt2->data_.data(), stmt1->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s[%s]", stmt2->data.data(), stmt1->data.data());
 		}
 		break;
 		case opcode::OP_EvalNewLocalArrayRefCached0:
 		{
-			auto stmt = func->stack_.top();
-			stmt->data_ = xsk::string::va("%s[%s]", func->local_vars_.at(0).data(), stmt->data_.data());
+			auto stmt = func->stack.top();
+			stmt->data = xsk::string::va("%s[%s]", func->local_vars.at(0).data(), stmt->data.data());
 		}
 		break;
 		case opcode::OP_EvalLocalArrayRefCached0:
 		{
-			auto stmt = func->stack_.top();
-			func->local_vars_.insert(func->local_vars_.begin(), xsk::string::va("var%i", std::stoul(inst->data[0])));
-			stmt->data_ = xsk::string::va("%s[%s]", func->local_vars_.at(0).data(), stmt->data_.data());
+			auto stmt = func->stack.top();
+			func->local_vars.insert(func->local_vars.begin(), xsk::string::va("var%i", std::stoul(inst->data[0])));
+			stmt->data = xsk::string::va("%s[%s]", func->local_vars.at(0).data(), stmt->data.data());
 		}
 		break;
 		case opcode::OP_EvalLocalArrayRefCached:
 		{
-			auto stmt = func->stack_.top();
-			stmt->data_ = xsk::string::va("%s[%s]", func->local_vars_.at(std::stoul(inst->data[0])).data(), stmt->data_.data());
+			auto stmt = func->stack.top();
+			stmt->data = xsk::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0])).data(), stmt->data.data());
 		}
 		break;
 		case opcode::OP_EvalArrayRef:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s[%s]", stmt2->data_.data(), stmt1->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s[%s]", stmt2->data.data(), stmt1->data.data());
 		}
 		break;
 		case opcode::OP_ClearArray:
 		{
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			stmt1->data_ = xsk::string::va("%s[%s] = undefined;", stmt->data_.data(), stmt1->data_.data());
-			func->statements_.push_back(stmt1);
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			stmt1->data = xsk::string::va("%s[%s] = undefined;", stmt->data.data(), stmt1->data.data());
+			func->statements.push_back(stmt1);
 		}
 		break;
 		case opcode::OP_EmptyArray:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "[]";
+			stmt->index = inst->index;
+			stmt->data = "[]";
 
-			func->stack_.push(stmt);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_AddArray:
@@ -310,75 +312,75 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_PreScriptCall:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "pre_script_call";
+			stmt->index = inst->index;
+			stmt->data = "pre_script_call";
 
-			func->stack_.push(stmt);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_ScriptLocalFunctionCall2:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = xsk::string::va("%s()", inst->data[0].substr(4).data());
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = xsk::string::va("%s()", inst->data[0].substr(4).data());
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_ScriptLocalFunctionCall:
 		{
 			std::string data = inst->data[0].substr(4) + "(";
 
-			auto stmt = func->stack_.top();
+			auto stmt = func->stack.top();
 
-			while (stmt->data_ != "pre_script_call")
+			while (stmt->data != "pre_script_call")
 			{
-				data += " " + stmt->data_;
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				stmt->data_ != "pre_script_call" ? data += "," : data += " ";
+				data += " " + stmt->data;
+				func->stack.pop();
+				stmt = func->stack.top();
+				stmt->data != "pre_script_call" ? data += "," : data += " ";
 			}
 			data += ")";
-			stmt->data_ = data;
+			stmt->data = data;
 		}
 		break;
 		case opcode::OP_ScriptLocalMethodCall:
 		{
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			std::string data = stmt->data_ + " " + inst->data[0].substr(4) + "(";
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			std::string data = stmt->data + " " + inst->data[0].substr(4) + "(";
 
-			stmt = func->stack_.top();
+			stmt = func->stack.top();
 
-			while (stmt->data_ != "pre_script_call")
+			while (stmt->data != "pre_script_call")
 			{
-				data += " " + stmt->data_;
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				stmt->data_ != "pre_script_call" ? data += "," : data += " ";
+				data += " " + stmt->data;
+				func->stack.pop();
+				stmt = func->stack.top();
+				stmt->data != "pre_script_call" ? data += "," : data += " ";
 			}
 			data += ")";
-			stmt->data_ = data;
+			stmt->data = data;
 		}
 		break;
 		case opcode::OP_ScriptLocalThreadCall:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "self thread " + inst->data[0].substr(4) + "(";
+			stmt->index = inst->index;
+			stmt->data = "self thread " + inst->data[0].substr(4) + "(";
 
 			auto argnum = std::stoul(inst->data[1]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				auto stmt2 = func->stack_.top();
-				func->stack_.pop();
-				stmt->index_ = stmt2->index_;
-				stmt->data_ += " " + stmt2->data_;
-				i != 1 ? stmt->data_ += "," : stmt->data_ += " ";
+				auto stmt2 = func->stack.top();
+				func->stack.pop();
+				stmt->index = stmt2->index;
+				stmt->data += " " + stmt2->data;
+				i != 1 ? stmt->data += "," : stmt->data += " ";
 			}
 
-			stmt->data_ += ")";
-			func->stack_.push(stmt);
+			stmt->data += ")";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_ScriptLocalChildThreadCall:
@@ -389,20 +391,20 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_ScriptLocalMethodThreadCall:
 		{
-			auto stmt = func->stack_.top();
-			auto data = stmt->data_ + " thread " + inst->data[0].substr(4) + "(";
+			auto stmt = func->stack.top();
+			auto data = stmt->data + " thread " + inst->data[0].substr(4) + "(";
 
 			auto argnum = std::stoul(inst->data[1]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				data += " " + stmt->data_;
+				func->stack.pop();
+				stmt = func->stack.top();
+				data += " " + stmt->data;
 				i != 1 ? data += "," : data += " ";
 			}
 
-			stmt->data_ = data + ")";
+			stmt->data = data + ")";
 		}
 		break;
 		case opcode::OP_ScriptLocalMethodChildThreadCall:
@@ -414,67 +416,67 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_ScriptFarFunctionCall2:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = xsk::string::va("%s::%s()", inst->data[0].data(), inst->data[1].data());
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = xsk::string::va("%s::%s()", inst->data[0].data(), inst->data[1].data());
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_ScriptFarFunctionCall:
 		{
 			std::string params = xsk::string::va("%s::%s( ", inst->data[0].data(), inst->data[1].data());
 
-			auto stmt = func->stack_.top();
+			auto stmt = func->stack.top();
 
-			while (stmt->data_ != "pre_script_call")
+			while (stmt->data != "pre_script_call")
 			{
-				params += stmt->data_ + ", ";
-				func->stack_.pop();
-				stmt = func->stack_.top(); // swap pointers
+				params += stmt->data + ", ";
+				func->stack.pop();
+				stmt = func->stack.top(); // swap pointers
 			}
 
 			params.erase(params.end() - 2, params.end()); // TODO: FIX THIS, SHOULD ONLY BE CALLED IF PARAMS > 0
 			params.append(" )");
-			stmt->data_ = params;
+			stmt->data = params;
 		}
 		break;
 		case opcode::OP_ScriptFarMethodCall:
 		{
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			std::string params = stmt->data_ + " " + inst->data[0] + "::" + inst->data[1] + "(";
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			std::string params = stmt->data + " " + inst->data[0] + "::" + inst->data[1] + "(";
 
-			stmt = func->stack_.top();
+			stmt = func->stack.top();
 
-			while (stmt->data_ != "pre_script_call")
+			while (stmt->data != "pre_script_call")
 			{
-				params.append(" " + stmt->data_);
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				stmt->data_ != "pre_script_call" ? params.append(",") : params.append(" ");
+				params.append(" " + stmt->data);
+				func->stack.pop();
+				stmt = func->stack.top();
+				stmt->data != "pre_script_call" ? params.append(",") : params.append(" ");
 			}
 			params.append(")");
-			stmt->data_ = params;
+			stmt->data = params;
 		}
 		break;
 		case opcode::OP_ScriptFarThreadCall:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
+			stmt->index = inst->index;
 			std::string data = "thread " + inst->data[1] + "::" + inst->data[2] + "(";
 
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{	
-				stmt = func->stack_.top();
-				func->stack_.pop();
-				data += " " + stmt->data_;
+				stmt = func->stack.top();
+				func->stack.pop();
+				data += " " + stmt->data;
 				i != 1 ? data += "," : data += " ";
 			}
 
 			data += ")";
-			stmt->data_ = data;
-			func->stack_.push(stmt);
+			stmt->data = data;
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_ScriptFarChildThreadCall:
@@ -485,21 +487,21 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_ScriptFarMethodThreadCall:
 		{
-			auto stmt = func->stack_.top(); // caller
-			std::string data = stmt->data_ + " thread " + inst->data[1] + "::" + inst->data[2] + "(";
+			auto stmt = func->stack.top(); // caller
+			std::string data = stmt->data + " thread " + inst->data[1] + "::" + inst->data[2] + "(";
 
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				data += " " + stmt->data_;
+				func->stack.pop();
+				stmt = func->stack.top();
+				data += " " + stmt->data;
 				i != 1 ? data += "," : data += " ";
 			}
 
 			data += ")";
-			stmt->data_ = data;
+			stmt->data = data;
 		}
 		break;
 		case opcode::OP_ScriptFarMethodChildThreadCall:
@@ -511,17 +513,17 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_ScriptFunctionCallPointer:
 		{
 			std::string params;
-			auto stmt = func->stack_.top();
-			params = xsk::string::va("[[ %s ]](", stmt->data_.data());
-			func->stack_.pop();
-			stmt = func->stack_.top();
+			auto stmt = func->stack.top();
+			params = xsk::string::va("[[ %s ]](", stmt->data.data());
+			func->stack.pop();
+			stmt = func->stack.top();
 
 			auto count = 0;
-			while (stmt->data_ != "pre_script_call")
+			while (stmt->data != "pre_script_call")
 			{
-				params += stmt->data_ + ", ";
-				func->stack_.pop();
-				stmt = func->stack_.top(); // swap pointers
+				params += stmt->data + ", ";
+				func->stack.pop();
+				stmt = func->stack.top(); // swap pointers
 				count++;
 			}
 			if (count)
@@ -529,74 +531,74 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 				params.erase(params.end() - 2, params.end());
 			}
 			params.append(" )");
-			stmt->data_ = params;
+			stmt->data = params;
 		}
 		break;
 		case opcode::OP_ScriptMethodCallPointer:
 		{
-			auto stmt = func->stack_.top(); // pointer
-			func->stack_.pop();
-			std::string data = "[[ " + stmt->data_ + " ]](";
+			auto stmt = func->stack.top(); // pointer
+			func->stack.pop();
+			std::string data = "[[ " + stmt->data + " ]](";
 				
-			stmt = func->stack_.top(); // caller
-			func->stack_.pop();
-			data = stmt->data_ + " " + data;
+			stmt = func->stack.top(); // caller
+			func->stack.pop();
+			data = stmt->data + " " + data;
 
-			stmt = func->stack_.top(); // params
+			stmt = func->stack.top(); // params
 
-			while (stmt->data_ != "pre_script_call")
+			while (stmt->data != "pre_script_call")
 			{
-				data += " " + stmt->data_;
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				stmt->data_ != "pre_script_call" ? data += "," : data += " ";
+				data += " " + stmt->data;
+				func->stack.pop();
+				stmt = func->stack.top();
+				stmt->data != "pre_script_call" ? data += "," : data += " ";
 			}
 	
 			data += ")";
-			stmt->data_ = data;
+			stmt->data = data;
 		}
 		break;
 		case opcode::OP_ScriptThreadCallPointer:
 		{
-			auto stmt = func->stack_.top();
+			auto stmt = func->stack.top();
 				
-			std::string data = "thread [[ " + stmt->data_ + " ]](";
+			std::string data = "thread [[ " + stmt->data + " ]](";
 
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				data += " " + stmt->data_;
+				func->stack.pop();
+				stmt = func->stack.top();
+				data += " " + stmt->data;
 				i != 1 ? data += "," : data += " ";
 			}
 
 			data += ")";
-			stmt->data_ = data;
+			stmt->data = data;
 		}
 		break;
 		case opcode::OP_ScriptMethodThreadCallPointer:
 		{
-			auto stmt = func->stack_.top(); // pointer
-			func->stack_.pop();
-			std::string data = "thread [[ " + stmt->data_ + " ]](";
+			auto stmt = func->stack.top(); // pointer
+			func->stack.pop();
+			std::string data = "thread [[ " + stmt->data + " ]](";
 
-			stmt = func->stack_.top(); // caller
-			data = stmt->data_ + " " + data;
+			stmt = func->stack.top(); // caller
+			data = stmt->data + " " + data;
 
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				data += " " + stmt->data_;
+				func->stack.pop();
+				stmt = func->stack.top();
+				data += " " + stmt->data;
 				i != 1 ? data += "," : data += " ";
 			}
 
 			data += ")";
-			stmt->data_ = data;
+			stmt->data = data;
 		}
 		break;
 		case opcode::OP_ScriptMethodChildThreadCallPointer:
@@ -607,69 +609,69 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_CallBuiltinPointer:
 		{
-			auto stmt = func->stack_.top(); // pointer
+			auto stmt = func->stack.top(); // pointer
 
-			std::string data = "call [[ " + stmt->data_ + " ]](";
+			std::string data = "call [[ " + stmt->data + " ]](";
 
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				data += " " + stmt->data_;
+				func->stack.pop();
+				stmt = func->stack.top();
+				data += " " + stmt->data;
 				i != 1 ? data += "," : data += " ";
 			}
 
 			data += ")";
-			stmt->data_ = data;
+			stmt->data = data;
 		}
 		break;
 		case opcode::OP_CallBuiltinMethodPointer:
 		{
-			auto stmt = func->stack_.top(); // pointer
-			func->stack_.pop();
-			std::string data = "call [[ " + stmt->data_ + " ]](";
+			auto stmt = func->stack.top(); // pointer
+			func->stack.pop();
+			std::string data = "call [[ " + stmt->data + " ]](";
 
-			stmt = func->stack_.top(); // caller
-			data = stmt->data_ + " " + data;
+			stmt = func->stack.top(); // caller
+			data = stmt->data + " " + data;
 
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				data += " " + stmt->data_;
+				func->stack.pop();
+				stmt = func->stack.top();
+				data += " " + stmt->data;
 				i != 1 ? data += "," : data += " ";
 			}
 
 			data += ")";
-			stmt->data_ = data;
+			stmt->data = data;
 		}
 		break;
 		case opcode::OP_GetIString:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "&" + inst->data[0];
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = "&" + inst->data[0];
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_GetVector:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "( "+ inst->data[0] + ", " + inst->data[1] + ", " + inst->data[2] + " )";
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = "( "+ inst->data[0] + ", " + inst->data[1] + ", " + inst->data[2] + " )";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_GetLevelObject:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "level";
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = "level";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_GetAnimObject:
@@ -681,10 +683,10 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_GetSelf:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "self";
+			stmt->index = inst->index;
+			stmt->data = "self";
 
-			func->stack_.push(stmt);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_GetThisthread:
@@ -696,19 +698,19 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_GetLevel:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "level";
+			stmt->index = inst->index;
+			stmt->data = "level";
 
-			func->stack_.push(stmt);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_GetGame:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "game";
+			stmt->index = inst->index;
+			stmt->data = "game";
 
-			func->stack_.push(stmt);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_GetAnim:
@@ -726,117 +728,117 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_GetGameRef:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "game";
+			stmt->index = inst->index;
+			stmt->data = "game";
 
-			func->stack_.push(stmt);
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_inc:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "++";
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = "++";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_dec:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "--";
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = "--";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_bit_or:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s | %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s | %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_JumpOnFalseExpr:
 		{
 			// TODO
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			stmt1->data_ = xsk::string::va("cond_false_expr ( %s ) #%s", stmt1->data_.data(), inst->data[0].data());
-			func->statements_.push_back(stmt1);
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			stmt1->data = xsk::string::va("cond_false_expr ( %s ) #%s", stmt1->data.data(), inst->data[0].data());
+			func->statements.push_back(stmt1);
 		}
 		break;
 		case opcode::OP_bit_ex_or:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s ^ %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s ^ %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_bit_and:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s & %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s & %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_equality:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s == %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s == %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_inequality:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s != %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s != %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_less:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s < %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s < %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_greater:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s > %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s > %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_JumpOnTrueExpr:
 		{
 			// TODO
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			stmt1->data_ = xsk::string::va("cond_true_expr ( %s ) #%s", stmt1->data_.data(), inst->data[0].data());
-			func->statements_.push_back(stmt1);
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			stmt1->data = xsk::string::va("cond_true_expr ( %s ) #%s", stmt1->data.data(), inst->data[0].data());
+			func->statements.push_back(stmt1);
 		}
 		break;
 		case opcode::OP_less_equal:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s <= %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s <= %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_jumpback:
 		{
 			// TODO
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = xsk::string::va("cond_loop #%s", inst->data[0].data());
-			func->statements_.push_back(stmt);
+			stmt->index = inst->index;
+			stmt->data = xsk::string::va("cond_loop #%s", inst->data[0].data());
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_waittillmatch2:
@@ -849,109 +851,109 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		{
 			this->in_waittill_ = true;
 
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
 
-			stmt1->data_ = xsk::string::va("%s waittill( %s", stmt2->data_.data(), stmt1->data_.data());
+			stmt1->data = xsk::string::va("%s waittill( %s", stmt2->data.data(), stmt1->data.data());
 		}
 		break;
 		case opcode::OP_notify:
 		{
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			auto data = stmt1->data_ + " notify(" + stmt->data_;
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			auto data = stmt1->data + " notify(" + stmt->data;
 
-			stmt = func->stack_.top(); // params
-			func->stack_.pop();
+			stmt = func->stack.top(); // params
+			func->stack.pop();
 
-			while (stmt->data_ != "voidcodepos")
+			while (stmt->data != "voidcodepos")
 			{
-				data += ", " + stmt->data_;
-				stmt = func->stack_.top();
-				func->stack_.pop();
+				data += ", " + stmt->data;
+				stmt = func->stack.top();
+				func->stack.pop();
 			}
 
 			data += " );";
-			stmt->data_ = data;
-			func->statements_.push_back(stmt);
+			stmt->data = data;
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_endon:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			stmt1->data_ = xsk::string::va("%s endon(%s);", stmt2->data_.data(), stmt1->data_.data());
-			func->statements_.push_back(stmt1);
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			stmt1->data = xsk::string::va("%s endon(%s);", stmt2->data.data(), stmt1->data.data());
+			func->statements.push_back(stmt1);
 		}
 		break;
 		case opcode::OP_voidCodepos:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "voidcodepos";
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = "voidcodepos";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_switch:
 		{
 			// TODO
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			stmt->data_ = xsk::string::va("switch ( %s ) #%s", stmt->data_.data(), inst->data[0].data());
-			func->statements_.push_back(stmt);
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			stmt->data = xsk::string::va("switch ( %s ) #%s", stmt->data.data(), inst->data[0].data());
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_endswitch:
 		{
 			// TODO
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = get_opcode_name(inst->opcode);
+			stmt->index = inst->index;
+			stmt->data = get_opcode_name(inst->opcode);
 			for (auto d : inst->data)
 			{
-				stmt->data_.append(" " + d);
+				stmt->data.append(" " + d);
 			}
-			stmt->data_.append(";");
-			func->statements_.push_back(stmt);
+			stmt->data.append(";");
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_vector:
 		{
-			auto stmt3 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = "( " + stmt3->data_ + ", " + stmt2->data_ + ", " + stmt1->data_ + " )";
+			auto stmt3 = func->stack.top();
+			func->stack.pop();
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = "( " + stmt3->data + ", " + stmt2->data + ", " + stmt1->data + " )";
 		}
 		break;
 		case opcode::OP_JumpOnFalse:
 		{
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			stmt1->data_ = xsk::string::va("cond ( %s ) #%s", stmt1->data_.data(), inst->data[0].data());
-			func->statements_.push_back(stmt1);
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			stmt1->data = xsk::string::va("cond ( %s ) #%s", stmt1->data.data(), inst->data[0].data());
+			func->statements.push_back(stmt1);
 
 			// dirty shit
-			if (func->labels_.find(inst->index) != func->labels_.end())
+			if (func->labels.find(inst->index) != func->labels.end())
 			{
-				auto loc = func->labels_.extract(inst->index);
-				loc.key() = stmt1->index_;
-				func->labels_.insert(std::move(loc));
+				auto loc = func->labels.extract(inst->index);
+				loc.key() = stmt1->index;
+				func->labels.insert(std::move(loc));
 			}
 		}
 		break;
 		case opcode::OP_greater_equal:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s >= %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s >= %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_shift_left:
@@ -968,147 +970,147 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_plus:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s + %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s + %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_jump:
 		{
 			// TODO
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = xsk::string::va("cond_no #%s;", inst->data[0].data());
-			func->statements_.push_back(stmt);
+			stmt->index = inst->index;
+			stmt->data = xsk::string::va("cond_no #%s;", inst->data[0].data());
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_minus:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s - %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s - %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_multiply:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s * %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s * %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_divide:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = xsk::string::va("%s / %s", stmt1->data_.data(), stmt2->data_.data());
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = xsk::string::va("%s / %s", stmt1->data.data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_mod:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			stmt1->data_ = stmt1->data_ + " % " + stmt2->data_;
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			stmt1->data = stmt1->data + " % " + stmt2->data;
 		}
 		break;
 		case opcode::OP_JumpOnTrue: // negate condition and replace with false: equals 'if (!epxr)'
 		{
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			stmt1->data_ = xsk::string::va("cond ( !%s ) #%s", stmt1->data_.data(), inst->data[0].data());
-			func->statements_.push_back(stmt1);
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			stmt1->data = xsk::string::va("cond ( !%s ) #%s", stmt1->data.data(), inst->data[0].data());
+			func->statements.push_back(stmt1);
 
 			// dirty shit
-			if (func->labels_.find(inst->index) != func->labels_.end())
+			if (func->labels.find(inst->index) != func->labels.end())
 			{
-				auto loc = func->labels_.extract(inst->index);
-				loc.key() = stmt1->index_;
-				func->labels_.insert(std::move(loc));
+				auto loc = func->labels.extract(inst->index);
+				loc.key() = stmt1->index;
+				func->labels.insert(std::move(loc));
 			}
 		}
 		break;
 		case opcode::OP_size:
 		{
-			auto stmt = func->stack_.top();
-			stmt->data_ = xsk::string::va("%s.size", stmt->data_.data());
+			auto stmt = func->stack.top();
+			stmt->data = xsk::string::va("%s.size", stmt->data.data());
 		}
 		break;
 		case opcode::OP_waittillmatch:
 		{
 			this->in_waittill_ = true;
 
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt = func->stack_.top();
-			stmt->data_ = stmt2->data_ + " waittillmatch( " + stmt1->data_ + ", " + stmt->data_;
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			auto stmt = func->stack.top();
+			stmt->data = stmt2->data + " waittillmatch( " + stmt1->data + ", " + stmt->data;
 		}
 		break;
 		case opcode::OP_GetLocalFunction:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = xsk::string::va("::%s", inst->data[0].substr(4).data());
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = xsk::string::va("::%s", inst->data[0].substr(4).data());
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_GetFarFunction:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = xsk::string::va("%s::%s", inst->data[0].data(), inst->data[1].data());
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = xsk::string::va("%s::%s", inst->data[0].data(), inst->data[1].data());
+			func->stack.push(stmt);
 		};
 		break;
 		case opcode::OP_GetSelfObject:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "self";
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = "self";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalLevelFieldVariable:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = xsk::string::va("level.%s", inst->data[0].data());
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = xsk::string::va("level.%s", inst->data[0].data());
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalAnimFieldVariable:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = xsk::string::va("anim.%s", inst->data[0].data());
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = xsk::string::va("anim.%s", inst->data[0].data());
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalSelfFieldVariable:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = xsk::string::va("self.%s", inst->data[0].data());
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = xsk::string::va("self.%s", inst->data[0].data());
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalFieldVariable:
 		{
-			auto stmt = func->stack_.top();
-			stmt->data_ = xsk::string::va("%s.%s", stmt->data_.data(), inst->data[0].data());
+			auto stmt = func->stack.top();
+			stmt->data = xsk::string::va("%s.%s", stmt->data.data(), inst->data[0].data());
 		}
 		break;
 		case opcode::OP_EvalLevelFieldVariableRef:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = xsk::string::va("level.%s", inst->data[0].data());
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = xsk::string::va("level.%s", inst->data[0].data());
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalAnimFieldVariableRef:
@@ -1116,37 +1118,37 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			// TODO: check it!
 			XSK_ERROR("missing handler 'OP_EvalAnimFieldVariableRef'!");
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "anim." + inst->data[0];
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = "anim." + inst->data[0];
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalSelfFieldVariableRef:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = "self." + inst->data[0];
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = "self." + inst->data[0];
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalFieldVariableRef:
 		{
-			auto stmt = func->stack_.top();
-			stmt->data_ = stmt->data_ + "." + inst->data[0];
+			auto stmt = func->stack.top();
+			stmt->data = stmt->data + "." + inst->data[0];
 		}
 		break;
 		case opcode::OP_ClearFieldVariable:
 		{
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			stmt->data_ = xsk::string::va("%s.%s = undefined;", stmt->data_.data(), inst->data[0].data());
-			func->statements_.push_back(stmt);
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			stmt->data = xsk::string::va("%s.%s = undefined;", stmt->data.data(), inst->data[0].data());
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_SafeCreateVariableFieldCached:
 		{
-			func->params_++;
-			func->local_vars_.push_back("var");
+			func->params++;
+			func->local_vars.push_back("var");
 		}
 		break;
 		case opcode::OP_SafeSetVariableFieldCached0:
@@ -1163,8 +1165,8 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_SafeSetWaittillVariableFieldCached:
 		{
-			auto stmt = func->stack_.top();
-			stmt->data_ += ", " + func->local_vars_.at(std::stoul(inst->data[0]));
+			auto stmt = func->stack.top();
+			stmt->data += ", " + func->local_vars.at(std::stoul(inst->data[0]));
 		}
 		break;
 		case opcode::OP_GetAnimTree:
@@ -1180,27 +1182,27 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 				this->in_waittill_ = false;
 			}
 
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
 
-			stmt1->data_ = stmt1->data_ + " );";
-			func->statements_.push_back(stmt1);
+			stmt1->data = stmt1->data + " );";
+			func->statements.push_back(stmt1);
 		}
 		break;
 		case opcode::OP_checkclearparams:
 		{
-			for (size_t i = 0; i < func->params_; i++)
+			for (size_t i = 0; i < func->params; i++)
 			{
-				func->local_vars_.at(i).append(xsk::string::va("%i", func->params_ - 1 - i));
+				func->local_vars.at(i).append(xsk::string::va("%i", func->params - 1 - i));
 			}
 		}
 		break;
 		case opcode::OP_EvalLocalVariableRefCached0:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = func->local_vars_.at(0).data();
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = func->local_vars.at(0).data();
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalNewLocalVariableRefCached0:
@@ -1212,35 +1214,35 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_EvalLocalVariableRefCached:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = func->local_vars_.at(std::stoul(inst->data[0])).data();
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = func->local_vars.at(std::stoul(inst->data[0])).data();
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_SetLevelFieldVariableField:
 		{
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			stmt1->data_ = xsk::string::va("level.%s = %s;", inst->data[0].data(), stmt1->data_.data());
-			func->statements_.push_back(stmt1);
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			stmt1->data = xsk::string::va("level.%s = %s;", inst->data[0].data(), stmt1->data.data());
+			func->statements.push_back(stmt1);
 		}
 		break;
 		case opcode::OP_SetVariableField:
 		{
-			auto stmt2 = func->stack_.top();
-			func->stack_.pop();
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			if (stmt2->data_ == "++" || stmt2->data_ == "--")
+			auto stmt2 = func->stack.top();
+			func->stack.pop();
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			if (stmt2->data == "++" || stmt2->data == "--")
 			{
-				stmt1->data_ = xsk::string::va("%s%s;", stmt1->data_.data(), stmt2->data_.data());
+				stmt1->data = xsk::string::va("%s%s;", stmt1->data.data(), stmt2->data.data());
 			}
 			else
 			{
-				stmt1->data_ = xsk::string::va("%s = %s;", stmt2->data_.data(), stmt1->data_.data());
+				stmt1->data = xsk::string::va("%s = %s;", stmt2->data.data(), stmt1->data.data());
 			}
 				
-			func->statements_.push_back(stmt1);
+			func->statements.push_back(stmt1);
 		}
 		break;
 		case opcode::OP_ClearVariableField:
@@ -1257,37 +1259,37 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_SetSelfFieldVariableField:
 		{
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			stmt1->data_ = xsk::string::va("self.%s = %s;", inst->data[0].data(), stmt1->data_.data());
-			func->statements_.push_back(stmt1);
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			stmt1->data = xsk::string::va("self.%s = %s;", inst->data[0].data(), stmt1->data.data());
+			func->statements.push_back(stmt1);
 		}
 		break;
 		case opcode::OP_SetLocalVariableFieldCached0:
 		{
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			stmt->data_ = func->local_vars_.at(0) + " = " + stmt->data_ + ";";
-			func->statements_.push_back(stmt);
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			stmt->data = func->local_vars.at(0) + " = " + stmt->data + ";";
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_SetNewLocalVariableFieldCached0:
 		{
 			std::string var = xsk::string::va("var%i", std::stoul(inst->data[0]));
-			func->local_vars_.insert(func->local_vars_.begin(), var);
+			func->local_vars.insert(func->local_vars.begin(), var);
 
-			auto stmt1 = func->stack_.top();
-			func->stack_.pop();
-			stmt1->data_ = xsk::string::va("%s = %s;", var.data(), stmt1->data_.data());
-			func->statements_.push_back(stmt1);
+			auto stmt1 = func->stack.top();
+			func->stack.pop();
+			stmt1->data = xsk::string::va("%s = %s;", var.data(), stmt1->data.data());
+			func->statements.push_back(stmt1);
 		}
 		break;
 		case opcode::OP_SetLocalVariableFieldCached:
 		{
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			stmt->data_ = func->local_vars_.at(std::stoul(inst->data[0])) + " = " + stmt->data_.data() + ";";
-			func->statements_.push_back(stmt);
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			stmt->data = func->local_vars.at(std::stoul(inst->data[0])) + " = " + stmt->data.data() + ";";
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_ClearLocalVariableFieldCached:
@@ -1309,139 +1311,139 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_CallBuiltin0:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = inst->data[0] + "()";
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = inst->data[0] + "()";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_CallBuiltin1:
 		{
-			auto stmt = func->stack_.top();
-			stmt->data_ = inst->data[0] + "( " + stmt->data_ + " )";
+			auto stmt = func->stack.top();
+			stmt->data = inst->data[0] + "( " + stmt->data + " )";
 		}
 		break;
 		case opcode::OP_CallBuiltin2:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = inst->data[0] + "(";
+			stmt->index = inst->index;
+			stmt->data = inst->data[0] + "(";
 
 			for (size_t i = 2; i > 0; i--)
 			{
-				auto stmt2 = func->stack_.top();
-				func->stack_.pop();
-				stmt->index_ = stmt2->index_;
-				stmt->data_ += " " + stmt2->data_;
-				i != 1 ? stmt->data_ += "," : stmt->data_ += " ";
+				auto stmt2 = func->stack.top();
+				func->stack.pop();
+				stmt->index = stmt2->index;
+				stmt->data += " " + stmt2->data;
+				i != 1 ? stmt->data += "," : stmt->data += " ";
 			}
 
-			stmt->data_ += ")";
-			func->stack_.push(stmt);
+			stmt->data += ")";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_CallBuiltin3:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = inst->data[0] + "(";
+			stmt->index = inst->index;
+			stmt->data = inst->data[0] + "(";
 
 			for (size_t i = 3; i > 0; i--)
 			{
-				auto stmt2 = func->stack_.top();
-				func->stack_.pop();
-				stmt->index_ = stmt2->index_;
-				stmt->data_ += " " + stmt2->data_;
-				i != 1 ? stmt->data_ += "," : stmt->data_ += " ";
+				auto stmt2 = func->stack.top();
+				func->stack.pop();
+				stmt->index = stmt2->index;
+				stmt->data += " " + stmt2->data;
+				i != 1 ? stmt->data += "," : stmt->data += " ";
 			}
 
-			stmt->data_ += ")";
-			func->stack_.push(stmt);
+			stmt->data += ")";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_CallBuiltin4:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = inst->data[0] + "(";
+			stmt->index = inst->index;
+			stmt->data = inst->data[0] + "(";
 
 			for (size_t i = 4; i > 0; i--)
 			{
-				auto stmt2 = func->stack_.top();
-				func->stack_.pop();
-				stmt->index_ = stmt2->index_;
-				stmt->data_ += " " + stmt2->data_;
-				i != 1 ? stmt->data_ += "," : stmt->data_ += " ";
+				auto stmt2 = func->stack.top();
+				func->stack.pop();
+				stmt->index = stmt2->index;
+				stmt->data += " " + stmt2->data;
+				i != 1 ? stmt->data += "," : stmt->data += " ";
 			}
 
-			stmt->data_ += ")";
-			func->stack_.push(stmt);
+			stmt->data += ")";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_CallBuiltin5:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = inst->data[0] + "(";
+			stmt->index = inst->index;
+			stmt->data = inst->data[0] + "(";
 
 			for (size_t i = 5; i > 0; i--)
 			{
-				auto stmt2 = func->stack_.top();
-				func->stack_.pop();
-				stmt->index_ = stmt2->index_;
-				stmt->data_ += " " + stmt2->data_;
-				i != 1 ? stmt->data_ += "," : stmt->data_ += " ";
+				auto stmt2 = func->stack.top();
+				func->stack.pop();
+				stmt->index = stmt2->index;
+				stmt->data += " " + stmt2->data;
+				i != 1 ? stmt->data += "," : stmt->data += " ";
 			}
 
-			stmt->data_ += ")";
-			func->stack_.push(stmt);
+			stmt->data += ")";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_CallBuiltin:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = inst->data[1] + "(";
+			stmt->index = inst->index;
+			stmt->data = inst->data[1] + "(";
 
 			auto paracount = std::stoul(inst->data[0]);
 
 			for (size_t i = paracount; i > 0; i--)
 			{
-				auto stmt2 = func->stack_.top();
-				func->stack_.pop();
-				stmt->index_ = stmt2->index_;
-				stmt->data_ += " " + stmt2->data_;
-				i != 1 ? stmt->data_ += "," : stmt->data_ += " ";
+				auto stmt2 = func->stack.top();
+				func->stack.pop();
+				stmt->index = stmt2->index;
+				stmt->data += " " + stmt2->data;
+				i != 1 ? stmt->data += "," : stmt->data += " ";
 			}
 
-			stmt->data_ += ")";
-			func->stack_.push(stmt);
+			stmt->data += ")";
+			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_CallBuiltinMethod0:
 		{
-			auto stmt = func->stack_.top();
-			stmt->data_ = xsk::string::va("%s %s()", stmt->data_.data(), inst->data[0].data());
+			auto stmt = func->stack.top();
+			stmt->data = xsk::string::va("%s %s()", stmt->data.data(), inst->data[0].data());
 		}
 		break;
 		case opcode::OP_CallBuiltinMethod1:
 		{
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			auto stmt2 = func->stack_.top();
-			stmt2->data_ = xsk::string::va("%s %s( %s )", stmt->data_.data(), inst->data[0].data(), stmt2->data_.data());
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			auto stmt2 = func->stack.top();
+			stmt2->data = xsk::string::va("%s %s( %s )", stmt->data.data(), inst->data[0].data(), stmt2->data.data());
 		}
 		break;
 		case opcode::OP_CallBuiltinMethod2:
 		{
-			auto stmt = func->stack_.top();
+			auto stmt = func->stack.top();
 
-			std::string params = xsk::string::va("%s %s( ", stmt->data_.data(), inst->data[0].data());
+			std::string params = xsk::string::va("%s %s( ", stmt->data.data(), inst->data[0].data());
 
 			for (size_t i = 0; i < 2; i++)
 			{
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				params.append(stmt->data_);
+				func->stack.pop();
+				stmt = func->stack.top();
+				params.append(stmt->data);
 				if (i != 1)
 				{
 					params.append(", ");
@@ -1449,20 +1451,20 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			}
 
 			params.append(" )");
-			stmt->data_ = params.data();
+			stmt->data = params.data();
 		}
 		break;
 		case opcode::OP_CallBuiltinMethod3:
 		{
-			auto stmt = func->stack_.top();
+			auto stmt = func->stack.top();
 	
-			std::string params = xsk::string::va("%s %s( ", stmt->data_.data(), inst->data[0].data());
+			std::string params = xsk::string::va("%s %s( ", stmt->data.data(), inst->data[0].data());
 				
 			for (size_t i = 0; i < 3; i++)
 			{
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				params.append(stmt->data_);
+				func->stack.pop();
+				stmt = func->stack.top();
+				params.append(stmt->data);
 				if (i != 2)
 				{
 					params.append(", ");
@@ -1470,20 +1472,20 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			}
 
 			params.append(" )");
-			stmt->data_ = params.data();
+			stmt->data = params.data();
 		}
 		break;
 		case opcode::OP_CallBuiltinMethod4:
 		{
-			auto stmt = func->stack_.top();
+			auto stmt = func->stack.top();
 
-			std::string params = xsk::string::va("%s %s( ", stmt->data_.data(), inst->data[0].data());
+			std::string params = xsk::string::va("%s %s( ", stmt->data.data(), inst->data[0].data());
 
 			for (size_t i = 0; i < 4; i++)
 			{
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				params.append(stmt->data_);
+				func->stack.pop();
+				stmt = func->stack.top();
+				params.append(stmt->data);
 				if (i != 3)
 				{
 					params.append(", ");
@@ -1491,65 +1493,65 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			}
 
 			params.append(" )");
-			stmt->data_ = params.data();
+			stmt->data = params.data();
 		}
 		break;
 		case opcode::OP_CallBuiltinMethod5:
 		{
-			auto stmt = func->stack_.top();
-			std::string data = stmt->data_ + " " + inst->data[0] + "(";
+			auto stmt = func->stack.top();
+			std::string data = stmt->data + " " + inst->data[0] + "(";
 
 			for (size_t i = 0; i < 5; i++)
 			{
-				func->stack_.pop();
-				stmt = func->stack_.top();
-				data += " " + stmt->data_;
+				func->stack.pop();
+				stmt = func->stack.top();
+				data += " " + stmt->data;
 				i != 4 ? data += "," : data += " ";
 			}
 
 			data += ")";
-			stmt->data_ = data.data();
+			stmt->data = data.data();
 		}
 		break;
 		case opcode::OP_CallBuiltinMethod:
 		{
-			auto stmt = func->stack_.top(); // method caller, level self or var
-			func->stack_.pop();
+			auto stmt = func->stack.top(); // method caller, level self or var
+			func->stack.pop();
 
-			stmt->data_ = xsk::string::va("%s %s( ", stmt->data_.data(), inst->data[1].data());
+			stmt->data = xsk::string::va("%s %s( ", stmt->data.data(), inst->data[1].data());
 
 			auto paracount = std::stoul(inst->data[0]);
 			for (size_t i = 0; i < paracount; i++)
 			{
-				auto stmt2 = func->stack_.top();
-				func->stack_.pop();
+				auto stmt2 = func->stack.top();
+				func->stack.pop();
 
-				stmt->data_.append(stmt2->data_ + ", ");
+				stmt->data.append(stmt2->data + ", ");
 
 				if (i == paracount - 1)
 				{
-					stmt->index_ = stmt2->index_;
-					stmt->data_.erase(stmt->data_.end() - 2);
+					stmt->index = stmt2->index;
+					stmt->data.erase(stmt->data.end() - 2);
 				}
 			}
-			stmt->data_.append(" )");
-			func->stack_.push(stmt);
+			stmt->data.append(" )");
+			func->stack.push(stmt);
 		}
 		break;
 		case  opcode::OP_wait:
 		{
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			stmt->data_ = "wait " + stmt->data_ + ";";
-			func->statements_.push_back(stmt);
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			stmt->data = "wait " + stmt->data + ";";
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_DecTop:
 		{
-			auto stmt = func->stack_.top();
-			func->stack_.pop();
-			stmt->data_ = stmt->data_ + ";";
-			func->statements_.push_back(stmt);
+			auto stmt = func->stack.top();
+			func->stack.pop();
+			stmt->data = stmt->data + ";";
+			func->statements.push_back(stmt);
 		}
 		break;
 		case opcode::OP_CastFieldObject:
@@ -1563,9 +1565,9 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_EvalLocalVariableObjectCached:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = func->local_vars_.at(std::stoul(inst->data[0]));
-			func->stack_.push(stmt);
+			stmt->index = inst->index;
+			stmt->data = func->local_vars.at(std::stoul(inst->data[0]));
+			func->stack.push(stmt);
 		}
 		break;
 		case  opcode::OP_CastBool:
@@ -1575,8 +1577,8 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_BoolNot:
 		{
-			auto stmt = func->stack_.top();
-			stmt->data_ = "!" + stmt->data_;
+			auto stmt = func->stack.top();
+			stmt->data = "!" + stmt->data;
 		}
 		break;
 		case opcode::OP_BoolComplement:
@@ -1588,14 +1590,14 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		default:
 		{
 			auto stmt = std::make_shared<statement>();
-			stmt->index_ = inst->index;
-			stmt->data_ = get_opcode_name(inst->opcode);
+			stmt->index = inst->index;
+			stmt->data = get_opcode_name(inst->opcode);
 			for (auto d : inst->data)
 			{
-				stmt->data_.append(" " + d);
+				stmt->data.append(" " + d);
 			}
-			stmt->data_.append(";");
-			func->statements_.push_back(stmt);
+			stmt->data.append(";");
+			func->statements.push_back(stmt);
 		}
 		break;
 		}
@@ -1626,34 +1628,34 @@ void decompiler::decompile_blocks(std::shared_ptr<decompiler_function> func)
 void decompiler::print_function(std::shared_ptr<decompiler_function> func)
 {
 	// header
-	output_->write_cpp_string("\n" + func->name_ + "(");
+	output_->write_cpp_string("\n" + func->name + "(");
 
 	// param list
-	std::vector<std::string> args = func->local_vars_;
+	std::vector<std::string> args = func->local_vars;
 	std::reverse(args.begin(), args.end());
 
-	for (size_t i = 0; i < func->params_; i++)
+	for (size_t i = 0; i < func->params; i++)
 	{
 		output_->write_cpp_string(" " + args.at(i));
-		i != (func->params_ - 1) ? output_->write_cpp_string(",") : output_->write_cpp_string(" ");
+		i != (func->params - 1) ? output_->write_cpp_string(",") : output_->write_cpp_string(" ");
 	}
 
 	output_->write_cpp_string(")\n{\n");
 
 	// body
-	for (auto& stmt : func->statements_)
+	for (auto& stmt : func->statements)
 	{
-		if (func->labels_.find(stmt->index_) != func->labels_.end())
+		if (func->labels.find(stmt->index) != func->labels.end())
 		{
-			this->print_label(func->labels_[stmt->index_]);
+			this->print_label(func->labels[stmt->index]);
 		}
 
 		this->print_statement(stmt);
 	}
 
-	if (func->labels_.find(func->end_) != func->labels_.end())
+	if (func->labels.find(func->end) != func->labels.end())
 	{
-		this->print_label(func->labels_[func->end_]);
+		this->print_label(func->labels[func->end]);
 	}
 
 	// footer
@@ -1663,7 +1665,7 @@ void decompiler::print_function(std::shared_ptr<decompiler_function> func)
 void decompiler::print_statement(std::shared_ptr<statement> stmt)
 {
 	output_->write_cpp_string("\t");
-	output_->write_cpp_string(stmt->data_);
+	output_->write_cpp_string(stmt->data);
 	output_->write_cpp_string("\n");
 }
 

@@ -1,6 +1,9 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-#include "xsk_gsc.hpp"
+#include "gsc_tool.hpp"
 
 namespace gsc
 {
@@ -47,7 +50,7 @@ void assembler::assemble(std::string& buffer)
 		}
 		else
 		{
-			// TODO(xensik): BUG! take care of string literals!
+			// TODO: BUG! take care of string literals!
 			std::vector<std::string> data;
 			line.find(' ') != std::string::npos ? data = xsk::string::split(line, ' ') : data.push_back(line);
 

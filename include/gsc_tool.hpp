@@ -1,10 +1,10 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-// IW GSC Tool: Game script code manager for the IW engine.
-// Modules: Assembler, Disassembler & Decompiler
-
-#ifndef XSK_GSC_H_
-#define XSK_GSC_H_
+#ifndef _XSK_GSC_TOOL_H_
+#define _XSK_GSC_TOOL_H_
 
 // Warnings
 #define _CRT_SECURE_NO_WARNINGS
@@ -73,4 +73,4 @@ using namespace iw5;
 
 #endif // DEBUG
 
-#endif // XSK_GSC_H_
+#endif // _XSK_GSC_TOOL_H_

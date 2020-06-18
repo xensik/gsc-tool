@@ -1,7 +1,10 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-#ifndef XSK_GSC_DISASSEMBLER_H_
-#define XSK_GSC_DISASSEMBLER_H_
+#ifndef _XSK_GSC_DISASSEMBLER_H_
+#define _XSK_GSC_DISASSEMBLER_H_
 
 namespace gsc
 {
@@ -32,6 +35,7 @@ private:
 	void disassemble_switch(std::shared_ptr<instruction> inst);
 	void disassemble_end_switch(std::shared_ptr<instruction> inst);
 	auto disassemble_offset() -> std::int32_t;
+	void resolve_local_functions();
 	auto resolve_function(const std::string& index) -> std::string;
 	void print_script_name(const std::string& name);
 	void print_opcodes(std::uint32_t index, std::uint32_t size);
@@ -42,4 +46,4 @@ private:
 
 } // namespace gsc
 
-#endif // XSK_GSC_DISASSEMBLER_H_
+#endif // _XSK_GSC_DISASSEMBLER_H_

@@ -1,7 +1,10 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-#ifndef XSK_GSC_ASSEMBLER_H_
-#define XSK_GSC_ASSEMBLER_H_
+#ifndef _XSK_GSC_ASSEMBLER_H_
+#define _XSK_GSC_ASSEMBLER_H_
 
 namespace gsc
 {
@@ -37,4 +40,4 @@ private:
 
 } // namespace gsc
 
-#endif // XSK_GSC_ASSEMBLER_H_
+#endif // _XSK_GSC_ASSEMBLER_H_

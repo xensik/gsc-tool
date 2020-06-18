@@ -1,7 +1,10 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-#ifndef XSK_GSC_ASM_DATA_H_
-#define XSK_GSC_ASM_DATA_H_
+#ifndef _XSK_GSC_ASM_DATA_H_
+#define _XSK_GSC_ASM_DATA_H_
 
 namespace gsc
 {
@@ -33,4 +36,4 @@ struct instruction
 
 } // namespace gsc
 
-#endif // XSK_GSC_ASM_DATA_H_
+#endif // _XSK_GSC_ASM_DATA_H_

@@ -1,6 +1,9 @@
-// Copyright 2020 xensik. All Rights Reserved.
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 
-#include "xsk_gsc.hpp"
+#include "gsc_tool.hpp"
 #include <filesystem>
 
 void assemble_file(std::string file)
