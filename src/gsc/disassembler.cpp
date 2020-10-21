@@ -645,7 +645,11 @@ void disassembler::disassemble_end_switch(std::shared_ptr<instruction> inst)
 				inst->data.push_back("case");
 				inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
 			}
+#ifdef IW5
 			else if (case_label < 0x10000)
+#else // IW6
+			else if (case_label < 0x40000)
+#endif
 			{
 				inst->data.push_back("default");
 				stack_->read<std::uint16_t>(); // should be 01 00 (opaque string id)
