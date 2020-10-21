@@ -1,7 +1,7 @@
 ## GSC Tool
 A utility to assemble/disassemble & decompile IW engine game scripts.
 
- supported games: IW5
+supported games: IW5, IW6
 ## Usage
 ``./gsc-tool.exe <options> <file>``
 

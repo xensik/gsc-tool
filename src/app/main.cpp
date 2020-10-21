@@ -3,12 +3,12 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include "gsc_tool.hpp"
+#include "stdinc.hpp"
 #include <filesystem>
 
 void assemble_file(std::string file)
 {
-	auto scriptfile = xsk::file::read(file + ".gscasm");
+	auto scriptfile = utils::file::read(file + ".gscasm");
 	gsc::assembler assembler;
 
 	assembler.assemble(scriptfile);
@@ -35,8 +35,8 @@ void assemble_file(std::string file)
 
 	if (overwrite)
 	{
-		xsk::file::save(file + ".cgsc", assembler.output_script());
-		xsk::file::save(file + ".cgsc.stack", assembler.output_stack());
+		utils::file::save(file + ".cgsc", assembler.output_script());
+		utils::file::save(file + ".cgsc.stack", assembler.output_stack());
 	}
 }
 
@@ -56,14 +56,14 @@ void disassemble_file(std::string file)
 	}
 
 	// open files
-	auto script = std::make_shared<xsk::byte_buffer>(file + ".cgsc");
-	auto stack = std::make_shared<xsk::byte_buffer>(file + ".cgsc.stack");
+	auto script = std::make_shared<utils::byte_buffer>(file + ".cgsc");
+	auto stack = std::make_shared<utils::byte_buffer>(file + ".cgsc.stack");
 
 	gsc::disassembler disassembler(false);
 
 	disassembler.disassemble(script, stack);
 	
-	xsk::file::save(file + ".gscasm", disassembler.output_buffer());
+	utils::file::save(file + ".gscasm", disassembler.output_buffer());
 }
 
 void decompile_file(std::string file)
@@ -82,8 +82,8 @@ void decompile_file(std::string file)
 	}
 
 	// open files
-	auto script = std::make_shared<xsk::byte_buffer>(file + ".cgsc");
-	auto stack = std::make_shared<xsk::byte_buffer>(file + ".cgsc.stack");
+	auto script = std::make_shared<utils::byte_buffer>(file + ".cgsc");
+	auto stack = std::make_shared<utils::byte_buffer>(file + ".cgsc.stack");
 
 	gsc::disassembler disassembler(false);
 
@@ -93,7 +93,7 @@ void decompile_file(std::string file)
 
 	decompiler.decompile(disassembler.output());
 
-	xsk::file::save(file + ".gsc", decompiler.output());
+	utils::file::save(file + ".gsc", decompiler.output());
 }
 
 int main(int argc, char** argv)
