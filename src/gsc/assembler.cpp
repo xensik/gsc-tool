@@ -522,7 +522,11 @@ void assembler::assemble_field_variable(std::shared_ptr<instruction> inst)
 
 	script_->write<std::uint16_t>(field_id);
 
+#ifdef IW5
 	if (field_id > 33386)
+#else // IW6
+	if (field_id > 38305)
+#endif
 	{
 		stack_->write<std::uint16_t>(0);
 		stack_->write_string(field_name);

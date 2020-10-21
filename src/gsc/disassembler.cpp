@@ -609,8 +609,11 @@ void disassembler::disassemble_field_variable(std::shared_ptr<instruction> inst)
 	inst->size = 3;
 
 	std::uint16_t field_id = script_->read<std::uint16_t>();
+#ifdef IW5
 	std::string field_name = field_id > 33386 ? stack_->read_opaque_string() : get_token_name(field_id);
-
+#else // IW6
+	std::string field_name = field_id > 38305 ? stack_->read_opaque_string() : get_token_name(field_id);
+#endif
 	inst->data.push_back(field_name != "" ? field_name : utils::string::va("%i", field_id));
 }
 
