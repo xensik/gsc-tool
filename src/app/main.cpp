@@ -59,11 +59,17 @@ void disassemble_file(std::string file)
 	auto script = std::make_shared<utils::byte_buffer>(file + ".cgsc");
 	auto stack = std::make_shared<utils::byte_buffer>(file + ".cgsc.stack");
 
+#ifdef DEV_DEBUG
+	gsc::disassembler disassembler(true);
+#else
 	gsc::disassembler disassembler(false);
+#endif
 
 	disassembler.disassemble(script, stack);
 	
+#ifndef DEV_DEBUG
 	utils::file::save(file + ".gscasm", disassembler.output_buffer());
+#endif
 }
 
 void decompile_file(std::string file)

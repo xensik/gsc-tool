@@ -25,7 +25,7 @@ auto get_builtin_func_id(const std::string& name) -> std::uint16_t
 		return builtin_function_map[name];
 	}
 
-	LOG_ERROR("Couldn't resolve builtin function id for name '%s'!", name.c_str());
+	LOG_WARN("Couldn't resolve builtin function id for name '%s'!", name.c_str());
 	return 0xFFFF;
 }
 
@@ -39,8 +39,8 @@ auto get_builtin_func_name(std::uint16_t id) -> std::string
 		}
 	}
 
-	LOG_ERROR("Couldn't resolve builtin function name for id '%i'!", id);
-	return "";
+	LOG_WARN("Couldn't resolve builtin function name for id '%i'!", id);
+	return "_null_";
 }
 
 auto get_builtin_method_id(const std::string& name) -> std::uint16_t
@@ -50,7 +50,7 @@ auto get_builtin_method_id(const std::string& name) -> std::uint16_t
 		return builtin_method_map[name];
 	}
 
-	LOG_ERROR("Couldn't resolve builtin method id for name '%s'!", name.c_str());
+	LOG_WARN("Couldn't resolve builtin method id for name '%s'!", name.c_str());
 	return 0xFFFF;
 }
 
@@ -63,8 +63,8 @@ auto get_builtin_method_name(std::uint16_t id) -> std::string
 			return field.first;
 		}
 	}
-	LOG_ERROR("Couldn't resolve builtin method name for id '%i'!", id);
-	return "";
+	LOG_WARN("Couldn't resolve builtin method name for id '%i'!", id);
+	return "_null_";
 }
 
 } // namespace iw6

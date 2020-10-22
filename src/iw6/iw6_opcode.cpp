@@ -205,7 +205,6 @@ auto get_opcode_size(opcode id) -> std::size_t
 	case opcode::OP_EvalLocalVariableCached4:
 	case opcode::OP_EvalLocalVariableCached5:
 	case opcode::OP_EvalArray:
-	case opcode::OP_EvalNewLocalArrayRefCached0:
 	case opcode::OP_EvalArrayRef:
 	case opcode::OP_ClearArray:
 	case opcode::OP_EmptyArray:
@@ -279,6 +278,7 @@ auto get_opcode_size(opcode id) -> std::size_t
 	case opcode::OP_ClearLocalVariableFieldCached:
 	case opcode::OP_EvalLocalVariableObjectCached:
 	case opcode::OP_GetNegByte:
+	case opcode::OP_EvalNewLocalArrayRefCached0:
 		return 2;
 		break;
 	case opcode::OP_GetUnsignedShort:
@@ -303,8 +303,6 @@ auto get_opcode_size(opcode id) -> std::size_t
 	case opcode::OP_CallBuiltinMethod3:
 	case opcode::OP_CallBuiltinMethod4:
 	case opcode::OP_CallBuiltinMethod5:
-	case opcode::OP_GetString:
-	case opcode::OP_GetIString:
 	case opcode::OP_EvalLevelFieldVariable:
 	case opcode::OP_EvalAnimFieldVariable:
 	case opcode::OP_EvalSelfFieldVariable:
@@ -333,6 +331,8 @@ auto get_opcode_size(opcode id) -> std::size_t
 	case opcode::OP_CallBuiltinMethod:
 		return 4;
 		break;
+	case opcode::OP_GetString:
+	case opcode::OP_GetIString:
 	case opcode::OP_GetInteger:
 	case opcode::OP_switch:
 	case opcode::OP_jump:
@@ -345,8 +345,10 @@ auto get_opcode_size(opcode id) -> std::size_t
 	case opcode::OP_ScriptFarChildThreadCall:
 	case opcode::OP_ScriptFarMethodThreadCall:
 	case opcode::OP_ScriptFarMethodChildThreadCall:
-	case opcode::OP_GetAnimation:
 		return 5;
+		break;
+	case opcode::OP_GetAnimation:
+		return 9;
 		break;
 	case opcode::OP_GetVector:
 		return 13;

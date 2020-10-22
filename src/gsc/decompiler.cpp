@@ -176,7 +176,7 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		case opcode::OP_CreateLocalVariable:
 		{
 			size_t index = std::stoul(inst->data[0]);
-			func->local_vars.insert(func->local_vars.begin(), utils::string::va("var%i", index));
+			func->local_vars.insert(func->local_vars.begin(), utils::string::va("var_%i", index));
 		}
 		break;
 		case opcode::OP_RemoveLocalVariables:
@@ -259,8 +259,14 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_EvalNewLocalArrayRefCached0:
 		{
+#ifdef IW5
 			auto stmt = func->stack.top();
 			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(0).data(), stmt->data.data());
+#else
+			auto stmt = func->stack.top();
+			func->local_vars.push_back(utils::string::va("var_%s",inst->data[0].data()));
+			stmt->data = utils::string::va("var_%s[%s]", inst->data[0].data(), stmt->data.data());
+#endif
 		}
 		break;
 		case opcode::OP_EvalLocalArrayRefCached0:

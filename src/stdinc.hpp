@@ -6,7 +6,8 @@
 #ifndef _XSK_STDINC_H_
 #define _XSK_STDINC_H_
 
-#define IW5
+#define DEV_DEBUG
+#define IW6
 
 // Warnings
 #define _CRT_SECURE_NO_WARNINGS
@@ -42,12 +43,20 @@ using namespace std::literals;
 
 // Engine
 #ifdef IW5
-#include "iw5/iw5.hpp"
+#include "IW5/IW5.hpp"
 using namespace iw5;
 
 #elif defined IW6
-#include "iw6/iw6.hpp"
+#include "IW6/IW6.hpp"
 using namespace iw6;
+
+#elif defined S1
+#include "S1/S1.hpp"
+using namespace s1;
+
+#elif defined H1
+#include "H1/H1.hpp"
+using namespace h1;
 
 #else
 #error "no game specified"

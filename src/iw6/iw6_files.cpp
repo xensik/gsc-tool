@@ -22,7 +22,7 @@ auto get_file_id(const std::string& name) -> std::uint16_t
 		return itr->second;
 	}
 
-	LOG_ERROR("Couldn't resolve file id for name '%s'!", name.c_str());
+	LOG_WARN("Couldn't resolve file id for name '%s'!", name.c_str());
 	return 0;
 }
 
@@ -36,7 +36,7 @@ auto get_file_name(std::uint16_t id) -> std::string
 		}
 	}
 
-	LOG_ERROR("Couldn't resolve file name for id '%i'!", id);
+	LOG_WARN("Couldn't resolve file name for id '%i'!", id);
 	return "";
 }
 
