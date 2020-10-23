@@ -30,7 +30,7 @@ void decompiler::decompile(std::vector<std::shared_ptr<function>>& functions)
 
 auto decompiler::output() -> std::vector<std::uint8_t>
 {
-	output_->write_cpp_string("// IW5 PC GSC\n");
+	output_->write_cpp_string(utils::string::va("// %s PC GSC\n", ENGINE).data());
 	output_->write_cpp_string("// Decompiled by https://github.com/xensik/gsc-tool\n");
 
 	for (auto& func : functions_)
@@ -67,6 +67,7 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 {
 	for (auto inst : func->instructions)
 	{
+		LOG_INFO("%s", get_opcode_name(inst->opcode).data());
 		switch (inst->opcode)
 		{
 		case opcode::OP_End:
@@ -94,7 +95,7 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			func->is_void = false;
 			auto stmt = func->stack.top();
 			func->stack.pop();
-			stmt->data = "return "+ stmt->data + ";";
+			stmt->data = "return " + stmt->data + ";";
 			func->statements.push_back(stmt);
 		}
 		break;
@@ -175,7 +176,7 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_CreateLocalVariable:
 		{
-			func->local_vars.insert(func->local_vars.begin(), inst->data[0]); // 'var_i'
+			func->local_vars.insert(func->local_vars.begin(), "var_" + inst->data[0]);
 		}
 		break;
 		case opcode::OP_RemoveLocalVariables:
@@ -238,14 +239,14 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		{
 			auto stmt = std::make_shared<statement>();
 			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(std::stoul(inst->data[0].substr(4)));
+			stmt->data = func->local_vars.at(std::stoul(inst->data[0]));
 			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalLocalArrayCached:
 		{
 			auto stmt = func->stack.top();
-			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0].substr(4))).data(), stmt->data.data());
+			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0])).data(), stmt->data.data());
 		}
 		break;
 		case opcode::OP_EvalArray:
@@ -263,22 +264,22 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(0).data(), stmt->data.data());
 #else
 			auto stmt = func->stack.top();
-			func->local_vars.push_back(inst->data[0]); // need to check if this insert at variable_stack begin
-			stmt->data = utils::string::va("%s[%s]", inst->data[0].data(), stmt->data.data());
+			func->local_vars.insert(func->local_vars.begin(), "var_" + inst->data[0]);// need to check if this insert at variable_stack begin
+			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(0).data(), stmt->data.data());
 #endif
 		}
 		break;
 		case opcode::OP_EvalLocalArrayRefCached0:
 		{
 			auto stmt = func->stack.top();
-			func->local_vars.insert(func->local_vars.begin(), inst->data[0]);
+			func->local_vars.insert(func->local_vars.begin(), "var_" + inst->data[0]);
 			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(0).data(), stmt->data.data());
 		}
 		break;
 		case opcode::OP_EvalLocalArrayRefCached:
 		{
 			auto stmt = func->stack.top();
-			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0].substr(4))).data(), stmt->data.data());
+			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0])).data(), stmt->data.data());
 		}
 		break;
 		case opcode::OP_EvalArrayRef:
@@ -310,8 +311,23 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_AddArray:
 		{
-			// TODO
-			LOG_ERROR("missing handler 'OP_AddArray'!");
+			auto var_stmt = func->stack.top();
+			func->stack.pop();
+			auto array_stmt = func->stack.top();
+			//func->stack.pop();
+			if (array_stmt->data == "[]") // make a 1 element array: [ var ]
+			{
+				array_stmt->data = utils::string::va("[ %s ]", var_stmt->data.data());
+			}
+			else if (array_stmt->data.back() == ']') // append to array: [ var, newvar ]
+			{
+				array_stmt->data.pop_back();
+				array_stmt->data = array_stmt->data + utils::string::va(", %s ]", var_stmt->data.data());
+			}
+			else
+			{
+				LOG_ERROR("unknown array type (could be an array variable name?)");
+			}
 		}
 		break;
 		case opcode::OP_PreScriptCall:
@@ -1280,12 +1296,11 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_SetNewLocalVariableFieldCached0:
 		{
-			std::string var = utils::string::va("var%i", std::stoul(inst->data[0]));
-			func->local_vars.insert(func->local_vars.begin(), var);
+			func->local_vars.insert(func->local_vars.begin(), "var_" + inst->data[0]);
 
 			auto stmt1 = func->stack.top();
 			func->stack.pop();
-			stmt1->data = utils::string::va("%s = %s;", var.data(), stmt1->data.data());
+			stmt1->data = utils::string::va("%s = %s;", func->local_vars.at(0).data(), stmt1->data.data());
 			func->statements.push_back(stmt1);
 		}
 		break;

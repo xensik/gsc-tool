@@ -10,7 +10,8 @@ namespace iw6
 
 std::unordered_map<std::string, std::uint16_t> file_map =
 {
-
+	{"codescripts\\delete", 912 },
+	{"codescripts\\struct", 913 },
 };
 
 auto get_file_id(const std::string& name) -> std::uint16_t

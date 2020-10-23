@@ -10,7 +10,11 @@ namespace iw6
 
 std::unordered_map <std::string, std::uint16_t> token_map =
 {
-
+	{ "CreateStruct", 8482 },
+	{ "main", 20445 },
+	{ "InitStructs", 18005 },
+	
+	
 };
 
 auto get_token_id(const std::string& name) -> std::uint16_t

@@ -43,18 +43,22 @@ using namespace std::literals;
 
 // Engine
 #ifdef IW5
+#define ENGINE "IW5"
 #include "IW5/IW5.hpp"
 using namespace iw5;
 
 #elif defined IW6
+#define ENGINE "IW6"
 #include "IW6/IW6.hpp"
 using namespace iw6;
 
 #elif defined S1
+#define ENGINE "S1"
 #include "S1/S1.hpp"
 using namespace s1;
 
 #elif defined H1
+#define ENGINE "H1"
 #include "H1/H1.hpp"
 using namespace h1;
 

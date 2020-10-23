@@ -254,7 +254,7 @@ void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 	case opcode::OP_ClearLocalVariableFieldCached:
 	case opcode::OP_EvalLocalVariableObjectCached:
 		inst->size = 2;
-		inst->data.push_back(utils::string::va("var_%i", script_->read<std::uint8_t>())); // var index
+		inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>())); // var index
 		break;
 	case opcode::OP_EvalLevelFieldVariable:
 	case opcode::OP_EvalAnimFieldVariable:
@@ -603,10 +603,10 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
 void disassembler::print_script_name(const std::string& name)
 {
 #ifdef DEV_DEBUG
-	printf("// IW5 PC GSCASM\n");
+	printf(utils::string::va("// %s PC GSCASM\n", ENGINE).data());
 	printf("// Disassembled by https://github.com/xensik/gsc-tool\n\n");
 #else
-	output_->write_cpp_string("// IW5 PC GSCASM\n");
+	output_->write_cpp_string(utils::string::va("// %s PC GSCASM\n", ENGINE).data());
 	output_->write_cpp_string("// Disassembled by https://github.com/xensik/gsc-tool\n");
 #endif
 }
