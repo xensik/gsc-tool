@@ -28,7 +28,7 @@ void assembler::assemble(std::string& buffer)
 
 	for (auto& line : assembly)
 	{
-		if (line == "" || line.at(0) == '#' || line.find("script_asm") != std::string::npos)
+		if (line == "" || line.substr(0, 2) == "//" /*|| line.find("script_asm") != std::string::npos*/)
 		{
 			continue;
 		}
@@ -133,8 +133,12 @@ void assembler::assemble(std::vector<std::shared_ptr<function>>& functions)
 {
 	functions_ = functions;
 
-	// script start opcode 00
-	script_->write<std::uint8_t>(0);
+	// gsc magic opcode 00 (IW5) 34 (IW6)
+#ifdef IW5
+	script_->write<std::uint8_t>(0x00);
+#else
+	script_->write<std::uint8_t>(0x34);
+#endif
 
 	for (auto func : functions_)
 	{
@@ -148,7 +152,7 @@ void assembler::assemble_function(std::shared_ptr<function> func)
 	stack_->write<std::uint32_t>(func->size);
 
 	// function id
-	func->id = utils::string::is_number(func->name) ? std::stoul(func->name) : get_token_id(func->name);
+	func->id = func->name.substr(0, 3) == "id#" ? std::stoul(func->name.substr(3)) : get_token_id(func->name);
 	stack_->write<std::uint16_t>(func->id);
 		
 	// function name
@@ -165,6 +169,7 @@ void assembler::assemble_function(std::shared_ptr<function> func)
 
 void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 {
+	LOG_INFO("%s\n", get_opcode_name(inst->opcode).c_str());
 	switch (inst->opcode)
 	{
 	case opcode::OP_End:
@@ -179,7 +184,9 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 	case opcode::OP_EvalLocalVariableCached4:
 	case opcode::OP_EvalLocalVariableCached5:
 	case opcode::OP_EvalArray:
+#ifdef IW5
 	case opcode::OP_EvalNewLocalArrayRefCached0:
+#endif
 	case opcode::OP_EvalArrayRef:
 	case opcode::OP_ClearArray:
 	case opcode::OP_EmptyArray:
@@ -231,18 +238,23 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		break;
 	case opcode::OP_GetByte:
-	case opcode::OP_CreateLocalVariable:
-	case opcode::OP_RemoveLocalVariables:
-	case opcode::OP_EvalLocalVariableCached:
-	case opcode::OP_EvalLocalArrayCached:
-	case opcode::OP_EvalLocalArrayRefCached0:
-	case opcode::OP_EvalLocalArrayRefCached:
+
+
 	case opcode::OP_ScriptThreadCallPointer:
 	case opcode::OP_ScriptMethodThreadCallPointer:
 	case opcode::OP_ScriptMethodChildThreadCallPointer:
 	case opcode::OP_CallBuiltinPointer:
 	case opcode::OP_CallBuiltinMethodPointer:
 	case opcode::OP_GetAnimObject:
+		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
+		script_->write<std::uint8_t>(std::stol(inst->data[1]));
+		break;
+	case opcode::OP_CreateLocalVariable:
+	case opcode::OP_RemoveLocalVariables:
+	case opcode::OP_EvalLocalVariableCached:
+	case opcode::OP_EvalLocalArrayCached:
+	case opcode::OP_EvalLocalArrayRefCached0:
+	case opcode::OP_EvalLocalArrayRefCached:
 	case opcode::OP_SafeCreateVariableFieldCached:
 	case opcode::OP_SafeSetVariableFieldCached:
 	case opcode::OP_SafeSetWaittillVariableFieldCached:
@@ -251,8 +263,11 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 	case opcode::OP_SetLocalVariableFieldCached:
 	case opcode::OP_ClearLocalVariableFieldCached:
 	case opcode::OP_EvalLocalVariableObjectCached:
+#ifndef IW5
+	case opcode::OP_EvalNewLocalArrayRefCached0:
+#endif
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::uint8_t>(std::stol(inst->data[1]));
+		script_->write<std::uint8_t>(std::stol(inst->data[1].substr(4))); // remove 'var_'
 		break;
 	case opcode::OP_GetNegByte:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
@@ -350,12 +365,18 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 	case opcode::OP_GetString:
 	case opcode::OP_GetIString:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::uint16_t>(0);
+		script_->write<std::uint16_t>(0);	// IW5: 2 bytes placeholder
+#ifdef IW6
+		script_->write<std::uint16_t>(0);	// IW6: 4 bytes placeholder
+#endif
 		stack_->write_string(utils::string::get_string_literal(inst->data[1]));
 		break;
 	case opcode::OP_GetAnimation:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::uint32_t>(0); // placeholder 4 bytes?
+		script_->write<std::uint32_t>(0); // IW5: 4 bytes placeholder
+#ifdef IW6
+		script_->write<std::uint32_t>(0); // IW6: 8 bytes placeholder
+#endif
 		stack_->write_string(utils::string::get_string_literal(inst->data[1]));
 		stack_->write_string(utils::string::get_string_literal(inst->data[2]));
 		break;
@@ -382,7 +403,7 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 		this->assemble_end_switch(inst);
 		break;
 	default:
-		LOG_ERROR("%04X UNHANDLED OPCODE (%X)!", inst->index, inst->opcode);
+		LOG_ERROR("Unhandled opcode (0x%X) at index '%04X'!", inst->opcode, inst->index);
 		break;
 	}
 }
@@ -391,19 +412,27 @@ void assembler::assemble_builtin_call(std::shared_ptr<instruction> inst, bool me
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
+	std::uint16_t id = 0;
+
 	if (arg_num)
 	{
 		script_->write<std::uint8_t>(std::stol(inst->data[1]));
-	}
 
-	if (method)
-	{
-		script_->write<std::uint16_t>(get_builtin_method_id(arg_num ? inst->data[2] : inst->data[1]));
+		if (method)
+			id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : get_builtin_method_id(inst->data[2]);
+		else
+			id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : get_builtin_func_id(inst->data[2]);
+
 	}
 	else
 	{
-		script_->write<std::uint16_t>(get_builtin_func_id(arg_num ? inst->data[2] : inst->data[1]));
+		if (method)
+			id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : get_builtin_method_id(inst->data[1]);
+		else
+			id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : get_builtin_func_id(inst->data[1]);
 	}
+
+	script_->write<std::uint16_t>(id);
 }
 
 void assembler::assemble_local_call(std::shared_ptr<instruction> inst, bool thread)
@@ -428,13 +457,22 @@ void assembler::assemble_far_call(std::shared_ptr<instruction> inst, bool thread
 	script_->write<std::uint8_t>(0); // 3 bytes placeholder
 	script_->write<std::uint16_t>(0);
 
+	std::uint16_t file_id = 0;
+	std::uint16_t func_id = 0;
+
 	if (thread)
 	{
 		script_->write<std::uint8_t>(std::stol(inst->data[1]));
+
+		file_id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : get_file_id(inst->data[2]);
+		func_id = inst->data[3].substr(0, 3) == "id#" ? std::stol(inst->data[3].substr(3)) : get_token_id(inst->data[3]);
+	}
+	else
+	{
+		file_id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : get_file_id(inst->data[1]);
+		func_id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : get_token_id(inst->data[2]);
 	}
 
-	auto file_id = std::stol(thread ? inst->data[2] : inst->data[1]); // get_file_id(data[1]);
-	auto func_id = std::stol(thread ? inst->data[3] : inst->data[2]); // get_function_id(data[2]);
 	stack_->write<std::uint16_t>(file_id);
 	if (file_id == 0) stack_->write_string(thread ? inst->data[2] : inst->data[1]);
 	stack_->write<std::uint16_t>(func_id);
@@ -503,16 +541,15 @@ void assembler::assemble_field_variable(std::shared_ptr<instruction> inst)
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
-	std::string field_name = inst->data[1];
 	std::uint16_t field_id = 0;
 
-	if (utils::string::is_number(inst->data[1]))
+	if (inst->data[1].substr(0, 3) == "id#")
 	{
-		field_id = (std::uint16_t)std::stol(field_name);
+		field_id = (std::uint16_t)std::stol(inst->data[1].substr(3));
 	}
 	else
 	{
-		field_id = get_token_id(field_name);
+		field_id = get_token_id(inst->data[1]);
 
 		if (field_id == 0)
 		{
@@ -529,7 +566,7 @@ void assembler::assemble_field_variable(std::shared_ptr<instruction> inst)
 #endif
 	{
 		stack_->write<std::uint16_t>(0);
-		stack_->write_string(field_name);
+		stack_->write_string(inst->data[1]);
 	}
 }
 
@@ -580,7 +617,7 @@ auto assembler::resolve_function(const std::string& name) -> std::uint32_t
 		}
 	}
 
-	LOG_ERROR("Couldn't resolve local function address of '%s'!", name.c_str());
+	LOG_ERROR("Couldn't resolve local function address of '%s'!", temp.c_str());
 	return 0;
 }
 

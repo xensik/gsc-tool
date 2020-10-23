@@ -22,7 +22,7 @@ void decompiler::decompile(std::vector<std::shared_ptr<function>>& functions)
 
 		dfunc->labels = func->labels;
 		dfunc->instructions = func->instructions;
-		dfunc->name = func->name != "" ? func->name : utils::string::va("id_%i", func->id);
+		dfunc->name = func->name.substr(4); // remove 'sub_'
 
 		this->decompile_function(dfunc);
 	}
@@ -175,8 +175,7 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_CreateLocalVariable:
 		{
-			size_t index = std::stoul(inst->data[0]);
-			func->local_vars.insert(func->local_vars.begin(), utils::string::va("var_%i", index));
+			func->local_vars.insert(func->local_vars.begin(), inst->data[0]); // 'var_i'
 		}
 		break;
 		case opcode::OP_RemoveLocalVariables:
@@ -235,18 +234,18 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			func->stack.push(stmt);
 		}
 		break;
-		case opcode::OP_EvalLocalVariableCached:
+		case opcode::OP_EvalLocalVariableCached: // need revision for IW6!!!!!!!!!!!!!!!
 		{
 			auto stmt = std::make_shared<statement>();
 			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(std::stoul(inst->data[0]));
+			stmt->data = func->local_vars.at(std::stoul(inst->data[0].substr(4)));
 			func->stack.push(stmt);
 		}
 		break;
 		case opcode::OP_EvalLocalArrayCached:
 		{
 			auto stmt = func->stack.top();
-			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0])).data(), stmt->data.data());
+			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0].substr(4))).data(), stmt->data.data());
 		}
 		break;
 		case opcode::OP_EvalArray:
@@ -257,29 +256,29 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			stmt1->data = utils::string::va("%s[%s]", stmt2->data.data(), stmt1->data.data());
 		}
 		break;
-		case opcode::OP_EvalNewLocalArrayRefCached0:
+		case opcode::OP_EvalNewLocalArrayRefCached0: // IW6 have the index after instruction
 		{
 #ifdef IW5
 			auto stmt = func->stack.top();
 			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(0).data(), stmt->data.data());
 #else
 			auto stmt = func->stack.top();
-			func->local_vars.push_back(utils::string::va("var_%s",inst->data[0].data()));
-			stmt->data = utils::string::va("var_%s[%s]", inst->data[0].data(), stmt->data.data());
+			func->local_vars.push_back(inst->data[0]); // need to check if this insert at variable_stack begin
+			stmt->data = utils::string::va("%s[%s]", inst->data[0].data(), stmt->data.data());
 #endif
 		}
 		break;
 		case opcode::OP_EvalLocalArrayRefCached0:
 		{
 			auto stmt = func->stack.top();
-			func->local_vars.insert(func->local_vars.begin(), utils::string::va("var%i", std::stoul(inst->data[0])));
+			func->local_vars.insert(func->local_vars.begin(), inst->data[0]);
 			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(0).data(), stmt->data.data());
 		}
 		break;
 		case opcode::OP_EvalLocalArrayRefCached:
 		{
 			auto stmt = func->stack.top();
-			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0])).data(), stmt->data.data());
+			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0].substr(4))).data(), stmt->data.data());
 		}
 		break;
 		case opcode::OP_EvalArrayRef:

@@ -6,7 +6,7 @@
 #ifndef _XSK_STDINC_H_
 #define _XSK_STDINC_H_
 
-#define DEV_DEBUG
+//#define DEV_DEBUG
 #define IW6
 
 // Warnings

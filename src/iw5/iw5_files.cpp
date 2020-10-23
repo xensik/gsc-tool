@@ -346,7 +346,7 @@ auto get_file_name(std::uint16_t id) -> std::string
 	}
 
 	LOG_ERROR("Couldn't resolve file name for id '%i'!", id);
-	return "";
+	return utils::string::va("id#%i", id);
 }
 
 } // namespace iw5

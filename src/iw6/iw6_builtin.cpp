@@ -40,7 +40,7 @@ auto get_builtin_func_name(std::uint16_t id) -> std::string
 	}
 
 	LOG_WARN("Couldn't resolve builtin function name for id '%i'!", id);
-	return "_null_";
+	return utils::string::va("id#%i", id);
 }
 
 auto get_builtin_method_id(const std::string& name) -> std::uint16_t
@@ -64,7 +64,7 @@ auto get_builtin_method_name(std::uint16_t id) -> std::string
 		}
 	}
 	LOG_WARN("Couldn't resolve builtin method name for id '%i'!", id);
-	return "_null_";
+	return utils::string::va("id#%i", id);
 }
 
 } // namespace iw6

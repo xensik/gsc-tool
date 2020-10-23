@@ -21,22 +21,21 @@ void disassembler::disassemble(std::shared_ptr<utils::byte_buffer> script, std::
 	output_->clear();
 	functions_.clear();
 
-//#ifdef IW5
-	script_->seek(1); // skip opcode 00 (IW5) 34 (IW6)
-//#endif
+	script_->seek(1); // skip magic opcode 00 (IW5) 34 (IW6)
+
 	while (stack_->is_avail() && script_->is_avail())
 	{
 		auto func = std::make_shared<function>();
 		func->index = script_->get_pos();
 		func->size = stack_->read<std::uint32_t>();
 		func->id = stack_->read<std::uint16_t>();
-		func->name = func->id == 0 ? stack_->read_string() : get_token_name(func->id);
+		func->name = "sub_"s + (func->id == 0 ? stack_->read_string() : get_token_name(func->id));
 		functions_.push_back(func);
 
 		this->dissasemble_function(func);
 	}
 
-	// fix local function calls here once we have all function names created
+	// fix local function calls here once we have all function addresses
 	this->resolve_local_functions();
 }
 
@@ -255,7 +254,7 @@ void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 	case opcode::OP_ClearLocalVariableFieldCached:
 	case opcode::OP_EvalLocalVariableObjectCached:
 		inst->size = 2;
-		inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>())); // var index
+		inst->data.push_back(utils::string::va("var_%i", script_->read<std::uint8_t>())); // var index
 		break;
 	case opcode::OP_EvalLevelFieldVariable:
 	case opcode::OP_EvalAnimFieldVariable:
@@ -372,7 +371,7 @@ void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 		break;
 
 	default:
-		LOG_ERROR("%04X UNHANDLED OPCODE (%X)!", inst->index, inst->opcode);
+		LOG_ERROR("Unhandled opcode (0x%X) at index '%04X'!", inst->opcode, inst->index);
 		break;
 	}
 }
@@ -414,7 +413,7 @@ void disassembler::disassemble_far_call(std::shared_ptr<instruction> inst, bool 
 {
 	inst->size = thread ? 5 : 4;
 
-	script_->seek(3); // placeholder 24bit offset
+	script_->seek(3); // pointer placeholder 24 bit offset
 
 	if (thread)
 	{
@@ -426,8 +425,8 @@ void disassembler::disassemble_far_call(std::shared_ptr<instruction> inst, bool 
 	auto func_id = stack_->read<std::uint16_t>();
 	auto func_name = func_id == 0 ? stack_->read_string() : get_token_name(func_id);
 
-	inst->data.push_back(file_name != "" ? file_name : utils::string::va("%i", file_id));
-	inst->data.push_back(func_name != "" ? func_name : utils::string::va("%i", func_id));
+	inst->data.push_back(file_name != "" ? file_name : utils::string::va("id#%i", file_id));
+	inst->data.push_back(func_name != "" ? func_name : utils::string::va("id#%i", func_id));
 }
 
 void disassembler::disassemble_jump(std::shared_ptr<instruction> inst, bool expr, bool back)
@@ -469,7 +468,7 @@ void disassembler::disassemble_field_variable(std::shared_ptr<instruction> inst)
 #else // IW6
 	std::string field_name = field_id > 38305 ? stack_->read_opaque_string() : get_token_name(field_id);
 #endif
-	inst->data.push_back(field_name != "" ? field_name : utils::string::va("%i", field_id));
+	inst->data.push_back(field_name != "" ? field_name : utils::string::va("id#%i", field_id));
 }
 
 void disassembler::disassemble_switch(std::shared_ptr<instruction> inst)
@@ -587,10 +586,7 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
 		{
 			if (func->index == idx)
 			{
-				if (func->name != "")
-					return utils::string::va("sub_%s", func->name.data());
-				else
-					return utils::string::va("sub_%i", func->id);
+				return func->name;
 			}
 		}
 
@@ -607,9 +603,11 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
 void disassembler::print_script_name(const std::string& name)
 {
 #ifdef DEV_DEBUG
-	printf(utils::string::va("script_asm %s\n", name.data()).c_str());
+	printf("// IW5 PC GSCASM\n");
+	printf("// Disassembled by https://github.com/xensik/gsc-tool\n\n");
 #else
-	output_->write_cpp_string(utils::string::va("script_asm %s\n", name.data()));
+	output_->write_cpp_string("// IW5 PC GSCASM\n");
+	output_->write_cpp_string("// Disassembled by https://github.com/xensik/gsc-tool\n");
 #endif
 }
 
@@ -645,28 +643,17 @@ void disassembler::print_function(std::shared_ptr<function> func)
 	if (ida_output_)
 	{
 #ifdef DEV_DEBUG
-		printf(utils::string::va("\t%-20s", "").c_str());
+		printf(utils::string::va("\t%-20s", "", func->name.data()).c_str());
 #else
 		output_->write_cpp_string(utils::string::va("\t%-20s", ""));
 #endif
 	}
 
-	if (func->name != "")
-	{
 #ifdef DEV_DEBUG
-		printf(utils::string::va("sub_%s\n", func->name.data()).c_str());
+		printf(utils::string::va("%s\n", func->name.data()).c_str());
 #else
-		output_->write_cpp_string(utils::string::va("sub_%s\n", func->name.data()));
+		output_->write_cpp_string(utils::string::va("%s\n", func->name.data()));
 #endif
-	}
-	else
-	{
-#ifdef DEV_DEBUG
-		printf(utils::string::va("sub_%i\n", func->id).c_str());
-#else
-		output_->write_cpp_string(utils::string::va("sub_%i\n", func->id));
-#endif
-	}
 }
 
 void disassembler::print_instruction(std::shared_ptr<instruction> inst)
@@ -746,8 +733,7 @@ void disassembler::print_label(const std::string& label)
 {
 	if (ida_output_)
 	{
-		output_->write_cpp_string("\n\t");
-		output_->write_cpp_string(utils::string::va("%-20s ", ""));
+		output_->write_cpp_string(utils::string::va("\n\t%-20s ", ""));
 	}
 
 	output_->write_cpp_string(utils::string::va("\t%s\n", label.data()));

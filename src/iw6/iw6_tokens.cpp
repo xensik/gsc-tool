@@ -37,7 +37,7 @@ auto get_token_name(std::uint16_t id) -> std::string
 	}
 
 	LOG_WARN("Couldn't resolve token name for id '%i'!", id);
-	return "";
+	return utils::string::va("id#%i", id);
 }
 
 } // namespace iw6
