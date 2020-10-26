@@ -6,10 +6,10 @@ A utility to assemble/disassemble & decompile IW engine game scripts.
 - **S1** (*Call of Duty: Advanced Warfare*)
 - **H1** (*Call of Duty: Modern Warfare Remastered*)
 ## Usage
-``./gsc-tool.exe <game> <options> <file>``
+``./gsc-tool.exe <game> <mode> <file>``
 
 **game**: `-iw5`, `-iw6`, `-sh1`
-| Options  |Description                                  | Output                         |
+| Modes    |Description                                  | Output                         |
 |:---------|:--------------------------------------------|:-------------------------------|
 |`-asm`    |assemble a `file.gscasm`                     | `file.cgsc` + `file.cgsc.stack`|
 |`-disasm` |dissasemble a `file.cgsc` + `file.cgsc.stack`| `file.gscasm`                  |
