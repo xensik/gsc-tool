@@ -1,0 +1,122 @@
+
+%{
+    #include <stdio.h>
+
+    //#include "parser.hpp"
+
+    #undef YY_DECL
+    #define YY_DECL int yylex( void )
+
+    #define PRINT_TOKEN(S) printf("%s\n", S)
+%}
+
+%option noyywrap
+/* %option reentrant */
+
+
+RGX_FILEPATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
+RGX_IDENTIFIER      [_A-Za-z][_A-Za-z0-9\-]*
+RGX_STRING		    \"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\'
+RGX_FLOAT		    -?[0-9]+\.(?:[0-9]*)?f?|\.[0-9]+f?
+RGX_INTEGER		    -?[0-9]+
+RGX_DEFAULT		    (.|\n)
+
+%x COMMENT_BLOCK_STATE
+%x DEVELOPER_BLOCK_STATE
+
+%%
+
+[ \t\n\r]
+
+"//".*
+
+"/*"					    { BEGIN(COMMENT_BLOCK_STATE); }
+<COMMENT_BLOCK_STATE>(.|\n)
+<COMMENT_BLOCK_STATE>"*/"	{ BEGIN(INITIAL); }
+
+<INITIAL>"/#"				{ BEGIN(DEVELOPER_BLOCK_STATE); }
+<DEVELOPER_BLOCK_STATE>"#/"	{ BEGIN(INITIAL); }	
+
+"#include"			{ PRINT_TOKEN("TOK_INCLUDE"); }
+"#using_animtree"	{ PRINT_TOKEN("TOK_USING_ANIMTREE"); }
+"#animtree"			{ PRINT_TOKEN("TOK_ANIMTREE"); }
+"if"			    { PRINT_TOKEN("TOK_IF"); }
+"else"			    { PRINT_TOKEN("TOK_ELSE"); }
+"switch"		    { PRINT_TOKEN("TOK_SWITCH"); }
+"case"			    { PRINT_TOKEN("TOK_CASE"); }
+"default"		    { PRINT_TOKEN("TOK_DEFAULT"); }
+"break"			    { PRINT_TOKEN("TOK_BREAK"); }
+"for"			    { PRINT_TOKEN("TOK_FOR"); }
+"foreach"			{ PRINT_TOKEN("TOK_FOREACH"); }
+"while"			    { PRINT_TOKEN("TOK_WHILE"); }
+"continue"		    { PRINT_TOKEN("TOK_CONTINUE"); }
+"return"		    { PRINT_TOKEN("TOK_RETURN"); }
+"thread"		    { PRINT_TOKEN("TOK_THREAD"); }
+"wait"			    { PRINT_TOKEN("TOK_WAIT"); }
+"waittill"			{ PRINT_TOKEN("TOK_WAITTILL"); }
+"waittillmatch"		{ PRINT_TOKEN("TOK_WAITTILLMATCH"); }
+"waittillframeend"	{ PRINT_TOKEN("TOK_WAITTILLFRAMEEND"); }
+"endon"			    { PRINT_TOKEN("TOK_ENDON"); }
+"notify"		    { PRINT_TOKEN("TOK_NOTIFY"); }
+
+"in"		        { PRINT_TOKEN("TOK_IN"); }
+"undefined"		    { PRINT_TOKEN("TOK_UNDEFINED"); }
+"true"		        { PRINT_TOKEN("TOK_TRUE"); }
+"false"		        { PRINT_TOKEN("TOK_FALSE"); }
+"size"		        { PRINT_TOKEN("TOK_SIZE"); }
+\[\]                { PRINT_TOKEN("TOK_EMPTYARRAY"); }
+
+\(			        { PRINT_TOKEN("TOK_LPARENT"); }
+\)			        { PRINT_TOKEN("TOK_RPARENT"); }
+\{			        { PRINT_TOKEN("TOK_LBRACE"); }
+\}			        { PRINT_TOKEN("TOK_RBRACE"); }
+\[			        { PRINT_TOKEN("TOK_LBRACKET"); }
+\]			        { PRINT_TOKEN("TOK_RBRACKET"); }
+\,			        { PRINT_TOKEN("TOK_COMMA"); }
+\.			        { PRINT_TOKEN("TOK_DOT"); }
+\:\:		        { PRINT_TOKEN("TOK_DOUBLECOLON"); }
+\:			        { PRINT_TOKEN("TOK_COLON"); }
+\;			        { PRINT_TOKEN("TOK_SEMICOLON"); }
+\?			        { PRINT_TOKEN("TOK_QMARK"); }
+\#			        { PRINT_TOKEN("TOK_HASH"); }
+\@		            { PRINT_TOKEN("TOK_AT"); }
+%			        { PRINT_TOKEN("TOK_MOD"); }
+\+\+		        { PRINT_TOKEN("TOK_INC"); }
+\-\-		        { PRINT_TOKEN("TOK_DEC"); }
+\<\<		        { PRINT_TOKEN("TOK_LSHIFT"); }
+\>\>		        { PRINT_TOKEN("TOK_RSHIFT"); }
+\|\|		        { PRINT_TOKEN("TOK_CMP_OR"); }
+\&\&		        { PRINT_TOKEN("TOK_CMP_AND"); }
+\=\=		        { PRINT_TOKEN("TOK_CMP_EQUAL"); }
+\!\=		        { PRINT_TOKEN("TOK_CMP_NOT_EQ"); }
+\<\=		        { PRINT_TOKEN("TOK_CMP_LESS_EQ"); }
+\>\=		        { PRINT_TOKEN("TOK_CMP_GREATER_EQ"); }
+\<			        { PRINT_TOKEN("TOK_CMP_LESS"); }
+\>			        { PRINT_TOKEN("TOK_CMP_GREATER"); }
+\+\=		        { PRINT_TOKEN("TOK_ASSIGN_ADD"); }
+\-\=		        { PRINT_TOKEN("TOK_ASSIGN_SUB"); }
+\*\=		        { PRINT_TOKEN("TOK_ASSIGN_MULT"); }
+\/\=			    { PRINT_TOKEN("TOK_ASSIGN_DIV"); }
+\|\=		        { PRINT_TOKEN("TOK_ASSIGN_BW_OR"); }
+\&\=		        { PRINT_TOKEN("TOK_ASSIGN_BW_AND"); }
+\^\=		        { PRINT_TOKEN("TOK_ASSIGN_BW_XOR"); }
+\~\=			    { PRINT_TOKEN("TOK_ASSIGN_BW_NOT"); }
+\=			        { PRINT_TOKEN("TOK_ASSIGN"); }
+\+			        { PRINT_TOKEN("TOK_ADD"); }
+\-			        { PRINT_TOKEN("TOK_SUB"); }
+\*			        { PRINT_TOKEN("TOK_MULT"); }
+\/			        { PRINT_TOKEN("TOK_DIV"); }
+\!			        { PRINT_TOKEN("TOK_NOT"); }
+\|			        { PRINT_TOKEN("TOK_BW_OR"); }
+\&			        { PRINT_TOKEN("TOK_BW_AND"); }
+\^			        { PRINT_TOKEN("TOK_BW_XOR"); }
+\~			        { PRINT_TOKEN("TOK_BW_NOT"); }
+
+{RGX_FILEPATH}		{ PRINT_TOKEN("TOK_FILEPATH"); }
+{RGX_IDENTIFIER}	{ PRINT_TOKEN("TOK_IDENTIFIER"); }
+{RGX_STRING}	    { PRINT_TOKEN("TOK_STRING"); }
+{RGX_FLOAT}		    { PRINT_TOKEN("TOK_FLOAT"); }
+{RGX_INTEGER}	    { PRINT_TOKEN("TOK_INT"); }
+
+<*>{RGX_DEFAULT}   /* unexpected chars */
+%%

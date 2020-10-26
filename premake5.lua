@@ -11,28 +11,14 @@ end
 workspace "gsc-tool"
 	location "./build"
 	objdir "%{wks.location}/obj/%{prj.name}"
-	targetdir "%{wks.location}/bin/%{cfg.platform}-%{cfg.buildcfg}"
+	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	targetname "%{prj.name}"
 
-	configurations {
-		"debug",
-		"release",
-	}
+	language "C++"
+	
+	architecture "x86_64"
 
-	platforms { 
-		"win32",
-		"win64",
-	}
-
-	filter "platforms:win32"
-		architecture "x86"
-		defines "CPU_32BIT"
-	filter {}
-
-	filter "platforms:win64"
-		architecture "x86_64"
-		defines "CPU_64BIT"
-	filter {}
+	configurations { "debug", "release", }
 
 	buildoptions "/std:c++latest"
 	systemversion "latest"
@@ -70,9 +56,9 @@ workspace "gsc-tool"
 
 	startproject "gsc-tool"
 
-	-- ========================
-	-- Projects
-	-- ========================
+-- ========================
+-- Projects
+-- ========================
 
 	include "src/tool.lua"
 	include "src/utils.lua"
