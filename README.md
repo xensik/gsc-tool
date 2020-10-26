@@ -1,4 +1,3 @@
-
 # GSC Tool
 A utility to assemble/disassemble & decompile IW engine game scripts.
 ## Supported Games 
@@ -7,11 +6,13 @@ A utility to assemble/disassemble & decompile IW engine game scripts.
 - **S1** (*Call of Duty: Advanced Warfare*)
 - **H1** (*Call of Duty: Modern Warfare Remastered*)
 ## Usage
-``./gsc-tool.exe <options> <file>``
+``./gsc-tool.exe <game> <options> <file>``
+
+**game**: `-iw5`, `-iw6`, `-sh1`
 | Options  |Description                                  | Output                         |
 |:---------|:--------------------------------------------|:-------------------------------|
 |`-asm`    |assemble a `file.gscasm`                     | `file.cgsc` + `file.cgsc.stack`|
 |`-disasm` |dissasemble a `file.cgsc` + `file.cgsc.stack`| `file.gscasm`                  |
 |`-decomp` |decompile a `file.cgsc` + `file.cgsc.stack`  | `file.gsc`                     |
 ## Credits
-This project is based on  [*RektInator's* gsc-asm](https://github.com/ZoneTool/gsc-asm). Special thanks to **RekInator** & **JTAG**.
+This project is based on  [*RektInator's* gsc-asm](https://github.com/ZoneTool/gsc-asm). Special thanks to **RektInator** & **JTAG**.

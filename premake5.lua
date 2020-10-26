@@ -1,9 +1,18 @@
+
+local _project_dir = path.getabsolute("src")
+function project_dir()
+	return path.getrelative(os.getcwd(), _project_dir)
+end
+
+-- ========================
+-- Workspace
+-- ========================
+
 workspace "gsc-tool"
 	location "./build"
-	objdir "%{wks.location}/obj"
-	targetdir "%{wks.location}/bin"
-	targetname "%{prj.name}-%{cfg.platform}-%{cfg.buildcfg}"
-	warnings "Off"
+	objdir "%{wks.location}/obj/%{prj.name}"
+	targetdir "%{wks.location}/bin/%{cfg.platform}-%{cfg.buildcfg}"
+	targetname "%{prj.name}"
 
 	configurations {
 		"debug",
@@ -65,24 +74,14 @@ workspace "gsc-tool"
 	-- Projects
 	-- ========================
 
-	project "gsc-tool"
-		kind "ConsoleApp"
-		language "C++"
-		
-		files {
-			"./src/**.h",
-			"./src/**.hpp",
-			"./src/**.cpp",
-		}
+	include "src/tool.lua"
+	include "src/utils.lua"
+	include "src/IW5.lua"
+	include "src/IW6.lua"
+	include "src/SH1.lua"
 
-		links {
-		}
-
-		syslibdirs {
-			"./build/bin",
-		}
-
-		includedirs {
-			"./src",
-			"%{prj.location}/src",
-		}
+	tool:project()
+	utils:project()
+	IW5:project()
+	IW6:project()
+	SH1:project()
