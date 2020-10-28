@@ -15,29 +15,14 @@ workspace "gsc-tool"
 	targetname "%{prj.name}"
 
 	language "C++"
-	
+	cppdialect "C++17"
+
 	architecture "x86_64"
 
 	configurations { "debug", "release", }
 
-	buildoptions "/std:c++latest"
-	systemversion "latest"
 	symbols "On"
 	editandcontinue "Off"
-
-	flags {
-		"NoIncrementalLink",
-		"NoMinimalRebuild",
-		"MultiProcessorCompile",
-		"No64BitChecks"
-	}
-
-	configuration "windows"
-		defines {
-			"_WINDOWS",
-			"WIN32",
-		}
-	configuration{}
 
 	configuration "release"
 		optimize "Full"
