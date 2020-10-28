@@ -1,50 +1,28 @@
-/* Copyright 2020 xensik. All rights reserved.
-//
-// Use of this source code is governed by a GNU GPLv3 license
-// that can be found in the LICENSE file.
-*/
 %{
-	#include "node.hpp"
+	#include "IW6.hpp"
 	#include "parser.hpp"
 	#include "lexer.hpp"
-
-	int yyerror(yyscan_t scanner, node **astout, const char *msg);
 %}
 
 %output "parser.cpp"
 %defines "parser.hpp"
-%define api.pure
-%lex-param  { yyscan_t scanner } 
-%parse-param { yyscan_t scanner } { node **astout }
 
 %code requires
 {
-	typedef void *yyscan_t; // fix yyscan_t error type no defined
-	#include "node.hpp"
-
-	using ::node;
-	using ::node_script;
-	using ::node_parameter_list;
-	using ::node_statement_block;
 }
 
 %union
 {
 	char* value_string;
 	node* value_node;
-	node_script* value_script;
-	node_parameter_list* value_parameter_list;
-	node_statement_block* value_statement_block;
 }
-
-%token TOK_EOF 0
 
 %token TOK_INCLUDE TOK_USING_ANIMTREE TOK_ANIMTREE TOK_IF TOK_ELSE TOK_SWITCH
 %token TOK_CASE TOK_DEFAULT TOK_BREAK TOK_FOR TOK_FOREACH TOK_WHILE TOK_CONTINUE
 %token TOK_RETURN TOK_THREAD TOK_WAIT TOK_WAITTILL TOK_WAITTILLMATCH TOK_WAITTILLFRAMEEND
 %token TOK_ENDON TOK_NOTIFY TOK_IN TOK_UNDEFINED TOK_TRUE TOK_FALSE TOK_SIZE TOK_GAME
 
-%token TOK_EMPTY_ARRAY TOK_LPAREN TOK_RPAREN TOK_LBRACE TOK_RBRACE TOK_LBRACKET TOK_RBRACKET
+%token TOK_EMPTY_ARRAY TOK_LPARENT TOK_RPARENT TOK_LBRACE TOK_RBRACE TOK_LBRACKET TOK_RBRACKET
 %token TOK_COMMA TOK_DOT TOK_DOUBLECOLON TOK_COLON TOK_SEMICOLON TOK_QMARK TOK_HASH TOK_AT
 %token TOK_MOD TOK_INC TOK_DEC TOK_LSHIFT TOK_RSHIFT TOK_CMP_OR TOK_CMP_AND TOK_CMP_EQUAL
 %token TOK_CMP_NOT_EQ TOK_CMP_LESS_EQ TOK_CMP_GREATER_EQ TOK_CMP_LESS TOK_CMP_GREATER TOK_ASSIGN_ADD
@@ -54,76 +32,41 @@
 
 %token <value_string> TOK_FILEPATH TOK_IDENTIFIER TOK_STRING TOK_STRING_LOC TOK_STRING_HASH TOK_FLOAT TOK_INTEGER
 
-%type <value_script> script
-%type <value_node> include using_animtree function
-%type <value_parameter_list> parameter_list
-%type <value_statement_block> statement_block
-%type <value_node> statement_assign
-/*%type <value_node> statement_continue statement_break
+%type <value_node> script include using_animtree function parameter_list statement_block statement_continue statement_break
 %type <value_node> statement_switch_list statement_switch statement_while statement_foreach statement_for
 %type <value_node> statement_ifelse statement_if statement_endon statement_notify statement_waittillframeend
-%type <value_node> statement_waittillmatch statement_waittill statement_wait statement_return statement_call 
-%type <value_node> statement argument_list*/
+%type <value_node> statement_waittillmatch statement_waittill statement_wait statement_return statement_call statement_assign
+%type <value_node> statement argument_list
 
 
-%start root
+%start translation_unit
 
-%%
+%
 
-root
-	: script    					{ *astout = $1; }
-	| 								{ *astout = new node(); }
+translation_unit
+	: script    { compiler->sourceCode = $1;}
+	| 
 	;
 
 script
-	: script include				{ $$ = $1; $$->childs.push_back($2); }
-	| script using_animtree			{ $$ = $1; $$->childs.push_back($2); }
-	| script function				{ $$ = $1; $$->childs.push_back($2); }
-	| include						{ $$ = new node_script(); $$->childs.push_back($1);}
-	| using_animtree				{ $$ = new node_script(); $$->childs.push_back($1);}
-	| function						{ $$ = new node_script(); $$->childs.push_back($1);}
+	: script include				{ $$ = $1; $$->include_list.push_back($2); }
+	| script using_animtree			{ $$ = $1; $$->animtree_list.push_back($2); }
+	| script function				{ $$ = $1; $$->function_list.push_back($2); }
+	| include						{ $$ = new node_script(); $$->include_list.push_back($1);}
+	| using_animtree				{ $$ = new node_script(); $$->animtree_list.push_back($1);}
+	| function						{ $$ = new node_script(); $$->function_list.push_back($1);}
 	;
 
 include
-	: TOK_INCLUDE TOK_FILEPATH TOK_SEMICOLON 	{ $$ = new node_include(new node_filepath($2)); }
-	| TOK_INCLUDE TOK_IDENTIFIER TOK_SEMICOLON 	{ $$ = new node_include(new node_identifier($2)); }
+	: TOK_INCLUDE TOK_FILEPATH TOK_SEMICOLON 	{ $$ = new node_include($2); }
+	| TOK_INCLUDE TOK_IDENTIFIER TOK_SEMICOLON 	{ $$ = new node_include($2); }
 	;
 
 using_animtree
-	: TOK_USING_ANIMTREE TOK_LPAREN TOK_STRING TOK_RPAREN TOK_SEMICOLON
+	: TOK_USING_ANIMTREE TOK_LPARENT TOK_STRING TOK_RPARENT TOK_SEMICOLON
 		{
 			$$ = new node_using_animtree(new node_string($3)); 
 		}
 	;
 
-function
-	: TOK_IDENTIFIER TOK_LPAREN parameter_list TOK_RPAREN TOK_LBRACE statement_block TOK_RBRACE
-		{
-			$$ = new node_function(new node_identifier($1), $3, $6); 
-		}
-	;
-
-parameter_list
-	: parameter_list TOK_COMMA TOK_IDENTIFIER 	{ $$ = $1; $$->params.push_back(new node_identifier($3)); }
-	| TOK_IDENTIFIER 							{ $$ = new node_parameter_list(); $$->params.push_back(new node_identifier($1)); }
-	| 											{ $$ = new node_parameter_list(); }
-	;
-
-statement_block
-	:									{ $$ = new node_statement_block(); }
-	;
-	/*: statement_block statement_assign 	{ $$ = $1; $$->stmts.push_back($2); }
-	| statement_assign 					{ $$ = new node_statement_block(); $$->stmts.push_back($1); }*/			
-/*
-statement_assign
-	:
-	;
-*/
-
-%%
-
-int yyerror(yyscan_t scanner, node **astout, const char *msg)
-{
-	printf("[compiler]: %s", msg);
-	return 0;
-}
+%

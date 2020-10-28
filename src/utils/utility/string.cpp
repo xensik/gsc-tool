@@ -19,12 +19,12 @@ auto string::iequals(const std::string& a, const std::string& b) -> bool
 
 auto string::is_number(const std::string& s) -> bool
 {
-	return !s.empty() && std::all_of(s.begin(), s.end(), isdigit);
+	return !s.empty() && std::all_of(s.begin(), s.end(), std::isdigit);
 }
 
 auto string::is_hex_number(const std::string& s) -> bool
 {
-	return !s.empty() && std::all_of(s.begin(), s.end(), isxdigit);
+	return !s.empty() && std::all_of(s.begin(), s.end(), std::isxdigit);
 }
 
 auto string::to_lower(std::string input) -> std::string

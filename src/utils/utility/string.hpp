@@ -15,10 +15,10 @@ public:
 	template <typename ... Args>
 	static auto va(const std::string& format, Args ... args) -> std::string
 	{
-		size_t size = snprintf(nullptr, 0, format.data(), args ...) + 1;
+		size_t size = _snprintf(nullptr, 0, format.data(), args ...) + 1;
 		std::vector<char> buf;
 		buf.resize(size);
-		snprintf(buf.data(), size, format.data(), args ...);
+		_snprintf(buf.data(), size, format.data(), args ...);
 		return std::string(buf.data(), buf.data() + size - 1);
 	}
 

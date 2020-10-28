@@ -38,4 +38,4 @@ public:
 
 } // namespace SH1
 
-#endif // _GSC_SH1_RESOLVER_H_
+#endif _GSC_SH1_RESOLVER_H_

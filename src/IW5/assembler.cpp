@@ -52,7 +52,7 @@ void assembler::assemble(std::string& buffer)
 		{
 			// TODO: BUG! take care of string literals!
 			std::vector<std::string> data;
-			line.find(' ') != std::string::npos ? (void)(data = utils::string::split(line, ' ')) : data.push_back(line);
+			line.find(' ') != std::string::npos ? data = utils::string::split(line, ' ') : data.push_back(line);
 
 			if (switchnum)
 			{

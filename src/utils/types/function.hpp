@@ -20,7 +20,7 @@ struct function
 	std::vector<std::shared_ptr<instruction>> instructions;
 	std::unordered_map<std::uint32_t, std::string> labels;
 
-	function() : index(0), name(""), size(0), id(0) { }
+	function::function() : index(0), name(""), size(0), id(0) { }
 };
 
 

@@ -38,4 +38,4 @@ public:
 
 } // namespace IW5
 
-#endif // _GSC_IW5_RESOLVER_H_
+#endif _GSC_IW5_RESOLVER_H_

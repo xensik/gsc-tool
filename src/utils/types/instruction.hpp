@@ -17,7 +17,7 @@ struct instruction
 	std::vector<std::string> data;
 	std::shared_ptr<function> parent;
 
-	instruction() : index(0), opcode(0xFF), size(0) { }
+	instruction::instruction() : index(0), opcode(0xFF), size(0) { }
 };
 
 /*} // namespace gsc*/
