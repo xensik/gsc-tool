@@ -62,6 +62,7 @@ RGX_DEFAULT		    (.|\n)
 "false"		        { return TOK_FALSE; }
 "size"		        { return TOK_SIZE; }
 "game"		        { return TOK_GAME; }
+"level"		        { return TOK_LEVEL; }
 
 \[\]                { return TOK_EMPTY_ARRAY; }
 \(			        { return TOK_LPAREN; }
