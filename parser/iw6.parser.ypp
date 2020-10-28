@@ -1,0 +1,72 @@
+%{
+	#include "IW6.hpp"
+	#include "parser.hpp"
+	#include "lexer.hpp"
+%}
+
+%output "parser.cpp"
+%defines "parser.hpp"
+
+%code requires
+{
+}
+
+%union
+{
+	char* value_string;
+	node* value_node;
+}
+
+%token TOK_INCLUDE TOK_USING_ANIMTREE TOK_ANIMTREE TOK_IF TOK_ELSE TOK_SWITCH
+%token TOK_CASE TOK_DEFAULT TOK_BREAK TOK_FOR TOK_FOREACH TOK_WHILE TOK_CONTINUE
+%token TOK_RETURN TOK_THREAD TOK_WAIT TOK_WAITTILL TOK_WAITTILLMATCH TOK_WAITTILLFRAMEEND
+%token TOK_ENDON TOK_NOTIFY TOK_IN TOK_UNDEFINED TOK_TRUE TOK_FALSE TOK_SIZE TOK_GAME
+
+%token TOK_EMPTY_ARRAY TOK_LPARENT TOK_RPARENT TOK_LBRACE TOK_RBRACE TOK_LBRACKET TOK_RBRACKET
+%token TOK_COMMA TOK_DOT TOK_DOUBLECOLON TOK_COLON TOK_SEMICOLON TOK_QMARK TOK_HASH TOK_AT
+%token TOK_MOD TOK_INC TOK_DEC TOK_LSHIFT TOK_RSHIFT TOK_CMP_OR TOK_CMP_AND TOK_CMP_EQUAL
+%token TOK_CMP_NOT_EQ TOK_CMP_LESS_EQ TOK_CMP_GREATER_EQ TOK_CMP_LESS TOK_CMP_GREATER TOK_ASSIGN_ADD
+%token TOK_ASSIGN_SUB TOK_ASSIGN_MULT TOK_ASSIGN_DIV TOK_ASSIGN_BW_OR TOK_ASSIGN_BW_AND
+%token TOK_ASSIGN_BW_XOR TOK_ASSIGN_BW_NOT TOK_ASSIGN TOK_ADD TOK_SUB TOK_MULT TOK_DIV TOK_NOT
+%token TOK_BW_OR TOK_BW_AND TOK_BW_XOR TOK_BW_NOT
+
+%token <value_string> TOK_FILEPATH TOK_IDENTIFIER TOK_STRING TOK_STRING_LOC TOK_STRING_HASH TOK_FLOAT TOK_INTEGER
+
+%type <value_node> script include using_animtree function parameter_list statement_block statement_continue statement_break
+%type <value_node> statement_switch_list statement_switch statement_while statement_foreach statement_for
+%type <value_node> statement_ifelse statement_if statement_endon statement_notify statement_waittillframeend
+%type <value_node> statement_waittillmatch statement_waittill statement_wait statement_return statement_call statement_assign
+%type <value_node> statement argument_list
+
+
+%start translation_unit
+
+%
+
+translation_unit
+	: script    { compiler->sourceCode = $1;}
+	| 
+	;
+
+script
+	: script include				{ $$ = $1; $$->include_list.push_back($2); }
+	| script using_animtree			{ $$ = $1; $$->animtree_list.push_back($2); }
+	| script function				{ $$ = $1; $$->function_list.push_back($2); }
+	| include						{ $$ = new node_script(); $$->include_list.push_back($1);}
+	| using_animtree				{ $$ = new node_script(); $$->animtree_list.push_back($1);}
+	| function						{ $$ = new node_script(); $$->function_list.push_back($1);}
+	;
+
+include
+	: TOK_INCLUDE TOK_FILEPATH TOK_SEMICOLON 	{ $$ = new node_include($2); }
+	| TOK_INCLUDE TOK_IDENTIFIER TOK_SEMICOLON 	{ $$ = new node_include($2); }
+	;
+
+using_animtree
+	: TOK_USING_ANIMTREE TOK_LPARENT TOK_STRING TOK_RPARENT TOK_SEMICOLON
+		{
+			$$ = new node_using_animtree(new node_string($3)); 
+		}
+	;
+
+%

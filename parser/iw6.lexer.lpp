@@ -1,8 +1,7 @@
 
 %{
-    #include <stdio.h>
-
-    //#include "parser.hpp"
+    #include "IW6.hpp"
+    #include "parser.hpp"
 
     #undef YY_DECL
     #define YY_DECL int yylex( void )
@@ -10,6 +9,7 @@
     #define PRINT_TOKEN(S) printf("%s\n", S)
 %}
 
+%option outfile="lexer.cpp" header-file="lexer.hpp"
 %option noyywrap
 /* %option reentrant */
 
@@ -58,14 +58,14 @@ RGX_DEFAULT		    (.|\n)
 "waittillframeend"	{ PRINT_TOKEN("TOK_WAITTILLFRAMEEND"); }
 "endon"			    { PRINT_TOKEN("TOK_ENDON"); }
 "notify"		    { PRINT_TOKEN("TOK_NOTIFY"); }
-
 "in"		        { PRINT_TOKEN("TOK_IN"); }
 "undefined"		    { PRINT_TOKEN("TOK_UNDEFINED"); }
 "true"		        { PRINT_TOKEN("TOK_TRUE"); }
 "false"		        { PRINT_TOKEN("TOK_FALSE"); }
 "size"		        { PRINT_TOKEN("TOK_SIZE"); }
-\[\]                { PRINT_TOKEN("TOK_EMPTYARRAY"); }
+"game"		        { PRINT_TOKEN("TOK_GAME"); }
 
+\[\]                { PRINT_TOKEN("TOK_EMPTY_ARRAY"); }
 \(			        { PRINT_TOKEN("TOK_LPARENT"); }
 \)			        { PRINT_TOKEN("TOK_RPARENT"); }
 \{			        { PRINT_TOKEN("TOK_LBRACE"); }
@@ -116,7 +116,7 @@ RGX_DEFAULT		    (.|\n)
 {RGX_IDENTIFIER}	{ PRINT_TOKEN("TOK_IDENTIFIER"); }
 {RGX_STRING}	    { PRINT_TOKEN("TOK_STRING"); }
 {RGX_FLOAT}		    { PRINT_TOKEN("TOK_FLOAT"); }
-{RGX_INTEGER}	    { PRINT_TOKEN("TOK_INT"); }
+{RGX_INTEGER}	    { PRINT_TOKEN("TOK_INTEGER"); }
 
-<*>{RGX_DEFAULT}   /* unexpected chars */
+<*>{RGX_DEFAULT}    { yyerror("unexpected character"); }
 %%

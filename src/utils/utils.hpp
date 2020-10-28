@@ -45,4 +45,7 @@ using namespace std::literals;
 #include "interfaces/compiler.hpp"
 #include "interfaces/decompiler.hpp"
 
+
+#include "types/nodes/node.h"
+
 #endif // _GSC_UTILS_H_

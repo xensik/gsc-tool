@@ -194,19 +194,19 @@ int main(int argc, char** argv)
 	{
 		if (game == game::IW5)
 		{
-			IW5::disassembler disassembler(idaout);
+			IW5::disassembler disassembler(false);
 			IW5::decompiler decompiler;
 			decompile_file(disassembler, decompiler, file);
 		}
 		else if (game == game::IW6)
 		{
-			IW6::disassembler disassembler(idaout);
+			IW6::disassembler disassembler(false);
 			IW6::decompiler decompiler;
 			decompile_file(disassembler, decompiler, file);
 		}
 		if (game == game::SH1)
 		{
-			SH1::disassembler disassembler(idaout);
+			SH1::disassembler disassembler(false);
 			SH1::decompiler decompiler;
 			decompile_file(disassembler, decompiler, file);
 		}
