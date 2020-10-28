@@ -10,7 +10,7 @@ end
 
 workspace "gsc-tool"
 	location "./build"
-	objdir "%{wks.location}/obj/%{prj.name}"
+	objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{prj.name}"
 	targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 	targetname "%{prj.name}"
 
@@ -22,21 +22,15 @@ workspace "gsc-tool"
 	configurations { "debug", "release", }
 
 	symbols "On"
-	editandcontinue "Off"
-
+	
 	configuration "release"
 		optimize "Full"
-		defines {
-			"NDEBUG",
-		}
+		defines { "NDEBUG" }
 	configuration{}
 
 	configuration "debug"
 		optimize "Debug"
-		defines {
-			"DEBUG",
-			"_DEBUG",
-		}
+		defines { "DEBUG", "_DEBUG", }
 	configuration {}
 
 	startproject "gsc-tool"
