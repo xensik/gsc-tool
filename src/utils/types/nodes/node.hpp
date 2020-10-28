@@ -1,4 +1,11 @@
+// Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
 #pragma once
+
+
+std::string indented(std::uint32_t indent);
 
 enum class node_type
 {
@@ -94,67 +101,78 @@ enum class node_type
     asm_jump_on_false_expr,
 };
 
-
-// BASE NODE
 struct node
 {
-    node_type   type;
-    std::string value;
+    node_type type;
 
-    node() : type(node_type::null), value("") {}
-    node(node_type type, const std::string& value) : type(type), value(value) {}
-
-    auto print() -> std::string { return value; };
+    node() : type(node_type::null) {}
+    node(node_type type) : type(type) {}
+    virtual auto print() -> std::string { return ""; };
 };
 
-//NODE_PATH, NODE_IDENTIFIER, NODE_STRING, NODE_FLOAT, NODE_INTEGER,
 struct node_literal : public node
 {
-    node_type   type;
     std::string value;
 
-    //node_literal(node_type type, const std::string& value) : type(type), value(value) {}
+    node_literal(node_type type, const std::string& value) : node(type), value(value) {}
 
-    auto print() -> std::string { return value; }
+    auto print() -> std::string override { return value; }
 };
 
+struct node_string : public node_literal
+{
+    node_string(const std::string& value) : node_literal(node_type::literal_string, value) {}
+};
+
+struct node_filepath : public node_literal
+{
+    node_filepath(const std::string& value) : node_literal(node_type::literal_path, value) {}
+};
+
+struct node_identifier : public node_literal
+{
+    node_identifier(const std::string& value) : node_literal(node_type::literal_identifier, value) {}
+};
+
+struct node_float : public node_literal
+{
+    node_float(const std::string& value) : node_literal(node_type::literal_float, value) {}
+};
+
+struct node_integer : public node_literal
+{
+    node_integer(const std::string& value) : node_literal(node_type::literal_integer, value) {}
+};
 
 
 struct node_argument_list : public node
 {
     std::vector<node*> args;
 
-    node_argument_list(const std::vector<node*>& exprs) : node(node_type::argument_list, ""), args(args) {}
+    node_argument_list(const std::vector<node*>& args) : node(node_type::argument_list), args(args) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
         std::string data;
 
         for (const auto& arg : args)
         {
-            data.append(arg->print());
-
-            if (&arg != &args.back())
-                data += ", ";
+            data += arg->print();
+            if (&arg != &args.back()) data += ", ";
         }
 
         return data;
     }
 };
 
-
-
-
-
-
 struct node_statement_assign : public node
 {
     node* lvalue;
     node* rvalue;
 
-    node_statement_assign(node* lvalue, node* rvalue) : node(node_type::statement_assign, "="), lvalue(lvalue), rvalue(rvalue) {}
+    node_statement_assign(node* lvalue, node* rvalue) : node(node_type::statement_assign), lvalue(lvalue), rvalue(rvalue) {}
     
-    auto print()->std::string
+    auto print()->std::string override
     {
         return lvalue->print() + " = " + rvalue->print() + ";";
     };
@@ -164,9 +182,9 @@ struct node_statement_call : public node
 {
     node* expr;
 
-    node_statement_call(node* expr) : node(node_type::statement_call, "call"), expr(expr) {}
+    node_statement_call(node* expr) : node(node_type::statement_call), expr(expr) {}
 
-    auto print()->std::string
+    auto print()->std::string override
     {
         return expr->print() + ";";
     };
@@ -176,9 +194,9 @@ struct node_statement_return : public node
 {
     node* expr;
 
-    node_statement_return(node* expr) : node(node_type::statement_return, "return"), expr(expr) {}
+    node_statement_return(node* expr) : node(node_type::statement_return), expr(expr) {}
 
-    auto print()->std::string
+    auto print() -> std::string override
     {
         return "return " + expr->print() + ";";
     };
@@ -188,9 +206,9 @@ struct node_statement_wait : public node
 {
     node* expr;
 
-    node_statement_wait(node* expr) : node(node_type::statement_wait, "wait"), expr(expr) {}
+    node_statement_wait(node* expr) : node(node_type::statement_wait), expr(expr) {}
 
-    auto print()->std::string
+    auto print() -> std::string override
     {
         return "wait(" + expr->print() + ");";
     };
@@ -203,9 +221,9 @@ struct node_statement_waittill : public node
     node* params;
 
     node_statement_waittill(node* obj, node* expr, node* params)
-        : node(node_type::statement_waittill, "waittill"), obj(obj), expr(expr), params(params) {}
+        : node(node_type::statement_waittill), obj(obj), expr(expr), params(params) {}
 
-    auto print()->std::string
+    auto print() -> std::string override
     {
         if (params->type == node_type::null)
         {
@@ -225,9 +243,9 @@ struct node_statement_waittillmatch : public node
     node* rexpr;
 
     node_statement_waittillmatch(node* obj, node* lexpr, node* rexpr)
-        : node(node_type::statement_waittillmatch, "waittillmatch"), obj(obj), lexpr(lexpr), rexpr(rexpr) {}
+        : node(node_type::statement_waittillmatch), obj(obj), lexpr(lexpr), rexpr(rexpr) {}
 
-    auto print()->std::string
+    auto print() -> std::string override
     {
         return obj->print() + " waittillmatch( " + lexpr->print() + ", " + rexpr->print() + " );";
     };
@@ -235,9 +253,9 @@ struct node_statement_waittillmatch : public node
 
 struct node_statement_waittillframeend : public node
 {
-    node_statement_waittillframeend() : node(node_type::statement_waittillframeend, "waittillframeend") {}
+    node_statement_waittillframeend() : node(node_type::statement_waittillframeend) {}
 
-    auto print()->std::string
+    auto print() -> std::string override
     {
         return "waittillframeend;";
     };
@@ -250,9 +268,9 @@ struct node_statement_notify : public node
     node* params;
 
     node_statement_notify(node* obj, node* expr, node* params)
-        : node(node_type::statement_notify, "notify"), obj(obj), expr(expr), params(params) {}
+        : node(node_type::statement_notify), obj(obj), expr(expr), params(params) {}
 
-    auto print()->std::string
+    auto print() -> std::string override
     {
         if (params->type == node_type::null)
         {
@@ -270,9 +288,9 @@ struct node_statement_endon : public node
     node* obj;
     node* expr;
 
-    node_statement_endon(node* obj, node* expr) : node(node_type::statement_endon, "endon"), obj(obj), expr(expr) {}
+    node_statement_endon(node* obj, node* expr) : node(node_type::statement_endon), obj(obj), expr(expr) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
         return obj->print() + " endon( " + expr->print() + " );";
     };
@@ -283,9 +301,9 @@ struct node_statement_if : public node
     node* expr;
     node* stmt;
 
-    node_statement_if(node* expr, node* stmt) : node(node_type::statement_if, "if"), expr(expr), stmt(stmt) {}
+    node_statement_if(node* expr, node* stmt) : node(node_type::statement_if), expr(expr), stmt(stmt) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
         return "if ( " + expr->print() + " )\n{\n" + stmt->print() + "\n}\n";
     };
@@ -298,9 +316,9 @@ struct node_statement_ifelse : public node
     node* stmt2;
 
     node_statement_ifelse(node* expr, node* stmt, node* stmt2)
-        : node(node_type::statement_ifelse, "ifelse"), expr(expr), stmt(stmt), stmt2(stmt2) {}
+        : node(node_type::statement_ifelse), expr(expr), stmt(stmt), stmt2(stmt2) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
         return "if ( " + expr->print() + " )\n{\n" + stmt->print() + "\n}\nelse\n{\n" + stmt2->print() + "\n}\n";
     };
@@ -314,9 +332,9 @@ struct node_statement_for : public node
     node* stmt;
 
     node_statement_for(node* stmt1, node* expr, node* stmt2, node* stmt)
-        : node(node_type::statement_for, "for"), stmt1(stmt1), expr(expr), stmt2(stmt2), stmt(stmt) {}
+        : node(node_type::statement_for), stmt1(stmt1), expr(expr), stmt2(stmt2), stmt(stmt) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
         if (expr->type == node_type::null)
         {
@@ -336,9 +354,9 @@ struct node_statement_foreach : public node
     node* stmt;
 
     node_statement_foreach(node* stmt1, node* stmt2, node* stmt)
-        : node(node_type::statement_foreach, "foreach"), stmt1(stmt1), stmt2(stmt2), stmt(stmt) {}
+        : node(node_type::statement_foreach), stmt1(stmt1), stmt2(stmt2), stmt(stmt) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
         return "foreach ( " + stmt1->print() + " in " + stmt2->print() + " )\n{\n" + stmt->print() + "\n}\n";
 
@@ -351,9 +369,9 @@ struct node_statement_while : public node
     node* stmt;
 
     node_statement_while(node* expr, node* stmt)
-        : node(node_type::statement_while, "while"), expr(expr), stmt(stmt) {}
+        : node(node_type::statement_while), expr(expr), stmt(stmt) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
         if (expr->type == node_type::null)
         {
@@ -378,58 +396,66 @@ struct node_statement_block : public node
 {
     std::vector<node*> stmts;
 
-    node_statement_block(const std::vector<node*>& stmts) : node(node_type::statement_block, ""), stmts(stmts) {}
+    node_statement_block() : node(node_type::statement_block) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
         std::string data;
 
+        indent += 4;
+
+        std::string pad = indented(indent);
         for (const auto& stmt : stmts)
         {
-            data.append(stmt->print());
+            data += pad + stmt->print();
 
             if (&stmt != &stmts.back())
                 data += "\n";
         }
 
+        indent -= 4;
+
         return data;
     }
+
+    static void reset_indentation() { indent = 0; }
+
+protected:
+   static std::uint32_t indent;
 };
 
 struct node_parameter_list : public node
 {
     std::vector<node*> params;
 
-    node_parameter_list(const std::vector<node*>& params) : node(node_type::parameter_list, ""), params(params) {}
+    node_parameter_list() : node(node_type::parameter_list) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
         std::string data;
-
-        data += "(";
-
+        
         for (const auto& param : params)
         {
-            data.append(" " + param->print());
-
+            data += " " + param->print();
             data += (&param != &params.back()) ? "," : " ";
         }
 
-        return data += ")";
+        return data;
     }
 };
 
 struct node_function : public node
 {
-    node* param_list;
-    node* stmt_list;
+    node* name;
+    node* params;
+    node* stmts;
 
-    node_function(const std::string& name, node* param_list, node* stmt_list)
-        : node(node_type::function, name), param_list(param_list), stmt_list(stmt_list) {}
+    node_function(node* name, node* params, node* stmts)
+        : node(node_type::function), name(name), params(params), stmts(stmts) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
-        return value + param_list->print() + "\n{\n" + stmt_list->print() + "\n}\n";
+        return name->print() + "(" + params->print() + ")" + "\n{\n" + stmts->print() + "\n}\n";
     }
 };
 
@@ -437,11 +463,11 @@ struct node_using_animtree : public node
 {
     node* child;
 
-    node_using_animtree(node* child) : node(node_type::using_animtree, "#using_animtree"), child(child) {}
+    node_using_animtree(node* child) : node(node_type::using_animtree), child(child) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
-        return value + "(" + child->print() + ");";
+        return "#using_animtree"s + "(" + child->print() + ");\n";
     }
 };
 
@@ -449,39 +475,31 @@ struct node_include : public node
 {
     node* child;
 
-    node_include(node* child) : node(node_type::include, "#include"), child(child) {}
+    node_include(node* child) : node(node_type::include), child(child) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
-        return value + " " + child->print() + ";";
+        return "#include"s + " " + child->print() + ";\n";
     }
 };
 
 struct node_script : public node
 {
-    std::vector<node*> include_list;
-    std::vector<node*> animtree_list;
-    std::vector<node*> function_list;
+    std::vector<node*> childs;
     
-    node_script() : node(node_type::script, "") {}
+    node_script() : node(node_type::script) {}
 
-    auto print() -> std::string
+    auto print() -> std::string override
     {
         std::string data;
-
-        for (const auto& inc : include_list)
+        for (const auto& child : childs)
         {
-            data.append(inc->print() + "\n");
-        }
+            if(child->type == node_type::function)
+            {
+                data += "\n";
+            }
 
-        for (const auto& anim : animtree_list)
-        {
-            data.append(anim->print() + "\n");
-        }
-
-        for (const auto& func : function_list)
-        {
-            data.append("\n" + func->print() + "\n");
+            data += child->print();
         }
 
         return data;

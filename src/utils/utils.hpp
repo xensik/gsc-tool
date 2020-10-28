@@ -23,7 +23,6 @@
 #include <functional>
 #include <fstream>
 #include <stdio.h>
-#include <tchar.h>
 
 // Ext
 using namespace std::literals;
@@ -46,6 +45,6 @@ using namespace std::literals;
 #include "interfaces/decompiler.hpp"
 
 
-#include "types/nodes/node.h"
+#include "types/nodes/node.hpp"
 
 #endif // _GSC_UTILS_H_
