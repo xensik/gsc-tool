@@ -83,7 +83,8 @@ void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler
 
 	disassembler.disassemble(script, stack);
 
-	decompiler.decompile(disassembler.output());
+	auto output = disassembler.output();
+	decompiler.decompile(output);
 
 	utils::file::save(file + ".gsc", decompiler.output());
 }

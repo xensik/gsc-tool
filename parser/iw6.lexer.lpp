@@ -1,18 +1,16 @@
+/* Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
+*/
+%option outfile="lexer.cpp" header-file="lexer.hpp"
+%option reentrant
+%option bison-bridge
+%option noyywrap batch nounput noinput
 
 %{
-    #include "IW6.hpp"
     #include "parser.hpp"
-
-    #undef YY_DECL
-    #define YY_DECL int yylex( void )
-
-    #define PRINT_TOKEN(S) printf("%s\n", S)
 %}
-
-%option outfile="lexer.cpp" header-file="lexer.hpp"
-%option noyywrap
-/* %option reentrant */
-
 
 RGX_FILEPATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
 RGX_IDENTIFIER      [_A-Za-z][_A-Za-z0-9\-]*
@@ -37,86 +35,87 @@ RGX_DEFAULT		    (.|\n)
 <INITIAL>"/#"				{ BEGIN(DEVELOPER_BLOCK_STATE); }
 <DEVELOPER_BLOCK_STATE>"#/"	{ BEGIN(INITIAL); }	
 
-"#include"			{ PRINT_TOKEN("TOK_INCLUDE"); }
-"#using_animtree"	{ PRINT_TOKEN("TOK_USING_ANIMTREE"); }
-"#animtree"			{ PRINT_TOKEN("TOK_ANIMTREE"); }
-"if"			    { PRINT_TOKEN("TOK_IF"); }
-"else"			    { PRINT_TOKEN("TOK_ELSE"); }
-"switch"		    { PRINT_TOKEN("TOK_SWITCH"); }
-"case"			    { PRINT_TOKEN("TOK_CASE"); }
-"default"		    { PRINT_TOKEN("TOK_DEFAULT"); }
-"break"			    { PRINT_TOKEN("TOK_BREAK"); }
-"for"			    { PRINT_TOKEN("TOK_FOR"); }
-"foreach"			{ PRINT_TOKEN("TOK_FOREACH"); }
-"while"			    { PRINT_TOKEN("TOK_WHILE"); }
-"continue"		    { PRINT_TOKEN("TOK_CONTINUE"); }
-"return"		    { PRINT_TOKEN("TOK_RETURN"); }
-"thread"		    { PRINT_TOKEN("TOK_THREAD"); }
-"wait"			    { PRINT_TOKEN("TOK_WAIT"); }
-"waittill"			{ PRINT_TOKEN("TOK_WAITTILL"); }
-"waittillmatch"		{ PRINT_TOKEN("TOK_WAITTILLMATCH"); }
-"waittillframeend"	{ PRINT_TOKEN("TOK_WAITTILLFRAMEEND"); }
-"endon"			    { PRINT_TOKEN("TOK_ENDON"); }
-"notify"		    { PRINT_TOKEN("TOK_NOTIFY"); }
-"in"		        { PRINT_TOKEN("TOK_IN"); }
-"undefined"		    { PRINT_TOKEN("TOK_UNDEFINED"); }
-"true"		        { PRINT_TOKEN("TOK_TRUE"); }
-"false"		        { PRINT_TOKEN("TOK_FALSE"); }
-"size"		        { PRINT_TOKEN("TOK_SIZE"); }
-"game"		        { PRINT_TOKEN("TOK_GAME"); }
+"#include"			{ return TOK_INCLUDE; }
+"#using_animtree"	{ return TOK_USING_ANIMTREE; }
+"#animtree"			{ return TOK_ANIMTREE; }
+"if"			    { return TOK_IF; }
+"else"			    { return TOK_ELSE; }
+"while"			    { return TOK_WHILE; }
+"for"			    { return TOK_FOR; }
+"foreach"			{ return TOK_FOREACH; }
+"in"		        { return TOK_IN; }
+"switch"		    { return TOK_SWITCH; }
+"case"			    { return TOK_CASE; }
+"default"		    { return TOK_DEFAULT; }
+"break"			    { return TOK_BREAK; }
+"continue"		    { return TOK_CONTINUE; }
+"return"		    { return TOK_RETURN; }
+"wait"			    { return TOK_WAIT; }
+"waittill"			{ return TOK_WAITTILL; }
+"waittillmatch"		{ return TOK_WAITTILLMATCH; }
+"waittillframeend"	{ return TOK_WAITTILLFRAMEEND; }
+"endon"			    { return TOK_ENDON; }
+"notify"		    { return TOK_NOTIFY; }
+"thread"		    { return TOK_THREAD; }
+"undefined"		    { return TOK_UNDEFINED; }
+"true"		        { return TOK_TRUE; }
+"false"		        { return TOK_FALSE; }
+"size"		        { return TOK_SIZE; }
+"game"		        { return TOK_GAME; }
 
-\[\]                { PRINT_TOKEN("TOK_EMPTY_ARRAY"); }
-\(			        { PRINT_TOKEN("TOK_LPARENT"); }
-\)			        { PRINT_TOKEN("TOK_RPARENT"); }
-\{			        { PRINT_TOKEN("TOK_LBRACE"); }
-\}			        { PRINT_TOKEN("TOK_RBRACE"); }
-\[			        { PRINT_TOKEN("TOK_LBRACKET"); }
-\]			        { PRINT_TOKEN("TOK_RBRACKET"); }
-\,			        { PRINT_TOKEN("TOK_COMMA"); }
-\.			        { PRINT_TOKEN("TOK_DOT"); }
-\:\:		        { PRINT_TOKEN("TOK_DOUBLECOLON"); }
-\:			        { PRINT_TOKEN("TOK_COLON"); }
-\;			        { PRINT_TOKEN("TOK_SEMICOLON"); }
-\?			        { PRINT_TOKEN("TOK_QMARK"); }
-\#			        { PRINT_TOKEN("TOK_HASH"); }
-\@		            { PRINT_TOKEN("TOK_AT"); }
-%			        { PRINT_TOKEN("TOK_MOD"); }
-\+\+		        { PRINT_TOKEN("TOK_INC"); }
-\-\-		        { PRINT_TOKEN("TOK_DEC"); }
-\<\<		        { PRINT_TOKEN("TOK_LSHIFT"); }
-\>\>		        { PRINT_TOKEN("TOK_RSHIFT"); }
-\|\|		        { PRINT_TOKEN("TOK_CMP_OR"); }
-\&\&		        { PRINT_TOKEN("TOK_CMP_AND"); }
-\=\=		        { PRINT_TOKEN("TOK_CMP_EQUAL"); }
-\!\=		        { PRINT_TOKEN("TOK_CMP_NOT_EQ"); }
-\<\=		        { PRINT_TOKEN("TOK_CMP_LESS_EQ"); }
-\>\=		        { PRINT_TOKEN("TOK_CMP_GREATER_EQ"); }
-\<			        { PRINT_TOKEN("TOK_CMP_LESS"); }
-\>			        { PRINT_TOKEN("TOK_CMP_GREATER"); }
-\+\=		        { PRINT_TOKEN("TOK_ASSIGN_ADD"); }
-\-\=		        { PRINT_TOKEN("TOK_ASSIGN_SUB"); }
-\*\=		        { PRINT_TOKEN("TOK_ASSIGN_MULT"); }
-\/\=			    { PRINT_TOKEN("TOK_ASSIGN_DIV"); }
-\|\=		        { PRINT_TOKEN("TOK_ASSIGN_BW_OR"); }
-\&\=		        { PRINT_TOKEN("TOK_ASSIGN_BW_AND"); }
-\^\=		        { PRINT_TOKEN("TOK_ASSIGN_BW_XOR"); }
-\~\=			    { PRINT_TOKEN("TOK_ASSIGN_BW_NOT"); }
-\=			        { PRINT_TOKEN("TOK_ASSIGN"); }
-\+			        { PRINT_TOKEN("TOK_ADD"); }
-\-			        { PRINT_TOKEN("TOK_SUB"); }
-\*			        { PRINT_TOKEN("TOK_MULT"); }
-\/			        { PRINT_TOKEN("TOK_DIV"); }
-\!			        { PRINT_TOKEN("TOK_NOT"); }
-\|			        { PRINT_TOKEN("TOK_BW_OR"); }
-\&			        { PRINT_TOKEN("TOK_BW_AND"); }
-\^			        { PRINT_TOKEN("TOK_BW_XOR"); }
-\~			        { PRINT_TOKEN("TOK_BW_NOT"); }
+\[\]                { return TOK_EMPTY_ARRAY; }
+\(			        { return TOK_LPAREN; }
+\)			        { return TOK_RPAREN; }
+\{			        { return TOK_LBRACE; }
+\}			        { return TOK_RBRACE; }
+\[			        { return TOK_LBRACKET; }
+\]			        { return TOK_RBRACKET; }
+\,			        { return TOK_COMMA; }
+\.			        { return TOK_DOT; }
+\:\:		        { return TOK_DOUBLECOLON; }
+\:			        { return TOK_COLON; }
+\;			        { return TOK_SEMICOLON; }
+\?			        { return TOK_QMARK; }
+\#			        { return TOK_HASH; }
+\@		            { return TOK_AT; }
+%			        { return TOK_MOD; }
+\+\+		        { return TOK_INC; }
+\-\-		        { return TOK_DEC; }
+\<\<		        { return TOK_LSHIFT; }
+\>\>		        { return TOK_RSHIFT; }
+\|\|		        { return TOK_CMP_OR; }
+\&\&		        { return TOK_CMP_AND; }
+\=\=		        { return TOK_CMP_EQUAL; }
+\!\=		        { return TOK_CMP_NOT_EQ; }
+\<\=		        { return TOK_CMP_LESS_EQ; }
+\>\=		        { return TOK_CMP_GREATER_EQ; }
+\<			        { return TOK_CMP_LESS; }
+\>			        { return TOK_CMP_GREATER; }
+\+\=		        { return TOK_ASSIGN_ADD; }
+\-\=		        { return TOK_ASSIGN_SUB; }
+\*\=		        { return TOK_ASSIGN_MULT; }
+\/\=			    { return TOK_ASSIGN_DIV; }
+\|\=		        { return TOK_ASSIGN_BW_OR; }
+\&\=		        { return TOK_ASSIGN_BW_AND; }
+\^\=		        { return TOK_ASSIGN_BW_XOR; }
+\~\=			    { return TOK_ASSIGN_BW_NOT; }
+\=			        { return TOK_ASSIGN; }
+\+			        { return TOK_ADD; }
+\-			        { return TOK_SUB; }
+\*			        { return TOK_MULT; }
+\/			        { return TOK_DIV; }
+\!			        { return TOK_NOT; }
+\|			        { return TOK_BW_OR; }
+\&			        { return TOK_BW_AND; }
+\^			        { return TOK_BW_XOR; }
+\~			        { return TOK_BW_NOT; }
 
-{RGX_FILEPATH}		{ PRINT_TOKEN("TOK_FILEPATH"); }
-{RGX_IDENTIFIER}	{ PRINT_TOKEN("TOK_IDENTIFIER"); }
-{RGX_STRING}	    { PRINT_TOKEN("TOK_STRING"); }
-{RGX_FLOAT}		    { PRINT_TOKEN("TOK_FLOAT"); }
-{RGX_INTEGER}	    { PRINT_TOKEN("TOK_INTEGER"); }
+{RGX_FILEPATH}		{ yylval->value_string = strdup(yytext); return TOK_FILEPATH; }
+{RGX_IDENTIFIER}	{ yylval->value_string = strdup(yytext); return TOK_IDENTIFIER; }
+{RGX_STRING}	    { yylval->value_string = strdup(yytext); return TOK_STRING; }
+{RGX_FLOAT}		    { yylval->value_string = strdup(yytext); return TOK_FLOAT; }
+{RGX_INTEGER}	    { yylval->value_string = strdup(yytext); return TOK_INTEGER; }
 
-<*>{RGX_DEFAULT}    { yyerror("unexpected character"); }
+<<EOF>>             { return TOK_EOF; }
+<*>{RGX_DEFAULT}    { printf("yylex error: unexpected character"); }
 %%
