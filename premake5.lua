@@ -25,12 +25,12 @@ workspace "gsc-tool"
 	
 	configuration "release"
 		optimize "Full"
-		defines { "NDEBUG" }
+		defines { "NDEBUG", "YY_NO_UNISTD_H"}
 	configuration{}
 
 	configuration "debug"
 		optimize "Debug"
-		defines { "DEBUG", "_DEBUG", }
+		defines { "DEBUG", "_DEBUG", "YY_NO_UNISTD_H" }
 	configuration {}
 
 	startproject "gsc-tool"
