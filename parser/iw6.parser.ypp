@@ -4,15 +4,15 @@
 // that can be found in the LICENSE file.
 */
 %{
-	#include "node.hpp"
-	#include "parser.hpp"
-	#include "lexer.hpp"
+#include "IW6.hpp"
+#include "parser.hpp"
+#include "lexer.hpp"
 
-	int yyerror(yyscan_t scanner, node **astout, const char *msg);
+int yyerror(yyscan_t scanner, node **astout, const char *msg);
 %}
 
-%output "parser.cpp"
-%defines "parser.hpp"
+%output "./IW6/parser.cpp"
+%defines "./IW6/parser.hpp"
 %define api.pure
 %lex-param  { yyscan_t scanner } 
 %parse-param { yyscan_t scanner } { node **astout }
@@ -20,7 +20,7 @@
 %code requires
 {
 	typedef void *yyscan_t; // fix yyscan_t error type no defined
-	#include "node.hpp"
+	#include <utils.hpp>
 
 	using ::node;
 	using ::node_script;

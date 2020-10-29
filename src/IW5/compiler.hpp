@@ -11,7 +11,11 @@ namespace IW5
 
 class compiler : public gsc::compiler
 {
+public:
+    compiler();
 
+	void compile(std::string& buffer);
+	auto output() -> std::vector<std::shared_ptr<function>>;
 };
 
 } // namespace IW5

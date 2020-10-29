@@ -62,6 +62,27 @@ void disassemble_file(gsc::disassembler& disassembler, std::string file)
 	utils::file::save(file + ".gscasm", disassembler.output_buffer());
 }
 
+void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::string file)
+{
+	const auto ext = std::string(".gsc");
+	const auto extpos = file.find(ext);
+	if (extpos != std::string::npos)
+	{
+		file.replace(extpos, ext.length(), "");
+	}
+
+	auto scriptfile = utils::file::read(file + ".gsc");
+
+	compiler.compile(scriptfile);
+
+	// auto output = compiler.output();
+
+	// assembler.assemble(output);
+
+	// utils::file::save(file + ".cgsc", assembler.output_script());
+	// utils::file::save(file + ".cgsc.stack", assembler.output_stack());
+}
+
 void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler, std::string file)
 {
 	if (file.find(".stack") != std::string::npos)
@@ -84,6 +105,7 @@ void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler
 	disassembler.disassemble(script, stack);
 
 	auto output = disassembler.output();
+
 	decompiler.decompile(output);
 
 	utils::file::save(file + ".gsc", decompiler.output());
@@ -189,6 +211,27 @@ int main(int argc, char** argv)
 		{
 			SH1::disassembler disassembler(idaout);
 			disassemble_file(disassembler, file);
+		}
+	}
+	else if (mode == mode::COMP)
+	{
+		if (game == game::IW5)
+		{
+			IW5::assembler assembler;
+			IW5::compiler compiler;
+			compile_file(assembler,compiler, file);
+		}
+		else if (game == game::IW6)
+		{
+			IW6::assembler assembler;
+			IW6::compiler compiler;
+			compile_file(assembler, compiler, file);
+		}
+		if (game == game::SH1)
+		{
+			SH1::assembler assembler;
+			SH1::compiler compiler;
+			compile_file(assembler, compiler, file);
 		}
 	}
 	else if (mode == mode::DECOMP)

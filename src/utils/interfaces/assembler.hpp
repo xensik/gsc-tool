@@ -12,7 +12,6 @@ namespace gsc
 class assembler
 {
 public:
-
 	virtual void assemble(std::string& buffer) = 0;
 	virtual void assemble(std::vector<std::shared_ptr<function>>& functions) = 0;
 	virtual auto output_script() -> std::vector<std::uint8_t> = 0;

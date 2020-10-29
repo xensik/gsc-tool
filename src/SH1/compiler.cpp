@@ -8,4 +8,19 @@
 namespace SH1
 {
 
+compiler::compiler()
+{
+
+}
+
+void compiler::compile(std::string& buffer)
+{
+
+}
+
+auto compiler::output() -> std::vector<std::shared_ptr<function>>
+{
+    return std::vector<std::shared_ptr<function>>();
+}
+
 } // namespace SH1

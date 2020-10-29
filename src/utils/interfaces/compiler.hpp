@@ -11,7 +11,9 @@ namespace gsc
 
 class compiler
 {
-
+public:
+	virtual void compile(std::string& buffer) = 0;
+	virtual auto output() -> std::vector<std::shared_ptr<function>> = 0;
 };
 
 } // namespace gsc

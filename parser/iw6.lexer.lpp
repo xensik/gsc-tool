@@ -3,13 +3,14 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 */
-%option outfile="lexer.cpp" header-file="lexer.hpp"
+%option outfile="./IW6/lexer.cpp" header-file="./IW6/lexer.hpp"
 %option reentrant
 %option bison-bridge
 %option noyywrap batch nounput noinput
 
 %{
-    #include "parser.hpp"
+#include "IW6.hpp"
+#include "parser.hpp"
 %}
 
 RGX_FILEPATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
