@@ -7,6 +7,8 @@
 %option reentrant
 %option bison-bridge
 %option noyywrap batch nounput noinput
+%option never-interactive
+%option nounistd
 
 %{
 #include "IW6.hpp"
