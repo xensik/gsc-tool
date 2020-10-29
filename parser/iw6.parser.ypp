@@ -13,6 +13,7 @@ int yyerror(yyscan_t scanner, node **astout, const char *msg);
 
 %output "./IW6/parser.cpp"
 %defines "./IW6/parser.hpp"
+%define api.token.prefix {TOK_}
 %define api.pure
 %lex-param  { yyscan_t scanner } 
 %parse-param { yyscan_t scanner } { node **astout }
@@ -26,6 +27,7 @@ int yyerror(yyscan_t scanner, node **astout, const char *msg);
 	using ::node_script;
 	using ::node_parameter_list;
 	using ::node_statement_block;
+	using ::node_expr_arg_list;
 }
 
 %union
@@ -35,90 +37,230 @@ int yyerror(yyscan_t scanner, node **astout, const char *msg);
 	node_script* value_script;
 	node_parameter_list* value_parameter_list;
 	node_statement_block* value_statement_block;
+	node_expr_arg_list* value_expr_arg_list;
 }
 
-%token TOK_EOF 0
+%token EOF 0
 
-%token TOK_INCLUDE TOK_USING_ANIMTREE TOK_ANIMTREE TOK_IF TOK_ELSE TOK_SWITCH
-%token TOK_CASE TOK_DEFAULT TOK_BREAK TOK_FOR TOK_FOREACH TOK_WHILE TOK_CONTINUE
-%token TOK_RETURN TOK_THREAD TOK_WAIT TOK_WAITTILL TOK_WAITTILLMATCH TOK_WAITTILLFRAMEEND
-%token TOK_ENDON TOK_NOTIFY TOK_IN TOK_UNDEFINED TOK_TRUE TOK_FALSE TOK_SIZE TOK_GAME TOK_LEVEL
+%token INCLUDE USING_ANIMTREE ANIMTREE IF ELSE SWITCH
+%token CASE DEFAULT BREAK FOR FOREACH WHILE CONTINUE
+%token RETURN THREAD WAIT WAITTILL WAITTILLMATCH WAITTILLFRAMEEND
+%token ENDON NOTIFY IN UNDEFINED TRUE FALSE SIZE GAME LEVEL
 
-%token TOK_EMPTY_ARRAY TOK_LPAREN TOK_RPAREN TOK_LBRACE TOK_RBRACE TOK_LBRACKET TOK_RBRACKET
-%token TOK_COMMA TOK_DOT TOK_DOUBLECOLON TOK_COLON TOK_SEMICOLON TOK_QMARK TOK_HASH TOK_AT
-%token TOK_MOD TOK_INC TOK_DEC TOK_LSHIFT TOK_RSHIFT TOK_CMP_OR TOK_CMP_AND TOK_CMP_EQUAL
-%token TOK_CMP_NOT_EQ TOK_CMP_LESS_EQ TOK_CMP_GREATER_EQ TOK_CMP_LESS TOK_CMP_GREATER TOK_ASSIGN_ADD
-%token TOK_ASSIGN_SUB TOK_ASSIGN_MULT TOK_ASSIGN_DIV TOK_ASSIGN_BW_OR TOK_ASSIGN_BW_AND
-%token TOK_ASSIGN_BW_XOR TOK_ASSIGN_BW_NOT TOK_ASSIGN TOK_ADD TOK_SUB TOK_MULT TOK_DIV TOK_NOT
-%token TOK_BW_OR TOK_BW_AND TOK_BW_XOR TOK_BW_NOT
+%token EMPTY_ARRAY LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
+%token COMMA DOT DOUBLECOLON COLON SEMICOLON QMARK HASH AT
+%token MOD INC DEC LSHIFT RSHIFT CMP_OR CMP_AND CMP_EQUAL
+%token CMP_NOT_EQ CMP_LESS_EQ CMP_GREATER_EQ CMP_LESS CMP_GREATER ASSIGN_ADD
+%token ASSIGN_SUB ASSIGN_MULT ASSIGN_DIV ASSIGN_BW_OR ASSIGN_BW_AND
+%token ASSIGN_BW_XOR ASSIGN_BW_NOT ASSIGN ADD SUB MULT DIV NOT COMPLEMENT
+%token BW_OR BW_AND BW_XOR 
 
-%token <value_string> TOK_FILEPATH TOK_IDENTIFIER TOK_STRING TOK_STRING_LOC TOK_STRING_HASH TOK_FLOAT TOK_INTEGER
+%token <value_string> FILEPATH IDENTIFIER STRING STRING_LOC STRING_HASH FLOAT INTEGER
 
 %type <value_script> script
 %type <value_node> include using_animtree function
 %type <value_parameter_list> parameter_list
 %type <value_statement_block> statement_block
-%type <value_node> statement_assign
-/*%type <value_node> statement_continue statement_break
+%type <value_node>  statement_endon
+/*%type <value_node> statement_continue statement_break statement_assign
 %type <value_node> statement_switch_list statement_switch statement_while statement_foreach statement_for
 %type <value_node> statement_ifelse statement_if statement_endon statement_notify statement_waittillframeend
 %type <value_node> statement_waittillmatch statement_waittill statement_wait statement_return statement_call 
 %type <value_node> statement argument_list*/
 
+%type <value_node> expr
+%type <value_node> expr_func_call_ptr expr_func_call expr_call expr_call_thread
+%type <value_expr_arg_list> expr_arg_list
+%type <value_node> object expr_func_ref expr_subscribe expr_select
+%type <value_node> num vector undefined empty_array
+%type <value_node> filepath identifier string string_loc string_hash num_integer num_float
 
 %start root
 
 %%
 
 root
-	: script    					{ *astout = $1; }
-	| 								{ *astout = new node(); }
+	: script    								{ *astout = $1; }
+	| 											{ *astout = new node(); }
 	;
 
 script
-	: script include				{ $$ = $1; $$->childs.push_back($2); }
-	| script using_animtree			{ $$ = $1; $$->childs.push_back($2); }
-	| script function				{ $$ = $1; $$->childs.push_back($2); }
-	| include						{ $$ = new node_script(); $$->childs.push_back($1);}
-	| using_animtree				{ $$ = new node_script(); $$->childs.push_back($1);}
-	| function						{ $$ = new node_script(); $$->childs.push_back($1);}
+	: script include							{ $$ = $1; $$->childs.push_back($2); }
+	| script using_animtree						{ $$ = $1; $$->childs.push_back($2); }
+	| script function							{ $$ = $1; $$->childs.push_back($2); }
+	| include									{ $$ = new node_script(); $$->childs.push_back($1);}
+	| using_animtree							{ $$ = new node_script(); $$->childs.push_back($1);}
+	| function									{ $$ = new node_script(); $$->childs.push_back($1);}
 	;
 
 include
-	: TOK_INCLUDE TOK_FILEPATH TOK_SEMICOLON 	{ $$ = new node_include(new node_filepath($2)); }
-	| TOK_INCLUDE TOK_IDENTIFIER TOK_SEMICOLON 	{ $$ = new node_include(new node_identifier($2)); }
+	: INCLUDE filepath SEMICOLON 				{ $$ = new node_include($2); }
+	| INCLUDE identifier SEMICOLON 				{ $$ = new node_include($2); }
 	;
 
 using_animtree
-	: TOK_USING_ANIMTREE TOK_LPAREN TOK_STRING TOK_RPAREN TOK_SEMICOLON
-		{
-			$$ = new node_using_animtree(new node_string($3)); 
-		}
+	: USING_ANIMTREE LPAREN string RPAREN SEMICOLON { $$ = new node_using_animtree($3); }
 	;
 
 function
-	: TOK_IDENTIFIER TOK_LPAREN parameter_list TOK_RPAREN TOK_LBRACE statement_block TOK_RBRACE
-		{
-			$$ = new node_function(new node_identifier($1), $3, $6); 
-		}
+	: identifier LPAREN parameter_list RPAREN LBRACE statement_block RBRACE { $$ = new node_function($1, $3, $6); }
 	;
 
 parameter_list
-	: parameter_list TOK_COMMA TOK_IDENTIFIER 	{ $$ = $1; $$->params.push_back(new node_identifier($3)); }
-	| TOK_IDENTIFIER 							{ $$ = new node_parameter_list(); $$->params.push_back(new node_identifier($1)); }
+	: parameter_list COMMA identifier 			{ $$ = $1; $$->params.push_back($3); }
+	| identifier 								{ $$ = new node_parameter_list(); $$->params.push_back($1); }
 	| 											{ $$ = new node_parameter_list(); }
 	;
 
 statement_block
-	:									{ $$ = new node_statement_block(); }
+	:											{ $$ = new node_statement_block(); }
 	;
-	/*: statement_block statement_assign 	{ $$ = $1; $$->stmts.push_back($2); }
-	| statement_assign 					{ $$ = new node_statement_block(); $$->stmts.push_back($1); }*/			
-/*
-statement_assign
+	/*: statement_block statement_assign 		{ $$ = $1; $$->stmts.push_back($2); }
+	| statement_assign 							{ $$ = new node_statement_block(); $$->stmts.push_back($1); }*/			
+
+statement_endon
+	: object ENDON LPAREN expr RPAREN SEMICOLON
+	;
+
+expr
+	:
+	| expr_cmp									{ $$ = $1; }
+	| expr_binary								{ $$ = $1; }
+	| COMPLEMENT expr							{ $$ = new node_expr_complement($2); }
+	| NOT expr									{ $$ = new node_expr_not($2); }
+	| expr_call									{ $$ = $1; }
+	| expr_call_thread							{ $$ = $1; }
+	| expr_select								{ $$ = $1; }
+	| expr_subscribe							{ $$ = $1; }
+	| expr_func_ref								{ $$ = $1; }
+	| empty_array								{ $$ = $1; }
+	| undefined									{ $$ = $1; }
+	| LPAREN expr COMMA expr COMMA expr RPAREN 	{ $$ = new node_expr_vector($2, $4, $6); }
+	| vector									{ $$ = $1; }
+	| num_float									{ $$ = $1; }
+	| num_integer								{ $$ = $1; }
+	| string_hash								{ $$ = $1; }
+	| string_loc								{ $$ = $1; }
+	| string									{ $$ = $1; }
+	| identifier 								{ $$ = $1; }
+	| LPAREN expr RPAREN						{ $$ = $1; }
+	;
+
+expr_cmp
 	:
 	;
-*/
+
+expr_binary
+	:
+	| expr ADD expr
+	| expr SUB expr
+	| expr MULT expr
+	| expr DIV expr
+	| expr MOD expr
+	;
+
+expr_call
+	: expr_func_call							{ $$ = new node_expr_call(new node(), $1); }
+	| expr_func_call_ptr						{ $$ = new node_expr_call(new node(), $1); }
+	| object expr_func_call						{ $$ = new node_expr_call($1, $2); }
+	| object expr_func_call_ptr					{ $$ = new node_expr_call($1, $2); }
+	;
+
+expr_call_thread
+	: THREAD expr_func_call						{ $$ = new node_expr_call_thread(new node(), $2); }
+	| THREAD expr_func_call_ptr  				{ $$ = new node_expr_call_thread(new node(), $2); }
+	| object THREAD expr_func_call    			{ $$ = new node_expr_call_thread($1, $3); }
+	| object THREAD expr_func_call_ptr 			{ $$ = new node_expr_call_thread($1, $3); }
+	;
+
+/* function("arg", 1) // file::function("arg", 1) */
+expr_func_call
+	: identifier LPAREN expr_arg_list RPAREN							{ $$ = new node_expr_func_call(new node(), $3, $5); }
+	| filepath DOUBLECOLON identifier LPAREN expr_arg_list RPAREN		{ $$ = new node_expr_func_call($1, $3, $5); }
+	| identifier DOUBLECOLON identifier LPAREN expr_arg_list RPAREN		{ $$ = new node_expr_func_call($1, $3, $5); }
+	;
+
+/* [[function]]("0", 1) */
+expr_func_call_ptr
+	: LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arg_list RPAREN { $$ = new node_expr_func_call_ptr($3, $7); }
+	;
+
+expr_arg_list
+	: expr_arg_list COMMA expr					{ $$ = $1; $$->args.push_back($3); }
+	| expr										{ $$ = new node_expr_arg_list(); $$->args.push_back($1); }
+	|											{ $$ = new node_expr_arg_list(); }
+	;
+
+/* object.field */
+expr_select
+	: object DOT identifier						{ $$ = new node_expr_select($1, $3); }
+	;
+
+/* array[ "key" ] */
+expr_subscribe
+	:
+	| object LBRACKET expr RBRACKET				{ $$ = new node_expr_subscribe($1, $3); }
+	;
+
+/* ::callback, maps\load::callback */
+expr_func_ref
+ 	: DOUBLECOLON identifier					{ $$ = new node_expr_func_ref(new node(), $2); }
+	| identifier DOUBLECOLON identifier			{ $$ = new node_expr_func_ref($1, $3); }
+ 	| filepath DOUBLECOLON identifier			{ $$ = new node_expr_func_ref($1, $3); }
+	;
+
+/* localvar.*, level.*, arrays[xx].*, var.id.*  func(xx).*  */
+object
+	: expr_call 								{ $$ = $1; }
+	| expr_subscribe 							{ $$ = $1; }
+	| expr_select 								{ $$ = $1; }
+	| identifier 								{ $$ = $1; }
+	;
+
+empty_array 
+	: EMPTY_ARRAY 								{ $$ = new node_empty_array(); }
+	;
+
+undefined 
+	: UNDEFINED 								{ $$ = new node_undefined(); }
+	;
+
+vector 
+	: LPAREN num COMMA num COMMA num RPAREN 	{ $$ = new node_vector($2, $4, $6); }
+	;
+
+num
+	: num_float 								{ $$ = $1; }
+	| num_integer 								{ $$ = $1; }
+	;
+
+num_float 
+	: FLOAT 									{ $$ = new node_num_float($1); }
+	;
+
+num_integer 
+	: INTEGER 									{ $$ = new node_num_integer($1); }
+	;
+
+string_hash 
+	: STRING_HASH 								{ $$ = new node_string_hash($1); }
+	;
+
+string_loc
+	: STRING_LOC 								{ $$ = new node_string_loc($1); }
+	;
+
+string
+	: STRING 									{ $$ = new node_string($1); }
+	;
+
+identifier 
+	: IDENTIFIER 								{ $$ = new node_identifier($1); }
+	;
+
+filepath 
+	: FILEPATH 									{ $$ = new node_filepath($1); }
+	;
 
 %%
 

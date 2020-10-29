@@ -9,17 +9,31 @@ std::string indented(std::uint32_t indent);
 
 enum class node_type
 {
+    // EMPTY NODE
     null,
-    literal, // abstract node!
-    literal_path,
-    literal_identifier,
-    literal_string,
-    literal_istring,
-    literal_float,
-    literal_integer,
-    literal_vector,
-    literal_undefined,
-    literal_emptyarray,
+    // BASIC TYPES
+    filepath,
+    identifier,
+    string,
+    string_loc,
+    string_hash,
+    num_integer,
+    num_float,
+    vector,
+    undefined,
+    empty_array,
+    // missing %animref
+    //
+    expr_vector,
+    expr_func_ref,
+    expr_subscribe,
+    expr_select,
+    expr_arg_list,
+    expr_func_call_ptr,
+    expr_func_call,
+    expr_call_thread,
+    expr_call,
+
     expression, // abstract node!
 
     // primitive expressions
@@ -64,7 +78,6 @@ enum class node_type
     expression_variable_array_ref,
     expression_variable_field_ref,
 
-    argument_list,
     statement, // abstract node!
     statement_assign,
     statement_call,
@@ -110,46 +123,164 @@ struct node
     virtual auto print() -> std::string { return ""; };
 };
 
-struct node_literal : public node
+struct node_filepath : public node
 {
     std::string value;
 
-    node_literal(node_type type, const std::string& value) : node(type), value(value) {}
+    node_filepath(const std::string& value) : node(node_type::filepath), value(value) {}
 
     auto print() -> std::string override { return value; }
 };
 
-struct node_string : public node_literal
+struct node_identifier : public node
 {
-    node_string(const std::string& value) : node_literal(node_type::literal_string, value) {}
+    std::string value;
+
+    node_identifier(const std::string& value) : node(node_type::identifier), value(value) {}
+
+    auto print() -> std::string override { return value; }
 };
 
-struct node_filepath : public node_literal
+struct node_string : public node
 {
-    node_filepath(const std::string& value) : node_literal(node_type::literal_path, value) {}
+    std::string value;
+
+    node_string(const std::string& value) : node(node_type::string), value(value) {}
+
+    auto print() -> std::string override { return value; }
 };
 
-struct node_identifier : public node_literal
+struct node_string_loc : public node
 {
-    node_identifier(const std::string& value) : node_literal(node_type::literal_identifier, value) {}
+    std::string value;
+
+    node_string_loc(const std::string& value) : node(node_type::string_loc), value(value) {}
+
+    auto print() -> std::string override { return value; }
 };
 
-struct node_float : public node_literal
+struct node_string_hash : public node
 {
-    node_float(const std::string& value) : node_literal(node_type::literal_float, value) {}
+    std::string value;
+
+    node_string_hash(const std::string& value) : node(node_type::string_hash), value(value) {}
+
+    auto print() -> std::string override { return value; }
 };
 
-struct node_integer : public node_literal
+struct node_num_integer : public node
 {
-    node_integer(const std::string& value) : node_literal(node_type::literal_integer, value) {}
+    std::string value;
+
+    node_num_integer(const std::string& value) : node(node_type::num_integer), value(value) {}
+
+    auto print() -> std::string override { return value; }
 };
 
+struct node_num_float : public node
+{
+    std::string value;
 
-struct node_argument_list : public node
+    node_num_float(const std::string& value) : node(node_type::string), value(value) {}
+
+    auto print() -> std::string override { return value; }
+};
+
+struct node_vector : public node
+{
+    node* x;
+    node* y;
+    node* z;
+
+    node_vector(node* x, node* y, node* z) : node(node_type::vector), x(x), y(y), z(z) {}
+
+    auto print() -> std::string override
+    {
+        return "( "s + x->print() + ", " + y->print() + ", "+ z->print() + " )";
+    }
+};
+
+struct node_undefined : public node
+{
+    node_undefined() : node(node_type::undefined) {}
+
+    auto print() -> std::string override
+    {
+        return "undefined";
+    }
+};
+
+struct node_empty_array : public node
+{
+    node_empty_array() : node(node_type::empty_array) {}
+
+    auto print() -> std::string override
+    {
+        return "[]";
+    }
+};
+
+struct node_expr_vector : public node
+{
+    node* x;
+    node* y;
+    node* z;
+
+    node_expr_vector(node* x, node* y, node* z) : node(node_type::expr_vector), x(x), y(y), z(z) {}
+
+    auto print() -> std::string override
+    {
+        return "( "s + x->print() + ", " + y->print() + ", "+ z->print() + " )";
+    }
+};
+
+struct node_expr_func_ref : public node
+{
+    node* file;
+    node* func;
+
+    node_expr_func_ref(node* file, node* func)
+        : node(node_type::expr_func_ref), file(file), func(func) {}
+
+    auto print() -> std::string override
+    {
+        return file->print() + "::" + func->print();
+    }
+};
+
+struct node_expr_subscribe : public node
+{
+    node* obj;
+    node* key;
+
+    node_expr_subscribe(node* obj, node* key)
+        : node(node_type::expr_subscribe), obj(obj), key(key) {}
+
+    auto print() -> std::string override
+    {
+        return obj->print() + "[ " + key->print() + " ]";
+    }
+};
+
+struct node_expr_select : public node
+{
+    node* obj;
+    node* field;
+
+    node_expr_select(node* obj, node* field)
+        : node(node_type::expr_select), obj(obj), field(field) {}
+
+    auto print() -> std::string override
+    {
+        return obj->print() + "." + field->print();
+    }
+};
+
+struct node_expr_arg_list : public node
 {
     std::vector<node*> args;
 
-    node_argument_list(const std::vector<node*>& args) : node(node_type::argument_list), args(args) {}
+    node_expr_arg_list() : node(node_type::expr_arg_list) {}
 
     auto print() -> std::string override
     {
@@ -164,6 +295,80 @@ struct node_argument_list : public node
         return data;
     }
 };
+
+struct expr_func_call_ptr : public node
+{
+    node* expr;
+    node* arg_list;
+
+    expr_func_call_ptr(node* expr, node* arg_list)
+        : node(node_type::expr_func_call_ptr), expr(expr), arg_list(arg_list) {}
+
+    auto print() -> std::string override
+    {
+        return "[["s + expr->print() + "]](" + arg_list->print() + ")";
+    }
+};
+
+struct expr_func_call : public node
+{
+    node* file;
+    node* func;
+    node* arg_list;
+
+    expr_func_call(node* file, node* func, node* arg_list)
+        : node(node_type::expr_func_call), file(file), func(func), arg_list(arg_list) {}
+
+    auto print() -> std::string override
+    {
+        if(file->type == node_type::null)
+        {
+            return func->print() + "(" + arg_list->print() + ")";
+        }
+
+        return file->print() + "::" + func->print() + "(" + arg_list->print() + ")";
+    }
+};
+
+struct expr_call_thread : public node
+{
+    node* obj;
+    node* call;
+
+    expr_call_thread(node* obj, node* call)
+        : node(node_type::expr_call_thread), obj(obj), call(call) {}
+
+    auto print() -> std::string override
+    {
+        if(obj->type == node_type::null)
+        {
+            return "thread " + call->print();
+        }
+
+        return obj->print() + " thread " + call->print();
+    }
+};
+
+struct expr_call : public node
+{
+    node* obj;
+    node* call;
+
+    expr_call(node* obj, node* call)
+        : node(node_type::expr_call_thread), obj(obj), call(call) {}
+
+    auto print() -> std::string override
+    {
+        if(obj->type == node_type::null)
+        {
+            return call->print();
+        }
+
+        return obj->print() + " " + call->print();
+    }
+};
+
+
 
 struct node_statement_assign : public node
 {

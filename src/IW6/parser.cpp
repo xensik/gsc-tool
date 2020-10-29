@@ -103,90 +103,90 @@ int yyerror(yyscan_t scanner, node **astout, const char *msg);
 enum yysymbol_kind_t
 {
   YYSYMBOL_YYEMPTY = -2,
-  YYSYMBOL_YYEOF = 0,                      /* TOK_EOF  */
+  YYSYMBOL_YYEOF = 0,                      /* EOF  */
   YYSYMBOL_YYerror = 1,                    /* error  */
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
-  YYSYMBOL_TOK_INCLUDE = 3,                /* TOK_INCLUDE  */
-  YYSYMBOL_TOK_USING_ANIMTREE = 4,         /* TOK_USING_ANIMTREE  */
-  YYSYMBOL_TOK_ANIMTREE = 5,               /* TOK_ANIMTREE  */
-  YYSYMBOL_TOK_IF = 6,                     /* TOK_IF  */
-  YYSYMBOL_TOK_ELSE = 7,                   /* TOK_ELSE  */
-  YYSYMBOL_TOK_SWITCH = 8,                 /* TOK_SWITCH  */
-  YYSYMBOL_TOK_CASE = 9,                   /* TOK_CASE  */
-  YYSYMBOL_TOK_DEFAULT = 10,               /* TOK_DEFAULT  */
-  YYSYMBOL_TOK_BREAK = 11,                 /* TOK_BREAK  */
-  YYSYMBOL_TOK_FOR = 12,                   /* TOK_FOR  */
-  YYSYMBOL_TOK_FOREACH = 13,               /* TOK_FOREACH  */
-  YYSYMBOL_TOK_WHILE = 14,                 /* TOK_WHILE  */
-  YYSYMBOL_TOK_CONTINUE = 15,              /* TOK_CONTINUE  */
-  YYSYMBOL_TOK_RETURN = 16,                /* TOK_RETURN  */
-  YYSYMBOL_TOK_THREAD = 17,                /* TOK_THREAD  */
-  YYSYMBOL_TOK_WAIT = 18,                  /* TOK_WAIT  */
-  YYSYMBOL_TOK_WAITTILL = 19,              /* TOK_WAITTILL  */
-  YYSYMBOL_TOK_WAITTILLMATCH = 20,         /* TOK_WAITTILLMATCH  */
-  YYSYMBOL_TOK_WAITTILLFRAMEEND = 21,      /* TOK_WAITTILLFRAMEEND  */
-  YYSYMBOL_TOK_ENDON = 22,                 /* TOK_ENDON  */
-  YYSYMBOL_TOK_NOTIFY = 23,                /* TOK_NOTIFY  */
-  YYSYMBOL_TOK_IN = 24,                    /* TOK_IN  */
-  YYSYMBOL_TOK_UNDEFINED = 25,             /* TOK_UNDEFINED  */
-  YYSYMBOL_TOK_TRUE = 26,                  /* TOK_TRUE  */
-  YYSYMBOL_TOK_FALSE = 27,                 /* TOK_FALSE  */
-  YYSYMBOL_TOK_SIZE = 28,                  /* TOK_SIZE  */
-  YYSYMBOL_TOK_GAME = 29,                  /* TOK_GAME  */
-  YYSYMBOL_TOK_LEVEL = 30,                 /* TOK_LEVEL  */
-  YYSYMBOL_TOK_EMPTY_ARRAY = 31,           /* TOK_EMPTY_ARRAY  */
-  YYSYMBOL_TOK_LPAREN = 32,                /* TOK_LPAREN  */
-  YYSYMBOL_TOK_RPAREN = 33,                /* TOK_RPAREN  */
-  YYSYMBOL_TOK_LBRACE = 34,                /* TOK_LBRACE  */
-  YYSYMBOL_TOK_RBRACE = 35,                /* TOK_RBRACE  */
-  YYSYMBOL_TOK_LBRACKET = 36,              /* TOK_LBRACKET  */
-  YYSYMBOL_TOK_RBRACKET = 37,              /* TOK_RBRACKET  */
-  YYSYMBOL_TOK_COMMA = 38,                 /* TOK_COMMA  */
-  YYSYMBOL_TOK_DOT = 39,                   /* TOK_DOT  */
-  YYSYMBOL_TOK_DOUBLECOLON = 40,           /* TOK_DOUBLECOLON  */
-  YYSYMBOL_TOK_COLON = 41,                 /* TOK_COLON  */
-  YYSYMBOL_TOK_SEMICOLON = 42,             /* TOK_SEMICOLON  */
-  YYSYMBOL_TOK_QMARK = 43,                 /* TOK_QMARK  */
-  YYSYMBOL_TOK_HASH = 44,                  /* TOK_HASH  */
-  YYSYMBOL_TOK_AT = 45,                    /* TOK_AT  */
-  YYSYMBOL_TOK_MOD = 46,                   /* TOK_MOD  */
-  YYSYMBOL_TOK_INC = 47,                   /* TOK_INC  */
-  YYSYMBOL_TOK_DEC = 48,                   /* TOK_DEC  */
-  YYSYMBOL_TOK_LSHIFT = 49,                /* TOK_LSHIFT  */
-  YYSYMBOL_TOK_RSHIFT = 50,                /* TOK_RSHIFT  */
-  YYSYMBOL_TOK_CMP_OR = 51,                /* TOK_CMP_OR  */
-  YYSYMBOL_TOK_CMP_AND = 52,               /* TOK_CMP_AND  */
-  YYSYMBOL_TOK_CMP_EQUAL = 53,             /* TOK_CMP_EQUAL  */
-  YYSYMBOL_TOK_CMP_NOT_EQ = 54,            /* TOK_CMP_NOT_EQ  */
-  YYSYMBOL_TOK_CMP_LESS_EQ = 55,           /* TOK_CMP_LESS_EQ  */
-  YYSYMBOL_TOK_CMP_GREATER_EQ = 56,        /* TOK_CMP_GREATER_EQ  */
-  YYSYMBOL_TOK_CMP_LESS = 57,              /* TOK_CMP_LESS  */
-  YYSYMBOL_TOK_CMP_GREATER = 58,           /* TOK_CMP_GREATER  */
-  YYSYMBOL_TOK_ASSIGN_ADD = 59,            /* TOK_ASSIGN_ADD  */
-  YYSYMBOL_TOK_ASSIGN_SUB = 60,            /* TOK_ASSIGN_SUB  */
-  YYSYMBOL_TOK_ASSIGN_MULT = 61,           /* TOK_ASSIGN_MULT  */
-  YYSYMBOL_TOK_ASSIGN_DIV = 62,            /* TOK_ASSIGN_DIV  */
-  YYSYMBOL_TOK_ASSIGN_BW_OR = 63,          /* TOK_ASSIGN_BW_OR  */
-  YYSYMBOL_TOK_ASSIGN_BW_AND = 64,         /* TOK_ASSIGN_BW_AND  */
-  YYSYMBOL_TOK_ASSIGN_BW_XOR = 65,         /* TOK_ASSIGN_BW_XOR  */
-  YYSYMBOL_TOK_ASSIGN_BW_NOT = 66,         /* TOK_ASSIGN_BW_NOT  */
-  YYSYMBOL_TOK_ASSIGN = 67,                /* TOK_ASSIGN  */
-  YYSYMBOL_TOK_ADD = 68,                   /* TOK_ADD  */
-  YYSYMBOL_TOK_SUB = 69,                   /* TOK_SUB  */
-  YYSYMBOL_TOK_MULT = 70,                  /* TOK_MULT  */
-  YYSYMBOL_TOK_DIV = 71,                   /* TOK_DIV  */
-  YYSYMBOL_TOK_NOT = 72,                   /* TOK_NOT  */
-  YYSYMBOL_TOK_BW_OR = 73,                 /* TOK_BW_OR  */
-  YYSYMBOL_TOK_BW_AND = 74,                /* TOK_BW_AND  */
-  YYSYMBOL_TOK_BW_XOR = 75,                /* TOK_BW_XOR  */
-  YYSYMBOL_TOK_BW_NOT = 76,                /* TOK_BW_NOT  */
-  YYSYMBOL_TOK_FILEPATH = 77,              /* TOK_FILEPATH  */
-  YYSYMBOL_TOK_IDENTIFIER = 78,            /* TOK_IDENTIFIER  */
-  YYSYMBOL_TOK_STRING = 79,                /* TOK_STRING  */
-  YYSYMBOL_TOK_STRING_LOC = 80,            /* TOK_STRING_LOC  */
-  YYSYMBOL_TOK_STRING_HASH = 81,           /* TOK_STRING_HASH  */
-  YYSYMBOL_TOK_FLOAT = 82,                 /* TOK_FLOAT  */
-  YYSYMBOL_TOK_INTEGER = 83,               /* TOK_INTEGER  */
+  YYSYMBOL_INCLUDE = 3,                    /* INCLUDE  */
+  YYSYMBOL_USING_ANIMTREE = 4,             /* USING_ANIMTREE  */
+  YYSYMBOL_ANIMTREE = 5,                   /* ANIMTREE  */
+  YYSYMBOL_IF = 6,                         /* IF  */
+  YYSYMBOL_ELSE = 7,                       /* ELSE  */
+  YYSYMBOL_SWITCH = 8,                     /* SWITCH  */
+  YYSYMBOL_CASE = 9,                       /* CASE  */
+  YYSYMBOL_DEFAULT = 10,                   /* DEFAULT  */
+  YYSYMBOL_BREAK = 11,                     /* BREAK  */
+  YYSYMBOL_FOR = 12,                       /* FOR  */
+  YYSYMBOL_FOREACH = 13,                   /* FOREACH  */
+  YYSYMBOL_WHILE = 14,                     /* WHILE  */
+  YYSYMBOL_CONTINUE = 15,                  /* CONTINUE  */
+  YYSYMBOL_RETURN = 16,                    /* RETURN  */
+  YYSYMBOL_THREAD = 17,                    /* THREAD  */
+  YYSYMBOL_WAIT = 18,                      /* WAIT  */
+  YYSYMBOL_WAITTILL = 19,                  /* WAITTILL  */
+  YYSYMBOL_WAITTILLMATCH = 20,             /* WAITTILLMATCH  */
+  YYSYMBOL_WAITTILLFRAMEEND = 21,          /* WAITTILLFRAMEEND  */
+  YYSYMBOL_ENDON = 22,                     /* ENDON  */
+  YYSYMBOL_NOTIFY = 23,                    /* NOTIFY  */
+  YYSYMBOL_IN = 24,                        /* IN  */
+  YYSYMBOL_UNDEFINED = 25,                 /* UNDEFINED  */
+  YYSYMBOL_TRUE = 26,                      /* TRUE  */
+  YYSYMBOL_FALSE = 27,                     /* FALSE  */
+  YYSYMBOL_SIZE = 28,                      /* SIZE  */
+  YYSYMBOL_GAME = 29,                      /* GAME  */
+  YYSYMBOL_LEVEL = 30,                     /* LEVEL  */
+  YYSYMBOL_EMPTY_ARRAY = 31,               /* EMPTY_ARRAY  */
+  YYSYMBOL_LPAREN = 32,                    /* LPAREN  */
+  YYSYMBOL_RPAREN = 33,                    /* RPAREN  */
+  YYSYMBOL_LBRACE = 34,                    /* LBRACE  */
+  YYSYMBOL_RBRACE = 35,                    /* RBRACE  */
+  YYSYMBOL_LBRACKET = 36,                  /* LBRACKET  */
+  YYSYMBOL_RBRACKET = 37,                  /* RBRACKET  */
+  YYSYMBOL_COMMA = 38,                     /* COMMA  */
+  YYSYMBOL_DOT = 39,                       /* DOT  */
+  YYSYMBOL_DOUBLECOLON = 40,               /* DOUBLECOLON  */
+  YYSYMBOL_COLON = 41,                     /* COLON  */
+  YYSYMBOL_SEMICOLON = 42,                 /* SEMICOLON  */
+  YYSYMBOL_QMARK = 43,                     /* QMARK  */
+  YYSYMBOL_HASH = 44,                      /* HASH  */
+  YYSYMBOL_AT = 45,                        /* AT  */
+  YYSYMBOL_MOD = 46,                       /* MOD  */
+  YYSYMBOL_INC = 47,                       /* INC  */
+  YYSYMBOL_DEC = 48,                       /* DEC  */
+  YYSYMBOL_LSHIFT = 49,                    /* LSHIFT  */
+  YYSYMBOL_RSHIFT = 50,                    /* RSHIFT  */
+  YYSYMBOL_CMP_OR = 51,                    /* CMP_OR  */
+  YYSYMBOL_CMP_AND = 52,                   /* CMP_AND  */
+  YYSYMBOL_CMP_EQUAL = 53,                 /* CMP_EQUAL  */
+  YYSYMBOL_CMP_NOT_EQ = 54,                /* CMP_NOT_EQ  */
+  YYSYMBOL_CMP_LESS_EQ = 55,               /* CMP_LESS_EQ  */
+  YYSYMBOL_CMP_GREATER_EQ = 56,            /* CMP_GREATER_EQ  */
+  YYSYMBOL_CMP_LESS = 57,                  /* CMP_LESS  */
+  YYSYMBOL_CMP_GREATER = 58,               /* CMP_GREATER  */
+  YYSYMBOL_ASSIGN_ADD = 59,                /* ASSIGN_ADD  */
+  YYSYMBOL_ASSIGN_SUB = 60,                /* ASSIGN_SUB  */
+  YYSYMBOL_ASSIGN_MULT = 61,               /* ASSIGN_MULT  */
+  YYSYMBOL_ASSIGN_DIV = 62,                /* ASSIGN_DIV  */
+  YYSYMBOL_ASSIGN_BW_OR = 63,              /* ASSIGN_BW_OR  */
+  YYSYMBOL_ASSIGN_BW_AND = 64,             /* ASSIGN_BW_AND  */
+  YYSYMBOL_ASSIGN_BW_XOR = 65,             /* ASSIGN_BW_XOR  */
+  YYSYMBOL_ASSIGN_BW_NOT = 66,             /* ASSIGN_BW_NOT  */
+  YYSYMBOL_ASSIGN = 67,                    /* ASSIGN  */
+  YYSYMBOL_ADD = 68,                       /* ADD  */
+  YYSYMBOL_SUB = 69,                       /* SUB  */
+  YYSYMBOL_MULT = 70,                      /* MULT  */
+  YYSYMBOL_DIV = 71,                       /* DIV  */
+  YYSYMBOL_NOT = 72,                       /* NOT  */
+  YYSYMBOL_BW_OR = 73,                     /* BW_OR  */
+  YYSYMBOL_BW_AND = 74,                    /* BW_AND  */
+  YYSYMBOL_BW_XOR = 75,                    /* BW_XOR  */
+  YYSYMBOL_BW_NOT = 76,                    /* BW_NOT  */
+  YYSYMBOL_FILEPATH = 77,                  /* FILEPATH  */
+  YYSYMBOL_IDENTIFIER = 78,                /* IDENTIFIER  */
+  YYSYMBOL_STRING = 79,                    /* STRING  */
+  YYSYMBOL_STRING_LOC = 80,                /* STRING_LOC  */
+  YYSYMBOL_STRING_HASH = 81,               /* STRING_HASH  */
+  YYSYMBOL_FLOAT = 82,                     /* FLOAT  */
+  YYSYMBOL_INTEGER = 83,                   /* INTEGER  */
   YYSYMBOL_YYACCEPT = 84,                  /* $accept  */
   YYSYMBOL_root = 85,                      /* root  */
   YYSYMBOL_script = 86,                    /* script  */
@@ -570,8 +570,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    74,    74,    75,    79,    80,    81,    82,    83,    84,
-      88,    89,    93,   100,   107,   108,   109,   113
+       0,    75,    75,    76,    80,    81,    82,    83,    84,    85,
+      89,    90,    94,   101,   108,   109,   110,   114
 };
 #endif
 
@@ -587,26 +587,21 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "TOK_EOF", "error", "\"invalid token\"", "TOK_INCLUDE",
-  "TOK_USING_ANIMTREE", "TOK_ANIMTREE", "TOK_IF", "TOK_ELSE", "TOK_SWITCH",
-  "TOK_CASE", "TOK_DEFAULT", "TOK_BREAK", "TOK_FOR", "TOK_FOREACH",
-  "TOK_WHILE", "TOK_CONTINUE", "TOK_RETURN", "TOK_THREAD", "TOK_WAIT",
-  "TOK_WAITTILL", "TOK_WAITTILLMATCH", "TOK_WAITTILLFRAMEEND", "TOK_ENDON",
-  "TOK_NOTIFY", "TOK_IN", "TOK_UNDEFINED", "TOK_TRUE", "TOK_FALSE",
-  "TOK_SIZE", "TOK_GAME", "TOK_LEVEL", "TOK_EMPTY_ARRAY", "TOK_LPAREN",
-  "TOK_RPAREN", "TOK_LBRACE", "TOK_RBRACE", "TOK_LBRACKET", "TOK_RBRACKET",
-  "TOK_COMMA", "TOK_DOT", "TOK_DOUBLECOLON", "TOK_COLON", "TOK_SEMICOLON",
-  "TOK_QMARK", "TOK_HASH", "TOK_AT", "TOK_MOD", "TOK_INC", "TOK_DEC",
-  "TOK_LSHIFT", "TOK_RSHIFT", "TOK_CMP_OR", "TOK_CMP_AND", "TOK_CMP_EQUAL",
-  "TOK_CMP_NOT_EQ", "TOK_CMP_LESS_EQ", "TOK_CMP_GREATER_EQ",
-  "TOK_CMP_LESS", "TOK_CMP_GREATER", "TOK_ASSIGN_ADD", "TOK_ASSIGN_SUB",
-  "TOK_ASSIGN_MULT", "TOK_ASSIGN_DIV", "TOK_ASSIGN_BW_OR",
-  "TOK_ASSIGN_BW_AND", "TOK_ASSIGN_BW_XOR", "TOK_ASSIGN_BW_NOT",
-  "TOK_ASSIGN", "TOK_ADD", "TOK_SUB", "TOK_MULT", "TOK_DIV", "TOK_NOT",
-  "TOK_BW_OR", "TOK_BW_AND", "TOK_BW_XOR", "TOK_BW_NOT", "TOK_FILEPATH",
-  "TOK_IDENTIFIER", "TOK_STRING", "TOK_STRING_LOC", "TOK_STRING_HASH",
-  "TOK_FLOAT", "TOK_INTEGER", "$accept", "root", "script", "include",
-  "using_animtree", "function", "parameter_list", "statement_block", YY_NULLPTR
+  "EOF", "error", "\"invalid token\"", "INCLUDE", "USING_ANIMTREE",
+  "ANIMTREE", "IF", "ELSE", "SWITCH", "CASE", "DEFAULT", "BREAK", "FOR",
+  "FOREACH", "WHILE", "CONTINUE", "RETURN", "THREAD", "WAIT", "WAITTILL",
+  "WAITTILLMATCH", "WAITTILLFRAMEEND", "ENDON", "NOTIFY", "IN",
+  "UNDEFINED", "TRUE", "FALSE", "SIZE", "GAME", "LEVEL", "EMPTY_ARRAY",
+  "LPAREN", "RPAREN", "LBRACE", "RBRACE", "LBRACKET", "RBRACKET", "COMMA",
+  "DOT", "DOUBLECOLON", "COLON", "SEMICOLON", "QMARK", "HASH", "AT", "MOD",
+  "INC", "DEC", "LSHIFT", "RSHIFT", "CMP_OR", "CMP_AND", "CMP_EQUAL",
+  "CMP_NOT_EQ", "CMP_LESS_EQ", "CMP_GREATER_EQ", "CMP_LESS", "CMP_GREATER",
+  "ASSIGN_ADD", "ASSIGN_SUB", "ASSIGN_MULT", "ASSIGN_DIV", "ASSIGN_BW_OR",
+  "ASSIGN_BW_AND", "ASSIGN_BW_XOR", "ASSIGN_BW_NOT", "ASSIGN", "ADD",
+  "SUB", "MULT", "DIV", "NOT", "BW_OR", "BW_AND", "BW_XOR", "BW_NOT",
+  "FILEPATH", "IDENTIFIER", "STRING", "STRING_LOC", "STRING_HASH", "FLOAT",
+  "INTEGER", "$accept", "root", "script", "include", "using_animtree",
+  "function", "parameter_list", "statement_block", YY_NULLPTR
 };
 
 static const char *
@@ -728,7 +723,7 @@ static const yytype_int8 yyr2[] =
 enum { YYENOMEM = -2 };
 
 #define yyerrok         (yyerrstatus = 0)
-#define yyclearin       (yychar = YYEMPTY)
+#define yyclearin       (yychar = TOK_YYEMPTY)
 
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
@@ -739,7 +734,7 @@ enum { YYENOMEM = -2 };
 
 #define YYBACKUP(Token, Value)                                    \
   do                                                              \
-    if (yychar == YYEMPTY)                                        \
+    if (yychar == TOK_YYEMPTY)                                        \
       {                                                           \
         yychar = (Token);                                         \
         yylval = (Value);                                         \
@@ -755,8 +750,8 @@ enum { YYENOMEM = -2 };
   while (0)
 
 /* Backward compatibility with an undocumented macro.
-   Use YYerror or YYUNDEF. */
-#define YYERRCODE YYUNDEF
+   Use TOK_YYerror or TOK_YYUNDEF. */
+#define YYERRCODE TOK_YYUNDEF
 
 
 /* Enable debugging if requested.  */
@@ -1000,7 +995,7 @@ YYSTYPE yylval YY_INITIAL_VALUE (= yyval_default);
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
-  yychar = YYEMPTY; /* Cause a token to be read.  */
+  yychar = TOK_YYEMPTY; /* Cause a token to be read.  */
   goto yysetstate;
 
 
@@ -1108,7 +1103,7 @@ yybackup:
   /* Not known => get a lookahead token if don't already have one.  */
 
   /* YYCHAR is either empty, or end-of-input, or a valid lookahead.  */
-  if (yychar == YYEMPTY)
+  if (yychar == TOK_YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token\n"));
       yychar = yylex (&yylval, scanner);
@@ -1120,13 +1115,13 @@ yybackup:
       yytoken = YYSYMBOL_YYEOF;
       YYDPRINTF ((stderr, "Now at end of input.\n"));
     }
-  else if (yychar == YYerror)
+  else if (yychar == TOK_YYerror)
     {
       /* The scanner already issued an error message, process directly
          to error recovery.  But do not keep the error token as
          lookahead, it is too special and may lead us to an endless
          loop in error recovery. */
-      yychar = YYUNDEF;
+      yychar = TOK_YYUNDEF;
       yytoken = YYSYMBOL_YYerror;
       goto yyerrlab1;
     }
@@ -1163,7 +1158,7 @@ yybackup:
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 
   /* Discard the shifted token.  */
-  yychar = YYEMPTY;
+  yychar = TOK_YYEMPTY;
   goto yynewstate;
 
 
@@ -1199,107 +1194,107 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* root: script  */
-#line 74 "iw6.parser.ypp"
+#line 75 "iw6.parser.ypp"
                                                         { *astout = (yyvsp[0].value_script); }
-#line 1205 "./IW6/parser.cpp"
+#line 1200 "./IW6/parser.cpp"
     break;
 
   case 3: /* root: %empty  */
-#line 75 "iw6.parser.ypp"
+#line 76 "iw6.parser.ypp"
                                                                         { *astout = new node(); }
-#line 1211 "./IW6/parser.cpp"
+#line 1206 "./IW6/parser.cpp"
     break;
 
   case 4: /* script: script include  */
-#line 79 "iw6.parser.ypp"
+#line 80 "iw6.parser.ypp"
                                                         { (yyval.value_script) = (yyvsp[-1].value_script); (yyval.value_script)->childs.push_back((yyvsp[0].value_node)); }
-#line 1217 "./IW6/parser.cpp"
+#line 1212 "./IW6/parser.cpp"
     break;
 
   case 5: /* script: script using_animtree  */
-#line 80 "iw6.parser.ypp"
+#line 81 "iw6.parser.ypp"
                                                 { (yyval.value_script) = (yyvsp[-1].value_script); (yyval.value_script)->childs.push_back((yyvsp[0].value_node)); }
-#line 1223 "./IW6/parser.cpp"
+#line 1218 "./IW6/parser.cpp"
     break;
 
   case 6: /* script: script function  */
-#line 81 "iw6.parser.ypp"
+#line 82 "iw6.parser.ypp"
                                                         { (yyval.value_script) = (yyvsp[-1].value_script); (yyval.value_script)->childs.push_back((yyvsp[0].value_node)); }
-#line 1229 "./IW6/parser.cpp"
+#line 1224 "./IW6/parser.cpp"
     break;
 
   case 7: /* script: include  */
-#line 82 "iw6.parser.ypp"
+#line 83 "iw6.parser.ypp"
                                                                 { (yyval.value_script) = new node_script(); (yyval.value_script)->childs.push_back((yyvsp[0].value_node));}
-#line 1235 "./IW6/parser.cpp"
+#line 1230 "./IW6/parser.cpp"
     break;
 
   case 8: /* script: using_animtree  */
-#line 83 "iw6.parser.ypp"
+#line 84 "iw6.parser.ypp"
                                                         { (yyval.value_script) = new node_script(); (yyval.value_script)->childs.push_back((yyvsp[0].value_node));}
-#line 1241 "./IW6/parser.cpp"
+#line 1236 "./IW6/parser.cpp"
     break;
 
   case 9: /* script: function  */
-#line 84 "iw6.parser.ypp"
+#line 85 "iw6.parser.ypp"
                                                                 { (yyval.value_script) = new node_script(); (yyval.value_script)->childs.push_back((yyvsp[0].value_node));}
-#line 1247 "./IW6/parser.cpp"
+#line 1242 "./IW6/parser.cpp"
     break;
 
-  case 10: /* include: TOK_INCLUDE TOK_FILEPATH TOK_SEMICOLON  */
-#line 88 "iw6.parser.ypp"
-                                                        { (yyval.value_node) = new node_include(new node_filepath((yyvsp[-1].value_string))); }
-#line 1253 "./IW6/parser.cpp"
-    break;
-
-  case 11: /* include: TOK_INCLUDE TOK_IDENTIFIER TOK_SEMICOLON  */
+  case 10: /* include: INCLUDE FILEPATH SEMICOLON  */
 #line 89 "iw6.parser.ypp"
-                                                        { (yyval.value_node) = new node_include(new node_identifier((yyvsp[-1].value_string))); }
-#line 1259 "./IW6/parser.cpp"
+                                        { (yyval.value_node) = new node_include(new node_filepath((yyvsp[-1].value_string))); }
+#line 1248 "./IW6/parser.cpp"
     break;
 
-  case 12: /* using_animtree: TOK_USING_ANIMTREE TOK_LPAREN TOK_STRING TOK_RPAREN TOK_SEMICOLON  */
-#line 94 "iw6.parser.ypp"
+  case 11: /* include: INCLUDE IDENTIFIER SEMICOLON  */
+#line 90 "iw6.parser.ypp"
+                                        { (yyval.value_node) = new node_include(new node_identifier((yyvsp[-1].value_string))); }
+#line 1254 "./IW6/parser.cpp"
+    break;
+
+  case 12: /* using_animtree: USING_ANIMTREE LPAREN STRING RPAREN SEMICOLON  */
+#line 95 "iw6.parser.ypp"
                 {
 			(yyval.value_node) = new node_using_animtree(new node_string((yyvsp[-2].value_string))); 
 		}
-#line 1267 "./IW6/parser.cpp"
+#line 1262 "./IW6/parser.cpp"
     break;
 
-  case 13: /* function: TOK_IDENTIFIER TOK_LPAREN parameter_list TOK_RPAREN TOK_LBRACE statement_block TOK_RBRACE  */
-#line 101 "iw6.parser.ypp"
+  case 13: /* function: IDENTIFIER LPAREN parameter_list RPAREN LBRACE statement_block RBRACE  */
+#line 102 "iw6.parser.ypp"
                 {
 			(yyval.value_node) = new node_function(new node_identifier((yyvsp[-6].value_string)), (yyvsp[-4].value_parameter_list), (yyvsp[-1].value_statement_block)); 
 		}
-#line 1275 "./IW6/parser.cpp"
+#line 1270 "./IW6/parser.cpp"
     break;
 
-  case 14: /* parameter_list: parameter_list TOK_COMMA TOK_IDENTIFIER  */
-#line 107 "iw6.parser.ypp"
-                                                        { (yyval.value_parameter_list) = (yyvsp[-2].value_parameter_list); (yyval.value_parameter_list)->params.push_back(new node_identifier((yyvsp[0].value_string))); }
-#line 1281 "./IW6/parser.cpp"
-    break;
-
-  case 15: /* parameter_list: TOK_IDENTIFIER  */
+  case 14: /* parameter_list: parameter_list COMMA IDENTIFIER  */
 #line 108 "iw6.parser.ypp"
-                                                                                { (yyval.value_parameter_list) = new node_parameter_list(); (yyval.value_parameter_list)->params.push_back(new node_identifier((yyvsp[0].value_string))); }
-#line 1287 "./IW6/parser.cpp"
+                                                { (yyval.value_parameter_list) = (yyvsp[-2].value_parameter_list); (yyval.value_parameter_list)->params.push_back(new node_identifier((yyvsp[0].value_string))); }
+#line 1276 "./IW6/parser.cpp"
+    break;
+
+  case 15: /* parameter_list: IDENTIFIER  */
+#line 109 "iw6.parser.ypp"
+                                                                        { (yyval.value_parameter_list) = new node_parameter_list(); (yyval.value_parameter_list)->params.push_back(new node_identifier((yyvsp[0].value_string))); }
+#line 1282 "./IW6/parser.cpp"
     break;
 
   case 16: /* parameter_list: %empty  */
-#line 109 "iw6.parser.ypp"
+#line 110 "iw6.parser.ypp"
                                                                                                 { (yyval.value_parameter_list) = new node_parameter_list(); }
-#line 1293 "./IW6/parser.cpp"
+#line 1288 "./IW6/parser.cpp"
     break;
 
   case 17: /* statement_block: %empty  */
-#line 113 "iw6.parser.ypp"
+#line 114 "iw6.parser.ypp"
                                                                                 { (yyval.value_statement_block) = new node_statement_block(); }
-#line 1299 "./IW6/parser.cpp"
+#line 1294 "./IW6/parser.cpp"
     break;
 
 
-#line 1303 "./IW6/parser.cpp"
+#line 1298 "./IW6/parser.cpp"
 
       default: break;
     }
@@ -1341,7 +1336,7 @@ yyreduce:
 yyerrlab:
   /* Make sure we have latest lookahead translation.  See comments at
      user semantic actions for why this is necessary.  */
-  yytoken = yychar == YYEMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
+  yytoken = yychar == TOK_YYEMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
@@ -1364,7 +1359,7 @@ yyerrlab:
         {
           yydestruct ("Error: discarding",
                       yytoken, &yylval, scanner, astout);
-          yychar = YYEMPTY;
+          yychar = TOK_YYEMPTY;
         }
     }
 
@@ -1467,7 +1462,7 @@ yyexhaustedlab:
 | yyreturn -- parsing is finished, clean up and return.  |
 `-------------------------------------------------------*/
 yyreturn:
-  if (yychar != YYEMPTY)
+  if (yychar != TOK_YYEMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at
          user semantic actions for why this is necessary.  */
@@ -1493,7 +1488,7 @@ yyreturn:
   return yyresult;
 }
 
-#line 123 "iw6.parser.ypp"
+#line 124 "iw6.parser.ypp"
 
 
 int yyerror(yyscan_t scanner, node **astout, const char *msg)

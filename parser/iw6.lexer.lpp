@@ -109,10 +109,10 @@ RGX_DEFAULT		    (.|\n)
 \*			        { return TOK_MULT; }
 \/			        { return TOK_DIV; }
 \!			        { return TOK_NOT; }
+\~			        { return TOK_COMPLEMENT; }
 \|			        { return TOK_BW_OR; }
 \&			        { return TOK_BW_AND; }
 \^			        { return TOK_BW_XOR; }
-\~			        { return TOK_BW_NOT; }
 
 {RGX_FILEPATH}		{ yylval->value_string = strdup(yytext); return TOK_FILEPATH; }
 {RGX_IDENTIFIER}	{ yylval->value_string = strdup(yytext); return TOK_IDENTIFIER; }

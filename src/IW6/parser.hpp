@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 21 "iw6.parser.ypp"
+#line 22 "iw6.parser.ypp"
 
 	typedef void *yyscan_t; // fix yyscan_t error type no defined
 	#include <utils.hpp>
@@ -62,91 +62,91 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    YYEMPTY = -2,
-    TOK_EOF = 0,                   /* TOK_EOF  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
-    TOK_INCLUDE = 258,             /* TOK_INCLUDE  */
-    TOK_USING_ANIMTREE = 259,      /* TOK_USING_ANIMTREE  */
-    TOK_ANIMTREE = 260,            /* TOK_ANIMTREE  */
-    TOK_IF = 261,                  /* TOK_IF  */
-    TOK_ELSE = 262,                /* TOK_ELSE  */
-    TOK_SWITCH = 263,              /* TOK_SWITCH  */
-    TOK_CASE = 264,                /* TOK_CASE  */
-    TOK_DEFAULT = 265,             /* TOK_DEFAULT  */
-    TOK_BREAK = 266,               /* TOK_BREAK  */
-    TOK_FOR = 267,                 /* TOK_FOR  */
-    TOK_FOREACH = 268,             /* TOK_FOREACH  */
-    TOK_WHILE = 269,               /* TOK_WHILE  */
-    TOK_CONTINUE = 270,            /* TOK_CONTINUE  */
-    TOK_RETURN = 271,              /* TOK_RETURN  */
-    TOK_THREAD = 272,              /* TOK_THREAD  */
-    TOK_WAIT = 273,                /* TOK_WAIT  */
-    TOK_WAITTILL = 274,            /* TOK_WAITTILL  */
-    TOK_WAITTILLMATCH = 275,       /* TOK_WAITTILLMATCH  */
-    TOK_WAITTILLFRAMEEND = 276,    /* TOK_WAITTILLFRAMEEND  */
-    TOK_ENDON = 277,               /* TOK_ENDON  */
-    TOK_NOTIFY = 278,              /* TOK_NOTIFY  */
-    TOK_IN = 279,                  /* TOK_IN  */
-    TOK_UNDEFINED = 280,           /* TOK_UNDEFINED  */
-    TOK_TRUE = 281,                /* TOK_TRUE  */
-    TOK_FALSE = 282,               /* TOK_FALSE  */
-    TOK_SIZE = 283,                /* TOK_SIZE  */
-    TOK_GAME = 284,                /* TOK_GAME  */
-    TOK_LEVEL = 285,               /* TOK_LEVEL  */
-    TOK_EMPTY_ARRAY = 286,         /* TOK_EMPTY_ARRAY  */
-    TOK_LPAREN = 287,              /* TOK_LPAREN  */
-    TOK_RPAREN = 288,              /* TOK_RPAREN  */
-    TOK_LBRACE = 289,              /* TOK_LBRACE  */
-    TOK_RBRACE = 290,              /* TOK_RBRACE  */
-    TOK_LBRACKET = 291,            /* TOK_LBRACKET  */
-    TOK_RBRACKET = 292,            /* TOK_RBRACKET  */
-    TOK_COMMA = 293,               /* TOK_COMMA  */
-    TOK_DOT = 294,                 /* TOK_DOT  */
-    TOK_DOUBLECOLON = 295,         /* TOK_DOUBLECOLON  */
-    TOK_COLON = 296,               /* TOK_COLON  */
-    TOK_SEMICOLON = 297,           /* TOK_SEMICOLON  */
-    TOK_QMARK = 298,               /* TOK_QMARK  */
-    TOK_HASH = 299,                /* TOK_HASH  */
-    TOK_AT = 300,                  /* TOK_AT  */
-    TOK_MOD = 301,                 /* TOK_MOD  */
-    TOK_INC = 302,                 /* TOK_INC  */
-    TOK_DEC = 303,                 /* TOK_DEC  */
-    TOK_LSHIFT = 304,              /* TOK_LSHIFT  */
-    TOK_RSHIFT = 305,              /* TOK_RSHIFT  */
-    TOK_CMP_OR = 306,              /* TOK_CMP_OR  */
-    TOK_CMP_AND = 307,             /* TOK_CMP_AND  */
-    TOK_CMP_EQUAL = 308,           /* TOK_CMP_EQUAL  */
-    TOK_CMP_NOT_EQ = 309,          /* TOK_CMP_NOT_EQ  */
-    TOK_CMP_LESS_EQ = 310,         /* TOK_CMP_LESS_EQ  */
-    TOK_CMP_GREATER_EQ = 311,      /* TOK_CMP_GREATER_EQ  */
-    TOK_CMP_LESS = 312,            /* TOK_CMP_LESS  */
-    TOK_CMP_GREATER = 313,         /* TOK_CMP_GREATER  */
-    TOK_ASSIGN_ADD = 314,          /* TOK_ASSIGN_ADD  */
-    TOK_ASSIGN_SUB = 315,          /* TOK_ASSIGN_SUB  */
-    TOK_ASSIGN_MULT = 316,         /* TOK_ASSIGN_MULT  */
-    TOK_ASSIGN_DIV = 317,          /* TOK_ASSIGN_DIV  */
-    TOK_ASSIGN_BW_OR = 318,        /* TOK_ASSIGN_BW_OR  */
-    TOK_ASSIGN_BW_AND = 319,       /* TOK_ASSIGN_BW_AND  */
-    TOK_ASSIGN_BW_XOR = 320,       /* TOK_ASSIGN_BW_XOR  */
-    TOK_ASSIGN_BW_NOT = 321,       /* TOK_ASSIGN_BW_NOT  */
-    TOK_ASSIGN = 322,              /* TOK_ASSIGN  */
-    TOK_ADD = 323,                 /* TOK_ADD  */
-    TOK_SUB = 324,                 /* TOK_SUB  */
-    TOK_MULT = 325,                /* TOK_MULT  */
-    TOK_DIV = 326,                 /* TOK_DIV  */
-    TOK_NOT = 327,                 /* TOK_NOT  */
-    TOK_BW_OR = 328,               /* TOK_BW_OR  */
-    TOK_BW_AND = 329,              /* TOK_BW_AND  */
-    TOK_BW_XOR = 330,              /* TOK_BW_XOR  */
-    TOK_BW_NOT = 331,              /* TOK_BW_NOT  */
-    TOK_FILEPATH = 332,            /* TOK_FILEPATH  */
-    TOK_IDENTIFIER = 333,          /* TOK_IDENTIFIER  */
-    TOK_STRING = 334,              /* TOK_STRING  */
-    TOK_STRING_LOC = 335,          /* TOK_STRING_LOC  */
-    TOK_STRING_HASH = 336,         /* TOK_STRING_HASH  */
-    TOK_FLOAT = 337,               /* TOK_FLOAT  */
-    TOK_INTEGER = 338              /* TOK_INTEGER  */
+    TOK_YYEMPTY = -2,
+    TOK_EOF = 0,                   /* EOF  */
+    TOK_YYerror = 256,             /* error  */
+    TOK_YYUNDEF = 257,             /* "invalid token"  */
+    TOK_INCLUDE = 258,             /* INCLUDE  */
+    TOK_USING_ANIMTREE = 259,      /* USING_ANIMTREE  */
+    TOK_ANIMTREE = 260,            /* ANIMTREE  */
+    TOK_IF = 261,                  /* IF  */
+    TOK_ELSE = 262,                /* ELSE  */
+    TOK_SWITCH = 263,              /* SWITCH  */
+    TOK_CASE = 264,                /* CASE  */
+    TOK_DEFAULT = 265,             /* DEFAULT  */
+    TOK_BREAK = 266,               /* BREAK  */
+    TOK_FOR = 267,                 /* FOR  */
+    TOK_FOREACH = 268,             /* FOREACH  */
+    TOK_WHILE = 269,               /* WHILE  */
+    TOK_CONTINUE = 270,            /* CONTINUE  */
+    TOK_RETURN = 271,              /* RETURN  */
+    TOK_THREAD = 272,              /* THREAD  */
+    TOK_WAIT = 273,                /* WAIT  */
+    TOK_WAITTILL = 274,            /* WAITTILL  */
+    TOK_WAITTILLMATCH = 275,       /* WAITTILLMATCH  */
+    TOK_WAITTILLFRAMEEND = 276,    /* WAITTILLFRAMEEND  */
+    TOK_ENDON = 277,               /* ENDON  */
+    TOK_NOTIFY = 278,              /* NOTIFY  */
+    TOK_IN = 279,                  /* IN  */
+    TOK_UNDEFINED = 280,           /* UNDEFINED  */
+    TOK_TRUE = 281,                /* TRUE  */
+    TOK_FALSE = 282,               /* FALSE  */
+    TOK_SIZE = 283,                /* SIZE  */
+    TOK_GAME = 284,                /* GAME  */
+    TOK_LEVEL = 285,               /* LEVEL  */
+    TOK_EMPTY_ARRAY = 286,         /* EMPTY_ARRAY  */
+    TOK_LPAREN = 287,              /* LPAREN  */
+    TOK_RPAREN = 288,              /* RPAREN  */
+    TOK_LBRACE = 289,              /* LBRACE  */
+    TOK_RBRACE = 290,              /* RBRACE  */
+    TOK_LBRACKET = 291,            /* LBRACKET  */
+    TOK_RBRACKET = 292,            /* RBRACKET  */
+    TOK_COMMA = 293,               /* COMMA  */
+    TOK_DOT = 294,                 /* DOT  */
+    TOK_DOUBLECOLON = 295,         /* DOUBLECOLON  */
+    TOK_COLON = 296,               /* COLON  */
+    TOK_SEMICOLON = 297,           /* SEMICOLON  */
+    TOK_QMARK = 298,               /* QMARK  */
+    TOK_HASH = 299,                /* HASH  */
+    TOK_AT = 300,                  /* AT  */
+    TOK_MOD = 301,                 /* MOD  */
+    TOK_INC = 302,                 /* INC  */
+    TOK_DEC = 303,                 /* DEC  */
+    TOK_LSHIFT = 304,              /* LSHIFT  */
+    TOK_RSHIFT = 305,              /* RSHIFT  */
+    TOK_CMP_OR = 306,              /* CMP_OR  */
+    TOK_CMP_AND = 307,             /* CMP_AND  */
+    TOK_CMP_EQUAL = 308,           /* CMP_EQUAL  */
+    TOK_CMP_NOT_EQ = 309,          /* CMP_NOT_EQ  */
+    TOK_CMP_LESS_EQ = 310,         /* CMP_LESS_EQ  */
+    TOK_CMP_GREATER_EQ = 311,      /* CMP_GREATER_EQ  */
+    TOK_CMP_LESS = 312,            /* CMP_LESS  */
+    TOK_CMP_GREATER = 313,         /* CMP_GREATER  */
+    TOK_ASSIGN_ADD = 314,          /* ASSIGN_ADD  */
+    TOK_ASSIGN_SUB = 315,          /* ASSIGN_SUB  */
+    TOK_ASSIGN_MULT = 316,         /* ASSIGN_MULT  */
+    TOK_ASSIGN_DIV = 317,          /* ASSIGN_DIV  */
+    TOK_ASSIGN_BW_OR = 318,        /* ASSIGN_BW_OR  */
+    TOK_ASSIGN_BW_AND = 319,       /* ASSIGN_BW_AND  */
+    TOK_ASSIGN_BW_XOR = 320,       /* ASSIGN_BW_XOR  */
+    TOK_ASSIGN_BW_NOT = 321,       /* ASSIGN_BW_NOT  */
+    TOK_ASSIGN = 322,              /* ASSIGN  */
+    TOK_ADD = 323,                 /* ADD  */
+    TOK_SUB = 324,                 /* SUB  */
+    TOK_MULT = 325,                /* MULT  */
+    TOK_DIV = 326,                 /* DIV  */
+    TOK_NOT = 327,                 /* NOT  */
+    TOK_BW_OR = 328,               /* BW_OR  */
+    TOK_BW_AND = 329,              /* BW_AND  */
+    TOK_BW_XOR = 330,              /* BW_XOR  */
+    TOK_BW_NOT = 331,              /* BW_NOT  */
+    TOK_FILEPATH = 332,            /* FILEPATH  */
+    TOK_IDENTIFIER = 333,          /* IDENTIFIER  */
+    TOK_STRING = 334,              /* STRING  */
+    TOK_STRING_LOC = 335,          /* STRING_LOC  */
+    TOK_STRING_HASH = 336,         /* STRING_HASH  */
+    TOK_FLOAT = 337,               /* FLOAT  */
+    TOK_INTEGER = 338              /* INTEGER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -155,7 +155,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 32 "iw6.parser.ypp"
+#line 33 "iw6.parser.ypp"
 
 	char* value_string;
 	node* value_node;
