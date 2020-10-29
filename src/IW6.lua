@@ -22,8 +22,8 @@ function IW6:project()
         kind "StaticLib"
         language "C++"
         
-        pchheader "IW6.hpp"
-        pchsource(path.join(folder, "IW6/IW6.cpp"))
+    --    pchheader "IW6.hpp"
+    --    pchsource(path.join(folder, "IW6/IW6.cpp"))
 
         files
         {
