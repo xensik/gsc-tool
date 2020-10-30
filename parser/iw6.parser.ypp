@@ -258,6 +258,7 @@ expr_arg_list
 /* object.field */
 expr_select
 	: object DOT identifier						{ $$ = new node_expr_select($1, $3); }
+	| level DOT identifier						{ $$ = new node_expr_select($1, $3); }
 	;
 
 /* array[ "key" ] */
