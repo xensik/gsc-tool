@@ -5,7 +5,7 @@
 
 #include "utils.hpp"
 
-std::uint32_t node_stmt_block::indent;
+std::uint32_t node::indent;
 
 std::string indented(std::uint32_t indent)
 {

@@ -24,6 +24,7 @@ enum class node_type
     empty_array,
     game,
     level,
+    size,
     // missing %animref
     //
     expr_vector,
@@ -69,6 +70,7 @@ enum class node_type
     expr_assign_bw_xor,
     expr_inc,
     expr_dec,
+    // STATEMENTS
     stmt_call,
     stmt_assign,
     stmt_endon,
@@ -77,7 +79,6 @@ enum class node_type
     stmt_waittill,
     stmt_waittillmatch,
     stmt_waittillframeend,
-
     stmt_if,
     stmt_ifelse,
     stmt_for,
@@ -113,6 +114,10 @@ struct node
     node() : type(node_type::null) {}
     node(node_type type) : type(type) {}
     virtual auto print() -> std::string { return ""; };
+     
+protected:
+    static std::uint32_t indent;
+    static void reset_indentation() { indent = 0; }
 };
 
 struct node_filepath : public node
@@ -229,6 +234,16 @@ struct node_level : public node
     auto print() -> std::string override
     {
         return "level";
+    }
+};
+
+struct node_size : public node
+{
+    node_size() : node(node_type::size) {}
+
+    auto print() -> std::string override
+    {
+        return "size";
     }
 };
 
@@ -965,9 +980,6 @@ struct node_stmt_waittillframeend : public node
     };
 };
 
-
-
-
 struct node_stmt_if : public node
 {
     node* expr;
@@ -977,7 +989,22 @@ struct node_stmt_if : public node
 
     auto print() -> std::string override
     {
-        return "if ( " + expr->print() + " )\n{\n" + stmt->print() + "\n}\n";
+        std::string data = "if ( " + expr->print() + " )\n";
+
+        std::string pad = indented(indent);
+
+        if (stmt->type == node_type::stmt_block)
+        {
+            data +=  pad + "{\n" + stmt->print() + "\n" + pad + "}\n";
+        }
+        else
+        {
+            indent += 4;
+            data += indented(indent) + stmt->print() + "\n";
+            indent -= 4;
+        }
+        
+        return data;
     };
 };
 
@@ -992,7 +1019,72 @@ struct node_stmt_ifelse : public node
 
     auto print() -> std::string override
     {
-        return "if ( " + expr->print() + " )\n{\n" + stmt->print() + "\n}\nelse\n{\n" + stmt2->print() + "\n}\n";
+        std::string pad = indented(indent);
+        std::string data = "if ( " + expr->print() + " )\n";
+        
+        if (stmt->type == node_type::stmt_block)
+        {
+            data +=  pad + "{\n" + stmt->print() + "\n" + pad + "}\n";
+        }
+        else
+        {
+            indent += 4;
+            data += indented(indent) + stmt->print() + "\n";
+            indent -= 4;
+        }
+
+        data += pad + "else\n";
+
+        if (stmt2->type == node_type::stmt_block)
+        {
+            data +=  pad + "{\n" + stmt2->print() + "\n" + pad + "}\n";
+        }
+        else
+        {
+            indent += 4;
+            data += indented(indent) + stmt2->print() + "\n";
+            indent -= 4;
+        }
+        
+        return data;
+    };
+};
+
+struct node_stmt_while : public node
+{
+    node* expr;
+    node* stmt;
+
+    node_stmt_while(node* expr, node* stmt)
+        : node(node_type::stmt_while), expr(expr), stmt(stmt) {}
+
+    auto print() -> std::string override
+    {
+        std::string data;
+
+        if (expr->type == node_type::null)
+        {
+            data += "while ( true )\n";
+        }
+        else
+        {
+            data += "while ( " + expr->print() + " )\n";
+        }
+
+        std::string pad = indented(indent);
+
+        if (stmt->type == node_type::stmt_block)
+        {
+            data +=  pad + "{\n" + stmt->print() + "\n" + pad + "}\n";
+        }
+        else
+        {
+            indent += 4;
+            data += indented(indent) + stmt->print() + "\n";
+            indent -= 4;
+        }
+
+        return data;
     };
 };
 
@@ -1008,14 +1100,31 @@ struct node_stmt_for : public node
 
     auto print() -> std::string override
     {
+        std::string data;
+
         if (expr->type == node_type::null)
         {
-            return "for ( ;; )\n{\n" + stmt->print() + "\n}\n";
+            data += "for ( ;; )\n";
         }
         else
         {
-            return "for ( " + stmt1->print() + ";" + expr->print() + ";" + stmt2->print() + " )\n{\n" + stmt->print() + "\n}\n";
+            data += "for ( " + stmt1->print() + "; " + expr->print() + "; " + stmt2->print() + " )\n";
         }
+
+        std::string pad = indented(indent);
+
+        if (stmt->type == node_type::stmt_block)
+        {
+            data +=  pad + "{\n" + stmt->print() + "\n" + pad + "}\n";
+        }
+        else
+        {
+            indent += 4;
+            data += indented(indent) + stmt->print() + "\n";
+            indent -= 4;
+        }
+
+        return data;
     };
 };
 
@@ -1030,29 +1139,51 @@ struct node_stmt_foreach : public node
 
     auto print() -> std::string override
     {
-        return "foreach ( " + stmt1->print() + " in " + stmt2->print() + " )\n{\n" + stmt->print() + "\n}\n";
+        std::string data;
 
-    };
-};
+        data += "foreach ( " + stmt1->print() + " in " + stmt2->print() + " )\n";
 
-struct node_stmt_while : public node
-{
-    node* expr;
-    node* stmt;
+        std::string pad = indented(indent);
 
-    node_stmt_while(node* expr, node* stmt)
-        : node(node_type::stmt_while), expr(expr), stmt(stmt) {}
-
-    auto print() -> std::string override
-    {
-        if (expr->type == node_type::null)
+        if (stmt->type == node_type::stmt_block)
         {
-            return "while ( 1 )\n{\n" + stmt->print() + "\n}\n";
+            data +=  pad + "{\n" + stmt->print() + "\n" + pad + "}\n";
         }
         else
         {
-            return "while ( " + expr->print() + " )\n{\n" + stmt->print() + "\n}\n";
+            indent += 4;
+            data += indented(indent) + stmt->print() + "\n";
+            indent -= 4;
         }
+
+        return data;
+    };
+};
+
+/*
+    stmt_switch,
+    stmt_switch_list,
+    case,
+    default,
+*/
+
+struct node_stmt_break : public node
+{
+    node_stmt_break() : node(node_type::stmt_break) {}
+
+    auto print() -> std::string override
+    {
+        return "break;";
+    };
+};
+
+struct node_stmt_continue : public node
+{
+    node_stmt_continue() : node(node_type::stmt_continue) {}
+
+    auto print() -> std::string override
+    {
+        return "continue;";
     };
 };
 
@@ -1064,15 +1195,12 @@ struct node_stmt_return : public node
 
     auto print() -> std::string override
     {
+        if(expr->type == node_type::null)
+            return "return;";
+
         return "return " + expr->print() + ";";
     };
 };
-/*
-    stmt_switch,
-    stmt_switch_list,
-    stmt_break,
-    stmt_continue,
-*/
 
 struct node_stmt_block : public node
 {
@@ -1089,6 +1217,11 @@ struct node_stmt_block : public node
         std::string pad = indented(indent);
         for (const auto& stmt : stmts)
         {
+            if (&stmt != &stmts.front()
+                && (stmt->type == node_type::stmt_if || stmt->type == node_type::stmt_ifelse
+                || stmt->type == node_type::stmt_for || stmt->type == node_type::stmt_foreach
+                || stmt->type == node_type::stmt_while || stmt->type == node_type::stmt_switch))
+                data += "\n";
             data += pad + stmt->print();
 
             if (&stmt != &stmts.back())
@@ -1099,11 +1232,6 @@ struct node_stmt_block : public node
 
         return data;
     }
-
-    static void reset_indentation() { indent = 0; }
-
-protected:
-   static std::uint32_t indent;
 };
 
 struct node_parameter_list : public node

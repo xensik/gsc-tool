@@ -61,19 +61,22 @@ int yyerror(yyscan_t scanner, node **astout, const char *msg);
 %type <value_node> include using_animtree function
 %type <value_parameter_list> parameter_list
 %type <value_statement_block> stmt_block
-%type <value_node>  stmt  stmt_call stmt_assign stmt_endon stmt_notify stmt_wait
-/*%type <value_node> statement_continue statement_break statement_assign
-%type <value_node> statement_switch_list statement_switch statement_while statement_foreach statement_for
-%type <value_node> statement_ifelse statement_if statement_endon statement_notify statement_waittillframeend
-%type <value_node> statement_waittillmatch statement_waittill statement_wait statement_return statement_call 
-%type <value_node> statement argument_list*/
+
+%type <value_node> stmt  stmt_call stmt_assign stmt_endon stmt_notify
+%type <value_node> stmt_wait stmt_waittill stmt_waittillmatch stmt_waittillframeend
+%type <value_node> stmt_if stmt_ifelse stmt_while stmt_for stmt_foreach 
+%type <value_node> stmt_break stmt_continue stmt_return for_assign for_cond
 
 %type <value_node> expr expr_assign expr_cmp expr_unary expr_binary expr_ternary
 %type <value_node> expr_func_call_ptr expr_func_call expr_call expr_call_thread
 %type <value_expr_arg_list> expr_arg_list
+
 %type <value_node> object object_restricted expr_func_ref expr_subscribe expr_select
-%type <value_node> num vector undefined empty_array game level
+%type <value_node> num vector undefined empty_array game level false true size
 %type <value_node> filepath identifier string string_loc string_hash num_integer num_float
+
+%nonassoc IFX
+%nonassoc ELSE
 
 %start root
 
@@ -125,6 +128,17 @@ stmt
 	| stmt_endon 								{ $$ = $1; }
 	| stmt_notify 								{ $$ = $1; }
 	| stmt_wait 								{ $$ = $1; }
+	| stmt_waittill 							{ $$ = $1; }
+	| stmt_waittillmatch 						{ $$ = $1; }
+	| stmt_waittillframeend 					{ $$ = $1; }
+	| stmt_if									{ $$ = $1; }
+	| stmt_ifelse								{ $$ = $1; }
+	| stmt_while								{ $$ = $1; }
+	| stmt_for									{ $$ = $1; }
+	| stmt_foreach								{ $$ = $1; }
+	| stmt_break								{ $$ = $1; }
+	| stmt_continue								{ $$ = $1; }
+	| stmt_return								{ $$ = $1; }
 	;
 
 stmt_call
@@ -148,6 +162,84 @@ stmt_notify
 stmt_wait
 	: WAIT LPAREN expr RPAREN SEMICOLON			{ $$ = new node_stmt_wait($3); }
 	| WAIT num SEMICOLON						{ $$ = new node_stmt_wait($2); }
+	;
+
+stmt_waittill
+	: object_restricted WAITTILL LPAREN expr COMMA expr_arg_list RPAREN SEMICOLON
+		{ $$ = new node_stmt_waittill($1, $4, $6); }
+	| object_restricted WAITTILL LPAREN expr RPAREN SEMICOLON
+		{ $$ = new node_stmt_waittill($1, $4, new node()); }
+	;
+
+stmt_waittillmatch
+	: object_restricted WAITTILLMATCH LPAREN expr COMMA expr RPAREN SEMICOLON
+		{ $$ = new node_stmt_waittillmatch($1, $4, $6); }
+	;
+
+stmt_waittillframeend
+	: WAITTILLFRAMEEND SEMICOLON
+		{ $$ = new node_stmt_waittillframeend(); }
+	;
+
+stmt_if
+	: IF LPAREN expr RPAREN LBRACE stmt_block RBRACE %prec IFX
+		{ $$ = new node_stmt_if($3, $6); }
+	| IF LPAREN expr RPAREN stmt %prec IFX
+		{ $$ = new node_stmt_if($3, $5); }
+	;
+
+stmt_ifelse
+	: IF LPAREN expr RPAREN LBRACE stmt_block RBRACE ELSE LBRACE stmt_block RBRACE
+		{ $$ = new node_stmt_ifelse($3, $6, $10); }
+	| IF LPAREN expr RPAREN stmt ELSE LBRACE stmt_block RBRACE
+		{ $$ = new node_stmt_ifelse($3, $5, $8); }
+	| IF LPAREN expr RPAREN LBRACE stmt_block RBRACE ELSE stmt
+		{ $$ = new node_stmt_ifelse($3, $6, $9); }
+	| IF LPAREN expr RPAREN stmt ELSE stmt
+		{ $$ = new node_stmt_ifelse($3, $5, $7); }
+	;
+
+stmt_while
+	: WHILE LPAREN expr RPAREN LBRACE stmt_block RBRACE
+		{ $$ = new node_stmt_while($3, $6); }
+	| WHILE LPAREN expr RPAREN stmt
+		{ $$ = new node_stmt_while($3, $5); }
+	;
+
+stmt_for
+	: FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN LBRACE stmt_block RBRACE
+		{ $$ = new node_stmt_for($3, $5, $7, $10); }
+	|FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN stmt
+		{ $$ = new node_stmt_for($3, $5, $7, $9); }
+	;
+
+stmt_foreach
+	: FOREACH LPAREN expr IN expr RPAREN RBRACE stmt_block RBRACE
+		{ $$ = new node_stmt_foreach($3, $5, $8); }
+	| FOREACH LPAREN expr IN expr RPAREN stmt
+		{ $$ = new node_stmt_foreach($3, $5, $7); }
+	;
+
+stmt_break
+	: BREAK SEMICOLON 							{ $$ = new node_stmt_break(); }
+	;
+stmt_continue
+	: CONTINUE SEMICOLON 						{ $$ = new node_stmt_continue(); }
+	;
+
+stmt_return
+	: RETURN expr SEMICOLON						{ $$ = new node_stmt_return($2); }
+	| RETURN SEMICOLON 							{ $$ = new node_stmt_return(new node()); }
+	;
+
+for_assign
+	: expr_assign 								{ $$ = $1; }
+	|											{ $$ = new node(); }
+	;
+
+for_cond
+	: expr_cmp 									{ $$ = $1; }
+	|											{ $$ = new node(); }
 	;
 
 /* EXPRESSIONS */
@@ -214,8 +306,7 @@ expr_unary
 	| undefined									{ $$ = $1; }
 	| LPAREN expr COMMA expr COMMA expr RPAREN 	{ $$ = new node_expr_vector($2, $4, $6); }
 	| vector									{ $$ = $1; }
-	| num_float									{ $$ = $1; }
-	| num_integer								{ $$ = $1; }
+	| num 										{ $$ = $1; }
 	| string_hash								{ $$ = $1; }
 	| string_loc								{ $$ = $1; }
 	| string									{ $$ = $1; }
@@ -258,13 +349,12 @@ expr_arg_list
 /* object.field */
 expr_select
 	: object DOT identifier						{ $$ = new node_expr_select($1, $3); }
-	| level DOT identifier						{ $$ = new node_expr_select($1, $3); }
+	| object DOT size							{ $$ = new node_expr_select($1, $3); }
 	;
 
 /* array[ "key" ] */
 expr_subscribe
 	: object LBRACKET expr RBRACKET				{ $$ = new node_expr_subscribe($1, $3); }
-	| game	LBRACKET expr RBRACKET				{ $$ = new node_expr_subscribe($1, $3); }
 	;
 
 /* ::callback, maps\load::callback */
@@ -285,12 +375,25 @@ object_restricted
 	: expr_subscribe 							{ $$ = $1; }
 	| expr_select 								{ $$ = $1; }
 	| identifier 								{ $$ = $1; }
+	| level										{ $$ = $1; }
+	| game										{ $$ = $1; }
+	;
+
+size
+	: SIZE										{ $$ = new node_size(); }
+	;
+
+false
+	: FALSE										{ $$ = new node_num_integer("0"); }
+	;
+
+true
+	: TRUE										{ $$ = new node_num_integer("1"); }
 	;
 
 level
 	: LEVEL										{ $$ = new node_level(); }
 	;
-
 
 game
 	: GAME										{ $$ = new node_game(); }
@@ -311,6 +414,8 @@ vector
 num
 	: num_float 								{ $$ = $1; }
 	| num_integer 								{ $$ = $1; }
+	| false										{ $$ = $1; }
+	| true										{ $$ = $1; }
 	;
 
 num_float 

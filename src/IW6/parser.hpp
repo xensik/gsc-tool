@@ -147,7 +147,8 @@ extern int yydebug;
     TOK_STRING_LOC = 335,          /* STRING_LOC  */
     TOK_STRING_HASH = 336,         /* STRING_HASH  */
     TOK_FLOAT = 337,               /* FLOAT  */
-    TOK_INTEGER = 338              /* INTEGER  */
+    TOK_INTEGER = 338,             /* INTEGER  */
+    TOK_IFX = 339                  /* IFX  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -165,7 +166,7 @@ union YYSTYPE
 	node_stmt_block* value_statement_block;
 	node_expr_arg_list* value_expr_arg_list;
 
-#line 169 "./IW6/parser.hpp"
+#line 170 "./IW6/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
