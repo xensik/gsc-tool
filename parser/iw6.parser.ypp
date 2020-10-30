@@ -26,7 +26,7 @@ int yyerror(yyscan_t scanner, node **astout, const char *msg);
 	using ::node;
 	using ::node_script;
 	using ::node_parameter_list;
-	using ::node_statement_block;
+	using ::node_stmt_block;
 	using ::node_expr_arg_list;
 }
 
@@ -36,7 +36,7 @@ int yyerror(yyscan_t scanner, node **astout, const char *msg);
 	node* value_node;
 	node_script* value_script;
 	node_parameter_list* value_parameter_list;
-	node_statement_block* value_statement_block;
+	node_stmt_block* value_statement_block;
 	node_expr_arg_list* value_expr_arg_list;
 }
 
@@ -48,31 +48,31 @@ int yyerror(yyscan_t scanner, node **astout, const char *msg);
 %token ENDON NOTIFY IN UNDEFINED TRUE FALSE SIZE GAME LEVEL
 
 %token EMPTY_ARRAY LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
-%token COMMA DOT DOUBLECOLON COLON SEMICOLON QMARK HASH AT
+%token COMMA DOT DOUBLECOLON COLON SEMICOLON QMARK
 %token MOD INC DEC LSHIFT RSHIFT CMP_OR CMP_AND CMP_EQUAL
-%token CMP_NOT_EQ CMP_LESS_EQ CMP_GREATER_EQ CMP_LESS CMP_GREATER ASSIGN_ADD
-%token ASSIGN_SUB ASSIGN_MULT ASSIGN_DIV ASSIGN_BW_OR ASSIGN_BW_AND
-%token ASSIGN_BW_XOR ASSIGN_BW_NOT ASSIGN ADD SUB MULT DIV NOT COMPLEMENT
-%token BW_OR BW_AND BW_XOR 
+%token CMP_NOT_EQ CMP_LESS_EQ CMP_GREATER_EQ CMP_LESS CMP_GREATER 
+%token ASSIGN ASSIGN_ADD ASSIGN_SUB ASSIGN_MULT ASSIGN_DIV ASSIGN_MOD
+%token ASSIGN_BW_OR ASSIGN_BW_AND ASSIGN_BW_XOR ASSIGN_LSHIFT ASSIGN_RSHIFT
+%token BW_OR BW_AND BW_XOR ADD SUB MULT DIV NOT COMPLEMENT
 
 %token <value_string> FILEPATH IDENTIFIER STRING STRING_LOC STRING_HASH FLOAT INTEGER
 
 %type <value_script> script
 %type <value_node> include using_animtree function
 %type <value_parameter_list> parameter_list
-%type <value_statement_block> statement_block
-%type <value_node>  statement_endon
+%type <value_statement_block> stmt_block
+%type <value_node>  stmt  stmt_call stmt_assign stmt_endon stmt_notify stmt_wait
 /*%type <value_node> statement_continue statement_break statement_assign
 %type <value_node> statement_switch_list statement_switch statement_while statement_foreach statement_for
 %type <value_node> statement_ifelse statement_if statement_endon statement_notify statement_waittillframeend
 %type <value_node> statement_waittillmatch statement_waittill statement_wait statement_return statement_call 
 %type <value_node> statement argument_list*/
 
-%type <value_node> expr
+%type <value_node> expr expr_assign expr_cmp expr_unary expr_binary expr_ternary
 %type <value_node> expr_func_call_ptr expr_func_call expr_call expr_call_thread
 %type <value_expr_arg_list> expr_arg_list
-%type <value_node> object expr_func_ref expr_subscribe expr_select
-%type <value_node> num vector undefined empty_array
+%type <value_node> object object_restricted expr_func_ref expr_subscribe expr_select
+%type <value_node> num vector undefined empty_array game level
 %type <value_node> filepath identifier string string_loc string_hash num_integer num_float
 
 %start root
@@ -103,7 +103,7 @@ using_animtree
 	;
 
 function
-	: identifier LPAREN parameter_list RPAREN LBRACE statement_block RBRACE { $$ = new node_function($1, $3, $6); }
+	: identifier LPAREN parameter_list RPAREN LBRACE stmt_block RBRACE { $$ = new node_function($1, $3, $6); }
 	;
 
 parameter_list
@@ -112,21 +112,98 @@ parameter_list
 	| 											{ $$ = new node_parameter_list(); }
 	;
 
-statement_block
-	:											{ $$ = new node_statement_block(); }
-	;
-	/*: statement_block statement_assign 		{ $$ = $1; $$->stmts.push_back($2); }
-	| statement_assign 							{ $$ = new node_statement_block(); $$->stmts.push_back($1); }*/			
-
-statement_endon
-	: object ENDON LPAREN expr RPAREN SEMICOLON
+stmt_block
+	: stmt_block stmt 							{ $$ = $1; $$->stmts.push_back($2); }
+	| stmt 										{$$ = new node_stmt_block(); $$->stmts.push_back($1); }
+	|											{ $$ = new node_stmt_block(); }
 	;
 
+/* STATEMENTS */
+stmt
+	: stmt_call 								{ $$ = $1; }
+	| stmt_assign 								{ $$ = $1; }
+	| stmt_endon 								{ $$ = $1; }
+	| stmt_notify 								{ $$ = $1; }
+	| stmt_wait 								{ $$ = $1; }
+	;
+
+stmt_call
+	: expr_call SEMICOLON						{ $$ = new node_stmt_call($1); }
+	| expr_call_thread SEMICOLON				{ $$ = new node_stmt_call($1); }
+	;
+
+stmt_assign
+	: expr_assign SEMICOLON	{ $$ = new node_stmt_assign($1); }
+	;
+
+stmt_endon
+	: object_restricted ENDON LPAREN expr RPAREN SEMICOLON { $$ = new node_stmt_endon($1, $4); }
+	;
+
+stmt_notify
+	: object_restricted NOTIFY LPAREN expr COMMA expr_arg_list RPAREN SEMICOLON { $$ = new node_stmt_notify($1, $4, $6); }
+	| object_restricted NOTIFY LPAREN expr RPAREN SEMICOLON { $$ = new node_stmt_notify($1, $4, new node()); }
+	;
+
+stmt_wait
+	: WAIT LPAREN expr RPAREN SEMICOLON			{ $$ = new node_stmt_wait($3); }
+	| WAIT num SEMICOLON						{ $$ = new node_stmt_wait($2); }
+	;
+
+/* EXPRESSIONS */
 expr
-	:
-	| expr_cmp									{ $$ = $1; }
+	: expr_cmp									{ $$ = $1; }
+	| expr_ternary								{ $$ = $1; }
 	| expr_binary								{ $$ = $1; }
-	| COMPLEMENT expr							{ $$ = new node_expr_complement($2); }
+	| expr_unary								{ $$ = $1; }
+	;
+
+expr_assign
+	: object_restricted INC						{ $$ = new node_expr_inc($1); }
+	| object_restricted DEC						{ $$ = new node_expr_dec($1); }
+	| object_restricted ASSIGN expr				{ $$ = new node_expr_assign($1, $3); }
+	| object_restricted ASSIGN_BW_OR expr		{ $$ = new node_expr_assign_bw_or($1, $3); }
+	| object_restricted ASSIGN_BW_AND expr		{ $$ = new node_expr_assign_bw_and($1, $3); }
+	| object_restricted ASSIGN_BW_XOR expr		{ $$ = new node_expr_assign_bw_xor($1, $3); }
+	| object_restricted ASSIGN_LSHIFT expr		{ $$ = new node_expr_assign_shift_left($1, $3); }
+	| object_restricted ASSIGN_RSHIFT expr 		{ $$ = new node_expr_assign_shift_right($1, $3); }
+	| object_restricted ASSIGN_ADD expr			{ $$ = new node_expr_assign_add($1, $3); }
+	| object_restricted ASSIGN_SUB expr			{ $$ = new node_expr_assign_sub($1, $3); }
+	| object_restricted ASSIGN_MULT expr		{ $$ = new node_expr_assign_mult($1, $3); }
+	| object_restricted ASSIGN_DIV expr			{ $$ = new node_expr_assign_div($1, $3); }
+	| object_restricted ASSIGN_MOD expr 		{ $$ = new node_expr_assign_mod($1, $3); }
+	;
+
+expr_cmp
+	: expr CMP_OR expr							{ $$ = new node_expr_cmp_or($1, $3); }
+	| expr CMP_AND expr							{ $$ = new node_expr_cmp_and($1, $3); }
+	| expr CMP_EQUAL expr						{ $$ = new node_expr_cmp_equal($1, $3); }
+	| expr CMP_NOT_EQ expr						{ $$ = new node_expr_cmp_not_equal($1, $3); }
+	| expr CMP_LESS_EQ expr						{ $$ = new node_expr_cmp_less_equal($1, $3); }
+	| expr CMP_GREATER_EQ expr					{ $$ = new node_expr_cmp_greater_equal($1, $3); }
+	| expr CMP_LESS expr						{ $$ = new node_expr_cmp_less($1, $3); }
+	| expr CMP_GREATER expr						{ $$ = new node_expr_cmp_greater($1, $3); }
+	;
+
+expr_ternary
+	: expr_cmp QMARK expr COLON expr   			{ $$ = new node_expr_ternary($1, $3, $5); }
+	;
+
+expr_binary
+	: expr BW_OR expr							{ $$ = new node_expr_bw_or($1, $3); }
+	| expr BW_AND expr							{ $$ = new node_expr_bw_and($1, $3); }
+	| expr BW_XOR expr							{ $$ = new node_expr_bw_xor($1, $3); }
+	| expr LSHIFT expr							{ $$ = new node_expr_shift_left($1, $3); }
+	| expr RSHIFT expr 							{ $$ = new node_expr_shift_right($1, $3); }
+	| expr ADD expr								{ $$ = new node_expr_add($1, $3); }
+	| expr SUB expr								{ $$ = new node_expr_sub($1, $3); }
+	| expr MULT expr							{ $$ = new node_expr_mult($1, $3); }
+	| expr DIV expr								{ $$ = new node_expr_div($1, $3); }
+	| expr MOD expr 							{ $$ = new node_expr_mod($1, $3); }
+	;
+
+expr_unary
+	: COMPLEMENT expr							{ $$ = new node_expr_complement($2); }
 	| NOT expr									{ $$ = new node_expr_not($2); }
 	| expr_call									{ $$ = $1; }
 	| expr_call_thread							{ $$ = $1; }
@@ -143,20 +220,7 @@ expr
 	| string_loc								{ $$ = $1; }
 	| string									{ $$ = $1; }
 	| identifier 								{ $$ = $1; }
-	| LPAREN expr RPAREN						{ $$ = $1; }
-	;
-
-expr_cmp
-	:
-	;
-
-expr_binary
-	:
-	| expr ADD expr
-	| expr SUB expr
-	| expr MULT expr
-	| expr DIV expr
-	| expr MOD expr
+	| LPAREN expr RPAREN						{ $$ = $2; }
 	;
 
 expr_call
@@ -175,7 +239,7 @@ expr_call_thread
 
 /* function("arg", 1) // file::function("arg", 1) */
 expr_func_call
-	: identifier LPAREN expr_arg_list RPAREN							{ $$ = new node_expr_func_call(new node(), $3, $5); }
+	: identifier LPAREN expr_arg_list RPAREN							{ $$ = new node_expr_func_call(new node(), $1, $3); }
 	| filepath DOUBLECOLON identifier LPAREN expr_arg_list RPAREN		{ $$ = new node_expr_func_call($1, $3, $5); }
 	| identifier DOUBLECOLON identifier LPAREN expr_arg_list RPAREN		{ $$ = new node_expr_func_call($1, $3, $5); }
 	;
@@ -198,8 +262,8 @@ expr_select
 
 /* array[ "key" ] */
 expr_subscribe
-	:
-	| object LBRACKET expr RBRACKET				{ $$ = new node_expr_subscribe($1, $3); }
+	: object LBRACKET expr RBRACKET				{ $$ = new node_expr_subscribe($1, $3); }
+	| game	LBRACKET expr RBRACKET				{ $$ = new node_expr_subscribe($1, $3); }
 	;
 
 /* ::callback, maps\load::callback */
@@ -212,9 +276,23 @@ expr_func_ref
 /* localvar.*, level.*, arrays[xx].*, var.id.*  func(xx).*  */
 object
 	: expr_call 								{ $$ = $1; }
-	| expr_subscribe 							{ $$ = $1; }
+	| object_restricted							{ $$ = $1; }
+	;
+
+/* can be refered (localvar = , level.* = , arrays[xx] = *) */
+object_restricted
+	: expr_subscribe 							{ $$ = $1; }
 	| expr_select 								{ $$ = $1; }
 	| identifier 								{ $$ = $1; }
+	;
+
+level
+	: LEVEL										{ $$ = new node_level(); }
+	;
+
+
+game
+	: GAME										{ $$ = new node_game(); }
 	;
 
 empty_array 

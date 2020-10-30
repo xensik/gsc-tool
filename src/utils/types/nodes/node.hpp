@@ -22,6 +22,8 @@ enum class node_type
     vector,
     undefined,
     empty_array,
+    game,
+    level,
     // missing %animref
     //
     expr_vector,
@@ -33,71 +35,61 @@ enum class node_type
     expr_func_call,
     expr_call_thread,
     expr_call,
+    expr_complement,
+    expr_not,
+    expr_add,
+    expr_sub,
+    expr_mult,
+    expr_div,
+    expr_mod,
+    expr_shift_left,
+    expr_shift_right,
+    expr_bw_or,
+    expr_bw_and,
+    expr_bw_xor,
+    expr_ternary,
+    expr_cmp_equal,
+    expr_cmp_not_equal,
+    expr_cmp_less_equal,
+    expr_cmp_greater_equal,
+    expr_cmp_less,
+    expr_cmp_greater,
+    expr_cmp_or,
+    expr_cmp_and,
+    expr_assign,
+    expr_assign_add,
+    expr_assign_sub,
+    expr_assign_mult,
+    expr_assign_div,
+    expr_assign_mod,
+    expr_assign_shift_left,
+    expr_assign_shift_right,
+    expr_assign_bw_or,
+    expr_assign_bw_and,
+    expr_assign_bw_xor,
+    expr_inc,
+    expr_dec,
+    stmt_call,
+    stmt_assign,
+    stmt_endon,
+    stmt_notify,
+    stmt_wait,
+    stmt_waittill,
+    stmt_waittillmatch,
+    stmt_waittillframeend,
 
-    expression, // abstract node!
+    stmt_if,
+    stmt_ifelse,
+    stmt_for,
+    stmt_foreach,
+    stmt_while,
+    stmt_switch,
+    stmt_switch_list,
+    stmt_break,
+    stmt_continue,
+    stmt_return,
 
-    // primitive expressions
-    expression_variable,
-    // eval_local_var
-    // eval_local_var_cached
-    // variable_array
-    
-    
-
-    expression_binary_or,
-    expression_binary_exor,
-    expression_binary_and,
-    expression_binary_equality,
-    expression_binary_inequality,
-    expression_binary_less,
-    expression_binary_greater,
-    expression_binary_equal,
-    expression_binary_less_equal,
-    expression_binary_greater_equal,
-    expression_binary_shift_left,
-    expression_binary_shift_right,
-    expression_binary_plus,
-    expression_binary_minus,
-    expression_binary_multiply,
-    expression_binary_divide,
-    expression_binary_mod,
-
-
-    expression_call, // abstract node!
-    expression_call_function,
-    expression_call_method,
-    expression_call_function_pointer,
-    expression_call_method_pointer,
-    expression_call_function_thread,
-    expression_call_method_thread,
-    expression_call_function_thread_pointer,
-    expression_call_method_thread_pointer,
-
-    expression_variable_ref, // used on assignment
-    expression_variable_local_ref,
-    expression_variable_array_ref,
-    expression_variable_field_ref,
-
-    statement, // abstract node!
-    statement_assign,
-    statement_call,
-    statement_return,
-    statement_wait,
-    statement_waittill,
-    statement_waittillmatch,
-    statement_waittillframeend,
-    statement_notify,
-    statement_endon,
-    statement_if,
-    statement_ifelse,
-    statement_for,
-    statement_foreach,
-    statement_while,
-    statement_switch,
-    statement_switch_list,
-    statement_break,
-    statement_continue,
-    statement_block,
+    stmt_block,
     parameter_list,
     function,
     using_animtree,
@@ -220,6 +212,26 @@ struct node_empty_array : public node
     }
 };
 
+struct node_game : public node
+{
+    node_game() : node(node_type::game) {}
+
+    auto print() -> std::string override
+    {
+        return "game";
+    }
+};
+
+struct node_level : public node
+{
+    node_level() : node(node_type::level) {}
+
+    auto print() -> std::string override
+    {
+        return "level";
+    }
+};
+
 struct node_expr_vector : public node
 {
     node* x;
@@ -288,20 +300,20 @@ struct node_expr_arg_list : public node
 
         for (const auto& arg : args)
         {
-            data += arg->print();
-            if (&arg != &args.back()) data += ", ";
+            data += " " + arg->print();
+            data += (&arg != &args.back()) ? "," : " ";
         }
 
         return data;
     }
 };
-
-struct expr_func_call_ptr : public node
+ 
+struct node_expr_func_call_ptr : public node
 {
     node* expr;
     node* arg_list;
 
-    expr_func_call_ptr(node* expr, node* arg_list)
+    node_expr_func_call_ptr(node* expr, node* arg_list)
         : node(node_type::expr_func_call_ptr), expr(expr), arg_list(arg_list) {}
 
     auto print() -> std::string override
@@ -310,13 +322,13 @@ struct expr_func_call_ptr : public node
     }
 };
 
-struct expr_func_call : public node
+struct node_expr_func_call : public node
 {
     node* file;
     node* func;
     node* arg_list;
 
-    expr_func_call(node* file, node* func, node* arg_list)
+    node_expr_func_call(node* file, node* func, node* arg_list)
         : node(node_type::expr_func_call), file(file), func(func), arg_list(arg_list) {}
 
     auto print() -> std::string override
@@ -330,12 +342,12 @@ struct expr_func_call : public node
     }
 };
 
-struct expr_call_thread : public node
+struct node_expr_call_thread : public node
 {
     node* obj;
     node* call;
 
-    expr_call_thread(node* obj, node* call)
+    node_expr_call_thread(node* obj, node* call)
         : node(node_type::expr_call_thread), obj(obj), call(call) {}
 
     auto print() -> std::string override
@@ -349,13 +361,13 @@ struct expr_call_thread : public node
     }
 };
 
-struct expr_call : public node
+struct node_expr_call : public node
 {
     node* obj;
     node* call;
 
-    expr_call(node* obj, node* call)
-        : node(node_type::expr_call_thread), obj(obj), call(call) {}
+    node_expr_call(node* obj, node* call)
+        : node(node_type::expr_call), obj(obj), call(call) {}
 
     auto print() -> std::string override
     {
@@ -368,26 +380,478 @@ struct expr_call : public node
     }
 };
 
+struct node_expr_complement : public node
+{
+    node* rvalue;
 
+    node_expr_complement(node* rvalue)
+        : node(node_type::expr_complement), rvalue(rvalue) {}
 
-struct node_statement_assign : public node
+    auto print() -> std::string override
+    {
+        return "~" + rvalue->print();
+    }
+};
+
+struct node_expr_not : public node
+{
+    node* rvalue;
+
+    node_expr_not(node* rvalue)
+        : node(node_type::expr_not), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return "!" + rvalue->print();
+    }
+};
+
+struct node_expr_add : public node
 {
     node* lvalue;
     node* rvalue;
 
-    node_statement_assign(node* lvalue, node* rvalue) : node(node_type::statement_assign), lvalue(lvalue), rvalue(rvalue) {}
+    node_expr_add(node* lvalue, node* rvalue)
+        : node(node_type::expr_add), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " + " + rvalue->print();
+    }
+};
+
+struct node_expr_sub : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_sub(node* lvalue, node* rvalue)
+        : node(node_type::expr_sub), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " - " + rvalue->print();
+    }
+};
+
+struct node_expr_mult : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_mult(node* lvalue, node* rvalue)
+        : node(node_type::expr_mult), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " * " + rvalue->print();
+    }
+};
+
+struct node_expr_div : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_div(node* lvalue, node* rvalue)
+        : node(node_type::expr_div), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " / " + rvalue->print();
+    }
+};
+
+struct node_expr_mod : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_mod(node* lvalue, node* rvalue)
+        : node(node_type::expr_mod), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " % " + rvalue->print();
+    }
+};
+
+struct node_expr_shift_left : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_shift_left(node* lvalue, node* rvalue)
+        : node(node_type::expr_shift_left), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " << " + rvalue->print();
+    }
+};
+
+struct node_expr_shift_right : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_shift_right(node* lvalue, node* rvalue)
+        : node(node_type::expr_shift_right), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " >> " + rvalue->print();
+    }
+};
+
+struct node_expr_bw_or : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_bw_or(node* lvalue, node* rvalue)
+        : node(node_type::expr_bw_or), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " | " + rvalue->print();
+    }
+};
+
+struct node_expr_bw_and : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_bw_and(node* lvalue, node* rvalue)
+        : node(node_type::expr_bw_and), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " & " + rvalue->print();
+    }
+};
+
+struct node_expr_bw_xor : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_bw_xor(node* lvalue, node* rvalue)
+        : node(node_type::expr_bw_xor), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " ^ " + rvalue->print();
+    }
+};
+
+struct node_expr_ternary : public node
+{
+    node* cmp;
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_ternary(node* cmp, node* lvalue, node* rvalue)
+        : node(node_type::expr_bw_xor), cmp(cmp), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return cmp->print() + " ? " + lvalue->print() + " : " + rvalue->print();
+    }
+};
+
+struct node_expr_cmp_equal : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_cmp_equal(node* lvalue, node* rvalue)
+        : node(node_type::expr_cmp_equal), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " == " + rvalue->print();
+    }
+};
+
+struct node_expr_cmp_not_equal : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_cmp_not_equal(node* lvalue, node* rvalue)
+        : node(node_type::expr_cmp_not_equal), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " != " + rvalue->print();
+    }
+};
+
+struct node_expr_cmp_less_equal : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_cmp_less_equal(node* lvalue, node* rvalue)
+        : node(node_type::expr_cmp_less_equal), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " <= " + rvalue->print();
+    }
+};
+
+struct node_expr_cmp_greater_equal : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_cmp_greater_equal(node* lvalue, node* rvalue)
+        : node(node_type::expr_cmp_greater_equal), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " >= " + rvalue->print();
+    }
+};
+
+struct node_expr_cmp_less : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_cmp_less(node* lvalue, node* rvalue)
+        : node(node_type::expr_cmp_less), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " < " + rvalue->print();
+    }
+};
+
+struct node_expr_cmp_greater : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_cmp_greater(node* lvalue, node* rvalue)
+        : node(node_type::expr_cmp_greater), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " > " + rvalue->print();
+    }
+};
+
+struct node_expr_cmp_or : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_cmp_or(node* lvalue, node* rvalue)
+        : node(node_type::expr_cmp_or), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " || " + rvalue->print();
+    }
+};
+
+struct node_expr_cmp_and : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_cmp_and(node* lvalue, node* rvalue)
+        : node(node_type::expr_cmp_and), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " && " + rvalue->print();
+    }
+};
+
+struct node_expr_assign : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_assign(node* lvalue, node* rvalue) : node(node_type::expr_assign), lvalue(lvalue), rvalue(rvalue) {}
     
     auto print()->std::string override
     {
-        return lvalue->print() + " = " + rvalue->print() + ";";
+        return lvalue->print() + " = " + rvalue->print() ;
     };
 };
 
-struct node_statement_call : public node
+struct node_expr_assign_add : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_assign_add(node* lvalue, node* rvalue) : node(node_type::expr_assign_add), lvalue(lvalue), rvalue(rvalue) {}
+    
+    auto print()->std::string override
+    {
+        return lvalue->print() + " += " + rvalue->print() ;
+    };
+};
+
+struct node_expr_assign_sub : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_assign_sub(node* lvalue, node* rvalue) : node(node_type::expr_assign_sub), lvalue(lvalue), rvalue(rvalue) {}
+    
+    auto print()->std::string override
+    {
+        return lvalue->print() + " -= " + rvalue->print() ;
+    };
+};
+
+struct node_expr_assign_mult : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_assign_mult(node* lvalue, node* rvalue) : node(node_type::expr_assign_mult), lvalue(lvalue), rvalue(rvalue) {}
+    
+    auto print()->std::string override
+    {
+        return lvalue->print() + " *= " + rvalue->print() ;
+    };
+};
+
+struct node_expr_assign_div : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_assign_div(node* lvalue, node* rvalue) : node(node_type::expr_assign_div), lvalue(lvalue), rvalue(rvalue) {}
+    
+    auto print()->std::string override
+    {
+        return lvalue->print() + " /= " + rvalue->print() ;
+    };
+};
+
+struct node_expr_assign_mod : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_assign_mod(node* lvalue, node* rvalue) : node(node_type::expr_assign_mod), lvalue(lvalue), rvalue(rvalue) {}
+    
+    auto print()->std::string override
+    {
+        return lvalue->print() + " %= " + rvalue->print() ;
+    };
+};
+
+struct node_expr_assign_shift_left : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_assign_shift_left(node* lvalue, node* rvalue)
+        : node(node_type::expr_assign_shift_left), lvalue(lvalue), rvalue(rvalue) {}
+    
+    auto print()->std::string override
+    {
+        return lvalue->print() + " <<= " + rvalue->print() ;
+    };
+};
+
+struct node_expr_assign_shift_right : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_assign_shift_right(node* lvalue, node* rvalue)
+        : node(node_type::expr_assign_shift_right), lvalue(lvalue), rvalue(rvalue) {}
+    
+    auto print()->std::string override
+    {
+        return lvalue->print() + " >>= " + rvalue->print() ;
+    };
+};
+
+struct node_expr_assign_bw_or : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_assign_bw_or(node* lvalue, node* rvalue)
+        : node(node_type::expr_assign_bw_or), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " |= " + rvalue->print();
+    }
+};
+
+struct node_expr_assign_bw_and : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_assign_bw_and(node* lvalue, node* rvalue)
+        : node(node_type::expr_assign_bw_and), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " &= " + rvalue->print();
+    }
+};
+
+struct node_expr_assign_bw_xor : public node
+{
+    node* lvalue;
+    node* rvalue;
+
+    node_expr_assign_bw_xor(node* lvalue, node* rvalue)
+        : node(node_type::expr_assign_bw_xor), lvalue(lvalue), rvalue(rvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + " ^= " + rvalue->print();
+    }
+};
+
+struct node_expr_inc : public node
+{
+    node* lvalue;
+
+    node_expr_inc(node* lvalue)
+        : node(node_type::expr_inc), lvalue(lvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + "++";
+    }
+};
+
+struct node_expr_dec : public node
+{
+    node* lvalue;
+
+    node_expr_dec(node* lvalue)
+        : node(node_type::expr_inc), lvalue(lvalue) {}
+
+    auto print() -> std::string override
+    {
+        return lvalue->print() + "--";
+    }
+};
+
+struct node_stmt_call : public node
 {
     node* expr;
 
-    node_statement_call(node* expr) : node(node_type::statement_call), expr(expr) {}
+    node_stmt_call(node* expr) : node(node_type::stmt_call), expr(expr) {}
 
     auto print()->std::string override
     {
@@ -395,23 +859,58 @@ struct node_statement_call : public node
     };
 };
 
-struct node_statement_return : public node
+struct node_stmt_assign : public node
 {
     node* expr;
 
-    node_statement_return(node* expr) : node(node_type::statement_return), expr(expr) {}
-
-    auto print() -> std::string override
+    node_stmt_assign(node* expr) : node(node_type::stmt_assign), expr(expr) {}
+    
+    auto print()->std::string override
     {
-        return "return " + expr->print() + ";";
+        return expr->print() + ";";
     };
 };
 
-struct node_statement_wait : public node
+struct node_stmt_endon : public node
+{
+    node* obj;
+    node* expr;
+
+    node_stmt_endon(node* obj, node* expr) : node(node_type::stmt_endon), obj(obj), expr(expr) {}
+
+    auto print() -> std::string override
+    {
+        return obj->print() + " endon( " + expr->print() + " );";
+    };
+};
+
+struct node_stmt_notify : public node
+{
+    node* obj;
+    node* expr;
+    node* params;
+
+    node_stmt_notify(node* obj, node* expr, node* params)
+        : node(node_type::stmt_notify), obj(obj), expr(expr), params(params) {}
+
+    auto print() -> std::string override
+    {
+        if (params->type == node_type::null) // TODO: solve empty arg_list => ' notify("ok",) '
+        {
+            return obj->print() + " notify( " + expr->print() + " );"; 
+        }
+        else
+        {
+            return obj->print() + " notify( " + expr->print() + ", " + params->print() + " );";
+        }
+    };
+};
+
+struct node_stmt_wait : public node
 {
     node* expr;
 
-    node_statement_wait(node* expr) : node(node_type::statement_wait), expr(expr) {}
+    node_stmt_wait(node* expr) : node(node_type::stmt_wait), expr(expr) {}
 
     auto print() -> std::string override
     {
@@ -419,14 +918,14 @@ struct node_statement_wait : public node
     };
 };
 
-struct node_statement_waittill : public node
+struct node_stmt_waittill : public node
 {
     node* obj;
     node* expr;
     node* params;
 
-    node_statement_waittill(node* obj, node* expr, node* params)
-        : node(node_type::statement_waittill), obj(obj), expr(expr), params(params) {}
+    node_stmt_waittill(node* obj, node* expr, node* params)
+        : node(node_type::stmt_waittill), obj(obj), expr(expr), params(params) {}
 
     auto print() -> std::string override
     {
@@ -441,14 +940,14 @@ struct node_statement_waittill : public node
     };
 };
 
-struct node_statement_waittillmatch : public node
+struct node_stmt_waittillmatch : public node
 {
     node* obj;
     node* lexpr;
     node* rexpr;
 
-    node_statement_waittillmatch(node* obj, node* lexpr, node* rexpr)
-        : node(node_type::statement_waittillmatch), obj(obj), lexpr(lexpr), rexpr(rexpr) {}
+    node_stmt_waittillmatch(node* obj, node* lexpr, node* rexpr)
+        : node(node_type::stmt_waittillmatch), obj(obj), lexpr(lexpr), rexpr(rexpr) {}
 
     auto print() -> std::string override
     {
@@ -456,9 +955,9 @@ struct node_statement_waittillmatch : public node
     };
 };
 
-struct node_statement_waittillframeend : public node
+struct node_stmt_waittillframeend : public node
 {
-    node_statement_waittillframeend() : node(node_type::statement_waittillframeend) {}
+    node_stmt_waittillframeend() : node(node_type::stmt_waittillframeend) {}
 
     auto print() -> std::string override
     {
@@ -466,47 +965,15 @@ struct node_statement_waittillframeend : public node
     };
 };
 
-struct node_statement_notify : public node
-{
-    node* obj;
-    node* expr;
-    node* params;
 
-    node_statement_notify(node* obj, node* expr, node* params)
-        : node(node_type::statement_notify), obj(obj), expr(expr), params(params) {}
 
-    auto print() -> std::string override
-    {
-        if (params->type == node_type::null)
-        {
-            return obj->print() + " notify( " + expr->print() + " );"; 
-        }
-        else
-        {
-            return obj->print() + " notify( " + expr->print() + ", " + params->print() + " );";
-        }
-    };
-};
 
-struct node_statement_endon : public node
-{
-    node* obj;
-    node* expr;
-
-    node_statement_endon(node* obj, node* expr) : node(node_type::statement_endon), obj(obj), expr(expr) {}
-
-    auto print() -> std::string override
-    {
-        return obj->print() + " endon( " + expr->print() + " );";
-    };
-};
-
-struct node_statement_if : public node
+struct node_stmt_if : public node
 {
     node* expr;
     node* stmt;
 
-    node_statement_if(node* expr, node* stmt) : node(node_type::statement_if), expr(expr), stmt(stmt) {}
+    node_stmt_if(node* expr, node* stmt) : node(node_type::stmt_if), expr(expr), stmt(stmt) {}
 
     auto print() -> std::string override
     {
@@ -514,14 +981,14 @@ struct node_statement_if : public node
     };
 };
 
-struct node_statement_ifelse : public node
+struct node_stmt_ifelse : public node
 {
     node* expr;
     node* stmt;
     node* stmt2;
 
-    node_statement_ifelse(node* expr, node* stmt, node* stmt2)
-        : node(node_type::statement_ifelse), expr(expr), stmt(stmt), stmt2(stmt2) {}
+    node_stmt_ifelse(node* expr, node* stmt, node* stmt2)
+        : node(node_type::stmt_ifelse), expr(expr), stmt(stmt), stmt2(stmt2) {}
 
     auto print() -> std::string override
     {
@@ -529,15 +996,15 @@ struct node_statement_ifelse : public node
     };
 };
 
-struct node_statement_for : public node
+struct node_stmt_for : public node
 {
     node* stmt1;
     node* expr;
     node* stmt2;
     node* stmt;
 
-    node_statement_for(node* stmt1, node* expr, node* stmt2, node* stmt)
-        : node(node_type::statement_for), stmt1(stmt1), expr(expr), stmt2(stmt2), stmt(stmt) {}
+    node_stmt_for(node* stmt1, node* expr, node* stmt2, node* stmt)
+        : node(node_type::stmt_for), stmt1(stmt1), expr(expr), stmt2(stmt2), stmt(stmt) {}
 
     auto print() -> std::string override
     {
@@ -552,14 +1019,14 @@ struct node_statement_for : public node
     };
 };
 
-struct node_statement_foreach : public node
+struct node_stmt_foreach : public node
 {
     node* stmt1;
     node* stmt2;
     node* stmt;
 
-    node_statement_foreach(node* stmt1, node* stmt2, node* stmt)
-        : node(node_type::statement_foreach), stmt1(stmt1), stmt2(stmt2), stmt(stmt) {}
+    node_stmt_foreach(node* stmt1, node* stmt2, node* stmt)
+        : node(node_type::stmt_foreach), stmt1(stmt1), stmt2(stmt2), stmt(stmt) {}
 
     auto print() -> std::string override
     {
@@ -568,13 +1035,13 @@ struct node_statement_foreach : public node
     };
 };
 
-struct node_statement_while : public node
+struct node_stmt_while : public node
 {
     node* expr;
     node* stmt;
 
-    node_statement_while(node* expr, node* stmt)
-        : node(node_type::statement_while), expr(expr), stmt(stmt) {}
+    node_stmt_while(node* expr, node* stmt)
+        : node(node_type::stmt_while), expr(expr), stmt(stmt) {}
 
     auto print() -> std::string override
     {
@@ -589,19 +1056,29 @@ struct node_statement_while : public node
     };
 };
 
+struct node_stmt_return : public node
+{
+    node* expr;
 
+    node_stmt_return(node* expr) : node(node_type::stmt_return), expr(expr) {}
+
+    auto print() -> std::string override
+    {
+        return "return " + expr->print() + ";";
+    };
+};
 /*
-    statement_switch,
-    statement_switch_list,
-    statement_break,
-    statement_continue,
+    stmt_switch,
+    stmt_switch_list,
+    stmt_break,
+    stmt_continue,
 */
 
-struct node_statement_block : public node
+struct node_stmt_block : public node
 {
     std::vector<node*> stmts;
 
-    node_statement_block() : node(node_type::statement_block) {}
+    node_stmt_block() : node(node_type::stmt_block) {}
 
     auto print() -> std::string override
     {

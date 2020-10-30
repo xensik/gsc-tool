@@ -53,9 +53,10 @@ extern int yydebug;
 	using ::node;
 	using ::node_script;
 	using ::node_parameter_list;
-	using ::node_statement_block;
+	using ::node_stmt_block;
+	using ::node_expr_arg_list;
 
-#line 59 "./IW6/parser.hpp"
+#line 60 "./IW6/parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -107,39 +108,39 @@ extern int yydebug;
     TOK_COLON = 296,               /* COLON  */
     TOK_SEMICOLON = 297,           /* SEMICOLON  */
     TOK_QMARK = 298,               /* QMARK  */
-    TOK_HASH = 299,                /* HASH  */
-    TOK_AT = 300,                  /* AT  */
-    TOK_MOD = 301,                 /* MOD  */
-    TOK_INC = 302,                 /* INC  */
-    TOK_DEC = 303,                 /* DEC  */
-    TOK_LSHIFT = 304,              /* LSHIFT  */
-    TOK_RSHIFT = 305,              /* RSHIFT  */
-    TOK_CMP_OR = 306,              /* CMP_OR  */
-    TOK_CMP_AND = 307,             /* CMP_AND  */
-    TOK_CMP_EQUAL = 308,           /* CMP_EQUAL  */
-    TOK_CMP_NOT_EQ = 309,          /* CMP_NOT_EQ  */
-    TOK_CMP_LESS_EQ = 310,         /* CMP_LESS_EQ  */
-    TOK_CMP_GREATER_EQ = 311,      /* CMP_GREATER_EQ  */
-    TOK_CMP_LESS = 312,            /* CMP_LESS  */
-    TOK_CMP_GREATER = 313,         /* CMP_GREATER  */
-    TOK_ASSIGN_ADD = 314,          /* ASSIGN_ADD  */
-    TOK_ASSIGN_SUB = 315,          /* ASSIGN_SUB  */
-    TOK_ASSIGN_MULT = 316,         /* ASSIGN_MULT  */
-    TOK_ASSIGN_DIV = 317,          /* ASSIGN_DIV  */
+    TOK_MOD = 299,                 /* MOD  */
+    TOK_INC = 300,                 /* INC  */
+    TOK_DEC = 301,                 /* DEC  */
+    TOK_LSHIFT = 302,              /* LSHIFT  */
+    TOK_RSHIFT = 303,              /* RSHIFT  */
+    TOK_CMP_OR = 304,              /* CMP_OR  */
+    TOK_CMP_AND = 305,             /* CMP_AND  */
+    TOK_CMP_EQUAL = 306,           /* CMP_EQUAL  */
+    TOK_CMP_NOT_EQ = 307,          /* CMP_NOT_EQ  */
+    TOK_CMP_LESS_EQ = 308,         /* CMP_LESS_EQ  */
+    TOK_CMP_GREATER_EQ = 309,      /* CMP_GREATER_EQ  */
+    TOK_CMP_LESS = 310,            /* CMP_LESS  */
+    TOK_CMP_GREATER = 311,         /* CMP_GREATER  */
+    TOK_ASSIGN = 312,              /* ASSIGN  */
+    TOK_ASSIGN_ADD = 313,          /* ASSIGN_ADD  */
+    TOK_ASSIGN_SUB = 314,          /* ASSIGN_SUB  */
+    TOK_ASSIGN_MULT = 315,         /* ASSIGN_MULT  */
+    TOK_ASSIGN_DIV = 316,          /* ASSIGN_DIV  */
+    TOK_ASSIGN_MOD = 317,          /* ASSIGN_MOD  */
     TOK_ASSIGN_BW_OR = 318,        /* ASSIGN_BW_OR  */
     TOK_ASSIGN_BW_AND = 319,       /* ASSIGN_BW_AND  */
     TOK_ASSIGN_BW_XOR = 320,       /* ASSIGN_BW_XOR  */
-    TOK_ASSIGN_BW_NOT = 321,       /* ASSIGN_BW_NOT  */
-    TOK_ASSIGN = 322,              /* ASSIGN  */
-    TOK_ADD = 323,                 /* ADD  */
-    TOK_SUB = 324,                 /* SUB  */
-    TOK_MULT = 325,                /* MULT  */
-    TOK_DIV = 326,                 /* DIV  */
-    TOK_NOT = 327,                 /* NOT  */
-    TOK_BW_OR = 328,               /* BW_OR  */
-    TOK_BW_AND = 329,              /* BW_AND  */
-    TOK_BW_XOR = 330,              /* BW_XOR  */
-    TOK_BW_NOT = 331,              /* BW_NOT  */
+    TOK_ASSIGN_LSHIFT = 321,       /* ASSIGN_LSHIFT  */
+    TOK_ASSIGN_RSHIFT = 322,       /* ASSIGN_RSHIFT  */
+    TOK_BW_OR = 323,               /* BW_OR  */
+    TOK_BW_AND = 324,              /* BW_AND  */
+    TOK_BW_XOR = 325,              /* BW_XOR  */
+    TOK_ADD = 326,                 /* ADD  */
+    TOK_SUB = 327,                 /* SUB  */
+    TOK_MULT = 328,                /* MULT  */
+    TOK_DIV = 329,                 /* DIV  */
+    TOK_NOT = 330,                 /* NOT  */
+    TOK_COMPLEMENT = 331,          /* COMPLEMENT  */
     TOK_FILEPATH = 332,            /* FILEPATH  */
     TOK_IDENTIFIER = 333,          /* IDENTIFIER  */
     TOK_STRING = 334,              /* STRING  */
@@ -155,15 +156,16 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 33 "iw6.parser.ypp"
+#line 34 "iw6.parser.ypp"
 
 	char* value_string;
 	node* value_node;
 	node_script* value_script;
 	node_parameter_list* value_parameter_list;
-	node_statement_block* value_statement_block;
+	node_stmt_block* value_statement_block;
+	node_expr_arg_list* value_expr_arg_list;
 
-#line 167 "./IW6/parser.hpp"
+#line 169 "./IW6/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

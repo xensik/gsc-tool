@@ -67,7 +67,7 @@ RGX_DEFAULT		    (.|\n)
 "game"		        { return TOK_GAME; }
 "level"		        { return TOK_LEVEL; }
 
-\[\]                { return TOK_EMPTY_ARRAY; }
+"[]"                { return TOK_EMPTY_ARRAY; }
 \(			        { return TOK_LPAREN; }
 \)			        { return TOK_RPAREN; }
 \{			        { return TOK_LBRACE; }
@@ -80,11 +80,11 @@ RGX_DEFAULT		    (.|\n)
 \:			        { return TOK_COLON; }
 \;			        { return TOK_SEMICOLON; }
 \?			        { return TOK_QMARK; }
-\#			        { return TOK_HASH; }
-\@		            { return TOK_AT; }
-%			        { return TOK_MOD; }
+
 \+\+		        { return TOK_INC; }
 \-\-		        { return TOK_DEC; }
+\<\<\=		        { return TOK_ASSIGN_LSHIFT; }
+\>\>\=		        { return TOK_ASSIGN_RSHIFT; }
 \<\<		        { return TOK_LSHIFT; }
 \>\>		        { return TOK_RSHIFT; }
 \|\|		        { return TOK_CMP_OR; }
@@ -99,15 +99,16 @@ RGX_DEFAULT		    (.|\n)
 \-\=		        { return TOK_ASSIGN_SUB; }
 \*\=		        { return TOK_ASSIGN_MULT; }
 \/\=			    { return TOK_ASSIGN_DIV; }
+\%\=			    { return TOK_ASSIGN_MOD; }
 \|\=		        { return TOK_ASSIGN_BW_OR; }
 \&\=		        { return TOK_ASSIGN_BW_AND; }
 \^\=		        { return TOK_ASSIGN_BW_XOR; }
-\~\=			    { return TOK_ASSIGN_BW_NOT; }
 \=			        { return TOK_ASSIGN; }
 \+			        { return TOK_ADD; }
 \-			        { return TOK_SUB; }
 \*			        { return TOK_MULT; }
 \/			        { return TOK_DIV; }
+\%			        { return TOK_MOD; }
 \!			        { return TOK_NOT; }
 \~			        { return TOK_COMPLEMENT; }
 \|			        { return TOK_BW_OR; }
@@ -116,6 +117,8 @@ RGX_DEFAULT		    (.|\n)
 
 {RGX_FILEPATH}		{ yylval->value_string = strdup(yytext); return TOK_FILEPATH; }
 {RGX_IDENTIFIER}	{ yylval->value_string = strdup(yytext); return TOK_IDENTIFIER; }
+\#{RGX_STRING}	    { yylval->value_string = strdup(yytext); return TOK_STRING_HASH; }
+\&{RGX_STRING}	    { yylval->value_string = strdup(yytext); return TOK_STRING_LOC; }
 {RGX_STRING}	    { yylval->value_string = strdup(yytext); return TOK_STRING; }
 {RGX_FLOAT}		    { yylval->value_string = strdup(yytext); return TOK_FLOAT; }
 {RGX_INTEGER}	    { yylval->value_string = strdup(yytext); return TOK_INTEGER; }
