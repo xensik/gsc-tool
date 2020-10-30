@@ -65,6 +65,7 @@ int yyerror(yyscan_t scanner, node **astout, const char *msg);
 %type <value_node> stmt  stmt_call stmt_assign stmt_endon stmt_notify
 %type <value_node> stmt_wait stmt_waittill stmt_waittillmatch stmt_waittillframeend
 %type <value_node> stmt_if stmt_ifelse stmt_while stmt_for stmt_foreach 
+%type <value_node> stmt_switch stmt_case stmt_default
 %type <value_node> stmt_break stmt_continue stmt_return for_assign for_cond
 
 %type <value_node> expr expr_assign expr_cmp expr_unary expr_binary expr_ternary
@@ -117,7 +118,7 @@ parameter_list
 
 stmt_block
 	: stmt_block stmt 							{ $$ = $1; $$->stmts.push_back($2); }
-	| stmt 										{$$ = new node_stmt_block(); $$->stmts.push_back($1); }
+	| stmt 										{ $$ = new node_stmt_block(); $$->stmts.push_back($1); }
 	|											{ $$ = new node_stmt_block(); }
 	;
 
@@ -136,32 +137,43 @@ stmt
 	| stmt_while								{ $$ = $1; }
 	| stmt_for									{ $$ = $1; }
 	| stmt_foreach								{ $$ = $1; }
+	| stmt_switch								{ $$ = $1; }
+	| stmt_case									{ $$ = $1; }
+	| stmt_default								{ $$ = $1; }
 	| stmt_break								{ $$ = $1; }
 	| stmt_continue								{ $$ = $1; }
 	| stmt_return								{ $$ = $1; }
 	;
 
 stmt_call
-	: expr_call SEMICOLON						{ $$ = new node_stmt_call($1); }
-	| expr_call_thread SEMICOLON				{ $$ = new node_stmt_call($1); }
+	: expr_call SEMICOLON
+		{ $$ = new node_stmt_call($1); }
+	| expr_call_thread SEMICOLON
+		{ $$ = new node_stmt_call($1); }
 	;
 
 stmt_assign
-	: expr_assign SEMICOLON	{ $$ = new node_stmt_assign($1); }
+	: expr_assign SEMICOLON
+		{ $$ = new node_stmt_assign($1); }
 	;
 
 stmt_endon
-	: object_restricted ENDON LPAREN expr RPAREN SEMICOLON { $$ = new node_stmt_endon($1, $4); }
+	: object_restricted ENDON LPAREN expr RPAREN SEMICOLON
+		{ $$ = new node_stmt_endon($1, $4); }
 	;
 
 stmt_notify
-	: object_restricted NOTIFY LPAREN expr COMMA expr_arg_list RPAREN SEMICOLON { $$ = new node_stmt_notify($1, $4, $6); }
-	| object_restricted NOTIFY LPAREN expr RPAREN SEMICOLON { $$ = new node_stmt_notify($1, $4, new node()); }
+	: object_restricted NOTIFY LPAREN expr COMMA expr_arg_list RPAREN SEMICOLON
+		{ $$ = new node_stmt_notify($1, $4, $6); }
+	| object_restricted NOTIFY LPAREN expr RPAREN SEMICOLON
+		{ $$ = new node_stmt_notify($1, $4, new node()); }
 	;
 
 stmt_wait
-	: WAIT LPAREN expr RPAREN SEMICOLON			{ $$ = new node_stmt_wait($3); }
-	| WAIT num SEMICOLON						{ $$ = new node_stmt_wait($2); }
+	: WAIT LPAREN expr RPAREN SEMICOLON
+		{ $$ = new node_stmt_wait($3); }
+	| WAIT num SEMICOLON
+		{ $$ = new node_stmt_wait($2); }
 	;
 
 stmt_waittill
@@ -220,16 +232,37 @@ stmt_foreach
 		{ $$ = new node_stmt_foreach($3, $5, $7); }
 	;
 
+stmt_switch
+	: SWITCH LPAREN expr RPAREN LBRACE stmt_block RBRACE
+		{ $$ = new node_stmt_switch($3, $6); }
+	;
+
+stmt_case
+	: CASE num_integer COLON
+		{ $$ = new node_stmt_case($2); }
+	| CASE string COLON
+		{ $$ = new node_stmt_case($2); }
+	;
+
+stmt_default
+	: DEFAULT COLON
+		{ $$ = new node_stmt_default(); }
+	;
+
 stmt_break
-	: BREAK SEMICOLON 							{ $$ = new node_stmt_break(); }
+	: BREAK SEMICOLON 
+		{ $$ = new node_stmt_break(); }
 	;
 stmt_continue
-	: CONTINUE SEMICOLON 						{ $$ = new node_stmt_continue(); }
+	: CONTINUE SEMICOLON
+		{ $$ = new node_stmt_continue(); }
 	;
 
 stmt_return
-	: RETURN expr SEMICOLON						{ $$ = new node_stmt_return($2); }
-	| RETURN SEMICOLON 							{ $$ = new node_stmt_return(new node()); }
+	: RETURN expr SEMICOLON	
+		{ $$ = new node_stmt_return($2); }
+	| RETURN SEMICOLON
+		{ $$ = new node_stmt_return(new node()); }
 	;
 
 for_assign
@@ -450,6 +483,6 @@ filepath
 
 int yyerror(yyscan_t scanner, node **astout, const char *msg)
 {
-	printf("[compiler]: %s", msg);
+	printf("[compiler]: %s\n", msg);
 	return 0;
 }

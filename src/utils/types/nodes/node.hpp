@@ -4,7 +4,6 @@
 // that can be found in the LICENSE file.
 #pragma once
 
-
 std::string indented(std::uint32_t indent);
 
 enum class node_type
@@ -26,7 +25,7 @@ enum class node_type
     level,
     size,
     // missing %animref
-    //
+    // EXPRESSIONS
     expr_vector,
     expr_func_ref,
     expr_subscribe,
@@ -85,7 +84,8 @@ enum class node_type
     stmt_foreach,
     stmt_while,
     stmt_switch,
-    stmt_switch_list,
+    stmt_case,
+    stmt_default,
     stmt_break,
     stmt_continue,
     stmt_return,
@@ -1160,12 +1160,46 @@ struct node_stmt_foreach : public node
     };
 };
 
-/*
-    stmt_switch,
-    stmt_switch_list,
-    case,
-    default,
-*/
+struct node_stmt_switch : public node
+{
+    node* expr;
+    node* stmt;
+
+    node_stmt_switch(node* expr, node* stmt)
+        : node(node_type::stmt_switch), expr(expr), stmt(stmt) {}
+
+    auto print() -> std::string override
+    {
+        std::string data;
+        std::string pad = indented(indent);
+
+        data += "switch ( " + expr->print() + " )\n";
+        data +=  pad + "{\n" + stmt->print() + "\n" + pad + "}\n";
+
+        return data;
+    };
+};
+struct node_stmt_case : public node
+{
+    node* value;
+
+    node_stmt_case(node* value) : node(node_type::stmt_case), value(value) {}
+
+    auto print() -> std::string override
+    {
+        return "case " + value->print() + ":";
+    };
+};
+
+struct node_stmt_default : public node
+{
+    node_stmt_default() : node(node_type::stmt_default) {}
+
+    auto print() -> std::string override
+    {
+        return "default:";
+    };
+};
 
 struct node_stmt_break : public node
 {
