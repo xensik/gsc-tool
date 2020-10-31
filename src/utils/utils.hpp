@@ -37,14 +37,12 @@ using namespace std::literals;
 #include "types/statement.hpp"
 #include "types/function.hpp"
 #include "types/instruction.hpp"
+#include "types/nodetree.hpp"
 
 // GSC Interfaces
 #include "interfaces/assembler.hpp"
 #include "interfaces/disassembler.hpp"
 #include "interfaces/compiler.hpp"
 #include "interfaces/decompiler.hpp"
-
-
-#include "types/nodes/node.hpp"
 
 #endif // _GSC_UTILS_H_

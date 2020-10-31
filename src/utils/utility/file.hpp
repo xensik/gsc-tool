@@ -12,8 +12,8 @@ namespace utils
 class file
 {
 public:
-	static auto read(std::string file)->std::string;
-	static void save(std::string file, std::vector<std::uint8_t> buffer);
+	static auto read(std::string name) -> std::string;
+	static void save(std::string name, std::string data);
 	static auto length(FILE* fp) -> long;
 };
 

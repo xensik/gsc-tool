@@ -24,14 +24,6 @@ byte_buffer::byte_buffer(std::size_t size)
 	pos_ = 0;
 }
 
-byte_buffer::byte_buffer(std::shared_ptr<std::vector<std::uint8_t>> buffer)
-{
-	// TODO: move the buffer
-
-	size_ = buffer->size();
-	pos_ = 0;
-}
-
 byte_buffer::byte_buffer(std::string filename)
 {
 	size_ = 0;
@@ -79,13 +71,13 @@ void byte_buffer::seek_neg(std::size_t pos)
 	pos_ -= pos;
 }
 
-void byte_buffer::write_cpp_string(const std::string& data)
+void byte_buffer::write_string(const std::string& data)
 {
 	strcpy(reinterpret_cast<char*>(data_.data() + pos_), data.data());
 	pos_ += data.size();
 }
 
-void byte_buffer::write_string(const std::string& data)
+void byte_buffer::write_c_string(const std::string& data)
 {
 	strcpy(reinterpret_cast<char*>(data_.data() + pos_), data.data());
 	pos_ += data.size() + 1;
@@ -115,24 +107,24 @@ auto byte_buffer::read_opaque_string() -> std::string
 	return std::to_string(temp);
 }
 
-auto byte_buffer::get_bytes_print(std::size_t index, std::size_t count) -> std::string
+auto byte_buffer::print_bytes(std::size_t pos, std::size_t count) -> std::string
 {
-	std::string shit = "";
+	std::string shit;
 	
-	for (int i = index; i < index + count; i++)
+	for (int i = pos; i < pos + count; i++)
 	{
-		shit = utils::string::va("%s %02X", shit.data(), (*reinterpret_cast<std::uint8_t*>(data_.data() + i)));
+		shit += utils::string::va("%s %02X", shit.data(), (*reinterpret_cast<std::uint8_t*>(data_.data() + i)));
 	}
 
 	return shit;
 }
 
-auto byte_buffer::get_pos() -> std::size_t
+auto byte_buffer::pos() -> std::size_t
 {
 	return pos_;
 }
 
-auto byte_buffer::get_buffer() -> std::vector<std::uint8_t>&
+auto byte_buffer::buffer() -> std::vector<std::uint8_t>&
 {
 	return data_;
 }

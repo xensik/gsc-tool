@@ -28,19 +28,20 @@ void decompiler::decompile(std::vector<std::shared_ptr<function>>& functions)
 	}
 }
 
-auto decompiler::output() -> std::vector<std::uint8_t>
+auto decompiler::output() -> std::string
 {
-	output_->write_cpp_string("// SH1 PC GSC\n");
-	output_->write_cpp_string("// Decompiled by https://github.com/xensik/gsc-tool\n");
+	output_->write_string("// SH1 PC GSC\n");
+	output_->write_string("// Decompiled by https://github.com/xensik/gsc-tool\n");
 
 	for (auto& func : functions_)
 	{
 		this->print_function(func);
 	}
 
-	std::vector<std::uint8_t> output;
-	output.resize(output_->get_pos());
-	memcpy(output.data(), output_->get_buffer().data(), output.size());
+	std::string output;
+
+	output.resize(output_->pos());
+	memcpy(output.data(), output_->buffer().data(), output.size());
 
 	return output;
 }
@@ -1663,7 +1664,7 @@ void decompiler::decompile_blocks(std::shared_ptr<decompiler_function> func)
 void decompiler::print_function(std::shared_ptr<decompiler_function> func)
 {
 	// header
-	output_->write_cpp_string("\n" + func->name + "(");
+	output_->write_string("\n" + func->name + "(");
 
 	// param list
 	std::vector<std::string> args = func->local_vars;
@@ -1671,11 +1672,11 @@ void decompiler::print_function(std::shared_ptr<decompiler_function> func)
 
 	for (size_t i = 0; i < func->params; i++)
 	{
-		output_->write_cpp_string(" " + args.at(i));
-		i != (func->params - 1) ? output_->write_cpp_string(",") : output_->write_cpp_string(" ");
+		output_->write_string(" " + args.at(i));
+		i != (func->params - 1) ? output_->write_string(",") : output_->write_string(" ");
 	}
 
-	output_->write_cpp_string(")\n{\n");
+	output_->write_string(")\n{\n");
 
 	// body
 	for (auto& stmt : func->statements)
@@ -1694,19 +1695,19 @@ void decompiler::print_function(std::shared_ptr<decompiler_function> func)
 	}
 
 	// footer
-	output_->write_cpp_string("}\n");
+	output_->write_string("}\n");
 }
 
 void decompiler::print_statement(std::shared_ptr<statement> stmt)
 {
-	output_->write_cpp_string("\t");
-	output_->write_cpp_string(stmt->data);
-	output_->write_cpp_string("\n");
+	output_->write_string("\t");
+	output_->write_string(stmt->data);
+	output_->write_string("\n");
 }
 
 void decompiler::print_label(const std::string& label)
 {
-	output_->write_cpp_string(utils::string::va("#%s\n", label.data()));
+	output_->write_string(utils::string::va("#%s\n", label.data()));
 }
 
 } // namespace SH1

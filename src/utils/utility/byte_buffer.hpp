@@ -19,7 +19,6 @@ public:
 	byte_buffer();
 	byte_buffer(std::size_t size);
 	byte_buffer(std::string filename);
-	byte_buffer(std::shared_ptr<std::vector <std::uint8_t>> buffer);
 	~byte_buffer();
 
 	template <typename T>
@@ -45,14 +44,14 @@ public:
 	auto is_avail() -> bool;
 	void seek(std::size_t pos);
 	void seek_neg(std::size_t pos);
-	void write_cpp_string(const std::string& data);
 	void write_string(const std::string& data);
+	void write_c_string(const std::string& data);
 	void write_opaque_string(std::uint16_t id, const std::string& data = nullptr);
 	auto read_string() -> std::string;
 	auto read_opaque_string() -> std::string;
-	auto get_bytes_print(std::size_t index, std::size_t count) -> std::string;
-	auto get_pos() -> std::size_t;
-	auto get_buffer() -> std::vector<std::uint8_t>&;
+	auto print_bytes(std::size_t pos, std::size_t count) -> std::string;
+	auto pos() -> std::size_t;
+	auto buffer() -> std::vector<std::uint8_t>&;
 };
 
 } // namespace utils

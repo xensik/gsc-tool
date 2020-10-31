@@ -53,13 +53,13 @@ void disassemble_file(gsc::disassembler& disassembler, std::string file)
 		file.replace(extpos, ext.length(), "");
 	}
 
-	// open files
-	auto script = std::make_shared<utils::byte_buffer>(file + ".cgsc");
-	auto stack = std::make_shared<utils::byte_buffer>(file + ".cgsc.stack");
+	// TODO: open files here instead inside byte_buffer
+	auto script = file + ".cgsc";
+	auto stack = file + ".cgsc.stack";
 
 	disassembler.disassemble(script, stack);
 	
-	utils::file::save(file + ".gscasm", disassembler.output_buffer());
+	utils::file::save(file + ".gscasm", disassembler.output_asm());
 }
 
 void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::string file)
@@ -98,9 +98,9 @@ void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler
 		file.replace(extpos, ext.length(), "");
 	}
 
-	// open files
-	auto script = std::make_shared<utils::byte_buffer>(file + ".cgsc");
-	auto stack = std::make_shared<utils::byte_buffer>(file + ".cgsc.stack");
+	// TODO: open files here instead inside byte_buffer
+	auto script = file + ".cgsc";
+	auto stack = file + ".cgsc.stack";
 
 	disassembler.disassemble(script, stack);
 

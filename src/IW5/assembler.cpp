@@ -109,22 +109,22 @@ void assembler::assemble(std::string& buffer)
 	this->assemble(functions);
 }
 
-auto assembler::output_script() -> std::vector<std::uint8_t>
+auto assembler::output_script() -> std::string
 {
-	std::vector<std::uint8_t> script;
+	std::string script;
 
-	script.resize(script_->get_pos());
-	memcpy(script.data(), script_->get_buffer().data(), script.size());
+	script.resize(script_->pos());
+	memcpy(script.data(), script_->buffer().data(), script.size());
 
 	return script;
 }
 
-auto assembler::output_stack() -> std::vector<std::uint8_t>
+auto assembler::output_stack() -> std::string
 {
-	std::vector<std::uint8_t> stack;
+	std::string stack;
 
-	stack.resize(stack_->get_pos());
-	memcpy(stack.data(), stack_->get_buffer().data(), stack.size());
+	stack.resize(stack_->pos());
+	memcpy(stack.data(), stack_->buffer().data(), stack.size());
 
 	return stack;
 }
@@ -150,7 +150,7 @@ void assembler::assemble_function(std::shared_ptr<function> func)
 		
 	if (func->id == 0)
 	{
-		stack_->write_string(func->name);
+		stack_->write_c_string(func->name);
 	}
 
 	for (auto inst : func->instructions)
@@ -353,13 +353,13 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 	case opcode::OP_GetIString:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		script_->write<std::uint16_t>(0);	// IW5: 2 bytes placeholder
-		stack_->write_string(utils::string::get_string_literal(inst->data[1]));
+		stack_->write_c_string(utils::string::get_string_literal(inst->data[1]));
 		break;
 	case opcode::OP_GetAnimation:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		script_->write<std::uint32_t>(0); // IW5: 4 bytes placeholder
-		stack_->write_string(utils::string::get_string_literal(inst->data[1]));
-		stack_->write_string(utils::string::get_string_literal(inst->data[2]));
+		stack_->write_c_string(utils::string::get_string_literal(inst->data[1]));
+		stack_->write_c_string(utils::string::get_string_literal(inst->data[2]));
 		break;
 	case opcode::OP_EvalLevelFieldVariable:
 	case opcode::OP_EvalAnimFieldVariable:
@@ -378,7 +378,7 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 	case opcode::OP_GetAnimTree:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		script_->write<std::uint8_t>(0);
-		stack_->write_string(utils::string::get_string_literal(inst->data[1]));
+		stack_->write_c_string(utils::string::get_string_literal(inst->data[1]));
 		break;
 	case opcode::OP_endswitch:
 		this->assemble_end_switch(inst);
@@ -455,9 +455,9 @@ void assembler::assemble_far_call(std::shared_ptr<instruction> inst, bool thread
 	}
 
 	stack_->write<std::uint16_t>(file_id);
-	if (file_id == 0) stack_->write_string(thread ? inst->data[2] : inst->data[1]);
+	if (file_id == 0) stack_->write_c_string(thread ? inst->data[2] : inst->data[1]);
 	stack_->write<std::uint16_t>(func_id);
-	if (func_id == 0) stack_->write_string(thread ? inst->data[3] : inst->data[2]);
+	if (func_id == 0) stack_->write_c_string(thread ? inst->data[3] : inst->data[2]);
 }
 
 void assembler::assemble_switch(std::shared_ptr<instruction> inst)
@@ -493,7 +493,7 @@ void assembler::assemble_end_switch(std::shared_ptr<instruction> inst)
 		if (inst->data[2 + (3 * i)] == "case")
 		{
 			script_->write<uint32_t>(i + 1);
-			stack_->write_string(utils::string::get_string_literal(inst->data[2 + (3 * i) + 1]));
+			stack_->write_c_string(utils::string::get_string_literal(inst->data[2 + (3 * i) + 1]));
 
 			internal_index += 4;
 
@@ -506,7 +506,7 @@ void assembler::assemble_end_switch(std::shared_ptr<instruction> inst)
 		else if (inst->data[2 + (3 * i)] == "default")
 		{
 			script_->write<uint32_t>(0);
-			stack_->write_string("\x01");
+			stack_->write_c_string("\x01");
 
 			internal_index += 4;
 			std::int32_t addr = this->resolve_label(inst, inst->data[2 + (3 * i) + 1]);
@@ -543,7 +543,7 @@ void assembler::assemble_field_variable(std::shared_ptr<instruction> inst)
 	if (field_id > 33386)
 	{
 		stack_->write<std::uint16_t>(0);
-		stack_->write_string(inst->data[1]);
+		stack_->write_c_string(inst->data[1]);
 	}
 }
 

@@ -20,9 +20,9 @@ class disassembler : public gsc::disassembler
 public:
 	disassembler(bool ida_output);
 
-	void disassemble(std::shared_ptr<utils::byte_buffer> script, std::shared_ptr<utils::byte_buffer> stack);
+	void disassemble(std::string& script, std::string& stack);
 	auto output() -> std::vector<std::shared_ptr<function>>;
-	auto output_buffer() -> std::vector<std::uint8_t>;
+	auto output_asm() -> std::string;
 
 private:
 	void dissasemble_function(std::shared_ptr<function> func);

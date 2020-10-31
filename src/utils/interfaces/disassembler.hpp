@@ -12,9 +12,9 @@ namespace gsc
 class disassembler
 {
 public:
-	virtual void disassemble(std::shared_ptr<utils::byte_buffer> script, std::shared_ptr<utils::byte_buffer> stack) = 0;
+	virtual void disassemble(std::string& script, std::string& stack) = 0;
 	virtual auto output() -> std::vector<std::shared_ptr<function>> = 0;
-	virtual auto output_buffer() -> std::vector<std::uint8_t> = 0;
+	virtual auto output_asm() -> std::string = 0;
 };
 
 } // namespace gsc

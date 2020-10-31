@@ -8,11 +8,11 @@
 namespace utils
 {
 
-auto file::read(std::string file) -> std::string
+auto file::read(std::string name) -> std::string
 {
 	std::string buffer;
 
-	std::ifstream stream(file, std::ios::binary);
+	std::ifstream stream(name, std::ios::binary);
 	if (stream.good())
 	{
 		if (!stream.is_open()) return buffer;
@@ -35,7 +35,7 @@ auto file::read(std::string file) -> std::string
 	return buffer;
 }
 
-void file::save(std::string name, std::vector<std::uint8_t> data)
+void file::save(std::string name, std::string data)
 {
 	FILE* fp = fopen(name.data(), "wb");
 	fwrite(data.data(), 1, data.size(), fp);

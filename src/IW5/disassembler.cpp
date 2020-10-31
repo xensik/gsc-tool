@@ -14,10 +14,10 @@ disassembler::disassembler(bool ida_output)
 	output_ = std::make_unique<utils::byte_buffer>(0x100000);
 }
 
-void disassembler::disassemble(std::shared_ptr<utils::byte_buffer> script, std::shared_ptr<utils::byte_buffer> stack)
+void disassembler::disassemble(std::string& script, std::string& stack)
 {
-	script_ = script;
-	stack_ = stack;
+	script_ = std::make_shared<utils::byte_buffer>(script);
+	stack_ = std::make_shared<utils::byte_buffer>(stack);
 	output_->clear();
 	functions_.clear();
 
@@ -26,7 +26,7 @@ void disassembler::disassemble(std::shared_ptr<utils::byte_buffer> script, std::
 	while (stack_->is_avail() && script_->is_avail())
 	{
 		auto func = std::make_shared<function>();
-		func->index = script_->get_pos();
+		func->index = script_->pos();
 		func->size = stack_->read<std::uint32_t>();
 		func->id = stack_->read<std::uint16_t>();
 		func->name = "sub_"s + (func->id == 0 ? stack_->read_string() : resolver::token_name(func->id));
@@ -44,7 +44,7 @@ auto disassembler::output() -> std::vector<std::shared_ptr<function>>
 	return functions_;
 }
 
-auto disassembler::output_buffer() -> std::vector<std::uint8_t>
+auto disassembler::output_asm() -> std::string
 {
 	this->print_script_name(""); // TODO: add file name conversor
 
@@ -63,9 +63,10 @@ auto disassembler::output_buffer() -> std::vector<std::uint8_t>
 		}
 	}
 
-	std::vector<std::uint8_t> output;
-	output.resize(output_->get_pos());
-	memcpy(output.data(), output_->get_buffer().data(), output.size());
+	std::string output;
+
+	output.resize(output_->pos());
+	memcpy(output.data(), output_->buffer().data(), output.size());
 
 	return output;
 }
@@ -80,7 +81,7 @@ void disassembler::dissasemble_function(std::shared_ptr<function> func)
 	while (size > 0)
 	{
 		auto inst = std::make_shared<instruction>();
-		inst->index = script_->get_pos();
+		inst->index = script_->pos();
 		inst->opcode = script_->read<std::uint8_t>();
 		inst->parent = func;
 		func->instructions.push_back(inst);
@@ -583,8 +584,8 @@ void disassembler::print_script_name(const std::string& name)
 	printf("// IW5 PC GSCASM\n");
 	printf("// Disassembled by https://github.com/xensik/gsc-tool\n\n");
 #else
-	output_->write_cpp_string("// IW5 PC GSCASM\n");
-	output_->write_cpp_string("// Disassembled by https://github.com/xensik/gsc-tool\n");
+	output_->write_string("// IW5 PC GSCASM\n");
+	output_->write_string("// Disassembled by https://github.com/xensik/gsc-tool\n");
 #endif
 }
 
@@ -596,8 +597,8 @@ void disassembler::print_opcodes(std::uint32_t index, std::uint32_t size)
 		printf(utils::string::va("%04X\t", index).c_str());
 		printf(utils::string::va("%-20s \t\t", script_->get_bytes_print(index, size).data()).c_str());
 #else
-		output_->write_cpp_string(utils::string::va("%04X\t", index));
-		output_->write_cpp_string(utils::string::va("%-20s \t\t", script_->get_bytes_print(index, size).data()));
+		output_->write_string(utils::string::va("%04X\t", index));
+		output_->write_string(utils::string::va("%-20s \t\t", script_->print_bytes(index, size).data()));
 #endif
 	}
 	else
@@ -605,7 +606,7 @@ void disassembler::print_opcodes(std::uint32_t index, std::uint32_t size)
 #ifdef DEV_DEBUG
 		printf("\t\t");
 #else
-		output_->write_cpp_string("\t\t");
+		output_->write_string("\t\t");
 #endif
 	}
 }
@@ -615,21 +616,21 @@ void disassembler::print_function(std::shared_ptr<function> func)
 #ifdef DEV_DEBUG
 	printf("\n");
 #else
-	output_->write_cpp_string("\n");
+	output_->write_string("\n");
 #endif
 	if (ida_output_)
 	{
 #ifdef DEV_DEBUG
 		printf(utils::string::va("\t%-20s", "", func->name.data()).c_str());
 #else
-		output_->write_cpp_string(utils::string::va("\t%-20s", ""));
+		output_->write_string(utils::string::va("\t%-20s", ""));
 #endif
 	}
 
 #ifdef DEV_DEBUG
 		printf(utils::string::va("%s\n", func->name.data()).c_str());
 #else
-		output_->write_cpp_string(utils::string::va("%s\n", func->name.data()));
+		output_->write_string(utils::string::va("%s\n", func->name.data()));
 #endif
 }
 
@@ -643,8 +644,8 @@ void disassembler::print_instruction(std::shared_ptr<instruction> inst)
 		printf(utils::string::va("%s", opcode_name(opcode(inst->opcode)).data()).c_str());
 		printf(utils::string::va(" %s\n", inst->data[0].data()).c_str());
 #else
-		output_->write_cpp_string(utils::string::va("%s", resolver::opcode_name(opcode(inst->opcode)).data()));
-		output_->write_cpp_string(utils::string::va(" %s\n", inst->data[0].data()));
+		output_->write_string(utils::string::va("%s", resolver::opcode_name(opcode(inst->opcode)).data()));
+		output_->write_string(utils::string::va(" %s\n", inst->data[0].data()));
 #endif
 		{
 			std::uint32_t totalcase = std::stoul(inst->data[0]);
@@ -657,7 +658,7 @@ void disassembler::print_instruction(std::shared_ptr<instruction> inst)
 #ifdef DEV_DEBUG
 					printf(utils::string::va("%s %s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()).c_str());
 #else
-					output_->write_cpp_string(utils::string::va("%s %s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
+					output_->write_string(utils::string::va("%s %s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
 #endif
 					index += 3;
 				}
@@ -666,7 +667,7 @@ void disassembler::print_instruction(std::shared_ptr<instruction> inst)
 #ifdef DEV_DEBUG
 					printf(utils::string::va("%s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data()).c_str());
 #else
-					output_->write_cpp_string(utils::string::va("%s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data()));
+					output_->write_string(utils::string::va("%s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data()));
 #endif
 					index += 2;
 				}
@@ -675,7 +676,7 @@ void disassembler::print_instruction(std::shared_ptr<instruction> inst)
 #ifdef DEV_DEBUG
 					printf("\n");
 #else
-					output_->write_cpp_string("\n");
+					output_->write_string("\n");
 #endif
 				}
 			}
@@ -686,14 +687,14 @@ void disassembler::print_instruction(std::shared_ptr<instruction> inst)
 #ifdef DEV_DEBUG
 		printf(utils::string::va("%s", opcode_name(opcode(inst->opcode)).data()).c_str());
 #else
-		output_->write_cpp_string(utils::string::va("%s", resolver::opcode_name(opcode(inst->opcode)).data()));
+		output_->write_string(utils::string::va("%s", resolver::opcode_name(opcode(inst->opcode)).data()));
 #endif
 		for (auto& d : inst->data)
 		{
 #ifdef DEV_DEBUG
 			printf(utils::string::va(" %s", d.data()).c_str());
 #else
-			output_->write_cpp_string(utils::string::va(" %s", d.data()));
+			output_->write_string(utils::string::va(" %s", d.data()));
 #endif
 		}
 		break;
@@ -702,7 +703,7 @@ void disassembler::print_instruction(std::shared_ptr<instruction> inst)
 #ifdef DEV_DEBUG
 	printf("\n");
 #else
-	output_->write_cpp_string("\n");
+	output_->write_string("\n");
 #endif
 }
 
@@ -710,10 +711,10 @@ void disassembler::print_label(const std::string& label)
 {
 	if (ida_output_)
 	{
-		output_->write_cpp_string(utils::string::va("\n\t%-20s ", ""));
+		output_->write_string(utils::string::va("\n\t%-20s ", ""));
 	}
 
-	output_->write_cpp_string(utils::string::va("\t%s\n", label.data()));
+	output_->write_string(utils::string::va("\t%s\n", label.data()));
 }
 
 } // namespace IW5

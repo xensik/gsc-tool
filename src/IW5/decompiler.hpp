@@ -18,7 +18,7 @@ class decompiler : public gsc::decompiler
 public:
 	decompiler();
 	void decompile(std::vector<std::shared_ptr<function>>& functions);
-	auto output() -> std::vector<std::uint8_t>;
+	auto output() -> std::string;
 
 private:
 	void decompile_function(std::shared_ptr<decompiler_function> func);

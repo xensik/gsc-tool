@@ -10,9 +10,11 @@ namespace IW6
 
 auto resolver::opcode_id(const std::string& name) -> opcode
 {
-	if (opcode_map.find(name) != opcode_map.end())
+	const auto itr = opcode_map.find(name);
+
+	if (itr != opcode_map.end())
 	{
-		return opcode_map[name];
+		return itr->second;
 	}
 
 	LOG_ERROR("Couldn't resolve opcode id for name '%s'!", name.c_str());
@@ -35,9 +37,11 @@ auto resolver::opcode_name(opcode id) -> std::string
 
 auto resolver::builtin_func_id(const std::string& name) -> std::uint16_t
 {
-	if (builtin_function_map.find(name) != builtin_function_map.end())
+	const auto itr = builtin_function_map.find(name);
+
+	if (itr != builtin_function_map.end())
 	{
-		return builtin_function_map[name];
+		return itr->second;
 	}
 
 	LOG_ERROR("Couldn't resolve builtin function id for name '%s'!", name.c_str());
@@ -60,9 +64,11 @@ auto resolver::builtin_func_name(std::uint16_t id) -> std::string
 
 auto resolver::builtin_method_id(const std::string& name) -> std::uint16_t
 {
-	if (builtin_method_map.find(name) != builtin_method_map.end())
+	const auto itr = builtin_method_map.find(name);
+
+	if (itr != builtin_method_map.end())
 	{
-		return builtin_method_map[name];
+		return itr->second;
 	}
 
 	LOG_ERROR("Couldn't resolve builtin method id for name '%s'!", name.c_str());

@@ -20,8 +20,8 @@ public:
 
 	void assemble(std::string& buffer);
 	void assemble(std::vector<std::shared_ptr<function>>& functions);
-	auto output_script() -> std::vector<std::uint8_t>;
-	auto output_stack() -> std::vector<std::uint8_t>;
+	auto output_script() -> std::string;
+	auto output_stack() -> std::string;
 
 private:
 	void assemble_function(std::shared_ptr<function> func);

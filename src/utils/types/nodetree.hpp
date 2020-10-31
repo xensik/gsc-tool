@@ -2,9 +2,9 @@
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
-#pragma once
 
-std::string indented(std::uint32_t indent);
+#ifndef _GSC_NODETREE_H_
+#define _GSC_NODETREE_H_
 
 enum class node_type
 {
@@ -89,15 +89,14 @@ enum class node_type
     stmt_break,
     stmt_continue,
     stmt_return,
-
     stmt_block,
+    // SCRIPT
     parameter_list,
     function,
     using_animtree,
     include,
     script,
-
-    // decompiler
+    // DECOMPILER
     asm_loc,
     asm_jump,
     asm_jumpback,
@@ -120,6 +119,12 @@ struct node
 protected:
     static std::uint32_t indent;
     static void reset_indentation() { indent = 0; }
+    static std::string indented(std::uint32_t indent)
+    {
+        static char buff[100];
+        snprintf(buff, sizeof(buff), "%*s", indent, "");
+        return std::string(buff);
+    }
 };
 
 struct node_filepath : public node
@@ -1355,3 +1360,5 @@ struct node_script : public node
         return data;
     }
 };
+
+#endif // _GSC_NODETREE_H_
