@@ -1,6 +1,6 @@
-#line 1 "./IW6/lexer.cpp"
+#line 1 "./IW6/compiler_lexer.cpp"
 
-#line 3 "./IW6/lexer.cpp"
+#line 3 "./IW6/compiler_lexer.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -12,18 +12,6 @@
 #define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
-#endif
-
-#ifdef yyget_lval
-#define yyget_lval_ALREADY_DEFINED
-#else
-#define yyget_lval yyget_lval
-#endif
-
-#ifdef yyset_lval
-#define yyset_lval_ALREADY_DEFINED
-#else
-#define yyset_lval yyset_lval
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -688,12 +676,12 @@ static const flex_int16_t yy_chk[728] =
 */
 #define YY_NO_INPUT 1
 #define YY_NO_UNISTD_H 1
-#line 14 "iw6.lexer.lpp"
+#line 13 "iw6.lexer.lpp"
 #include "IW6.hpp"
-#include "parser.hpp"
-#line 694 "./IW6/lexer.cpp"
+#include "compiler_parser.hpp"
+#line 682 "./IW6/compiler_lexer.cpp"
 
-#line 696 "./IW6/lexer.cpp"
+#line 684 "./IW6/compiler_lexer.cpp"
 
 #define INITIAL 0
 #define COMMENT_BLOCK_STATE 1
@@ -743,16 +731,10 @@ struct yyguts_t
     int yy_more_flag;
     int yy_more_len;
 
-    YYSTYPE * yylval_r;
-
     }; /* end struct yyguts_t */
 
 static int yy_init_globals ( yyscan_t yyscanner );
 
-    /* This must go here because YYSTYPE and YYLTYPE are included
-     * from bison output in section 1.*/
-    #    define yylval yyg->yylval_r
-    
 int yylex_init (yyscan_t* scanner);
 
 int yylex_init_extra ( YY_EXTRA_TYPE user_defined, yyscan_t* scanner);
@@ -789,10 +771,6 @@ void yyset_lineno ( int _line_number , yyscan_t yyscanner );
 int yyget_column  ( yyscan_t yyscanner );
 
 void yyset_column ( int _column_no , yyscan_t yyscanner );
-
-YYSTYPE * yyget_lval ( yyscan_t yyscanner );
-
-void yyset_lval ( YYSTYPE * yylval_param , yyscan_t yyscanner );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -907,11 +885,9 @@ static int input ( yyscan_t yyscanner );
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int yylex \
-               (YYSTYPE * yylval_param , yyscan_t yyscanner);
+extern int yylex (yyscan_t yyscanner);
 
-#define YY_DECL int yylex \
-               (YYSTYPE * yylval_param , yyscan_t yyscanner)
+#define YY_DECL int yylex (yyscan_t yyscanner)
 #endif /* !YY_DECL */
 
 /* Code executed at the beginning of each rule, after yytext and yyleng
@@ -937,8 +913,6 @@ YY_DECL
 	char *yy_cp, *yy_bp;
 	int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-
-    yylval = yylval_param;
 
 	if ( !yyg->yy_init )
 		{
@@ -967,10 +941,10 @@ YY_DECL
 		}
 
 	{
-#line 28 "iw6.lexer.lpp"
+#line 27 "iw6.lexer.lpp"
 
 
-#line 973 "./IW6/lexer.cpp"
+#line 947 "./IW6/compiler_lexer.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1026,466 +1000,466 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 30 "iw6.lexer.lpp"
+#line 29 "iw6.lexer.lpp"
 
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 32 "iw6.lexer.lpp"
+#line 31 "iw6.lexer.lpp"
 
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 34 "iw6.lexer.lpp"
+#line 33 "iw6.lexer.lpp"
 { BEGIN(COMMENT_BLOCK_STATE); }
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 35 "iw6.lexer.lpp"
+#line 34 "iw6.lexer.lpp"
 
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 36 "iw6.lexer.lpp"
+#line 35 "iw6.lexer.lpp"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 38 "iw6.lexer.lpp"
+#line 37 "iw6.lexer.lpp"
 { BEGIN(DEVELOPER_BLOCK_STATE); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 39 "iw6.lexer.lpp"
+#line 38 "iw6.lexer.lpp"
 { BEGIN(INITIAL); }	
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 41 "iw6.lexer.lpp"
-{ return TOK_INCLUDE; }
+#line 40 "iw6.lexer.lpp"
+{ return yy::parser::make_INCLUDE(); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 42 "iw6.lexer.lpp"
-{ return TOK_USING_ANIMTREE; }
+#line 41 "iw6.lexer.lpp"
+{ return yy::parser::make_USING_ANIMTREE(); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 43 "iw6.lexer.lpp"
-{ return TOK_ANIMTREE; }
+#line 42 "iw6.lexer.lpp"
+{ return yy::parser::make_ANIMTREE(); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 44 "iw6.lexer.lpp"
-{ return TOK_IF; }
+#line 43 "iw6.lexer.lpp"
+{ return yy::parser::make_IF(); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 45 "iw6.lexer.lpp"
-{ return TOK_ELSE; }
+#line 44 "iw6.lexer.lpp"
+{ return yy::parser::make_ELSE(); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 46 "iw6.lexer.lpp"
-{ return TOK_WHILE; }
+#line 45 "iw6.lexer.lpp"
+{ return yy::parser::make_WHILE(); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 47 "iw6.lexer.lpp"
-{ return TOK_FOR; }
+#line 46 "iw6.lexer.lpp"
+{ return yy::parser::make_FOR(); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 48 "iw6.lexer.lpp"
-{ return TOK_FOREACH; }
+#line 47 "iw6.lexer.lpp"
+{ return yy::parser::make_FOREACH(); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 49 "iw6.lexer.lpp"
-{ return TOK_IN; }
+#line 48 "iw6.lexer.lpp"
+{ return yy::parser::make_IN(); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 50 "iw6.lexer.lpp"
-{ return TOK_SWITCH; }
+#line 49 "iw6.lexer.lpp"
+{ return yy::parser::make_SWITCH(); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 51 "iw6.lexer.lpp"
-{ return TOK_CASE; }
+#line 50 "iw6.lexer.lpp"
+{ return yy::parser::make_CASE(); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 52 "iw6.lexer.lpp"
-{ return TOK_DEFAULT; }
+#line 51 "iw6.lexer.lpp"
+{ return yy::parser::make_DEFAULT(); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 53 "iw6.lexer.lpp"
-{ return TOK_BREAK; }
+#line 52 "iw6.lexer.lpp"
+{ return yy::parser::make_BREAK(); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 54 "iw6.lexer.lpp"
-{ return TOK_CONTINUE; }
+#line 53 "iw6.lexer.lpp"
+{ return yy::parser::make_CONTINUE(); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 55 "iw6.lexer.lpp"
-{ return TOK_RETURN; }
+#line 54 "iw6.lexer.lpp"
+{ return yy::parser::make_RETURN(); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 56 "iw6.lexer.lpp"
-{ return TOK_WAIT; }
+#line 55 "iw6.lexer.lpp"
+{ return yy::parser::make_WAIT(); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 57 "iw6.lexer.lpp"
-{ return TOK_WAITTILL; }
+#line 56 "iw6.lexer.lpp"
+{ return yy::parser::make_WAITTILL(); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 58 "iw6.lexer.lpp"
-{ return TOK_WAITTILLMATCH; }
+#line 57 "iw6.lexer.lpp"
+{ return yy::parser::make_WAITTILLMATCH(); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 59 "iw6.lexer.lpp"
-{ return TOK_WAITTILLFRAMEEND; }
+#line 58 "iw6.lexer.lpp"
+{ return yy::parser::make_WAITTILLFRAMEEND(); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 60 "iw6.lexer.lpp"
-{ return TOK_ENDON; }
+#line 59 "iw6.lexer.lpp"
+{ return yy::parser::make_ENDON(); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 61 "iw6.lexer.lpp"
-{ return TOK_NOTIFY; }
+#line 60 "iw6.lexer.lpp"
+{ return yy::parser::make_NOTIFY(); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 62 "iw6.lexer.lpp"
-{ return TOK_THREAD; }
+#line 61 "iw6.lexer.lpp"
+{ return yy::parser::make_THREAD(); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 63 "iw6.lexer.lpp"
-{ return TOK_UNDEFINED; }
+#line 62 "iw6.lexer.lpp"
+{ return yy::parser::make_UNDEFINED(); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 64 "iw6.lexer.lpp"
-{ return TOK_TRUE; }
+#line 63 "iw6.lexer.lpp"
+{ return yy::parser::make_TRUE(); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 65 "iw6.lexer.lpp"
-{ return TOK_FALSE; }
+#line 64 "iw6.lexer.lpp"
+{ return yy::parser::make_FALSE(); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 66 "iw6.lexer.lpp"
-{ return TOK_SIZE; }
+#line 65 "iw6.lexer.lpp"
+{ return yy::parser::make_SIZE(); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 67 "iw6.lexer.lpp"
-{ return TOK_GAME; }
+#line 66 "iw6.lexer.lpp"
+{ return yy::parser::make_GAME(); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 68 "iw6.lexer.lpp"
-{ return TOK_LEVEL; }
+#line 67 "iw6.lexer.lpp"
+{ return yy::parser::make_LEVEL(); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 70 "iw6.lexer.lpp"
-{ return TOK_EMPTY_ARRAY; }
+#line 69 "iw6.lexer.lpp"
+{ return yy::parser::make_EMPTY_ARRAY(); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 71 "iw6.lexer.lpp"
-{ return TOK_LPAREN; }
+#line 70 "iw6.lexer.lpp"
+{ return yy::parser::make_LPAREN(); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 72 "iw6.lexer.lpp"
-{ return TOK_RPAREN; }
+#line 71 "iw6.lexer.lpp"
+{ return yy::parser::make_RPAREN(); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 73 "iw6.lexer.lpp"
-{ return TOK_LBRACE; }
+#line 72 "iw6.lexer.lpp"
+{ return yy::parser::make_LBRACE(); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 74 "iw6.lexer.lpp"
-{ return TOK_RBRACE; }
+#line 73 "iw6.lexer.lpp"
+{ return yy::parser::make_RBRACE(); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 75 "iw6.lexer.lpp"
-{ return TOK_LBRACKET; }
+#line 74 "iw6.lexer.lpp"
+{ return yy::parser::make_LBRACKET(); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 76 "iw6.lexer.lpp"
-{ return TOK_RBRACKET; }
+#line 75 "iw6.lexer.lpp"
+{ return yy::parser::make_RBRACKET(); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 77 "iw6.lexer.lpp"
-{ return TOK_COMMA; }
+#line 76 "iw6.lexer.lpp"
+{ return yy::parser::make_COMMA(); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 78 "iw6.lexer.lpp"
-{ return TOK_DOT; }
+#line 77 "iw6.lexer.lpp"
+{ return yy::parser::make_DOT(); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 79 "iw6.lexer.lpp"
-{ return TOK_DOUBLECOLON; }
+#line 78 "iw6.lexer.lpp"
+{ return yy::parser::make_DOUBLECOLON(); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 80 "iw6.lexer.lpp"
-{ return TOK_COLON; }
+#line 79 "iw6.lexer.lpp"
+{ return yy::parser::make_COLON(); }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 81 "iw6.lexer.lpp"
-{ return TOK_SEMICOLON; }
+#line 80 "iw6.lexer.lpp"
+{ return yy::parser::make_SEMICOLON(); }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 82 "iw6.lexer.lpp"
-{ return TOK_QMARK; }
+#line 81 "iw6.lexer.lpp"
+{ return yy::parser::make_QMARK(); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 84 "iw6.lexer.lpp"
-{ return TOK_INC; }
+#line 83 "iw6.lexer.lpp"
+{ return yy::parser::make_INC(); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 85 "iw6.lexer.lpp"
-{ return TOK_DEC; }
+#line 84 "iw6.lexer.lpp"
+{ return yy::parser::make_DEC(); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 86 "iw6.lexer.lpp"
-{ return TOK_ASSIGN_LSHIFT; }
+#line 85 "iw6.lexer.lpp"
+{ return yy::parser::make_ASSIGN_LSHIFT(); }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 87 "iw6.lexer.lpp"
-{ return TOK_ASSIGN_RSHIFT; }
+#line 86 "iw6.lexer.lpp"
+{ return yy::parser::make_ASSIGN_RSHIFT(); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 88 "iw6.lexer.lpp"
-{ return TOK_LSHIFT; }
+#line 87 "iw6.lexer.lpp"
+{ return yy::parser::make_LSHIFT(); }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 89 "iw6.lexer.lpp"
-{ return TOK_RSHIFT; }
+#line 88 "iw6.lexer.lpp"
+{ return yy::parser::make_RSHIFT(); }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 90 "iw6.lexer.lpp"
-{ return TOK_CMP_OR; }
+#line 89 "iw6.lexer.lpp"
+{ return yy::parser::make_CMP_OR(); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 91 "iw6.lexer.lpp"
-{ return TOK_CMP_AND; }
+#line 90 "iw6.lexer.lpp"
+{ return yy::parser::make_CMP_AND(); }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 92 "iw6.lexer.lpp"
-{ return TOK_CMP_EQUAL; }
+#line 91 "iw6.lexer.lpp"
+{ return yy::parser::make_CMP_EQUAL(); }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 93 "iw6.lexer.lpp"
-{ return TOK_CMP_NOT_EQ; }
+#line 92 "iw6.lexer.lpp"
+{ return yy::parser::make_CMP_NOT_EQ(); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 94 "iw6.lexer.lpp"
-{ return TOK_CMP_LESS_EQ; }
+#line 93 "iw6.lexer.lpp"
+{ return yy::parser::make_CMP_LESS_EQ(); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 95 "iw6.lexer.lpp"
-{ return TOK_CMP_GREATER_EQ; }
+#line 94 "iw6.lexer.lpp"
+{ return yy::parser::make_CMP_GREATER_EQ(); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 96 "iw6.lexer.lpp"
-{ return TOK_CMP_LESS; }
+#line 95 "iw6.lexer.lpp"
+{ return yy::parser::make_CMP_LESS(); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 97 "iw6.lexer.lpp"
-{ return TOK_CMP_GREATER; }
+#line 96 "iw6.lexer.lpp"
+{ return yy::parser::make_CMP_GREATER(); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 98 "iw6.lexer.lpp"
-{ return TOK_ASSIGN_ADD; }
+#line 97 "iw6.lexer.lpp"
+{ return yy::parser::make_ASSIGN_ADD(); }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 99 "iw6.lexer.lpp"
-{ return TOK_ASSIGN_SUB; }
+#line 98 "iw6.lexer.lpp"
+{ return yy::parser::make_ASSIGN_SUB(); }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 100 "iw6.lexer.lpp"
-{ return TOK_ASSIGN_MULT; }
+#line 99 "iw6.lexer.lpp"
+{ return yy::parser::make_ASSIGN_MULT(); }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 101 "iw6.lexer.lpp"
-{ return TOK_ASSIGN_DIV; }
+#line 100 "iw6.lexer.lpp"
+{ return yy::parser::make_ASSIGN_DIV(); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 102 "iw6.lexer.lpp"
-{ return TOK_ASSIGN_MOD; }
+#line 101 "iw6.lexer.lpp"
+{ return yy::parser::make_ASSIGN_MOD(); }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 103 "iw6.lexer.lpp"
-{ return TOK_ASSIGN_BW_OR; }
+#line 102 "iw6.lexer.lpp"
+{ return yy::parser::make_ASSIGN_BW_OR(); }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 104 "iw6.lexer.lpp"
-{ return TOK_ASSIGN_BW_AND; }
+#line 103 "iw6.lexer.lpp"
+{ return yy::parser::make_ASSIGN_BW_AND(); }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 105 "iw6.lexer.lpp"
-{ return TOK_ASSIGN_BW_XOR; }
+#line 104 "iw6.lexer.lpp"
+{ return yy::parser::make_ASSIGN_BW_XOR(); }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 106 "iw6.lexer.lpp"
-{ return TOK_ASSIGN; }
+#line 105 "iw6.lexer.lpp"
+{ return yy::parser::make_ASSIGN(); }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 107 "iw6.lexer.lpp"
-{ return TOK_ADD; }
+#line 106 "iw6.lexer.lpp"
+{ return yy::parser::make_ADD(); }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 108 "iw6.lexer.lpp"
-{ return TOK_SUB; }
+#line 107 "iw6.lexer.lpp"
+{ return yy::parser::make_SUB(); }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 109 "iw6.lexer.lpp"
-{ return TOK_MULT; }
+#line 108 "iw6.lexer.lpp"
+{ return yy::parser::make_MULT(); }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 110 "iw6.lexer.lpp"
-{ return TOK_DIV; }
+#line 109 "iw6.lexer.lpp"
+{ return yy::parser::make_DIV(); }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 111 "iw6.lexer.lpp"
-{ return TOK_MOD; }
+#line 110 "iw6.lexer.lpp"
+{ return yy::parser::make_MOD(); }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 112 "iw6.lexer.lpp"
-{ return TOK_NOT; }
+#line 111 "iw6.lexer.lpp"
+{ return yy::parser::make_NOT(); }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 113 "iw6.lexer.lpp"
-{ return TOK_COMPLEMENT; }
+#line 112 "iw6.lexer.lpp"
+{ return yy::parser::make_COMPLEMENT(); }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 114 "iw6.lexer.lpp"
-{ return TOK_BW_OR; }
+#line 113 "iw6.lexer.lpp"
+{ return yy::parser::make_BW_OR(); }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 115 "iw6.lexer.lpp"
-{ return TOK_BW_AND; }
+#line 114 "iw6.lexer.lpp"
+{ return yy::parser::make_BW_AND(); }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 116 "iw6.lexer.lpp"
-{ return TOK_BW_XOR; }
+#line 115 "iw6.lexer.lpp"
+{ return yy::parser::make_BW_XOR(); }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 118 "iw6.lexer.lpp"
-{ yylval->value_string = strdup(yytext); return TOK_FILEPATH; }
+#line 117 "iw6.lexer.lpp"
+{ return yy::parser::make_FILEPATH(std::string(yytext)); }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 119 "iw6.lexer.lpp"
-{ yylval->value_string = strdup(yytext); return TOK_IDENTIFIER; }
+#line 118 "iw6.lexer.lpp"
+{ return yy::parser::make_IDENTIFIER(std::string(yytext)); }
 	YY_BREAK
 case 84:
 /* rule 84 can match eol */
 YY_RULE_SETUP
-#line 120 "iw6.lexer.lpp"
-{ yylval->value_string = strdup(yytext); return TOK_STRING_HASH; }
+#line 119 "iw6.lexer.lpp"
+{ return yy::parser::make_STRING_HASH(std::string(yytext)); }
 	YY_BREAK
 case 85:
 /* rule 85 can match eol */
 YY_RULE_SETUP
-#line 121 "iw6.lexer.lpp"
-{ yylval->value_string = strdup(yytext); return TOK_STRING_LOC; }
+#line 120 "iw6.lexer.lpp"
+{ return yy::parser::make_STRING_LOC(std::string(yytext)); }
 	YY_BREAK
 case 86:
 /* rule 86 can match eol */
 YY_RULE_SETUP
-#line 122 "iw6.lexer.lpp"
-{ yylval->value_string = strdup(yytext); return TOK_STRING; }
+#line 121 "iw6.lexer.lpp"
+{ return yy::parser::make_STRING(std::string(yytext)); }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 123 "iw6.lexer.lpp"
-{ yylval->value_string = strdup(yytext); return TOK_FLOAT; }
+#line 122 "iw6.lexer.lpp"
+{ return yy::parser::make_FLOAT(std::string(yytext)); }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 124 "iw6.lexer.lpp"
-{ yylval->value_string = strdup(yytext); return TOK_INTEGER; }
+#line 123 "iw6.lexer.lpp"
+{ return yy::parser::make_INTEGER(std::string(yytext)); }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT_BLOCK_STATE):
 case YY_STATE_EOF(DEVELOPER_BLOCK_STATE):
-#line 126 "iw6.lexer.lpp"
-{ return TOK_EOF; }
+#line 125 "iw6.lexer.lpp"
+{ return yy::parser::make_YYEOF(); }
 	YY_BREAK
 case 89:
 /* rule 89 can match eol */
 YY_RULE_SETUP
-#line 127 "iw6.lexer.lpp"
-{ printf("yylex error: unexpected character"); }
+#line 126 "iw6.lexer.lpp"
+{ throw yy::parser::syntax_error("invalid character: " + std::string(yytext)); }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 128 "iw6.lexer.lpp"
+#line 127 "iw6.lexer.lpp"
 ECHO;
 	YY_BREAK
-#line 1488 "./IW6/lexer.cpp"
+#line 1462 "./IW6/compiler_lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2434,18 +2408,6 @@ void yyset_debug (int  _bdebug , yyscan_t yyscanner)
 
 /* Accessor methods for yylval and yylloc */
 
-YYSTYPE * yyget_lval  (yyscan_t yyscanner)
-{
-    struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    return yylval;
-}
-
-void yyset_lval (YYSTYPE *  yylval_param , yyscan_t yyscanner)
-{
-    struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    yylval = yylval_param;
-}
-
 /* User-visible API */
 
 /* yylex_init is special because it creates the scanner itself, so it is
@@ -2627,6 +2589,6 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 128 "iw6.lexer.lpp"
+#line 127 "iw6.lexer.lpp"
 
 

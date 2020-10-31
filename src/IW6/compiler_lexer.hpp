@@ -2,9 +2,9 @@
 #define yyHEADER_H 1
 #define yyIN_HEADER 1
 
-#line 5 "./IW6/lexer.hpp"
+#line 5 "./IW6/compiler_lexer.hpp"
 
-#line 7 "./IW6/lexer.hpp"
+#line 7 "./IW6/compiler_lexer.hpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -16,18 +16,6 @@
 #define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
-#endif
-
-#ifdef yyget_lval
-#define yyget_lval_ALREADY_DEFINED
-#else
-#define yyget_lval yyget_lval
-#endif
-
-#ifdef yyset_lval
-#define yyset_lval_ALREADY_DEFINED
-#else
-#define yyset_lval yyset_lval
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -289,10 +277,6 @@ int yyget_column  ( yyscan_t yyscanner );
 
 void yyset_column ( int _column_no , yyscan_t yyscanner );
 
-YYSTYPE * yyget_lval ( yyscan_t yyscanner );
-
-void yyset_lval ( YYSTYPE * yylval_param , yyscan_t yyscanner );
-
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
  */
@@ -338,11 +322,9 @@ static int yy_flex_strlen ( const char * , yyscan_t yyscanner);
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int yylex \
-               (YYSTYPE * yylval_param , yyscan_t yyscanner);
+extern int yylex (yyscan_t yyscanner);
 
-#define YY_DECL int yylex \
-               (YYSTYPE * yylval_param , yyscan_t yyscanner)
+#define YY_DECL int yylex (yyscan_t yyscanner)
 #endif /* !YY_DECL */
 
 /* yy_get_previous_state - get the state just before the EOB char was reached */
@@ -504,9 +486,9 @@ extern int yylex \
 #undef yyTABLES_NAME
 #endif
 
-#line 128 "iw6.lexer.lpp"
+#line 127 "iw6.lexer.lpp"
 
 
-#line 510 "./IW6/lexer.hpp"
+#line 492 "./IW6/compiler_lexer.hpp"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */

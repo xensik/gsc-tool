@@ -3,16 +3,15 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 */
-%option outfile="./IW6/lexer.cpp" header-file="./IW6/lexer.hpp"
+%option outfile="./IW6/compiler_lexer.cpp" header-file="./IW6/compiler_lexer.hpp"
 %option reentrant
-%option bison-bridge
 %option noyywrap batch nounput noinput
 %option never-interactive
 %option nounistd
 
 %{
 #include "IW6.hpp"
-#include "parser.hpp"
+#include "compiler_parser.hpp"
 %}
 
 RGX_FILEPATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
@@ -38,91 +37,91 @@ RGX_DEFAULT		    (.|\n)
 <INITIAL>"/#"				{ BEGIN(DEVELOPER_BLOCK_STATE); }
 <DEVELOPER_BLOCK_STATE>"#/"	{ BEGIN(INITIAL); }	
 
-"#include"			{ return TOK_INCLUDE; }
-"#using_animtree"	{ return TOK_USING_ANIMTREE; }
-"#animtree"			{ return TOK_ANIMTREE; }
-"if"			    { return TOK_IF; }
-"else"			    { return TOK_ELSE; }
-"while"			    { return TOK_WHILE; }
-"for"			    { return TOK_FOR; }
-"foreach"			{ return TOK_FOREACH; }
-"in"		        { return TOK_IN; }
-"switch"		    { return TOK_SWITCH; }
-"case"			    { return TOK_CASE; }
-"default"		    { return TOK_DEFAULT; }
-"break"			    { return TOK_BREAK; }
-"continue"		    { return TOK_CONTINUE; }
-"return"		    { return TOK_RETURN; }
-"wait"			    { return TOK_WAIT; }
-"waittill"			{ return TOK_WAITTILL; }
-"waittillmatch"		{ return TOK_WAITTILLMATCH; }
-"waittillframeend"	{ return TOK_WAITTILLFRAMEEND; }
-"endon"			    { return TOK_ENDON; }
-"notify"		    { return TOK_NOTIFY; }
-"thread"		    { return TOK_THREAD; }
-"undefined"		    { return TOK_UNDEFINED; }
-"true"		        { return TOK_TRUE; }
-"false"		        { return TOK_FALSE; }
-"size"		        { return TOK_SIZE; }
-"game"		        { return TOK_GAME; }
-"level"		        { return TOK_LEVEL; }
+"#include"			{ return yy::parser::make_INCLUDE(); }
+"#using_animtree"	{ return yy::parser::make_USING_ANIMTREE(); }
+"#animtree"			{ return yy::parser::make_ANIMTREE(); }
+"if"			    { return yy::parser::make_IF(); }
+"else"			    { return yy::parser::make_ELSE(); }
+"while"			    { return yy::parser::make_WHILE(); }
+"for"			    { return yy::parser::make_FOR(); }
+"foreach"			{ return yy::parser::make_FOREACH(); }
+"in"		        { return yy::parser::make_IN(); }
+"switch"		    { return yy::parser::make_SWITCH(); }
+"case"			    { return yy::parser::make_CASE(); }
+"default"		    { return yy::parser::make_DEFAULT(); }
+"break"			    { return yy::parser::make_BREAK(); }
+"continue"		    { return yy::parser::make_CONTINUE(); }
+"return"		    { return yy::parser::make_RETURN(); }
+"wait"			    { return yy::parser::make_WAIT(); }
+"waittill"			{ return yy::parser::make_WAITTILL(); }
+"waittillmatch"		{ return yy::parser::make_WAITTILLMATCH(); }
+"waittillframeend"	{ return yy::parser::make_WAITTILLFRAMEEND(); }
+"endon"			    { return yy::parser::make_ENDON(); }
+"notify"		    { return yy::parser::make_NOTIFY(); }
+"thread"		    { return yy::parser::make_THREAD(); }
+"undefined"		    { return yy::parser::make_UNDEFINED(); }
+"true"		        { return yy::parser::make_TRUE(); }
+"false"		        { return yy::parser::make_FALSE(); }
+"size"		        { return yy::parser::make_SIZE(); }
+"game"		        { return yy::parser::make_GAME(); }
+"level"		        { return yy::parser::make_LEVEL(); }
 
-"[]"                { return TOK_EMPTY_ARRAY; }
-\(			        { return TOK_LPAREN; }
-\)			        { return TOK_RPAREN; }
-\{			        { return TOK_LBRACE; }
-\}			        { return TOK_RBRACE; }
-\[			        { return TOK_LBRACKET; }
-\]			        { return TOK_RBRACKET; }
-\,			        { return TOK_COMMA; }
-\.			        { return TOK_DOT; }
-\:\:		        { return TOK_DOUBLECOLON; }
-\:			        { return TOK_COLON; }
-\;			        { return TOK_SEMICOLON; }
-\?			        { return TOK_QMARK; }
+"[]"                { return yy::parser::make_EMPTY_ARRAY(); }
+\(			        { return yy::parser::make_LPAREN(); }
+\)			        { return yy::parser::make_RPAREN(); }
+\{			        { return yy::parser::make_LBRACE(); }
+\}			        { return yy::parser::make_RBRACE(); }
+\[			        { return yy::parser::make_LBRACKET(); }
+\]			        { return yy::parser::make_RBRACKET(); }
+\,			        { return yy::parser::make_COMMA(); }
+\.			        { return yy::parser::make_DOT(); }
+\:\:		        { return yy::parser::make_DOUBLECOLON(); }
+\:			        { return yy::parser::make_COLON(); }
+\;			        { return yy::parser::make_SEMICOLON(); }
+\?			        { return yy::parser::make_QMARK(); }
 
-\+\+		        { return TOK_INC; }
-\-\-		        { return TOK_DEC; }
-\<\<\=		        { return TOK_ASSIGN_LSHIFT; }
-\>\>\=		        { return TOK_ASSIGN_RSHIFT; }
-\<\<		        { return TOK_LSHIFT; }
-\>\>		        { return TOK_RSHIFT; }
-\|\|		        { return TOK_CMP_OR; }
-\&\&		        { return TOK_CMP_AND; }
-\=\=		        { return TOK_CMP_EQUAL; }
-\!\=		        { return TOK_CMP_NOT_EQ; }
-\<\=		        { return TOK_CMP_LESS_EQ; }
-\>\=		        { return TOK_CMP_GREATER_EQ; }
-\<			        { return TOK_CMP_LESS; }
-\>			        { return TOK_CMP_GREATER; }
-\+\=		        { return TOK_ASSIGN_ADD; }
-\-\=		        { return TOK_ASSIGN_SUB; }
-\*\=		        { return TOK_ASSIGN_MULT; }
-\/\=			    { return TOK_ASSIGN_DIV; }
-\%\=			    { return TOK_ASSIGN_MOD; }
-\|\=		        { return TOK_ASSIGN_BW_OR; }
-\&\=		        { return TOK_ASSIGN_BW_AND; }
-\^\=		        { return TOK_ASSIGN_BW_XOR; }
-\=			        { return TOK_ASSIGN; }
-\+			        { return TOK_ADD; }
-\-			        { return TOK_SUB; }
-\*			        { return TOK_MULT; }
-\/			        { return TOK_DIV; }
-\%			        { return TOK_MOD; }
-\!			        { return TOK_NOT; }
-\~			        { return TOK_COMPLEMENT; }
-\|			        { return TOK_BW_OR; }
-\&			        { return TOK_BW_AND; }
-\^			        { return TOK_BW_XOR; }
+\+\+		        { return yy::parser::make_INC(); }
+\-\-		        { return yy::parser::make_DEC(); }
+\<\<\=		        { return yy::parser::make_ASSIGN_LSHIFT(); }
+\>\>\=		        { return yy::parser::make_ASSIGN_RSHIFT(); }
+\<\<		        { return yy::parser::make_LSHIFT(); }
+\>\>		        { return yy::parser::make_RSHIFT(); }
+\|\|		        { return yy::parser::make_CMP_OR(); }
+\&\&		        { return yy::parser::make_CMP_AND(); }
+\=\=		        { return yy::parser::make_CMP_EQUAL(); }
+\!\=		        { return yy::parser::make_CMP_NOT_EQ(); }
+\<\=		        { return yy::parser::make_CMP_LESS_EQ(); }
+\>\=		        { return yy::parser::make_CMP_GREATER_EQ(); }
+\<			        { return yy::parser::make_CMP_LESS(); }
+\>			        { return yy::parser::make_CMP_GREATER(); }
+\+\=		        { return yy::parser::make_ASSIGN_ADD(); }
+\-\=		        { return yy::parser::make_ASSIGN_SUB(); }
+\*\=		        { return yy::parser::make_ASSIGN_MULT(); }
+\/\=			    { return yy::parser::make_ASSIGN_DIV(); }
+\%\=			    { return yy::parser::make_ASSIGN_MOD(); }
+\|\=		        { return yy::parser::make_ASSIGN_BW_OR(); }
+\&\=		        { return yy::parser::make_ASSIGN_BW_AND(); }
+\^\=		        { return yy::parser::make_ASSIGN_BW_XOR(); }
+\=			        { return yy::parser::make_ASSIGN(); }
+\+			        { return yy::parser::make_ADD(); }
+\-			        { return yy::parser::make_SUB(); }
+\*			        { return yy::parser::make_MULT(); }
+\/			        { return yy::parser::make_DIV(); }
+\%			        { return yy::parser::make_MOD(); }
+\!			        { return yy::parser::make_NOT(); }
+\~			        { return yy::parser::make_COMPLEMENT(); }
+\|			        { return yy::parser::make_BW_OR(); }
+\&			        { return yy::parser::make_BW_AND(); }
+\^			        { return yy::parser::make_BW_XOR(); }
 
-{RGX_FILEPATH}		{ yylval->value_string = strdup(yytext); return TOK_FILEPATH; }
-{RGX_IDENTIFIER}	{ yylval->value_string = strdup(yytext); return TOK_IDENTIFIER; }
-\#{RGX_STRING}	    { yylval->value_string = strdup(yytext); return TOK_STRING_HASH; }
-\&{RGX_STRING}	    { yylval->value_string = strdup(yytext); return TOK_STRING_LOC; }
-{RGX_STRING}	    { yylval->value_string = strdup(yytext); return TOK_STRING; }
-{RGX_FLOAT}		    { yylval->value_string = strdup(yytext); return TOK_FLOAT; }
-{RGX_INTEGER}	    { yylval->value_string = strdup(yytext); return TOK_INTEGER; }
+{RGX_FILEPATH}		{ return yy::parser::make_FILEPATH(std::string(yytext)); }
+{RGX_IDENTIFIER}	{ return yy::parser::make_IDENTIFIER(std::string(yytext)); }
+\#{RGX_STRING}	    { return yy::parser::make_STRING_HASH(std::string(yytext)); }
+\&{RGX_STRING}	    { return yy::parser::make_STRING_LOC(std::string(yytext)); }
+{RGX_STRING}	    { return yy::parser::make_STRING(std::string(yytext)); }
+{RGX_FLOAT}		    { return yy::parser::make_FLOAT(std::string(yytext)); }
+{RGX_INTEGER}	    { return yy::parser::make_INTEGER(std::string(yytext)); }
 
-<<EOF>>             { return TOK_EOF; }
-<*>{RGX_DEFAULT}    { printf("yylex error: unexpected character"); }
+<<EOF>>             { return yy::parser::make_YYEOF(); }
+<*>{RGX_DEFAULT}    { throw yy::parser::syntax_error("invalid character: " + std::string(yytext)); }
 %%
