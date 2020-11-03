@@ -34,7 +34,8 @@ RGX_DEFAULT		    (.|\n)
 <COMMENT_BLOCK_STATE>(.|\n)
 <COMMENT_BLOCK_STATE>"*/"	{ BEGIN(INITIAL); }
 
-<INITIAL>"/#"				{ BEGIN(DEVELOPER_BLOCK_STATE); }
+"/#"				        { BEGIN(DEVELOPER_BLOCK_STATE); }
+<DEVELOPER_BLOCK_STATE>(.|\n)
 <DEVELOPER_BLOCK_STATE>"#/"	{ BEGIN(INITIAL); }	
 
 "#include"			{ return yy::parser::make_INCLUDE(); }
@@ -65,7 +66,6 @@ RGX_DEFAULT		    (.|\n)
 "size"		        { return yy::parser::make_SIZE(); }
 "game"		        { return yy::parser::make_GAME(); }
 "level"		        { return yy::parser::make_LEVEL(); }
-
 "[]"                { return yy::parser::make_EMPTY_ARRAY(); }
 \(			        { return yy::parser::make_LPAREN(); }
 \)			        { return yy::parser::make_RPAREN(); }
@@ -79,7 +79,6 @@ RGX_DEFAULT		    (.|\n)
 \:			        { return yy::parser::make_COLON(); }
 \;			        { return yy::parser::make_SEMICOLON(); }
 \?			        { return yy::parser::make_QMARK(); }
-
 \+\+		        { return yy::parser::make_INC(); }
 \-\-		        { return yy::parser::make_DEC(); }
 \<\<\=		        { return yy::parser::make_ASSIGN_LSHIFT(); }
