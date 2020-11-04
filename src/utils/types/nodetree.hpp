@@ -75,6 +75,7 @@ enum class node_type
     stmt_waittill,
     stmt_waittillmatch,
     stmt_waittillframeend,
+    stmt_waitframe, // new SH1
     stmt_if,
     stmt_ifelse,
     stmt_while,
@@ -1153,6 +1154,18 @@ struct node_stmt_waittillframeend : public node
 
 using stmt_waittillframeend_ptr = std::unique_ptr<node_stmt_waittillframeend>;
 
+struct node_stmt_waitframe : public node
+{
+    node_stmt_waitframe() : node(node_type::stmt_waitframe) {}
+
+    auto print() -> std::string override
+    {
+        return "waitframe;";
+    };
+};
+
+using stmt_waitframe_ptr = std::unique_ptr<node_stmt_waitframe>;
+
 struct node_stmt_if : public node
 {
     node_ptr expr;
@@ -1450,6 +1463,7 @@ union stmt_ptr
     stmt_waittill_ptr as_waittill;
     stmt_waittillmatch_ptr as_waittillmatch;
     stmt_waittillframeend_ptr as_waittillframeend;
+    stmt_waitframe_ptr as_waitframe;
     stmt_if_ptr as_if;
     stmt_ifelse_ptr as_ifelse;
     stmt_while_ptr as_while;
