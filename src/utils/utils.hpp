@@ -38,6 +38,7 @@ using namespace std::literals;
 #include "types/function.hpp"
 #include "types/instruction.hpp"
 #include "types/nodetree.hpp"
+#include "types/block.hpp"
 
 // GSC Interfaces
 #include "interfaces/assembler.hpp"

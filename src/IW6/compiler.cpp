@@ -6,6 +6,7 @@
 #include "IW6.hpp"
 #include "compiler_parser.hpp"
 #include "compiler_lexer.hpp"
+using namespace gsc;
 
 namespace IW6
 {

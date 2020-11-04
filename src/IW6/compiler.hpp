@@ -20,15 +20,16 @@ public:
 	auto output() -> std::vector<std::shared_ptr<function>>;
 
 private:
-	std::vector<std::shared_ptr<function>> assembly_;
-	std::vector<std::string> local_functions_;
-	std::vector<std::string> includes_;
-	std::vector<std::string> animtrees_;
-	std::shared_ptr<function> function_;
-	std::uint32_t index_;
-	std::vector<std::string> local_vars;
-	std::vector<std::string> param_vars;
-	std::uint32_t 			label_idx;
+	std::vector<std::shared_ptr<function>> assembly_; // assembley output
+	std::shared_ptr<function> 	function_;			// current assembly function
+	std::uint32_t 				index_;				// current assembly offset
+	std::vector<std::string> 	local_functions_;	// local call list
+	std::vector<std::string> 	includes_;
+	std::vector<std::string> 	animtrees_;
+	std::vector<std::string> 	local_vars;		// local func variables
+	std::vector<std::string> 	param_vars;
+	std::uint32_t 				label_idx;
+	std::vector<gsc::block> 	blocks;
 
 	void compile_tree(node_ptr tree);
 	void emit_include(const include_ptr& include);
