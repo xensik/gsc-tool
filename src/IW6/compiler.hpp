@@ -98,8 +98,8 @@ private:
 	auto is_builtin_func(const identifier_ptr& func) -> bool;
 	auto is_builtin_method(const identifier_ptr& func) -> bool;
 	auto create_label() -> std::string;
-	auto create_label_ahead() -> std::string;
-	auto add_label(const std::string& label);
+	auto insert_label() -> std::string;
+	void insert_label(const std::string& label);
 };
 
 } // namespace IW6

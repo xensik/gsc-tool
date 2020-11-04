@@ -274,39 +274,88 @@ void compiler::emit_statement_waittillframeend(const stmt_waittillframeend_ptr& 
 
 void compiler::emit_statement_if(const stmt_if_ptr& stmt)
 {
-    // need bool isLastStatement
+    // need bool isLastStatement ?
+    auto out_loc = create_label();
 
-    // -----------------------------------
-    // emitexpresion
-    // emit jump on false to label out
-
-    // emit statement
-
+    if(stmt->expr->type == node_type::expr_not)
+    {
+        emit_expression(*(expr_ptr*)&((*(expr_not_ptr*)&stmt->expr)->rvalue));
+        auto inst = emit_instruction(opcode::OP_JumpOnTrue);
+        inst->data.push_back(out_loc);
+    }
+    else
+    {
+        emit_expression(*(expr_ptr*)&stmt->expr);
+        auto inst = emit_instruction(opcode::OP_JumpOnFalse);
+        inst->data.push_back(out_loc);
+    }
+    
+    if(stmt->stmt->type == node_type::block)
+    {
+        emit_block(*(block_ptr*)&stmt->stmt);
+    } 
+    else
+    {
+        emit_statement(*(stmt_ptr*)&stmt->stmt);
+    }
+    
     // if lastStatement -> emit end, else emit remove local variables
 
-    // label out on false;
-
+    insert_label(out_loc);
 }
 
 void compiler::emit_statement_ifelse(const stmt_ifelse_ptr& stmt)
 {
-    // need bool isLastStatement
+    // need bool isLastStatement ?
+    auto else_loc = create_label();
+    auto out_loc = create_label();
 
-    // -----------------------------------
-    // emitexpresion
-    // emit jump on false to label out
-
-    // emit statement
-
+    if(stmt->expr->type == node_type::expr_not)
+    {
+        emit_expression(*(expr_ptr*)&((*(expr_not_ptr*)&stmt->expr)->rvalue));
+        auto inst = emit_instruction(opcode::OP_JumpOnTrue);
+        inst->data.push_back(else_loc);
+    }
+    else
+    {
+        emit_expression(*(expr_ptr*)&stmt->expr);
+        auto inst = emit_instruction(opcode::OP_JumpOnFalse);
+        inst->data.push_back(else_loc);
+    }
+    
+    // IF BLOCK
+    if(stmt->stmt->type == node_type::block)
+    {
+        emit_block(*(block_ptr*)&stmt->stmt);
+    } 
+    else
+    {
+        emit_statement(*(stmt_ptr*)&stmt->stmt);
+    }
+    
     // emit remove local vars
-    // if lastStatement -> emit end, else emit OP_jump to post_else
+    // if lastStatement -> emit end, else emit OP_jump to out
+    // ...
 
-    // label out on false;
+    auto inst = emit_instruction(opcode::OP_jump);
+    inst->data.push_back(out_loc);
 
-    // emit else block
+    insert_label(else_loc);
+
+    // ELSE BLOCK
+    if(stmt->stmt2->type == node_type::block)
+    {
+        emit_block(*(block_ptr*)&stmt->stmt2);
+    } 
+    else
+    {
+        emit_statement(*(stmt_ptr*)&stmt->stmt2);
+    }
 
     // if lastStatement -> emit end, else removelocalvars
-    // label post_else
+    //...
+
+    insert_label(out_loc);
 }
 
 void compiler::emit_statement_while(const stmt_while_ptr& stmt)
@@ -656,7 +705,7 @@ void compiler::emit_expr_and(const expr_and_ptr& expr)
     emit_expression(*(expr_ptr*)&expr->rvalue);
     emit_instruction(opcode::OP_CastBool);
 
-    auto label = create_label(); // jumpOnFalseExpr here
+    auto label = insert_label(); // jumpOnFalseExpr here
     inst->data.push_back(label);
 }
 
@@ -668,7 +717,7 @@ void compiler::emit_expr_or(const expr_or_ptr& expr)
     emit_expression(*(expr_ptr*)&expr->rvalue);
     emit_instruction(opcode::OP_CastBool);
 
-    auto label = create_label(); // jumpOnTrueExpr here
+    auto label = insert_label(); // jumpOnTrueExpr here
     inst->data.push_back(label);
 }
 
@@ -1457,8 +1506,20 @@ auto compiler::create_label() -> std::string
 {
     label_idx++;
     auto name = utils::string::va("loc_%d", label_idx);
-    function_->labels.insert({label_idx, name});
     return name;
+}
+
+auto compiler::insert_label() -> std::string
+{
+    label_idx++;
+    auto name = utils::string::va("loc_%d", label_idx);
+    function_->labels.insert({index_, name});
+    return name;
+}
+
+void compiler::insert_label(const std::string& name)
+{
+    function_->labels.insert({index_, name});
 }
 
 } // namespace IW6
