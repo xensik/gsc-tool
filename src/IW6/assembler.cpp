@@ -10,8 +10,8 @@ namespace IW6
 
 assembler::assembler()
 {
-	script_ = std::make_unique<utils::byte_buffer>(0x1000);
-	stack_ = std::make_unique<utils::byte_buffer>(0x1000);
+	script_ = std::make_unique<utils::byte_buffer>(0x100000);
+	stack_ = std::make_unique<utils::byte_buffer>(0x100000);
 }
 
 void assembler::assemble(std::string& buffer)

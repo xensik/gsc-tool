@@ -28,13 +28,14 @@ private:
 	std::uint32_t index_;
 	std::vector<std::string> local_vars;
 	std::vector<std::string> param_vars;
+	std::uint32_t 			label_idx;
 
 	void compile_tree(node_ptr tree);
 	void emit_include(const include_ptr& include);
 	void emit_using_animtree(const using_animtree_ptr& animtree);
 	void emit_function(const function_ptr& function);
-	void emit_parameters(const param_list_ptr& params);
-	void emit_statement_list(const stmt_block_ptr& block);
+	void emit_parameters(const parameters_ptr& params);
+	void emit_block(const block_ptr& block);
 	void emit_statement(const stmt_ptr& stmt);
 	void emit_statement_call(const stmt_call_ptr& stmt);
 	void emit_statement_assign(const stmt_assign_ptr& stmt);
@@ -58,7 +59,9 @@ private:
 	void emit_expression(const expr_ptr& expr);
 	void emit_expr_assign(const expr_assign_ptr& expr);
 	void emit_expr_ternary(const expr_ternary_ptr& expr);
-	void emit_expr_binary(const expr_ptr& expr);
+	void emit_expr_binary(const expr_binary_ptr& expr);
+	void emit_expr_and(const expr_and_ptr& expr);
+	void emit_expr_or(const expr_or_ptr& expr);
 	void emit_expr_complement(const expr_complement_ptr& expr);
 	void emit_expr_not(const expr_not_ptr& expr);
 	void emit_expr_call(const expr_call_ptr& expr);
@@ -66,22 +69,27 @@ private:
 	void emit_expr_call_far(const std::string& file, const std::string& func, int args, bool method, bool thread, bool child);
 	void emit_expr_call_local(const std::string& func, int args, bool method, bool thread, bool child);
 	void emit_expr_call_builtin(const std::string& func, int args, bool method);
-	void emit_expr_arg_list(const expr_arg_list_ptr& arg_list);
-	void emit_expr_func_ref(const expr_func_ref_ptr& node);
-	void emit_expr_ref(const expr_ptr& expr, bool set);
-	void emit_expr_subscribe_ref(const expr_subscribe_ptr& expr, bool set);
-	void emit_expr_select_ref(const expr_select_ptr& expr, bool set);
-	void emit_expr_variable_ref(const identifier_ptr& expr, bool set);
-	void emit_expr_subscribe(const expr_subscribe_ptr& expr);
-	void emit_expr_select(const expr_select_ptr& expr);
-	void emit_expr_variable(const identifier_ptr& expr);
+	void emit_expr_arguments(const expr_arguments_ptr& arg_list);
+	void emit_expr_function_ref(const expr_function_ref_ptr& node);
+	void emit_size(const expr_size_ptr& expr);
+	void emit_variable_ref(const expr_ptr& expr, bool set);
+	void emit_array_variable_ref(const expr_array_ptr& expr, bool set);
+	void emit_field_variable_ref(const expr_field_ptr& expr, bool set);
+	void emit_local_variable_ref(const identifier_ptr& expr, bool set);
+	void emit_array_variable(const expr_array_ptr& expr);
+	void emit_field_variable(const expr_field_ptr& expr);
+	void emit_local_variable(const identifier_ptr& expr);
+	void emit_expr_vector(const expr_vector_ptr& expr);
+	// expr_add_array =>  array = [0, 1, 2];
+	void emit_object(const expr_ptr& expr);
 	void emit_vector(const vector_ptr& vec);
 	void emit_float(const float_ptr& num);
 	void emit_integer(const integer_ptr& num);
-	void emit_string_loc(const string_loc_ptr& str);
+	void emit_localized_string(const localized_string_ptr& str);
 	void emit_string(const string_ptr& str);
 	auto emit_instruction(opcode op) -> std::shared_ptr<instruction>;
 
+	// helper
 	auto get_local_var_index(const node_ptr& var) -> std::uint8_t;
 	auto is_parameter_var(const node_ptr& var) -> bool;
 	auto is_local_var(const identifier_ptr& var) -> bool;
@@ -89,6 +97,9 @@ private:
 	auto is_builtin_call(const identifier_ptr& func) -> bool;
 	auto is_builtin_func(const identifier_ptr& func) -> bool;
 	auto is_builtin_method(const identifier_ptr& func) -> bool;
+	auto create_label() -> std::string;
+	auto create_label_ahead() -> std::string;
+	auto add_label(const std::string& label);
 };
 
 } // namespace IW6

@@ -399,37 +399,43 @@ namespace yy {
     /// An auxiliary type to compute the largest semantic type.
     union union_type
     {
-      // expr_arg_list
-      char dummy1[sizeof (expr_arg_list_ptr)];
+      // block
+      char dummy1[sizeof (block_ptr)];
+
+      // expr_arguments
+      char dummy2[sizeof (expr_arguments_ptr)];
 
       // expr_assign
-      char dummy2[sizeof (expr_assign_ptr)];
+      char dummy3[sizeof (expr_assign_ptr)];
 
       // expr_call
       // expr_call_thread
-      char dummy3[sizeof (expr_call_ptr)];
+      char dummy4[sizeof (expr_call_ptr)];
 
-      // expr_func_call
-      // expr_pointer_call
-      char dummy4[sizeof (expr_call_type_ptr)];
+      // expr_call_function
+      // expr_call_pointer
+      char dummy5[sizeof (expr_call_type_ptr)];
 
       // filepath
-      char dummy5[sizeof (filepath_ptr)];
+      char dummy6[sizeof (filepath_ptr)];
 
-      // float_
-      char dummy6[sizeof (float_ptr)];
+      // data_float
+      char dummy7[sizeof (float_ptr)];
 
       // function
-      char dummy7[sizeof (function_ptr)];
+      char dummy8[sizeof (function_ptr)];
 
       // identifier
-      char dummy8[sizeof (identifier_ptr)];
+      char dummy9[sizeof (identifier_ptr)];
 
       // include
-      char dummy9[sizeof (include_ptr)];
+      char dummy10[sizeof (include_ptr)];
 
-      // integer
-      char dummy10[sizeof (integer_ptr)];
+      // data_integer
+      char dummy11[sizeof (integer_ptr)];
+
+      // data_localized_string
+      char dummy12[sizeof (localized_string_ptr)];
 
       // for_assign
       // for_cond
@@ -437,117 +443,106 @@ namespace yy {
       // expr_cmp
       // expr_ternary
       // expr_binary
-      // expr_unary
-      // expr_func_ref
-      // expr_select
-      // expr_subscribe
-      // selectable
-      // subscriptable
-      // callable
-      // assignable
-      // size
+      // expr_primitive
+      // expr_function_ref
+      // expr_array
+      // expr_field
+      // expr_size
+      // expr_vector
+      // object
+      // vector
+      // num
       // false
       // true
+      // empty_array
+      // undefined
+      // size
+      // game
       // self
       // anim
       // level
-      // game
-      // empty_array
-      // undefined
-      // vector
-      // num
-      char dummy11[sizeof (node_ptr)];
+      char dummy13[sizeof (node_ptr)];
 
-      // param_list
-      char dummy12[sizeof (param_list_ptr)];
+      // parameters
+      char dummy14[sizeof (parameters_ptr)];
 
       // script
-      char dummy13[sizeof (script_ptr)];
+      char dummy15[sizeof (script_ptr)];
 
       // FILEPATH
       // IDENTIFIER
       // STRING
       // STRING_LOC
-      // STRING_HASH
       // FLOAT
       // INTEGER
-      char dummy14[sizeof (std::string)];
+      char dummy16[sizeof (std::string)];
 
       // stmt_assign
-      char dummy15[sizeof (stmt_assign_ptr)];
-
-      // stmt_block
-      char dummy16[sizeof (stmt_block_ptr)];
+      char dummy17[sizeof (stmt_assign_ptr)];
 
       // stmt_break
-      char dummy17[sizeof (stmt_break_ptr)];
+      char dummy18[sizeof (stmt_break_ptr)];
 
       // stmt_call
-      char dummy18[sizeof (stmt_call_ptr)];
+      char dummy19[sizeof (stmt_call_ptr)];
 
       // stmt_case
-      char dummy19[sizeof (stmt_case_ptr)];
+      char dummy20[sizeof (stmt_case_ptr)];
 
       // stmt_continue
-      char dummy20[sizeof (stmt_continue_ptr)];
+      char dummy21[sizeof (stmt_continue_ptr)];
 
       // stmt_default
-      char dummy21[sizeof (stmt_default_ptr)];
+      char dummy22[sizeof (stmt_default_ptr)];
 
       // stmt_endon
-      char dummy22[sizeof (stmt_endon_ptr)];
+      char dummy23[sizeof (stmt_endon_ptr)];
 
       // stmt_for
-      char dummy23[sizeof (stmt_for_ptr)];
+      char dummy24[sizeof (stmt_for_ptr)];
 
       // stmt_foreach
-      char dummy24[sizeof (stmt_foreach_ptr)];
+      char dummy25[sizeof (stmt_foreach_ptr)];
 
       // stmt_if
-      char dummy25[sizeof (stmt_if_ptr)];
+      char dummy26[sizeof (stmt_if_ptr)];
 
       // stmt_ifelse
-      char dummy26[sizeof (stmt_ifelse_ptr)];
+      char dummy27[sizeof (stmt_ifelse_ptr)];
 
       // stmt_notify
-      char dummy27[sizeof (stmt_notify_ptr)];
+      char dummy28[sizeof (stmt_notify_ptr)];
 
       // stmt
-      char dummy28[sizeof (stmt_ptr)];
+      char dummy29[sizeof (stmt_ptr)];
 
       // stmt_return
-      char dummy29[sizeof (stmt_return_ptr)];
+      char dummy30[sizeof (stmt_return_ptr)];
 
       // stmt_switch
-      char dummy30[sizeof (stmt_switch_ptr)];
+      char dummy31[sizeof (stmt_switch_ptr)];
 
       // stmt_wait
-      char dummy31[sizeof (stmt_wait_ptr)];
+      char dummy32[sizeof (stmt_wait_ptr)];
 
       // stmt_waittill
-      char dummy32[sizeof (stmt_waittill_ptr)];
+      char dummy33[sizeof (stmt_waittill_ptr)];
 
       // stmt_waittillframeend
-      char dummy33[sizeof (stmt_waittillframeend_ptr)];
+      char dummy34[sizeof (stmt_waittillframeend_ptr)];
 
       // stmt_waittillmatch
-      char dummy34[sizeof (stmt_waittillmatch_ptr)];
+      char dummy35[sizeof (stmt_waittillmatch_ptr)];
 
       // stmt_while
-      char dummy35[sizeof (stmt_while_ptr)];
+      char dummy36[sizeof (stmt_while_ptr)];
 
-      // string_hash
-      char dummy36[sizeof (string_hash_ptr)];
-
-      // string_loc
-      char dummy37[sizeof (string_loc_ptr)];
-
-      // string
-      char dummy38[sizeof (string_ptr)];
+      // data_string
+      char dummy37[sizeof (string_ptr)];
 
       // using_animtree
       // animtree
-      char dummy39[sizeof (using_animtree_ptr)];
+      char dummy38[sizeof (using_animtree_ptr)];
     };
 
     /// The size of the largest semantic type.
@@ -637,32 +632,32 @@ namespace yy {
     SEMICOLON = 44,                // SEMICOLON
     QMARK = 45,                    // QMARK
     MOD = 46,                      // MOD
-    INC = 47,                      // INC
-    DEC = 48,                      // DEC
+    INCREMENT = 47,                // INCREMENT
+    DECREMENT = 48,                // DECREMENT
     LSHIFT = 49,                   // LSHIFT
     RSHIFT = 50,                   // RSHIFT
-    CMP_OR = 51,                   // CMP_OR
-    CMP_AND = 52,                  // CMP_AND
-    CMP_EQUAL = 53,                // CMP_EQUAL
-    CMP_NOT_EQ = 54,               // CMP_NOT_EQ
-    CMP_LESS_EQ = 55,              // CMP_LESS_EQ
-    CMP_GREATER_EQ = 56,           // CMP_GREATER_EQ
-    CMP_LESS = 57,                 // CMP_LESS
-    CMP_GREATER = 58,              // CMP_GREATER
+    OR = 51,                       // OR
+    AND = 52,                      // AND
+    EQUALITY = 53,                 // EQUALITY
+    INEQUALITY = 54,               // INEQUALITY
+    LESS_EQUAL = 55,               // LESS_EQUAL
+    GREATER_EQUAL = 56,            // GREATER_EQUAL
+    LESS = 57,                     // LESS
+    GREATER = 58,                  // GREATER
     ASSIGN = 59,                   // ASSIGN
     ASSIGN_ADD = 60,               // ASSIGN_ADD
     ASSIGN_SUB = 61,               // ASSIGN_SUB
     ASSIGN_MULT = 62,              // ASSIGN_MULT
     ASSIGN_DIV = 63,               // ASSIGN_DIV
     ASSIGN_MOD = 64,               // ASSIGN_MOD
-    ASSIGN_BW_OR = 65,             // ASSIGN_BW_OR
-    ASSIGN_BW_AND = 66,            // ASSIGN_BW_AND
-    ASSIGN_BW_XOR = 67,            // ASSIGN_BW_XOR
+    ASSIGN_BITWISE_OR = 65,        // ASSIGN_BITWISE_OR
+    ASSIGN_BITWISE_AND = 66,       // ASSIGN_BITWISE_AND
+    ASSIGN_BITWISE_EXOR = 67,      // ASSIGN_BITWISE_EXOR
     ASSIGN_LSHIFT = 68,            // ASSIGN_LSHIFT
     ASSIGN_RSHIFT = 69,            // ASSIGN_RSHIFT
-    BW_OR = 70,                    // BW_OR
-    BW_AND = 71,                   // BW_AND
-    BW_XOR = 72,                   // BW_XOR
+    BITWISE_OR = 70,               // BITWISE_OR
+    BITWISE_AND = 71,              // BITWISE_AND
+    BITWISE_EXOR = 72,             // BITWISE_EXOR
     ADD = 73,                      // ADD
     SUB = 74,                      // SUB
     MULT = 75,                     // MULT
@@ -673,10 +668,9 @@ namespace yy {
     IDENTIFIER = 80,               // IDENTIFIER
     STRING = 81,                   // STRING
     STRING_LOC = 82,               // STRING_LOC
-    STRING_HASH = 83,              // STRING_HASH
-    FLOAT = 84,                    // FLOAT
-    INTEGER = 85,                  // INTEGER
-    IFX = 86                       // IFX
+    FLOAT = 83,                    // FLOAT
+    INTEGER = 84,                  // INTEGER
+    IFX = 85                       // IFX
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -693,7 +687,7 @@ namespace yy {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 87, ///< Number of tokens.
+        YYNTOKENS = 86, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -742,32 +736,32 @@ namespace yy {
         S_SEMICOLON = 44,                        // SEMICOLON
         S_QMARK = 45,                            // QMARK
         S_MOD = 46,                              // MOD
-        S_INC = 47,                              // INC
-        S_DEC = 48,                              // DEC
+        S_INCREMENT = 47,                        // INCREMENT
+        S_DECREMENT = 48,                        // DECREMENT
         S_LSHIFT = 49,                           // LSHIFT
         S_RSHIFT = 50,                           // RSHIFT
-        S_CMP_OR = 51,                           // CMP_OR
-        S_CMP_AND = 52,                          // CMP_AND
-        S_CMP_EQUAL = 53,                        // CMP_EQUAL
-        S_CMP_NOT_EQ = 54,                       // CMP_NOT_EQ
-        S_CMP_LESS_EQ = 55,                      // CMP_LESS_EQ
-        S_CMP_GREATER_EQ = 56,                   // CMP_GREATER_EQ
-        S_CMP_LESS = 57,                         // CMP_LESS
-        S_CMP_GREATER = 58,                      // CMP_GREATER
+        S_OR = 51,                               // OR
+        S_AND = 52,                              // AND
+        S_EQUALITY = 53,                         // EQUALITY
+        S_INEQUALITY = 54,                       // INEQUALITY
+        S_LESS_EQUAL = 55,                       // LESS_EQUAL
+        S_GREATER_EQUAL = 56,                    // GREATER_EQUAL
+        S_LESS = 57,                             // LESS
+        S_GREATER = 58,                          // GREATER
         S_ASSIGN = 59,                           // ASSIGN
         S_ASSIGN_ADD = 60,                       // ASSIGN_ADD
         S_ASSIGN_SUB = 61,                       // ASSIGN_SUB
         S_ASSIGN_MULT = 62,                      // ASSIGN_MULT
         S_ASSIGN_DIV = 63,                       // ASSIGN_DIV
         S_ASSIGN_MOD = 64,                       // ASSIGN_MOD
-        S_ASSIGN_BW_OR = 65,                     // ASSIGN_BW_OR
-        S_ASSIGN_BW_AND = 66,                    // ASSIGN_BW_AND
-        S_ASSIGN_BW_XOR = 67,                    // ASSIGN_BW_XOR
+        S_ASSIGN_BITWISE_OR = 65,                // ASSIGN_BITWISE_OR
+        S_ASSIGN_BITWISE_AND = 66,               // ASSIGN_BITWISE_AND
+        S_ASSIGN_BITWISE_EXOR = 67,              // ASSIGN_BITWISE_EXOR
         S_ASSIGN_LSHIFT = 68,                    // ASSIGN_LSHIFT
         S_ASSIGN_RSHIFT = 69,                    // ASSIGN_RSHIFT
-        S_BW_OR = 70,                            // BW_OR
-        S_BW_AND = 71,                           // BW_AND
-        S_BW_XOR = 72,                           // BW_XOR
+        S_BITWISE_OR = 70,                       // BITWISE_OR
+        S_BITWISE_AND = 71,                      // BITWISE_AND
+        S_BITWISE_EXOR = 72,                     // BITWISE_EXOR
         S_ADD = 73,                              // ADD
         S_SUB = 74,                              // SUB
         S_MULT = 75,                             // MULT
@@ -778,77 +772,74 @@ namespace yy {
         S_IDENTIFIER = 80,                       // IDENTIFIER
         S_STRING = 81,                           // STRING
         S_STRING_LOC = 82,                       // STRING_LOC
-        S_STRING_HASH = 83,                      // STRING_HASH
-        S_FLOAT = 84,                            // FLOAT
-        S_INTEGER = 85,                          // INTEGER
-        S_IFX = 86,                              // IFX
-        S_YYACCEPT = 87,                         // $accept
-        S_root = 88,                             // root
-        S_script = 89,                           // script
-        S_include = 90,                          // include
-        S_using_animtree = 91,                   // using_animtree
-        S_animtree = 92,                         // animtree
-        S_function = 93,                         // function
-        S_param_list = 94,                       // param_list
-        S_stmt_block = 95,                       // stmt_block
-        S_stmt = 96,                             // stmt
-        S_stmt_call = 97,                        // stmt_call
-        S_stmt_assign = 98,                      // stmt_assign
-        S_stmt_endon = 99,                       // stmt_endon
-        S_stmt_notify = 100,                     // stmt_notify
-        S_stmt_wait = 101,                       // stmt_wait
-        S_stmt_waittill = 102,                   // stmt_waittill
-        S_stmt_waittillmatch = 103,              // stmt_waittillmatch
-        S_stmt_waittillframeend = 104,           // stmt_waittillframeend
-        S_stmt_if = 105,                         // stmt_if
-        S_stmt_ifelse = 106,                     // stmt_ifelse
-        S_stmt_while = 107,                      // stmt_while
-        S_stmt_for = 108,                        // stmt_for
-        S_stmt_foreach = 109,                    // stmt_foreach
-        S_stmt_switch = 110,                     // stmt_switch
-        S_stmt_case = 111,                       // stmt_case
-        S_stmt_default = 112,                    // stmt_default
-        S_stmt_break = 113,                      // stmt_break
-        S_stmt_continue = 114,                   // stmt_continue
-        S_stmt_return = 115,                     // stmt_return
-        S_for_assign = 116,                      // for_assign
-        S_for_cond = 117,                        // for_cond
-        S_expr = 118,                            // expr
-        S_expr_assign = 119,                     // expr_assign
-        S_expr_cmp = 120,                        // expr_cmp
-        S_expr_ternary = 121,                    // expr_ternary
-        S_expr_binary = 122,                     // expr_binary
-        S_expr_unary = 123,                      // expr_unary
-        S_expr_call = 124,                       // expr_call
-        S_expr_call_thread = 125,                // expr_call_thread
-        S_expr_func_call = 126,                  // expr_func_call
-        S_expr_pointer_call = 127,               // expr_pointer_call
-        S_expr_arg_list = 128,                   // expr_arg_list
-        S_expr_func_ref = 129,                   // expr_func_ref
-        S_expr_select = 130,                     // expr_select
-        S_expr_subscribe = 131,                  // expr_subscribe
-        S_selectable = 132,                      // selectable
-        S_subscriptable = 133,                   // subscriptable
-        S_callable = 134,                        // callable
-        S_assignable = 135,                      // assignable
-        S_size = 136,                            // size
-        S_false = 137,                           // false
-        S_true = 138,                            // true
-        S_self = 139,                            // self
-        S_anim = 140,                            // anim
-        S_level = 141,                           // level
-        S_game = 142,                            // game
-        S_empty_array = 143,                     // empty_array
-        S_undefined = 144,                       // undefined
-        S_vector = 145,                          // vector
-        S_num = 146,                             // num
-        S_float_ = 147,                          // float_
-        S_integer = 148,                         // integer
-        S_string_hash = 149,                     // string_hash
-        S_string_loc = 150,                      // string_loc
-        S_string = 151,                          // string
-        S_identifier = 152,                      // identifier
-        S_filepath = 153                         // filepath
+        S_FLOAT = 83,                            // FLOAT
+        S_INTEGER = 84,                          // INTEGER
+        S_IFX = 85,                              // IFX
+        S_YYACCEPT = 86,                         // $accept
+        S_root = 87,                             // root
+        S_script = 88,                           // script
+        S_include = 89,                          // include
+        S_using_animtree = 90,                   // using_animtree
+        S_animtree = 91,                         // animtree
+        S_function = 92,                         // function
+        S_parameters = 93,                       // parameters
+        S_block = 94,                            // block
+        S_stmt = 95,                             // stmt
+        S_stmt_call = 96,                        // stmt_call
+        S_stmt_assign = 97,                      // stmt_assign
+        S_stmt_endon = 98,                       // stmt_endon
+        S_stmt_notify = 99,                      // stmt_notify
+        S_stmt_wait = 100,                       // stmt_wait
+        S_stmt_waittill = 101,                   // stmt_waittill
+        S_stmt_waittillmatch = 102,              // stmt_waittillmatch
+        S_stmt_waittillframeend = 103,           // stmt_waittillframeend
+        S_stmt_if = 104,                         // stmt_if
+        S_stmt_ifelse = 105,                     // stmt_ifelse
+        S_stmt_while = 106,                      // stmt_while
+        S_stmt_for = 107,                        // stmt_for
+        S_stmt_foreach = 108,                    // stmt_foreach
+        S_stmt_switch = 109,                     // stmt_switch
+        S_stmt_case = 110,                       // stmt_case
+        S_stmt_default = 111,                    // stmt_default
+        S_stmt_break = 112,                      // stmt_break
+        S_stmt_continue = 113,                   // stmt_continue
+        S_stmt_return = 114,                     // stmt_return
+        S_for_assign = 115,                      // for_assign
+        S_for_cond = 116,                        // for_cond
+        S_expr = 117,                            // expr
+        S_expr_assign = 118,                     // expr_assign
+        S_expr_cmp = 119,                        // expr_cmp
+        S_expr_ternary = 120,                    // expr_ternary
+        S_expr_binary = 121,                     // expr_binary
+        S_expr_primitive = 122,                  // expr_primitive
+        S_expr_call = 123,                       // expr_call
+        S_expr_call_thread = 124,                // expr_call_thread
+        S_expr_call_function = 125,              // expr_call_function
+        S_expr_call_pointer = 126,               // expr_call_pointer
+        S_expr_arguments = 127,                  // expr_arguments
+        S_expr_function_ref = 128,               // expr_function_ref
+        S_expr_array = 129,                      // expr_array
+        S_expr_field = 130,                      // expr_field
+        S_expr_size = 131,                       // expr_size
+        S_expr_vector = 132,                     // expr_vector
+        S_object = 133,                          // object
+        S_vector = 134,                          // vector
+        S_num = 135,                             // num
+        S_false = 136,                           // false
+        S_true = 137,                            // true
+        S_data_float = 138,                      // data_float
+        S_data_integer = 139,                    // data_integer
+        S_data_localized_string = 140,           // data_localized_string
+        S_data_string = 141,                     // data_string
+        S_identifier = 142,                      // identifier
+        S_filepath = 143,                        // filepath
+        S_empty_array = 144,                     // empty_array
+        S_undefined = 145,                       // undefined
+        S_size = 146,                            // size
+        S_game = 147,                            // game
+        S_self = 148,                            // self
+        S_anim = 149,                            // anim
+        S_level = 150                            // level
       };
     };
 
@@ -883,8 +874,12 @@ namespace yy {
       {
         switch (this->kind ())
     {
-      case symbol_kind::S_expr_arg_list: // expr_arg_list
-        value.move< expr_arg_list_ptr > (std::move (that.value));
+      case symbol_kind::S_block: // block
+        value.move< block_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_arguments: // expr_arguments
+        value.move< expr_arguments_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_expr_assign: // expr_assign
@@ -896,8 +891,8 @@ namespace yy {
         value.move< expr_call_ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_expr_func_call: // expr_func_call
-      case symbol_kind::S_expr_pointer_call: // expr_pointer_call
+      case symbol_kind::S_expr_call_function: // expr_call_function
+      case symbol_kind::S_expr_call_pointer: // expr_call_pointer
         value.move< expr_call_type_ptr > (std::move (that.value));
         break;
 
@@ -905,7 +900,7 @@ namespace yy {
         value.move< filepath_ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_float_: // float_
+      case symbol_kind::S_data_float: // data_float
         value.move< float_ptr > (std::move (that.value));
         break;
 
@@ -921,8 +916,12 @@ namespace yy {
         value.move< include_ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_integer: // integer
+      case symbol_kind::S_data_integer: // data_integer
         value.move< integer_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_data_localized_string: // data_localized_string
+        value.move< localized_string_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_for_assign: // for_assign
@@ -931,30 +930,29 @@ namespace yy {
       case symbol_kind::S_expr_cmp: // expr_cmp
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
-      case symbol_kind::S_expr_unary: // expr_unary
-      case symbol_kind::S_expr_func_ref: // expr_func_ref
-      case symbol_kind::S_expr_select: // expr_select
-      case symbol_kind::S_expr_subscribe: // expr_subscribe
-      case symbol_kind::S_selectable: // selectable
-      case symbol_kind::S_subscriptable: // subscriptable
-      case symbol_kind::S_callable: // callable
-      case symbol_kind::S_assignable: // assignable
-      case symbol_kind::S_size: // size
+      case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_function_ref: // expr_function_ref
+      case symbol_kind::S_expr_array: // expr_array
+      case symbol_kind::S_expr_field: // expr_field
+      case symbol_kind::S_expr_size: // expr_size
+      case symbol_kind::S_expr_vector: // expr_vector
+      case symbol_kind::S_object: // object
+      case symbol_kind::S_vector: // vector
+      case symbol_kind::S_num: // num
       case symbol_kind::S_false: // false
       case symbol_kind::S_true: // true
+      case symbol_kind::S_empty_array: // empty_array
+      case symbol_kind::S_undefined: // undefined
+      case symbol_kind::S_size: // size
+      case symbol_kind::S_game: // game
       case symbol_kind::S_self: // self
       case symbol_kind::S_anim: // anim
       case symbol_kind::S_level: // level
-      case symbol_kind::S_game: // game
-      case symbol_kind::S_empty_array: // empty_array
-      case symbol_kind::S_undefined: // undefined
-      case symbol_kind::S_vector: // vector
-      case symbol_kind::S_num: // num
         value.move< node_ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_param_list: // param_list
-        value.move< param_list_ptr > (std::move (that.value));
+      case symbol_kind::S_parameters: // parameters
+        value.move< parameters_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_script: // script
@@ -965,7 +963,6 @@ namespace yy {
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
-      case symbol_kind::S_STRING_HASH: // STRING_HASH
       case symbol_kind::S_FLOAT: // FLOAT
       case symbol_kind::S_INTEGER: // INTEGER
         value.move< std::string > (std::move (that.value));
@@ -973,10 +970,6 @@ namespace yy {
 
       case symbol_kind::S_stmt_assign: // stmt_assign
         value.move< stmt_assign_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_block: // stmt_block
-        value.move< stmt_block_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_stmt_break: // stmt_break
@@ -1055,15 +1048,7 @@ namespace yy {
         value.move< stmt_while_ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_string_hash: // string_hash
-        value.move< string_hash_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_string_loc: // string_loc
-        value.move< string_loc_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_string: // string
+      case symbol_kind::S_data_string: // data_string
         value.move< string_ptr > (std::move (that.value));
         break;
 
@@ -1093,12 +1078,23 @@ namespace yy {
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, expr_arg_list_ptr&& v)
+      basic_symbol (typename Base::kind_type t, block_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const expr_arg_list_ptr& v)
+      basic_symbol (typename Base::kind_type t, const block_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, expr_arguments_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const expr_arguments_ptr& v)
         : Base (t)
         , value (v)
       {}
@@ -1203,6 +1199,17 @@ namespace yy {
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, localized_string_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const localized_string_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, node_ptr&& v)
         : Base (t)
         , value (std::move (v))
@@ -1214,12 +1221,12 @@ namespace yy {
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, param_list_ptr&& v)
+      basic_symbol (typename Base::kind_type t, parameters_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const param_list_ptr& v)
+      basic_symbol (typename Base::kind_type t, const parameters_ptr& v)
         : Base (t)
         , value (v)
       {}
@@ -1253,17 +1260,6 @@ namespace yy {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const stmt_assign_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_block_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_block_ptr& v)
         : Base (t)
         , value (v)
       {}
@@ -1478,28 +1474,6 @@ namespace yy {
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, string_hash_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const string_hash_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, string_loc_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const string_loc_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, string_ptr&& v)
         : Base (t)
         , value (std::move (v))
@@ -1544,8 +1518,12 @@ namespace yy {
         // Value type destructor.
 switch (yykind)
     {
-      case symbol_kind::S_expr_arg_list: // expr_arg_list
-        value.template destroy< expr_arg_list_ptr > ();
+      case symbol_kind::S_block: // block
+        value.template destroy< block_ptr > ();
+        break;
+
+      case symbol_kind::S_expr_arguments: // expr_arguments
+        value.template destroy< expr_arguments_ptr > ();
         break;
 
       case symbol_kind::S_expr_assign: // expr_assign
@@ -1557,8 +1535,8 @@ switch (yykind)
         value.template destroy< expr_call_ptr > ();
         break;
 
-      case symbol_kind::S_expr_func_call: // expr_func_call
-      case symbol_kind::S_expr_pointer_call: // expr_pointer_call
+      case symbol_kind::S_expr_call_function: // expr_call_function
+      case symbol_kind::S_expr_call_pointer: // expr_call_pointer
         value.template destroy< expr_call_type_ptr > ();
         break;
 
@@ -1566,7 +1544,7 @@ switch (yykind)
         value.template destroy< filepath_ptr > ();
         break;
 
-      case symbol_kind::S_float_: // float_
+      case symbol_kind::S_data_float: // data_float
         value.template destroy< float_ptr > ();
         break;
 
@@ -1582,8 +1560,12 @@ switch (yykind)
         value.template destroy< include_ptr > ();
         break;
 
-      case symbol_kind::S_integer: // integer
+      case symbol_kind::S_data_integer: // data_integer
         value.template destroy< integer_ptr > ();
+        break;
+
+      case symbol_kind::S_data_localized_string: // data_localized_string
+        value.template destroy< localized_string_ptr > ();
         break;
 
       case symbol_kind::S_for_assign: // for_assign
@@ -1592,30 +1574,29 @@ switch (yykind)
       case symbol_kind::S_expr_cmp: // expr_cmp
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
-      case symbol_kind::S_expr_unary: // expr_unary
-      case symbol_kind::S_expr_func_ref: // expr_func_ref
-      case symbol_kind::S_expr_select: // expr_select
-      case symbol_kind::S_expr_subscribe: // expr_subscribe
-      case symbol_kind::S_selectable: // selectable
-      case symbol_kind::S_subscriptable: // subscriptable
-      case symbol_kind::S_callable: // callable
-      case symbol_kind::S_assignable: // assignable
-      case symbol_kind::S_size: // size
+      case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_function_ref: // expr_function_ref
+      case symbol_kind::S_expr_array: // expr_array
+      case symbol_kind::S_expr_field: // expr_field
+      case symbol_kind::S_expr_size: // expr_size
+      case symbol_kind::S_expr_vector: // expr_vector
+      case symbol_kind::S_object: // object
+      case symbol_kind::S_vector: // vector
+      case symbol_kind::S_num: // num
       case symbol_kind::S_false: // false
       case symbol_kind::S_true: // true
+      case symbol_kind::S_empty_array: // empty_array
+      case symbol_kind::S_undefined: // undefined
+      case symbol_kind::S_size: // size
+      case symbol_kind::S_game: // game
       case symbol_kind::S_self: // self
       case symbol_kind::S_anim: // anim
       case symbol_kind::S_level: // level
-      case symbol_kind::S_game: // game
-      case symbol_kind::S_empty_array: // empty_array
-      case symbol_kind::S_undefined: // undefined
-      case symbol_kind::S_vector: // vector
-      case symbol_kind::S_num: // num
         value.template destroy< node_ptr > ();
         break;
 
-      case symbol_kind::S_param_list: // param_list
-        value.template destroy< param_list_ptr > ();
+      case symbol_kind::S_parameters: // parameters
+        value.template destroy< parameters_ptr > ();
         break;
 
       case symbol_kind::S_script: // script
@@ -1626,7 +1607,6 @@ switch (yykind)
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
-      case symbol_kind::S_STRING_HASH: // STRING_HASH
       case symbol_kind::S_FLOAT: // FLOAT
       case symbol_kind::S_INTEGER: // INTEGER
         value.template destroy< std::string > ();
@@ -1634,10 +1614,6 @@ switch (yykind)
 
       case symbol_kind::S_stmt_assign: // stmt_assign
         value.template destroy< stmt_assign_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_block: // stmt_block
-        value.template destroy< stmt_block_ptr > ();
         break;
 
       case symbol_kind::S_stmt_break: // stmt_break
@@ -1716,15 +1692,7 @@ switch (yykind)
         value.template destroy< stmt_while_ptr > ();
         break;
 
-      case symbol_kind::S_string_hash: // string_hash
-        value.template destroy< string_hash_ptr > ();
-        break;
-
-      case symbol_kind::S_string_loc: // string_loc
-        value.template destroy< string_loc_ptr > ();
-        break;
-
-      case symbol_kind::S_string: // string
+      case symbol_kind::S_data_string: // data_string
         value.template destroy< string_ptr > ();
         break;
 
@@ -1820,26 +1788,26 @@ switch (yykind)
       symbol_type (int tok)
         : super_type(token_type (tok))
       {
-        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INC || tok == token::DEC || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::CMP_OR || tok == token::CMP_AND || tok == token::CMP_EQUAL || tok == token::CMP_NOT_EQ || tok == token::CMP_LESS_EQ || tok == token::CMP_GREATER_EQ || tok == token::CMP_LESS || tok == token::CMP_GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BW_OR || tok == token::ASSIGN_BW_AND || tok == token::ASSIGN_BW_XOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BW_OR || tok == token::BW_AND || tok == token::BW_XOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
+        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INCREMENT || tok == token::DECREMENT || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::OR || tok == token::AND || tok == token::EQUALITY || tok == token::INEQUALITY || tok == token::LESS_EQUAL || tok == token::GREATER_EQUAL || tok == token::LESS || tok == token::GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BITWISE_OR || tok == token::ASSIGN_BITWISE_AND || tok == token::ASSIGN_BITWISE_EXOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BITWISE_OR || tok == token::BITWISE_AND || tok == token::BITWISE_EXOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
       }
 #else
       symbol_type (int tok)
         : super_type(token_type (tok))
       {
-        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INC || tok == token::DEC || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::CMP_OR || tok == token::CMP_AND || tok == token::CMP_EQUAL || tok == token::CMP_NOT_EQ || tok == token::CMP_LESS_EQ || tok == token::CMP_GREATER_EQ || tok == token::CMP_LESS || tok == token::CMP_GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BW_OR || tok == token::ASSIGN_BW_AND || tok == token::ASSIGN_BW_XOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BW_OR || tok == token::BW_AND || tok == token::BW_XOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
+        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INCREMENT || tok == token::DECREMENT || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::OR || tok == token::AND || tok == token::EQUALITY || tok == token::INEQUALITY || tok == token::LESS_EQUAL || tok == token::GREATER_EQUAL || tok == token::LESS || tok == token::GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BITWISE_OR || tok == token::ASSIGN_BITWISE_AND || tok == token::ASSIGN_BITWISE_EXOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BITWISE_OR || tok == token::BITWISE_AND || tok == token::BITWISE_EXOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       symbol_type (int tok, std::string v)
         : super_type(token_type (tok), std::move (v))
       {
-        YY_ASSERT (tok == token::FILEPATH || tok == token::IDENTIFIER || tok == token::STRING || tok == token::STRING_LOC || tok == token::STRING_HASH || tok == token::FLOAT || tok == token::INTEGER);
+        YY_ASSERT (tok == token::FILEPATH || tok == token::IDENTIFIER || tok == token::STRING || tok == token::STRING_LOC || tok == token::FLOAT || tok == token::INTEGER);
       }
 #else
       symbol_type (int tok, const std::string& v)
         : super_type(token_type (tok), v)
       {
-        YY_ASSERT (tok == token::FILEPATH || tok == token::IDENTIFIER || tok == token::STRING || tok == token::STRING_LOC || tok == token::STRING_HASH || tok == token::FLOAT || tok == token::INTEGER);
+        YY_ASSERT (tok == token::FILEPATH || tok == token::IDENTIFIER || tok == token::STRING || tok == token::STRING_LOC || tok == token::FLOAT || tok == token::INTEGER);
       }
 #endif
     };
@@ -2597,31 +2565,31 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_INC ()
+      make_INCREMENT ()
       {
-        return symbol_type (token::INC);
+        return symbol_type (token::INCREMENT);
       }
 #else
       static
       symbol_type
-      make_INC ()
+      make_INCREMENT ()
       {
-        return symbol_type (token::INC);
+        return symbol_type (token::INCREMENT);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_DEC ()
+      make_DECREMENT ()
       {
-        return symbol_type (token::DEC);
+        return symbol_type (token::DECREMENT);
       }
 #else
       static
       symbol_type
-      make_DEC ()
+      make_DECREMENT ()
       {
-        return symbol_type (token::DEC);
+        return symbol_type (token::DECREMENT);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -2657,121 +2625,121 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_CMP_OR ()
+      make_OR ()
       {
-        return symbol_type (token::CMP_OR);
+        return symbol_type (token::OR);
       }
 #else
       static
       symbol_type
-      make_CMP_OR ()
+      make_OR ()
       {
-        return symbol_type (token::CMP_OR);
+        return symbol_type (token::OR);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_CMP_AND ()
+      make_AND ()
       {
-        return symbol_type (token::CMP_AND);
+        return symbol_type (token::AND);
       }
 #else
       static
       symbol_type
-      make_CMP_AND ()
+      make_AND ()
       {
-        return symbol_type (token::CMP_AND);
+        return symbol_type (token::AND);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_CMP_EQUAL ()
+      make_EQUALITY ()
       {
-        return symbol_type (token::CMP_EQUAL);
+        return symbol_type (token::EQUALITY);
       }
 #else
       static
       symbol_type
-      make_CMP_EQUAL ()
+      make_EQUALITY ()
       {
-        return symbol_type (token::CMP_EQUAL);
+        return symbol_type (token::EQUALITY);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_CMP_NOT_EQ ()
+      make_INEQUALITY ()
       {
-        return symbol_type (token::CMP_NOT_EQ);
+        return symbol_type (token::INEQUALITY);
       }
 #else
       static
       symbol_type
-      make_CMP_NOT_EQ ()
+      make_INEQUALITY ()
       {
-        return symbol_type (token::CMP_NOT_EQ);
+        return symbol_type (token::INEQUALITY);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_CMP_LESS_EQ ()
+      make_LESS_EQUAL ()
       {
-        return symbol_type (token::CMP_LESS_EQ);
+        return symbol_type (token::LESS_EQUAL);
       }
 #else
       static
       symbol_type
-      make_CMP_LESS_EQ ()
+      make_LESS_EQUAL ()
       {
-        return symbol_type (token::CMP_LESS_EQ);
+        return symbol_type (token::LESS_EQUAL);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_CMP_GREATER_EQ ()
+      make_GREATER_EQUAL ()
       {
-        return symbol_type (token::CMP_GREATER_EQ);
+        return symbol_type (token::GREATER_EQUAL);
       }
 #else
       static
       symbol_type
-      make_CMP_GREATER_EQ ()
+      make_GREATER_EQUAL ()
       {
-        return symbol_type (token::CMP_GREATER_EQ);
+        return symbol_type (token::GREATER_EQUAL);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_CMP_LESS ()
+      make_LESS ()
       {
-        return symbol_type (token::CMP_LESS);
+        return symbol_type (token::LESS);
       }
 #else
       static
       symbol_type
-      make_CMP_LESS ()
+      make_LESS ()
       {
-        return symbol_type (token::CMP_LESS);
+        return symbol_type (token::LESS);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_CMP_GREATER ()
+      make_GREATER ()
       {
-        return symbol_type (token::CMP_GREATER);
+        return symbol_type (token::GREATER);
       }
 #else
       static
       symbol_type
-      make_CMP_GREATER ()
+      make_GREATER ()
       {
-        return symbol_type (token::CMP_GREATER);
+        return symbol_type (token::GREATER);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -2867,46 +2835,46 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_ASSIGN_BW_OR ()
+      make_ASSIGN_BITWISE_OR ()
       {
-        return symbol_type (token::ASSIGN_BW_OR);
+        return symbol_type (token::ASSIGN_BITWISE_OR);
       }
 #else
       static
       symbol_type
-      make_ASSIGN_BW_OR ()
+      make_ASSIGN_BITWISE_OR ()
       {
-        return symbol_type (token::ASSIGN_BW_OR);
+        return symbol_type (token::ASSIGN_BITWISE_OR);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_ASSIGN_BW_AND ()
+      make_ASSIGN_BITWISE_AND ()
       {
-        return symbol_type (token::ASSIGN_BW_AND);
+        return symbol_type (token::ASSIGN_BITWISE_AND);
       }
 #else
       static
       symbol_type
-      make_ASSIGN_BW_AND ()
+      make_ASSIGN_BITWISE_AND ()
       {
-        return symbol_type (token::ASSIGN_BW_AND);
+        return symbol_type (token::ASSIGN_BITWISE_AND);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_ASSIGN_BW_XOR ()
+      make_ASSIGN_BITWISE_EXOR ()
       {
-        return symbol_type (token::ASSIGN_BW_XOR);
+        return symbol_type (token::ASSIGN_BITWISE_EXOR);
       }
 #else
       static
       symbol_type
-      make_ASSIGN_BW_XOR ()
+      make_ASSIGN_BITWISE_EXOR ()
       {
-        return symbol_type (token::ASSIGN_BW_XOR);
+        return symbol_type (token::ASSIGN_BITWISE_EXOR);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -2942,46 +2910,46 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_BW_OR ()
+      make_BITWISE_OR ()
       {
-        return symbol_type (token::BW_OR);
+        return symbol_type (token::BITWISE_OR);
       }
 #else
       static
       symbol_type
-      make_BW_OR ()
+      make_BITWISE_OR ()
       {
-        return symbol_type (token::BW_OR);
+        return symbol_type (token::BITWISE_OR);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_BW_AND ()
+      make_BITWISE_AND ()
       {
-        return symbol_type (token::BW_AND);
+        return symbol_type (token::BITWISE_AND);
       }
 #else
       static
       symbol_type
-      make_BW_AND ()
+      make_BITWISE_AND ()
       {
-        return symbol_type (token::BW_AND);
+        return symbol_type (token::BITWISE_AND);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_BW_XOR ()
+      make_BITWISE_EXOR ()
       {
-        return symbol_type (token::BW_XOR);
+        return symbol_type (token::BITWISE_EXOR);
       }
 #else
       static
       symbol_type
-      make_BW_XOR ()
+      make_BITWISE_EXOR ()
       {
-        return symbol_type (token::BW_XOR);
+        return symbol_type (token::BITWISE_EXOR);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -3132,21 +3100,6 @@ switch (yykind)
       make_STRING_LOC (const std::string& v)
       {
         return symbol_type (token::STRING_LOC, v);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
-      make_STRING_HASH (std::string v)
-      {
-        return symbol_type (token::STRING_HASH, std::move (v));
-      }
-#else
-      static
-      symbol_type
-      make_STRING_HASH (const std::string& v)
-      {
-        return symbol_type (token::STRING_HASH, v);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -3536,8 +3489,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2157,     ///< Last index in yytable_.
-      yynnts_ = 67,  ///< Number of nonterminal symbols.
+      yylast_ = 2289,     ///< Last index in yytable_.
+      yynnts_ = 65,  ///< Number of nonterminal symbols.
       yyfinal_ = 16 ///< Termination state number.
     };
 
@@ -3563,8 +3516,12 @@ switch (yykind)
   {
     switch (this->kind ())
     {
-      case symbol_kind::S_expr_arg_list: // expr_arg_list
-        value.copy< expr_arg_list_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_block: // block
+        value.copy< block_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_arguments: // expr_arguments
+        value.copy< expr_arguments_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_expr_assign: // expr_assign
@@ -3576,8 +3533,8 @@ switch (yykind)
         value.copy< expr_call_ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_expr_func_call: // expr_func_call
-      case symbol_kind::S_expr_pointer_call: // expr_pointer_call
+      case symbol_kind::S_expr_call_function: // expr_call_function
+      case symbol_kind::S_expr_call_pointer: // expr_call_pointer
         value.copy< expr_call_type_ptr > (YY_MOVE (that.value));
         break;
 
@@ -3585,7 +3542,7 @@ switch (yykind)
         value.copy< filepath_ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_float_: // float_
+      case symbol_kind::S_data_float: // data_float
         value.copy< float_ptr > (YY_MOVE (that.value));
         break;
 
@@ -3601,8 +3558,12 @@ switch (yykind)
         value.copy< include_ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_integer: // integer
+      case symbol_kind::S_data_integer: // data_integer
         value.copy< integer_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_data_localized_string: // data_localized_string
+        value.copy< localized_string_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_for_assign: // for_assign
@@ -3611,30 +3572,29 @@ switch (yykind)
       case symbol_kind::S_expr_cmp: // expr_cmp
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
-      case symbol_kind::S_expr_unary: // expr_unary
-      case symbol_kind::S_expr_func_ref: // expr_func_ref
-      case symbol_kind::S_expr_select: // expr_select
-      case symbol_kind::S_expr_subscribe: // expr_subscribe
-      case symbol_kind::S_selectable: // selectable
-      case symbol_kind::S_subscriptable: // subscriptable
-      case symbol_kind::S_callable: // callable
-      case symbol_kind::S_assignable: // assignable
-      case symbol_kind::S_size: // size
+      case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_function_ref: // expr_function_ref
+      case symbol_kind::S_expr_array: // expr_array
+      case symbol_kind::S_expr_field: // expr_field
+      case symbol_kind::S_expr_size: // expr_size
+      case symbol_kind::S_expr_vector: // expr_vector
+      case symbol_kind::S_object: // object
+      case symbol_kind::S_vector: // vector
+      case symbol_kind::S_num: // num
       case symbol_kind::S_false: // false
       case symbol_kind::S_true: // true
+      case symbol_kind::S_empty_array: // empty_array
+      case symbol_kind::S_undefined: // undefined
+      case symbol_kind::S_size: // size
+      case symbol_kind::S_game: // game
       case symbol_kind::S_self: // self
       case symbol_kind::S_anim: // anim
       case symbol_kind::S_level: // level
-      case symbol_kind::S_game: // game
-      case symbol_kind::S_empty_array: // empty_array
-      case symbol_kind::S_undefined: // undefined
-      case symbol_kind::S_vector: // vector
-      case symbol_kind::S_num: // num
         value.copy< node_ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_param_list: // param_list
-        value.copy< param_list_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_parameters: // parameters
+        value.copy< parameters_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_script: // script
@@ -3645,7 +3605,6 @@ switch (yykind)
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
-      case symbol_kind::S_STRING_HASH: // STRING_HASH
       case symbol_kind::S_FLOAT: // FLOAT
       case symbol_kind::S_INTEGER: // INTEGER
         value.copy< std::string > (YY_MOVE (that.value));
@@ -3653,10 +3612,6 @@ switch (yykind)
 
       case symbol_kind::S_stmt_assign: // stmt_assign
         value.copy< stmt_assign_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_block: // stmt_block
-        value.copy< stmt_block_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_stmt_break: // stmt_break
@@ -3735,15 +3690,7 @@ switch (yykind)
         value.copy< stmt_while_ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_string_hash: // string_hash
-        value.copy< string_hash_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_string_loc: // string_loc
-        value.copy< string_loc_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_string: // string
+      case symbol_kind::S_data_string: // data_string
         value.copy< string_ptr > (YY_MOVE (that.value));
         break;
 
@@ -3781,8 +3728,12 @@ switch (yykind)
     super_type::move (s);
     switch (this->kind ())
     {
-      case symbol_kind::S_expr_arg_list: // expr_arg_list
-        value.move< expr_arg_list_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_block: // block
+        value.move< block_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_arguments: // expr_arguments
+        value.move< expr_arguments_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_expr_assign: // expr_assign
@@ -3794,8 +3745,8 @@ switch (yykind)
         value.move< expr_call_ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_expr_func_call: // expr_func_call
-      case symbol_kind::S_expr_pointer_call: // expr_pointer_call
+      case symbol_kind::S_expr_call_function: // expr_call_function
+      case symbol_kind::S_expr_call_pointer: // expr_call_pointer
         value.move< expr_call_type_ptr > (YY_MOVE (s.value));
         break;
 
@@ -3803,7 +3754,7 @@ switch (yykind)
         value.move< filepath_ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_float_: // float_
+      case symbol_kind::S_data_float: // data_float
         value.move< float_ptr > (YY_MOVE (s.value));
         break;
 
@@ -3819,8 +3770,12 @@ switch (yykind)
         value.move< include_ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_integer: // integer
+      case symbol_kind::S_data_integer: // data_integer
         value.move< integer_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_data_localized_string: // data_localized_string
+        value.move< localized_string_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_for_assign: // for_assign
@@ -3829,30 +3784,29 @@ switch (yykind)
       case symbol_kind::S_expr_cmp: // expr_cmp
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
-      case symbol_kind::S_expr_unary: // expr_unary
-      case symbol_kind::S_expr_func_ref: // expr_func_ref
-      case symbol_kind::S_expr_select: // expr_select
-      case symbol_kind::S_expr_subscribe: // expr_subscribe
-      case symbol_kind::S_selectable: // selectable
-      case symbol_kind::S_subscriptable: // subscriptable
-      case symbol_kind::S_callable: // callable
-      case symbol_kind::S_assignable: // assignable
-      case symbol_kind::S_size: // size
+      case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_function_ref: // expr_function_ref
+      case symbol_kind::S_expr_array: // expr_array
+      case symbol_kind::S_expr_field: // expr_field
+      case symbol_kind::S_expr_size: // expr_size
+      case symbol_kind::S_expr_vector: // expr_vector
+      case symbol_kind::S_object: // object
+      case symbol_kind::S_vector: // vector
+      case symbol_kind::S_num: // num
       case symbol_kind::S_false: // false
       case symbol_kind::S_true: // true
+      case symbol_kind::S_empty_array: // empty_array
+      case symbol_kind::S_undefined: // undefined
+      case symbol_kind::S_size: // size
+      case symbol_kind::S_game: // game
       case symbol_kind::S_self: // self
       case symbol_kind::S_anim: // anim
       case symbol_kind::S_level: // level
-      case symbol_kind::S_game: // game
-      case symbol_kind::S_empty_array: // empty_array
-      case symbol_kind::S_undefined: // undefined
-      case symbol_kind::S_vector: // vector
-      case symbol_kind::S_num: // num
         value.move< node_ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_param_list: // param_list
-        value.move< param_list_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_parameters: // parameters
+        value.move< parameters_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_script: // script
@@ -3863,7 +3817,6 @@ switch (yykind)
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
-      case symbol_kind::S_STRING_HASH: // STRING_HASH
       case symbol_kind::S_FLOAT: // FLOAT
       case symbol_kind::S_INTEGER: // INTEGER
         value.move< std::string > (YY_MOVE (s.value));
@@ -3871,10 +3824,6 @@ switch (yykind)
 
       case symbol_kind::S_stmt_assign: // stmt_assign
         value.move< stmt_assign_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_block: // stmt_block
-        value.move< stmt_block_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_stmt_break: // stmt_break
@@ -3953,15 +3902,7 @@ switch (yykind)
         value.move< stmt_while_ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_string_hash: // string_hash
-        value.move< string_hash_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_string_loc: // string_loc
-        value.move< string_loc_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_string: // string
+      case symbol_kind::S_data_string: // data_string
         value.move< string_ptr > (YY_MOVE (s.value));
         break;
 
@@ -4031,7 +3972,7 @@ switch (yykind)
   }
 
 } // yy
-#line 4035 "./IW6/compiler_parser.hpp"
+#line 3976 "./IW6/compiler_parser.hpp"
 
 
 

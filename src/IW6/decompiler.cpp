@@ -258,7 +258,7 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			stmt1->data = utils::string::va("%s[%s]", stmt2->data.data(), stmt1->data.data());
 		}
 		break;
-		case opcode::OP_EvalNewLocalArrayRefCached0: // IW6 have the index after instruction
+		case opcode::OP_EvalNewLocalArrayRefCached0: // IW6 have the index after instruction (array)
 		{
 			auto stmt = func->stack.top();
 			func->local_vars.insert(func->local_vars.begin(), "var_" + inst->data[0]);// need to check if this insert at variable_stack begin

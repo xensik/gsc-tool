@@ -4,17 +4,13 @@
 // that can be found in the LICENSE file.
 
 #include "IW6.hpp"
-
 #include "compiler_parser.hpp"
 #include "compiler_lexer.hpp"
 
 namespace IW6
 {
 
-compiler::compiler()
-{
-
-}
+compiler::compiler() { }
 
 void compiler::compile(std::string& buffer)
 {
@@ -44,14 +40,14 @@ void compiler::compile(std::string& buffer)
     if(result != nullptr)
     {
         LOG_INFO("starting to compile...");
-        //printf("%s", result->print().data());
-        compile_tree(std::move(result));
+        printf("%s", result->print().data());
+        //compile_tree(std::move(result));
     }
 }
 
 auto compiler::output() -> std::vector<std::shared_ptr<function>>
 {
-    return std::vector<std::shared_ptr<function>>();
+    return assembly_;
 }
 
 void compiler::compile_tree(std::unique_ptr<node> tree)
@@ -107,8 +103,8 @@ void compiler::emit_function(const function_ptr& func)
 
     function_->name = func->name->value;
     
-    emit_parameters(func->param_list);
-    emit_statement_list(func->stmt_block);
+    emit_parameters(func->params);
+    emit_block(func->block);
     emit_instruction(opcode::OP_End);
 
     function_->size = index_ - function_->index;
@@ -116,9 +112,9 @@ void compiler::emit_function(const function_ptr& func)
     LOG_DEBUG("function '%s' with %d instructions.",function_->name.data(), function_->instructions.size());
 }
 
-void compiler::emit_parameters(const param_list_ptr& param_list)
+void compiler::emit_parameters(const parameters_ptr& params)
 {
-    for(auto& param : param_list->params)
+    for(auto& param : params->list)
     {
         auto inst = emit_instruction(opcode::OP_SafeCreateVariableFieldCached);
         inst->data.push_back(utils::string::va("%d", local_vars.size()));
@@ -128,7 +124,7 @@ void compiler::emit_parameters(const param_list_ptr& param_list)
     auto inst = emit_instruction(opcode::OP_checkclearparams);
 }
 
-void compiler::emit_statement_list(const stmt_block_ptr& block)
+void compiler::emit_block(const block_ptr& block)
 {
     for(const auto& stmt : block->stmts)
     {
@@ -182,18 +178,23 @@ void compiler::emit_statement(const stmt_ptr& stmt)
         case node_type::stmt_switch:
             emit_statement_switch(stmt.as_switch);
             break;
-        case node_type::stmt_case: // ERROR ONLY ON SWITCH
+        case node_type::stmt_case:
+            emit_statement_case(stmt.as_case);
             break;
-        case node_type::stmt_default:  // ERROR ONLY ON SWITCH
+        case node_type::stmt_default:
+            emit_statement_default(stmt.as_default);
             break;
-        case node_type::stmt_break:  // ERROR ONLY ON LOOP
+        case node_type::stmt_break:
+            emit_statement_break(stmt.as_break);
             break;
-        case node_type::stmt_continue: // ERROR ONLY ON LOOP
+        case node_type::stmt_continue:
+            emit_statement_continue(stmt.as_continue);
             break;
         case node_type::stmt_return:
             emit_statement_return(stmt.as_return);
             break;
-        default: // ERROR UNKNOWN
+        default:
+            LOG_ERROR("UNKNOWN STATEMENT!");
             break;
     }
 }
@@ -211,110 +212,215 @@ void compiler::emit_statement_assign(const stmt_assign_ptr& stmt)
 
 void compiler::emit_statement_endon(const stmt_endon_ptr& stmt)
 {
-
+    emit_expression(*(expr_ptr*)&stmt->expr);
+    emit_expression(*(expr_ptr*)&stmt->obj);
+    emit_instruction(opcode::OP_endon);
 }
 
 void compiler::emit_statement_notify(const stmt_notify_ptr& stmt)
 {
+    emit_instruction(opcode::OP_voidCodepos);
+    
+    std::reverse(stmt->args->list.begin(), stmt->args->list.end());
+    for(const auto& arg : stmt->args->list)
+    {
+        emit_expression(*(expr_ptr*)&arg);
+    }
 
+    emit_expression(*(expr_ptr*)&stmt->expr); // notify string
+    emit_expression(*(expr_ptr*)&stmt->obj); // notify object
+    emit_instruction(opcode::OP_notify);
 }
 
 void compiler::emit_statement_wait(const stmt_wait_ptr& stmt)
 {
-
+    emit_expression(*(expr_ptr*)&stmt->expr);
+    emit_instruction(opcode::OP_wait);
 }
 
 void compiler::emit_statement_waittill(const stmt_waittill_ptr& stmt)
 {
+    emit_expression(*(expr_ptr*)&stmt->expr); // notify string
+    emit_expression(*(expr_ptr*)&stmt->obj); // notify object
+    emit_instruction(opcode::OP_waittill);
 
+    std::reverse(stmt->args->list.begin(), stmt->args->list.end());
+    for(const auto& arg : stmt->args->list)
+    {
+        // TODO: move this code to create variable function, 
+        // if this is inside a for loop, variable is created outside too. (create_local_variable 0)
+        local_vars.insert(local_vars.begin(), (*(identifier_ptr*)&arg)->value);
+        auto index = local_vars.size() - 1;
+        auto inst = emit_instruction(opcode::OP_SafeSetWaittillVariableFieldCached);
+        inst->data.push_back(utils::string::va("%d", index));
+    }
+
+    emit_instruction(opcode::OP_clearparams);
 }
 
 void compiler::emit_statement_waittillmatch(const stmt_waittillmatch_ptr& stmt)
 {
-
+    emit_expression(*(expr_ptr*)&stmt->rexpr);  // match string
+    emit_expression(*(expr_ptr*)&stmt->lexpr);  // notify string
+    emit_expression(*(expr_ptr*)&stmt->obj);    // notify object
+    emit_instruction(opcode::OP_waittillmatch);
+    emit_instruction(opcode::OP_clearparams);
 }
 
 void compiler::emit_statement_waittillframeend(const stmt_waittillframeend_ptr& stmt)
 {
-
+    emit_instruction(opcode::OP_waittillFrameEnd);
 }
 
 void compiler::emit_statement_if(const stmt_if_ptr& stmt)
 {
+    // need bool isLastStatement
+
+    // -----------------------------------
+    // emitexpresion
+    // emit jump on false to label out
+
+    // emit statement
+
+    // if lastStatement -> emit end, else emit remove local variables
+
+    // label out on false;
 
 }
 
 void compiler::emit_statement_ifelse(const stmt_ifelse_ptr& stmt)
 {
+    // need bool isLastStatement
 
+    // -----------------------------------
+    // emitexpresion
+    // emit jump on false to label out
+
+    // emit statement
+
+    // emit remove local vars
+    // if lastStatement -> emit end, else emit OP_jump to post_else
+
+    // label out on false;
+
+    // emit else block
+
+    // if lastStatement -> emit end, else removelocalvars
+    // label post_else
 }
 
 void compiler::emit_statement_while(const stmt_while_ptr& stmt)
 {
+    // set can break, can continue
 
+    // -------------------------------------
+    // emit create local variables!
+    //emit condition + label loop begin
+    // jumpOnFalse loop out, is not const condition
+
+    // emit block
+
+    // jumpback loop begin
+    // label loop out ( for break stmt )
 }
 
 void compiler::emit_statement_for(const stmt_for_ptr& stmt)
 {
+    // set can break, can continue
 
+    // -------------------------------------
+    // emit create local variables!
+    //emit precond
+
+    //emit condition + label loop begin
+
+    // emit block
+
+    // emit post cond
+    // jumpback loop begin
+    // label loop out ( for break stmt )
 }
 
 void compiler::emit_statement_foreach(const stmt_foreach_ptr& stmt)
 {
-
+    // set can break, can continue???
 }
 
 void compiler::emit_statement_switch(const stmt_switch_ptr& stmt)
 {
+    // set can break.
 
+    // emit expression
+    // emit switch + label to jumptable
+
+    // emit case blocks + label
+    // ...
+
+    // emit enswitxh jumptable
+    // case x jump case block label
 }
 
 void compiler::emit_statement_case(const stmt_case_ptr& stmt)
 {
-
+    // in switch?
 }
 
 void compiler::emit_statement_default(const stmt_default_ptr& stmt)
 {
-
+    // in switch?
 }
 
 void compiler::emit_statement_break(const stmt_break_ptr& stmt)
 {
+    // can break?
 
+    // remove_localvariables of current block
+    // emit OP_jump location (loop end out )
 }
 
 void compiler::emit_statement_continue(const stmt_continue_ptr& stmt)
 {
+    // can continue?
 
+    // remove_localvariables of current block
+    // emit OP_jump location (loop begin )
 }
 
 void compiler::emit_statement_return(const stmt_return_ptr& stmt)
 {
-
+    if(stmt->expr->type == node_type::null)
+    {
+        emit_instruction(opcode::OP_End);
+    }
+    else
+    {
+        emit_expression(*(expr_ptr*)&stmt->expr);
+        emit_instruction(opcode::OP_Return);
+    }
 }
 
 void compiler::emit_expression(const expr_ptr& expr)
 {
-    // objects not used? (level, anim, self)
-
     switch(expr.as_node->type)
     {
         case node_type::expr_ternary:
-            emit_expr_ternary(expr.as_expr_ternary);
+            emit_expr_ternary(expr.as_ternary);
             break;
-        case node_type::expr_cmp_and:
-        case node_type::expr_cmp_or:
-        case node_type::expr_cmp_equal:
-        case node_type::expr_cmp_less:
-        case node_type::expr_cmp_greater:
-        case node_type::expr_cmp_less_equal:
-        case node_type::expr_cmp_greater_equal:
-        case node_type::expr_cmp_not_equal:
-
-        case node_type::expr_bw_or:
-        case node_type::expr_bw_and:
-        case node_type::expr_bw_xor:
+        case node_type::expr_and:
+            emit_expr_and(expr.as_and);
+            break;
+        case node_type::expr_or:
+            emit_expr_or(expr.as_or);
+            break;
+        case node_type::expr_equality:
+        case node_type::expr_inequality:
+        case node_type::expr_less:
+        case node_type::expr_greater:
+        case node_type::expr_less_equal:
+        case node_type::expr_greater_equal:
+        case node_type::expr_bitwise_or:
+        case node_type::expr_bitwise_and:
+        case node_type::expr_bitwise_exor:
         case node_type::expr_shift_left:
         case node_type::expr_shift_right:
         case node_type::expr_add:
@@ -322,25 +428,28 @@ void compiler::emit_expression(const expr_ptr& expr)
         case node_type::expr_mult:
         case node_type::expr_div:
         case node_type::expr_mod:
-            emit_expr_binary(expr);
+            emit_expr_binary(expr.as_binary);
             break;
         case node_type::expr_complement:
-            emit_expr_complement(expr.as_expr_complement);
+            emit_expr_complement(expr.as_complement);
             break;
         case node_type::expr_not:
-            emit_expr_not(expr.as_expr_not);
+            emit_expr_not(expr.as_not);
             break;
         case node_type::expr_call:
-            emit_expr_call(expr.as_expr_call);
+            emit_expr_call(expr.as_call);
             break;
-        case node_type::expr_subscribe:
-            emit_expr_subscribe(expr.as_expr_subscribe);
+        case node_type::expr_array:
+            emit_array_variable(expr.as_array);
             break;
-        case node_type::expr_select:
-            emit_expr_select(expr.as_expr_select);
+        case node_type::expr_field:
+            emit_field_variable(expr.as_field);
             break;
-        case node_type::expr_func_ref:
-            emit_expr_func_ref(expr.as_expr_func_ref);
+        case node_type::expr_size:
+            emit_size(expr.as_size_expr);
+            break;
+        case node_type::expr_function_ref:
+            emit_expr_function_ref(expr.as_function_ref);
             break;
         case node_type::empty_array:
             emit_instruction(opcode::OP_EmptyArray);
@@ -348,7 +457,6 @@ void compiler::emit_expression(const expr_ptr& expr)
         case node_type::undefined:
             emit_instruction(opcode::OP_GetUndefined);
             break;
-        // globals
        case node_type::level:
             emit_instruction(opcode::OP_GetLevel);
             break;
@@ -361,50 +469,80 @@ void compiler::emit_expression(const expr_ptr& expr)
         case node_type::game:
             emit_instruction(opcode::OP_GetGame);
             break;
-        // basic
         case node_type::identifier:
-            emit_expr_variable(expr.as_identifier);
+            emit_local_variable(expr.as_identifier);
             break;
-        case node_type::string:
+        case node_type::data_string:
             emit_string(expr.as_string);
             break;
-        case node_type::string_loc:
-            emit_string_loc(expr.as_string_loc);
+        case node_type::data_localized_string:
+            emit_localized_string(expr.as_localized_string);
             break;
-        case node_type::float_:
-            emit_float(expr.as_float_);
+        case node_type::data_float:
+            emit_float(expr.as_float);
             break;
-        case node_type::integer:
+        case node_type::data_integer:
             emit_integer(expr.as_integer);
             break;
-        case node_type::vector:
+        case node_type::data_vector:
             emit_vector(expr.as_vector);
+            break;
+        case node_type::expr_vector:
+            emit_expr_vector(expr.as_vector_expr);
             break;
     }
 }
 
 void compiler::emit_expr_assign(const expr_assign_ptr& expr)	
 {
-    if(expr->type == node_type::expr_inc)
+    if(expr->type == node_type::expr_increment)
     {
         emit_expression(*(expr_ptr*)&expr->lvalue);
         emit_instruction(opcode::OP_inc);
     }
-    else if(expr->type == node_type::expr_dec)
+    else if(expr->type == node_type::expr_decrement)
     {
         emit_expression(*(expr_ptr*)&expr->lvalue);
         emit_instruction(opcode::OP_dec);
     }
     else if(expr->type == node_type::expr_assign_equal)
     {
-        //TODO:  undefined, clear array ????
-        emit_expression(*(expr_ptr*)&expr->rvalue);
-        emit_expr_ref(*(expr_ptr*)&expr->lvalue, true);
+        if(expr->rvalue->type == node_type::undefined) // ClearVariable
+        {
+            if(expr->lvalue->type == node_type::expr_array) // CLEAR ARRAY
+            {
+                emit_expression(*(expr_ptr*)&((*(expr_array_ptr*)&expr->lvalue)->key));
+                // emit game_ref or eval array_ref
+                //emit_expr_ref(*(expr_ptr*)&((*(expr_subscribe_ptr*)&expr->lvalue)->obj), false);
+                emit_instruction(opcode::OP_ClearArray);
+            }
+            else if(expr->lvalue->type == node_type::expr_field) // CLEAR FIELD
+            {
+                // TODO: size cant be cleared!!
+                auto field = (*(identifier_ptr*)&(*(expr_field_ptr*)&expr->lvalue)->field)->value;
+                emit_object(*(expr_ptr*)&((*(expr_field_ptr*)&expr->lvalue)->obj));
+                auto inst = emit_instruction(opcode::OP_ClearFieldVariable);
+                inst->data.push_back(field);
+            }
+            else // is a local var, use OP_Get_undefined ?? 
+            {
+                // this 2 opcodes are always after for/foreach loops !!!
+                //OP_ClearLocalVariableFieldCached0 = 0x30,
+	            //OP_ClearLocalVariableFieldCached = 0x31,
+                emit_expression(*(expr_ptr*)&expr->rvalue);
+                emit_variable_ref(*(expr_ptr*)&expr->lvalue, true);
+            } 
+        }
+        else
+        {
+            emit_expression(*(expr_ptr*)&expr->rvalue);
+            emit_variable_ref(*(expr_ptr*)&expr->lvalue, true);
+        }
     }
     else
     {
-        emit_expression(*(expr_ptr*)&expr->rvalue);
         emit_expression(*(expr_ptr*)&expr->lvalue);
+        emit_expression(*(expr_ptr*)&expr->rvalue);
 
         switch(expr->type)
         {
@@ -429,13 +567,13 @@ void compiler::emit_expr_assign(const expr_assign_ptr& expr)
             case node_type::expr_assign_shift_right:
                 emit_instruction(opcode::OP_shift_right);
                 break;
-            case node_type::expr_assign_bw_or:
+            case node_type::expr_assign_bitwise_or:
                 emit_instruction(opcode::OP_bit_or);
                 break;
-            case node_type::expr_assign_bw_and:
+            case node_type::expr_assign_bitwise_and:
                 emit_instruction(opcode::OP_bit_and);
                 break;
-            case node_type::expr_assign_bw_xor:
+            case node_type::expr_assign_bitwise_exor:
                 emit_instruction(opcode::OP_bit_ex_or);
                 break;
             default:
@@ -443,18 +581,95 @@ void compiler::emit_expr_assign(const expr_assign_ptr& expr)
                 break;
         }
 
-        emit_expr_ref(*(expr_ptr*)&expr->lvalue, true);
+        emit_variable_ref(*(expr_ptr*)&expr->lvalue, true);
     }  
 }
 
 void compiler::emit_expr_ternary(const expr_ternary_ptr& expr)
 {
-
+    LOG_ERROR("EXPR TERNARY NOT IMPLEMENTED!");
 }
 
-void compiler::emit_expr_binary(const expr_ptr& expr)
+void compiler::emit_expr_binary(const expr_binary_ptr& expr)
 {
+    emit_expression(*(expr_ptr*)&expr->lvalue);
+    emit_expression(*(expr_ptr*)&expr->rvalue);
 
+    switch(expr->type)
+    {
+        case node_type::expr_equality:
+            emit_instruction(opcode::OP_equality);
+            break;
+        case node_type::expr_inequality:
+            emit_instruction(opcode::OP_inequality);
+            break;
+        case node_type::expr_less:
+            emit_instruction(opcode::OP_less);
+            break;
+        case node_type::expr_greater:
+            emit_instruction(opcode::OP_greater);
+            break;
+        case node_type::expr_less_equal:
+            emit_instruction(opcode::OP_less_equal);
+            break;
+        case node_type::expr_greater_equal:
+            emit_instruction(opcode::OP_greater_equal);
+            break;
+        case node_type::expr_bitwise_or:
+            emit_instruction(opcode::OP_bit_or);
+            break;
+        case node_type::expr_bitwise_and:
+            emit_instruction(opcode::OP_bit_and);
+            break;
+        case node_type::expr_bitwise_exor:
+            emit_instruction(opcode::OP_bit_ex_or);
+            break;
+        case node_type::expr_shift_left:
+            emit_instruction(opcode::OP_shift_left);
+            break;
+        case node_type::expr_shift_right:
+            emit_instruction(opcode::OP_shift_right);
+            break;
+        case node_type::expr_add:
+            emit_instruction(opcode::OP_plus);
+            break;
+        case node_type::expr_sub:
+            emit_instruction(opcode::OP_minus);
+            break;
+        case node_type::expr_mult:
+            emit_instruction(opcode::OP_multiply);
+            break;
+        case node_type::expr_div:
+            emit_instruction(opcode::OP_divide);
+            break;
+        case node_type::expr_mod:
+            emit_instruction(opcode::OP_mod);
+            break;
+    }
+}
+
+void compiler::emit_expr_and(const expr_and_ptr& expr)
+{
+    emit_expression(*(expr_ptr*)&expr->lvalue);
+    auto inst = emit_instruction(opcode::OP_JumpOnFalseExpr);
+
+    emit_expression(*(expr_ptr*)&expr->rvalue);
+    emit_instruction(opcode::OP_CastBool);
+
+    auto label = create_label(); // jumpOnFalseExpr here
+    inst->data.push_back(label);
+}
+
+void compiler::emit_expr_or(const expr_or_ptr& expr)
+{
+    emit_expression(*(expr_ptr*)&expr->lvalue);
+    auto inst = emit_instruction(opcode::OP_JumpOnTrueExpr);
+
+    emit_expression(*(expr_ptr*)&expr->rvalue);
+    emit_instruction(opcode::OP_CastBool);
+
+    auto label = create_label(); // jumpOnTrueExpr here
+    inst->data.push_back(label);
 }
 
 void compiler::emit_expr_complement(const expr_complement_ptr& expr)
@@ -465,6 +680,22 @@ void compiler::emit_expr_complement(const expr_complement_ptr& expr)
 
 void compiler::emit_expr_not(const expr_not_ptr& expr)
 {
+    /* on if statements, if the root condition is negated, is assembled as
+    
+    emit expression --- call<2> issubstr
+    jump over stmt  --- jump<true> loc_3233
+	stmt code       --- xxxxxxxxxxx
+	out if          --- loc_3233
+
+    just optimize 1 instruction, instead...
+
+    emit expression --- call<2> issubstr
+                    --- bool_not
+    jump over stmt  --- jump<false> loc_3233
+	stmt code       --- xxxxxxxxxxx
+	out if          --- loc_3233
+
+    */
     emit_expression(*(expr_ptr*)&expr->rvalue);
     emit_instruction(opcode::OP_BoolNot);
 }
@@ -473,8 +704,6 @@ void compiler::emit_expr_call(const expr_call_ptr& expr)
 {
     bool thread, method, builtin, far, local = false;
     std::string file, name;
-    node_expr_arg_list* arg_list;
-    node* pointer_expr;
     std::uint32_t args = 0;
 
     thread = expr->thread;
@@ -484,25 +713,25 @@ void compiler::emit_expr_call(const expr_call_ptr& expr)
         method = true;
     }
 
-    if(expr->func.as_node->type == node_type::expr_pointer_call)
+    if(expr->func.as_node->type == node_type::expr_call_pointer)
     {
         if(expr->func.as_pointer->expr->type == node_type::identifier)
         {
             builtin = is_builtin_call(*(identifier_ptr*)&expr->func.as_pointer->expr);
         }
         
-        args = expr->func.as_pointer->arg_list->args.size();
+        args = expr->func.as_pointer->args->list.size();
         
         if(!thread && !builtin)
             emit_instruction(opcode::OP_PreScriptCall);
   
-        emit_expr_arg_list(expr->func.as_pointer->arg_list);
+        emit_expr_arguments(expr->func.as_pointer->args);
         emit_expression(*(expr_ptr*)&expr->func.as_pointer->expr);
         emit_expr_call_pointer(args, builtin, method, thread, false);
     }
     else
     {
-        args = expr->func.as_func->arg_list->args.size();
+        args = expr->func.as_func->args->list.size();
         name = expr->func.as_func->name->value;
         file = expr->func.as_func->file->value;
 
@@ -530,7 +759,7 @@ void compiler::emit_expr_call(const expr_call_ptr& expr)
         if(args > 0 && !thread && !builtin)
             emit_instruction(opcode::OP_PreScriptCall);
 
-        emit_expr_arg_list(expr->func.as_func->arg_list);
+        emit_expr_arguments(expr->func.as_func->args);
 
         if(far)
             emit_expr_call_far(file, name, args, method, thread, false);
@@ -713,36 +942,36 @@ void compiler::emit_expr_call_builtin(const std::string& func, int args, bool me
     inst->data.push_back(func);
 }
 
-void compiler::emit_expr_arg_list(const expr_arg_list_ptr& arg_list)
+void compiler::emit_expr_arguments(const expr_arguments_ptr& args)
 {
-    std::reverse(arg_list->args.begin(), arg_list->args.end());
+    std::reverse(args->list.begin(), args->list.end());
 
-    for(auto& arg : arg_list->args)
+    for(auto& arg : args->list)
     {
         emit_expression(*(expr_ptr*)&arg);
     }
 }
 
-void compiler::emit_expr_func_ref(const expr_func_ref_ptr& node)
+void compiler::emit_expr_function_ref(const expr_function_ref_ptr& expr)
 {
     bool far, local, builtin, method = false;
-    auto name = node->func->value;
-    auto file = node->file->value;
+    auto name = expr->func->value;
+    auto file = expr->file->value;
 
     if(file != "")
     {
         far = true;
     }
-    else if(is_builtin_method(node->func))
+    else if(is_builtin_method(expr->func))
     {
         builtin = true;
         method = true;
     }
-    else if(is_builtin_func(node->func))
+    else if(is_builtin_func(expr->func))
     {
         builtin = true;
     }
-    else if(is_local_call(node->func))
+    else if(is_local_call(expr->func))
     {
         local = true;
     }
@@ -772,19 +1001,25 @@ void compiler::emit_expr_func_ref(const expr_func_ref_ptr& node)
     }
 }
 
-void compiler::emit_expr_ref(const expr_ptr& expr, bool set)
+void compiler::emit_size(const expr_size_ptr& expr)
 {
-    if(expr.as_node->type == node_type::expr_subscribe)
+    emit_object(*(expr_ptr*)&expr->obj);
+    emit_instruction(opcode::OP_size);
+}
+
+void compiler::emit_variable_ref(const expr_ptr& expr, bool set)
+{
+    if(expr.as_node->type == node_type::expr_array)
     {
-        emit_expr_subscribe_ref(expr.as_expr_subscribe, set);
+        emit_array_variable_ref(expr.as_array, set);
     }
-    else if(expr.as_node->type == node_type::expr_select)
+    else if(expr.as_node->type == node_type::expr_field)
     {
-        emit_expr_select_ref(expr.as_expr_select, set);
+        emit_field_variable_ref(expr.as_field, set);
     }
     else if(expr.as_node->type == node_type::identifier)
     {
-        emit_expr_variable_ref(expr.as_identifier, set);
+        emit_local_variable_ref(expr.as_identifier, set);
     }
     else
     {
@@ -792,7 +1027,7 @@ void compiler::emit_expr_ref(const expr_ptr& expr, bool set)
     }
 }
 
-void compiler::emit_expr_subscribe_ref(const expr_subscribe_ptr& expr, bool set)
+void compiler::emit_array_variable_ref(const expr_array_ptr& expr, bool set)
 {
     emit_expression(*(expr_ptr*)&expr->key);
 
@@ -809,10 +1044,10 @@ void compiler::emit_expr_subscribe_ref(const expr_subscribe_ptr& expr, bool set)
             emit_instruction(opcode::OP_SetVariableField);
         }
     }
-    else if(expr->obj->type == node_type::expr_subscribe
-            || expr->obj->type == node_type::expr_select)
+    else if(expr->obj->type == node_type::expr_array
+            || expr->obj->type == node_type::expr_field)
     {
-        emit_expr_variable_ref(*(identifier_ptr*)&expr->obj, false);
+        emit_variable_ref(*(expr_ptr*)&expr->obj, false);
         emit_instruction(opcode::OP_EvalArrayRef);
         if(set)
         {
@@ -821,9 +1056,13 @@ void compiler::emit_expr_subscribe_ref(const expr_subscribe_ptr& expr, bool set)
     }
     else // local var
     {
-        // OP_EvalLocalArrayRefCached0: for new array??
-	    // OP_EvalLocalArrayRefCached: alredy created??
-        // OP_EvalNewLocalArrayRefCached0: add new array index?
+        // OP_EvalNewLocalArrayRefCached0 add new array index? on IW6
+        // create a local array and set one of its elements without having to initialize it first
+        
+        // OP_EvalLocalArrayRefCached0:
+        // evaluates the last created local array.
+
+	    // OP_EvalLocalArrayRefCached: evaluate an array by local_variable_index
         auto index = get_local_var_index(expr->obj);
         auto inst = emit_instruction(opcode::OP_EvalLocalArrayRefCached);
         inst->data.push_back(utils::string::va("%d", index));
@@ -835,15 +1074,9 @@ void compiler::emit_expr_subscribe_ref(const expr_subscribe_ptr& expr, bool set)
     }
 }
 
-void compiler::emit_expr_select_ref(const expr_select_ptr&  expr, bool set)
+void compiler::emit_field_variable_ref(const expr_field_ptr&  expr, bool set)
 {
-    if(expr->field->type ==  node_type::size)
-    {
-        LOG_ERROR("size field can't be referenced");
-        return;
-    }
-
-    auto field = ((node_identifier*)expr->field.get())->value;
+    auto field = expr->field->value;
 
     if(expr->obj->type == node_type::level)
     {
@@ -884,10 +1117,10 @@ void compiler::emit_expr_select_ref(const expr_select_ptr&  expr, bool set)
             inst->data.push_back(field);
         } 
     }
-    else if(expr->obj->type == node_type::expr_subscribe)
+    else if(expr->obj->type == node_type::expr_array)
     {
-        emit_expr_subscribe_ref(*(expr_subscribe_ptr*)&expr->obj, false);
-        emit_instruction(opcode::OP_CastFieldObject);
+        emit_array_variable_ref(*(expr_array_ptr*)&expr->obj, false);
+        emit_instruction(opcode::OP_CastFieldObject);                       // TODO: ?????????
         auto inst = emit_instruction(opcode::OP_EvalFieldVariableRef);
         inst->data.push_back(field);
         
@@ -917,55 +1150,150 @@ void compiler::emit_expr_select_ref(const expr_select_ptr&  expr, bool set)
     }
 }
 
-void compiler::emit_expr_variable_ref(const identifier_ptr& expr, bool set)
+void compiler::emit_local_variable_ref(const identifier_ptr& expr, bool set)
 {
         // local var
 
-        // if no exist, create
+        // no exist?, create
+
+        // OP_SetNewLocalVariableFieldCached0
+        // OP_SetLocalVariableFieldCached0 = 0x44,
+	    // OP_SetLocalVariableFieldCached = 0x45,
+        // OP_EvalNewLocalVariableRefCached0 = 0x7C,
+        // OP_CreateLocalVariable
 }
 
-void compiler::emit_expr_subscribe(const expr_subscribe_ptr& expr)
+void compiler::emit_array_variable(const expr_array_ptr& expr)
 {
-    //TODO: eval arrays
-}
+    emit_expression(*(expr_ptr*)&expr->key);
 
-void compiler::emit_expr_select(const expr_select_ptr& expr)
-{
-    // TODO: eval fields
-
-    /*if(expr->field->type ==  node_type::size)
+    if(expr->obj->type == node_type::identifier) // local array
     {
-        // emit_variable(expr->obj)
-        emit_instruction(opcode::OP_size);
-    }*/
-
-    // emit_instruction(opcode::OP_EvalSelfFieldVariable);
-    // emit_instruction(opcode::OP_EvalLevelFieldVariable);
-    // emit_instruction(opcode::OP_EvalAnimFieldVariable);
+        auto index = get_local_var_index(expr->obj);
+        auto inst = emit_instruction(opcode::OP_EvalLocalArrayCached);
+        inst->data.push_back(utils::string::va("%d", index));
+    }
+    else
+    {
+        emit_expression(*(expr_ptr*)&expr->obj);
+        emit_instruction(opcode::OP_EvalArray);
+    }
 }
 
-void compiler::emit_expr_variable(const identifier_ptr& expr)
+void compiler::emit_field_variable(const expr_field_ptr& expr)
 {
-    // TODO: eval variables
+    if(expr->obj->type ==  node_type::level)
+    {
+        auto inst = emit_instruction(opcode::OP_EvalLevelFieldVariable);
+        inst->data.push_back(expr->field->value);
+    }
+    else if(expr->obj->type ==  node_type::anim)
+    {
+        auto inst = emit_instruction(opcode::OP_EvalAnimFieldVariable);
+        inst->data.push_back(expr->field->value);
+    }
+    else if(expr->obj->type ==  node_type::self)
+    {
+        auto inst = emit_instruction(opcode::OP_EvalSelfFieldVariable);
+        inst->data.push_back(expr->field->value);
+    }
+    else
+    {
+        emit_object(*(expr_ptr*)&expr->obj);
+        auto inst = emit_instruction(opcode::OP_EvalFieldVariable);
+        inst->data.push_back(expr->field->value);
+    }
+}
+
+void compiler::emit_local_variable(const identifier_ptr& expr)
+{
+    auto index = get_local_var_index(*(node_ptr*)&expr);
+
+    if(index == 0xFF)
+    {
+        LOG_ERROR("no local var found!");
+        return;
+    }
+
+    switch(index)
+    {
+        case 0:
+            emit_instruction(opcode::OP_EvalLocalVariableCached0);
+            break;
+        case 1:
+            emit_instruction(opcode::OP_EvalLocalVariableCached1);
+            break;
+        case 2:
+            emit_instruction(opcode::OP_EvalLocalVariableCached2);
+            break;
+        case 3:
+            emit_instruction(opcode::OP_EvalLocalVariableCached3);
+            break;
+        case 4:
+            emit_instruction(opcode::OP_EvalLocalVariableCached4);
+            break;
+        case 5:
+            emit_instruction(opcode::OP_EvalLocalVariableCached5);
+            break;
+        default:
+        {
+            auto inst = emit_instruction(opcode::OP_EvalLocalVariableCached);
+            inst->data.push_back(utils::string::va("%d", index));
+        }
+            break;
+    }
+}
+
+void compiler::emit_expr_vector(const expr_vector_ptr& expr)
+{
+    emit_expression(*(expr_ptr*)&expr->z);
+    emit_expression(*(expr_ptr*)&expr->y);
+    emit_expression(*(expr_ptr*)&expr->x);
+    emit_instruction(opcode::OP_vector);
+}
+
+void compiler::emit_object(const expr_ptr& expr)
+{
+    switch(expr.as_node->type)
+    {
+        case node_type::level:
+            emit_instruction(opcode::OP_GetLevelObject);
+            break;
+        case node_type::anim:
+            emit_instruction(opcode::OP_GetAnimObject);
+            break;
+        case node_type::self:
+            emit_instruction(opcode::OP_GetSelfObject);
+            break;
+        case node_type::identifier:
+        {
+            auto index = get_local_var_index(expr.as_node);
+            auto inst = emit_instruction(opcode::OP_EvalLocalVariableObjectCached);
+            inst->data.push_back(utils::string::va("%d", index));
+        }
+            break;
+        default: // function result cast object ?
+            break;
+    }
 }
 
 void compiler::emit_vector(const vector_ptr& vec)
 {
     auto inst = emit_instruction(opcode::OP_GetVector);
 
-    if(vec->x->type == node_type::integer)
+    if(vec->x->type == node_type::data_integer)
         inst->data.push_back(static_cast<node_integer*>(vec->x.get())->value);
-    else if(vec->x->type == node_type::float_)
+    else if(vec->x->type == node_type::data_float)
         inst->data.push_back(static_cast<node_float*>(vec->x.get())->value);
     
-    if(vec->y->type == node_type::integer)
+    if(vec->y->type == node_type::data_integer)
         inst->data.push_back(static_cast<node_integer*>(vec->y.get())->value);
-    else if(vec->y->type == node_type::float_)
+    else if(vec->y->type == node_type::data_float)
         inst->data.push_back(static_cast<node_float*>(vec->y.get())->value);
     
-    if(vec->z->type == node_type::integer)
+    if(vec->z->type == node_type::data_integer)
         inst->data.push_back(static_cast<node_integer*>(vec->z.get())->value);
-    else if(vec->z->type == node_type::float_)
+    else if(vec->z->type == node_type::data_float)
         inst->data.push_back(static_cast<node_float*>(vec->z.get())->value);
 }
 
@@ -1010,7 +1338,7 @@ void compiler::emit_integer(const integer_ptr& num)
     } 
 }
 
-void compiler::emit_string_loc(const string_loc_ptr& str)
+void compiler::emit_localized_string(const localized_string_ptr& str)
 {
     auto inst = emit_instruction(opcode::OP_GetIString);
     inst->data.push_back(str->value);
@@ -1123,6 +1451,14 @@ auto compiler::is_builtin_method(const identifier_ptr& func) -> bool
     if(res != 0xFFFF) return true;
 
     return false;
+}
+
+auto compiler::create_label() -> std::string
+{
+    label_idx++;
+    auto name = utils::string::va("loc_%d", label_idx);
+    function_->labels.insert({label_idx, name});
+    return name;
 }
 
 } // namespace IW6
