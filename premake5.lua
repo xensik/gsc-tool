@@ -18,6 +18,11 @@ workspace "gsc-tool"
 	cppdialect "C++17"
 
 	architecture "x86_64"
+	
+	-- microsoft shit
+	filter "action:vs*"
+		buildoptions "/Zc:__cplusplus"
+	filter{}
 
 	configurations { "debug", "release", }
 
