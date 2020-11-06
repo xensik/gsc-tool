@@ -7,7 +7,10 @@
 #define _GSC_UTILS_HPP_
 
 // Warnings
+#ifdef _WIN32
+#pragma warning( disable : 4244 67 )
 #define _CRT_SECURE_NO_WARNINGS
+#endif
 
 // C/C++
 #include <stack>

@@ -130,7 +130,7 @@ void assembler::assemble(std::string& data)
 	}
 
 	LOG_DEBUG("assembly file parse complete.");
-	LOG_DEBUG("%lu functions staged for assemble.", functions.size());
+	LOG_DEBUG("%zu functions staged for assemble.", functions.size());
 
 	this->assemble(functions);
 }
