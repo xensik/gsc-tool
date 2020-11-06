@@ -20,7 +20,7 @@
 
 %lex-param  { yyscan_t yyscanner } 
 %parse-param { yyscan_t yyscanner } 
-%parse-param { std::unique_ptr<node>& astout }
+%parse-param { gsc::script_ptr&astout }
 
 %code requires
 {
@@ -55,7 +55,7 @@
 %type <include_ptr> 				include
 %type <using_animtree_ptr> 			using_animtree
 %type <using_animtree_ptr> 			animtree
-%type <function_ptr> 				function
+%type <thread_ptr> 					thread
 %type <parameters_ptr> 				parameters
 %type <block_ptr> 					block
 %type <stmt_ptr> 					stmt
@@ -121,16 +121,16 @@ script
 		{ $$ = std::move($1); $$->animtrees.push_back(std::move($2)); }
 	| script animtree
 		{ $$ = std::move($1); $$->animtrees.push_back(std::move($2)); }
-	| script function
-		{ $$ = std::move($1); $$->functions.push_back(std::move($2)); }
+	| script thread
+		{ $$ = std::move($1); $$->threads.push_back(std::move($2)); }
 	| include
 		{ $$ = std::make_unique<node_script>(); $$->includes.push_back(std::move($1));}
 	| using_animtree
 		{ $$ = std::make_unique<node_script>(); $$->animtrees.push_back(std::move($1));}
 	| animtree
 		{ $$ = std::make_unique<node_script>(); $$->animtrees.push_back(std::move($1));}
-	| function
-		{ $$ = std::make_unique<node_script>(); $$->functions.push_back(std::move($1));}
+	| thread
+		{ $$ = std::make_unique<node_script>(); $$->threads.push_back(std::move($1));}
 	;
 
 include
@@ -148,9 +148,9 @@ animtree
 		{ $$ = std::make_unique<node_using_animtree>(std::move($3)); }
 	;
 
-function
+thread
 	: identifier LPAREN parameters RPAREN LBRACE block RBRACE
-		{ $$ = std::make_unique<node_function>(std::move($1), std::move($3), std::move($6)); }
+		{ $$ = std::make_unique<node_thread>(std::move($1), std::move($3), std::move($6)); }
 	;
 
 parameters

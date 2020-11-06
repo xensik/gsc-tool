@@ -5,4 +5,4 @@
 
 #include "utils.hpp"
 
-std::uint32_t node::indent;
+std::uint32_t gsc::node::indent;

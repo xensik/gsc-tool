@@ -3,21 +3,13 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_TOOL_STDINC_H_
-#define _GSC_TOOL_STDINC_H_
+#ifndef _GSC_TOOL_STDINC_HPP_
+#define _GSC_TOOL_STDINC_HPP_
 
 #include <utils.hpp>
 #include <IW5.hpp>
 #include <IW6.hpp>
 #include <SH1.hpp>
-
-#include <filesystem>
-
-#ifdef DEV_DEBUG
-#define IDAOUT true
-#else
-#define IDAOUT false
-#endif
 
 enum class mode
 {
@@ -37,4 +29,4 @@ enum class game
 
 };
 
-#endif // _GSC_TOOL_STDINC_H_
+#endif // _GSC_TOOL_STDINC_HPP_

@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_UTILS_H_
-#define _GSC_UTILS_H_
+#ifndef _GSC_UTILS_HPP_
+#define _GSC_UTILS_HPP_
 
 // Warnings
 #define _CRT_SECURE_NO_WARNINGS
@@ -22,6 +22,7 @@
 #include <unordered_map>
 #include <functional>
 #include <fstream>
+#include <filesystem>
 #include <stdio.h>
 
 // Ext
@@ -34,9 +35,7 @@ using namespace std::literals;
 #include "utility/byte_buffer.hpp"
 
 // GSC Types
-#include "types/statement.hpp"
-#include "types/function.hpp"
-#include "types/instruction.hpp"
+#include "types/assembly.hpp"
 #include "types/nodetree.hpp"
 #include "types/block.hpp"
 
@@ -46,4 +45,4 @@ using namespace std::literals;
 #include "interfaces/compiler.hpp"
 #include "interfaces/decompiler.hpp"
 
-#endif // _GSC_UTILS_H_
+#endif // _GSC_UTILS_HPP_

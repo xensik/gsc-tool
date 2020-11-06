@@ -8,27 +8,45 @@
 namespace IW5
 {
 
-assembler::assembler()
+auto assembler::output_script() -> std::string
 {
-	script_ = std::make_unique<utils::byte_buffer>(0x100000);
-	stack_ = std::make_unique<utils::byte_buffer>(0x100000);
+	std::string script;
+
+	if(script_ == nullptr) return script;
+
+	script.resize(script_->pos());
+	memcpy(script.data(), script_->buffer().data(), script.size());
+
+	return script;
 }
 
-void assembler::assemble(std::string& buffer)
+auto assembler::output_stack() -> std::string
+{
+	std::string stack;
+
+	if(stack_ == nullptr) return stack;
+
+	stack.resize(stack_->pos());
+	memcpy(stack.data(), stack_->buffer().data(), stack.size());
+
+	return stack;
+}
+
+void assembler::assemble(std::string& data)
 {
 	LOG_DEBUG("parsing assembly file...");
-	std::cout << buffer.size();
-	std::vector<std::string> assembly = utils::string::clean_buffer_lines(buffer);
 
-	std::vector<std::shared_ptr<function>> functions;
-	std::shared_ptr<function> func = nullptr;
-	std::shared_ptr<instruction> inst = nullptr;
+	std::vector<std::string> assembly = utils::string::clean_buffer_lines(data);
+
+	std::vector<gsc::function_ptr> functions;
+	gsc::function_ptr func = nullptr;
+	gsc::instruction_ptr inst = nullptr;
 	std::uint32_t index = 1;
 	std::uint16_t switchnum = 0;
 
 	for (auto& line : assembly)
 	{
-		if (line == "" || line.substr(0, 2) == "//" /*|| line.find("script_asm") != std::string::npos*/)
+		if (line == "" || line.substr(0, 2) == "//")
 		{
 			continue;
 		}
@@ -37,12 +55,12 @@ void assembler::assemble(std::string& buffer)
 			if (func != nullptr)
 			{
 				func->size = index - func->index;
+				functions.push_back(std::move(func));
 			}
 
-			func = std::make_shared<function>();
+			func = std::make_unique<gsc::function>();
 			func->index = index;
 			func->name = line.substr(4);
-			functions.push_back(func);
 		}
 		else if (line.substr(0, 4) == "loc_")
 		{
@@ -71,12 +89,16 @@ void assembler::assemble(std::string& buffer)
 			}
 			else
 			{
-				inst = std::make_shared<instruction>();
+				if(inst != nullptr)
+				{
+					func->instructions.push_back(std::move(inst));
+				}
+
+				inst = std::make_unique<gsc::instruction>();
 				inst->index = index;
 				inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(utils::string::to_lower(data[0])));
 				inst->size = opcode_size(opcode(inst->opcode));
 				inst->data = data;
-				inst->parent = func;
 
 				// group switch in one instruction
 				if (opcode(inst->opcode) == opcode::OP_endswitch)
@@ -88,61 +110,50 @@ void assembler::assemble(std::string& buffer)
 					}
 					else
 					{
-						LOG_ERROR("endswitch arg is not a number! %s", line.c_str());
+						LOG_ERROR("endswitch arg is not a number! %s", line.data());
 						return;
 					}
 				}
 					
 				index += inst->size;
-				func->instructions.push_back(inst);
 			}
 		}
+	}
+	if(inst != nullptr)
+	{
+		func->instructions.push_back(std::move(inst));
 	}
 	if (func != nullptr)
 	{
 		func->size = index - func->index;
+		functions.push_back(std::move(func));
 	}
 
 	LOG_DEBUG("assembly file parse complete.");
-	LOG_DEBUG("%d functions staged for assemble.", functions.size());
+	LOG_DEBUG("%lu functions staged for assemble.", functions.size());
 
 	this->assemble(functions);
 }
 
-auto assembler::output_script() -> std::string
+void assembler::assemble(std::vector<gsc::function_ptr>& functions)
 {
-	std::string script;
+	script_ = std::make_unique<utils::byte_buffer>(0x100000);
+	stack_ = std::make_unique<utils::byte_buffer>(0x100000);
 
-	script.resize(script_->pos());
-	memcpy(script.data(), script_->buffer().data(), script.size());
+	functions_ = std::move(functions);
 
-	return script;
-}
+	script_->write<std::uint8_t>(0x00);
 
-auto assembler::output_stack() -> std::string
-{
-	std::string stack;
-
-	stack.resize(stack_->pos());
-	memcpy(stack.data(), stack_->buffer().data(), stack.size());
-
-	return stack;
-}
-
-void assembler::assemble(std::vector<std::shared_ptr<function>>& functions)
-{
-	functions_ = functions;
-
-	script_->write<std::uint8_t>(0x00); // gsc magic opcode
-
-	for (auto func : functions_)
+	for (const auto& func : functions_)
 	{
 		this->assemble_function(func);
 	}
 }
 
-void assembler::assemble_function(std::shared_ptr<function> func)
+void assembler::assemble_function(const gsc::function_ptr& func)
 {
+	labels_ = func->labels;
+
 	stack_->write<std::uint32_t>(func->size);
 
 	func->id = func->name.substr(0, 3) == "id#" ? std::stoul(func->name.substr(3)) : resolver::token_id(func->name);
@@ -153,15 +164,14 @@ void assembler::assemble_function(std::shared_ptr<function> func)
 		stack_->write_c_string(func->name);
 	}
 
-	for (auto inst : func->instructions)
+	for (const auto& inst : func->instructions)
 	{
 		this->assemble_instruction(inst);
 	}
 }
 
-void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
+void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 {
-	LOG_INFO("%s\n", resolver::opcode_name(opcode(inst->opcode)).c_str());
 	switch (opcode(inst->opcode))
 	{
 	case opcode::OP_End:
@@ -228,8 +238,6 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		break;
 	case opcode::OP_GetByte:
-
-
 	case opcode::OP_ScriptThreadCallPointer:
 	case opcode::OP_ScriptMethodThreadCallPointer:
 	case opcode::OP_ScriptMethodChildThreadCallPointer:
@@ -254,20 +262,20 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 	case opcode::OP_ClearLocalVariableFieldCached:
 	case opcode::OP_EvalLocalVariableObjectCached:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::uint8_t>(std::stol(inst->data[1]));
+		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[1])));
 		break;
 	case opcode::OP_GetNegByte:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::int8_t>(std::stol(inst->data[1]));
+		script_->write<std::int8_t>(static_cast<std::int8_t>(std::stol(inst->data[1])));
 		break;
 	case opcode::OP_GetUnsignedShort:
 	case opcode::OP_waittillmatch:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::uint16_t>(std::stol(inst->data[1]));
+		script_->write<std::uint16_t>(static_cast<std::uint16_t>(std::stol(inst->data[1])));
 		break;
 	case opcode::OP_GetNegUnsignedShort:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::int16_t>(std::stol(inst->data[1]));
+		script_->write<std::int16_t>(static_cast<std::int16_t>(std::stol(inst->data[1])));
 	case opcode::OP_JumpOnFalseExpr:
 	case opcode::OP_JumpOnTrueExpr:
 	case opcode::OP_JumpOnFalse:
@@ -352,7 +360,7 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 	case opcode::OP_GetString:
 	case opcode::OP_GetIString:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::uint16_t>(0);	// IW5: 2 bytes placeholder
+		script_->write<std::uint16_t>(0); // IW5: 2 bytes placeholder
 		stack_->write_c_string(utils::string::get_string_literal(inst->data[1]));
 		break;
 	case opcode::OP_GetAnimation:
@@ -384,12 +392,12 @@ void assembler::assemble_instruction(std::shared_ptr<instruction> inst)
 		this->assemble_end_switch(inst);
 		break;
 	default:
-		LOG_ERROR("Unhandled opcode (0x%X) at index '%04X'!", inst->opcode, inst->index);
+		LOG_ERROR("Unhandled opcode 0x%hhX at index '%04X'!", inst->opcode, inst->index);
 		break;
 	}
 }
 
-void assembler::assemble_builtin_call(std::shared_ptr<instruction> inst, bool method, bool arg_num)
+void assembler::assemble_builtin_call(const gsc::instruction_ptr& inst, bool method, bool arg_num)
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
@@ -397,7 +405,7 @@ void assembler::assemble_builtin_call(std::shared_ptr<instruction> inst, bool me
 
 	if (arg_num)
 	{
-		script_->write<std::uint8_t>(std::stol(inst->data[1]));
+		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[1])));
 
 		if (method)
 			id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : resolver::builtin_method_id(inst->data[2]);
@@ -416,7 +424,7 @@ void assembler::assemble_builtin_call(std::shared_ptr<instruction> inst, bool me
 	script_->write<std::uint16_t>(id);
 }
 
-void assembler::assemble_local_call(std::shared_ptr<instruction> inst, bool thread)
+void assembler::assemble_local_call(const gsc::instruction_ptr& inst, bool thread)
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
@@ -428,14 +436,14 @@ void assembler::assemble_local_call(std::shared_ptr<instruction> inst, bool thre
 
 	if (thread)
 	{
-		script_->write<std::uint8_t>(std::stol(inst->data[2]));
+		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[2])));
 	}
 }
 
-void assembler::assemble_far_call(std::shared_ptr<instruction> inst, bool thread)
+void assembler::assemble_far_call(const gsc::instruction_ptr& inst, bool thread)
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-	script_->write<std::uint8_t>(0); // 3 bytes placeholder
+	script_->write<std::uint8_t>(0); // IW5: 3 bytes placeholder
 	script_->write<std::uint16_t>(0);
 
 	std::uint16_t file_id = 0;
@@ -443,7 +451,7 @@ void assembler::assemble_far_call(std::shared_ptr<instruction> inst, bool thread
 
 	if (thread)
 	{
-		script_->write<std::uint8_t>(std::stol(inst->data[1]));
+		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[1])));
 
 		file_id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : resolver::file_id(inst->data[2]);
 		func_id = inst->data[3].substr(0, 3) == "id#" ? std::stol(inst->data[3].substr(3)) : resolver::token_id(inst->data[3]);
@@ -460,7 +468,7 @@ void assembler::assemble_far_call(std::shared_ptr<instruction> inst, bool thread
 	if (func_id == 0) stack_->write_c_string(thread ? inst->data[3] : inst->data[2]);
 }
 
-void assembler::assemble_switch(std::shared_ptr<instruction> inst)
+void assembler::assemble_switch(const gsc::instruction_ptr& inst)
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
@@ -469,7 +477,7 @@ void assembler::assemble_switch(std::shared_ptr<instruction> inst)
 	script_->write<std::int32_t>(addr - inst->index - 4);
 }
 
-void assembler::assemble_end_switch(std::shared_ptr<instruction> inst)
+void assembler::assemble_end_switch(const gsc::instruction_ptr& inst)
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
@@ -518,7 +526,7 @@ void assembler::assemble_end_switch(std::shared_ptr<instruction> inst)
 	}
 }
 
-void assembler::assemble_field_variable(std::shared_ptr<instruction> inst)
+void assembler::assemble_field_variable(const gsc::instruction_ptr& inst)
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
@@ -547,7 +555,7 @@ void assembler::assemble_field_variable(std::shared_ptr<instruction> inst)
 	}
 }
 
-void assembler::assemble_jump(std::shared_ptr<instruction> inst, bool expr, bool back)
+void assembler::assemble_jump(const gsc::instruction_ptr& inst, bool expr, bool back)
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
@@ -586,7 +594,7 @@ auto assembler::resolve_function(const std::string& name) -> std::uint32_t
 {
 	std::string temp = name.substr(4);
 
-	for (auto func : functions_)
+	for (const auto& func : functions_)
 	{
 		if (func->name == temp)
 		{
@@ -598,9 +606,9 @@ auto assembler::resolve_function(const std::string& name) -> std::uint32_t
 	return 0;
 }
 
-auto assembler::resolve_label(std::shared_ptr<instruction> inst, const std::string& name) -> std::uint32_t
+auto assembler::resolve_label(const gsc::instruction_ptr& inst, const std::string& name) -> std::uint32_t
 {
-	for (auto& func : inst->parent->labels)
+	for (auto& func : labels_)
 	{
 		if (func.second == name)
 		{

@@ -17,7 +17,7 @@ auto resolver::opcode_id(const std::string& name) -> opcode
 		return itr->second;
 	}
 
-	LOG_ERROR("Couldn't resolve opcode id for name '%s'!", name.c_str());
+	LOG_ERROR("Couldn't resolve opcode id for name '%s'!", name.data());
 	return opcode::OP_Count;
 }
 
@@ -31,7 +31,7 @@ auto resolver::opcode_name(opcode id) -> std::string
 		}
 	}
 
-	LOG_ERROR("Couldn't resolve opcode name for id '0x%X'!", id);
+	LOG_ERROR("Couldn't resolve opcode name for id '0x%hhX'!", id);
 	return "";
 }
 
@@ -44,7 +44,7 @@ auto resolver::builtin_func_id(const std::string& name) -> std::uint16_t
 		return itr->second;
 	}
 
-	LOG_ERROR("Couldn't resolve builtin function id for name '%s'!", name.c_str());
+	LOG_ERROR("Couldn't resolve builtin function id for name '%s'!", name.data());
 	return 0xFFFF;
 }
 
@@ -71,7 +71,7 @@ auto resolver::builtin_method_id(const std::string& name) -> std::uint16_t
 		return itr->second;
 	}
 
-	LOG_ERROR("Couldn't resolve builtin method id for name '%s'!", name.c_str());
+	LOG_ERROR("Couldn't resolve builtin method id for name '%s'!", name.data());
 	return 0xFFFF;
 }
 
@@ -97,7 +97,7 @@ auto resolver::file_id(const std::string& name) -> std::uint16_t
 		return itr->second;
 	}
 
-	LOG_ERROR("Couldn't resolve file id for name '%s'!", name.c_str());
+	LOG_ERROR("Couldn't resolve file id for name '%s'!", name.data());
 	return 0;
 }
 
@@ -124,7 +124,7 @@ auto resolver::token_id(const std::string& name) -> std::uint16_t
 		return itr->second;
 	}
 
-	LOG_WARN("Couldn't resolve token id for name '%s'!", name.c_str());
+	LOG_WARN("Couldn't resolve token id for name '%s'!", name.data());
 	return 0;
 }
 

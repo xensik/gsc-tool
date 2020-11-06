@@ -173,7 +173,7 @@ auto opcode_size(opcode id) -> std::size_t
 		return 13;
 		break;
 	default:
-		LOG_ERROR("Couldn't resolve instruction size for 0x%X!", id);
+		LOG_ERROR("Couldn't resolve instruction size for 0x%hhX!", id);
 		return 0;
 	}
 }

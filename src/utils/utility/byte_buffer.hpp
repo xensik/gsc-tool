@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_UTILS_BYTE_BUFFER_H_
-#define _GSC_UTILS_BYTE_BUFFER_H_
+#ifndef _GSC_UTILS_BYTE_BUFFER_HPP_
+#define _GSC_UTILS_BYTE_BUFFER_HPP_
 
 namespace utils
 {
@@ -54,6 +54,8 @@ public:
 	auto buffer() -> std::vector<std::uint8_t>&;
 };
 
+using byte_buffer_ptr = std::unique_ptr<utils::byte_buffer>;
+
 } // namespace utils
 
-#endif // _GSC_UTILS_BYTE_BUFFER_H_
+#endif // _GSC_UTILS_BYTE_BUFFER_HPP_

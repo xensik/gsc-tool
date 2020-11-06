@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_DISASSEMBLER_H_
-#define _GSC_DISASSEMBLER_H_
+#ifndef _GSC_DISASSEMBLER_HPP_
+#define _GSC_DISASSEMBLER_HPP_
 
 namespace gsc
 {
@@ -12,11 +12,11 @@ namespace gsc
 class disassembler
 {
 public:
+	virtual auto output() -> std::vector<gsc::function_ptr> = 0;
+	virtual auto output_data() -> std::string = 0;
 	virtual void disassemble(std::string& script, std::string& stack) = 0;
-	virtual auto output() -> std::vector<std::shared_ptr<function>> = 0;
-	virtual auto output_asm() -> std::string = 0;
 };
 
 } // namespace gsc
 
-#endif // _GSC_DISASSEMBLER_H_
+#endif // _GSC_DISASSEMBLER_HPP_

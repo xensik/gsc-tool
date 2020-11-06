@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_UTILS_STRING_H_
-#define _GSC_UTILS_STRING_H_
+#ifndef _GSC_UTILS_STRING_HPP_
+#define _GSC_UTILS_STRING_HPP_
 
 namespace utils
 {
@@ -25,7 +25,7 @@ public:
 	static auto iequals(const std::string& a, const std::string& b) -> bool;
 	static auto is_number(const std::string& s) -> bool;
 	static auto is_hex_number(const std::string& s) -> bool;
-	static auto to_lower(std::string input)->std::string;
+	static auto to_lower(std::string input) -> std::string;
 	static auto split(std::string& str, char delimiter) -> std::vector<std::string>;
 	static auto clean_buffer_lines(std::string& buffer) -> std::vector<std::string>;
 	static auto get_string_literal(std::string str) -> std::string;
@@ -33,4 +33,4 @@ public:
 
 } // namespace utils
 
-#endif // _GSC_UTILS_STRING_H_
+#endif // _GSC_UTILS_STRING_HPP_

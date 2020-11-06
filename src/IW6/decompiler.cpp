@@ -8,378 +8,427 @@
 namespace IW6
 {
 
-decompiler::decompiler()
+void decompiler::decompile(std::vector<gsc::function_ptr>& functions)
 {
-	output_ = std::make_unique<utils::byte_buffer>(0x100000);
-}
+	script_ = std::make_unique<gsc::node_script>();
 
-void decompiler::decompile(std::vector<std::shared_ptr<function>>& functions)
-{
-	for (auto func : functions)
+	for (auto& func : functions)
 	{
-		auto dfunc = std::make_shared<decompiler_function>();
-		functions_.push_back(dfunc);
+		auto name = std::make_unique<gsc::node_identifier>(func->name.substr(4));
+		auto params = std::make_unique<gsc::node_parameters>();
+		auto block = std::make_unique<gsc::node_block>();
+		func_ = std::make_unique<gsc::node_thread>(std::move(name),std::move(params),std::move(block));
 
-		dfunc->labels = func->labels;
-		dfunc->instructions = func->instructions;
-		dfunc->name = func->name.substr(4);
+		labels_ = func->labels;
 
-		this->decompile_function(dfunc);
+		this->decompile_function(func);
+
+		script_->threads.push_back(std::move(func_));
 	}
 }
 
 auto decompiler::output() -> std::string
 {
+	output_ = std::make_unique<utils::byte_buffer>(0x100000);
+
 	output_->write_string("// IW6 PC GSC\n");
 	output_->write_string("// Decompiled by https://github.com/xensik/gsc-tool\n");
 
-	for (auto& func : functions_)
+	/*for (auto& func : functions_)
 	{
 		this->print_function(func);
-	}
+	}*/
 
 	std::string output;
 
-	output.resize(output_->pos());
-	memcpy(output.data(), output_->buffer().data(), output.size());
+	//output.resize(output_->pos());
+	//memcpy(output.data(), output_->buffer().data(), output.size());
 
 	return output;
 }
 
-void decompiler::decompile_function(std::shared_ptr<decompiler_function> func)
+void decompiler::decompile_function(const gsc::function_ptr& func)
 {
 	// return type
-	func->is_void = true;
+	//func->is_void = true;
 
 	// parameter list
-	func->params = 0;
+	//func->params = 0;
 
 	// save last index for labels
-	func->end = (*(func->instructions.end() - 1))->index;
+	//func->end = (*(func->instructions.end() - 1))->index;
 		
 	// process instructions to generate statements
 	this->decompile_statements(func);
 
 	// generate blocks (for, foreach, while, if, if/else, infinite for, switch)
-	this->decompile_blocks(func);
+	//this->decompile_blocks(func);
 }
 
-void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
+void decompiler::decompile_statements(const gsc::function_ptr& func)
 {
-	for (auto inst : func->instructions)
+	for (auto& inst : func->instructions)
 	{
 		LOG_INFO("%s", resolver::opcode_name(opcode(inst->opcode)).data());
+
+		//insert labels
+
 		switch (opcode(inst->opcode))
 		{
-		case opcode::OP_End:
+		case opcode::OP_GetThisthread:
 		{
-			if (!func->is_void)
-			{
-				/*auto stmt = func->stack.top();
-				if (stmt->data.find("return") != std::string::npos)
-				{
-					func->stack.pop();
-					func->statements.push_back(stmt);
-				}	*/			
-			}
-			else if (inst->index != func->end)
-			{
-				auto stmt = std::make_shared<statement>();
-				stmt->index = inst->index;
-				stmt->data = utils::string::va("return;");
-				func->statements.push_back(stmt);
-			}
+			// TODO
+			LOG_ERROR("missing handler 'OP_GetThisthread'!");
 		}
 		break;
-		case opcode::OP_Return:
+		case opcode::OP_GetLevel:
+		case opcode::OP_GetLevelObject:
 		{
-			func->is_void = false;
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			stmt->data = "return " + stmt->data + ";";
-			func->statements.push_back(stmt);
+			auto node = std::make_unique<gsc::node_level>();
+			stack_.push(std::move(node));
+		}
+		break;
+		case opcode::OP_GetAnim:
+		case opcode::OP_GetAnimObject:
+		{
+			auto node = std::make_unique<gsc::node_anim>();
+			stack_.push(std::move(node));
+		}
+		break;
+		case opcode::OP_GetSelf:
+		case opcode::OP_GetSelfObject:
+		{
+			auto node = std::make_unique<gsc::node_self>();
+			stack_.push(std::move(node));
+		}
+		break;
+		case opcode::OP_GetGame:
+		case opcode::OP_GetGameRef:
+		{
+			auto node = std::make_unique<gsc::node_game>();
+			stack_.push(std::move(node));
+		}
+		break;
+		case opcode::OP_GetUndefined:
+		{
+			auto node = std::make_unique<gsc::node_undefined>();
+			stack_.push(std::move(node));
+		}
+		break;
+		case opcode::OP_EmptyArray:
+		{
+			auto node = std::make_unique<gsc::node_empty_array>();
+			stack_.push(std::move(node));
+		}
+		break;
+		/*case opcode::OP_GetAnimation: // TODO !!! 
+		{
+			
+			auto stmt = std::make_shared<statement>();
+			stmt->index = inst->index;
+			stmt->data = "%_unsuported_get_animation_";
+
+			func->stack.push(stmt);
+		}
+		break;*/
+		case opcode::OP_GetString:
+		{
+			auto node = std::make_unique<gsc::node_string>(inst->data[0]);
+			stack_.push(std::move(node));
+		}
+		break;
+		case opcode::OP_GetIString:
+		{
+			auto node = std::make_unique<gsc::node_localized_string>(inst->data[0]);
+			stack_.push(std::move(node));
+		}
+		break;
+		case opcode::OP_GetZero:
+		{
+			auto node = std::make_unique<gsc::node_integer>("0");
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_GetByte:		
 		case opcode::OP_GetUnsignedShort:
 		case opcode::OP_GetInteger:
-		case opcode::OP_GetBuiltinFunction:
-		case opcode::OP_GetBuiltinMethod:
-		case opcode::OP_GetFloat: // TODO: append .0 if integer / remove 0. if < 0
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = inst->data[0];
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_GetString:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = inst->data[0];
-
-			for (size_t i = 0; i < stmt->data.size(); i++)
-			{
-				if (stmt->data.at(i) == '\\')
-				{
-					stmt->data.insert(stmt->data.begin() + i, '\\');
-					i++;
-				}
-			}
-			for (size_t i = 1; i < stmt->data.size() - 1; i++)
-			{
-				if (stmt->data.at(i) == '\"')
-				{
-					stmt->data.insert(stmt->data.begin() + i, '\\');
-					i++;
-				}
-			}
-
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_integer>(inst->data[0]);
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_GetNegByte:
 		case opcode::OP_GetNegUnsignedShort:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "-" + inst->data[0];
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_integer>("-" + inst->data[0]);
+			stack_.push(std::move(node));
 		}
 		break;
-		case opcode::OP_GetUndefined:
+		case opcode::OP_GetFloat:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "undefined";
-
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_float>(inst->data[0]);
+			stack_.push(std::move(node));
 		}
 		break;
-		case opcode::OP_GetZero:
+		case opcode::OP_GetVector:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "0";
-
-			func->stack.push(stmt);
+			auto node1 = std::make_unique<gsc::node_float>(inst->data[0]);
+			auto node2 = std::make_unique<gsc::node_float>(inst->data[1]);
+			auto node3 = std::make_unique<gsc::node_float>(inst->data[2]);
+			auto node = std::make_unique<gsc::node_vector>(std::move(node1), std::move(node2), std::move(node3));
+			stack_.push(std::move(node));
 		}
 		break;
+
+
+		case opcode::OP_End:
+		{
+			if (&inst != &func->instructions.back())
+			{
+				auto stmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_return>(std::make_unique<gsc::node>()));
+				func_->block->stmts.push_back(std::move(stmt));
+			}
+		}
+		break;
+		case opcode::OP_Return:
+		{
+			auto expr = std::move(stack_.top());
+			stack_.pop();
+			auto stmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_return>(std::move(expr)));
+			func_->block->stmts.push_back(std::move(stmt));
+		}
+		break;
+		
+		
+
+		case opcode::OP_GetBuiltinFunction:
+		case opcode::OP_GetBuiltinMethod:
+		{
+			auto node = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			stack_.push(std::move(node));
+		}
+		break;
+
 		case opcode::OP_waittillFrameEnd:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "waittillframeend;";
-
-			func->statements.push_back(stmt);
+			auto stmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_waittillframeend>());
+			func_->block->stmts.push_back(std::move(stmt));
 		}
 		break;
 		case opcode::OP_CreateLocalVariable:
 		{
-			func->local_vars.insert(func->local_vars.begin(), "var_" + inst->data[0]);
+			local_vars_.insert(local_vars_.begin(), "var_" + inst->data[0]);
 		}
 		break;
 		case opcode::OP_RemoveLocalVariables:
 		{
-			// TODO
-			//LOG_ERROR("missing handler 'OP_RemoveLocalVariables'!");
-				
-			// no needed?
+			for(auto i = std::stoul(inst->data[0]); i > 0; i--)
+				local_vars_.erase(local_vars_.begin());
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached0:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(0);
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(0));
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached1:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(1);
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(1));
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached2:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(2);
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(2));
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached3:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(3);
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(3));
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached4:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(4);
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(4));
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached5:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(5);
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(5));
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_EvalLocalVariableCached: // need revision for IW6!!!!!!!!!!!!!!!
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(std::stoul(inst->data[0]));
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(std::stoul(inst->data[0])));
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_EvalLocalArrayCached:
 		{
-			auto stmt = func->stack.top();
-			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0])).data(), stmt->data.data());
+			/*auto key = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_identifier>(local_vars_.at(std::stoul(inst->data[0]))));
+			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
+			stack_.push(std::move(node));*/
 		}
 		break;
 		case opcode::OP_EvalArray:
 		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s[%s]", stmt2->data.data(), stmt1->data.data());
+			/*auto obj = std::move(stack_.top());
+			stack_.pop();
+			auto key = std::move(stack_.top());
+			stack_.pop();
+			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
+			stack_.push(std::move(node));*/
 		}
 		break;
 		case opcode::OP_EvalNewLocalArrayRefCached0: // IW6 have the index after instruction (array)
 		{
-			auto stmt = func->stack.top();
-			func->local_vars.insert(func->local_vars.begin(), "var_" + inst->data[0]);// need to check if this insert at variable_stack begin
-			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(0).data(), stmt->data.data());
+			/*local_vars_.insert(local_vars_.begin(), "var_" + inst->data[0]);// need to check if this insert at variable_stack begin
+			auto key = std::move(stack_.top());
+			stack_.pop();
+			auto obj = std::make_unique<gsc::node_identifier>(local_vars_.at(0));
+			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
+			stack_.push(std::move(node));*/
 		}
 		break;
 		case opcode::OP_EvalLocalArrayRefCached0:
 		{
-			auto stmt = func->stack.top();
-			func->local_vars.insert(func->local_vars.begin(), "var_" + inst->data[0]);
-			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(0).data(), stmt->data.data());
+			/*local_vars_.insert(local_vars_.begin(), "var_" + inst->data[0]);
+			auto key = std::move(stack_.top());
+			stack_.pop();
+			auto obj = std::make_unique<gsc::node_identifier>(local_vars_.at(0));
+			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
+			stack_.push(std::move(node));*/	
 		}
 		break;
 		case opcode::OP_EvalLocalArrayRefCached:
 		{
-			auto stmt = func->stack.top();
-			stmt->data = utils::string::va("%s[%s]", func->local_vars.at(std::stoul(inst->data[0])).data(), stmt->data.data());
+			/*auto key = std::move(stack_.top());
+			stack_.pop();
+			auto obj = std::make_unique<gsc::node_identifier>(local_vars_.at(std::stoul(inst->data[0])));
+			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
+			stack_.push(std::move(node));*/
 		}
 		break;
 		case opcode::OP_EvalArrayRef:
 		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s[%s]", stmt2->data.data(), stmt1->data.data());
+			/*auto obj = std::move(stack_.top());
+			stack_.pop();
+			auto key = std::move(stack_.top());
+			stack_.pop();
+			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
+			stack_.push(std::move(node));*/
 		}
 		break;
 		case opcode::OP_ClearArray:
 		{
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			stmt1->data = utils::string::va("%s[%s] = undefined;", stmt->data.data(), stmt1->data.data());
-			func->statements.push_back(stmt1);
-		}
-		break;
-		case opcode::OP_EmptyArray:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "[]";
+			/*auto obj = std::move(stack_.top());
+			stack_.pop();
+			auto key = std::move(stack_.top());
+			stack_.pop();
 
-			func->stack.push(stmt);
+			auto lvalue = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
+			auto rvalue = std::make_unique<gsc::node_undefined>();
+			auto expr = std::make_unique<gsc::node_expr_assign_equal>(std::move(lvalue), std::move(rvalue));
+			auto stmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_assign>(std::move(expr)));
+			func_->block->stmts.push_back(std::move(stmt));*/
 		}
 		break;
 		case opcode::OP_AddArray:
 		{
-			auto var_stmt = func->stack.top();
-			func->stack.pop();
-			auto array_stmt = func->stack.top();
-			//func->stack.pop();
-			if (array_stmt->data == "[]") // make a 1 element array: [ var ]
+			auto var = std::move(stack_.top());
+			stack_.pop();
+			auto array = std::move(stack_.top());
+			stack_.pop();
+			
+			if (array->type == gsc::node_type::empty_array)
 			{
-				array_stmt->data = utils::string::va("[ %s ]", var_stmt->data.data());
+				auto args = std::make_unique<gsc::node_expr_arguments>();
+				args->list.push_back(std::move(var));
+				auto expr = std::make_unique<gsc::node_expr_add_array>(std::move(args));
+				stack_.push(std::move(expr));
 			}
-			else if (array_stmt->data.back() == ']') // append to array: [ var, newvar ]
+			else if (array->type == gsc::node_type::expr_add_array)
 			{
-				array_stmt->data.pop_back();
-				array_stmt->data = array_stmt->data + utils::string::va(", %s ]", var_stmt->data.data());
+				(*(gsc::expr_add_array_ptr*)&array)->args->list.push_back(std::move(var));
+				stack_.push(std::move(array));
 			}
 			else
 			{
-				LOG_ERROR("unknown array type (could be an array variable name?)");
+				LOG_ERROR("unknown add array type (could be an array variable name?)");
 			}
 		}
 		break;
 		case opcode::OP_PreScriptCall:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "pre_script_call";
-
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_identifier>("pre_script_call");
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_ScriptLocalFunctionCall2:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = utils::string::va("%s()", inst->data[0].substr(4).data());
-			func->stack.push(stmt);
+			/*auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0].substr(4));
+			auto file = std::make_unique<gsc::node_filepath>("");
+			auto func = std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args));
+			auto obj = std::make_unique<gsc::node>();
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));*/
 		}
 		break;
 		case opcode::OP_ScriptLocalFunctionCall:
 		{
-			std::string data = inst->data[0].substr(4) + "(";
+			/*auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0].substr(4));
+			auto file = std::make_unique<gsc::node_filepath>("");
 
-			auto stmt = func->stack.top();
+			auto var = std::move(stack_.top());
+			stack_.pop();
 
-			while (stmt->data != "pre_script_call")
+			while(var->type != gsc::node_type::identifier && (*(gsc::identifier_ptr*)&var)->value != "pre_script_call")
 			{
-				data += " " + stmt->data;
-				func->stack.pop();
-				stmt = func->stack.top();
-				stmt->data != "pre_script_call" ? data += "," : data += " ";
+				args->list.push_back(std::move(var));
+				var = std::move(stack_.top());
+				stack_.pop();
 			}
-			data += ")";
-			stmt->data = data;
+
+			auto func = std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args));
+			auto obj = std::make_unique<gsc::node>();
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));*/
 		}
 		break;
 		case opcode::OP_ScriptLocalMethodCall:
 		{
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			std::string data = stmt->data + " " + inst->data[0].substr(4) + "(";
+			/*auto obj = std::move(stack_.top());
+			stack_.pop();
 
-			stmt = func->stack.top();
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0].substr(4));
+			auto file = std::make_unique<gsc::node_filepath>("");
 
-			while (stmt->data != "pre_script_call")
+			auto var = std::move(stack_.top());
+			stack_.pop();
+
+			while(var->type != gsc::node_type::identifier && (*(gsc::identifier_ptr*)&var)->value != "pre_script_call")
 			{
-				data += " " + stmt->data;
-				func->stack.pop();
-				stmt = func->stack.top();
-				stmt->data != "pre_script_call" ? data += "," : data += " ";
+				args->list.push_back(std::move(var));
+				var = std::move(stack_.top());
+				stack_.pop();
 			}
-			data += ")";
-			stmt->data = data;
+
+			auto func = std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));*/
 		}
 		break;
-		case opcode::OP_ScriptLocalThreadCall:
+		/*case opcode::OP_ScriptLocalThreadCall:
 		{
 			auto stmt = std::make_shared<statement>();
 			stmt->index = inst->index;
@@ -683,94 +732,8 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			stmt->data = data;
 		}
 		break;
-		case opcode::OP_GetIString:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "&" + inst->data[0];
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_GetVector:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "( "+ inst->data[0] + ", " + inst->data[1] + ", " + inst->data[2] + " )";
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_GetLevelObject:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "level";
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_GetAnimObject:
-		{
-			// TODO
-			LOG_ERROR("missing handler 'OP_GetAnimObject'!");
-		}
-		break;
-		case opcode::OP_GetSelf:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "self";
+		
 
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_GetThisthread:
-		{
-			// TODO
-			LOG_ERROR("missing handler 'OP_GetThisthread'!");
-		}
-		break;
-		case opcode::OP_GetLevel:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "level";
-
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_GetGame:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "game";
-
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_GetAnim:
-		{
-			// TODO
-			LOG_ERROR("missing handler 'OP_GetAnim'!");
-		}
-		break;
-		case opcode::OP_GetAnimation:
-		{
-			// TODO
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "%_unsuported_get_animation_";
-
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_GetGameRef:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "game";
-
-			func->stack.push(stmt);
-		}
-		break;
 		case opcode::OP_inc:
 		{
 			auto stmt = std::make_shared<statement>();
@@ -1104,14 +1067,7 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			func->stack.push(stmt);
 		};
 		break;
-		case opcode::OP_GetSelfObject:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "self";
-			func->stack.push(stmt);
-		}
-		break;
+		
 		case opcode::OP_EvalLevelFieldVariable:
 		{
 			auto stmt = std::make_shared<statement>();
@@ -1592,10 +1548,7 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 		break;
 		case opcode::OP_CastFieldObject:
 		{
-			// TODO
-			//LOG_ERROR("missing handler 'OP_CastFieldObject'!");
-
-			// no needed?
+			continue;
 		}
 		break;
 		case opcode::OP_EvalLocalVariableObjectCached:
@@ -1622,9 +1575,9 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			// TODO
 			LOG_ERROR("missing handler 'OP_BoolComplement'!");
 		}
-		break;
+		break;*/
 		default:
-		{
+		/*{
 			auto stmt = std::make_shared<statement>();
 			stmt->index = inst->index;
 			stmt->data = resolver::opcode_name(opcode(inst->opcode));
@@ -1634,13 +1587,13 @@ void decompiler::decompile_statements(std::shared_ptr<decompiler_function> func)
 			}
 			stmt->data.append(";");
 			func->statements.push_back(stmt);
-		}
+		}*/
 		break;
 		}
 	}
 }
 
-void decompiler::decompile_blocks(std::shared_ptr<decompiler_function> func)
+void decompiler::decompile_blocks()
 {
 	// TODO
 
@@ -1661,53 +1614,16 @@ void decompiler::decompile_blocks(std::shared_ptr<decompiler_function> func)
 
 }
 
-void decompiler::print_function(std::shared_ptr<decompiler_function> func)
+void decompiler::print_function()
 {
-	// header
-	output_->write_string("\n" + func->name + "(");
-
-	// param list
-	std::vector<std::string> args = func->local_vars;
-	std::reverse(args.begin(), args.end());
-
-	for (size_t i = 0; i < func->params; i++)
-	{
-		output_->write_string(" " + args.at(i));
-		i != (func->params - 1) ? output_->write_string(",") : output_->write_string(" ");
-	}
-
-	output_->write_string(")\n{\n");
-
-	// body
-	for (auto& stmt : func->statements)
-	{
-		if (func->labels.find(stmt->index) != func->labels.end())
-		{
-			this->print_label(func->labels[stmt->index]);
-		}
-
-		this->print_statement(stmt);
-	}
-
-	if (func->labels.find(func->end) != func->labels.end())
-	{
-		this->print_label(func->labels[func->end]);
-	}
-
-	// footer
-	output_->write_string("}\n");
 }
 
-void decompiler::print_statement(std::shared_ptr<statement> stmt)
+void decompiler::print_statement()
 {
-	output_->write_string("\t");
-	output_->write_string(stmt->data);
-	output_->write_string("\n");
 }
 
 void decompiler::print_label(const std::string& label)
 {
-	output_->write_string(utils::string::va("#%s\n", label.data()));
 }
 
 } // namespace IW6

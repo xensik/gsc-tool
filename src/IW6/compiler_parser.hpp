@@ -45,7 +45,7 @@
 #ifndef YY_YY_IW6_COMPILER_PARSER_HPP_INCLUDED
 # define YY_YY_IW6_COMPILER_PARSER_HPP_INCLUDED
 // "%code requires" blocks.
-#line 26 "iw6.parser.ypp"
+#line 26 "IW6.parser.ypp"
 
 	#include <utils.hpp>
 	typedef void *yyscan_t;
@@ -400,42 +400,21 @@ namespace yy {
     union union_type
     {
       // block
-      char dummy1[sizeof (block_ptr)];
+      char dummy1[sizeof (gsc::block_ptr)];
 
       // expr_arguments
-      char dummy2[sizeof (expr_arguments_ptr)];
+      char dummy2[sizeof (gsc::expr_arguments_ptr)];
 
       // expr_assign
-      char dummy3[sizeof (expr_assign_ptr)];
+      char dummy3[sizeof (gsc::expr_assign_ptr)];
 
       // expr_call
       // expr_call_thread
-      char dummy4[sizeof (expr_call_ptr)];
+      char dummy4[sizeof (gsc::expr_call_ptr)];
 
       // expr_call_function
       // expr_call_pointer
-      char dummy5[sizeof (expr_call_type_ptr)];
-
-      // filepath
-      char dummy6[sizeof (filepath_ptr)];
-
-      // data_float
-      char dummy7[sizeof (float_ptr)];
-
-      // function
-      char dummy8[sizeof (function_ptr)];
-
-      // identifier
-      char dummy9[sizeof (identifier_ptr)];
-
-      // include
-      char dummy10[sizeof (include_ptr)];
-
-      // data_integer
-      char dummy11[sizeof (integer_ptr)];
-
-      // data_localized_string
-      char dummy12[sizeof (localized_string_ptr)];
+      char dummy5[sizeof (gsc::expr_call_type_ptr)];
 
       // for_assign
       // for_cond
@@ -444,6 +423,26 @@ namespace yy {
       // expr_ternary
       // expr_binary
       // expr_primitive
+      char dummy6[sizeof (gsc::expr_ptr)];
+
+      // filepath
+      char dummy7[sizeof (gsc::filepath_ptr)];
+
+      // data_float
+      char dummy8[sizeof (gsc::float_ptr)];
+
+      // identifier
+      char dummy9[sizeof (gsc::identifier_ptr)];
+
+      // include
+      char dummy10[sizeof (gsc::include_ptr)];
+
+      // data_integer
+      char dummy11[sizeof (gsc::integer_ptr)];
+
+      // data_localized_string
+      char dummy12[sizeof (gsc::localized_string_ptr)];
+
       // expr_function_ref
       // expr_array
       // expr_field
@@ -461,13 +460,83 @@ namespace yy {
       // self
       // anim
       // level
-      char dummy13[sizeof (node_ptr)];
+      char dummy13[sizeof (gsc::node_ptr)];
 
       // parameters
-      char dummy14[sizeof (parameters_ptr)];
+      char dummy14[sizeof (gsc::parameters_ptr)];
 
       // script
-      char dummy15[sizeof (script_ptr)];
+      char dummy15[sizeof (gsc::script_ptr)];
+
+      // stmt_assign
+      char dummy16[sizeof (gsc::stmt_assign_ptr)];
+
+      // stmt_break
+      char dummy17[sizeof (gsc::stmt_break_ptr)];
+
+      // stmt_call
+      char dummy18[sizeof (gsc::stmt_call_ptr)];
+
+      // stmt_case
+      char dummy19[sizeof (gsc::stmt_case_ptr)];
+
+      // stmt_continue
+      char dummy20[sizeof (gsc::stmt_continue_ptr)];
+
+      // stmt_default
+      char dummy21[sizeof (gsc::stmt_default_ptr)];
+
+      // stmt_endon
+      char dummy22[sizeof (gsc::stmt_endon_ptr)];
+
+      // stmt_for
+      char dummy23[sizeof (gsc::stmt_for_ptr)];
+
+      // stmt_foreach
+      char dummy24[sizeof (gsc::stmt_foreach_ptr)];
+
+      // stmt_if
+      char dummy25[sizeof (gsc::stmt_if_ptr)];
+
+      // stmt_ifelse
+      char dummy26[sizeof (gsc::stmt_ifelse_ptr)];
+
+      // stmt_notify
+      char dummy27[sizeof (gsc::stmt_notify_ptr)];
+
+      // stmt
+      char dummy28[sizeof (gsc::stmt_ptr)];
+
+      // stmt_return
+      char dummy29[sizeof (gsc::stmt_return_ptr)];
+
+      // stmt_switch
+      char dummy30[sizeof (gsc::stmt_switch_ptr)];
+
+      // stmt_wait
+      char dummy31[sizeof (gsc::stmt_wait_ptr)];
+
+      // stmt_waittill
+      char dummy32[sizeof (gsc::stmt_waittill_ptr)];
+
+      // stmt_waittillframeend
+      char dummy33[sizeof (gsc::stmt_waittillframeend_ptr)];
+
+      // stmt_waittillmatch
+      char dummy34[sizeof (gsc::stmt_waittillmatch_ptr)];
+
+      // stmt_while
+      char dummy35[sizeof (gsc::stmt_while_ptr)];
+
+      // data_string
+      char dummy36[sizeof (gsc::string_ptr)];
+
+      // thread
+      char dummy37[sizeof (gsc::thread_ptr)];
+
+      // using_animtree
+      // animtree
+      char dummy38[sizeof (gsc::using_animtree_ptr)];
 
       // FILEPATH
       // IDENTIFIER
@@ -475,74 +544,7 @@ namespace yy {
       // STRING_LOC
       // FLOAT
       // INTEGER
-      char dummy16[sizeof (std::string)];
-
-      // stmt_assign
-      char dummy17[sizeof (stmt_assign_ptr)];
-
-      // stmt_break
-      char dummy18[sizeof (stmt_break_ptr)];
-
-      // stmt_call
-      char dummy19[sizeof (stmt_call_ptr)];
-
-      // stmt_case
-      char dummy20[sizeof (stmt_case_ptr)];
-
-      // stmt_continue
-      char dummy21[sizeof (stmt_continue_ptr)];
-
-      // stmt_default
-      char dummy22[sizeof (stmt_default_ptr)];
-
-      // stmt_endon
-      char dummy23[sizeof (stmt_endon_ptr)];
-
-      // stmt_for
-      char dummy24[sizeof (stmt_for_ptr)];
-
-      // stmt_foreach
-      char dummy25[sizeof (stmt_foreach_ptr)];
-
-      // stmt_if
-      char dummy26[sizeof (stmt_if_ptr)];
-
-      // stmt_ifelse
-      char dummy27[sizeof (stmt_ifelse_ptr)];
-
-      // stmt_notify
-      char dummy28[sizeof (stmt_notify_ptr)];
-
-      // stmt
-      char dummy29[sizeof (stmt_ptr)];
-
-      // stmt_return
-      char dummy30[sizeof (stmt_return_ptr)];
-
-      // stmt_switch
-      char dummy31[sizeof (stmt_switch_ptr)];
-
-      // stmt_wait
-      char dummy32[sizeof (stmt_wait_ptr)];
-
-      // stmt_waittill
-      char dummy33[sizeof (stmt_waittill_ptr)];
-
-      // stmt_waittillframeend
-      char dummy34[sizeof (stmt_waittillframeend_ptr)];
-
-      // stmt_waittillmatch
-      char dummy35[sizeof (stmt_waittillmatch_ptr)];
-
-      // stmt_while
-      char dummy36[sizeof (stmt_while_ptr)];
-
-      // data_string
-      char dummy37[sizeof (string_ptr)];
-
-      // using_animtree
-      // animtree
-      char dummy38[sizeof (using_animtree_ptr)];
+      char dummy39[sizeof (std::string)];
     };
 
     /// The size of the largest semantic type.
@@ -781,7 +783,7 @@ namespace yy {
         S_include = 89,                          // include
         S_using_animtree = 90,                   // using_animtree
         S_animtree = 91,                         // animtree
-        S_function = 92,                         // function
+        S_thread = 92,                           // thread
         S_parameters = 93,                       // parameters
         S_block = 94,                            // block
         S_stmt = 95,                             // stmt
@@ -875,53 +877,25 @@ namespace yy {
         switch (this->kind ())
     {
       case symbol_kind::S_block: // block
-        value.move< block_ptr > (std::move (that.value));
+        value.move< gsc::block_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_expr_arguments: // expr_arguments
-        value.move< expr_arguments_ptr > (std::move (that.value));
+        value.move< gsc::expr_arguments_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_expr_assign: // expr_assign
-        value.move< expr_assign_ptr > (std::move (that.value));
+        value.move< gsc::expr_assign_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_expr_call: // expr_call
       case symbol_kind::S_expr_call_thread: // expr_call_thread
-        value.move< expr_call_ptr > (std::move (that.value));
+        value.move< gsc::expr_call_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_expr_call_function: // expr_call_function
       case symbol_kind::S_expr_call_pointer: // expr_call_pointer
-        value.move< expr_call_type_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_filepath: // filepath
-        value.move< filepath_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_data_float: // data_float
-        value.move< float_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_function: // function
-        value.move< function_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_identifier: // identifier
-        value.move< identifier_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_include: // include
-        value.move< include_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_data_integer: // data_integer
-        value.move< integer_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_data_localized_string: // data_localized_string
-        value.move< localized_string_ptr > (std::move (that.value));
+        value.move< gsc::expr_call_type_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_for_assign: // for_assign
@@ -931,6 +905,33 @@ namespace yy {
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+        value.move< gsc::expr_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_filepath: // filepath
+        value.move< gsc::filepath_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_data_float: // data_float
+        value.move< gsc::float_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_identifier: // identifier
+        value.move< gsc::identifier_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_include: // include
+        value.move< gsc::include_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_data_integer: // data_integer
+        value.move< gsc::integer_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_data_localized_string: // data_localized_string
+        value.move< gsc::localized_string_ptr > (std::move (that.value));
+        break;
+
       case symbol_kind::S_expr_function_ref: // expr_function_ref
       case symbol_kind::S_expr_array: // expr_array
       case symbol_kind::S_expr_field: // expr_field
@@ -948,15 +949,108 @@ namespace yy {
       case symbol_kind::S_self: // self
       case symbol_kind::S_anim: // anim
       case symbol_kind::S_level: // level
-        value.move< node_ptr > (std::move (that.value));
+        value.move< gsc::node_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_parameters: // parameters
-        value.move< parameters_ptr > (std::move (that.value));
+        value.move< gsc::parameters_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_script: // script
-        value.move< script_ptr > (std::move (that.value));
+        value.move< gsc::script_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_assign: // stmt_assign
+        value.move< gsc::stmt_assign_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_break: // stmt_break
+        value.move< gsc::stmt_break_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_call: // stmt_call
+        value.move< gsc::stmt_call_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_case: // stmt_case
+        value.move< gsc::stmt_case_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_continue: // stmt_continue
+        value.move< gsc::stmt_continue_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_default: // stmt_default
+        value.move< gsc::stmt_default_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_endon: // stmt_endon
+        value.move< gsc::stmt_endon_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_for: // stmt_for
+        value.move< gsc::stmt_for_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_foreach: // stmt_foreach
+        value.move< gsc::stmt_foreach_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_if: // stmt_if
+        value.move< gsc::stmt_if_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
+        value.move< gsc::stmt_ifelse_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_notify: // stmt_notify
+        value.move< gsc::stmt_notify_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt: // stmt
+        value.move< gsc::stmt_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_return: // stmt_return
+        value.move< gsc::stmt_return_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_switch: // stmt_switch
+        value.move< gsc::stmt_switch_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_wait: // stmt_wait
+        value.move< gsc::stmt_wait_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittill: // stmt_waittill
+        value.move< gsc::stmt_waittill_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
+        value.move< gsc::stmt_waittillframeend_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
+        value.move< gsc::stmt_waittillmatch_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_while: // stmt_while
+        value.move< gsc::stmt_while_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_data_string: // data_string
+        value.move< gsc::string_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_thread: // thread
+        value.move< gsc::thread_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_using_animtree: // using_animtree
+      case symbol_kind::S_animtree: // animtree
+        value.move< gsc::using_animtree_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_FILEPATH: // FILEPATH
@@ -966,95 +1060,6 @@ namespace yy {
       case symbol_kind::S_FLOAT: // FLOAT
       case symbol_kind::S_INTEGER: // INTEGER
         value.move< std::string > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.move< stmt_assign_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_break: // stmt_break
-        value.move< stmt_break_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.move< stmt_call_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_case: // stmt_case
-        value.move< stmt_case_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_continue: // stmt_continue
-        value.move< stmt_continue_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_default: // stmt_default
-        value.move< stmt_default_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_endon: // stmt_endon
-        value.move< stmt_endon_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_for: // stmt_for
-        value.move< stmt_for_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_foreach: // stmt_foreach
-        value.move< stmt_foreach_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_if: // stmt_if
-        value.move< stmt_if_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
-        value.move< stmt_ifelse_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_notify: // stmt_notify
-        value.move< stmt_notify_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt: // stmt
-        value.move< stmt_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_return: // stmt_return
-        value.move< stmt_return_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_switch: // stmt_switch
-        value.move< stmt_switch_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_wait: // stmt_wait
-        value.move< stmt_wait_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittill: // stmt_waittill
-        value.move< stmt_waittill_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
-        value.move< stmt_waittillframeend_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
-        value.move< stmt_waittillmatch_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_while: // stmt_while
-        value.move< stmt_while_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_data_string: // data_string
-        value.move< string_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_using_animtree: // using_animtree
-      case symbol_kind::S_animtree: // animtree
-        value.move< using_animtree_ptr > (std::move (that.value));
         break;
 
       default:
@@ -1078,166 +1083,419 @@ namespace yy {
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, block_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::block_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const block_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::block_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, expr_arguments_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::expr_arguments_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const expr_arguments_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::expr_arguments_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, expr_assign_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::expr_assign_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const expr_assign_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::expr_assign_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, expr_call_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::expr_call_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const expr_call_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::expr_call_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, expr_call_type_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::expr_call_type_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const expr_call_type_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::expr_call_type_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, filepath_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::expr_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const filepath_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::expr_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, float_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::filepath_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const float_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::filepath_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, function_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::float_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const function_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::float_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, identifier_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::identifier_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const identifier_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::identifier_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, include_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::include_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const include_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::include_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, integer_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::integer_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const integer_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::integer_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, localized_string_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::localized_string_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const localized_string_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::localized_string_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, node_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::node_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const node_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::node_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, parameters_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::parameters_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const parameters_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::parameters_ptr& v)
         : Base (t)
         , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, script_ptr&& v)
+      basic_symbol (typename Base::kind_type t, gsc::script_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const script_ptr& v)
+      basic_symbol (typename Base::kind_type t, const gsc::script_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_assign_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_assign_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_break_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_break_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_call_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_call_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_case_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_case_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_continue_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_continue_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_default_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_default_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_endon_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_endon_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_for_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_for_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_foreach_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_foreach_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_if_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_if_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_ifelse_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_ifelse_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_notify_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_notify_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_return_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_return_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_switch_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_switch_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_wait_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_wait_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_waittill_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_waittill_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_waittillframeend_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_waittillframeend_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_waittillmatch_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_waittillmatch_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::stmt_while_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::stmt_while_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::string_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::string_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::thread_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::thread_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::using_animtree_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::using_animtree_ptr& v)
         : Base (t)
         , value (v)
       {}
@@ -1249,248 +1507,6 @@ namespace yy {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const std::string& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_assign_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_assign_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_break_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_break_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_call_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_call_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_case_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_case_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_continue_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_continue_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_default_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_default_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_endon_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_endon_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_for_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_for_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_foreach_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_foreach_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_if_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_if_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_ifelse_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_ifelse_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_notify_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_notify_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_return_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_return_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_switch_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_switch_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_wait_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_wait_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_waittill_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_waittill_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_waittillframeend_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_waittillframeend_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_waittillmatch_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_waittillmatch_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_while_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_while_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, string_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const string_ptr& v)
-        : Base (t)
-        , value (v)
-      {}
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, using_animtree_ptr&& v)
-        : Base (t)
-        , value (std::move (v))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const using_animtree_ptr& v)
         : Base (t)
         , value (v)
       {}
@@ -1519,53 +1535,25 @@ namespace yy {
 switch (yykind)
     {
       case symbol_kind::S_block: // block
-        value.template destroy< block_ptr > ();
+        value.template destroy< gsc::block_ptr > ();
         break;
 
       case symbol_kind::S_expr_arguments: // expr_arguments
-        value.template destroy< expr_arguments_ptr > ();
+        value.template destroy< gsc::expr_arguments_ptr > ();
         break;
 
       case symbol_kind::S_expr_assign: // expr_assign
-        value.template destroy< expr_assign_ptr > ();
+        value.template destroy< gsc::expr_assign_ptr > ();
         break;
 
       case symbol_kind::S_expr_call: // expr_call
       case symbol_kind::S_expr_call_thread: // expr_call_thread
-        value.template destroy< expr_call_ptr > ();
+        value.template destroy< gsc::expr_call_ptr > ();
         break;
 
       case symbol_kind::S_expr_call_function: // expr_call_function
       case symbol_kind::S_expr_call_pointer: // expr_call_pointer
-        value.template destroy< expr_call_type_ptr > ();
-        break;
-
-      case symbol_kind::S_filepath: // filepath
-        value.template destroy< filepath_ptr > ();
-        break;
-
-      case symbol_kind::S_data_float: // data_float
-        value.template destroy< float_ptr > ();
-        break;
-
-      case symbol_kind::S_function: // function
-        value.template destroy< function_ptr > ();
-        break;
-
-      case symbol_kind::S_identifier: // identifier
-        value.template destroy< identifier_ptr > ();
-        break;
-
-      case symbol_kind::S_include: // include
-        value.template destroy< include_ptr > ();
-        break;
-
-      case symbol_kind::S_data_integer: // data_integer
-        value.template destroy< integer_ptr > ();
-        break;
-
-      case symbol_kind::S_data_localized_string: // data_localized_string
-        value.template destroy< localized_string_ptr > ();
+        value.template destroy< gsc::expr_call_type_ptr > ();
         break;
 
       case symbol_kind::S_for_assign: // for_assign
@@ -1575,6 +1563,33 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+        value.template destroy< gsc::expr_ptr > ();
+        break;
+
+      case symbol_kind::S_filepath: // filepath
+        value.template destroy< gsc::filepath_ptr > ();
+        break;
+
+      case symbol_kind::S_data_float: // data_float
+        value.template destroy< gsc::float_ptr > ();
+        break;
+
+      case symbol_kind::S_identifier: // identifier
+        value.template destroy< gsc::identifier_ptr > ();
+        break;
+
+      case symbol_kind::S_include: // include
+        value.template destroy< gsc::include_ptr > ();
+        break;
+
+      case symbol_kind::S_data_integer: // data_integer
+        value.template destroy< gsc::integer_ptr > ();
+        break;
+
+      case symbol_kind::S_data_localized_string: // data_localized_string
+        value.template destroy< gsc::localized_string_ptr > ();
+        break;
+
       case symbol_kind::S_expr_function_ref: // expr_function_ref
       case symbol_kind::S_expr_array: // expr_array
       case symbol_kind::S_expr_field: // expr_field
@@ -1592,15 +1607,108 @@ switch (yykind)
       case symbol_kind::S_self: // self
       case symbol_kind::S_anim: // anim
       case symbol_kind::S_level: // level
-        value.template destroy< node_ptr > ();
+        value.template destroy< gsc::node_ptr > ();
         break;
 
       case symbol_kind::S_parameters: // parameters
-        value.template destroy< parameters_ptr > ();
+        value.template destroy< gsc::parameters_ptr > ();
         break;
 
       case symbol_kind::S_script: // script
-        value.template destroy< script_ptr > ();
+        value.template destroy< gsc::script_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_assign: // stmt_assign
+        value.template destroy< gsc::stmt_assign_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_break: // stmt_break
+        value.template destroy< gsc::stmt_break_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_call: // stmt_call
+        value.template destroy< gsc::stmt_call_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_case: // stmt_case
+        value.template destroy< gsc::stmt_case_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_continue: // stmt_continue
+        value.template destroy< gsc::stmt_continue_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_default: // stmt_default
+        value.template destroy< gsc::stmt_default_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_endon: // stmt_endon
+        value.template destroy< gsc::stmt_endon_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_for: // stmt_for
+        value.template destroy< gsc::stmt_for_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_foreach: // stmt_foreach
+        value.template destroy< gsc::stmt_foreach_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_if: // stmt_if
+        value.template destroy< gsc::stmt_if_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
+        value.template destroy< gsc::stmt_ifelse_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_notify: // stmt_notify
+        value.template destroy< gsc::stmt_notify_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt: // stmt
+        value.template destroy< gsc::stmt_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_return: // stmt_return
+        value.template destroy< gsc::stmt_return_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_switch: // stmt_switch
+        value.template destroy< gsc::stmt_switch_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_wait: // stmt_wait
+        value.template destroy< gsc::stmt_wait_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_waittill: // stmt_waittill
+        value.template destroy< gsc::stmt_waittill_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
+        value.template destroy< gsc::stmt_waittillframeend_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
+        value.template destroy< gsc::stmt_waittillmatch_ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_while: // stmt_while
+        value.template destroy< gsc::stmt_while_ptr > ();
+        break;
+
+      case symbol_kind::S_data_string: // data_string
+        value.template destroy< gsc::string_ptr > ();
+        break;
+
+      case symbol_kind::S_thread: // thread
+        value.template destroy< gsc::thread_ptr > ();
+        break;
+
+      case symbol_kind::S_using_animtree: // using_animtree
+      case symbol_kind::S_animtree: // animtree
+        value.template destroy< gsc::using_animtree_ptr > ();
         break;
 
       case symbol_kind::S_FILEPATH: // FILEPATH
@@ -1610,95 +1718,6 @@ switch (yykind)
       case symbol_kind::S_FLOAT: // FLOAT
       case symbol_kind::S_INTEGER: // INTEGER
         value.template destroy< std::string > ();
-        break;
-
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.template destroy< stmt_assign_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_break: // stmt_break
-        value.template destroy< stmt_break_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.template destroy< stmt_call_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_case: // stmt_case
-        value.template destroy< stmt_case_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_continue: // stmt_continue
-        value.template destroy< stmt_continue_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_default: // stmt_default
-        value.template destroy< stmt_default_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_endon: // stmt_endon
-        value.template destroy< stmt_endon_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_for: // stmt_for
-        value.template destroy< stmt_for_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_foreach: // stmt_foreach
-        value.template destroy< stmt_foreach_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_if: // stmt_if
-        value.template destroy< stmt_if_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
-        value.template destroy< stmt_ifelse_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_notify: // stmt_notify
-        value.template destroy< stmt_notify_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt: // stmt
-        value.template destroy< stmt_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_return: // stmt_return
-        value.template destroy< stmt_return_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_switch: // stmt_switch
-        value.template destroy< stmt_switch_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_wait: // stmt_wait
-        value.template destroy< stmt_wait_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_waittill: // stmt_waittill
-        value.template destroy< stmt_waittill_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
-        value.template destroy< stmt_waittillframeend_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
-        value.template destroy< stmt_waittillmatch_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_while: // stmt_while
-        value.template destroy< stmt_while_ptr > ();
-        break;
-
-      case symbol_kind::S_data_string: // data_string
-        value.template destroy< string_ptr > ();
-        break;
-
-      case symbol_kind::S_using_animtree: // using_animtree
-      case symbol_kind::S_animtree: // animtree
-        value.template destroy< using_animtree_ptr > ();
         break;
 
       default:
@@ -1813,7 +1832,7 @@ switch (yykind)
     };
 
     /// Build a parser object.
-    parser (yyscan_t yyscanner_yyarg, std::unique_ptr<node>& astout_yyarg);
+    parser (yyscan_t yyscanner_yyarg, gsc::script_ptr& astout_yyarg);
     virtual ~parser ();
 
 #if 201103L <= YY_CPLUSPLUS
@@ -3497,7 +3516,7 @@ switch (yykind)
 
     // User arguments.
     yyscan_t yyscanner;
-    std::unique_ptr<node>& astout;
+    gsc::script_ptr& astout;
 
   };
 
@@ -3517,53 +3536,25 @@ switch (yykind)
     switch (this->kind ())
     {
       case symbol_kind::S_block: // block
-        value.copy< block_ptr > (YY_MOVE (that.value));
+        value.copy< gsc::block_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_expr_arguments: // expr_arguments
-        value.copy< expr_arguments_ptr > (YY_MOVE (that.value));
+        value.copy< gsc::expr_arguments_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_expr_assign: // expr_assign
-        value.copy< expr_assign_ptr > (YY_MOVE (that.value));
+        value.copy< gsc::expr_assign_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_expr_call: // expr_call
       case symbol_kind::S_expr_call_thread: // expr_call_thread
-        value.copy< expr_call_ptr > (YY_MOVE (that.value));
+        value.copy< gsc::expr_call_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_expr_call_function: // expr_call_function
       case symbol_kind::S_expr_call_pointer: // expr_call_pointer
-        value.copy< expr_call_type_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_filepath: // filepath
-        value.copy< filepath_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_data_float: // data_float
-        value.copy< float_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_function: // function
-        value.copy< function_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_identifier: // identifier
-        value.copy< identifier_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_include: // include
-        value.copy< include_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_data_integer: // data_integer
-        value.copy< integer_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_data_localized_string: // data_localized_string
-        value.copy< localized_string_ptr > (YY_MOVE (that.value));
+        value.copy< gsc::expr_call_type_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_for_assign: // for_assign
@@ -3573,6 +3564,33 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+        value.copy< gsc::expr_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_filepath: // filepath
+        value.copy< gsc::filepath_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_data_float: // data_float
+        value.copy< gsc::float_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_identifier: // identifier
+        value.copy< gsc::identifier_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_include: // include
+        value.copy< gsc::include_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_data_integer: // data_integer
+        value.copy< gsc::integer_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_data_localized_string: // data_localized_string
+        value.copy< gsc::localized_string_ptr > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_expr_function_ref: // expr_function_ref
       case symbol_kind::S_expr_array: // expr_array
       case symbol_kind::S_expr_field: // expr_field
@@ -3590,15 +3608,108 @@ switch (yykind)
       case symbol_kind::S_self: // self
       case symbol_kind::S_anim: // anim
       case symbol_kind::S_level: // level
-        value.copy< node_ptr > (YY_MOVE (that.value));
+        value.copy< gsc::node_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_parameters: // parameters
-        value.copy< parameters_ptr > (YY_MOVE (that.value));
+        value.copy< gsc::parameters_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_script: // script
-        value.copy< script_ptr > (YY_MOVE (that.value));
+        value.copy< gsc::script_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_assign: // stmt_assign
+        value.copy< gsc::stmt_assign_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_break: // stmt_break
+        value.copy< gsc::stmt_break_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_call: // stmt_call
+        value.copy< gsc::stmt_call_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_case: // stmt_case
+        value.copy< gsc::stmt_case_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_continue: // stmt_continue
+        value.copy< gsc::stmt_continue_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_default: // stmt_default
+        value.copy< gsc::stmt_default_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_endon: // stmt_endon
+        value.copy< gsc::stmt_endon_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_for: // stmt_for
+        value.copy< gsc::stmt_for_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_foreach: // stmt_foreach
+        value.copy< gsc::stmt_foreach_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_if: // stmt_if
+        value.copy< gsc::stmt_if_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
+        value.copy< gsc::stmt_ifelse_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_notify: // stmt_notify
+        value.copy< gsc::stmt_notify_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt: // stmt
+        value.copy< gsc::stmt_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_return: // stmt_return
+        value.copy< gsc::stmt_return_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_switch: // stmt_switch
+        value.copy< gsc::stmt_switch_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_wait: // stmt_wait
+        value.copy< gsc::stmt_wait_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittill: // stmt_waittill
+        value.copy< gsc::stmt_waittill_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
+        value.copy< gsc::stmt_waittillframeend_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
+        value.copy< gsc::stmt_waittillmatch_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_while: // stmt_while
+        value.copy< gsc::stmt_while_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_data_string: // data_string
+        value.copy< gsc::string_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_thread: // thread
+        value.copy< gsc::thread_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_using_animtree: // using_animtree
+      case symbol_kind::S_animtree: // animtree
+        value.copy< gsc::using_animtree_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_FILEPATH: // FILEPATH
@@ -3608,95 +3719,6 @@ switch (yykind)
       case symbol_kind::S_FLOAT: // FLOAT
       case symbol_kind::S_INTEGER: // INTEGER
         value.copy< std::string > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.copy< stmt_assign_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_break: // stmt_break
-        value.copy< stmt_break_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.copy< stmt_call_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_case: // stmt_case
-        value.copy< stmt_case_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_continue: // stmt_continue
-        value.copy< stmt_continue_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_default: // stmt_default
-        value.copy< stmt_default_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_endon: // stmt_endon
-        value.copy< stmt_endon_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_for: // stmt_for
-        value.copy< stmt_for_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_foreach: // stmt_foreach
-        value.copy< stmt_foreach_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_if: // stmt_if
-        value.copy< stmt_if_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
-        value.copy< stmt_ifelse_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_notify: // stmt_notify
-        value.copy< stmt_notify_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt: // stmt
-        value.copy< stmt_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_return: // stmt_return
-        value.copy< stmt_return_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_switch: // stmt_switch
-        value.copy< stmt_switch_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_wait: // stmt_wait
-        value.copy< stmt_wait_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittill: // stmt_waittill
-        value.copy< stmt_waittill_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
-        value.copy< stmt_waittillframeend_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
-        value.copy< stmt_waittillmatch_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_while: // stmt_while
-        value.copy< stmt_while_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_data_string: // data_string
-        value.copy< string_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_using_animtree: // using_animtree
-      case symbol_kind::S_animtree: // animtree
-        value.copy< using_animtree_ptr > (YY_MOVE (that.value));
         break;
 
       default:
@@ -3729,53 +3751,25 @@ switch (yykind)
     switch (this->kind ())
     {
       case symbol_kind::S_block: // block
-        value.move< block_ptr > (YY_MOVE (s.value));
+        value.move< gsc::block_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_expr_arguments: // expr_arguments
-        value.move< expr_arguments_ptr > (YY_MOVE (s.value));
+        value.move< gsc::expr_arguments_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_expr_assign: // expr_assign
-        value.move< expr_assign_ptr > (YY_MOVE (s.value));
+        value.move< gsc::expr_assign_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_expr_call: // expr_call
       case symbol_kind::S_expr_call_thread: // expr_call_thread
-        value.move< expr_call_ptr > (YY_MOVE (s.value));
+        value.move< gsc::expr_call_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_expr_call_function: // expr_call_function
       case symbol_kind::S_expr_call_pointer: // expr_call_pointer
-        value.move< expr_call_type_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_filepath: // filepath
-        value.move< filepath_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_data_float: // data_float
-        value.move< float_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_function: // function
-        value.move< function_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_identifier: // identifier
-        value.move< identifier_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_include: // include
-        value.move< include_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_data_integer: // data_integer
-        value.move< integer_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_data_localized_string: // data_localized_string
-        value.move< localized_string_ptr > (YY_MOVE (s.value));
+        value.move< gsc::expr_call_type_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_for_assign: // for_assign
@@ -3785,6 +3779,33 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+        value.move< gsc::expr_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_filepath: // filepath
+        value.move< gsc::filepath_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_data_float: // data_float
+        value.move< gsc::float_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_identifier: // identifier
+        value.move< gsc::identifier_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_include: // include
+        value.move< gsc::include_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_data_integer: // data_integer
+        value.move< gsc::integer_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_data_localized_string: // data_localized_string
+        value.move< gsc::localized_string_ptr > (YY_MOVE (s.value));
+        break;
+
       case symbol_kind::S_expr_function_ref: // expr_function_ref
       case symbol_kind::S_expr_array: // expr_array
       case symbol_kind::S_expr_field: // expr_field
@@ -3802,15 +3823,108 @@ switch (yykind)
       case symbol_kind::S_self: // self
       case symbol_kind::S_anim: // anim
       case symbol_kind::S_level: // level
-        value.move< node_ptr > (YY_MOVE (s.value));
+        value.move< gsc::node_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_parameters: // parameters
-        value.move< parameters_ptr > (YY_MOVE (s.value));
+        value.move< gsc::parameters_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_script: // script
-        value.move< script_ptr > (YY_MOVE (s.value));
+        value.move< gsc::script_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_assign: // stmt_assign
+        value.move< gsc::stmt_assign_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_break: // stmt_break
+        value.move< gsc::stmt_break_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_call: // stmt_call
+        value.move< gsc::stmt_call_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_case: // stmt_case
+        value.move< gsc::stmt_case_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_continue: // stmt_continue
+        value.move< gsc::stmt_continue_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_default: // stmt_default
+        value.move< gsc::stmt_default_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_endon: // stmt_endon
+        value.move< gsc::stmt_endon_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_for: // stmt_for
+        value.move< gsc::stmt_for_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_foreach: // stmt_foreach
+        value.move< gsc::stmt_foreach_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_if: // stmt_if
+        value.move< gsc::stmt_if_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
+        value.move< gsc::stmt_ifelse_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_notify: // stmt_notify
+        value.move< gsc::stmt_notify_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt: // stmt
+        value.move< gsc::stmt_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_return: // stmt_return
+        value.move< gsc::stmt_return_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_switch: // stmt_switch
+        value.move< gsc::stmt_switch_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_wait: // stmt_wait
+        value.move< gsc::stmt_wait_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_waittill: // stmt_waittill
+        value.move< gsc::stmt_waittill_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
+        value.move< gsc::stmt_waittillframeend_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
+        value.move< gsc::stmt_waittillmatch_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_while: // stmt_while
+        value.move< gsc::stmt_while_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_data_string: // data_string
+        value.move< gsc::string_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_thread: // thread
+        value.move< gsc::thread_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_using_animtree: // using_animtree
+      case symbol_kind::S_animtree: // animtree
+        value.move< gsc::using_animtree_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_FILEPATH: // FILEPATH
@@ -3820,95 +3934,6 @@ switch (yykind)
       case symbol_kind::S_FLOAT: // FLOAT
       case symbol_kind::S_INTEGER: // INTEGER
         value.move< std::string > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.move< stmt_assign_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_break: // stmt_break
-        value.move< stmt_break_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.move< stmt_call_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_case: // stmt_case
-        value.move< stmt_case_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_continue: // stmt_continue
-        value.move< stmt_continue_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_default: // stmt_default
-        value.move< stmt_default_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_endon: // stmt_endon
-        value.move< stmt_endon_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_for: // stmt_for
-        value.move< stmt_for_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_foreach: // stmt_foreach
-        value.move< stmt_foreach_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_if: // stmt_if
-        value.move< stmt_if_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
-        value.move< stmt_ifelse_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_notify: // stmt_notify
-        value.move< stmt_notify_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt: // stmt
-        value.move< stmt_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_return: // stmt_return
-        value.move< stmt_return_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_switch: // stmt_switch
-        value.move< stmt_switch_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_wait: // stmt_wait
-        value.move< stmt_wait_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_waittill: // stmt_waittill
-        value.move< stmt_waittill_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
-        value.move< stmt_waittillframeend_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
-        value.move< stmt_waittillmatch_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_while: // stmt_while
-        value.move< stmt_while_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_data_string: // data_string
-        value.move< string_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_using_animtree: // using_animtree
-      case symbol_kind::S_animtree: // animtree
-        value.move< using_animtree_ptr > (YY_MOVE (s.value));
         break;
 
       default:
@@ -3972,7 +3997,7 @@ switch (yykind)
   }
 
 } // yy
-#line 3976 "./IW6/compiler_parser.hpp"
+#line 4001 "./IW6/compiler_parser.hpp"
 
 
 

@@ -8,45 +8,17 @@
 namespace SH1
 {
 
-disassembler::disassembler(bool ida_output)
+auto disassembler::output() -> std::vector<gsc::function_ptr>
 {
-	ida_output_ = ida_output;
+	return std::move(functions_);
+}
+
+auto disassembler::output_data() -> std::string
+{
 	output_ = std::make_unique<utils::byte_buffer>(0x100000);
-}
 
-void disassembler::disassemble(std::string& script, std::string& stack)
-{
-	script_ = std::make_shared<utils::byte_buffer>(script);
-	stack_ = std::make_shared<utils::byte_buffer>(stack);
-	output_->clear();
-	functions_.clear();
-
-	script_->seek(1); // skip magic opcode 0x34
-
-	while (stack_->is_avail() && script_->is_avail())
-	{
-		auto func = std::make_shared<function>();
-		func->index = script_->pos();
-		func->size = stack_->read<std::uint32_t>();
-		func->id = stack_->read<std::uint16_t>();
-		func->name = "sub_"s + (func->id == 0 ? stack_->read_string() : resolver::token_name(func->id));
-		functions_.push_back(func);
-
-		this->dissasemble_function(func);
-	}
-
-	// fix local function calls here once we have all function addresses
-	this->resolve_local_functions();
-}
-
-auto disassembler::output() -> std::vector<std::shared_ptr<function>>
-{
-	return functions_;
-}
-
-auto disassembler::output_asm() -> std::string
-{
-	this->print_script_name(""); // TODO: add file name conversor
+	output_->write_string("// IW6 PC GSCASM\n");
+	output_->write_string("// Disassembled by https://github.com/xensik/gsc-tool\n");
 
 	for (auto& func : functions_)
 	{
@@ -54,9 +26,11 @@ auto disassembler::output_asm() -> std::string
 
 		for (auto& inst : func->instructions)
 		{
-			if (func->labels.find(inst->index) != func->labels.end())
+			const auto itr = func->labels.find(inst->index);
+
+			if (itr != func->labels.end())
 			{
-				this->print_label(func->labels[inst->index]);
+				this->print_label(itr->second);
 			}
 
 			this->print_instruction(inst);
@@ -71,32 +45,50 @@ auto disassembler::output_asm() -> std::string
 	return output;
 }
 
-void disassembler::dissasemble_function(std::shared_ptr<function> func)
+void disassembler::disassemble(std::string& script, std::string& stack)
 {
-#ifdef DEV_DEBUG
-	this->print_function(func);
-#endif
+	script_ = std::make_unique<utils::byte_buffer>(script);
+	stack_ = std::make_unique<utils::byte_buffer>(stack);
+	functions_.clear();
+
+	script_->seek(1);
+
+	while (stack_->is_avail() && script_->is_avail())
+	{
+		functions_.push_back(std::make_unique<gsc::function>());
+		auto& func = functions_.back();
+
+		func->index = script_->pos();
+		func->size = stack_->read<std::uint32_t>();
+		func->id = stack_->read<std::uint16_t>();
+		func->name = "sub_"s + (func->id == 0 ? stack_->read_string() : resolver::token_name(func->id));
+
+		this->dissasemble_function(func);
+
+		func->labels = labels_;
+		labels_.clear();
+	}
+
+	this->resolve_local_functions();
+}
+
+void disassembler::dissasemble_function(const gsc::function_ptr& func)
+{
 	auto size = func->size;
 
 	while (size > 0)
 	{
-		auto inst = std::make_shared<instruction>();
+		func->instructions.push_back(std::make_unique<gsc::instruction>());
+		auto& inst = func->instructions.back();
 		inst->index = script_->pos();
 		inst->opcode = script_->read<std::uint8_t>();
-		inst->parent = func;
-		func->instructions.push_back(inst);
 
 		this->dissasemble_instruction(inst);
-
-#ifdef DEV_DEBUG
-		this->print_instruction(inst);
-#endif
-
 		size -= inst->size;
 	}
 }
 
-void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
+void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
 {
 	switch (opcode(inst->opcode))
 	{
@@ -206,7 +198,7 @@ void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 		script_->seek(1);
 		inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
 		break;
-	case opcode::OP_waittillmatch: // IW6 placeholder is 2 bytes???
+	case opcode::OP_waittillmatch: // SH1 placeholder is 2 bytes???
 		inst->size = 3;
 		inst->data.push_back(utils::string::va("%i", script_->read<std::uint16_t>()));
 		break;
@@ -241,7 +233,7 @@ void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 	case opcode::OP_ClearLocalVariableFieldCached:
 	case opcode::OP_EvalLocalVariableObjectCached:
 		inst->size = 2;
-		inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>())); // var index
+		inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
 		break;
 	case opcode::OP_EvalLevelFieldVariable:
 	case opcode::OP_EvalAnimFieldVariable:
@@ -269,7 +261,7 @@ void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 	case opcode::OP_ScriptMethodChildThreadCallPointer:
 	case opcode::OP_ScriptChildThreadCallPointer:
 		inst->size = 2;
-		inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>())); // arg num
+		inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
 		break;
 // FAR CALL
 	case opcode::OP_GetFarFunction:
@@ -354,12 +346,12 @@ void disassembler::dissasemble_instruction(std::shared_ptr<instruction> inst)
 		break;
 
 	default:
-		LOG_ERROR("Unhandled opcode (0x%X) at index '%04X'!", inst->opcode, inst->index);
+		LOG_ERROR("Unhandled opcode 0x%hhX at index '%04X'!", inst->opcode, inst->index);
 		break;
 	}
 }
 
-void disassembler::disassemble_builtin_call(std::shared_ptr<instruction> inst, bool method, bool arg_num)
+void disassembler::disassemble_builtin_call(const gsc::instruction_ptr& inst, bool method, bool arg_num)
 {
 	inst->size = arg_num ? 4 : 3;
 
@@ -378,7 +370,7 @@ void disassembler::disassemble_builtin_call(std::shared_ptr<instruction> inst, b
 	}
 }
 
-void disassembler::disassemble_local_call(std::shared_ptr<instruction> inst, bool thread)
+void disassembler::disassemble_local_call(const gsc::instruction_ptr& inst, bool thread)
 {
 	inst->size = thread ? 5 : 4;
 
@@ -392,11 +384,11 @@ void disassembler::disassemble_local_call(std::shared_ptr<instruction> inst, boo
 	}
 }
 
-void disassembler::disassemble_far_call(std::shared_ptr<instruction> inst, bool thread)
+void disassembler::disassemble_far_call(const gsc::instruction_ptr& inst, bool thread)
 {
 	inst->size = thread ? 5 : 4;
 
-	script_->seek(3); // pointer placeholder 24 bit offset
+	// SH1 seems to remove placeholders
 
 	if (thread)
 	{
@@ -412,7 +404,7 @@ void disassembler::disassemble_far_call(std::shared_ptr<instruction> inst, bool 
 	inst->data.push_back(func_name != "" ? func_name : utils::string::va("id#%i", func_id));
 }
 
-void disassembler::disassemble_jump(std::shared_ptr<instruction> inst, bool expr, bool back)
+void disassembler::disassemble_jump(const gsc::instruction_ptr& inst, bool expr, bool back)
 {
 	inst->size = (expr || back) ? 3 : 5;
 
@@ -438,10 +430,10 @@ void disassembler::disassemble_jump(std::shared_ptr<instruction> inst, bool expr
 		inst->data.push_back(label);
 	}
 
-	inst->parent->labels[addr] = label;
+	labels_.insert({addr, label});
 }
 
-void disassembler::disassemble_field_variable(std::shared_ptr<instruction> inst)
+void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
 {
 	inst->size = 3;
 
@@ -451,7 +443,7 @@ void disassembler::disassemble_field_variable(std::shared_ptr<instruction> inst)
 	inst->data.push_back(field_name != "" ? field_name : utils::string::va("id#%i", field_id));
 }
 
-void disassembler::disassemble_switch(std::shared_ptr<instruction> inst)
+void disassembler::disassemble_switch(const gsc::instruction_ptr& inst)
 {
 	inst->size = 5;
 
@@ -459,10 +451,10 @@ void disassembler::disassemble_switch(std::shared_ptr<instruction> inst)
 	std::string label = utils::string::va("loc_%X", addr);
 
 	inst->data.push_back(label);
-	inst->parent->labels[addr] = label;
+	labels_.insert({addr, label});
 }
 
-void disassembler::disassemble_end_switch(std::shared_ptr<instruction> inst)
+void disassembler::disassemble_end_switch(const gsc::instruction_ptr& inst)
 {
 	inst->size = 3;
 
@@ -500,7 +492,7 @@ void disassembler::disassemble_end_switch(std::shared_ptr<instruction> inst)
 			std::string label = utils::string::va("loc_%X", addr);
 			inst->data.push_back(label);
 
-			inst->parent->labels[addr] = label;
+			labels_.insert({addr, label});
 
 			inst->size += 3;
 			internal_index += 3;
@@ -576,54 +568,27 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
 	}
 }
 
-void disassembler::print_script_name(const std::string& name)
-{
-#ifdef DEV_DEBUG
-	printf("// SH1 PC GSCASM\n");
-	printf("// Disassembled by https://github.com/xensik/gsc-tool\n\n");
-#else
-	output_->write_string("// SH1 PC GSCASM\n");
-	output_->write_string("// Disassembled by https://github.com/xensik/gsc-tool\n");
-#endif
-}
-
 void disassembler::print_opcodes(std::uint32_t index, std::uint32_t size)
 {
-	if (ida_output_)
-	{
 #ifdef DEV_DEBUG
-		printf(utils::string::va("%04X\t", index).c_str());
-		printf(utils::string::va("%-20s \t\t", script_->get_bytes_print(index, size).data()).c_str());
+	printf(utils::string::va("%04X\t", index).c_str());
+	printf(utils::string::va("%-20s \t\t", script_->get_bytes_print(index, size).data()).c_str());
 #else
-		output_->write_string(utils::string::va("%04X\t", index));
-		output_->write_string(utils::string::va("%-20s \t\t", script_->print_bytes(index, size).data()));
+	output_->write_string("\t\t");
 #endif
-	}
-	else
-	{
-#ifdef DEV_DEBUG
-		printf("\t\t");
-#else
-		output_->write_string("\t\t");
-#endif
-	}
 }
 
-void disassembler::print_function(std::shared_ptr<function> func)
+void disassembler::print_function(const gsc::function_ptr& func)
 {
 #ifdef DEV_DEBUG
 	printf("\n");
 #else
 	output_->write_string("\n");
 #endif
-	if (ida_output_)
-	{
+
 #ifdef DEV_DEBUG
 		printf(utils::string::va("\t%-20s", "", func->name.data()).c_str());
-#else
-		output_->write_string(utils::string::va("\t%-20s", ""));
 #endif
-	}
 
 #ifdef DEV_DEBUG
 		printf(utils::string::va("%s\n", func->name.data()).c_str());
@@ -632,7 +597,7 @@ void disassembler::print_function(std::shared_ptr<function> func)
 #endif
 }
 
-void disassembler::print_instruction(std::shared_ptr<instruction> inst)
+void disassembler::print_instruction(const gsc::instruction_ptr& inst)
 {
 	switch (opcode(inst->opcode))
 	{
@@ -707,12 +672,12 @@ void disassembler::print_instruction(std::shared_ptr<instruction> inst)
 
 void disassembler::print_label(const std::string& label)
 {
-	if (ida_output_)
-	{
-		output_->write_string(utils::string::va("\n\t%-20s ", ""));
+#ifdef DEV_DEBUG
+	printf(utils::string::va("\n\t%-20s ", ""));
 	}
-
+#else
 	output_->write_string(utils::string::va("\t%s\n", label.data()));
+#endif
 }
 
 } // namespace SH1

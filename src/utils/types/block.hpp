@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_BLOCK_H_
-#define _GSC_BLOCK_H_
+#ifndef _GSC_BLOCK_HPP_
+#define _GSC_BLOCK_HPP_
 
 namespace gsc
 {
@@ -28,4 +28,4 @@ struct block
 
 } // namespace gsc
 
-#endif // _GSC_BLOCK_H_
+#endif // _GSC_BLOCK_HPP_

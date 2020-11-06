@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_IW6_H_
-#define _GSC_IW6_H_
+#ifndef _GSC_IW6_HPP_
+#define _GSC_IW6_HPP_
 
 #include <utils.hpp>
 
@@ -175,8 +175,8 @@ enum class opcode : std::uint8_t
 	OP_Count = 0xB0,
 };
 
-auto opcode_size(opcode op)->std::size_t;
+auto opcode_size(opcode op) -> std::size_t;
 
 } // namespace IW6
 
-#endif // _GSC_IW6_H_
+#endif // _GSC_IW6_HPP_

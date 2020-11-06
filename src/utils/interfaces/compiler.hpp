@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_COMPILER_H_
-#define _GSC_COMPILER_H_
+#ifndef _GSC_COMPILER_HPP_
+#define _GSC_COMPILER_HPP_
 
 namespace gsc
 {
@@ -12,10 +12,10 @@ namespace gsc
 class compiler
 {
 public:
-	virtual void compile(std::string& buffer) = 0;
-	virtual auto output() -> std::vector<std::shared_ptr<function>> = 0;
+	virtual auto output() -> std::vector<gsc::function_ptr> = 0;
+	virtual void compile(std::string& data) = 0;
 };
 
 } // namespace gsc
 
-#endif // _GSC_COMPILER_H_
+#endif // _GSC_COMPILER_HPP_

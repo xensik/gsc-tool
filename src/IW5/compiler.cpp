@@ -8,19 +8,14 @@
 namespace IW5
 {
 
-compiler::compiler()
+auto compiler::output() -> std::vector<gsc::function_ptr>
 {
-
+    return std::vector<gsc::function_ptr>();
 }
 
-void compiler::compile(std::string& buffer)
+void compiler::compile(std::string& data)
 {
 
-}
-
-auto compiler::output() -> std::vector<std::shared_ptr<function>>
-{
-    return std::vector<std::shared_ptr<function>>();
 }
 
 } // namespace IW5

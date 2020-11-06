@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_SH1_COMPILER_H_
-#define _GSC_SH1_COMPILER_H_
+#ifndef _GSC_SH1_COMPILER_HPP_
+#define _GSC_SH1_COMPILER_HPP_
 
 namespace SH1
 {
@@ -12,12 +12,10 @@ namespace SH1
 class compiler : public gsc::compiler
 {
 public:
-    compiler();
-
-	void compile(std::string& buffer);
-	auto output() -> std::vector<std::shared_ptr<function>>;
+	auto output() -> std::vector<gsc::function_ptr>;
+	void compile(std::string& data);
 };
 
 } // namespace SH1
 
-#endif // _GSC_SH1_COMPILER_H_
+#endif // _GSC_SH1_COMPILER_HPP_

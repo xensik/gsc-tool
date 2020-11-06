@@ -19,7 +19,6 @@ workspace "gsc-tool"
 
 	architecture "x86_64"
 	
-	-- microsoft shit
 	filter "action:vs*"
 		buildoptions "/Zc:__cplusplus"
 	filter{}

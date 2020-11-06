@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_IW5_H_
-#define _GSC_IW5_H_
+#ifndef _GSC_IW5_HPP_
+#define _GSC_IW5_HPP_
 
 #include <utils.hpp>
 
@@ -180,4 +180,4 @@ auto opcode_size(opcode id) -> std::size_t;
 
 } // namespace IW5
 
-#endif // _GSC_IW5_H_
+#endif // _GSC_IW5_HPP_

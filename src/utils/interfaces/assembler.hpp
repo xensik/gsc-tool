@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_ASSEMBLER_H_
-#define _GSC_ASSEMBLER_H_
+#ifndef _GSC_ASSEMBLER_HPP_
+#define _GSC_ASSEMBLER_HPP_
 
 namespace gsc
 {
@@ -12,12 +12,12 @@ namespace gsc
 class assembler
 {
 public:
-	virtual void assemble(std::string& buffer) = 0;
-	virtual void assemble(std::vector<std::shared_ptr<function>>& functions) = 0;
 	virtual auto output_script() -> std::string = 0;
 	virtual auto output_stack() -> std::string = 0;
+	virtual void assemble(std::string& data) = 0;
+	virtual void assemble(std::vector<gsc::function_ptr>& functions) = 0;
 };
 
 } // namespace gsc
 
-#endif // _GSC_ASSEMBLER_H_
+#endif // _GSC_ASSEMBLER_HPP_

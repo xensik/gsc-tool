@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_UTILS_LOG_H_
-#define _GSC_UTILS_LOG_H_
+#ifndef _GSC_UTILS_LOG_HPP_
+#define _GSC_UTILS_LOG_HPP_
 
 #ifdef DEBUG
 #define LOG_DEBUG(__FMT__, ...) printf("[D]: " __FMT__ "\n", ## __VA_ARGS__);
@@ -29,4 +29,4 @@ public:
 
 } // namespace utils
 
-#endif // _GSC_UTILS_LOG_H_
+#endif // _GSC_UTILS_LOG_HPP_

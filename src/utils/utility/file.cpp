@@ -8,7 +8,7 @@
 namespace utils
 {
 
-auto file::read(std::string name) -> std::string
+auto file::read(const std::string& name) -> std::string
 {
 	std::string buffer;
 
@@ -35,7 +35,7 @@ auto file::read(std::string name) -> std::string
 	return buffer;
 }
 
-void file::save(std::string name, std::string data)
+void file::save(const std::string& name, const std::string& data)
 {
 	FILE* fp = fopen(name.data(), "wb");
 	fwrite(data.data(), 1, data.size(), fp);

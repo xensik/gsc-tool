@@ -5,18 +5,15 @@
 
 #include "stdinc.hpp"
 
-void assemble_file(gsc::assembler& assembler, std::string file)
+auto overwrite_prompt(const std::string& file) -> bool
 {
-	auto scriptfile = utils::file::read(file + ".gscasm");
-
-	assembler.assemble(scriptfile);
-
 	auto overwrite = true;
-	if (std::filesystem::exists(file + ".cgsc"))
+
+	if (std::filesystem::exists(file))
 	{
 		do
 		{
-			printf("File \"%s.cgsc\" already exists, overwrite? [Y/n]: ", file.data());
+			printf("File \"%s\" already exists, overwrite? [Y/n]: ", file.data());
 			auto result = std::getchar();
 
 			if (result == '\n' || result == 'Y' || result == 'y')
@@ -31,7 +28,16 @@ void assemble_file(gsc::assembler& assembler, std::string file)
 		} while (true);
 	}
 
-	if (overwrite)
+	return overwrite;
+}
+
+void assemble_file(gsc::assembler& assembler, std::string file)
+{
+	auto scriptfile = utils::file::read(file + ".gscasm");
+
+	assembler.assemble(scriptfile);
+
+	if (overwrite_prompt(file + ".cgsc"))
 	{
 		utils::file::save(file + ".cgsc", assembler.output_script());
 		utils::file::save(file + ".cgsc.stack", assembler.output_stack());
@@ -59,7 +65,7 @@ void disassemble_file(gsc::disassembler& disassembler, std::string file)
 
 	disassembler.disassemble(script, stack);
 	
-	utils::file::save(file + ".gscasm", disassembler.output_asm());
+	utils::file::save(file + ".gscasm", disassembler.output_data());
 }
 
 void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::string file)
@@ -71,16 +77,19 @@ void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::strin
 		file.replace(extpos, ext.length(), "");
 	}
 
-	auto scriptfile = utils::file::read(file + ".gsc");
+	auto source = utils::file::read(file + ".gsc");
 
-	compiler.compile(scriptfile);
+	compiler.compile(source);
 
-	// auto output = compiler.output();
+	auto output = compiler.output();
 
-	// assembler.assemble(output);
+	assembler.assemble(output);
 
-	// utils::file::save(file + ".cgsc", assembler.output_script());
-	// utils::file::save(file + ".cgsc.stack", assembler.output_stack());
+	if (overwrite_prompt(file + ".cgsc"))
+	{
+		utils::file::save(file + ".cgsc", assembler.output_script());
+		utils::file::save(file + ".cgsc.stack", assembler.output_stack());
+	}
 }
 
 void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler, std::string file)
@@ -108,7 +117,11 @@ void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler
 
 	decompiler.decompile(output);
 
-	utils::file::save(file + ".gsc", decompiler.output());
+	if (overwrite_prompt(file + ".gsc"))
+	{
+		utils::file::save(file + ".gsc", decompiler.output());
+	}
+	
 }
 
 int parse_flags(int argc, char** argv, game& game, mode& mode)
@@ -167,7 +180,6 @@ int main(int argc, char** argv)
 	std::string file = argv[argc - 1];
 	mode mode = mode::__;
 	game game = game::__;
-	bool idaout = IDAOUT;
 
 	if (parse_flags(argc, argv, game, mode))
 	{
@@ -199,17 +211,17 @@ int main(int argc, char** argv)
 	{
 		if (game == game::IW5)
 		{
-			IW5::disassembler disassembler(idaout);
+			IW5::disassembler disassembler;
 			disassemble_file(disassembler, file);
 		}
 		else if (game == game::IW6)
 		{
-			IW6::disassembler disassembler(idaout);
+			IW6::disassembler disassembler;
 			disassemble_file(disassembler, file);
 		}
 		else if (game == game::SH1)
 		{
-			SH1::disassembler disassembler(idaout);
+			SH1::disassembler disassembler;
 			disassemble_file(disassembler, file);
 		}
 	}
@@ -238,19 +250,19 @@ int main(int argc, char** argv)
 	{
 		if (game == game::IW5)
 		{
-			IW5::disassembler disassembler(false);
+			IW5::disassembler disassembler;
 			IW5::decompiler decompiler;
 			decompile_file(disassembler, decompiler, file);
 		}
 		else if (game == game::IW6)
 		{
-			IW6::disassembler disassembler(false);
+			IW6::disassembler disassembler;
 			IW6::decompiler decompiler;
 			decompile_file(disassembler, decompiler, file);
 		}
 		if (game == game::SH1)
 		{
-			SH1::disassembler disassembler(false);
+			SH1::disassembler disassembler;
 			SH1::decompiler decompiler;
 			decompile_file(disassembler, decompiler, file);
 		}
