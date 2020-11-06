@@ -111,7 +111,7 @@ auto byte_buffer::print_bytes(std::size_t pos, std::size_t count) -> std::string
 {
 	std::string shit;
 	
-	for (int i = pos; i < pos + count; i++)
+	for (auto i = pos; i < pos + count; i++)
 	{
 		shit += utils::string::va("%s %02X", shit.data(), (*reinterpret_cast<std::uint8_t*>(data_.data() + i)));
 	}

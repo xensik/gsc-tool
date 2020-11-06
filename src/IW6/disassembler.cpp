@@ -58,7 +58,7 @@ void disassembler::disassemble(std::string& script, std::string& stack)
 		functions_.push_back(std::make_unique<gsc::function>());
 		auto& func = functions_.back();
 
-		func->index = script_->pos();
+		func->index = static_cast<std::uint32_t>(script_->pos());
 		func->size = stack_->read<std::uint32_t>();
 		func->id = stack_->read<std::uint16_t>();
 		func->name = "sub_"s + (func->id == 0 ? stack_->read_string() : resolver::token_name(func->id));
@@ -589,7 +589,7 @@ void disassembler::print_instruction(const gsc::instruction_ptr& inst)
 		{
 			std::uint32_t totalcase = std::stoul(inst->data[0]);
 			auto index = 0;
-			for (auto casenum = 0; casenum < totalcase; casenum++)
+			for (auto casenum = 0u; casenum < totalcase; casenum++)
 			{
 				this->print_opcodes(inst->index, 7);
 				if (inst->data[1 + index] == "case")

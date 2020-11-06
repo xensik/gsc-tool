@@ -105,7 +105,7 @@ void assembler::assemble(std::string& data)
 				{
 					if (utils::string::is_number(data[1]))
 					{
-						switchnum = std::stoul(data[1]);
+						switchnum = static_cast<std::uint16_t>(std::stoul(data[1]));
 						inst->size += 7 * switchnum;
 					}
 					else

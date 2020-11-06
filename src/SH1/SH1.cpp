@@ -8,7 +8,7 @@
 namespace SH1
 {
 
-auto opcode_size(opcode id) -> std::size_t
+auto opcode_size(opcode id) -> std::uint32_t
 {
 	switch (id)
 	{

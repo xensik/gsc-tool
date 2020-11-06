@@ -105,7 +105,7 @@ void assembler::assemble(std::string& data)
 				{
 					if (utils::string::is_number(data[1]))
 					{
-						switchnum = std::stoul(data[1]);
+						switchnum = static_cast<std::uint16_t>(std::stoul(data[1]));
 						inst->size += 7 * switchnum;
 					}
 					else
@@ -452,7 +452,7 @@ void assembler::assemble_far_call(const gsc::instruction_ptr& inst, bool thread)
 
 	if (thread)
 	{
-		script_->write<std::uint8_t>(std::stol(inst->data[1]));
+		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[1])));
 
 		file_id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : resolver::file_id(inst->data[2]);
 		func_id = inst->data[3].substr(0, 3) == "id#" ? std::stol(inst->data[3].substr(3)) : resolver::token_id(inst->data[3]);

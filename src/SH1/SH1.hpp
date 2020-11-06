@@ -176,7 +176,7 @@ enum class opcode : std::uint8_t
 	OP_Count = 0xB1,
 };
 
-auto opcode_size(opcode op) -> std::size_t;
+auto opcode_size(opcode op) -> std::uint32_t;
 
 } // namespace SH1
 
