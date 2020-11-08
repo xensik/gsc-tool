@@ -130,7 +130,7 @@ void assembler::assemble(std::string& data)
 	}
 
 	LOG_DEBUG("assembly file parse complete.");
-	LOG_DEBUG("%lu functions staged for assemble.", functions.size());
+	LOG_DEBUG("%zu functions staged for assemble.", functions.size());
 
 	this->assemble(functions);
 }
@@ -234,6 +234,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_CastBool:
 	case opcode::OP_BoolNot:
 	case opcode::OP_BoolComplement:
+	case opcode::OP_EvalLocalArrayRefCached0:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		break;
 	case opcode::OP_GetByte:
@@ -250,7 +251,6 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_RemoveLocalVariables:
 	case opcode::OP_EvalLocalVariableCached:
 	case opcode::OP_EvalLocalArrayCached:
-	case opcode::OP_EvalLocalArrayRefCached0:
 	case opcode::OP_EvalLocalArrayRefCached:
 	case opcode::OP_SafeCreateVariableFieldCached:
 	case opcode::OP_SafeSetVariableFieldCached:

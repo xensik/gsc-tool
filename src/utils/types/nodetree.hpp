@@ -101,11 +101,14 @@ enum class node_type
     // DECOMPILER
     asm_loc,
     asm_jump,
-    asm_jumpback,
-    asm_jump_on_true,
-    asm_jump_on_false,
-    asm_jump_on_true_expr,
-    asm_jump_on_false_expr,
+    asm_jump_back,
+    asm_jump_cond,
+    asm_jump_true_expr,
+    asm_jump_false_expr,
+    asm_switch,
+    asm_endswitch,
+    asm_prescriptcall,
+    asm_voidcodepos,
 };
 
 struct node;
@@ -197,6 +200,11 @@ struct node_animtree;
 struct node_using_animtree;
 struct node_include;
 struct node_script;
+struct node_asm_jump;
+struct node_asm_jump_back;
+struct node_asm_jump_cond;
+struct node_asm_jump_false_expr;
+struct node_asm_jump_true_expr;
 
 using node_ptr = std::unique_ptr<node>;
 using level_ptr = std::unique_ptr<node_level>;
@@ -287,6 +295,11 @@ using animtree_ptr = std::unique_ptr<node_animtree>;
 using using_animtree_ptr = std::unique_ptr<node_using_animtree>;
 using include_ptr = std::unique_ptr<node_include>;
 using script_ptr = std::unique_ptr<node_script>;
+using asm_jump_ptr = std::unique_ptr<node_asm_jump>;
+using asm_jump_back_ptr = std::unique_ptr<node_asm_jump_back>;
+using asm_jump_cond_ptr = std::unique_ptr<node_asm_jump_cond>;
+using asm_jump_false_expr_ptr = std::unique_ptr<node_asm_jump_false_expr>;
+using asm_jump_true_expr_ptr = std::unique_ptr<node_asm_jump_true_expr>;
 
 union expr_call_type_ptr
 {
@@ -1750,6 +1763,137 @@ struct node_script : public node
         }
 
         return data;
+    }
+};
+
+struct node_asm_loc : public node
+{
+    std::string value;
+
+    node_asm_loc(std::string value) : node(node_type::asm_loc), value(std::move(value)) {}
+
+    auto print() -> std::string override
+    {
+        return value + ":";
+    }
+};
+
+struct node_asm_jump : public node
+{
+    std::string value;
+
+    node_asm_jump(std::string value) : node(node_type::asm_jump), value(std::move(value)) {}
+
+    auto print() -> std::string override
+    {
+        return "jump " + value;
+    }
+};
+
+struct node_asm_jump_back : public node
+{
+    std::string value;
+
+    node_asm_jump_back(std::string value) : node(node_type::asm_jump_back), value(std::move(value)) {}
+
+    auto print() -> std::string override
+    {
+        return "jump_back " + value;
+    }
+};
+
+struct node_asm_jump_cond : public node
+{
+    std::string value;
+    expr_ptr expr;
+
+    node_asm_jump_cond(expr_ptr expr, std::string value)
+        : node(node_type::asm_jump_cond), expr(std::move(expr)), value(std::move(value)) {}
+
+    auto print() -> std::string override
+    {
+        return "jump_cond( " + expr.as_node->print() + " ) " + value;
+    }
+};
+
+struct node_asm_jump_true_expr : public node
+{
+    expr_ptr expr;
+    std::string value;
+
+    node_asm_jump_true_expr(expr_ptr expr, std::string value)
+        : node(node_type::asm_jump_true_expr), expr(std::move(expr)), value(std::move(value)) {}
+
+    auto print() -> std::string override
+    {
+        return "expr_true " + value;
+    }
+};
+
+struct node_asm_jump_false_expr : public node
+{
+    expr_ptr expr;
+    std::string value;
+
+    node_asm_jump_false_expr(expr_ptr expr, std::string value)
+        : node(node_type::asm_jump_false_expr), expr(std::move(expr)), value(std::move(value)) {}
+
+    auto print() -> std::string override
+    {
+        return "expr_false " + value;
+    }
+};
+
+struct node_asm_switch : public node
+{
+    expr_ptr expr;
+    std::string value;
+
+    node_asm_switch(expr_ptr expr, std::string value)
+        : node(node_type::asm_switch), expr(std::move(expr)), value(std::move(value)) {}
+
+    auto print() -> std::string override
+    {
+        return "switch( " + expr.as_node->print() + " ) " + value;
+    }
+};
+
+struct node_asm_endswitch : public node
+{
+    std::vector<std::string> data;
+    std::string count;
+
+    node_asm_endswitch(std::vector<std::string> data, std::string count)
+        : node(node_type::asm_endswitch), data(std::move(data)), count(std::move(count)) {}
+
+    auto print() -> std::string override
+    {
+        std::string p;
+        for(auto& d : data)
+        {
+            p+= " " + d;
+        }
+        return "endswitch( " + count + " ) " + p;
+    }
+};
+
+struct node_asm_prescriptcall : public node
+{
+    node_asm_prescriptcall() : node(node_type::asm_prescriptcall) {}
+
+    auto print() -> std::string override
+    {
+        return "prescriptcall";
+    }
+};
+
+struct node_asm_voidcodepos : public node
+{
+    node_asm_voidcodepos() : node(node_type::asm_voidcodepos) {}
+
+    auto print() -> std::string override
+    {
+        return "voidcodepos";
     }
 };
 

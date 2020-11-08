@@ -8,6 +8,18 @@
 namespace IW6
 {
 
+auto decompiler::output() -> std::string
+{
+	std::string output;
+
+	output.reserve(0x1000000);
+	output.append("// IW6 PC GSC\n");
+	output.append("// Decompiled by https://github.com/xensik/gsc-tool\n");
+	output.append(script_->print());
+
+	return output;
+}
+
 void decompiler::decompile(std::vector<gsc::function_ptr>& functions)
 {
 	script_ = std::make_unique<gsc::node_script>();
@@ -20,45 +32,19 @@ void decompiler::decompile(std::vector<gsc::function_ptr>& functions)
 		func_ = std::make_unique<gsc::node_thread>(std::move(name),std::move(params),std::move(block));
 
 		labels_ = func->labels;
-
+		params_ = 0;
+		local_vars_.clear();
+		expr_labels_.clear();
+		stack_ = std::stack<gsc::node_ptr>();
+		
 		this->decompile_function(func);
 
 		script_->threads.push_back(std::move(func_));
 	}
 }
 
-auto decompiler::output() -> std::string
-{
-	output_ = std::make_unique<utils::byte_buffer>(0x100000);
-
-	output_->write_string("// IW6 PC GSC\n");
-	output_->write_string("// Decompiled by https://github.com/xensik/gsc-tool\n");
-
-	/*for (auto& func : functions_)
-	{
-		this->print_function(func);
-	}*/
-
-	std::string output;
-
-	//output.resize(output_->pos());
-	//memcpy(output.data(), output_->buffer().data(), output.size());
-
-	return output;
-}
-
 void decompiler::decompile_function(const gsc::function_ptr& func)
 {
-	// return type
-	//func->is_void = true;
-
-	// parameter list
-	//func->params = 0;
-
-	// save last index for labels
-	//func->end = (*(func->instructions.end() - 1))->index;
-		
-	// process instructions to generate statements
 	this->decompile_statements(func);
 
 	// generate blocks (for, foreach, while, if, if/else, infinite for, switch)
@@ -69,9 +55,23 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 {
 	for (auto& inst : func->instructions)
 	{
-		LOG_INFO("%s", resolver::opcode_name(opcode(inst->opcode)).data());
+		const auto itr = func->labels.find(inst->index);
 
-		//insert labels
+		if (itr != func->labels.end())
+		{
+			auto node = std::make_unique<gsc::node_asm_loc>(itr->second);
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(node)));
+
+			for(auto& loc : expr_labels_)
+			{
+				if(loc == itr->second)
+				{
+					decompile_expr();
+					// erase loc in expr_labels
+					break;
+				}
+			}
+		}
 
 		switch (opcode(inst->opcode))
 		{
@@ -121,16 +121,18 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			stack_.push(std::move(node));
 		}
 		break;
-		/*case opcode::OP_GetAnimation: // TODO !!! 
+		case opcode::OP_GetAnimation: // TODO !!! 
 		{
-			
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "%_unsuported_get_animation_";
-
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_animref>("_unsuported_get_animation_");
+			stack_.push(std::move(node));
 		}
-		break;*/
+		break;
+		case opcode::OP_GetAnimTree:
+		{
+			// TODO
+			LOG_ERROR("missing handler 'OP_GetAnimTree'!");
+		}
+		break;
 		case opcode::OP_GetString:
 		{
 			auto node = std::make_unique<gsc::node_string>(inst->data[0]);
@@ -179,8 +181,33 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			stack_.push(std::move(node));
 		}
 		break;
-
-
+// FUNC REF
+		case opcode::OP_GetBuiltinFunction:
+		case opcode::OP_GetBuiltinMethod:
+		{
+			// TODO: as func_ref!!!!
+			LOG_ERROR("missing handler 'OP_GetBuiltin'!");
+			//auto node = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			//stack_.push(std::move(node));
+		}
+		break;
+		case opcode::OP_GetLocalFunction:
+		{
+			auto file = std::make_unique<gsc::node_filepath>("");
+			auto func = std::make_unique<gsc::node_identifier>(inst->data[0].substr(4));
+			auto stmt = std::make_unique<gsc::node_expr_function_ref>(std::move(file), std::move(func));
+			stack_.push(std::move(stmt));
+		}
+		break;
+		case opcode::OP_GetFarFunction:
+		{
+			auto file = std::make_unique<gsc::node_filepath>(inst->data[0]);
+			auto func = std::make_unique<gsc::node_identifier>(inst->data[1]);
+			auto stmt = std::make_unique<gsc::node_expr_function_ref>(std::move(file), std::move(func));
+			stack_.push(std::move(stmt));
+		};
+		break;
+//////
 		case opcode::OP_End:
 		{
 			if (&inst != &func->instructions.back())
@@ -199,22 +226,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		}
 		break;
 		
-		
-
-		case opcode::OP_GetBuiltinFunction:
-		case opcode::OP_GetBuiltinMethod:
-		{
-			auto node = std::make_unique<gsc::node_identifier>(inst->data[0]);
-			stack_.push(std::move(node));
-		}
-		break;
-
-		case opcode::OP_waittillFrameEnd:
-		{
-			auto stmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_waittillframeend>());
-			func_->block->stmts.push_back(std::move(stmt));
-		}
-		break;
 		case opcode::OP_CreateLocalVariable:
 		{
 			local_vars_.insert(local_vars_.begin(), "var_" + inst->data[0]);
@@ -262,7 +273,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			stack_.push(std::move(node));
 		}
 		break;
-		case opcode::OP_EvalLocalVariableCached: // need revision for IW6!!!!!!!!!!!!!!!
+		case opcode::OP_EvalLocalVariableCached:
 		{
 			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(std::stoul(inst->data[0])));
 			stack_.push(std::move(node));
@@ -270,74 +281,73 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_EvalLocalArrayCached:
 		{
-			/*auto key = gsc::expr_ptr(std::move(stack_.top()));
+			auto key = gsc::expr_ptr(std::move(stack_.top()));
 			stack_.pop();
 			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_identifier>(local_vars_.at(std::stoul(inst->data[0]))));
 			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
-			stack_.push(std::move(node));*/
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_EvalArray:
 		{
-			/*auto obj = std::move(stack_.top());
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
 			stack_.pop();
-			auto key = std::move(stack_.top());
+			auto key = gsc::expr_ptr(std::move(stack_.top()));
 			stack_.pop();
 			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
-			stack_.push(std::move(node));*/
+			stack_.push(std::move(node));
 		}
 		break;
-		case opcode::OP_EvalNewLocalArrayRefCached0: // IW6 have the index after instruction (array)
+		case opcode::OP_EvalNewLocalArrayRefCached0: // creat a local array and initialize
 		{
-			/*local_vars_.insert(local_vars_.begin(), "var_" + inst->data[0]);// need to check if this insert at variable_stack begin
-			auto key = std::move(stack_.top());
+			local_vars_.insert(local_vars_.begin(), "var_" + inst->data[0]);
+			auto key = gsc::expr_ptr(std::move(stack_.top()));
 			stack_.pop();
-			auto obj = std::make_unique<gsc::node_identifier>(local_vars_.at(0));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_identifier>(local_vars_.at(0)));
 			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
-			stack_.push(std::move(node));*/
+			stack_.push(std::move(node));
 		}
 		break;
-		case opcode::OP_EvalLocalArrayRefCached0:
+		case opcode::OP_EvalLocalArrayRefCached0: // get last created local array ref
 		{
-			/*local_vars_.insert(local_vars_.begin(), "var_" + inst->data[0]);
-			auto key = std::move(stack_.top());
+			auto key = gsc::expr_ptr(std::move(stack_.top()));
 			stack_.pop();
-			auto obj = std::make_unique<gsc::node_identifier>(local_vars_.at(0));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_identifier>(local_vars_.at(0)));
 			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
-			stack_.push(std::move(node));*/	
+			stack_.push(std::move(node));	
 		}
 		break;
-		case opcode::OP_EvalLocalArrayRefCached:
+		case opcode::OP_EvalLocalArrayRefCached: // get local array ref
 		{
-			/*auto key = std::move(stack_.top());
+			auto key = gsc::expr_ptr(std::move(stack_.top()));
 			stack_.pop();
-			auto obj = std::make_unique<gsc::node_identifier>(local_vars_.at(std::stoul(inst->data[0])));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_identifier>(local_vars_.at(std::stoul(inst->data[0]))));
 			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
-			stack_.push(std::move(node));*/
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_EvalArrayRef:
 		{
-			/*auto obj = std::move(stack_.top());
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
 			stack_.pop();
-			auto key = std::move(stack_.top());
+			auto key = gsc::expr_ptr(std::move(stack_.top()));
 			stack_.pop();
 			auto node = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
-			stack_.push(std::move(node));*/
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_ClearArray:
 		{
-			/*auto obj = std::move(stack_.top());
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
 			stack_.pop();
-			auto key = std::move(stack_.top());
+			auto key = gsc::expr_ptr(std::move(stack_.top()));
 			stack_.pop();
 
-			auto lvalue = std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key));
-			auto rvalue = std::make_unique<gsc::node_undefined>();
+			auto lvalue = gsc::expr_ptr(std::make_unique<gsc::node_expr_array>(std::move(obj), std::move(key)));
+			auto rvalue = gsc::expr_ptr(std::make_unique<gsc::node_undefined>());
 			auto expr = std::make_unique<gsc::node_expr_assign_equal>(std::move(lvalue), std::move(rvalue));
 			auto stmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_assign>(std::move(expr)));
-			func_->block->stmts.push_back(std::move(stmt));*/
+			func_->block->stmts.push_back(std::move(stmt));
 		}
 		break;
 		case opcode::OP_AddArray:
@@ -365,48 +375,49 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			}
 		}
 		break;
+// CALLS
 		case opcode::OP_PreScriptCall:
 		{
-			auto node = std::make_unique<gsc::node_identifier>("pre_script_call");
+			auto node = std::make_unique<gsc::node_asm_prescriptcall>();
 			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_ScriptLocalFunctionCall2:
 		{
-			/*auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto args = std::make_unique<gsc::node_expr_arguments>();
 			auto name = std::make_unique<gsc::node_identifier>(inst->data[0].substr(4));
 			auto file = std::make_unique<gsc::node_filepath>("");
-			auto func = std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args));
-			auto obj = std::make_unique<gsc::node>();
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
 			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
-			stack_.push(std::move(expr));*/
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptLocalFunctionCall:
 		{
-			/*auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto args = std::make_unique<gsc::node_expr_arguments>();
 			auto name = std::make_unique<gsc::node_identifier>(inst->data[0].substr(4));
 			auto file = std::make_unique<gsc::node_filepath>("");
 
 			auto var = std::move(stack_.top());
 			stack_.pop();
 
-			while(var->type != gsc::node_type::identifier && (*(gsc::identifier_ptr*)&var)->value != "pre_script_call")
+			while(var->type != gsc::node_type::asm_prescriptcall)
 			{
 				args->list.push_back(std::move(var));
 				var = std::move(stack_.top());
 				stack_.pop();
 			}
 
-			auto func = std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args));
-			auto obj = std::make_unique<gsc::node>();
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
 			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
-			stack_.push(std::move(expr));*/
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptLocalMethodCall:
 		{
-			/*auto obj = std::move(stack_.top());
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
 			stack_.pop();
 
 			auto args = std::make_unique<gsc::node_expr_arguments>();
@@ -416,149 +427,182 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			auto var = std::move(stack_.top());
 			stack_.pop();
 
-			while(var->type != gsc::node_type::identifier && (*(gsc::identifier_ptr*)&var)->value != "pre_script_call")
+			while(var->type != gsc::node_type::asm_prescriptcall)
 			{
 				args->list.push_back(std::move(var));
 				var = std::move(stack_.top());
 				stack_.pop();
 			}
 
-			auto func = std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args));
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
 			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
-			stack_.push(std::move(expr));*/
+			stack_.push(std::move(expr));
 		}
 		break;
-		/*case opcode::OP_ScriptLocalThreadCall:
+		case opcode::OP_ScriptLocalThreadCall:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "self thread " + inst->data[0].substr(4) + "(";
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0].substr(4));
+			auto file = std::make_unique<gsc::node_filepath>("");
 
 			auto argnum = std::stoul(inst->data[1]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				auto stmt2 = func->stack.top();
-				func->stack.pop();
-				stmt->index = stmt2->index;
-				stmt->data += " " + stmt2->data;
-				i != 1 ? stmt->data += "," : stmt->data += " ";
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
 			}
 
-			stmt->data += ")";
-			func->stack.push(stmt);
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto expr = std::make_unique<gsc::node_expr_call>(true, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptLocalChildThreadCall:
 		{
 			// TODO. take a look at all child things
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "self thread " + inst->data[0].substr(4) + "(";
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0].substr(4));
+			auto file = std::make_unique<gsc::node_filepath>("");
 
 			auto argnum = std::stoul(inst->data[1]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				auto stmt2 = func->stack.top();
-				func->stack.pop();
-				stmt->index = stmt2->index;
-				stmt->data += " " + stmt2->data;
-				i != 1 ? stmt->data += "," : stmt->data += " ";
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
 			}
 
-			stmt->data += ")";
-			func->stack.push(stmt);
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto expr = std::make_unique<gsc::node_expr_call>(true, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptLocalMethodThreadCall:
 		{
-			auto stmt = func->stack.top();
-			auto data = stmt->data + " thread " + inst->data[0].substr(4) + "(";
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0].substr(4));
+			auto file = std::make_unique<gsc::node_filepath>("");
 
 			auto argnum = std::stoul(inst->data[1]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack.pop();
-				stmt = func->stack.top();
-				data += " " + stmt->data;
-				i != 1 ? data += "," : data += " ";
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
 			}
 
-			stmt->data = data + ")";
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(true, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptLocalMethodChildThreadCall:
 		{
-			// TODO
-			LOG_ERROR("missing handler 'OP_ScriptLocalMethodChildThreadCall'!");
+			// TODO: child things...
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0].substr(4));
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			auto argnum = std::stoul(inst->data[1]);
+
+			for (size_t i = argnum; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(true, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptFarFunctionCall2:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = utils::string::va("%s::%s()", inst->data[0].data(), inst->data[1].data());
-			func->stack.push(stmt);
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[1]);
+			auto file = std::make_unique<gsc::node_filepath>(inst->data[0]);
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptFarFunctionCall:
 		{
-			std::string params = utils::string::va("%s::%s( ", inst->data[0].data(), inst->data[1].data());
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[1]);
+			auto file = std::make_unique<gsc::node_filepath>(inst->data[0]);
 
-			auto stmt = func->stack.top();
+			auto var = std::move(stack_.top());
+			stack_.pop();
 
-			while (stmt->data != "pre_script_call")
+			while(var->type != gsc::node_type::asm_prescriptcall)
 			{
-				params += stmt->data + ", ";
-				func->stack.pop();
-				stmt = func->stack.top(); // swap pointers
+				args->list.push_back(std::move(var));
+				var = std::move(stack_.top());
+				stack_.pop();
 			}
 
-			params.erase(params.end() - 2, params.end()); // TODO: FIX THIS, SHOULD ONLY BE CALLED IF PARAMS > 0
-			params.append(" )");
-			stmt->data = params;
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptFarMethodCall:
 		{
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			std::string params = stmt->data + " " + inst->data[0] + "::" + inst->data[1] + "(";
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
 
-			stmt = func->stack.top();
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[1]);
+			auto file = std::make_unique<gsc::node_filepath>(inst->data[0]);
 
-			while (stmt->data != "pre_script_call")
+			auto var = std::move(stack_.top());
+			stack_.pop();
+
+			while(var->type != gsc::node_type::asm_prescriptcall)
 			{
-				params.append(" " + stmt->data);
-				func->stack.pop();
-				stmt = func->stack.top();
-				stmt->data != "pre_script_call" ? params.append(",") : params.append(" ");
+				args->list.push_back(std::move(var));
+				var = std::move(stack_.top());
+				stack_.pop();
 			}
-			params.append(")");
-			stmt->data = params;
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptFarThreadCall:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			std::string data = "thread " + inst->data[1] + "::" + inst->data[2] + "(";
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[2]);
+			auto file = std::make_unique<gsc::node_filepath>(inst->data[1]);
 
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
-			{	
-				stmt = func->stack.top();
-				func->stack.pop();
-				data += " " + stmt->data;
-				i != 1 ? data += "," : data += " ";
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
 			}
 
-			data += ")";
-			stmt->data = data;
-			func->stack.push(stmt);
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto expr = std::make_unique<gsc::node_expr_call>(true, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptFarChildThreadCall:
@@ -569,21 +613,24 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_ScriptFarMethodThreadCall:
 		{
-			auto stmt = func->stack.top(); // caller
-			std::string data = stmt->data + " thread " + inst->data[1] + "::" + inst->data[2] + "(";
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[2]);
+			auto file = std::make_unique<gsc::node_filepath>(inst->data[1]);
 
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack.pop();
-				stmt = func->stack.top();
-				data += " " + stmt->data;
-				i != 1 ? data += "," : data += " ";
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
 			}
 
-			data += ")";
-			stmt->data = data;
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(true, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptFarMethodChildThreadCall:
@@ -594,93 +641,92 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_ScriptFunctionCallPointer:
 		{
-			std::string params;
-			auto stmt = func->stack.top();
-			params = utils::string::va("[[ %s ]](", stmt->data.data());
-			func->stack.pop();
-			stmt = func->stack.top();
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto exprf = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
 
-			auto count = 0;
-			while (stmt->data != "pre_script_call")
+			auto var = std::move(stack_.top());
+			stack_.pop();
+
+			while(var->type != gsc::node_type::asm_prescriptcall)
 			{
-				params += stmt->data + ", ";
-				func->stack.pop();
-				stmt = func->stack.top(); // swap pointers
-				count++;
+				args->list.push_back(std::move(var));
+				var = std::move(stack_.top());
+				stack_.pop();
 			}
-			if (count)
-			{
-				params.erase(params.end() - 2, params.end());
-			}
-			params.append(" )");
-			stmt->data = params;
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(std::move(exprf), std::move(args)));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptMethodCallPointer:
-		{
-			auto stmt = func->stack.top(); // pointer
-			func->stack.pop();
-			std::string data = "[[ " + stmt->data + " ]](";
-				
-			stmt = func->stack.top(); // caller
-			func->stack.pop();
-			data = stmt->data + " " + data;
+		{		
+			auto exprf = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
 
-			stmt = func->stack.top(); // params
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
 
-			while (stmt->data != "pre_script_call")
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto var = std::move(stack_.top());
+			stack_.pop();
+
+			while(var->type != gsc::node_type::asm_prescriptcall)
 			{
-				data += " " + stmt->data;
-				func->stack.pop();
-				stmt = func->stack.top();
-				stmt->data != "pre_script_call" ? data += "," : data += " ";
+				args->list.push_back(std::move(var));
+				var = std::move(stack_.top());
+				stack_.pop();
 			}
-	
-			data += ")";
-			stmt->data = data;
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(std::move(exprf), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptThreadCallPointer:
 		{
-			auto stmt = func->stack.top();
-				
-			std::string data = "thread [[ " + stmt->data + " ]](";
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto exprf = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
 
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack.pop();
-				stmt = func->stack.top();
-				data += " " + stmt->data;
-				i != 1 ? data += "," : data += " ";
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
 			}
 
-			data += ")";
-			stmt->data = data;
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(std::move(exprf), std::move(args)));
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto expr = std::make_unique<gsc::node_expr_call>(true, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptMethodThreadCallPointer:
 		{
-			auto stmt = func->stack.top(); // pointer
-			func->stack.pop();
-			std::string data = "thread [[ " + stmt->data + " ]](";
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto exprf = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
 
-			stmt = func->stack.top(); // caller
-			data = stmt->data + " " + data;
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
 
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack.pop();
-				stmt = func->stack.top();
-				data += " " + stmt->data;
-				i != 1 ? data += "," : data += " ";
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
 			}
 
-			data += ")";
-			stmt->data = data;
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(std::move(exprf), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(true, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_ScriptMethodChildThreadCallPointer:
@@ -691,7 +737,8 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_CallBuiltinPointer:
 		{
-			auto stmt = func->stack.top(); // pointer
+			LOG_ERROR("missing handler 'OP_CallBuiltinPointer'!");
+			/*auto stmt = func->stack.top(); // pointer
 
 			std::string data = "call [[ " + stmt->data + " ]](";
 
@@ -706,12 +753,13 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			}
 
 			data += ")";
-			stmt->data = data;
+			stmt->data = data;*/
 		}
 		break;
 		case opcode::OP_CallBuiltinMethodPointer:
 		{
-			auto stmt = func->stack.top(); // pointer
+			LOG_ERROR("missing handler 'OP_CallBuiltinMethodPointer'!");
+			/*auto stmt = func->stack.top(); // pointer
 			func->stack.pop();
 			std::string data = "call [[ " + stmt->data + " ]](";
 
@@ -729,116 +777,493 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			}
 
 			data += ")";
-			stmt->data = data;
+			stmt->data = data;*/
 		}
 		break;
-		
+		case opcode::OP_CallBuiltin0:
+		{
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltin1:
+		{
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
 
+			for (size_t i = 1; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+			
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltin2:
+		{
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			for (size_t i = 2; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+			
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltin3:
+		{
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			for (size_t i = 3; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+			
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltin4:
+		{
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			for (size_t i = 4; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+			
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltin5:
+		{
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			for (size_t i = 5; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+			
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltin:
+		{
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[1]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			auto argnum = std::stoul(inst->data[0]);
+
+			for (size_t i = argnum; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltinMethod0:
+		{
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltinMethod1:
+		{
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			for (size_t i = 1; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltinMethod2:
+		{
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			for (size_t i = 2; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltinMethod3:
+		{
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			for (size_t i = 3; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltinMethod4:
+		{
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			for (size_t i = 4; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltinMethod5:
+		{
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			for (size_t i = 5; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_CallBuiltinMethod:
+		{
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto name = std::make_unique<gsc::node_identifier>(inst->data[1]);
+			auto file = std::make_unique<gsc::node_filepath>("");
+
+			auto argnum = std::stoul(inst->data[0]);
+
+			for (size_t i = argnum; i > 0; i--)
+			{
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				args->list.push_back(std::move(var));
+			}
+
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(std::move(file), std::move(name), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_DecTop:
+		{
+			auto expr = std::move(stack_.top());
+			stack_.pop();
+			auto stmt = std::make_unique<gsc::node_stmt_call>(std::move(*(gsc::expr_call_ptr*)&expr));
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
+		}
+		break;
+// EXPR
 		case opcode::OP_inc:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "++";
-			func->stack.push(stmt);
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto expr = std::make_unique<gsc::node_expr_increment>(std::move(lvalue));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_dec:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "--";
-			func->stack.push(stmt);
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto expr = std::make_unique<gsc::node_expr_decrement>(std::move(lvalue));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_bit_or:
 		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s | %s", stmt1->data.data(), stmt2->data.data());
-		}
-		break;
-		case opcode::OP_JumpOnFalseExpr:
-		{
-			// TODO
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			stmt1->data = utils::string::va("cond_false_expr ( %s ) #%s", stmt1->data.data(), inst->data[0].data());
-			func->statements.push_back(stmt1);
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_bitwise_or>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_bit_ex_or:
 		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s ^ %s", stmt1->data.data(), stmt2->data.data());
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_bitwise_exor>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_bit_and:
 		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s & %s", stmt1->data.data(), stmt2->data.data());
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_bitwise_and>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_equality:
 		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s == %s", stmt1->data.data(), stmt2->data.data());
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_equality>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_inequality:
 		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s != %s", stmt1->data.data(), stmt2->data.data());
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_inequality>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_less:
 		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s < %s", stmt1->data.data(), stmt2->data.data());
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_less>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_greater:
 		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s > %s", stmt1->data.data(), stmt2->data.data());
-		}
-		break;
-		case opcode::OP_JumpOnTrueExpr:
-		{
-			// TODO
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			stmt1->data = utils::string::va("cond_true_expr ( %s ) #%s", stmt1->data.data(), inst->data[0].data());
-			func->statements.push_back(stmt1);
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_greater>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_less_equal:
 		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s <= %s", stmt1->data.data(), stmt2->data.data());
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_less_equal>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
 		}
 		break;
-		case opcode::OP_jumpback:
+		case opcode::OP_greater_equal:
 		{
-			// TODO
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = utils::string::va("cond_loop #%s", inst->data[0].data());
-			func->statements.push_back(stmt);
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_greater_equal>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_shift_left:
+		{
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_shift_left>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_shift_right:
+		{
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_shift_right>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_plus:
+		{
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_add>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_minus:
+		{
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_sub>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_multiply:
+		{
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_mult>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_divide:
+		{
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_div>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
+		}
+		break;
+		case opcode::OP_mod:
+		{
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_mod>(std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(expr));
+		}
+		break;
+
+// WAIT NOTIFY
+		case opcode::OP_wait:
+		{
+			auto expr = std::move(stack_.top());
+			stack_.pop();
+			auto stmt = std::make_unique<gsc::node_stmt_wait>(std::move(expr));
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
+		}
+		break;
+		case opcode::OP_waittillFrameEnd:
+		{
+			auto stmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_waittillframeend>());
+			func_->block->stmts.push_back(std::move(stmt));
 		}
 		break;
 		case opcode::OP_waittillmatch2:
@@ -849,299 +1274,201 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_waittill:
 		{
-			this->in_waittill_ = true;
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
 
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-
-			stmt1->data = utils::string::va("%s waittill( %s", stmt2->data.data(), stmt1->data.data());
-		}
-		break;
-		case opcode::OP_notify:
-		{
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			auto data = stmt1->data + " notify(" + stmt->data;
-
-			stmt = func->stack.top(); // params
-			func->stack.pop();
-
-			while (stmt->data != "voidcodepos")
-			{
-				data += ", " + stmt->data;
-				stmt = func->stack.top();
-				func->stack.pop();
-			}
-
-			data += " );";
-			stmt->data = data;
-			func->statements.push_back(stmt);
-		}
-		break;
-		case opcode::OP_endon:
-		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			stmt1->data = utils::string::va("%s endon(%s);", stmt2->data.data(), stmt1->data.data());
-			func->statements.push_back(stmt1);
-		}
-		break;
-		case opcode::OP_voidCodepos:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "voidcodepos";
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_switch:
-		{
-			// TODO
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			stmt->data = utils::string::va("switch ( %s ) #%s", stmt->data.data(), inst->data[0].data());
-			func->statements.push_back(stmt);
-		}
-		break;
-		case opcode::OP_endswitch:
-		{
-			// TODO
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = resolver::opcode_name(opcode(inst->opcode));
-			for (auto d : inst->data)
-			{
-				stmt->data.append(" " + d);
-			}
-			stmt->data.append(";");
-			func->statements.push_back(stmt);
-		}
-		break;
-		case opcode::OP_vector:
-		{
-			auto stmt3 = func->stack.top();
-			func->stack.pop();
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = "( " + stmt3->data + ", " + stmt2->data + ", " + stmt1->data + " )";
-		}
-		break;
-		case opcode::OP_JumpOnFalse:
-		{
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			stmt1->data = utils::string::va("cond ( %s ) #%s", stmt1->data.data(), inst->data[0].data());
-			func->statements.push_back(stmt1);
-
-			// dirty shit
-			if (func->labels.find(inst->index) != func->labels.end())
-			{
-				auto loc = func->labels.extract(inst->index);
-				loc.key() = stmt1->index;
-				func->labels.insert(std::move(loc));
-			}
-		}
-		break;
-		case opcode::OP_greater_equal:
-		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s >= %s", stmt1->data.data(), stmt2->data.data());
-		}
-		break;
-		case opcode::OP_shift_left:
-		{
-			// TODO
-			LOG_ERROR("missing handler 'OP_shift_left'!");
-		}
-		break;
-		case opcode::OP_shift_right:
-		{
-			// TODO
-			LOG_ERROR("missing handler 'OP_shift_right'!");
-		}
-		break;
-		case opcode::OP_plus:
-		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s + %s", stmt1->data.data(), stmt2->data.data());
-		}
-		break;
-		case opcode::OP_jump:
-		{
-			// TODO
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = utils::string::va("cond_no #%s;", inst->data[0].data());
-			func->statements.push_back(stmt);
-		}
-		break;
-		case opcode::OP_minus:
-		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s - %s", stmt1->data.data(), stmt2->data.data());
-		}
-		break;
-		case opcode::OP_multiply:
-		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s * %s", stmt1->data.data(), stmt2->data.data());
-		}
-		break;
-		case opcode::OP_divide:
-		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = utils::string::va("%s / %s", stmt1->data.data(), stmt2->data.data());
-		}
-		break;
-		case opcode::OP_mod:
-		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			stmt1->data = stmt1->data + " % " + stmt2->data;
-		}
-		break;
-		case opcode::OP_JumpOnTrue: // negate condition and replace with false: equals 'if (!epxr)'
-		{
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			stmt1->data = utils::string::va("cond ( !%s ) #%s", stmt1->data.data(), inst->data[0].data());
-			func->statements.push_back(stmt1);
-
-			// dirty shit
-			if (func->labels.find(inst->index) != func->labels.end())
-			{
-				auto loc = func->labels.extract(inst->index);
-				loc.key() = stmt1->index;
-				func->labels.insert(std::move(loc));
-			}
-		}
-		break;
-		case opcode::OP_size:
-		{
-			auto stmt = func->stack.top();
-			stmt->data = utils::string::va("%s.size", stmt->data.data());
+			auto nstr = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto stmt = std::make_unique<gsc::node_stmt_waittill>(std::move(obj) , std::move(nstr), std::move(args));
+			stack_.push(std::move(stmt));
 		}
 		break;
 		case opcode::OP_waittillmatch:
 		{
-			this->in_waittill_ = true;
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto stmt = std::make_unique<gsc::node_stmt_waittillmatch>(std::move(obj), std::move(lvalue), std::move(rvalue));
+			stack_.push(std::move(stmt));
+		}
+		break;
+		case opcode::OP_clearparams:
+		{
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			auto var = std::move(stack_.top());
+			stack_.pop();
 
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			auto stmt = func->stack.top();
-			stmt->data = stmt2->data + " waittillmatch( " + stmt1->data + ", " + stmt->data;
+			while(var->type != gsc::node_type::stmt_waittill && var->type != gsc::node_type::stmt_waittillmatch)
+			{
+				args->list.push_back(std::move(var));
+				var = std::move(stack_.top());
+				stack_.pop();
+			}
+
+			if(var->type == gsc::node_type::stmt_waittill)
+			{
+				(*(gsc::stmt_waittill_ptr*)&var)->args = std::move(args);
+			}
+
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(var)));
 		}
 		break;
-		case opcode::OP_GetLocalFunction:
+		case opcode::OP_checkclearparams:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = utils::string::va("::%s", inst->data[0].substr(4).data());
-			func->stack.push(stmt);
+			for (size_t i = 0; i < params_; i++)
+			{
+				local_vars_.at(i).append(utils::string::va("%i", params_ - 1 - i));
+				func_->params->list.insert(func_->params->list.begin(), std::make_unique<gsc::node_identifier>(local_vars_.at(i)));
+			}
 		}
 		break;
-		case opcode::OP_GetFarFunction:
+		case opcode::OP_notify:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = utils::string::va("%s::%s", inst->data[0].data(), inst->data[1].data());
-			func->stack.push(stmt);
-		};
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto nstr = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto args = std::make_unique<gsc::node_expr_arguments>();
+			
+			auto var = std::move(stack_.top());
+			stack_.pop();
+
+			while(var->type != gsc::node_type::asm_voidcodepos)
+			{
+				args->list.push_back(std::move(var));
+				var = std::move(stack_.top());
+				stack_.pop();
+			}
+
+			auto stmt = std::make_unique<gsc::node_stmt_notify>(std::move(obj) , std::move(nstr), std::move(args));
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
+		}
 		break;
-		
+		case opcode::OP_endon:
+		{
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto nstr = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto stmt = std::make_unique<gsc::node_stmt_endon>(std::move(obj) , std::move(nstr));
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
+		}
+		break;
+		case opcode::OP_voidCodepos:
+		{
+			auto node = std::make_unique<gsc::node_asm_voidcodepos>();
+			stack_.push(std::move(node));
+		}
+		break;
+/// 
+		case opcode::OP_vector:
+		{
+			auto x = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto y = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto z = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto expr = std::make_unique<gsc::node_expr_vector>(std::move(x), std::move(y),  std::move(z));
+			stack_.push(std::move(expr));
+		}
+		break;	
+		case opcode::OP_size:
+		{
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_size>(std::move(lvalue));
+			stack_.push(std::move(expr));
+		}
+		break;		
 		case opcode::OP_EvalLevelFieldVariable:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = utils::string::va("level.%s", inst->data[0].data());
-			func->stack.push(stmt);
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_level>());
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto stmt = std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field));
+			stack_.push(std::move(stmt));
 		}
 		break;
 		case opcode::OP_EvalAnimFieldVariable:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = utils::string::va("anim.%s", inst->data[0].data());
-			func->stack.push(stmt);
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_anim>());
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto stmt = std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field));
+			stack_.push(std::move(stmt));
 		}
 		break;
 		case opcode::OP_EvalSelfFieldVariable:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = utils::string::va("self.%s", inst->data[0].data());
-			func->stack.push(stmt);
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_self>());
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto stmt = std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field));
+			stack_.push(std::move(stmt));
 		}
 		break;
 		case opcode::OP_EvalFieldVariable:
 		{
-			auto stmt = func->stack.top();
-			stmt->data = utils::string::va("%s.%s", stmt->data.data(), inst->data[0].data());
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto stmt = std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field));
+			stack_.push(std::move(stmt));
 		}
 		break;
 		case opcode::OP_EvalLevelFieldVariableRef:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = utils::string::va("level.%s", inst->data[0].data());
-			func->stack.push(stmt);
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_level>());
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto stmt = std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field));
+			stack_.push(std::move(stmt));
 		}
 		break;
 		case opcode::OP_EvalAnimFieldVariableRef:
 		{
-			// TODO: check it!
-			LOG_ERROR("missing handler 'OP_EvalAnimFieldVariableRef'!");
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "anim." + inst->data[0];
-			func->stack.push(stmt);
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_anim>());
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto stmt = std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field));
+			stack_.push(std::move(stmt));
 		}
 		break;
 		case opcode::OP_EvalSelfFieldVariableRef:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = "self." + inst->data[0];
-			func->stack.push(stmt);
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_self>());
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto stmt = std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field));
+			stack_.push(std::move(stmt));
 		}
 		break;
 		case opcode::OP_EvalFieldVariableRef:
 		{
-			auto stmt = func->stack.top();
-			stmt->data = stmt->data + "." + inst->data[0];
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto stmt = std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field));
+			stack_.push(std::move(stmt));
 		}
 		break;
 		case opcode::OP_ClearFieldVariable:
 		{
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			stmt->data = utils::string::va("%s.%s = undefined;", stmt->data.data(), inst->data[0].data());
-			func->statements.push_back(stmt);
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto expr = gsc::expr_ptr(std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field)));
+			auto undef = gsc::expr_ptr(std::make_unique<gsc::node_undefined>());
+			auto e = std::make_unique<gsc::node_expr_assign_equal>(std::move(expr), std::move(undef));
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::make_unique<gsc::node_stmt_assign>(std::move(e))));
 		}
 		break;
 		case opcode::OP_SafeCreateVariableFieldCached:
 		{
-			func->params++;
-			func->local_vars.push_back("var");
+			params_++;
+			local_vars_.push_back("var");
 		}
 		break;
 		case opcode::OP_SafeSetVariableFieldCached0:
@@ -1158,44 +1485,14 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_SafeSetWaittillVariableFieldCached:
 		{
-			auto stmt = func->stack.top();
-			stmt->data += ", " + func->local_vars.at(std::stoul(inst->data[0]));
-		}
-		break;
-		case opcode::OP_GetAnimTree:
-		{
-			// TODO
-			LOG_ERROR("missing handler 'OP_GetAnimTree'!");
-		}
-		break;
-		case opcode::OP_clearparams:
-		{
-			if (this->in_waittill_)
-			{
-				this->in_waittill_ = false;
-			}
-
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-
-			stmt1->data = stmt1->data + " );";
-			func->statements.push_back(stmt1);
-		}
-		break;
-		case opcode::OP_checkclearparams:
-		{
-			for (size_t i = 0; i < func->params; i++)
-			{
-				func->local_vars.at(i).append(utils::string::va("%i", func->params - 1 - i));
-			}
+			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(std::stoul(inst->data[0])));
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_EvalLocalVariableRefCached0:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(0).data();
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(0));
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_EvalNewLocalVariableRefCached0:
@@ -1206,36 +1503,47 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_EvalLocalVariableRefCached:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(std::stoul(inst->data[0])).data();
-			func->stack.push(stmt);
+			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(std::stoul(inst->data[0])));
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_SetLevelFieldVariableField:
 		{
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			stmt1->data = utils::string::va("level.%s = %s;", inst->data[0].data(), stmt1->data.data());
-			func->statements.push_back(stmt1);
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_level>());
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto lvalue = gsc::expr_ptr(std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field)));
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto e = std::make_unique<gsc::node_expr_assign_equal>(std::move(lvalue), std::move(rvalue));
+			auto stmt = std::make_unique<gsc::node_stmt_assign>(std::move(e));
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
 		}
 		break;
 		case opcode::OP_SetVariableField:
 		{
-			auto stmt2 = func->stack.top();
-			func->stack.pop();
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			if (stmt2->data == "++" || stmt2->data == "--")
+			// TODO: increment decrament need check!!!
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			
+
+			if(lvalue.as_node->type == gsc::node_type::expr_increment)
 			{
-				stmt1->data = utils::string::va("%s%s;", stmt1->data.data(), stmt2->data.data());
+				auto stmt = std::make_unique<gsc::node_stmt_assign>(std::move(lvalue.as_increment));
+				func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
+			}
+			else if(lvalue.as_node->type == gsc::node_type::expr_decrement)
+			{
+				auto stmt = std::make_unique<gsc::node_stmt_assign>(std::move(lvalue.as_decrement));
+				func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
 			}
 			else
 			{
-				stmt1->data = utils::string::va("%s = %s;", stmt2->data.data(), stmt1->data.data());
+				auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+				stack_.pop();
+				auto e = std::make_unique<gsc::node_expr_assign_equal>(std::move(lvalue), std::move(rvalue));
+				auto stmt = std::make_unique<gsc::node_stmt_assign>(std::move(e));
+				func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
 			}
-				
-			func->statements.push_back(stmt1);
 		}
 		break;
 		case opcode::OP_ClearVariableField:
@@ -1246,363 +1554,227 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_SetAnimFieldVariableField:
 		{
-			// TODO
-			LOG_ERROR("missing handler 'OP_SetAnimFieldVariableField'!");
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_anim>());
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto lvalue = gsc::expr_ptr(std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field)));
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto e = std::make_unique<gsc::node_expr_assign_equal>(std::move(lvalue), std::move(rvalue));
+			auto stmt = std::make_unique<gsc::node_stmt_assign>(std::move(e));
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
 		}
 		break;
 		case opcode::OP_SetSelfFieldVariableField:
 		{
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			stmt1->data = utils::string::va("self.%s = %s;", inst->data[0].data(), stmt1->data.data());
-			func->statements.push_back(stmt1);
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node_self>());
+			auto field = std::make_unique<gsc::node_identifier>(inst->data[0]);
+			auto lvalue = gsc::expr_ptr(std::make_unique<gsc::node_expr_field>(std::move(obj), std::move(field)));
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto e = std::make_unique<gsc::node_expr_assign_equal>(std::move(lvalue), std::move(rvalue));
+			auto stmt = std::make_unique<gsc::node_stmt_assign>(std::move(e));
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
 		}
 		break;
 		case opcode::OP_SetLocalVariableFieldCached0:
 		{
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			stmt->data = func->local_vars.at(0) + " = " + stmt->data + ";";
-			func->statements.push_back(stmt);
+			auto lvalue = gsc::expr_ptr(std::make_unique<gsc::node_identifier>(local_vars_.at(0)));
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto e = std::make_unique<gsc::node_expr_assign_equal>(std::move(lvalue), std::move(rvalue));
+			auto stmt = std::make_unique<gsc::node_stmt_assign>(std::move(e));
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
 		}
 		break;
 		case opcode::OP_SetNewLocalVariableFieldCached0:
 		{
-			func->local_vars.insert(func->local_vars.begin(), "var_" + inst->data[0]);
+			local_vars_.insert(local_vars_.begin(), "var_" + inst->data[0]);
 
-			auto stmt1 = func->stack.top();
-			func->stack.pop();
-			stmt1->data = utils::string::va("%s = %s;", func->local_vars.at(0).data(), stmt1->data.data());
-			func->statements.push_back(stmt1);
+			auto lvalue = gsc::expr_ptr(std::make_unique<gsc::node_identifier>(local_vars_.at(0)));
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto e = std::make_unique<gsc::node_expr_assign_equal>(std::move(lvalue), std::move(rvalue));
+			auto stmt = std::make_unique<gsc::node_stmt_assign>(std::move(e));
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
 		}
 		break;
 		case opcode::OP_SetLocalVariableFieldCached:
 		{
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			stmt->data = func->local_vars.at(std::stoul(inst->data[0])) + " = " + stmt->data.data() + ";";
-			func->statements.push_back(stmt);
+			auto lvalue = gsc::expr_ptr(std::make_unique<gsc::node_identifier>(local_vars_.at(std::stoul(inst->data[0]))));
+			auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			auto e = std::make_unique<gsc::node_expr_assign_equal>(std::move(lvalue), std::move(rvalue));
+			auto stmt = std::make_unique<gsc::node_stmt_assign>(std::move(e));
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
 		}
 		break;
 		case opcode::OP_ClearLocalVariableFieldCached:
 		{
-			// TODO
-			// LOG_ERROR("missing handler 'OP_ClearLocalVariableFieldCached'!");
+			// TODO: used in for, foreach
+			//LOG_ERROR("missing handler 'OP_ClearLocalVariableFieldCached'!");
 
 			// seems like no needed!
 		}
 		break;
 		case opcode::OP_ClearLocalVariableFieldCached0:
 		{
-			// TODO
-			// LOG_ERROR("missing handler 'OP_ClearLocalVariableFieldCached0'!");
+			// TODO: used in for, foreach
+			//LOG_ERROR("missing handler 'OP_ClearLocalVariableFieldCached0'!");
 
 			// seems like no needed!
 		}
 		break;
-		case opcode::OP_CallBuiltin0:
+		case opcode::OP_EvalLocalVariableObjectCached:
 		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = inst->data[0] + "()";
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_CallBuiltin1:
-		{
-			auto stmt = func->stack.top();
-			stmt->data = inst->data[0] + "( " + stmt->data + " )";
-		}
-		break;
-		case opcode::OP_CallBuiltin2:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = inst->data[0] + "(";
-
-			for (size_t i = 2; i > 0; i--)
-			{
-				auto stmt2 = func->stack.top();
-				func->stack.pop();
-				stmt->index = stmt2->index;
-				stmt->data += " " + stmt2->data;
-				i != 1 ? stmt->data += "," : stmt->data += " ";
-			}
-
-			stmt->data += ")";
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_CallBuiltin3:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = inst->data[0] + "(";
-
-			for (size_t i = 3; i > 0; i--)
-			{
-				auto stmt2 = func->stack.top();
-				func->stack.pop();
-				stmt->index = stmt2->index;
-				stmt->data += " " + stmt2->data;
-				i != 1 ? stmt->data += "," : stmt->data += " ";
-			}
-
-			stmt->data += ")";
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_CallBuiltin4:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = inst->data[0] + "(";
-
-			for (size_t i = 4; i > 0; i--)
-			{
-				auto stmt2 = func->stack.top();
-				func->stack.pop();
-				stmt->index = stmt2->index;
-				stmt->data += " " + stmt2->data;
-				i != 1 ? stmt->data += "," : stmt->data += " ";
-			}
-
-			stmt->data += ")";
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_CallBuiltin5:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = inst->data[0] + "(";
-
-			for (size_t i = 5; i > 0; i--)
-			{
-				auto stmt2 = func->stack.top();
-				func->stack.pop();
-				stmt->index = stmt2->index;
-				stmt->data += " " + stmt2->data;
-				i != 1 ? stmt->data += "," : stmt->data += " ";
-			}
-
-			stmt->data += ")";
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_CallBuiltin:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = inst->data[1] + "(";
-
-			auto paracount = std::stoul(inst->data[0]);
-
-			for (size_t i = paracount; i > 0; i--)
-			{
-				auto stmt2 = func->stack.top();
-				func->stack.pop();
-				stmt->index = stmt2->index;
-				stmt->data += " " + stmt2->data;
-				i != 1 ? stmt->data += "," : stmt->data += " ";
-			}
-
-			stmt->data += ")";
-			func->stack.push(stmt);
-		}
-		break;
-		case opcode::OP_CallBuiltinMethod0:
-		{
-			auto stmt = func->stack.top();
-			stmt->data = utils::string::va("%s %s()", stmt->data.data(), inst->data[0].data());
-		}
-		break;
-		case opcode::OP_CallBuiltinMethod1:
-		{
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			auto stmt2 = func->stack.top();
-			stmt2->data = utils::string::va("%s %s( %s )", stmt->data.data(), inst->data[0].data(), stmt2->data.data());
-		}
-		break;
-		case opcode::OP_CallBuiltinMethod2:
-		{
-			auto stmt = func->stack.top();
-
-			std::string params = utils::string::va("%s %s( ", stmt->data.data(), inst->data[0].data());
-
-			for (size_t i = 0; i < 2; i++)
-			{
-				func->stack.pop();
-				stmt = func->stack.top();
-				params.append(stmt->data);
-				if (i != 1)
-				{
-					params.append(", ");
-				}
-			}
-
-			params.append(" )");
-			stmt->data = params.data();
-		}
-		break;
-		case opcode::OP_CallBuiltinMethod3:
-		{
-			auto stmt = func->stack.top();
-	
-			std::string params = utils::string::va("%s %s( ", stmt->data.data(), inst->data[0].data());
-				
-			for (size_t i = 0; i < 3; i++)
-			{
-				func->stack.pop();
-				stmt = func->stack.top();
-				params.append(stmt->data);
-				if (i != 2)
-				{
-					params.append(", ");
-				}
-			}
-
-			params.append(" )");
-			stmt->data = params.data();
-		}
-		break;
-		case opcode::OP_CallBuiltinMethod4:
-		{
-			auto stmt = func->stack.top();
-
-			std::string params = utils::string::va("%s %s( ", stmt->data.data(), inst->data[0].data());
-
-			for (size_t i = 0; i < 4; i++)
-			{
-				func->stack.pop();
-				stmt = func->stack.top();
-				params.append(stmt->data);
-				if (i != 3)
-				{
-					params.append(", ");
-				}
-			}
-
-			params.append(" )");
-			stmt->data = params.data();
-		}
-		break;
-		case opcode::OP_CallBuiltinMethod5:
-		{
-			auto stmt = func->stack.top();
-			std::string data = stmt->data + " " + inst->data[0] + "(";
-
-			for (size_t i = 0; i < 5; i++)
-			{
-				func->stack.pop();
-				stmt = func->stack.top();
-				data += " " + stmt->data;
-				i != 4 ? data += "," : data += " ";
-			}
-
-			data += ")";
-			stmt->data = data.data();
-		}
-		break;
-		case opcode::OP_CallBuiltinMethod:
-		{
-			auto stmt = func->stack.top(); // method caller, level self or var
-			func->stack.pop();
-
-			stmt->data = utils::string::va("%s %s( ", stmt->data.data(), inst->data[1].data());
-
-			auto paracount = std::stoul(inst->data[0]);
-			for (size_t i = 0; i < paracount; i++)
-			{
-				auto stmt2 = func->stack.top();
-				func->stack.pop();
-
-				stmt->data.append(stmt2->data + ", ");
-
-				if (i == paracount - 1)
-				{
-					stmt->index = stmt2->index;
-					stmt->data.erase(stmt->data.end() - 2);
-				}
-			}
-			stmt->data.append(" )");
-			func->stack.push(stmt);
-		}
-		break;
-		case  opcode::OP_wait:
-		{
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			stmt->data = "wait " + stmt->data + ";";
-			func->statements.push_back(stmt);
-		}
-		break;
-		case opcode::OP_DecTop:
-		{
-			auto stmt = func->stack.top();
-			func->stack.pop();
-			stmt->data = stmt->data + ";";
-			func->statements.push_back(stmt);
+			auto node = std::make_unique<gsc::node_identifier>(local_vars_.at(std::stoul(inst->data[0])));
+			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_CastFieldObject:
 		{
-			continue;
-		}
-		break;
-		case opcode::OP_EvalLocalVariableObjectCached:
-		{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = func->local_vars.at(std::stoul(inst->data[0]));
-			func->stack.push(stmt);
+			//continue;
 		}
 		break;
 		case  opcode::OP_CastBool:
 		{
-			continue;
+			//continue;
 		}
 		break;
 		case opcode::OP_BoolNot:
 		{
-			auto stmt = func->stack.top();
-			stmt->data = "!" + stmt->data;
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_not>(std::move(lvalue));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_BoolComplement:
 		{
-			// TODO
-			LOG_ERROR("missing handler 'OP_BoolComplement'!");
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_expr_complement>(std::move(lvalue));
+			stack_.push(std::move(expr));
 		}
-		break;*/
+		break;
+
+// SPECIAL SHIT
+		case opcode::OP_switch:
+		{
+			auto expr = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto sw = std::make_unique<gsc::node_asm_switch>(std::move(expr), inst->data[0]);
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(sw)));
+		}
+		break;
+		case opcode::OP_endswitch:
+		{
+			auto count = inst->data[0];
+			inst->data.erase(inst->data.begin());
+			auto data = inst->data;
+			auto end = std::make_unique<gsc::node_asm_endswitch>(data, inst->data[0]);
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(end)));
+		}
+		break;
+		case opcode::OP_jump:
+		{
+			auto expr = std::make_unique<gsc::node_asm_jump>(inst->data[0]);
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(expr)));
+
+		}
+		break;
+		case opcode::OP_jumpback:
+		{
+			auto expr = std::make_unique<gsc::node_asm_jump_back>(inst->data[0]);
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(expr)));
+		}
+		break;
+		case opcode::OP_JumpOnTrue:
+		{
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto e_not = gsc::expr_ptr(std::make_unique<gsc::node_expr_not>(std::move(lvalue)));
+			auto expr = std::make_unique<gsc::node_asm_jump_cond>(std::move(e_not), inst->data[0]);
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(expr)));
+		}
+		break;
+		case opcode::OP_JumpOnFalse:
+		{
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+	
+			auto expr = std::make_unique<gsc::node_asm_jump_cond>(std::move(lvalue), inst->data[0]);
+			func_->block->stmts.push_back(gsc::stmt_ptr(std::move(expr)));
+		}
+		break;
+		case opcode::OP_JumpOnTrueExpr:
+		{
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_asm_jump_true_expr>(std::move(lvalue), inst->data[0]);
+			stack_.push(std::move(expr));
+			expr_labels_.push_back(inst->data[0]);
+		}
+		break;
+		case opcode::OP_JumpOnFalseExpr:
+		{
+			auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+
+			auto expr = std::make_unique<gsc::node_asm_jump_false_expr>(std::move(lvalue), inst->data[0]);
+			stack_.push(std::move(expr));
+			expr_labels_.push_back(inst->data[0]);
+		}
+		break;
 		default:
-		/*{
-			auto stmt = std::make_shared<statement>();
-			stmt->index = inst->index;
-			stmt->data = resolver::opcode_name(opcode(inst->opcode));
-			for (auto d : inst->data)
-			{
-				stmt->data.append(" " + d);
-			}
-			stmt->data.append(";");
-			func->statements.push_back(stmt);
-		}*/
+			LOG_ERROR("unhandled opcode '%s'!", resolver::opcode_name(opcode(inst->opcode)).data());
 		break;
 		}
 	}
+}
+
+void decompiler::decompile_expr()
+{
+	auto expr = std::move(stack_.top());
+	stack_.pop();
+
+	auto jump_expr = std::move(stack_.top());
+	stack_.pop();
+
+	if(jump_expr->type == gsc::node_type::asm_jump_true_expr)
+	{
+		auto lvalue = std::move((*(gsc::asm_jump_true_expr_ptr*)&jump_expr)->expr);
+		auto rvalue = gsc::expr_ptr(std::move(expr));
+		auto e = std::make_unique<gsc::node_expr_or>(std::move(lvalue), std::move(rvalue));
+		stack_.push(std::move(e));
+	}
+	else if(jump_expr->type == gsc::node_type::asm_jump_false_expr)
+	{
+		auto lvalue = std::move((*(gsc::asm_jump_false_expr_ptr*)&jump_expr)->expr);
+		auto rvalue = gsc::expr_ptr(std::move(expr));
+		auto e = std::make_unique<gsc::node_expr_and>(std::move(lvalue), std::move(rvalue));
+		stack_.push(std::move(e));
+	}
+	else
+	{
+		LOG_ERROR("invalid jump expr decompile.");
+	}
+	
 }
 
 void decompiler::decompile_blocks()
 {
 	// TODO
 
-	// first parse and group conditions in a single statement
+	// parse single if, (no jump/jumpback)
 
-	// if ( x && y )    cond_false_expr + cond;
-	// if ( x || y )	cond_true_expr + cond;
+	// parse ifelse (jump)
 
-	// then parse easy blocks
+	// parse loop (jumpback)
 
 	// for ( ;; )			loop
 	// while (1)			loop
@@ -1610,20 +1782,7 @@ void decompiler::decompile_blocks()
 	// for ( x; y; z )		loop + pre assign + condition + post increment/decrement
 	// foreach ( x in y )	loop + pre getfirstarraykey + conditionisdef + assign + post getnextarraykey
 
-	// then parse if/ else if / else blocks
-
-}
-
-void decompiler::print_function()
-{
-}
-
-void decompiler::print_statement()
-{
-}
-
-void decompiler::print_label(const std::string& label)
-{
+	// parse switch
 }
 
 } // namespace IW6

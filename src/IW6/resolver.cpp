@@ -44,7 +44,7 @@ auto resolver::builtin_func_id(const std::string& name) -> std::uint16_t
 		return itr->second;
 	}
 
-	LOG_ERROR("Couldn't resolve builtin function id for name '%s'!", name.data());
+	LOG_DEBUG("Couldn't resolve builtin function id for name '%s'!", name.data());
 	return 0xFFFF;
 }
 
@@ -58,7 +58,7 @@ auto resolver::builtin_func_name(std::uint16_t id) -> std::string
 		}
 	}
 
-	LOG_ERROR("Couldn't resolve builtin function name for id '%i'!", id);
+	LOG_DEBUG("Couldn't resolve builtin function name for id '%i'!", id);
 	return utils::string::va("id#%i", id);
 }
 
@@ -71,7 +71,7 @@ auto resolver::builtin_method_id(const std::string& name) -> std::uint16_t
 		return itr->second;
 	}
 
-	LOG_ERROR("Couldn't resolve builtin method id for name '%s'!", name.data());
+	LOG_DEBUG("Couldn't resolve builtin method id for name '%s'!", name.data());
 	return 0xFFFF;
 }
 
@@ -84,7 +84,7 @@ auto resolver::builtin_method_name(std::uint16_t id) -> std::string
 			return field.first;
 		}
 	}
-	LOG_ERROR("Couldn't resolve builtin method name for id '%i'!", id);
+	LOG_DEBUG("Couldn't resolve builtin method name for id '%i'!", id);
 	return utils::string::va("id#%i", id);
 }
 
@@ -97,7 +97,7 @@ auto resolver::file_id(const std::string& name) -> std::uint16_t
 		return itr->second;
 	}
 
-	LOG_ERROR("Couldn't resolve file id for name '%s'!", name.data());
+	LOG_DEBUG("Couldn't resolve file id for name '%s'!", name.data());
 	return 0;
 }
 
@@ -111,7 +111,7 @@ auto resolver::file_name(std::uint16_t id) -> std::string
 		}
 	}
 
-	LOG_ERROR("Couldn't resolve file name for id '%i'!", id);
+	LOG_DEBUG("Couldn't resolve file name for id '%i'!", id);
 	return utils::string::va("id#%i", id);
 }
 
@@ -124,7 +124,7 @@ auto resolver::token_id(const std::string& name) -> std::uint16_t
 		return itr->second;
 	}
 
-	LOG_WARN("Couldn't resolve token id for name '%s'!", name.data());
+	LOG_DEBUG("Couldn't resolve token id for name '%s'!", name.data());
 	return 0;
 }
 
@@ -138,7 +138,7 @@ auto resolver::token_name(std::uint16_t id) -> std::string
 		}
 	}
 
-	LOG_WARN("Couldn't resolve token name for id '%i'!", id);
+	LOG_DEBUG("Couldn't resolve token name for id '%i'!", id);
 	return utils::string::va("id#%i", id);
 }
 
@@ -301,6 +301,8 @@ std::unordered_map<std::string, opcode> resolver::opcode_map
 std::unordered_map<std::string, std::uint16_t> resolver::builtin_function_map
 {
 	{ "setdvar", 50 },
+
+	{ "loadfx", 323 },
 };
 
 std::unordered_map<std::string, std::uint16_t> resolver::builtin_method_map
@@ -310,32 +312,33 @@ std::unordered_map<std::string, std::uint16_t> resolver::builtin_method_map
 
 std::unordered_map<std::string, std::uint16_t> resolver::file_map
 {
-	{"codescripts\\delete", 912 },
-	{"codescripts\\struct", 913 },
-	{"codescripts\\struct", 913 },
+	{ "codescripts\\delete", 912 },
+	{ "codescripts\\struct", 913 },
+	{ "codescripts\\struct", 913 },
 
 
-	{"__unk__mp_zebra", 1265 },
-	{"maps\\mp\\_compass", 1357 },
-	{"maps\\mp\\_load", 1373 },
+	{ "__unk__mp_zebra", 1265 },
+	{ "maps\\mp\\_compass", 1357 },
+	{ "maps\\mp\\_load", 1373 },
 
-	//{"_empty_", 1417 },
+	{ "maps\\mp\\mp_zebra_fx", 1416 },
+	{ "maps\\mp\\mp_zebra_precache", 1417 },
 
-	{"maps\\mp\\gametypes\\_rank", 1501 },
-	{"maps\\mp\\gametypes\\_serversettings", 1502 },
+	{ "maps\\mp\\gametypes\\_rank", 1501 },
+	{ "maps\\mp\\gametypes\\_serversettings", 1502 },
 
-	{"maps\\mp\\gametypes\\_teams", 1508 },
+	{ "maps\\mp\\gametypes\\_teams", 1508 },
 };
 
 std::unordered_map <std::string, std::uint16_t> resolver::token_map
 {
+	{ "_effect", 1644 },
 	{ "CreateStruct", 8482 },
 	{ "init", 17631 },
 	{ "main", 20445 },
 	{ "InitStructs", 18005 },
 
 	{ "setupMiniMap", 29184 },
-
 };
 
 } // namespace IW6

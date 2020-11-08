@@ -215,6 +215,7 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
 		inst->size = 1;
 		break;
 	case opcode::OP_SafeSetVariableFieldCached0:
+	case opcode::OP_EvalLocalArrayRefCached0:
 		inst->size = 1;
 		break;
 	case opcode::OP_EvalNewLocalArrayRefCached0:
@@ -222,7 +223,6 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_RemoveLocalVariables:
 	case opcode::OP_EvalLocalVariableCached:
 	case opcode::OP_EvalLocalArrayCached:
-	case opcode::OP_EvalLocalArrayRefCached0:
 	case opcode::OP_EvalLocalArrayRefCached:
 	case opcode::OP_SafeCreateVariableFieldCached:
 	case opcode::OP_SafeSetVariableFieldCached:

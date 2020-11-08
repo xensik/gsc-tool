@@ -74,6 +74,7 @@ auto opcode_size(opcode id) -> std::uint32_t
 	case opcode::OP_BoolComplement:
 	case opcode::OP_GetAnimObject:
 	case opcode::OP_GetLevelObject:
+	case opcode::OP_EvalLocalArrayRefCached0:
 		return 1;
 		break;
 	case opcode::OP_GetByte:
@@ -81,7 +82,6 @@ auto opcode_size(opcode id) -> std::uint32_t
 	case opcode::OP_RemoveLocalVariables:
 	case opcode::OP_EvalLocalVariableCached:
 	case opcode::OP_EvalLocalArrayCached:
-	case opcode::OP_EvalLocalArrayRefCached0:
 	case opcode::OP_EvalLocalArrayRefCached:
 	case opcode::OP_ScriptThreadCallPointer:
 	case opcode::OP_ScriptMethodThreadCallPointer:

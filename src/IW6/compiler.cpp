@@ -83,9 +83,9 @@ void compiler::compile_script(const gsc::script_ptr& script)
     }
 
     LOG_DEBUG("----------------------------------");
-    LOG_DEBUG("files included: %lu", includes_.size());
-    LOG_DEBUG("animtrees used: %lu", animtrees_.size());
-    LOG_DEBUG("functions compiled: %lu",assembly_.size());
+    LOG_DEBUG("files included: %zu", includes_.size());
+    LOG_DEBUG("animtrees used: %zu", animtrees_.size());
+    LOG_DEBUG("functions compiled: %zu",assembly_.size());
 }
 
 void compiler::emit_include(const gsc::include_ptr& include)
@@ -114,7 +114,7 @@ void compiler::emit_thread(const gsc::thread_ptr& func)
     emit_block(func->block);
     emit_instruction(opcode::OP_End);
 
-    LOG_DEBUG("function '%s' with %lu instructions.",function_->name.data(), function_->instructions.size());
+    LOG_DEBUG("function '%s' with %zu instructions.",function_->name.data(), function_->instructions.size());
 
     function_->size = index_ - function_->index;
     assembly_.push_back(std::move(function_));
@@ -544,11 +544,13 @@ void compiler::emit_expr_assign(const gsc::expr_assign_ptr& expr)
     {
         emit_expression(expr->lvalue);
         emit_instruction(opcode::OP_inc);
+        emit_instruction(opcode::OP_SetVariableField);
     }
     else if(expr->type == gsc::node_type::expr_decrement)
     {
         emit_expression(expr->lvalue);
         emit_instruction(opcode::OP_dec);
+        emit_instruction(opcode::OP_SetVariableField);
     }
     else if(expr->type == gsc::node_type::expr_assign_equal)
     {

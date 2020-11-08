@@ -8,7 +8,10 @@
 
 // Warnings
 #ifdef _WIN32
-#pragma warning( disable : 4244 67 )
+#pragma warning(disable:4244)
+#pragma warning(disable:4267)
+#pragma warning(disable:4005)
+#pragma warning(disable:4065)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
