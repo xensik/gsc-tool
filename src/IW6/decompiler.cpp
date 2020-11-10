@@ -14,7 +14,7 @@ auto decompiler::output() -> std::string
 
 	output.reserve(0x1000000);
 	output.append("// IW6 PC GSC\n");
-	output.append("// Decompiled by https://github.com/xensik/gsc-tool\n");
+	output.append("// Decompiled by https://github.com/xensik/gsc-tool\n\n");
 	output.append(script_->print());
 
 	return output;
@@ -47,8 +47,8 @@ void decompiler::decompile_function(const gsc::function_ptr& func)
 {
 	this->decompile_statements(func);
 
-	// generate blocks (for, foreach, while, if, if/else, infinite for, switch)
-	//this->decompile_blocks(func);
+	auto& block = func_->block;
+	this->decompile_block(block);
 }
 
 void decompiler::decompile_statements(const gsc::function_ptr& func)
@@ -121,9 +121,12 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			stack_.push(std::move(node));
 		}
 		break;
-		case opcode::OP_GetAnimation: // TODO !!! 
+		case opcode::OP_GetAnimation:
 		{
-			auto node = std::make_unique<gsc::node_animref>("_unsuported_get_animation_");
+			auto str_ = std::make_unique<gsc::node_string>(inst->data[0]);
+			auto anim = std::make_unique<gsc::node_using_animtree>(std::move(str_));
+			script_->animtrees.push_back(std::move(anim));
+			auto node = std::make_unique<gsc::node_animref>(inst->data[1].substr(1,inst->data[1].size()-2));
 			stack_.push(std::move(node));
 		}
 		break;
@@ -1766,13 +1769,44 @@ void decompiler::decompile_expr()
 	
 }
 
-void decompiler::decompile_blocks()
+void decompiler::decompile_block(const gsc::block_ptr& block)
 {
+	// check first for empty loops!
+
+	auto index = 0;
+	while(index < block->stmts.size())
+	{
+		auto& stmt = block->stmts.at(index);
+
+		// switch should be first, then loop (jump_back)
+		// preventing break, continue missing
+
+		if(stmt.as_node->type == gsc::node_type::asm_jump_cond)
+		{
+			auto locidx = get_label_index(block, stmt.as_loc->value);
+
+			if(block->stmts.at(locidx-1).as_node->type == gsc::node_type::asm_jump_back)
+			{
+				// loop (while, for, foreach)
+			}
+			else if(block->stmts.at(locidx-1).as_node->type == gsc::node_type::asm_jump)
+			{
+				decompile_ifelse(block, index, locidx);
+			}
+			else if(block->stmts.at(locidx-1).as_node->type == gsc::node_type::stmt_return
+				&& block->stmts.at(locidx-1).as_return->expr.as_node->type == gsc::node_type::null)
+			{
+				decompile_last_ifelse(block, index, locidx);
+			}
+			else
+			{
+				decompile_if(block, index, locidx);
+			}
+		}
+
+		index++;
+	}
 	// TODO
-
-	// parse single if, (no jump/jumpback)
-
-	// parse ifelse (jump)
 
 	// parse loop (jumpback)
 
@@ -1783,6 +1817,145 @@ void decompiler::decompile_blocks()
 	// foreach ( x in y )	loop + pre getfirstarraykey + conditionisdef + assign + post getnextarraykey
 
 	// parse switch
+}
+
+void decompiler::decompile_if(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end)
+{
+	auto& stmt = block->stmts.at(begin);
+
+	auto expr = std::move(stmt.as_cond->expr);
+	block->stmts.erase(block->stmts.begin() + begin); // remove condition
+
+	// create a block struct and add label as break.
+
+	block->stmts.erase(block->stmts.begin() + end - 1); // remove the if label
+	
+	auto if_block = std::make_unique<gsc::node_block>();
+
+	for(auto i = begin; i < end - 1; i++)
+	{
+		if_block->stmts.push_back(std::move(block->stmts[begin]));
+		block->stmts.erase(block->stmts.begin() + begin);
+	}
+
+	// recursive...
+	decompile_block(if_block);
+
+	auto ifstmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_if>(std::move(expr), std::move(if_block)));
+	block->stmts.insert(block->stmts.begin() + begin, std::move(ifstmt));
+}
+
+void decompiler::decompile_ifelse(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end)
+{
+	auto& stmt = block->stmts.at(begin);
+
+	auto expr = std::move(stmt.as_cond->expr);
+	block->stmts.erase(block->stmts.begin() + begin); // remove condition
+
+	// create a block struct and add label as break.
+
+	block->stmts.erase(block->stmts.begin() + end - 1); // remove the if label
+	
+	auto if_block = std::make_unique<gsc::node_block>();
+
+	for(auto i = begin; i < end - 2; i++) // skip the jump
+	{
+		if_block->stmts.push_back(std::move(block->stmts[begin]));
+		block->stmts.erase(block->stmts.begin() + begin);
+	}
+
+	// recursive...
+	decompile_block(if_block);
+
+	auto else_label = block->stmts.at(begin).as_jump->value;
+	block->stmts.erase(block->stmts.begin() + begin); // remove jump
+
+	auto else_labelidx = get_label_index(block, else_label);
+	block->stmts.erase(block->stmts.begin() + begin); // remove label
+
+	auto else_block = std::make_unique<gsc::node_block>();
+
+	for(auto i = begin; i <= else_labelidx; i++)
+	{
+		else_block->stmts.push_back(std::move(block->stmts[begin]));
+		block->stmts.erase(block->stmts.begin() + begin);
+	}
+
+	// recursive...
+	decompile_block(else_block);
+
+	auto ifelsestmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_ifelse>(std::move(expr), std::move(if_block), std::move(else_block)));
+	block->stmts.insert(block->stmts.begin() + begin, std::move(ifelsestmt));
+}
+
+void decompiler::decompile_last_ifelse(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end)
+{
+	auto& stmt = block->stmts.at(begin);
+
+	auto expr = std::move(stmt.as_cond->expr);
+	block->stmts.erase(block->stmts.begin() + begin); // remove condition
+
+	// create a block struct and add label as break.
+
+	block->stmts.erase(block->stmts.begin() + end - 1); // remove the if label
+	
+	auto if_block = std::make_unique<gsc::node_block>();
+
+	for(auto i = begin; i < end - 1; i++)
+	{
+		if_block->stmts.push_back(std::move(block->stmts[begin]));
+		block->stmts.erase(block->stmts.begin() + begin);
+	}
+
+	// recursive...
+	if_block->stmts.erase(if_block->stmts.begin() + if_block->stmts.size()-1); // remove retn;
+	decompile_block(if_block);
+
+
+	// check if there is an else block!!
+	if(begin == block->stmts.size())
+	{
+		LOG_DEBUG("NO ELSE BLOCK");
+
+		auto ifstmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_if>(std::move(expr), std::move(if_block)));
+		block->stmts.insert(block->stmts.begin() + begin, std::move(ifstmt));
+	}
+	else
+	{
+		auto else_block = std::make_unique<gsc::node_block>();
+
+		for(auto i = begin; i <= block->stmts.size(); i++)
+		{
+			else_block->stmts.push_back(std::move(block->stmts[begin]));
+			block->stmts.erase(block->stmts.begin() + begin);
+		}
+
+		// recursive...
+		else_block->stmts.erase(else_block->stmts.begin() + else_block->stmts.size()-1); // remove retn;
+		decompile_block(else_block);
+
+		auto ifelsestmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_ifelse>(std::move(expr), std::move(if_block), std::move(else_block)));
+		block->stmts.insert(block->stmts.begin() + begin, std::move(ifelsestmt));
+	}
+}
+
+auto decompiler::get_label_index(const gsc::block_ptr& block, const std::string& label) -> std::uint32_t
+{
+	auto index = 0;
+	for(auto& stmt : block->stmts)
+	{
+		if(stmt.as_node->type == gsc::node_type::asm_loc)
+		{
+			if(stmt.as_loc->value == label)
+			{
+				return index;
+			}
+		}
+
+		index++;
+	}
+
+	return 0;
 }
 
 } // namespace IW6

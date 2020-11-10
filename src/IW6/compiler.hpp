@@ -13,16 +13,16 @@ enum class opcode : std::uint8_t;
 
 class compiler : public gsc::compiler
 {
-	std::vector<gsc::function_ptr> 	assembly_; // assembley output
-	gsc::function_ptr 				function_;			// current assembly function
-	std::uint32_t 					index_;				// current assembly offset
-	std::vector<std::string> 		local_functions_;	// local call list
+	std::vector<gsc::function_ptr> 	assembly_;
+	gsc::function_ptr 				function_;
+	std::uint32_t 					index_;
+	std::vector<std::string> 		local_functions_;
 	std::vector<std::string> 		includes_;
 	std::vector<std::string> 		animtrees_;
-	std::vector<std::string> 		local_vars;		// local func variables
-	std::vector<std::string> 		param_vars;
-	std::uint32_t 					label_idx;
-	std::vector<gsc::block> 		blocks;
+	std::vector<std::string> 		local_vars_;
+	std::vector<std::string> 		param_vars_;
+	std::uint32_t 					label_idx_;
+	std::vector<gsc::block> 		blocks_;
 
 public:
 	auto output() -> std::vector<gsc::function_ptr>;
@@ -81,7 +81,7 @@ private:
 	void emit_field_variable(const gsc::expr_field_ptr& expr);
 	void emit_local_variable(const gsc::identifier_ptr& expr);
 	void emit_expr_vector(const gsc::expr_vector_ptr& expr);
-	// expr_add_array =>  array = [0, 1, 2];
+	void emit_expr_add_array(const gsc::expr_add_array_ptr& expr);
 	void emit_object(const gsc::expr_ptr& expr);
 	void emit_vector(const gsc::vector_ptr& vec);
 	void emit_float(const gsc::float_ptr& num);

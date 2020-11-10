@@ -448,6 +448,7 @@ namespace yy {
       // expr_field
       // expr_size
       // expr_vector
+      // expr_add_array
       // object
       // vector
       // num
@@ -824,24 +825,25 @@ namespace yy {
         S_expr_field = 130,                      // expr_field
         S_expr_size = 131,                       // expr_size
         S_expr_vector = 132,                     // expr_vector
-        S_object = 133,                          // object
-        S_vector = 134,                          // vector
-        S_num = 135,                             // num
-        S_false = 136,                           // false
-        S_true = 137,                            // true
-        S_data_float = 138,                      // data_float
-        S_data_integer = 139,                    // data_integer
-        S_data_localized_string = 140,           // data_localized_string
-        S_data_string = 141,                     // data_string
-        S_identifier = 142,                      // identifier
-        S_filepath = 143,                        // filepath
-        S_empty_array = 144,                     // empty_array
-        S_undefined = 145,                       // undefined
-        S_size = 146,                            // size
-        S_game = 147,                            // game
-        S_self = 148,                            // self
-        S_anim = 149,                            // anim
-        S_level = 150                            // level
+        S_expr_add_array = 133,                  // expr_add_array
+        S_object = 134,                          // object
+        S_vector = 135,                          // vector
+        S_num = 136,                             // num
+        S_false = 137,                           // false
+        S_true = 138,                            // true
+        S_data_float = 139,                      // data_float
+        S_data_integer = 140,                    // data_integer
+        S_data_localized_string = 141,           // data_localized_string
+        S_data_string = 142,                     // data_string
+        S_identifier = 143,                      // identifier
+        S_filepath = 144,                        // filepath
+        S_empty_array = 145,                     // empty_array
+        S_undefined = 146,                       // undefined
+        S_size = 147,                            // size
+        S_game = 148,                            // game
+        S_self = 149,                            // self
+        S_anim = 150,                            // anim
+        S_level = 151                            // level
       };
     };
 
@@ -937,6 +939,7 @@ namespace yy {
       case symbol_kind::S_expr_field: // expr_field
       case symbol_kind::S_expr_size: // expr_size
       case symbol_kind::S_expr_vector: // expr_vector
+      case symbol_kind::S_expr_add_array: // expr_add_array
       case symbol_kind::S_object: // object
       case symbol_kind::S_vector: // vector
       case symbol_kind::S_num: // num
@@ -1595,6 +1598,7 @@ switch (yykind)
       case symbol_kind::S_expr_field: // expr_field
       case symbol_kind::S_expr_size: // expr_size
       case symbol_kind::S_expr_vector: // expr_vector
+      case symbol_kind::S_expr_add_array: // expr_add_array
       case symbol_kind::S_object: // object
       case symbol_kind::S_vector: // vector
       case symbol_kind::S_num: // num
@@ -3508,8 +3512,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2289,     ///< Last index in yytable_.
-      yynnts_ = 65,  ///< Number of nonterminal symbols.
+      yylast_ = 2435,     ///< Last index in yytable_.
+      yynnts_ = 66,  ///< Number of nonterminal symbols.
       yyfinal_ = 16 ///< Termination state number.
     };
 
@@ -3596,6 +3600,7 @@ switch (yykind)
       case symbol_kind::S_expr_field: // expr_field
       case symbol_kind::S_expr_size: // expr_size
       case symbol_kind::S_expr_vector: // expr_vector
+      case symbol_kind::S_expr_add_array: // expr_add_array
       case symbol_kind::S_object: // object
       case symbol_kind::S_vector: // vector
       case symbol_kind::S_num: // num
@@ -3811,6 +3816,7 @@ switch (yykind)
       case symbol_kind::S_expr_field: // expr_field
       case symbol_kind::S_expr_size: // expr_size
       case symbol_kind::S_expr_vector: // expr_vector
+      case symbol_kind::S_expr_add_array: // expr_add_array
       case symbol_kind::S_object: // object
       case symbol_kind::S_vector: // vector
       case symbol_kind::S_num: // num
@@ -3997,7 +4003,7 @@ switch (yykind)
   }
 
 } // yy
-#line 4001 "./IW6/compiler_parser.hpp"
+#line 4007 "./IW6/compiler_parser.hpp"
 
 
 

@@ -298,26 +298,54 @@ std::unordered_map<std::string, opcode> resolver::opcode_map
 	{ "bool_complement", opcode::OP_BoolComplement },
 };
 
+
+
+
 std::unordered_map<std::string, std::uint16_t> resolver::builtin_function_map
 {
-	{ "setdvar", 50 },
+	{ "isDefined", 45 },
+	{ "setDvar", 50 },
+	{ "setDynamicDvar", 51 },
+	{ "setDvarIfUninitialized", 52 },
+	{ "setDvar", 53 },
+	{ "setDvarIfUninitialized", 54 },
+	{ "getDvar", 55 },
+
+	{ "isSubStr", 275 },
+	{ "isEndStr", 276 },
+	{ "getSubStr", 277 },
+	{ "toLower", 278 },
+	{ "strTok", 279 },
+	{ "strICmp", 280 },
 
 	{ "loadfx", 323 },
+	{ "spawnstruct", 396 },
 };
 
 std::unordered_map<std::string, std::uint16_t> resolver::builtin_method_map
 {
-
+	{ "delete", 32937 },
 };
 
 std::unordered_map<std::string, std::uint16_t> resolver::file_map
 {
+	{ "codescripts\\character", 911 },
 	{ "codescripts\\delete", 912 },
 	{ "codescripts\\struct", 913 },
-	{ "codescripts\\struct", 913 },
+	
+	{ "common_scripts\\_createfx", 916 },
+	{ "common_scripts\\_createfxmenu", 917 },
+
+	{ "common_scripts\\_destructible", 919 },
+	{ "common_scripts\\_dynamic_world", 920 },
+	{ "common_scripts\\_elevator", 921 },
+
+	{ "common_scripts\\_fx", 923 },
+
+	{ "common_scripts\\utility", 927 },
 
 
-	{ "__unk__mp_zebra", 1265 },
+	{ "maps\\createart\\mp_zebra_art", 1265 },
 	{ "maps\\mp\\_compass", 1357 },
 	{ "maps\\mp\\_load", 1373 },
 
@@ -339,6 +367,9 @@ std::unordered_map <std::string, std::uint16_t> resolver::token_map
 	{ "InitStructs", 18005 },
 
 	{ "setupMiniMap", 29184 },
+
+	{ "struct", 31988 },
+	
 };
 
 } // namespace IW6

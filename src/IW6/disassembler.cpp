@@ -92,25 +92,17 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
 {
 	switch (opcode(inst->opcode))
 	{
-	case opcode::OP_End:
-	case opcode::OP_Return:
 	case opcode::OP_GetUndefined:
-	case opcode::OP_GetZero:
-	case opcode::OP_waittillFrameEnd:
-	case opcode::OP_EvalArray:
-	case opcode::OP_EvalArrayRef:
-	case opcode::OP_ClearArray:
-	case opcode::OP_EmptyArray:
-	case opcode::OP_AddArray:
-	case opcode::OP_PreScriptCall:
-	case opcode::OP_GetLevelObject:
-	case opcode::OP_GetAnimObject:
-	case opcode::OP_GetSelf:
-	case opcode::OP_GetThisthread:
 	case opcode::OP_GetLevel:
+	case opcode::OP_GetSelf:
 	case opcode::OP_GetGame:
 	case opcode::OP_GetAnim:
 	case opcode::OP_GetGameRef:
+	case opcode::OP_GetThisthread:
+	case opcode::OP_GetLevelObject:
+	case opcode::OP_GetAnimObject:
+	case opcode::OP_GetSelfObject:
+	case opcode::OP_GetZero:
 	case opcode::OP_inc:
 	case opcode::OP_dec:
 	case opcode::OP_bit_or:
@@ -120,11 +112,6 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_inequality:
 	case opcode::OP_less:
 	case opcode::OP_greater:
-	case opcode::OP_waittill:
-	case opcode::OP_notify:
-	case opcode::OP_endon:
-	case opcode::OP_voidCodepos:
-	case opcode::OP_vector:
 	case opcode::OP_less_equal:
 	case opcode::OP_greater_equal:
 	case opcode::OP_shift_left:
@@ -134,21 +121,29 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_multiply:
 	case opcode::OP_divide:
 	case opcode::OP_mod:
-	case opcode::OP_size:
-	case opcode::OP_GetSelfObject:
-	case opcode::OP_clearparams:
-	case opcode::OP_checkclearparams:
-	case opcode::OP_EvalLocalVariableRefCached0:
-	case opcode::OP_EvalNewLocalVariableRefCached0:
-	case opcode::OP_CastBool:
 	case opcode::OP_BoolNot:
 	case opcode::OP_BoolComplement:
+	case opcode::OP_CastBool:
+	case opcode::OP_CastFieldObject:
+	case opcode::OP_vector:
+	case opcode::OP_size:
+	case opcode::OP_End:
+	case opcode::OP_Return:
+	case opcode::OP_waittill:
+	case opcode::OP_notify:
+	case opcode::OP_endon:
+	case opcode::OP_voidCodepos:
+	case opcode::OP_waittillFrameEnd:
+	case opcode::OP_PreScriptCall:
+	case opcode::OP_clearparams:
+	case opcode::OP_checkclearparams:
 	case opcode::OP_wait:
 	case opcode::OP_DecTop:
-	case opcode::OP_CastFieldObject:
-	case opcode::OP_ClearLocalVariableFieldCached0:
-	case opcode::OP_SetVariableField:
-	case opcode::OP_SetLocalVariableFieldCached0:
+	case opcode::OP_EvalArray:
+	case opcode::OP_EvalArrayRef:
+	case opcode::OP_ClearArray:
+	case opcode::OP_EmptyArray:
+	case opcode::OP_AddArray:
 		inst->size = 1;
 		break;
 	case opcode::OP_GetByte:
@@ -212,10 +207,13 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_EvalLocalVariableCached3:
 	case opcode::OP_EvalLocalVariableCached4:
 	case opcode::OP_EvalLocalVariableCached5:
-		inst->size = 1;
-		break;
-	case opcode::OP_SafeSetVariableFieldCached0:
+	case opcode::OP_EvalLocalVariableRefCached0:
+	case opcode::OP_EvalNewLocalVariableRefCached0:
 	case opcode::OP_EvalLocalArrayRefCached0:
+	case opcode::OP_SafeSetVariableFieldCached0:
+	case opcode::OP_SetLocalVariableFieldCached0:
+	case opcode::OP_ClearLocalVariableFieldCached0:
+	case opcode::OP_SetVariableField:
 		inst->size = 1;
 		break;
 	case opcode::OP_EvalNewLocalArrayRefCached0:

@@ -27,8 +27,13 @@ public:
 private:
 	void decompile_function(const gsc::function_ptr& func);
 	void decompile_statements(const gsc::function_ptr& func);
-	void decompile_blocks();
+	void decompile_block(const gsc::block_ptr& block);
 	void decompile_expr();
+
+	void decompile_if(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end);
+	void decompile_ifelse(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end);
+	void decompile_last_ifelse(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end);
+	auto get_label_index(const gsc::block_ptr& block, const std::string& label) -> std::uint32_t;
 };
 
 } // namespace IW6

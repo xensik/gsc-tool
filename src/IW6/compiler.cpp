@@ -27,7 +27,7 @@ auto compiler::parse_buffer(std::string& data) -> gsc::script_ptr
     yyscan_t scanner;
     gsc::script_ptr result(nullptr);
     
-    // Add the two NUL terminators, required by flex.   
+    // Add the two NULL terminators, required by flex.   
     data.append("\0\0", 2);
 
     if (yylex_init(&scanner))
@@ -59,8 +59,6 @@ auto compiler::parse_file(const std::string& file) -> gsc::script_ptr
 void compiler::compile_script(const gsc::script_ptr& script)
 {
     index_ = 1; // skip magic
-
-    printf("%s", script->print().data());
 
     for(const auto& thread : script->threads)
     {
@@ -105,8 +103,9 @@ void compiler::emit_thread(const gsc::thread_ptr& func)
 {
     function_ = std::make_unique<gsc::function>();
     function_->index = index_;
-    local_vars.clear();
-    param_vars.clear();
+    local_vars_.clear();
+    param_vars_.clear();
+    blocks_.clear();
 
     function_->name = func->name->value;
     
@@ -125,8 +124,8 @@ void compiler::emit_parameters(const gsc::parameters_ptr& params)
     for(auto& param : params->list)
     {
         auto& inst = emit_instruction(opcode::OP_SafeCreateVariableFieldCached);
-        inst->data.push_back(utils::string::va("%d", local_vars.size()));
-        local_vars.insert(local_vars.begin(), param->value);      
+        inst->data.push_back(utils::string::va("%d", local_vars_.size()));
+        local_vars_.insert(local_vars_.begin(), param->value);      
     }
 
     emit_instruction(opcode::OP_checkclearparams);
@@ -253,14 +252,14 @@ void compiler::emit_statement_waittill(const gsc::stmt_waittill_ptr& stmt)
     emit_expression(stmt->obj);
     emit_instruction(opcode::OP_waittill);
 
-    std::reverse(stmt->args->list.begin(), stmt->args->list.end());
+    std::reverse(stmt->args->list.begin(), stmt->args->list.end()); // needed?
     
     for(const auto& arg : stmt->args->list)
     {
         // TODO: move this code to create variable function, 
         // if this is inside a for loop, variable is created outside too. (create_local_variable 0)
-        local_vars.insert(local_vars.begin(), arg.as_identifier->value);
-        auto index = local_vars.size() - 1;
+        local_vars_.insert(local_vars_.begin(), arg.as_identifier->value);
+        auto index = local_vars_.size() - 1;
         auto& inst = emit_instruction(opcode::OP_SafeSetWaittillVariableFieldCached);
         inst->data.push_back(utils::string::va("%d", index));
     }
@@ -1187,7 +1186,7 @@ void compiler::emit_field_variable_ref(const gsc::expr_field_ptr&  expr, bool se
     else if(expr->obj.as_node->type == gsc::node_type::expr_array)
     {
         emit_array_variable_ref(expr->obj.as_array, false);
-        emit_instruction(opcode::OP_CastFieldObject);                       // TODO: ?????????
+        emit_instruction(opcode::OP_CastFieldObject);                  // TODO: ?????????
         auto& inst = emit_instruction(opcode::OP_EvalFieldVariableRef);
         inst->data.push_back(field);
         
@@ -1319,28 +1318,52 @@ void compiler::emit_expr_vector(const gsc::expr_vector_ptr& expr)
     emit_instruction(opcode::OP_vector);
 }
 
+void compiler::emit_expr_add_array(const gsc::expr_add_array_ptr& expr)
+{
+    if(expr->args->list.size() > 0)
+    {
+        emit_instruction(opcode::OP_EmptyArray);
+        for(auto& arg : expr->args->list)
+        {
+            emit_expression(arg);
+            emit_instruction(opcode::OP_AddArray);
+        }
+    }
+    else
+    {
+        LOG_ERROR("can't add empty array");
+    }
+}
+
 void compiler::emit_object(const gsc::expr_ptr& expr)
 {
     switch(expr.as_node->type)
     {
         case gsc::node_type::level:
             emit_instruction(opcode::OP_GetLevelObject);
-            break;
+        break;
         case gsc::node_type::anim:
             emit_instruction(opcode::OP_GetAnimObject);
-            break;
+        break;
         case gsc::node_type::self:
             emit_instruction(opcode::OP_GetSelfObject);
-            break;
+        break;
         case gsc::node_type::identifier:
         {
             auto index = get_local_var_index(expr.as_node);
             auto& inst = emit_instruction(opcode::OP_EvalLocalVariableObjectCached);
             inst->data.push_back(utils::string::va("%d", index));
         }
-            break;
-        default: // function result cast object ?
-            break;
+        break;
+        case gsc::node_type::expr_call:
+        {
+            emit_expr_call(expr.as_call);
+            emit_instruction(opcode::OP_CastFieldObject);
+        }
+        break;
+        default:
+            LOG_ERROR("emit object unkown type.");
+        break;
     }
 }
 
@@ -1439,7 +1462,7 @@ auto compiler::get_local_var_index(const gsc::node_ptr& var) -> std::uint8_t
     auto name = (*(gsc::identifier_ptr*)&var)->value;
     int i = 0;
 
-    for(const auto& var : local_vars)
+    for(const auto& var : local_vars_)
     {
         if(var == name) return i;
         i++;
@@ -1455,7 +1478,7 @@ auto compiler::is_parameter_var(const gsc::node_ptr& var) -> bool
     
     auto name = (*(gsc::identifier_ptr*)&var)->value;
     
-    for(const auto& var : param_vars)
+    for(const auto& var : param_vars_)
     {
         if(var == name)
             return true;
@@ -1468,7 +1491,7 @@ auto compiler::is_local_var(const gsc::identifier_ptr& var) -> bool
 {
     auto name = var->value;
 
-    for(const auto& var : local_vars)
+    for(const auto& var : local_vars_)
     {
         if(var == name)
             return true;
@@ -1522,15 +1545,15 @@ auto compiler::is_builtin_method(const gsc::identifier_ptr& func) -> bool
 
 auto compiler::create_label() -> std::string
 {
-    label_idx++;
-    auto name = utils::string::va("loc_%d", label_idx);
+    label_idx_++;
+    auto name = utils::string::va("loc_%d", label_idx_);
     return name;
 }
 
 auto compiler::insert_label() -> std::string
 {
-    label_idx++;
-    auto name = utils::string::va("loc_%d", label_idx);
+    label_idx_++;
+    auto name = utils::string::va("loc_%d", label_idx_);
     function_->labels.insert({index_, name});
     return name;
 }

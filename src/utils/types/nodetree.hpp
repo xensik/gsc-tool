@@ -200,6 +200,7 @@ struct node_animtree;
 struct node_using_animtree;
 struct node_include;
 struct node_script;
+struct node_asm_loc;
 struct node_asm_jump;
 struct node_asm_jump_back;
 struct node_asm_jump_cond;
@@ -295,6 +296,7 @@ using animtree_ptr = std::unique_ptr<node_animtree>;
 using using_animtree_ptr = std::unique_ptr<node_using_animtree>;
 using include_ptr = std::unique_ptr<node_include>;
 using script_ptr = std::unique_ptr<node_script>;
+using asm_loc_ptr = std::unique_ptr<node_asm_loc>;
 using asm_jump_ptr = std::unique_ptr<node_asm_jump>;
 using asm_jump_back_ptr = std::unique_ptr<node_asm_jump_back>;
 using asm_jump_cond_ptr = std::unique_ptr<node_asm_jump_cond>;
@@ -416,9 +418,21 @@ union stmt_ptr
     stmt_continue_ptr as_continue;
     stmt_return_ptr as_return;
 
+    asm_loc_ptr as_loc;
+    asm_jump_cond_ptr as_cond;
+    asm_jump_ptr as_jump;
+
     stmt_ptr() {}
     stmt_ptr(node_ptr val): as_node(std::move(val)) {}
+    stmt_ptr(const stmt_ptr &) = delete;
+    stmt_ptr & operator=(const stmt_ptr &) = delete;
+
     stmt_ptr (stmt_ptr && val) { new(&as_node) node_ptr(std::move(val.as_node)); }
+    stmt_ptr& operator=(stmt_ptr &&val )
+    {
+        new(&as_node) node_ptr(std::move(val.as_node));
+        return *(stmt_ptr*)&as_node;
+    }
     ~stmt_ptr(){}
 };
 

@@ -89,6 +89,7 @@
 %type <gsc::node_ptr> 					expr_field
 %type <gsc::node_ptr> 					expr_size
 %type <gsc::node_ptr> 					expr_vector
+%type <gsc::node_ptr> 					expr_add_array
 %type <gsc::node_ptr> 					object
 %type <gsc::node_ptr> 					vector       
 %type <gsc::node_ptr> 					num
@@ -409,6 +410,7 @@ expr_primitive
 	| expr_field						{ $$.as_node = std::move($1); }
 	| expr_size 						{ $$.as_node = std::move($1); }
 	| expr_vector						{ $$.as_node = std::move($1); }
+	| expr_add_array					{ $$.as_node = std::move($1); }
 	| vector							{ $$.as_node = std::move($1); }
 	| num 								{ $$.as_node = std::move($1); }
 	| data_localized_string				{ $$.as_node = std::move($1); }
@@ -482,6 +484,11 @@ expr_size
 expr_vector
 	: LPAREN expr COMMA expr COMMA expr RPAREN 
 		{ $$ = std::make_unique<gsc::node_expr_vector>(std::move($2), std::move($4), std::move($6)); }
+	;
+
+expr_add_array
+	: LBRACKET expr_arguments RBRACKET
+		{ $$ = std::make_unique<gsc::node_expr_add_array>(std::move($2)); }
 	;
 
 object
