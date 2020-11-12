@@ -31,9 +31,10 @@ private:
 	void decompile_expr();
 	void decompile_block(const gsc::block_ptr& block);
 	void decompile_nulls(const gsc::block_ptr& block);
-	void decompile_search_switch(const gsc::block_ptr& block);
 	void decompile_search_infinite(const gsc::block_ptr& block);
 	void decompile_search_loop(const gsc::block_ptr& block);
+	void decompile_search_switch(const gsc::block_ptr& block);
+	void decompile_search_ifelse(const gsc::block_ptr& block);
 	void decompile_break_continue(const gsc::block_ptr& block);
 	void decompile_if(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end);
 	void decompile_ifelse(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end);

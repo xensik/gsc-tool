@@ -62,7 +62,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 {
 	for (auto& inst : func->instructions)
 	{
-		LOG_INFO("inst %s", resolver::opcode_name(opcode(inst->opcode)).data());
 		auto location = utils::string::va("loc_%X", inst->index);
 
 		const auto itr = func->labels.find(inst->index);
@@ -1834,6 +1833,17 @@ void decompiler::decompile_expr()
 	
 }
 
+void decompiler::decompile_block(const gsc::block_ptr& block)
+{
+	// IW6: 1509.gsc crash due to removeLocalVariables
+	this->decompile_search_infinite(block);
+	this->decompile_search_loop(block);
+	this->decompile_search_switch(block);
+	this->decompile_search_ifelse(block);
+	this->decompile_break_continue(block);
+	this->decompile_nulls(block);
+}
+
 void decompiler::decompile_nulls(const gsc::block_ptr& block)
 {
 	auto index = 0;
@@ -1841,36 +1851,9 @@ void decompiler::decompile_nulls(const gsc::block_ptr& block)
 	{
 		if(block->stmts.at(index).as_node->type == gsc::node_type::null)
 		{
-			//auto loc = block->stmts.at(index).as_node->location;
-			//block->stmts.at(index+1).as_node->location = loc;
 			block->stmts.erase(block->stmts.begin() + index);
 		}
 		else index++;
-	}
-}
-
-void decompiler::decompile_block(const gsc::block_ptr& block)
-{
-	// IW6: 1509.gsc crash due to removeLocalVariables
-	this->decompile_search_switch(block);
-	this->decompile_search_infinite(block);
-	this->decompile_search_loop(block);
-	this->decompile_break_continue(block);
-	this->decompile_nulls(block);
-}
-
-void decompiler::decompile_search_switch(const gsc::block_ptr& block)
-{
-	auto index = 0;
-
-	while(index < block->stmts.size())
-	{
-		if(block->stmts.at(index).as_node->type == gsc::node_type::asm_switch)
-		{
-			decompile_switch(block, index);
-		}
-
-		index++;
 	}
 }
 
@@ -1906,7 +1889,7 @@ void decompiler::decompile_search_loop(const gsc::block_ptr& block)
 {
 	auto index = 0;
 
-	while(index < block->stmts.size()) // WHILE, FOR, FOREACH, IF, IFELSE
+	while(index < block->stmts.size())
 	{
 		auto& stmt = block->stmts.at(index);
 
@@ -1925,11 +1908,50 @@ void decompiler::decompile_search_loop(const gsc::block_ptr& block)
 			if(block->stmts.at(end).as_node->type == gsc::node_type::asm_jump_back
 				&& block->stmts.at(index).as_node->location == block->stmts.at(end).as_jump_back->value)
 			{
-				// loop (while, for, foreach)
 				decompile_loop(block, index, end);
 				index = 0;
 			}
-			else if(block->stmts.at(end).as_node->type == gsc::node_type::asm_jump)
+		}
+		index++;
+	}
+}
+
+void decompiler::decompile_search_switch(const gsc::block_ptr& block)
+{
+	auto index = 0;
+
+	while(index < block->stmts.size())
+	{
+		if(block->stmts.at(index).as_node->type == gsc::node_type::asm_switch)
+		{
+			decompile_switch(block, index);
+		}
+
+		index++;
+	}
+}
+
+void decompiler::decompile_search_ifelse(const gsc::block_ptr& block)
+{
+	auto index = 0;
+
+	while(index < block->stmts.size()) // WHILE, FOR, FOREACH, IF, IFELSE
+	{
+		auto& stmt = block->stmts.at(index);
+
+		if(stmt.as_node->type == gsc::node_type::asm_jump_cond)
+		{
+			std::uint32_t end;
+			if(stmt.as_cond->value == blocks_.back().loc_end)
+			{
+				end = block->stmts.size() - 1;
+			}
+			else
+			{
+				end = find_location_index(block, stmt.as_cond->value) - 1;
+			}
+			
+			if(block->stmts.at(end).as_node->type == gsc::node_type::asm_jump)
 			{
 				// if block is a loop check break, continue
 				if(block->stmts.at(end).as_jump->value == blocks_.back().loc_continue)
@@ -2326,7 +2348,6 @@ void decompiler::decompile_foreach(const gsc::block_ptr& block, std::uint32_t be
 void decompiler::decompile_switch(const gsc::block_ptr& block, std::uint32_t start)
 {
 	gsc::block ctx;
-	ctx.loc_break = blocks_.back().loc_break;
 	ctx.loc_continue = blocks_.back().loc_continue;
 
 	auto location = block->stmts.at(start).as_node->location;
