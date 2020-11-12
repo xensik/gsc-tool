@@ -298,9 +298,6 @@ std::unordered_map<std::string, opcode> resolver::opcode_map
 	{ "bool_complement", opcode::OP_BoolComplement },
 };
 
-
-
-
 std::unordered_map<std::string, std::uint16_t> resolver::builtin_function_map
 {
 	{ "isDefined", 45 },
@@ -319,7 +316,15 @@ std::unordered_map<std::string, std::uint16_t> resolver::builtin_function_map
 	{ "strICmp", 280 },
 
 	{ "loadfx", 323 },
+	{ "exitLevel", 352 },
+
+	{ "getEntArray", 393 },
+
 	{ "spawnstruct", 396 },
+
+	
+	{ "getnextarraykey", 422 },
+	{ "getfirstarraykey", 449 },
 };
 
 std::unordered_map<std::string, std::uint16_t> resolver::builtin_method_map
@@ -352,6 +357,12 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "maps\\mp\\mp_zebra_fx", 1416 },
 	{ "maps\\mp\\mp_zebra_precache", 1417 },
 
+	{ "maps\\mp\\gametypes\\_callbacksetup", 1467 },
+	{ "maps\\mp\\gametypes\\_damage", 1470 },
+	{ "maps\\mp\\gametypes\\_gamelogic", 1476 },
+	{ "maps\\mp\\gametypes\\_hostmigration", 1486 },
+
+	{ "maps\\mp\\gametypes\\_playerlogic", 1500 },
 	{ "maps\\mp\\gametypes\\_rank", 1501 },
 	{ "maps\\mp\\gametypes\\_serversettings", 1502 },
 
@@ -369,6 +380,53 @@ std::unordered_map <std::string, std::uint16_t> resolver::token_map
 	{ "setupMiniMap", 29184 },
 
 	{ "struct", 31988 },
+
+	{ "CodeCallback_StartGameType", 7654 },
+	{ "CodeCallback_PlayerConnect", 7648 },
+	{ "CodeCallback_PlayerDisconnect", 7650 },
+	{ "CodeCallback_PlayerDamage", 7649 },
+	{ "CodeCallback_PlayerKilled", 7651 },
+	{ "CodeCallback_VehicleDamage", 7655 },
+	{ "CodeCallback_CodeEndGame", 7645 },
+	{ "CodeCallback_PlayerLastStand", 7652 },
+	{ "CodeCallback_PlayerMigrated", 7653 },
+	{ "CodeCallback_HostMigration", 7646 },
+	{ "SetupDamageFlags", 29170 },
+	{ "SetupCallbacks", 29168 },
+	{ "SetDefaultCallbacks", 28693 },
+	{ "AbortLevel", 1983 },
+	{ "callbackVoid", 6492 },
+	{ "gametypestarted", 14087 },
+	{ "callbackStartGameType", 6491 },
+	{ "callbackPlayerConnect", 6484 },
+	{ "callbackPlayerDisconnect", 6486 },
+	{ "callbackPlayerDamage", 6485 },
+	{ "callbackPlayerKilled", 6487 },
+	{ "damageCallback", 8960 },
+	{ "callbackCodeEndGame", 6482 },
+	{ "callbackPlayerLastStand", 6488 },
+	{ "callbackPlayerMigrated", 6489 },
+	{ "callbackHostMigration", 6483 },
+	{ "Callback_StartGameType", 6480 },
+	{ "Callback_PlayerConnect", 6471 },
+	{ "Callback_PlayerDisconnect", 6474 },
+	{ "Callback_PlayerDamage", 6472 },
+	{ "Callback_PlayerKilled", 6475 },
+	{ "Callback_CodeEndGame", 6468 },
+	{ "Callback_PlayerLastStand", 6476 },
+	{ "Callback_PlayerMigrated", 6479 },
+	{ "Callback_HostMigration", 6469 },
+	{ "iDFLAGS_RADIUS", 17344 },
+	{ "iDFLAGS_NO_ARMOR", 17338 },
+	{ "iDFLAGS_NO_KNOCKBACK", 17339 },
+	{ "iDFLAGS_PENETRATION", 17343 },
+	{ "iDFLAGS_STUN", 17348 },
+	{ "iDFLAGS_SHIELD_EXPLOSIVE_IMPACT", 17345 },
+	{ "iDFLAGS_SHIELD_EXPLOSIVE_IMPACT_HUGE", 17346 },
+	{ "iDFLAGS_SHIELD_EXPLOSIVE_SPLASH", 17347 },
+	{ "iDFLAGS_NO_TEAM_PROTECTION", 17341 },
+	{ "iDFLAGS_NO_PROTECTION", 17340 },
+	{ "iDFLAGS_PASSTHRU", 17342 },
 	
 };
 
