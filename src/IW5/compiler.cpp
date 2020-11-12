@@ -15,7 +15,7 @@ auto compiler::output() -> std::vector<gsc::function_ptr>
 
 void compiler::compile(std::string& data)
 {
-
+    LOG_ERROR("IW5 compiler not implemented!");
 }
 
 } // namespace IW5

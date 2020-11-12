@@ -17,7 +17,7 @@ auto decompiler::output() -> std::string
 
 void decompiler::decompile(std::vector<gsc::function_ptr>& functions)
 {
-
+	LOG_ERROR("SH1 decompiler not implemented!");
 }
 
 } // namespace SH1

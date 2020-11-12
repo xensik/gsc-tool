@@ -45,7 +45,6 @@ void decompiler::decompile(std::vector<gsc::function_ptr>& functions)
 
 void decompiler::decompile_function(const gsc::function_ptr& func)
 {
-	LOG_INFO("------ %s", func->name.data());
 	this->decompile_statements(func);
 
 	auto& block = func_->block;
@@ -54,12 +53,9 @@ void decompiler::decompile_function(const gsc::function_ptr& func)
 	ctx.loc_end = block->stmts.back().as_node->location;
 	block->stmts.pop_back(); // remove last return
 
-	LOG_INFO("function %s", func->name.data());
-
 	blocks_.push_back(ctx);
 	this->decompile_block(block);
 	blocks_.pop_back();
-	LOG_INFO("-------------------");
 }
 
 void decompiler::decompile_statements(const gsc::function_ptr& func)
@@ -2330,6 +2326,9 @@ void decompiler::decompile_foreach(const gsc::block_ptr& block, std::uint32_t be
 void decompiler::decompile_switch(const gsc::block_ptr& block, std::uint32_t start)
 {
 	gsc::block ctx;
+	ctx.loc_break = blocks_.back().loc_break;
+	ctx.loc_continue = blocks_.back().loc_continue;
+
 	auto location = block->stmts.at(start).as_node->location;
 	auto expr = std::move(block->stmts.at(start).as_asm_switch->expr);
 	auto end_loc = block->stmts.at(start).as_asm_switch->value;

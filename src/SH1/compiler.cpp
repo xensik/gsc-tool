@@ -15,7 +15,7 @@ auto compiler::output() -> std::vector<gsc::function_ptr>
 
 void compiler::compile(std::string& data)
 {
-
+    LOG_ERROR("SH1 compiler not implemented!");
 }
 
 } // namespace SH1
