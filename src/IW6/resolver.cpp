@@ -346,24 +346,36 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "codescripts\\character", 911 },
 	{ "codescripts\\delete", 912 },
 	{ "codescripts\\struct", 913 },
-	
+
+	{ "common_scripts\\_unk1", 914 },
+	{ "common_scripts\\_unk2", 915 },
 	{ "common_scripts\\_createfx", 916 },
 	{ "common_scripts\\_createfxmenu", 917 },
-
+	{ "common_scripts\\_unk3", 918 },// 918 shipment battery
 	{ "common_scripts\\_destructible", 919 },
 	{ "common_scripts\\_dynamic_world", 920 },
 	{ "common_scripts\\_elevator", 921 },
-
+	{ "common_scripts\\_unk4", 922 },
 	{ "common_scripts\\_fx", 923 },
+	{ "common_scripts\\_unk5", 924 },// 924 dome 
 
 	{ "common_scripts\\utility", 927 },
-	// maps/animated_models
+
+// destructible_scripts
+	// 935, 940, 941 seems destructible_scripts
+	// 937 mp_zulu something
+	// 942 behemoth
+	// 944 behemoth
+
+// maps/animated_models
 	{ "maps\\animatedmodels\\com_roofvent2_animated", 1201 },
 	{ "maps\\animated_models\\debris_water_trash_bob", 1206 },
 	{ "maps\\animated_models\\debris_water_trash_spiral", 1207 },
 	{ "maps\\animated_models\\mp_flooded_street_water", 1208 },
 	{ "maps\\animated_models\\mp_frag_crane_sway", 1209 },
-	// maps/createart
+// maps/createart
+	{ "maps\\createart\\mp_alien_town_art", 1236 },
+	{ "maps\\createart\\mp_alien_town_fog", 1237 },
 	{ "maps\\createart\\mp_chasm_art", 1238 },
 	{ "maps\\createart\\mp_chasm_fog", 1239 },
 	{ "maps\\createart\\mp_dart_art", 1240 },
@@ -393,7 +405,8 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "maps\\createart\\mp_warhawk_fog", 1264 },
 	{ "maps\\createart\\mp_zebra_art", 1265 },
 	{ "maps\\createart\\mp_zebra_fog", 1266 },
-	// maps/createfx
+// maps/createfx
+	{ "maps\\createfx\\mp_alient_town_fx", 1305 },
 	{ "maps\\createfx\\mp_chasm_fx", 1306 },
 	{ "maps\\createfx\\mp_dart_fx", 1307 },
 	{ "maps\\createfx\\mp_fahrenheit_fx", 1308 },
@@ -408,7 +421,9 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "maps\\createfx\\mp_strikezone_fx", 1317 },
 	{ "maps\\createfx\\mp_warhawk_fx", 1318 },
 	{ "maps\\createfx\\mp_zebra_fx", 1319 },
-	// maps/mp
+// maps/interactive_models
+
+// maps/mp
 	{ "maps\\mp\\_animatedmodels", 1351 },
 	{ "maps\\mp\\_areas", 1352 },
 	{ "maps\\mp\\_art", 1353 },
@@ -416,10 +431,12 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "maps\\mp\\_awards", 1355 },
 	{ "maps\\mp\\_b_unk1", 1356 },
 	{ "maps\\mp\\_compass", 1357 },
-
+// ..
 	{ "maps\\mp\\_load", 1373 },
 	{ "maps\\mp\\_matchdata", 1374 },
-	// map data
+// ..
+	{ "maps\\mp\\mp_alien_town_fx", 1388 },
+	{ "maps\\mp\\mp_alien_town_precache", 1389 },
 	{ "maps\\mp\\mp_chasm_fx", 1390 },
 	{ "maps\\mp\\mp_chasm_precache", 1391 },
 	{ "maps\\mp\\mp_dart_fx", 1392 },
@@ -448,7 +465,12 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "maps\\mp\\mp_warhawk_precache", 1415 },
 	{ "maps\\mp\\mp_zebra_fx", 1416 },
 	{ "maps\\mp\\mp_zebra_precache", 1417 },
-	// gametypes
+
+// maps/mp/agents/alien? 1418-29
+
+// maps/mp/alien? 1441-64
+
+// maps/mp/gametypes
 	{ "maps\\mp\\gametypes\\_battlebuddy", 1465 },
 	{ "maps\\mp\\gametypes\\_battlechatter_mp", 1466 },
 	{ "maps\\mp\\gametypes\\_callbacksetup", 1467 },
@@ -496,11 +518,15 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "maps\\mp\\gametypes\\_tm_unk11", 1509 },
 	{ "maps\\mp\\gametypes\\_tweakables", 1510 },
 	{ "maps\\mp\\gametypes\\_weapons", 1511 },
-	//
+// maps/mp/killstreaks
 	{ "maps\\mp\\killstreaks\\__unk1", 1512 },
 	{ "maps\\mp\\killstreaks\\__unk2", 1513 },
 	{ "maps\\mp\\killstreaks\\__unk3", 1514 },
 	{ "maps\\mp\\killstreaks\\__unk4", 1515 },
+	// 1516-70 killstreaks
+// maps/mp/perks
+	{ "maps\\mp\\perks\\_perkfunctions", 1571 },
+	{ "maps\\mp\\perks\\_perks", 1572 },
 };
 
 std::unordered_map <std::string, std::uint16_t> resolver::token_map
