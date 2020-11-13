@@ -596,7 +596,7 @@ struct node_localized_string : public node
 
     auto print() -> std::string override
     {
-        return value;
+        return "&" + value;
     }
 };
 
