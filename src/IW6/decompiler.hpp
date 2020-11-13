@@ -45,6 +45,7 @@ private:
 	void decompile_for(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end);
 	void decompile_foreach(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end);
 	void decompile_switch(const gsc::block_ptr& block, std::uint32_t start);
+	auto find_location_reference(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end, const std::string& location) -> bool;
 	auto find_location_index(const gsc::block_ptr& block, const std::string& location) -> std::uint32_t;
 	auto last_location_index(const gsc::block_ptr& block, std::uint32_t index) -> bool;
 };

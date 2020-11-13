@@ -193,10 +193,10 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		case opcode::OP_GetBuiltinFunction:
 		case opcode::OP_GetBuiltinMethod:
 		{
-			// TODO: as func_ref!!!!
-			LOG_ERROR("missing handler 'OP_GetBuiltin'!");
-			//auto node = std::make_unique<gsc::node_identifier>(inst->data[0]);
-			//stack_.push(std::move(node));
+			auto file = std::make_unique<gsc::node_filepath>(location, "");
+			auto func = std::make_unique<gsc::node_identifier>(location, inst->data[0]);
+			auto stmt = std::make_unique<gsc::node_expr_function_ref>(location, std::move(file), std::move(func));
+			stack_.push(std::move(stmt));
 		}
 		break;
 		case opcode::OP_GetLocalFunction:
@@ -1836,6 +1836,8 @@ void decompiler::decompile_expr()
 void decompiler::decompile_block(const gsc::block_ptr& block)
 {
 	// IW6: 1509.gsc crash due to removeLocalVariables
+	// IW6: _bots.gsc sub_id#5536 have complicated if/else
+	// 1569.gsc crash
 	this->decompile_search_infinite(block);
 	this->decompile_search_loop(block);
 	this->decompile_search_switch(block);
@@ -1982,7 +1984,23 @@ void decompiler::decompile_search_ifelse(const gsc::block_ptr& block)
 				}
 				else
 				{
-					decompile_last_ifelse(block, index, end); // special case
+					if(!blocks_.back().is_last && blocks_.size() != 1)
+					{
+						decompile_if(block, index, end);
+					}
+					else if(blocks_.back().loc_break != "" && blocks_.back().loc_continue != "") // inside a loop?
+					{
+						decompile_if(block, index, end);
+					}
+					else
+					{
+						if(end - index  == 1)
+						{
+							decompile_if(block, index, end);
+						}
+						else decompile_last_ifelse(block, index, end); // special case
+					}
+						
 				}
 			}
 			else
@@ -2225,11 +2243,22 @@ void decompiler::decompile_loop(const gsc::block_ptr& block, std::uint32_t start
 		auto& first_stmt = block->stmts.at(start - 1);
 		if(first_stmt.as_node->type == gsc::node_type::stmt_assign)
 		{
-			decompile_for(block, start, end);
-			return;
+			// need to change the pattern, if there is a reference to jump back, its an while always
+			
+			auto ref = block->stmts.at(end).as_node->location;
+			if(find_location_reference(block, start, end, ref))
+			{
+				decompile_while(block, start, end);
+				return;
+			}
+			else
+			{
+				decompile_for(block, start, end);
+				return;
+			}	
 		}
 	}
-
+	
 	decompile_while(block, start, end);
 }
 
@@ -2409,6 +2438,25 @@ void decompiler::decompile_switch(const gsc::block_ptr& block, std::uint32_t sta
 
 	auto stmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_switch>(location, std::move(expr), std::move(sw_block)));
 	block->stmts.insert(block->stmts.begin() + start, std::move(stmt));
+}
+
+auto decompiler::find_location_reference(const gsc::block_ptr& block, std::uint32_t start, std::uint32_t end, const std::string& location) -> bool
+{
+	for(auto i = start; i < end; i++)
+	{
+		if(block->stmts.at(i).as_node->type == gsc::node_type::asm_jump_cond)
+		{
+			if(block->stmts.at(i).as_cond->value == location)
+				return true;
+		}
+		else if(block->stmts.at(i).as_node->type == gsc::node_type::asm_jump)
+		{
+			if(block->stmts.at(i).as_jump->value == location)
+				return true;
+		}
+	}
+
+	return false;
 }
 
 auto decompiler::find_location_index(const gsc::block_ptr& block, const std::string& location) -> std::uint32_t
