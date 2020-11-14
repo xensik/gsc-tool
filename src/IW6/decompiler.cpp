@@ -128,7 +128,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_GetAnimation:
 		{
-			if(inst->data[0] != "")
+			if(inst->data[0] != "\"\"")
 			{
 				auto str_ = std::make_unique<gsc::node_string>(location, inst->data[0]);
 				auto anim = std::make_unique<gsc::node_using_animtree>(location, std::move(str_));
@@ -140,7 +140,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_GetAnimTree:
 		{
-			if(inst->data[0] != "")
+			if(inst->data[0] != "\"\"")
 			{
 				auto str_ = std::make_unique<gsc::node_string>(location, inst->data[0]);
 				auto anim = std::make_unique<gsc::node_using_animtree>(location, std::move(str_));
