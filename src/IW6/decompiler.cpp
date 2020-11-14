@@ -2239,7 +2239,7 @@ void decompiler::decompile_loop(const gsc::block_ptr& block, std::uint32_t start
 			{
 				if(rval.as_call->func.as_node->type == gsc::node_type::expr_call_function)
 				{
-					if(rval.as_call->func.as_func->name->value == "getnextarraykey")
+					if(utils::string::to_lower(rval.as_call->func.as_func->name->value) == "getnextarraykey")
 					{
 						decompile_foreach(block, start, end);
 						return;
