@@ -6,13 +6,13 @@ clean:
 	rm -rf ./SH1
 
 copy-IW5:
-	mv -f ./IW5/* ../src/IW5/
+	mv -f ./IW5/* ../../IW5/
 
 copy-IW6:
-	mv -f ./IW6/* ../src/IW6/
+	mv -f ./IW6/* ../../IW6/
 
 copy-SH1:
-	mv -f ./SH1/* ../src/SH1/
+	mv -f ./SH1/* ../../SH1/
 
 IW5: IW5.lexer.lpp IW5.parser.ypp
 	mkdir -p ./IW5

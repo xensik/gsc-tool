@@ -39,7 +39,7 @@
 
 %token INCLUDE USING_ANIMTREE ANIMTREE IF ELSE SWITCH
 %token CASE DEFAULT BREAK FOR FOREACH WHILE CONTINUE
-%token RETURN THREAD WAIT WAITTILL WAITTILLMATCH WAITTILLFRAMEEND
+%token RETURN THREAD CALL WAIT WAITTILL WAITTILLMATCH WAITTILLFRAMEEND
 %token ENDON NOTIFY IN UNDEFINED TRUE FALSE SIZE GAME LEVEL ANIM SELF
 %token EMPTY_ARRAY LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 %token COMMA DOT DOUBLECOLON COLON SEMICOLON QMARK
@@ -420,7 +420,9 @@ expr_call_function
 
 expr_call_pointer
 	: LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
-		{ $$.as_pointer = std::make_unique<node_expr_call_pointer>(std::move($3), std::move($7)); }
+		{ $$.as_pointer = std::make_unique<node_expr_call_pointer>("", false, std::move($3), std::move($7)); }
+	| CALL LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
+		{ $$.as_pointer = std::make_unique<gsc::node_expr_call_pointer>("", true, std::move($4), std::move($8)); }
 	;
 
 expr_arguments

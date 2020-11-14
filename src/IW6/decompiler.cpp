@@ -53,11 +53,6 @@ void decompiler::decompile_function(const gsc::function_ptr& func)
 	ctx.loc_end = block->stmts.back().as_node->location;
 	block->stmts.pop_back(); // remove last return
 
-	//LOG_INFO("%s", func->name.data());
-	if(func->name == "sub_id#26678")
-	{
-		LOG_INFO("%s", func->name.data());
-	}
 	blocks_.push_back(ctx);
 	this->decompile_block(block);
 	blocks_.pop_back();
