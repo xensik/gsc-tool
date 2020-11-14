@@ -360,7 +360,6 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "common_scripts\\_unk5", 924 },// 924 dome 
 
 	{ "common_scripts\\utility", 927 },
-
 // destructible_scripts
 	{ "destructible_scripts\\toy_filecabinet", 935 },
 	{ "destructible_scripts\\toy_light_ceiling_fluorescent", 937 },
@@ -425,7 +424,7 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "maps\\createfx\\mp_warhawk_fx", 1318 },
 	{ "maps\\createfx\\mp_zebra_fx", 1319 },
 // maps/interactive_models
-	{ "maps\\interactive_models\\_unk", 1340},
+	{ "maps\\interactive_models\\_unk1", 1340},
 // maps/mp
 	{ "maps\\mp\\_animatedmodels", 1351 },
 	{ "maps\\mp\\_areas", 1352 },
@@ -434,10 +433,36 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "maps\\mp\\_awards", 1355 },
 	{ "maps\\mp\\_b_unk1", 1356 },
 	{ "maps\\mp\\_compass", 1357 },
-// ..
+	{ "maps\\mp\\_createfx", 1358 },
+	{ "maps\\mp\\_crib", 1359 },
+	{ "maps\\mp\\_defcon", 1360 },
+	{ "maps\\mp\\_destructables", 1361 },
+	{ "maps\\mp\\_elevator", 1362 },
+	{ "maps\\mp\\_emp", 1363 },
+	{ "maps\\mp\\_entityheadicons", 1364 },
+	{ "maps\\mp\\_events", 1365 },
+	{ "maps\\mp\\_flashgrenades", 1366 },
+	{ "maps\\mp\\_fx", 1367 },
+	{ "maps\\mp\\_global_fx", 1368 },
+	{ "maps\\mp\\_global_fx2", 1369 },
+	{ "maps\\mp\\_highlights", 1370 },
+	{ "maps\\mp\\_javelin", 1371 },
+	{ "maps\\mp\\_laser_guided_launcher", 1372 },
 	{ "maps\\mp\\_load", 1373 },
 	{ "maps\\mp\\_matchdata", 1374 },
-// ..
+	{ "maps\\mp\\_matchevent", 1375 },
+	{ "maps\\mp\\_mi_unk2", 1376 },
+	{ "maps\\mp\\_minefields", 1377 },
+	{ "maps\\mp\\_mover_unk3", 1378 },
+	{ "maps\\mp\\_mover_unk4", 1379 },
+	{ "maps\\mp\\_radiation", 1380 },
+	{ "maps\\mp\\_scoreboard", 1381 },
+	{ "maps\\mp\\_shutter", 1382 },
+	{ "maps\\mp\\_stinger", 1383 },
+	{ "maps\\mp\\_teleport", 1384 },
+	{ "maps\\mp\\_utility", 1385 },
+	{ "maps\\mp\\_water", 1386 },
+	{ "maps\\mp\\_zipline", 1387 },
 	{ "maps\\mp\\mp_alien_town_fx", 1388 },
 	{ "maps\\mp\\mp_alien_town_precache", 1389 },
 	{ "maps\\mp\\mp_chasm_fx", 1390 },
@@ -468,7 +493,6 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "maps\\mp\\mp_warhawk_precache", 1415 },
 	{ "maps\\mp\\mp_zebra_fx", 1416 },
 	{ "maps\\mp\\mp_zebra_precache", 1417 },
-
 // maps/mp/agents/alien? 1418-29
 
 // maps/mp/alien? 1441-64
