@@ -53,6 +53,11 @@ void decompiler::decompile_function(const gsc::function_ptr& func)
 	ctx.loc_end = block->stmts.back().as_node->location;
 	block->stmts.pop_back(); // remove last return
 
+	//LOG_INFO("%s", func->name.data());
+	if(func->name == "sub_id#26678")
+	{
+		LOG_INFO("%s", func->name.data());
+	}
 	blocks_.push_back(ctx);
 	this->decompile_block(block);
 	blocks_.pop_back();
@@ -128,17 +133,24 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_GetAnimation:
 		{
-			auto str_ = std::make_unique<gsc::node_string>(location, inst->data[0]);
-			auto anim = std::make_unique<gsc::node_using_animtree>(location, std::move(str_));
-			script_->animtrees.push_back(std::move(anim));
+			if(inst->data[0] != "")
+			{
+				auto str_ = std::make_unique<gsc::node_string>(location, inst->data[0]);
+				auto anim = std::make_unique<gsc::node_using_animtree>(location, std::move(str_));
+				script_->animtrees.push_back(std::move(anim));
+			}
 			auto node = std::make_unique<gsc::node_animref>(location, inst->data[1].substr(1, inst->data[1].size() - 2));
 			stack_.push(std::move(node));
 		}
 		break;
 		case opcode::OP_GetAnimTree:
 		{
-			// TODO
-			LOG_ERROR("missing handler 'OP_GetAnimTree'!");
+			if(inst->data[0] != "")
+			{
+				auto str_ = std::make_unique<gsc::node_string>(location, inst->data[0]);
+				auto anim = std::make_unique<gsc::node_using_animtree>(location, std::move(str_));
+				script_->animtrees.push_back(std::move(anim));
+			}
 		}
 		break;
 		case opcode::OP_GetString:
@@ -688,7 +700,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 				location = var->location;
 			}
 
-			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(location, std::move(exprf), std::move(args)));
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(location, false, std::move(exprf), std::move(args)));
 			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
 			auto expr = std::make_unique<gsc::node_expr_call>(location, false, std::move(obj) ,std::move(func));
 			stack_.push(std::move(expr));
@@ -714,7 +726,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 				location = var->location;
 			}
 
-			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(location, std::move(exprf), std::move(args)));
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(location, false, std::move(exprf), std::move(args)));
 			auto expr = std::make_unique<gsc::node_expr_call>(location, false, std::move(obj) ,std::move(func));
 			stack_.push(std::move(expr));
 		}
@@ -735,7 +747,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 				args->list.push_back(std::move(var));
 			}
 
-			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(location, std::move(exprf), std::move(args)));
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(location, false, std::move(exprf), std::move(args)));
 			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
 			auto expr = std::make_unique<gsc::node_expr_call>(location, true, std::move(obj) ,std::move(func));
 			stack_.push(std::move(expr));
@@ -760,7 +772,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 				args->list.push_back(std::move(var));
 			}
 
-			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(location, std::move(exprf), std::move(args)));
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(location, false, std::move(exprf), std::move(args)));
 			auto expr = std::make_unique<gsc::node_expr_call>(location, true, std::move(obj) ,std::move(func));
 			stack_.push(std::move(expr));
 		}
@@ -773,47 +785,49 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_CallBuiltinPointer:
 		{
-			LOG_ERROR("missing handler 'OP_CallBuiltinPointer'!");
-			/*auto stmt = func->stack.top(); // pointer
-
-			std::string data = "call [[ " + stmt->data + " ]](";
+			auto args = std::make_unique<gsc::node_expr_arguments>(location);
+			auto exprf = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			location = exprf.as_node->location;
 
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack.pop();
-				stmt = func->stack.top();
-				data += " " + stmt->data;
-				i != 1 ? data += "," : data += " ";
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				location = var->location;
+				args->list.push_back(std::move(var));
 			}
 
-			data += ")";
-			stmt->data = data;*/
+			auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(location, true, std::move(exprf), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(location, false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_CallBuiltinMethodPointer:
 		{
-			LOG_ERROR("missing handler 'OP_CallBuiltinMethodPointer'!");
-			/*auto stmt = func->stack.top(); // pointer
-			func->stack.pop();
-			std::string data = "call [[ " + stmt->data + " ]](";
+			auto args = std::make_unique<gsc::node_expr_arguments>(location);
+			auto exprf = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
 
-			stmt = func->stack.top(); // caller
-			data = stmt->data + " " + data;
-
+			auto obj = gsc::expr_ptr(std::move(stack_.top()));
+			stack_.pop();
+			location = obj.as_node->location;
 			auto argnum = std::stoul(inst->data[0]);
 
 			for (size_t i = argnum; i > 0; i--)
 			{
-				func->stack.pop();
-				stmt = func->stack.top();
-				data += " " + stmt->data;
-				i != 1 ? data += "," : data += " ";
+				auto var = std::move(stack_.top());
+				stack_.pop();
+				location = var->location;
+				args->list.push_back(std::move(var));
 			}
 
-			data += ")";
-			stmt->data = data;*/
+			auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(location, true, std::move(exprf), std::move(args)));
+			auto expr = std::make_unique<gsc::node_expr_call>(location, false, std::move(obj) ,std::move(func));
+			stack_.push(std::move(expr));
 		}
 		break;
 		case opcode::OP_CallBuiltin0:
@@ -1828,9 +1842,8 @@ void decompiler::decompile_expr()
 	}
 	else
 	{
-		LOG_ERROR("invalid jump expr decompile.");
+		LOG_ERROR("TRIED TO DECOMPILE INVALID JUMP EXPR!");
 	}
-	
 }
 
 void decompiler::decompile_block(const gsc::block_ptr& block)
@@ -2240,22 +2253,25 @@ void decompiler::decompile_loop(const gsc::block_ptr& block, std::uint32_t start
 			}
 		}
 
-		auto& first_stmt = block->stmts.at(start - 1);
-		if(first_stmt.as_node->type == gsc::node_type::stmt_assign)
+		if(start > 0) // while at func start
 		{
-			// need to change the pattern, if there is a reference to jump back, its an while always
-			
-			auto ref = block->stmts.at(end).as_node->location;
-			if(find_location_reference(block, start, end, ref))
+			auto& first_stmt = block->stmts.at(start - 1);
+			if(first_stmt.as_node->type == gsc::node_type::stmt_assign)
 			{
-				decompile_while(block, start, end);
-				return;
+				// need to change the pattern, if there is a reference to jump back, its an while always
+				
+				auto ref = block->stmts.at(end).as_node->location;
+				if(find_location_reference(block, start, end, ref))
+				{
+					decompile_while(block, start, end);
+					return;
+				}
+				else
+				{
+					decompile_for(block, start, end);
+					return;
+				}	
 			}
-			else
-			{
-				decompile_for(block, start, end);
-				return;
-			}	
 		}
 	}
 	

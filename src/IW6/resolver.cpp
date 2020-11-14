@@ -362,13 +362,16 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "common_scripts\\utility", 927 },
 
 // destructible_scripts
-	// 935, 940, 941 seems destructible_scripts
-	// 937 mp_zulu something
-	// 942 behemoth
-	// 944 behemoth
-
+	{ "destructible_scripts\\toy_filecabinet", 935 },
+	{ "destructible_scripts\\toy_light_ceiling_fluorescent", 937 },
+	{ "destructible_scripts\\toy_transformer_small01", 940 },
+	{ "destructible_scripts\\toy_trashcan_metal_closed", 941 },
+	{ "destructible_scripts\\toy_tv_common", 942 },
+	{ "destructible_scripts\\toy_tv_video_monitor", 944 },
 // maps/animated_models
 	{ "maps\\animatedmodels\\com_roofvent2_animated", 1201 },
+
+	{ "maps\\animated_models\\clothes_line_sheet_iw6", 1205 }, // not exactly
 	{ "maps\\animated_models\\debris_water_trash_bob", 1206 },
 	{ "maps\\animated_models\\debris_water_trash_spiral", 1207 },
 	{ "maps\\animated_models\\mp_flooded_street_water", 1208 },
@@ -422,7 +425,7 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "maps\\createfx\\mp_warhawk_fx", 1318 },
 	{ "maps\\createfx\\mp_zebra_fx", 1319 },
 // maps/interactive_models
-
+	{ "maps\\interactive_models\\_unk", 1340},
 // maps/mp
 	{ "maps\\mp\\_animatedmodels", 1351 },
 	{ "maps\\mp\\_areas", 1352 },

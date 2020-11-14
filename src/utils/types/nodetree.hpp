@@ -736,13 +736,17 @@ struct node_expr_call_pointer : public node
 {
     expr_ptr expr;
     expr_arguments_ptr args;
+    bool builtin;
 
-    node_expr_call_pointer(const std::string& location, expr_ptr expr, expr_arguments_ptr args)
-        : node(node_type::expr_call_pointer, location), expr(std::move(expr)), args(std::move(args)) {}
+    node_expr_call_pointer(const std::string& location, bool builtin, expr_ptr expr, expr_arguments_ptr args)
+        : node(node_type::expr_call_pointer, location), builtin(builtin), expr(std::move(expr)), args(std::move(args)) {}
 
     auto print() -> std::string override
     {
-        return "[["s + expr.as_node->print() + "]](" + args->print() + ")";
+        if(builtin)
+            return "call [[ "s + expr.as_node->print() + " ]](" + args->print() + ")";
+        else
+            return "[[ "s + expr.as_node->print() + " ]](" + args->print() + ")";
     }
 };
 

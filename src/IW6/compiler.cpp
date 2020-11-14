@@ -745,10 +745,7 @@ void compiler::emit_expr_call(const gsc::expr_call_ptr& expr)
 
     if(expr->func.as_node->type == gsc::node_type::expr_call_pointer)
     {
-        if(expr->func.as_pointer->expr.as_node->type == gsc::node_type::identifier)
-        {
-            builtin = is_builtin_call(expr->func.as_pointer->expr.as_identifier);
-        }
+        builtin = expr->func.as_pointer->builtin;
         
         args = expr->func.as_pointer->args->list.size();
         
@@ -756,6 +753,10 @@ void compiler::emit_expr_call(const gsc::expr_call_ptr& expr)
             emit_instruction(opcode::OP_PreScriptCall);
   
         emit_expr_arguments(expr->func.as_pointer->args);
+
+        if(method)
+            emit_expression(expr->obj);
+
         emit_expression(expr->func.as_pointer->expr);
         emit_expr_call_pointer(args, builtin, method, thread, false);
     }

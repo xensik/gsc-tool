@@ -61,6 +61,7 @@ RGX_DEFAULT		    (.|\n)
 "continue"		    { return yy::parser::make_CONTINUE(); }
 "return"		    { return yy::parser::make_RETURN(); }
 "thread"		    { return yy::parser::make_THREAD(); }
+"call"              { return yy::parser::make_CALL(); }
 "true"		        { return yy::parser::make_TRUE(); }
 "false"		        { return yy::parser::make_FALSE(); }
 "undefined"		    { return yy::parser::make_UNDEFINED(); }
