@@ -14,8 +14,8 @@ enum class opcode : std::uint8_t;
 class resolver
 {
     static std::unordered_map<std::string, opcode> opcode_map;
-    static std::unordered_map<std::string, std::uint16_t> builtin_function_map;
-    static std::unordered_map<std::string, std::uint16_t> builtin_method_map;
+    static std::unordered_map<std::uint16_t, std::string> builtin_function_map;
+    static std::unordered_map<std::uint16_t, std::string> builtin_method_map;
     static std::unordered_map<std::string, std::uint16_t> file_map;
     static std::unordered_map<std::string, std::uint16_t> token_map;
 
