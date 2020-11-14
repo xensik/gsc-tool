@@ -530,6 +530,36 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 // maps/mp/perks
 	{ "maps\\mp\\perks\\_perkfunctions", 1571 },
 	{ "maps\\mp\\perks\\_perks", 1572 },
+// onslaugh dlc
+	{ "destructible_scripts\\toy_wall_fan", 36603 },
+	{ "destructible_scripts\\vehicle_pickup", 36604 },
+	{ "maps\\createart\\mp_alien_armory_art", 36605 },
+	{ "maps\\createart\\mp_alien_armory_fog", 36606 },
+	{ "maps\\createart\\mp_boneyard_ns_art", 36607 },
+	{ "maps\\createart\\mp_boneyard_ns_fog", 36608 },
+	{ "maps\\createart\\mp_ca_red_river_art", 36609 },
+	{ "maps\\createart\\mp_ca_red_river_fog", 36610 },
+	{ "maps\\createart\\mp_ca_rumble_art", 36611 },
+	{ "maps\\createart\\mp_ca_rumble_fog", 36612 },
+	{ "maps\\createart\\mp_swamp_art", 36613 },
+	{ "maps\\createart\\mp_swamp_fog", 36614 },
+	{ "maps\\cretaefx\\mp_alien_armory_fx", 36615 },
+	{ "maps\\createfx\\mp_boneyard_ns_fx", 36616 },
+	{ "maps\\createfx\\mp_ca_red_river_fx", 36617 },
+	{ " maps\\createfx\\mp_ca_rumble_fx", 36618 },
+	{ "maps\\createfx\\mp_swamp_fx", 36619 },
+	// { "maps\\mp\\dlc_unk", 36620 },
+	{ "maps\\mp\\mp_alien_armory_fx", 36621 },
+	{ "maps\\mp\\mp_alien_armory_precache", 36622 },
+	{ "maps\\mp\\mp_boneyard_ns_fx", 36623 },
+	{ "maps\\mp\\mp_boneyard_ns_precache", 36624 },
+	{ "maps\\mp\\mp_ca_red_river_fx", 36625 },
+	{ "maps\\mp\\mp_ca_red_river_precache", 36626 },
+	{ "maps\\mp\\mp_ca_rumble_fx", 36627 },
+	{ "maps\\mp\\mp_ca_rumble_precache", 36628 },
+	{ "maps\\mp\\mp_swamp_fx", 36629 },
+	{ "maps\\mp\\mp_swamp_precache", 36630 },
+	// 36631-44, effects?
 };
 
 std::unordered_map <std::string, std::uint16_t> resolver::token_map
