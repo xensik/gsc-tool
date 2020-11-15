@@ -48,6 +48,7 @@ private:
 	auto find_location_reference(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end, const std::string& location) -> bool;
 	auto find_location_index(const gsc::block_ptr& block, const std::string& location) -> std::uint32_t;
 	auto last_location_index(const gsc::block_ptr& block, std::uint32_t index) -> bool;
+	auto unhandled_function(const std::string& function) -> bool;
 };
 
 } // namespace IW6
