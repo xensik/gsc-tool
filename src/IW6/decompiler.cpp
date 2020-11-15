@@ -338,7 +338,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			stack_.push(std::move(node));
 		}
 		break;
-		case opcode::OP_EvalNewLocalArrayRefCached0: // creat a local array and initialize
+		case opcode::OP_EvalNewLocalArrayRefCached0: // create a local array and initialize
 		{
 			local_vars_.insert(local_vars_.begin(), "var_" + inst->data[0]);
 			auto key = gsc::expr_ptr(std::move(stack_.top()));
@@ -1748,8 +1748,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			stack_.push(std::move(expr));
 		}
 		break;
-
-// SPECIAL SHIT
 		case opcode::OP_switch:
 		{
 			auto expr = gsc::expr_ptr(std::move(stack_.top()));
@@ -1835,6 +1833,7 @@ void decompiler::decompile_expr()
 	auto jump_expr = std::move(stack_.top());
 	stack_.pop();
 	auto location = jump_expr->location;
+	
 	if(jump_expr->type == gsc::node_type::asm_jump_true_expr)
 	{
 		auto lvalue = std::move((*(gsc::asm_jump_true_expr_ptr*)&jump_expr)->expr);
@@ -1857,9 +1856,6 @@ void decompiler::decompile_expr()
 
 void decompiler::decompile_block(const gsc::block_ptr& block)
 {
-	// IW6: 1509.gsc crash due to removeLocalVariables
-	// IW6: _bots.gsc sub_id#5536 have complicated if/else
-	// 1569.gsc crash
 	this->decompile_search_infinite(block);
 	this->decompile_search_loop(block);
 	this->decompile_search_switch(block);
