@@ -47,6 +47,9 @@ void decompiler::decompile_function(const gsc::function_ptr& func)
 {
 	this->decompile_statements(func);
 
+	if(unhandled_function(func->name))
+		return;
+
 	auto& block = func_->block;
 
 	gsc::block ctx;
@@ -128,7 +131,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_GetAnimation:
 		{
-			if(inst->data[0] != "")
+			if(inst->data[0] != "\"\"")
 			{
 				auto str_ = std::make_unique<gsc::node_string>(location, inst->data[0]);
 				auto anim = std::make_unique<gsc::node_using_animtree>(location, std::move(str_));
@@ -140,7 +143,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_GetAnimTree:
 		{
-			if(inst->data[0] != "")
+			if(inst->data[0] != "\"\"")
 			{
 				auto str_ = std::make_unique<gsc::node_string>(location, inst->data[0]);
 				auto anim = std::make_unique<gsc::node_using_animtree>(location, std::move(str_));
@@ -150,7 +153,17 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_GetString:
 		{
-			auto node = std::make_unique<gsc::node_string>(location, inst->data[0]);
+			auto str = inst->data[0];
+
+			for (auto idx = str.size() - 2; idx > 0; idx--)
+			{
+				if(str.at(idx) == '\"' || str.at(idx) == '\\')
+				{
+					str.insert(str.begin() + idx, '\\');
+				}
+			}
+
+			auto node = std::make_unique<gsc::node_string>(location, str);
 			stack_.push(std::move(node));
 		}
 		break;
@@ -200,10 +213,10 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		case opcode::OP_GetBuiltinFunction:
 		case opcode::OP_GetBuiltinMethod:
 		{
-			// TODO: as func_ref!!!!
-			LOG_ERROR("missing handler 'OP_GetBuiltin'!");
-			//auto node = std::make_unique<gsc::node_identifier>(inst->data[0]);
-			//stack_.push(std::move(node));
+			auto file = std::make_unique<gsc::node_filepath>(location, "");
+			auto func = std::make_unique<gsc::node_identifier>(location, inst->data[0]);
+			auto stmt = std::make_unique<gsc::node_expr_function_ref>(location, std::move(file), std::move(func));
+			stack_.push(std::move(stmt));
 		}
 		break;
 		case opcode::OP_GetLocalFunction:
@@ -254,9 +267,10 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 		break;
 		case opcode::OP_RemoveLocalVariables:
 		{
-			for(auto i = std::stoul(inst->data[0]); i > 0; i--)
+			// TODO: FIX THIS!!
+			/*for(auto i = std::stoul(inst->data[0]); i > 0; i--)
 				local_vars_.erase(local_vars_.begin());
-
+			*/
 			// needed ????
 			auto stmt = std::make_unique<gsc::node>();
 			stmt->location = location;
@@ -324,7 +338,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			stack_.push(std::move(node));
 		}
 		break;
-		case opcode::OP_EvalNewLocalArrayRefCached0: // creat a local array and initialize
+		case opcode::OP_EvalNewLocalArrayRefCached0: // create a local array and initialize
 		{
 			local_vars_.insert(local_vars_.begin(), "var_" + inst->data[0]);
 			auto key = gsc::expr_ptr(std::move(stack_.top()));
@@ -1734,8 +1748,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 			stack_.push(std::move(expr));
 		}
 		break;
-
-// SPECIAL SHIT
 		case opcode::OP_switch:
 		{
 			auto expr = gsc::expr_ptr(std::move(stack_.top()));
@@ -1821,6 +1833,7 @@ void decompiler::decompile_expr()
 	auto jump_expr = std::move(stack_.top());
 	stack_.pop();
 	auto location = jump_expr->location;
+	
 	if(jump_expr->type == gsc::node_type::asm_jump_true_expr)
 	{
 		auto lvalue = std::move((*(gsc::asm_jump_true_expr_ptr*)&jump_expr)->expr);
@@ -1837,9 +1850,8 @@ void decompiler::decompile_expr()
 	}
 	else
 	{
-		LOG_ERROR("invalid jump expr decompile.");
+		LOG_ERROR("TRIED TO DECOMPILE INVALID JUMP EXPR!");
 	}
-	
 }
 
 void decompiler::decompile_block(const gsc::block_ptr& block)
@@ -1943,7 +1955,7 @@ void decompiler::decompile_search_ifelse(const gsc::block_ptr& block)
 {
 	auto index = 0;
 
-	while(index < block->stmts.size()) // WHILE, FOR, FOREACH, IF, IFELSE
+	while(index < block->stmts.size())
 	{
 		auto& stmt = block->stmts.at(index);
 
@@ -1959,6 +1971,8 @@ void decompiler::decompile_search_ifelse(const gsc::block_ptr& block)
 				end = find_location_index(block, stmt.as_cond->value) - 1;
 			}
 			
+			auto last_loc = blocks_.back().loc_end;
+
 			if(block->stmts.at(end).as_node->type == gsc::node_type::asm_jump)
 			{
 				// if block is a loop check break, continue
@@ -1973,7 +1987,11 @@ void decompiler::decompile_search_ifelse(const gsc::block_ptr& block)
 				}
 				else if(block->stmts.at(end).as_jump->value == blocks_.back().loc_end)
 				{
-					decompile_ifelse(block, index, end); // found some empty blocks
+					decompile_ifelse(block, index, end);
+				}
+				else if(block->stmts.at(end).as_jump->value == stmt.as_cond->value)
+				{
+					decompile_if(block, index, end); // if block, have a last empty else inside
 				}
 				else
 				{
@@ -1983,10 +2001,25 @@ void decompiler::decompile_search_ifelse(const gsc::block_ptr& block)
 			else if(block->stmts.at(end).as_node->type == gsc::node_type::stmt_return
 				&& block->stmts.at(end).as_return->expr.as_node->type == gsc::node_type::null)
 			{
-				if(!blocks_.back().is_last && (end - index  == 1
-					|| block->stmts.back().as_node->type != gsc::node_type::stmt_return))
+				if(blocks_.back().loc_break != "" || blocks_.back().loc_continue != "")
 				{
-					decompile_if(block, index, end);
+					decompile_if(block, index, end); // inside a loop cant be last
+				}
+				else if(end - index  == 1)
+				{
+					decompile_if(block, index, end); // only one explicit return
+				}
+				else if(block->stmts.back().as_node->type != gsc::node_type::stmt_return)
+				{
+					decompile_if(block, index, end); // block end is not a last return
+				}
+				else if(blocks_.back().is_last && block->stmts.back().as_node->type != gsc::node_type::stmt_return)
+				{
+					decompile_if(block, index, end); // inside a last block but is not and inner last
+				}
+				else if(find_location_reference(block, end, block->stmts.size(), last_loc))
+				{
+					decompile_if(block, index, end); // reference to func end after the if
 				}
 				else
 				{
@@ -2221,23 +2254,54 @@ void decompiler::decompile_loop(const gsc::block_ptr& block, std::uint32_t start
 			{
 				if(rval.as_call->func.as_node->type == gsc::node_type::expr_call_function)
 				{
-					if(rval.as_call->func.as_func->name->value == "getnextarraykey")
+					if(utils::string::to_lower(rval.as_call->func.as_func->name->value) == "getnextarraykey")
 					{
-						decompile_foreach(block, start, end);
-						return;
+						auto ref2 = block->stmts.at(start).as_node->location;
+						if(find_location_reference(block, 0, start, ref2))
+						{
+							// begin is at condition, not pre-expr
+							//decompile_while(block, start, end);
+							//return;
+						}
+						else
+						{
+							decompile_foreach(block, start, end);
+							return;
+						}
 					}
 				}
 			}
 		}
 
-		auto& first_stmt = block->stmts.at(start - 1);
-		if(first_stmt.as_node->type == gsc::node_type::stmt_assign)
+		if(start > 0) // while at func start
 		{
-			decompile_for(block, start, end);
-			return;
+			auto& first_stmt = block->stmts.at(start - 1);
+			if(first_stmt.as_node->type == gsc::node_type::stmt_assign)
+			{
+				auto ref = block->stmts.at(end).as_node->location;
+				auto ref2 = block->stmts.at(start).as_node->location;
+
+				if(find_location_reference(block, start, end, ref))
+				{
+					// continue is at jumpback, not post-expr
+					decompile_while(block, start, end);
+					return;
+				}
+				else if(find_location_reference(block, 0, start, ref2))
+				{
+					// begin is at condition, not pre-expr
+					decompile_while(block, start, end);
+					return;
+				}
+				else
+				{
+					decompile_for(block, start, end);
+					return;
+				}	
+			}
 		}
 	}
-
+	
 	decompile_while(block, start, end);
 }
 
@@ -2419,6 +2483,25 @@ void decompiler::decompile_switch(const gsc::block_ptr& block, std::uint32_t sta
 	block->stmts.insert(block->stmts.begin() + start, std::move(stmt));
 }
 
+auto decompiler::find_location_reference(const gsc::block_ptr& block, std::uint32_t start, std::uint32_t end, const std::string& location) -> bool
+{
+	for(auto i = start; i < end; i++)
+	{
+		if(block->stmts.at(i).as_node->type == gsc::node_type::asm_jump_cond)
+		{
+			if(block->stmts.at(i).as_cond->value == location)
+				return true;
+		}
+		else if(block->stmts.at(i).as_node->type == gsc::node_type::asm_jump)
+		{
+			if(block->stmts.at(i).as_jump->value == location)
+				return true;
+		}
+	}
+
+	return false;
+}
+
 auto decompiler::find_location_index(const gsc::block_ptr& block, const std::string& location) -> std::uint32_t
 {
 	auto index = 0;
@@ -2443,6 +2526,19 @@ auto decompiler::last_location_index(const gsc::block_ptr& block, std::uint32_t 
 	if(index == block->stmts.size() - 1)
 		return true;
 	
+	return false;
+}
+
+// testing stuff
+std::vector<std::string> unhandled =
+{
+};
+
+auto decompiler::unhandled_function(const std::string& function) -> bool
+{
+	if (std::find(std::begin(unhandled), std::end(unhandled), function) != std::end(unhandled))
+		return true;
+
 	return false;
 }
 
