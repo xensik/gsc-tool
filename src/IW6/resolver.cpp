@@ -1652,7 +1652,7 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 	{ "maps\\mp\\gametypes\\_spawn_unk2", 1506 },
 	{ "maps\\mp\\gametypes\\_spectating", 1507 },
 	{ "maps\\mp\\gametypes\\_teams", 1508 },
-	{ "maps\\mp\\gametypes\\_tm_unk11", 1509 },
+	{ "maps\\mp\\gametypes\\_trophy", 1509 },
 	{ "maps\\mp\\gametypes\\_tweakables", 1510 },
 	{ "maps\\mp\\gametypes\\_weapons", 1511 },
 // maps/mp/killstreaks
