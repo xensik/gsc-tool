@@ -2535,6 +2535,7 @@ std::vector<std::string> unhandled =
 	// bots.gsc
 	"sub_id#5803", // infinite loop create var before
 	//"sub_id#5804", // local vars problem remove?
+	"sub_id#24514", //_damage
 };
 
 auto decompiler::unhandled_function(const std::string& function) -> bool

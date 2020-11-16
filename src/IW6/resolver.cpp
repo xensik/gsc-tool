@@ -1700,12 +1700,48 @@ std::unordered_map<std::string, std::uint16_t> resolver::file_map
 
 std::unordered_map <std::string, std::uint16_t> resolver::token_map
 {
+// class fields
+	{ "alignX", 32 },
+	{ "alignY", 33 },
+	{ "alpha", 40 },
+	{ "archived", 53 },
+	{ "classname", 97 },
+	{ "code_classname", 99 },// ??
+	{ "color", 103 },
+	//{ "count", 0xEFFF },
+
+	{ "font", 221 },
+	{ "fontscale", 222 },
+	{ "foreground", 229 },
+	{ "glowAlpha", 244 },
+	{ "glowColor", 245 },
+	{ "height", 272 },
+	{ "hideWhenInMenu", 278 },
+	{ "horzAlign", 283 },
+	{ "label", 328 },
+	{ "name", 396 },
 	{ "origin", 430 },
 	{ "pers", 450 },
-	{ "team", 643 },
 
+	{ "sessionstate", 524 },
+	{ "sessionteam", 525 },
+	{ "sort", 538 },
+
+	{ "tag_stowed_back", 623 },
+	{ "team", 643 },
+	{ "type", 680 },
+	{ "vertAlign", 704 },
+	{ "with", 728 },
+	{ "x", 731 },
+	{ "y", 732 },
+	
+// gsc symbols
 	{ "_effect", 1644 },
 	{ "CreateStruct", 8482 },
+
+	{ "elemType", 11272 },
+
+
 	{ "init", 17631 },
 	{ "main", 20445 },
 	{ "InitStructs", 18005 },
