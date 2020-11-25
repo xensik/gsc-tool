@@ -107,7 +107,8 @@ void compiler::compile_script(const gsc::script_ptr& script)
 
 void compiler::emit_include(const gsc::include_ptr& include)
 {
-    includes_.push_back(include->file->value);
+    LOG_ERROR("INCLUDE FILES NOT SUPPORTED!");
+    //includes_.push_back(include->file->value);
     // need to parse the included file here, and make a vector with all function names
     // later assemble calls check if far call
     // ...
@@ -535,7 +536,7 @@ void compiler::emit_statement_continue(const gsc::stmt_continue_ptr& stmt)
     }
     else
     {
-        LOG_ERROR("illegal continue statement outside a loop.");
+        LOG_ERROR("compiler: illegal continue statement outside a loop.");
     }
 }
 
@@ -643,7 +644,7 @@ void compiler::emit_expression(const gsc::expr_ptr& expr)
             emit_expr_vector(expr.as_vector_expr);
             break;
         default:
-            LOG_ERROR("UNKNOWN EXPRESSION");
+            LOG_ERROR("UNKNOWN EXPRESSION!");
             break;
     }
 }
@@ -744,7 +745,7 @@ void compiler::emit_expr_assign(const gsc::expr_assign_ptr& expr)
 
 void compiler::emit_expr_ternary(const gsc::expr_ternary_ptr& expr)
 {
-    LOG_ERROR("EXPR TERNARY NOT IMPLEMENTED!");
+    LOG_ERROR("EXPR TERNARY NOT SUPPORTED!");
 }
 
 void compiler::emit_expr_binary(const gsc::expr_binary_ptr& expr)
@@ -882,7 +883,6 @@ void compiler::emit_expr_call(const gsc::expr_call_ptr& expr)
 
         if(file != "")
         {
-            LOG_DEBUG("is far");
             far = true;
         }
         else
@@ -897,8 +897,8 @@ void compiler::emit_expr_call(const gsc::expr_call_ptr& expr)
             }
             else
             {
-                // include files not supported!
-                LOG_ERROR("unknown call type. maybe far call without file.");
+                // maybe a far call, but include files not supported!
+                LOG_ERROR("compiler: unknown function call '%s'", name.data());
             }
         }
 
@@ -1218,7 +1218,7 @@ void compiler::emit_array_variable_ref(const gsc::expr_array_ptr& expr, bool set
 
     if(expr->obj.as_node->type == gsc::node_type::expr_call)
     {
-        LOG_ERROR("call result can't be referenced");
+        LOG_ERROR("compiler: call result can't be referenced");
     }
     else if(expr->obj.as_node->type == gsc::node_type::game)
     {
@@ -1695,7 +1695,7 @@ void compiler::transfer_block(const gsc::block& parent, gsc::block& child)
 
 void compiler::print_opcodes(std::uint32_t index, std::uint32_t size)
 {
-	printf("\t\t");
+	printf("    ");
 }
 
 void compiler::print_function(const gsc::function_ptr& func)
@@ -1750,7 +1750,7 @@ void compiler::print_instruction(const gsc::instruction_ptr& inst)
 
 void compiler::print_label(const std::string& label)
 {
-	printf("\t%s\n", label.data());
+	printf("  %s\n", label.data());
 }
 
 } // namespace IW6
