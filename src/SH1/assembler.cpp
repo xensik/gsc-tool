@@ -84,7 +84,7 @@ void assembler::assemble(std::string& data)
 					continue;
 				}
 
-				LOG_ERROR("invalid instruction inside endswitch \"%s\"!", line.c_str());
+				LOG_ERROR("invalid instruction inside endswitch \"%s\"!", line.data());
 				return;
 			}
 			else
@@ -244,7 +244,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_CallBuiltinMethodPointer:
 	case opcode::OP_GetAnimObject:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[1])));
+		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
 		break;
 	case opcode::OP_CreateLocalVariable:
 	case opcode::OP_RemoveLocalVariables:
@@ -262,20 +262,20 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_EvalLocalVariableObjectCached:
 	case opcode::OP_EvalNewLocalArrayRefCached0:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[1])));
+		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
 		break;
 	case opcode::OP_GetNegByte:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::int8_t>(static_cast<std::int8_t>(std::stol(inst->data[1])));
+		script_->write<std::int8_t>(static_cast<std::int8_t>(std::stol(inst->data[0])));
 		break;
 	case opcode::OP_GetUnsignedShort:
 	case opcode::OP_waittillmatch:// SH1 seems remove placeholder
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::uint16_t>(static_cast<std::uint16_t>(std::stol(inst->data[1])));
+		script_->write<std::uint16_t>(static_cast<std::uint16_t>(std::stol(inst->data[0])));
 		break;
 	case opcode::OP_GetNegUnsignedShort:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::int16_t>(static_cast<std::int16_t>(std::stol(inst->data[1])));
+		script_->write<std::int16_t>(static_cast<std::int16_t>(std::stol(inst->data[0])));
 	case opcode::OP_JumpOnFalseExpr:
 	case opcode::OP_JumpOnTrueExpr:
 	case opcode::OP_JumpOnFalse:
@@ -293,17 +293,17 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 		break;
 	case opcode::OP_GetInteger:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::int32_t>(std::stol(inst->data[1]));
+		script_->write<std::int32_t>(std::stol(inst->data[0]));
 		break;
 	case opcode::OP_GetFloat:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<float>(std::stof(inst->data[1]));
+		script_->write<float>(std::stof(inst->data[0]));
 		break;
 	case opcode::OP_GetVector: // SH1 total size is 4. op + 3 bytes !!!
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
+		script_->write<float>(std::stof(inst->data[0]));
 		script_->write<float>(std::stof(inst->data[1]));
 		script_->write<float>(std::stof(inst->data[2]));
-		script_->write<float>(std::stof(inst->data[3]));
 		break;
 	case opcode::OP_GetBuiltinFunction:
 		this->assemble_builtin_call(inst, false, false);
@@ -361,13 +361,13 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_GetIString:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		script_->write<std::uint8_t>(0); // SH1: 1 bytes placeholder
-		stack_->write_c_string(utils::string::get_string_literal(inst->data[1]));
+		stack_->write_c_string(utils::string::get_string_literal(inst->data[0]));
 		break;
 	case opcode::OP_GetAnimation:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		script_->write<std::uint16_t>(0); // SH1: 2 byte placeholder
+		stack_->write_c_string(utils::string::get_string_literal(inst->data[0]));
 		stack_->write_c_string(utils::string::get_string_literal(inst->data[1]));
-		stack_->write_c_string(utils::string::get_string_literal(inst->data[2]));
 		break;
 	case opcode::OP_EvalLevelFieldVariable:
 	case opcode::OP_EvalAnimFieldVariable:
@@ -386,7 +386,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_GetAnimTree:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		script_->write<std::uint8_t>(0);
-		stack_->write_c_string(utils::string::get_string_literal(inst->data[1]));
+		stack_->write_c_string(utils::string::get_string_literal(inst->data[0]));
 		break;
 	case opcode::OP_endswitch:
 		this->assemble_end_switch(inst);
@@ -405,20 +405,20 @@ void assembler::assemble_builtin_call(const gsc::instruction_ptr& inst, bool met
 
 	if (arg_num)
 	{
-		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[1])));
+		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
 
 		if (method)
-			id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : resolver::builtin_method_id(inst->data[2]);
+			id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_method_id(inst->data[1]);
 		else
-			id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : resolver::builtin_func_id(inst->data[2]);
+			id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_func_id(inst->data[1]);
 
 	}
 	else
 	{
 		if (method)
-			id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_method_id(inst->data[1]);
+			id = inst->data[0].substr(0, 3) == "id#" ? std::stol(inst->data[0].substr(3)) : resolver::builtin_method_id(inst->data[0]);
 		else
-			id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_func_id(inst->data[1]);
+			id = inst->data[0].substr(0, 3) == "id#" ? std::stol(inst->data[0].substr(3)) : resolver::builtin_func_id(inst->data[0]);
 	}
 
 	script_->write<std::uint16_t>(id);
@@ -428,7 +428,7 @@ void assembler::assemble_local_call(const gsc::instruction_ptr& inst, bool threa
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
-	std::int32_t addr = this->resolve_function(inst->data[1]);
+	std::int32_t addr = this->resolve_function(inst->data[0]);
 
 	std::int32_t offset = addr - inst->index - 1;
 
@@ -436,7 +436,7 @@ void assembler::assemble_local_call(const gsc::instruction_ptr& inst, bool threa
 
 	if (thread)
 	{
-		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[2])));
+		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[1])));
 	}
 }
 
@@ -449,28 +449,28 @@ void assembler::assemble_far_call(const gsc::instruction_ptr& inst, bool thread)
 
 	if (thread)
 	{
-		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[1])));
+		script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
 
-		file_id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : resolver::file_id(inst->data[2]);
-		func_id = inst->data[3].substr(0, 3) == "id#" ? std::stol(inst->data[3].substr(3)) : resolver::token_id(inst->data[3]);
-	}
-	else
-	{
 		file_id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : resolver::file_id(inst->data[1]);
 		func_id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : resolver::token_id(inst->data[2]);
 	}
+	else
+	{
+		file_id = inst->data[0].substr(0, 3) == "id#" ? std::stol(inst->data[0].substr(3)) : resolver::file_id(inst->data[0]);
+		func_id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : resolver::token_id(inst->data[1]);
+	}
 
 	stack_->write<std::uint16_t>(file_id);
-	if (file_id == 0) stack_->write_c_string(thread ? inst->data[2] : inst->data[1]);
+	if (file_id == 0) stack_->write_c_string(thread ? inst->data[1] : inst->data[0]);
 	stack_->write<std::uint16_t>(func_id);
-	if (func_id == 0) stack_->write_c_string(thread ? inst->data[3] : inst->data[2]);
+	if (func_id == 0) stack_->write_c_string(thread ? inst->data[2] : inst->data[1]);
 }
 
 void assembler::assemble_switch(const gsc::instruction_ptr& inst)
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
-	std::int32_t addr = this->resolve_label(inst, inst->data[1]);
+	std::int32_t addr = this->resolve_label(inst, inst->data[0]);
 
 	script_->write<std::int32_t>(addr - inst->index - 4);
 }
@@ -481,9 +481,9 @@ void assembler::assemble_end_switch(const gsc::instruction_ptr& inst)
 
 	std::uint16_t casenum = 0;
 
-	if (utils::string::is_number(inst->data[1]))
+	if (utils::string::is_number(inst->data[0]))
 	{
-		casenum = std::stol(inst->data[1]);
+		casenum = std::stol(inst->data[0]);
 	}
 	else
 	{
@@ -496,26 +496,26 @@ void assembler::assemble_end_switch(const gsc::instruction_ptr& inst)
 
 	for (std::uint16_t i = 0; i < casenum; i++)
 	{
-		if (inst->data[2 + (3 * i)] == "case")
+		if (inst->data[1 + (3 * i)] == "case")
 		{
 			script_->write<uint32_t>(i + 1);
-			stack_->write_c_string(utils::string::get_string_literal(inst->data[2 + (3 * i) + 1]));
+			stack_->write_c_string(utils::string::get_string_literal(inst->data[1 + (3 * i) + 1]));
 
 			internal_index += 4;
 
-			std::int32_t addr = this->resolve_label(inst, inst->data[2 + (3 * i) + 2]);
+			std::int32_t addr = this->resolve_label(inst, inst->data[1 + (3 * i) + 2]);
 
 			this->assemble_offset(addr - internal_index);
 
 			internal_index += 3;
 		}
-		else if (inst->data[2 + (3 * i)] == "default")
+		else if (inst->data[1 + (3 * i)] == "default")
 		{
 			script_->write<uint32_t>(0);
 			stack_->write_c_string("\x01");
 
 			internal_index += 4;
-			std::int32_t addr = this->resolve_label(inst, inst->data[2 + (3 * i) + 1]);
+			std::int32_t addr = this->resolve_label(inst, inst->data[1 + (3 * i) + 1]);
 
 			this->assemble_offset(addr - internal_index);
 
@@ -530,13 +530,13 @@ void assembler::assemble_field_variable(const gsc::instruction_ptr& inst)
 
 	std::uint16_t field_id = 0;
 
-	if (inst->data[1].substr(0, 3) == "id#")
+	if (inst->data[0].substr(0, 3) == "id#")
 	{
-		field_id = (std::uint16_t)std::stol(inst->data[1].substr(3));
+		field_id = (std::uint16_t)std::stol(inst->data[0].substr(3));
 	}
 	else
 	{
-		field_id = resolver::token_id(inst->data[1]);
+		field_id = resolver::token_id(inst->data[0]);
 
 		if (field_id == 0)
 		{
@@ -549,7 +549,7 @@ void assembler::assemble_field_variable(const gsc::instruction_ptr& inst)
 	if (field_id > 38305)
 	{
 		stack_->write<std::uint16_t>(0);
-		stack_->write_c_string(inst->data[1]);
+		stack_->write_c_string(inst->data[0]);
 	}
 }
 
@@ -557,7 +557,7 @@ void assembler::assemble_jump(const gsc::instruction_ptr& inst, bool expr, bool 
 {
 	script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
-	std::int32_t addr = this->resolve_label(inst, inst->data[1]);
+	std::int32_t addr = this->resolve_label(inst, inst->data[0]);
 
 	if (expr)
 	{
