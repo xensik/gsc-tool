@@ -118,7 +118,7 @@ RGX_DEFAULT		    (.|\n)
 \^			        { return yy::parser::make_BITWISE_EXOR(); }
 
 {RGX_FILEPATH}		{ return yy::parser::make_FILEPATH(std::string(yytext)); }
-{RGX_IDENTIFIER}	{ return yy::parser::make_IDENTIFIER(std::string(yytext)); }
+{RGX_IDENTIFIER}	{ return yy::parser::make_IDENTIFIER(utils::string::to_lower(yytext)); }
 \&{RGX_STRING}	    { return yy::parser::make_STRING_LOC(std::string(yytext)); }
 {RGX_STRING}	    { return yy::parser::make_STRING(std::string(yytext)); }
 {RGX_FLOAT}		    { return yy::parser::make_FLOAT(std::string(yytext)); }
