@@ -10,7 +10,7 @@ namespace utils
 
 byte_buffer::byte_buffer()
 {
-	data_.resize(0x100000);
+	data_.resize(0x1000000);
 	std::fill(data_.begin(), data_.end(), 0);
 	size_ = data_.size();
 	pos_ = 0;
