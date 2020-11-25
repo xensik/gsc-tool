@@ -84,6 +84,25 @@ void compiler::compile_script(const gsc::script_ptr& script)
     LOG_DEBUG("files included: %zu", includes_.size());
     LOG_DEBUG("animtrees used: %zu", animtrees_.size());
     LOG_DEBUG("functions compiled: %zu",assembly_.size());
+
+    for (auto& func : assembly_)
+	{
+		this->print_function(func);
+
+		for (auto& inst : func->instructions)
+		{
+			const auto itr = func->labels.find(inst->index);
+
+			if (itr != func->labels.end())
+			{
+				this->print_label(itr->second);
+			}
+
+			this->print_instruction(inst);
+		}
+	}
+
+    LOG_DEBUG("----------------------------------");
 }
 
 void compiler::emit_include(const gsc::include_ptr& include)
@@ -110,7 +129,12 @@ void compiler::emit_thread(const gsc::thread_ptr& func)
     function_->name = func->name->value;
     
     emit_parameters(func->params);
-    emit_block(func->block);
+
+    gsc::block ctx;
+    blocks_.push_back(ctx);
+    emit_block(func->block, true);
+    blocks_.pop_back();
+    
     emit_instruction(opcode::OP_End);
 
     LOG_DEBUG("function '%s' with %zu instructions.",function_->name.data(), function_->instructions.size());
@@ -131,15 +155,16 @@ void compiler::emit_parameters(const gsc::parameters_ptr& params)
     emit_instruction(opcode::OP_checkclearparams);
 }
 
-void compiler::emit_block(const gsc::block_ptr& block)
+void compiler::emit_block(const gsc::block_ptr& block, bool last)
 {
     for(const auto& stmt : block->stmts)
     {
-        emit_statement(stmt);
+        bool last_ = (&stmt == &block->stmts.back() && last) ? true : false;
+        emit_statement(stmt, last_);
     }
 }
 
-void compiler::emit_statement(const gsc::stmt_ptr& stmt)
+void compiler::emit_statement(const gsc::stmt_ptr& stmt, bool last)
 {
     switch(stmt.as_node->type)
     {
@@ -168,10 +193,10 @@ void compiler::emit_statement(const gsc::stmt_ptr& stmt)
             emit_statement_waittillframeend(stmt.as_waittillframeend);
             break;
         case gsc::node_type::stmt_if:
-            emit_statement_if(stmt.as_if);
+            emit_statement_if(stmt.as_if, last);
             break;
         case gsc::node_type::stmt_ifelse:
-            emit_statement_ifelse(stmt.as_ifelse);
+            emit_statement_ifelse(stmt.as_ifelse, last);
             break;
         case gsc::node_type::stmt_while:
             emit_statement_while(stmt.as_while);
@@ -180,16 +205,20 @@ void compiler::emit_statement(const gsc::stmt_ptr& stmt)
             emit_statement_for(stmt.as_for);
             break;
         case gsc::node_type::stmt_foreach:
-            emit_statement_foreach(stmt.as_foreach);
+            LOG_ERROR("FOREACH STATEMENT NOT SUPPORTED!");
+            //emit_statement_foreach(stmt.as_foreach);
             break;
         case gsc::node_type::stmt_switch:
-            emit_statement_switch(stmt.as_switch);
+            LOG_ERROR("SWITCH STATEMENT NOT SUPPORTED!");
+            //emit_statement_switch(stmt.as_switch);
             break;
         case gsc::node_type::stmt_case:
-            emit_statement_case(stmt.as_case);
+            LOG_ERROR("CASE STATEMENT NOT SUPPORTED!");
+            //emit_statement_case(stmt.as_case);
             break;
         case gsc::node_type::stmt_default:
-            emit_statement_default(stmt.as_default);
+            LOG_ERROR("DEFAULT STATEMENT NOT SUPPORTED!");
+            //emit_statement_default(stmt.as_default);
             break;
         case gsc::node_type::stmt_break:
             emit_statement_break(stmt.as_break);
@@ -281,9 +310,8 @@ void compiler::emit_statement_waittillframeend(const gsc::stmt_waittillframeend_
     emit_instruction(opcode::OP_waittillFrameEnd);
 }
 
-void compiler::emit_statement_if(const gsc::stmt_if_ptr& stmt)
+void compiler::emit_statement_if(const gsc::stmt_if_ptr& stmt, bool last)
 {
-    // need bool isLastStatement ?
     auto out_loc = create_label();
 
     if(stmt->expr.as_node->type == gsc::node_type::expr_not)
@@ -299,16 +327,26 @@ void compiler::emit_statement_if(const gsc::stmt_if_ptr& stmt)
         inst->data.push_back(out_loc);
     }
     
-    emit_block(stmt->block);
+    gsc::block ctx;
+    transfer_block(blocks_.back(), ctx);
+    blocks_.push_back(ctx);
+    emit_block(stmt->block, last);
+    blocks_.pop_back();
     
-    // if lastStatement -> emit end, else emit remove local variables
+    if(last)
+    {
+        emit_instruction(opcode::OP_End);
+    }
+    else
+    {
+        /* emit remove local variables */
+    }
 
     insert_label(out_loc);
 }
 
-void compiler::emit_statement_ifelse(const gsc::stmt_ifelse_ptr& stmt)
+void compiler::emit_statement_ifelse(const gsc::stmt_ifelse_ptr& stmt, bool last)
 {
-    // need bool isLastStatement ?
     auto else_loc = create_label();
     auto out_loc = create_label();
 
@@ -325,29 +363,45 @@ void compiler::emit_statement_ifelse(const gsc::stmt_ifelse_ptr& stmt)
         inst->data.push_back(else_loc);
     }
     
-    emit_block(stmt->block_if);
+    gsc::block ctx;
+    transfer_block(blocks_.back(), ctx);
+    blocks_.push_back(ctx);
+    emit_block(stmt->block_if, last);
+    blocks_.pop_back();
     
     // emit remove local vars
-    // if lastStatement -> emit end, else emit OP_jump to out
-    // ...
-
-    auto& jmp = emit_instruction(opcode::OP_jump);
-    jmp->data.push_back(out_loc);
+    if(last)
+    {
+        emit_instruction(opcode::OP_End);
+    }
+    else
+    {
+        auto& jmp = emit_instruction(opcode::OP_jump);
+        jmp->data.push_back(out_loc);
+    }
 
     insert_label(else_loc);
 
-    emit_block(stmt->block_else);
+    gsc::block ctx2;
+    transfer_block(blocks_.back(), ctx2);
+    blocks_.push_back(ctx2);
+    emit_block(stmt->block_else, last);
+    blocks_.pop_back();
 
-    // if lastStatement -> emit end, else removelocalvars
-    //...
+    if(last)
+    {
+        emit_instruction(opcode::OP_End);
+    }
+    else
+    {
+        /* emit remove local variables */
+    }
 
     insert_label(out_loc);
 }
 
 void compiler::emit_statement_while(const gsc::stmt_while_ptr& stmt)
 {
-    // set can break, can continue
-
     // emit create local variables!
     auto cont_loc = create_label();
     auto end_loc = create_label();
@@ -358,7 +412,14 @@ void compiler::emit_statement_while(const gsc::stmt_while_ptr& stmt)
     jmpout->data.push_back(end_loc);
 
     // emit block
-    emit_block(stmt->block);
+    gsc::block ctx;
+    ctx.allow_break = true;
+    ctx.allow_continue = true;
+    ctx.loc_break = end_loc;
+    ctx.loc_continue = cont_loc;
+    blocks_.push_back(ctx);
+    emit_block(stmt->block, false);
+    blocks_.pop_back();
     
     // jump back to begin
     insert_label(cont_loc);
@@ -371,24 +432,57 @@ void compiler::emit_statement_while(const gsc::stmt_while_ptr& stmt)
 
 void compiler::emit_statement_for(const gsc::stmt_for_ptr& stmt)
 {
-    // set can break, can continue
+    auto cont_loc = create_label();
+    auto end_loc = create_label();
 
-    // -------------------------------------
     // emit create local variables!
-    //emit precond
 
-    //emit condition + label loop begin
+    //emit precond
+    emit_expression(stmt->pre_expr);
+
+    auto begin_loc = insert_label();
+    emit_expression(stmt->expr);
 
     // emit block
+    gsc::block ctx;
+    ctx.allow_break = true;
+    ctx.allow_continue = true;
+    ctx.loc_break = end_loc;
+    ctx.loc_continue = cont_loc;
+    blocks_.push_back(ctx);
+    emit_block(stmt->block, false);
+    blocks_.pop_back();
 
+    // continue
+    insert_label(cont_loc);
     // emit post cond
-    // jumpback loop begin
-    // label loop out ( for break stmt )
+    emit_expression(stmt->post_expr);
+    // jump back to begin
+    auto& jmpback = emit_instruction(opcode::OP_jumpback);
+    jmpback->data.push_back(begin_loc);
+    
+    // break
+    insert_label(end_loc);
 }
 
 void compiler::emit_statement_foreach(const gsc::stmt_foreach_ptr& stmt)
 {
-    // set can break, can continue???
+    /*auto cont_loc = create_label();
+    auto end_loc = create_label();
+
+
+
+    // emit block
+    gsc::block ctx;
+    ctx.allow_break = true;
+    ctx.allow_continue = true;
+    ctx.loc_break = end_loc;
+    ctx.loc_continue = cont_loc;
+    blocks_.push_back(ctx);
+    emit_block(stmt->block, false);
+    blocks_.pop_back();
+
+    */
 }
 
 void compiler::emit_statement_switch(const gsc::stmt_switch_ptr& stmt)
@@ -417,18 +511,32 @@ void compiler::emit_statement_default(const gsc::stmt_default_ptr& stmt)
 
 void compiler::emit_statement_break(const gsc::stmt_break_ptr& stmt)
 {
-    // can break?
+    if(blocks_.back().allow_break)
+    {
+        // remove_localvariables of current block
 
-    // remove_localvariables of current block
-    // emit OP_jump location (loop end out )
+        auto& inst = emit_instruction(opcode::OP_jump);
+        inst->data.push_back(blocks_.back().loc_break);
+    }
+    else
+    {
+        LOG_ERROR("illegal break statement outside a loop.");
+    }
 }
 
 void compiler::emit_statement_continue(const gsc::stmt_continue_ptr& stmt)
 {
-    // can continue?
+    if(blocks_.back().allow_continue)
+    {
+        // remove_localvariables of current block
 
-    // remove_localvariables of current block
-    // emit OP_jump location (loop begin )
+        auto& inst = emit_instruction(opcode::OP_jump);
+        inst->data.push_back(blocks_.back().loc_continue);
+    }
+    else
+    {
+        LOG_ERROR("illegal continue statement outside a loop.");
+    }
 }
 
 void compiler::emit_statement_return(const gsc::stmt_return_ptr& stmt)
@@ -533,6 +641,9 @@ void compiler::emit_expression(const gsc::expr_ptr& expr)
             break;
         case gsc::node_type::expr_vector:
             emit_expr_vector(expr.as_vector_expr);
+            break;
+        default:
+            LOG_ERROR("UNKNOWN EXPRESSION");
             break;
     }
 }
@@ -691,6 +802,9 @@ void compiler::emit_expr_binary(const gsc::expr_binary_ptr& expr)
         case gsc::node_type::expr_mod:
             emit_instruction(opcode::OP_mod);
             break;
+        default:
+            LOG_ERROR("UNKNOWN BINARY EXPR!");
+            break;
     }
 }
 
@@ -732,7 +846,7 @@ void compiler::emit_expr_not(const gsc::expr_not_ptr& expr)
 
 void compiler::emit_expr_call(const gsc::expr_call_ptr& expr)
 {
-    bool thread, method, builtin, far, local = false;
+    bool thread = false, method = false, builtin = false, far = false, local = false;
     std::string file, name;
     std::uint32_t args = 0;
 
@@ -768,6 +882,7 @@ void compiler::emit_expr_call(const gsc::expr_call_ptr& expr)
 
         if(file != "")
         {
+            LOG_DEBUG("is far");
             far = true;
         }
         else
@@ -791,6 +906,9 @@ void compiler::emit_expr_call(const gsc::expr_call_ptr& expr)
             emit_instruction(opcode::OP_PreScriptCall);
 
         emit_expr_arguments(expr->func.as_func->args);
+
+        if(method)
+            emit_expression(expr->obj);
 
         if(far)
             emit_expr_call_far(file, name, args, method, thread, false);
@@ -947,7 +1065,7 @@ void compiler::emit_expr_call_builtin(const std::string& func, int args, bool me
         auto& inst = emit_instruction(opcode::OP_CallBuiltin0);
         inst->data.push_back(func);
     }
-    if(args == 1 && method)
+    else if(args == 1 && method)
     {
         auto& inst = emit_instruction(opcode::OP_CallBuiltinMethod1);
         inst->data.push_back(func);
@@ -957,7 +1075,7 @@ void compiler::emit_expr_call_builtin(const std::string& func, int args, bool me
         auto& inst = emit_instruction(opcode::OP_CallBuiltin1);
         inst->data.push_back(func);
     }
-    if(args == 2 && method)
+    else if(args == 2 && method)
     {
         auto& inst = emit_instruction(opcode::OP_CallBuiltinMethod2);
         inst->data.push_back(func);
@@ -967,7 +1085,7 @@ void compiler::emit_expr_call_builtin(const std::string& func, int args, bool me
         auto& inst = emit_instruction(opcode::OP_CallBuiltin2);
         inst->data.push_back(func);
     }
-    if(args == 3 && method)
+    else if(args == 3 && method)
     {
         auto& inst = emit_instruction(opcode::OP_CallBuiltinMethod3);
         inst->data.push_back(func);
@@ -977,7 +1095,7 @@ void compiler::emit_expr_call_builtin(const std::string& func, int args, bool me
         auto& inst = emit_instruction(opcode::OP_CallBuiltin3);
         inst->data.push_back(func);
     }
-    if(args == 4 && method)
+    else if(args == 4 && method)
     {
         auto& inst = emit_instruction(opcode::OP_CallBuiltinMethod4);
         inst->data.push_back(func);
@@ -987,7 +1105,7 @@ void compiler::emit_expr_call_builtin(const std::string& func, int args, bool me
         auto& inst = emit_instruction(opcode::OP_CallBuiltin4);
         inst->data.push_back(func);
     }
-    if(args == 5 && method)
+    else if(args == 5 && method)
     {
         auto& inst = emit_instruction(opcode::OP_CallBuiltinMethod5);
         inst->data.push_back(func);
@@ -1562,6 +1680,77 @@ auto compiler::insert_label() -> std::string
 void compiler::insert_label(const std::string& name)
 {
     function_->labels.insert({index_, name});
+}
+
+void compiler::transfer_block(const gsc::block& parent, gsc::block& child)
+{
+    child.allow_break = parent.allow_break;
+    child.allow_continue = parent.allow_continue;
+    child.loc_break = parent.loc_break;
+    child.loc_continue = parent.loc_continue;
+    //child.allow_case = parent.allow_case;
+    //child.allow_default = parent.allow_default;
+}
+
+
+void compiler::print_opcodes(std::uint32_t index, std::uint32_t size)
+{
+	printf("\t\t");
+}
+
+void compiler::print_function(const gsc::function_ptr& func)
+{
+	printf("\n");
+	printf("%s\n", func->name.data());
+}
+
+void compiler::print_instruction(const gsc::instruction_ptr& inst)
+{
+	switch (opcode(inst->opcode))
+	{
+	case opcode::OP_endswitch:
+		this->print_opcodes(inst->index, 3);
+		printf("%s", resolver::opcode_name(opcode(inst->opcode)).data());
+		printf(" %s\n", inst->data[0].data());
+		{
+			std::uint32_t totalcase = std::stoul(inst->data[0]);
+			auto index = 0;
+			for (auto casenum = 0u; casenum < totalcase; casenum++)
+			{
+				this->print_opcodes(inst->index, 7);
+				if (inst->data[1 + index] == "case")
+				{
+					printf("%s %s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data());
+					index += 3;
+				}
+				else if (inst->data[1 + index] == "default")
+				{
+					printf("%s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data());
+					index += 2;
+				}
+				if (casenum != totalcase - 1)
+				{
+					printf("\n");
+				}
+			}
+		}
+		break;
+	default:
+		this->print_opcodes(inst->index, inst->size);
+		printf("%s", resolver::opcode_name(opcode(inst->opcode)).data());
+		for (auto& d : inst->data)
+		{
+			printf(" %s", d.data());
+		}
+		break;
+	}
+
+	printf("\n");
+}
+
+void compiler::print_label(const std::string& label)
+{
+	printf("\t%s\n", label.data());
 }
 
 } // namespace IW6

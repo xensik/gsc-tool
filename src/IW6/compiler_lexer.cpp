@@ -1425,7 +1425,7 @@ YY_RULE_SETUP
 case 87:
 YY_RULE_SETUP
 #line 121 "IW6.lexer.lpp"
-{ return yy::parser::make_IDENTIFIER(std::string(yytext)); }
+{ return yy::parser::make_IDENTIFIER(utils::string::to_lower(yytext)); }
 	YY_BREAK
 case 88:
 /* rule 88 can match eol */

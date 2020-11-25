@@ -36,8 +36,8 @@ private:
 	void emit_using_animtree(const gsc::using_animtree_ptr& animtree);
 	void emit_thread(const gsc::thread_ptr& thread);
 	void emit_parameters(const gsc::parameters_ptr& params);
-	void emit_block(const gsc::block_ptr& block);
-	void emit_statement(const gsc::stmt_ptr& stmt);
+	void emit_block(const gsc::block_ptr& block, bool last);
+	void emit_statement(const gsc::stmt_ptr& stmt, bool last);
 	void emit_statement_call(const gsc::stmt_call_ptr& stmt);
 	void emit_statement_assign(const gsc::stmt_assign_ptr& stmt);
 	void emit_statement_endon(const gsc::stmt_endon_ptr& stmt);
@@ -46,8 +46,8 @@ private:
 	void emit_statement_waittill(const gsc::stmt_waittill_ptr& stmt);
 	void emit_statement_waittillmatch(const gsc::stmt_waittillmatch_ptr& stmt);
 	void emit_statement_waittillframeend(const gsc::stmt_waittillframeend_ptr& stmt);
-	void emit_statement_if(const gsc::stmt_if_ptr& stmt);
-	void emit_statement_ifelse(const gsc::stmt_ifelse_ptr& stmt);
+	void emit_statement_if(const gsc::stmt_if_ptr& stmt, bool last);
+	void emit_statement_ifelse(const gsc::stmt_ifelse_ptr& stmt, bool last);
 	void emit_statement_while(const gsc::stmt_while_ptr& stmt);
 	void emit_statement_for(const gsc::stmt_for_ptr& stmt);
 	void emit_statement_foreach(const gsc::stmt_foreach_ptr& stmt);
@@ -101,6 +101,13 @@ private:
 	auto create_label() -> std::string;
 	auto insert_label() -> std::string;
 	void insert_label(const std::string& label);
+	void transfer_block(const gsc::block& parent, gsc::block& child);
+
+	// debug
+	void print_opcodes(std::uint32_t index, std::uint32_t size);
+	void print_function(const gsc::function_ptr& func);
+	void print_instruction(const gsc::instruction_ptr& inst);
+	void print_label(const std::string& label);
 };
 
 } // namespace IW6
