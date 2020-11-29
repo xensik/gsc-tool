@@ -52,7 +52,7 @@ void decompiler::decompile_function(const gsc::function_ptr& func)
 
 	auto& block = func_->block;
 
-	gsc::block ctx;
+	gsc::context ctx;
 	ctx.loc_end = block->stmts.back().as_node->location;
 	block->stmts.pop_back(); // remove last return
 
@@ -2066,7 +2066,7 @@ void decompiler::decompile_break_continue(const gsc::block_ptr& block)
 
 void decompiler::decompile_if(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end)
 {
-	gsc::block ctx;
+	gsc::context ctx;
 	ctx.loc_end =block->stmts.at(begin).as_cond->value;
 	ctx.loc_break = blocks_.back().loc_break;
 	ctx.loc_continue = blocks_.back().loc_continue;
@@ -2094,7 +2094,7 @@ void decompiler::decompile_if(const gsc::block_ptr& block, std::uint32_t begin, 
 
 void decompiler::decompile_ifelse(const gsc::block_ptr& block, std::uint32_t start, std::uint32_t end)
 {
-	gsc::block ctx;
+	gsc::context ctx;
 	ctx.loc_end = block->stmts.at(end).as_node->location;
 	ctx.loc_break = blocks_.back().loc_break;
 	ctx.loc_continue = blocks_.back().loc_continue;
@@ -2132,7 +2132,7 @@ void decompiler::decompile_ifelse(const gsc::block_ptr& block, std::uint32_t sta
 		end_index = find_location_index(block, end_loc);
 	}
 
-	gsc::block ctx2;
+	gsc::context ctx2;
 	ctx2.loc_end = end_loc;
 	ctx2.loc_break = blocks_.back().loc_break;
 	ctx2.loc_continue = blocks_.back().loc_continue;
@@ -2155,7 +2155,7 @@ void decompiler::decompile_ifelse(const gsc::block_ptr& block, std::uint32_t sta
 
 void decompiler::decompile_last_ifelse(const gsc::block_ptr& block, std::uint32_t start, std::uint32_t end)
 {
-	gsc::block ctx;
+	gsc::context ctx;
 	ctx.is_last = true;
 
 	auto inner_end = find_location_index(block, block->stmts.at(start).as_cond->value) - 1;
@@ -2187,7 +2187,7 @@ void decompiler::decompile_last_ifelse(const gsc::block_ptr& block, std::uint32_
 	}
 	else
 	{
-		gsc::block ctx2;
+		gsc::context ctx2;
 		ctx2.is_last = true;
 
 		auto else_block = std::make_unique<gsc::node_block>(location);
@@ -2214,7 +2214,7 @@ void decompiler::decompile_last_ifelse(const gsc::block_ptr& block, std::uint32_
 
 void decompiler::decompile_infinite(const gsc::block_ptr& block, std::uint32_t start, std::uint32_t end)
 {
-	gsc::block ctx;
+	gsc::context ctx;
 	ctx.loc_break = last_location_index(block, end) ? blocks_.back().loc_end : block->stmts.at(end+1).as_node->location;
 	ctx.loc_end = block->stmts.at(end).as_node->location;
 	ctx.loc_continue = block->stmts.at(end).as_node->location;
@@ -2307,7 +2307,7 @@ void decompiler::decompile_loop(const gsc::block_ptr& block, std::uint32_t start
 
 void decompiler::decompile_while(const gsc::block_ptr& block, std::uint32_t start, std::uint32_t end)
 {
-	gsc::block ctx;
+	gsc::context ctx;
 	ctx.loc_break = block->stmts.at(start).as_cond->value;
 	ctx.loc_end = block->stmts.at(end).as_node->location;
 	ctx.loc_continue = block->stmts.at(end).as_node->location;
@@ -2337,7 +2337,7 @@ void decompiler::decompile_while(const gsc::block_ptr& block, std::uint32_t star
 
 void decompiler::decompile_for(const gsc::block_ptr& block, std::uint32_t start, std::uint32_t end)
 {
-	gsc::block ctx;
+	gsc::context ctx;
 	ctx.loc_break = block->stmts.at(start).as_cond->value;
 	ctx.loc_end = block->stmts.at(end - 1).as_node->location;
 	ctx.loc_continue = block->stmts.at(end - 1).as_node->location;
@@ -2378,7 +2378,7 @@ void decompiler::decompile_for(const gsc::block_ptr& block, std::uint32_t start,
 
 void decompiler::decompile_foreach(const gsc::block_ptr& block, std::uint32_t begin, std::uint32_t end)
 {
-	gsc::block ctx;
+	gsc::context ctx;
 	ctx.loc_break = block->stmts.at(begin).as_cond->value;
 	ctx.loc_end = block->stmts.at(end - 1).as_node->location;
 	ctx.loc_continue = block->stmts.at(end - 1).as_node->location;
@@ -2419,7 +2419,7 @@ void decompiler::decompile_foreach(const gsc::block_ptr& block, std::uint32_t be
 
 void decompiler::decompile_switch(const gsc::block_ptr& block, std::uint32_t start)
 {
-	gsc::block ctx;
+	gsc::context ctx;
 	ctx.loc_continue = blocks_.back().loc_continue;
 
 	auto location = block->stmts.at(start).as_node->location;

@@ -43,7 +43,7 @@ using namespace std::literals;
 // GSC Types
 #include "types/assembly.hpp"
 #include "types/nodetree.hpp"
-#include "types/block.hpp"
+#include "types/context.hpp"
 
 // GSC Interfaces
 #include "interfaces/assembler.hpp"

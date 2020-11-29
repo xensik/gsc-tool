@@ -19,7 +19,7 @@ class decompiler : public gsc::decompiler
 	std::vector<std::string> 						local_vars_;
 	std::stack<gsc::node_ptr> 						stack_;
 	std::vector<std::string> 						expr_labels_;
-	std::vector<gsc::block> 						blocks_;
+	std::vector<gsc::context> 						blocks_;
 
 public:
 	auto output() -> std::string;
