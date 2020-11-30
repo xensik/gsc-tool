@@ -716,18 +716,18 @@ void compiler::emit_expr_call_pointer(const gsc::context_ptr& ctx, int args, boo
     {
         emit_opcode(ctx, opcode::OP_CallBuiltinMethodPointer, utils::string::va("%d", args));
     }
-    else if(thread && method && child)
+    /*else if(thread && method && child)
     {
         emit_opcode(ctx, opcode::OP_ScriptMethodChildThreadCallPointer, utils::string::va("%d", args));
-    }
+    }*/
     else if(thread && method && !child)
     {
         emit_opcode(ctx, opcode::OP_ScriptMethodThreadCallPointer, utils::string::va("%d", args));
     }
-    else if (thread && !method && child)
+    /*else if (thread && !method && child)
     {
         emit_opcode(ctx, opcode::OP_ScriptChildThreadCallPointer, utils::string::va("%d", args));
-    }
+    }*/
     else if(thread && !method && !child)
     {
         emit_opcode(ctx, opcode::OP_ScriptThreadCallPointer, utils::string::va("%d", args));
@@ -740,18 +740,18 @@ void compiler::emit_expr_call_pointer(const gsc::context_ptr& ctx, int args, boo
 
 void compiler::emit_expr_call_far(const gsc::context_ptr& ctx, const std::string& file, const std::string& func, int args, bool method, bool thread, bool child)
 {
-    if(thread && method && child)
+    /*if(thread && method && child)
     {
         emit_opcode(ctx, opcode::OP_ScriptFarMethodChildThreadCall, { utils::string::va("%d", args), file, func });
     }
-    else if(thread && method && !child)
+    else */if(thread && method && !child)
     {
         emit_opcode(ctx, opcode::OP_ScriptFarMethodThreadCall, { utils::string::va("%d", args), file, func });
     }
-   else if(thread && !method && child)
+    /*else if(thread && !method && child)
     {
         emit_opcode(ctx, opcode::OP_ScriptFarChildThreadCall, { utils::string::va("%d", args), file, func });
-    }
+    }*/
     else if(thread && !method && !child)
     {
         emit_opcode(ctx, opcode::OP_ScriptFarThreadCall, { utils::string::va("%d", args), file, func });

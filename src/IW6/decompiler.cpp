@@ -26,7 +26,7 @@ void decompiler::decompile(std::vector<gsc::function_ptr>& functions)
 
     for (auto& func : functions)
     {
-        auto name = std::make_unique<gsc::node_identifier>("",func->name.substr(4));
+        auto name = std::make_unique<gsc::node_identifier>("", func->name.substr(4));
         auto params = std::make_unique<gsc::node_parameters>("");
         auto block = std::make_unique<gsc::node_block>("");
         func_ = std::make_unique<gsc::node_thread>("", std::move(name),std::move(params),std::move(block));
@@ -83,12 +83,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 
         switch (opcode(inst->opcode))
         {
-        case opcode::OP_GetThisthread:
-        {
-            // TODO
-            LOG_ERROR("missing handler 'OP_GetThisthread'!");
-        }
-        break;
         case opcode::OP_GetLevel:
         case opcode::OP_GetLevelObject:
         {
@@ -656,12 +650,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             stack_.push(std::move(expr));
         }
         break;
-        case opcode::OP_ScriptFarChildThreadCall:
-        {
-            // TODO
-            LOG_ERROR("missing handler 'OP_ScriptFarChildThreadCall'!");
-        }
-        break;
         case opcode::OP_ScriptFarMethodThreadCall:
         {
             auto obj = gsc::expr_ptr(std::move(stack_.top()));
@@ -684,12 +672,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(location, std::move(file), std::move(name), std::move(args)));
             auto expr = std::make_unique<gsc::node_expr_call>(location, true, std::move(obj) ,std::move(func));
             stack_.push(std::move(expr));
-        }
-        break;
-        case opcode::OP_ScriptFarMethodChildThreadCall:
-        {
-            // TODO
-            LOG_ERROR("missing handler 'OP_ScriptFarMethodChildThreadCall'!");
         }
         break;
         case opcode::OP_ScriptFunctionCallPointer:
@@ -784,12 +766,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_pointer>(location, false, std::move(exprf), std::move(args)));
             auto expr = std::make_unique<gsc::node_expr_call>(location, true, std::move(obj) ,std::move(func));
             stack_.push(std::move(expr));
-        }
-        break;
-        case opcode::OP_ScriptMethodChildThreadCallPointer:
-        {
-            // TODO
-            LOG_ERROR("missing handler 'OP_ScriptMethodChildThreadCallPointer'!");
         }
         break;
         case opcode::OP_CallBuiltinPointer:
@@ -1547,18 +1523,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             local_vars_.push_back("var");
         }
         break;
-        case opcode::OP_SafeSetVariableFieldCached0:
-        {
-            // TODO
-            LOG_ERROR("missing handler 'OP_SafeSetVariableFieldCached0'!");
-        }
-        break;
-        case opcode::OP_SafeSetVariableFieldCached:
-        {
-            // TODO
-            LOG_ERROR("missing handler 'OP_SafeSetVariableFieldCached'!");
-        }
-        break;
         case opcode::OP_SafeSetWaittillVariableFieldCached:
         {
             auto node = std::make_unique<gsc::node_identifier>(location, local_vars_.at(std::stoul(inst->data[0])));
@@ -1702,15 +1666,8 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             stack_.push(std::move(node));
         }
         break;
-        case opcode::OP_CastFieldObject:
-        {
-            //continue;
-        }
-        break;
-        case  opcode::OP_CastBool:
-        {
-            //continue;
-        }
+        case opcode::OP_CastFieldObject: // no needed
+        case opcode::OP_CastBool: // no needed
         break;
         case opcode::OP_BoolNot:
         {

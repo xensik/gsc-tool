@@ -218,7 +218,6 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_mod:
     case opcode::OP_size:
     case opcode::OP_GetSelfObject:
-    case opcode::OP_SafeSetVariableFieldCached0:
     case opcode::OP_clearparams:
     case opcode::OP_checkclearparams:
     case opcode::OP_EvalLocalVariableRefCached0:
@@ -294,7 +293,6 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_EvalLocalArrayCached:
     case opcode::OP_EvalLocalArrayRefCached:
     case opcode::OP_SafeCreateVariableFieldCached:
-    case opcode::OP_SafeSetVariableFieldCached:
     case opcode::OP_SafeSetWaittillVariableFieldCached:
     case opcode::OP_EvalLocalVariableRefCached:
     case opcode::OP_SetNewLocalVariableFieldCached0:
@@ -328,9 +326,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_CallBuiltinPointer:
     case opcode::OP_CallBuiltinMethodPointer:
     case opcode::OP_ScriptThreadCallPointer:
-    case opcode::OP_ScriptChildThreadCallPointer:
     case opcode::OP_ScriptMethodThreadCallPointer:
-    case opcode::OP_ScriptMethodChildThreadCallPointer:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
         break;
@@ -342,9 +338,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
         this->assemble_far_call(inst, false);
         break;
     case opcode::OP_ScriptFarThreadCall:
-    case opcode::OP_ScriptFarChildThreadCall:
     case opcode::OP_ScriptFarMethodThreadCall:
-    case opcode::OP_ScriptFarMethodChildThreadCall:
         this->assemble_far_call(inst, true);
         break;
 // LOCAL CALL

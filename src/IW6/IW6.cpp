@@ -23,7 +23,6 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_GetSelfObject:
     case opcode::OP_GetAnimObject:
     case opcode::OP_GetLevelObject:
-    case opcode::OP_GetThisthread:
     case opcode::OP_GetZero:
     case opcode::OP_inc:
     case opcode::OP_dec:
@@ -72,7 +71,6 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_PreScriptCall:
     case opcode::OP_ScriptFunctionCallPointer:
     case opcode::OP_ScriptMethodCallPointer:
-    case opcode::OP_SafeSetVariableFieldCached0:
     case opcode::OP_EvalLocalVariableRefCached0:
     case opcode::OP_SetVariableField:
     case opcode::OP_SetLocalVariableFieldCached0:
@@ -86,16 +84,13 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_CallBuiltinPointer:
     case opcode::OP_CallBuiltinMethodPointer:
     case opcode::OP_ScriptThreadCallPointer:
-    case opcode::OP_ScriptChildThreadCallPointer:
     case opcode::OP_ScriptMethodThreadCallPointer:
-    case opcode::OP_ScriptMethodChildThreadCallPointer:
     case opcode::OP_CreateLocalVariable:
     case opcode::OP_RemoveLocalVariables:
     case opcode::OP_EvalLocalVariableCached:
     case opcode::OP_EvalLocalArrayCached:
     case opcode::OP_EvalLocalArrayRefCached:
     case opcode::OP_SafeCreateVariableFieldCached:
-    case opcode::OP_SafeSetVariableFieldCached:
     case opcode::OP_SafeSetWaittillVariableFieldCached:
     case opcode::OP_EvalLocalVariableRefCached:
     case opcode::OP_SetNewLocalVariableFieldCached0:
@@ -165,9 +160,7 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_ScriptLocalMethodThreadCall:
     case opcode::OP_ScriptLocalMethodChildThreadCall:
     case opcode::OP_ScriptFarThreadCall:
-    case opcode::OP_ScriptFarChildThreadCall:
     case opcode::OP_ScriptFarMethodThreadCall:
-    case opcode::OP_ScriptFarMethodChildThreadCall:
         return 5;
         break;
     case opcode::OP_GetAnimation:

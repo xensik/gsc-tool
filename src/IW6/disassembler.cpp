@@ -101,7 +101,6 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_GetGame:
     case opcode::OP_GetAnim:
     case opcode::OP_GetGameRef:
-    case opcode::OP_GetThisthread:
     case opcode::OP_GetLevelObject:
     case opcode::OP_GetAnimObject:
     case opcode::OP_GetSelfObject:
@@ -199,7 +198,6 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_EvalLocalVariableCached5:
     case opcode::OP_EvalLocalVariableRefCached0:
     case opcode::OP_EvalLocalArrayRefCached0:
-    case opcode::OP_SafeSetVariableFieldCached0:
     case opcode::OP_SetLocalVariableFieldCached0:
     case opcode::OP_ClearLocalVariableFieldCached0:
     case opcode::OP_SetVariableField:
@@ -211,7 +209,6 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_EvalLocalArrayCached:
     case opcode::OP_EvalLocalArrayRefCached:
     case opcode::OP_SafeCreateVariableFieldCached:
-    case opcode::OP_SafeSetVariableFieldCached:
     case opcode::OP_SafeSetWaittillVariableFieldCached:
     case opcode::OP_EvalLocalVariableRefCached:
     case opcode::OP_SetNewLocalVariableFieldCached0:
@@ -243,8 +240,6 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_CallBuiltinMethodPointer:
     case opcode::OP_ScriptThreadCallPointer:
     case opcode::OP_ScriptMethodThreadCallPointer:
-    case opcode::OP_ScriptMethodChildThreadCallPointer:
-    case opcode::OP_ScriptChildThreadCallPointer:
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
         break;
 // FAR CALL
@@ -255,9 +250,7 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
         this->disassemble_far_call(inst, false);
         break;
     case opcode::OP_ScriptFarThreadCall:
-    case opcode::OP_ScriptFarChildThreadCall:
     case opcode::OP_ScriptFarMethodThreadCall:
-    case opcode::OP_ScriptFarMethodChildThreadCall:
         this->disassemble_far_call(inst, true);
         break;
 // LOCAL CALL
