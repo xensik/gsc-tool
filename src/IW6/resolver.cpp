@@ -37,11 +37,11 @@ auto resolver::opcode_name(opcode id) -> std::string
 
 auto resolver::builtin_func_id(const std::string& name) -> std::uint16_t
 {
-    for (auto& field : builtin_function_map)
+    for (auto& func : builtin_function_map)
     {
-        if (utils::string::to_lower(field.second) == utils::string::to_lower(name))
+        if (utils::string::to_lower(func.second) == utils::string::to_lower(name))
         {
-            return field.first;
+            return func.first;
         }
     }
 
@@ -64,11 +64,11 @@ auto resolver::builtin_func_name(std::uint16_t id) -> std::string
 
 auto resolver::builtin_method_id(const std::string& name) -> std::uint16_t
 {
-    for (auto& field : builtin_method_map)
+    for (auto& method : builtin_method_map)
     {
-        if (utils::string::to_lower(field.second) == utils::string::to_lower(name))
+        if (utils::string::to_lower(method.second) == utils::string::to_lower(name))
         {
-            return field.first;
+            return method.first;
         }
     }
 
@@ -117,11 +117,12 @@ auto resolver::file_name(std::uint16_t id) -> std::string
 
 auto resolver::token_id(const std::string& name) -> std::uint16_t
 {
-    const auto itr = token_map.find(name);
-
-    if (itr != token_map.end())
+    for (auto& token : token_map)
     {
-        return itr->second;
+        if (utils::string::to_lower(token.second) == name)
+        {
+            return token.first;
+        }
     }
 
     return 0;
@@ -129,16 +130,41 @@ auto resolver::token_id(const std::string& name) -> std::uint16_t
 
 auto resolver::token_name(std::uint16_t id) -> std::string
 {
-    for (auto& func : token_map)
+    const auto itr = token_map.find(id);
+
+    if (itr != token_map.end())
     {
-        if (func.second == id)
-        {
-            return func.first;
-        }
+        return itr->second;
     }
 
     //LOG_DEBUG("missing token name for id '%i'!", id);
     return utils::string::va("id#%i", id);
+}
+
+auto resolver::find_builtin_func(const std::string& name) -> bool
+{
+    for (auto& func : builtin_function_map)
+    {
+        if (utils::string::to_lower(func.second) == utils::string::to_lower(name))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+auto resolver::find_builtin_meth(const std::string& name) -> bool
+{
+    for (auto& method : builtin_method_map)
+    {
+        if (utils::string::to_lower(method.second) == utils::string::to_lower(name))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 std::unordered_map<opcode, std::string> resolver::opcode_map
@@ -292,7 +318,8 @@ std::unordered_map<std::uint16_t, std::string> resolver::builtin_function_map
 {
     //------------------------------------------------------------------------
     // FUNCTION COMMON 272
-    { 0x21E, "__null_func__" },
+    { 0x21E, "__null_func__0" },
+    { 0x1CB, "__null_func__1" },
 
     { 0x010, "Print" },
     { 0x011, "PrintLn" },
@@ -725,6 +752,8 @@ std::unordered_map<std::uint16_t, std::string> resolver::builtin_method_map
 {
     // ------------------------------------------------------------------------
     // METHOD COMMON 230
+    { 0x8022, "__null_func__0" },
+
     { 0x8018, "attach" },
     { 0x8019, "attachShieldModel" },
     { 0x8026, "detach" },
@@ -1687,117 +1716,116 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     // 36631-44, effects?
 };
 
-std::unordered_map <std::string, std::uint16_t> resolver::token_map
+std::unordered_map<std::uint16_t, std::string> resolver::token_map
 {
 // class fields
-    { "alignX", 32 },
-    { "alignY", 33 },
-    { "alpha", 40 },
-    { "archived", 53 },
-    { "classname", 97 },
-    { "code_classname", 99 },// ??
-    { "color", 103 },
-    //{ "count", 0xEFFF },
+    { 32, "alignX" },
+    { 33, "alignY" },
+    { 40, "alpha" },
+    { 53, "archived" },
+    { 97, "classname" },
+    { 99, "code_classname" },// ??
+    { 103, "color" },
+    //{ 0xEFFF"count" },
 
-    { "font", 221 },
-    { "fontscale", 222 },
-    { "foreground", 229 },
-    { "glowAlpha", 244 },
-    { "glowColor", 245 },
-    { "height", 272 },
-    { "hideWhenInMenu", 278 },
-    { "horzAlign", 283 },
-    { "label", 328 },
-    { "name", 396 },
-    { "origin", 430 },
-    { "pers", 450 },
+    { 221, "font" },
+    { 222, "fontscale" },
+    { 229, "foreground" },
+    { 244, "glowAlpha" },
+    { 245, "glowColor" },
+    { 272, "height" },
+    { 278, "hideWhenInMenu" },
+    { 283, "horzAlign" },
+    { 328, "label" },
+    { 396, "name" },
+    { 430, "origin" },
+    { 450, "pers" },
 
-    { "sessionstate", 524 },
-    { "sessionteam", 525 },
-    { "sort", 538 },
+    { 524, "sessionstate" },
+    { 525, "sessionteam" },
+    { 538, "sort" },
 
-    { "tag_stowed_back", 623 },
-    { "team", 643 },
-    { "type", 680 },
-    { "vertAlign", 704 },
-    { "with", 728 },
-    { "x", 731 },
-    { "y", 732 },
+    { 623, "tag_stowed_back" },
+    { 643, "team" },
+    { 680, "type" },
+    { 704, "vertAlign" },
+    { 728, "with" },
+    { 731, "x" },
+    { 732, "y" },
     
 // gsc symbols
-    { "_effect", 1644 },
-    { "CreateStruct", 8482 },
+    { 1644, "_effect" },
+    { 8482, "CreateStruct" },
 
-    { "elemType", 11272 },
+    { 11272, "elemType" },
 
 
-    { "init", 17631 },
-    { "main", 20445 },
-    { "InitStructs", 18005 },
+    { 17631, "init" },
+    { 20445, "main" },
+    { 18005, "InitStructs" },
 
-    { "setupMiniMap", 29184 },
+    { 29184, "setupMiniMap" },
 
-    { "struct", 31988 },
+    { 31988, "struct" },
 
-    { "gameType", 14086 },
-    { "splitscreen", 31068 },
-    { "initializeMatchRules", 17960 },
-    { "reInitializeMatchRulesOnMigration", 25726 },
+    { 14086, "gameType" },
+    { 31068, "splitscreen" },
+    { 17960, "initializeMatchRules" },
+    { 25726, "reInitializeMatchRulesOnMigration" },
 
-    { "onPrecacheGameType", 22892 },
-    { "onStartGameType", 22905 },
-    { "getSpawnPoint", 15341 },
-    { "onSpawnPlayer", 22902 },
-    { "onPlayerKilled", 22886 },
-    { "checkAllowSpectating", 7057 },
+    { 22892, "onPrecacheGameType" },
+    { 22905, "onStartGameType" },
+    { 15341, "getSpawnPoint" },
+    { 22902, "onSpawnPlayer" },
+    { 22886, "onPlayerKilled" },
+    { 7057, "checkAllowSpectating" },
 
-    { "CodeCallback_StartGameType", 7654 },
-    { "CodeCallback_PlayerConnect", 7648 },
-    { "CodeCallback_PlayerDisconnect", 7650 },
-    { "CodeCallback_PlayerDamage", 7649 },
-    { "CodeCallback_PlayerKilled", 7651 },
-    { "CodeCallback_VehicleDamage", 7655 },
-    { "CodeCallback_CodeEndGame", 7645 },
-    { "CodeCallback_PlayerLastStand", 7652 },
-    { "CodeCallback_PlayerMigrated", 7653 },
-    { "CodeCallback_HostMigration", 7646 },
-    { "SetupDamageFlags", 29170 },
-    { "SetupCallbacks", 29168 },
-    { "SetDefaultCallbacks", 28693 },
-    { "AbortLevel", 1983 },
-    { "callbackVoid", 6492 },
-    { "gametypestarted", 14087 },
-    { "callbackStartGameType", 6491 },
-    { "callbackPlayerConnect", 6484 },
-    { "callbackPlayerDisconnect", 6486 },
-    { "callbackPlayerDamage", 6485 },
-    { "callbackPlayerKilled", 6487 },
-    { "damageCallback", 8960 },
-    { "callbackCodeEndGame", 6482 },
-    { "callbackPlayerLastStand", 6488 },
-    { "callbackPlayerMigrated", 6489 },
-    { "callbackHostMigration", 6483 },
-    { "Callback_StartGameType", 6480 },
-    { "Callback_PlayerConnect", 6471 },
-    { "Callback_PlayerDisconnect", 6474 },
-    { "Callback_PlayerDamage", 6472 },
-    { "Callback_PlayerKilled", 6475 },
-    { "Callback_CodeEndGame", 6468 },
-    { "Callback_PlayerLastStand", 6476 },
-    { "Callback_PlayerMigrated", 6479 },
-    { "Callback_HostMigration", 6469 },
-    { "iDFLAGS_RADIUS", 17344 },
-    { "iDFLAGS_NO_ARMOR", 17338 },
-    { "iDFLAGS_NO_KNOCKBACK", 17339 },
-    { "iDFLAGS_PENETRATION", 17343 },
-    { "iDFLAGS_STUN", 17348 },
-    { "iDFLAGS_SHIELD_EXPLOSIVE_IMPACT", 17345 },
-    { "iDFLAGS_SHIELD_EXPLOSIVE_IMPACT_HUGE", 17346 },
-    { "iDFLAGS_SHIELD_EXPLOSIVE_SPLASH", 17347 },
-    { "iDFLAGS_NO_TEAM_PROTECTION", 17341 },
-    { "iDFLAGS_NO_PROTECTION", 17340 },
-    { "iDFLAGS_PASSTHRU", 17342 },
-    
+    { 7654, "CodeCallback_StartGameType" },
+    { 7648, "CodeCallback_PlayerConnect" },
+    { 7650, "CodeCallback_PlayerDisconnect" },
+    { 7649, "CodeCallback_PlayerDamage" },
+    { 7651, "CodeCallback_PlayerKilled" },
+    { 7655, "CodeCallback_VehicleDamage" },
+    { 7645, "CodeCallback_CodeEndGame"  },
+    { 7652, "CodeCallback_PlayerLastStand" },
+    { 7653, "CodeCallback_PlayerMigrated" },
+    { 7646, "CodeCallback_HostMigration" },
+    { 29170, "SetupDamageFlags" },
+    { 29168, "SetupCallbacks" },
+    { 28693, "SetDefaultCallbacks" },
+    { 1983, "AbortLevel" },
+    { 6492, "callbackVoid" },
+    { 14087, "gametypestarted" },
+    { 6491, "callbackStartGameType" },
+    { 6484, "callbackPlayerConnect" },
+    { 6486, "callbackPlayerDisconnect" },
+    { 6485, "callbackPlayerDamage" },
+    { 6487, "callbackPlayerKilled" },
+    { 8960, "damageCallback" },
+    { 6482, "callbackCodeEndGame" },
+    { 6488, "callbackPlayerLastStand" },
+    { 6489, "callbackPlayerMigrated" },
+    { 6483, "callbackHostMigration" },
+    { 6480, "Callback_StartGameType" },
+    { 6471, "Callback_PlayerConnect" },
+    { 6474, "Callback_PlayerDisconnect" },
+    { 6472, "Callback_PlayerDamage" },
+    { 6475, "Callback_PlayerKilled" },
+    { 6468, "Callback_CodeEndGame" },
+    { 6476, "Callback_PlayerLastStand" },
+    { 6479, "Callback_PlayerMigrated" },
+    { 6469, "Callback_HostMigration" },
+    { 17344, "iDFLAGS_RADIUS" },
+    { 17338, "iDFLAGS_NO_ARMOR" },
+    { 17339, "iDFLAGS_NO_KNOCKBACK" },
+    { 17343, "iDFLAGS_PENETRATION" },
+    { 17348, "iDFLAGS_STUN" },
+    { 17345, "iDFLAGS_SHIELD_EXPLOSIVE_IMPACT" },
+    { 17346, "iDFLAGS_SHIELD_EXPLOSIVE_IMPACT_HUGE" },
+    { 17347, "iDFLAGS_SHIELD_EXPLOSIVE_SPLASH" },
+    { 17341, "iDFLAGS_NO_TEAM_PROTECTION" },
+    { 17340, "iDFLAGS_NO_PROTECTION" },
+    { 17342, "iDFLAGS_PASSTHRU" },
 };
 
 } // namespace IW6

@@ -26,7 +26,8 @@ struct context
     std::vector<bool> local_vars_init;
     std::vector<std::string> local_vars;
     
-	context() : is_last(false), is_loop(false), is_switch(false) { }
+	context() : is_last(false), is_loop(false), is_switch(false), 
+        local_vars_create_count(0), local_vars_public_count(0) { }
 
     auto transfer() -> std::unique_ptr<context>
     {
@@ -41,7 +42,10 @@ struct context
     {
         child->loc_break = this->loc_break;
         child->loc_continue = this->loc_continue;
-        // ...
+        child->local_vars = this->local_vars;
+        child->local_vars_init = this->local_vars_init;
+        child->local_vars_create_count = this->local_vars_create_count;
+        child->local_vars_public_count = this->local_vars_create_count;
     }
 };
 

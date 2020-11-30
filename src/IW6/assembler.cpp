@@ -600,8 +600,9 @@ void assembler::assemble_offset(std::int32_t offset)
 
 auto assembler::resolve_function(const std::string& name) -> std::uint32_t
 {
-    std::string temp = name.substr(4);
-
+    // dirty fix for assemble .gscasm files
+    auto temp = name.substr(0, 4) == "sub_" ? name.substr(4) : name;
+    
     for (const auto& func : functions_)
     {
         if (func->name == temp)
@@ -610,7 +611,7 @@ auto assembler::resolve_function(const std::string& name) -> std::uint32_t
         }
     }
 
-    LOG_ERROR("Couldn't resolve local function address of '%s'!", temp.data());
+    LOG_ERROR("Couldn't resolve local function address of '%s'!", name.data());
     return 0;
 }
 

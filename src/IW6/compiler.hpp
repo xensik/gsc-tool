@@ -103,10 +103,10 @@ private:
     auto find_local_var_index(const gsc::context_ptr& ctx, const std::string& name) -> std::int8_t;
     auto is_local_var_initialized(const gsc::context_ptr& ctx, const std::string& name) -> bool;
 
-    auto is_local_call(const gsc::identifier_ptr& func) -> bool;
-    auto is_builtin_call(const gsc::identifier_ptr& func) -> bool;
-    auto is_builtin_func(const gsc::identifier_ptr& func) -> bool;
-    auto is_builtin_method(const gsc::identifier_ptr& func) -> bool;
+    auto is_local_call(const std::string& name) -> bool;
+    auto is_builtin_call(const std::string& name) -> bool;
+    auto is_builtin_func(const std::string& name) -> bool;
+    auto is_builtin_method(const std::string& name) -> bool;
     
     auto create_label() -> std::string;
     auto insert_label() -> std::string;

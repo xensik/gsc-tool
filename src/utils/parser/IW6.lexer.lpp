@@ -16,7 +16,7 @@
 %}
 
 RGX_FILEPATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
-RGX_IDENTIFIER      [_A-Za-z][_A-Za-z0-9\-]*
+RGX_IDENTIFIER      (id\#[0-9]*|[_A-Za-z][_A-Za-z0-9\-]*)
 RGX_STRING		    \"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\'
 RGX_FLOAT		    -?[0-9]+\.(?:[0-9]*)?f?|\.[0-9]+f?
 RGX_INTEGER		    -?[0-9]+

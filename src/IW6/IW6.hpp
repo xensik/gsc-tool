@@ -56,7 +56,7 @@ enum class opcode : std::uint8_t
     OP_voidCodepos = 0x39,
     OP_ScriptMethodThreadCallPointer = 0x3A,
     OP_endswitch = 0x3B,
-//  OP_ClearVariableField = 0x3C,                   // NOT USED size 1
+//  OP_ClearVariableField = 0x3C,  // NOP           // NOT USED size 1
     OP_divide = 0x3D,
 //  OP_ScriptFarMethodChildThreadCall = 0x3E,       // NOT USED size 5
     OP_GetUnsignedShort = 0x3F,
@@ -120,7 +120,7 @@ enum class opcode : std::uint8_t
     OP_wait = 0x79,
     OP_minus = 0x7A,
     OP_SetSelfFieldVariableField = 0x7B,
-//  OP_EvalNewLocalVariableRefCached0 = 0x7C,       // NOT USED size 2
+//  OP_EvalNewLocalVariableRefCached0 = 0x7C, // NOP // NOT USED size 2
     OP_multiply = 0x7D,
     OP_CreateLocalVariable = 0x7E,
     OP_ScriptLocalChildThreadCall = 0x7F,
@@ -159,7 +159,7 @@ enum class opcode : std::uint8_t
 //  OP_ScriptChildThreadCallPointer = 0xA0,         // NOT USED size 2
     OP_bit_or = 0xA1,
     OP_AddArray = 0xA2,
-//  OP_waittillmatch2 = 0xA3,                       // NOT USED size 1
+//  OP_waittillmatch2 = 0xA3, // NOP                // NOT USED size 1
     OP_waittillmatch = 0xA4,
     OP_GetLocalFunction = 0xA5,
     OP_GetNegUnsignedShort = 0xA6,

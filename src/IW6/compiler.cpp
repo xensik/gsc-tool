@@ -242,6 +242,8 @@ void compiler::emit_stmt_if(const gsc::context_ptr& ctx, const gsc::stmt_if_ptr&
     auto end_loc = create_label();
     auto if_ctx = ctx->transfer();
 
+    if_ctx->is_last = last;
+
     calc_local_vars_block(if_ctx, stmt->block);
 
     if(stmt->expr.as_node->type == gsc::node_type::expr_not)
@@ -269,6 +271,9 @@ void compiler::emit_stmt_ifelse(const gsc::context_ptr& ctx, const gsc::stmt_ife
 
     auto if_ctx = ctx->transfer();   // TODO: merge else block private variables ?
     auto else_ctx = ctx->transfer(); // TODO: merge if block private variables ?
+
+    if_ctx->is_last = last;
+    else_ctx->is_last = last;
 
     calc_local_vars_block(if_ctx, stmt->block_if);
     calc_local_vars_block(else_ctx, stmt->block_else);
@@ -674,11 +679,15 @@ void compiler::emit_expr_call(const gsc::context_ptr& ctx, const gsc::expr_call_
         }
         else
         {
-            if(is_local_call(expr->func.as_func->name))
+            if(is_local_call(name))
             {
                 local = true;
             }
-            else if(is_builtin_call(expr->func.as_func->name))
+            else if(method && is_builtin_method(name))
+            {
+                builtin = true;
+            }
+            else if(!method && is_builtin_func(name))
             {
                 builtin = true;
             }
@@ -852,16 +861,16 @@ void compiler::emit_expr_function_ref(const gsc::context_ptr& ctx, const gsc::ex
     {
         far = true;
     }
-    else if(is_builtin_method(expr->func))
+    else if(is_builtin_method(name))
     {
         builtin = true;
         method = true;
     }
-    else if(is_builtin_func(expr->func))
+    else if(is_builtin_func(name))
     {
         builtin = true;
     }
-    else if(is_local_call(expr->func))
+    else if(is_local_call(name))
     {
         local = true;
     }
@@ -1376,7 +1385,7 @@ void compiler::create_local_var(const gsc::context_ptr& ctx, const std::string& 
         }
     }
 
-    COMPILER_ERROR("local variable not found.");
+    COMPILER_ERROR("local variable '%s' not found.", name.data());
 }
 
 auto compiler::find_local_var_create_index(const gsc::context_ptr& ctx, const std::string& name) -> std::int8_t
@@ -1389,7 +1398,7 @@ auto compiler::find_local_var_create_index(const gsc::context_ptr& ctx, const st
         i++;
     }
 
-    COMPILER_ERROR("local variable not found.");
+    COMPILER_ERROR("local variable '%s' not found.", name.data());
     return -1;
 }
 
@@ -1403,7 +1412,7 @@ auto compiler::find_local_var_index(const gsc::context_ptr& ctx, const std::stri
         {
             if(!ctx->local_vars_init.at(i))
             {
-                COMPILER_ERROR("local variable not initialized");
+                COMPILER_ERROR("local variable '%s' not initialized", name.data());
             }
 
             return ctx->local_vars_create_count - 1 - i;
@@ -1412,7 +1421,7 @@ auto compiler::find_local_var_index(const gsc::context_ptr& ctx, const std::stri
         i++;
     }
 
-    COMPILER_ERROR("local variable not found.");
+    COMPILER_ERROR("local variable '%s' not found.", name.data());
     return -1;
 }
 
@@ -1432,14 +1441,12 @@ auto compiler::is_local_var_initialized(const gsc::context_ptr& ctx, const std::
         i++;
     }
 
-    COMPILER_ERROR("local variable not found.");
+    COMPILER_ERROR("local variable '%s' not found.", name.data());
     return -1;
 }
 
-auto compiler::is_local_call(const gsc::identifier_ptr& func) -> bool
+auto compiler::is_local_call(const std::string& name) -> bool
 {
-    auto name = func->value;
-
     for(const auto& f : local_functions_)
     {
         if(f == name) return true;
@@ -1448,34 +1455,24 @@ auto compiler::is_local_call(const gsc::identifier_ptr& func) -> bool
     return false;
 }
 
-auto compiler::is_builtin_call(const gsc::identifier_ptr& func) -> bool
+auto compiler::is_builtin_call(const std::string& name) -> bool
 {
-    if(is_builtin_func(func))
+    if(is_builtin_func(name))
         return true;
     
-    if(is_builtin_method(func))
+    if(is_builtin_method(name))
         return true;
 
     return false;
 }
 
-auto compiler::is_builtin_func(const gsc::identifier_ptr& func) -> bool
+auto compiler::is_builtin_func(const std::string& name) -> bool
 {
-    auto name = func->value;
-
-    auto res = resolver::builtin_func_id(name);
-    if(res != 0xFFFF) return true;
-
-    return false;
+    return resolver::find_builtin_func(name);
 }
-auto compiler::is_builtin_method(const gsc::identifier_ptr& func) -> bool
+auto compiler::is_builtin_method(const std::string& name) -> bool
 {
-    auto name = func->value;
-
-    auto res = resolver::builtin_method_id(name);
-    if(res != 0xFFFF) return true;
-
-    return false;
+    return resolver::find_builtin_meth(name);
 }
 
 auto compiler::create_label() -> std::string
