@@ -1617,12 +1617,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             }
         }
         break;
-        case opcode::OP_ClearVariableField:
-        {
-            // TODO
-            LOG_ERROR("missing handler 'OP_ClearVariableField'!");
-        }
-        break;
         case opcode::OP_SetAnimFieldVariableField:
         {
             auto obj = gsc::expr_ptr(std::make_unique<gsc::node_anim>(location));

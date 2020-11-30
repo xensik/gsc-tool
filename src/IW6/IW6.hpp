@@ -56,7 +56,7 @@ enum class opcode : std::uint8_t
     OP_voidCodepos = 0x39,
     OP_ScriptMethodThreadCallPointer = 0x3A,
     OP_endswitch = 0x3B,
-    OP_ClearVariableField = 0x3C,
+//  OP_ClearVariableField = 0x3C, NOT USED
     OP_divide = 0x3D,
     OP_ScriptFarMethodChildThreadCall = 0x3E,
     OP_GetUnsignedShort = 0x3F,

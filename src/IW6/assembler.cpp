@@ -34,8 +34,6 @@ auto assembler::output_stack() -> std::string
 
 void assembler::assemble(std::string& data)
 {
-    LOG_DEBUG("parsing assembly file...");
-
     std::vector<std::string> assembly = utils::string::clean_buffer_lines(data);
 
     std::vector<gsc::function_ptr> functions;
@@ -70,6 +68,7 @@ void assembler::assemble(std::string& data)
         {
             // TODO: BUG! take care of string literals!
             std::vector<std::string> data;
+            
             line.find(' ') != std::string::npos ? (void)(data = utils::string::split(line, ' ')) : data.push_back(line);
 
             if (switchnum)
@@ -98,14 +97,16 @@ void assembler::assemble(std::string& data)
                 inst->index = index;
                 inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(utils::string::to_lower(data[0])));
                 inst->size = opcode_size(opcode(inst->opcode));
+                
+                data.erase(data.begin());
                 inst->data = data;
 
                 // group switch in one instruction
                 if (opcode(inst->opcode) == opcode::OP_endswitch)
                 {
-                    if (utils::string::is_number(data[1]))
+                    if (utils::string::is_number(data[0]))
                     {
-                        switchnum = static_cast<std::uint16_t>(std::stoul(data[1]));
+                        switchnum = static_cast<std::uint16_t>(std::stoul(data[0]));
                         inst->size += 7 * switchnum;
                     }
                     else
@@ -128,9 +129,6 @@ void assembler::assemble(std::string& data)
         func->size = index - func->index;
         functions.push_back(std::move(func));
     }
-
-    LOG_DEBUG("assembly file parse complete.");
-    LOG_DEBUG("%zu functions staged for assemble.", functions.size());
 
     this->assemble(functions);
 }
@@ -195,6 +193,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_GetLevel:
     case opcode::OP_GetGame:
     case opcode::OP_GetGameRef:
+    case opcode::OP_GetLevelObject:
     case opcode::OP_GetAnimObject:
     case opcode::OP_inc:
     case opcode::OP_dec:

@@ -79,11 +79,14 @@ void disassembler::dissasemble_function(const gsc::function_ptr& func)
     while (size > 0)
     {
         func->instructions.push_back(std::make_unique<gsc::instruction>());
+        
         auto& inst = func->instructions.back();
         inst->index = static_cast<std::uint32_t>(script_->pos());
         inst->opcode = script_->read<std::uint8_t>();
-
+        inst->size = opcode_size(opcode(inst->opcode));
+        
         this->dissasemble_instruction(inst);
+        
         size -= inst->size;
     }
 }
@@ -144,57 +147,47 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_ClearArray:
     case opcode::OP_EmptyArray:
     case opcode::OP_AddArray:
-        inst->size = 1;
         break;
+// DATA
     case opcode::OP_GetByte:
-        inst->size = 2;
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
         break;
     case opcode::OP_GetNegByte:
-        inst->size = 2;
         inst->data.push_back(utils::string::va("%i", script_->read<std::int8_t>()));
         break;
     case opcode::OP_GetUnsignedShort:
-        inst->size = 3;
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint16_t>()));
         break;
     case opcode::OP_GetNegUnsignedShort:
-        inst->size = 3;
         inst->data.push_back(utils::string::va("%i", script_->read<std::int16_t>()));
         break;
     case opcode::OP_GetInteger:
-        inst->size = 5;
         inst->data.push_back(utils::string::va("%i", script_->read<std::int32_t>()));
         break;
     case opcode::OP_GetFloat:
-        inst->size = 5;
         inst->data.push_back(utils::string::va("%g", script_->read<float>()));
         break;
     case opcode::OP_GetVector:
-        inst->size = 13;
         inst->data.push_back(utils::string::va("%g", script_->read<float>()));
         inst->data.push_back(utils::string::va("%g", script_->read<float>()));
         inst->data.push_back(utils::string::va("%g", script_->read<float>()));
         break;
     case opcode::OP_GetString:
     case opcode::OP_GetIString:
-        inst->size = 5;
         script_->seek(4);
         inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
         break;
     case opcode::OP_GetAnimation:
-        inst->size = 9;
         script_->seek(8);
         inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
         inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
         break;
     case opcode::OP_GetAnimTree:
-        inst->size = 2;
         script_->seek(1);
         inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
         break;
+// WAITTILLMATCH
     case opcode::OP_waittillmatch:
-        inst->size = 3;
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint16_t>()));
         break;
 // VARIABLE
@@ -210,7 +203,6 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_SetLocalVariableFieldCached0:
     case opcode::OP_ClearLocalVariableFieldCached0:
     case opcode::OP_SetVariableField:
-        inst->size = 1;
         break;
     case opcode::OP_EvalNewLocalArrayRefCached0:
     case opcode::OP_CreateLocalVariable:
@@ -226,9 +218,9 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_SetLocalVariableFieldCached:
     case opcode::OP_ClearLocalVariableFieldCached:
     case opcode::OP_EvalLocalVariableObjectCached:
-        inst->size = 2;
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
         break;
+// VARIABLE FIELD
     case opcode::OP_EvalLevelFieldVariable:
     case opcode::OP_EvalAnimFieldVariable:
     case opcode::OP_EvalSelfFieldVariable:
@@ -246,7 +238,6 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
 // POINTER
     case opcode::OP_ScriptFunctionCallPointer:
     case opcode::OP_ScriptMethodCallPointer:
-        inst->size = 1;
         break;
     case opcode::OP_CallBuiltinPointer:
     case opcode::OP_CallBuiltinMethodPointer:
@@ -254,7 +245,6 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_ScriptMethodThreadCallPointer:
     case opcode::OP_ScriptMethodChildThreadCallPointer:
     case opcode::OP_ScriptChildThreadCallPointer:
-        inst->size = 2;
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
         break;
 // FAR CALL
@@ -340,8 +330,6 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
 
 void disassembler::disassemble_builtin_call(const gsc::instruction_ptr& inst, bool method, bool arg_num)
 {
-    inst->size = arg_num ? 4 : 3;
-
     if (arg_num)
     {
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
@@ -359,8 +347,6 @@ void disassembler::disassemble_builtin_call(const gsc::instruction_ptr& inst, bo
 
 void disassembler::disassemble_local_call(const gsc::instruction_ptr& inst, bool thread)
 {
-    inst->size = thread ? 5 : 4;
-
     std::int32_t offset = this->disassemble_offset();
 
     inst->data.push_back(utils::string::va("%X", offset + inst->index + 1));
@@ -373,8 +359,6 @@ void disassembler::disassemble_local_call(const gsc::instruction_ptr& inst, bool
 
 void disassembler::disassemble_far_call(const gsc::instruction_ptr& inst, bool thread)
 {
-    inst->size = thread ? 5 : 4;
-
     script_->seek(3); // IW6: 3 bytes placeholder
 
     if (thread)
@@ -393,8 +377,6 @@ void disassembler::disassemble_far_call(const gsc::instruction_ptr& inst, bool t
 
 void disassembler::disassemble_jump(const gsc::instruction_ptr& inst, bool expr, bool back)
 {
-    inst->size = (expr || back) ? 3 : 5;
-
     std::int32_t addr;
     std::string label;
 
@@ -422,8 +404,6 @@ void disassembler::disassemble_jump(const gsc::instruction_ptr& inst, bool expr,
 
 void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
 {
-    inst->size = 3;
-
     std::uint16_t field_id = script_->read<std::uint16_t>();
     std::string field_name = field_id > 38305 ? stack_->read_opaque_string() : resolver::token_name(field_id);
 
@@ -432,8 +412,6 @@ void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
 
 void disassembler::disassemble_switch(const gsc::instruction_ptr& inst)
 {
-    inst->size = 5;
-
     std::int32_t addr = inst->index + 4 + script_->read<std::int32_t>();
     std::string label = utils::string::va("loc_%X", addr);
 
@@ -443,8 +421,6 @@ void disassembler::disassemble_switch(const gsc::instruction_ptr& inst)
 
 void disassembler::disassemble_end_switch(const gsc::instruction_ptr& inst)
 {
-    inst->size = 3;
-
     std::uint16_t case_num = script_->read<std::uint16_t>();
     inst->data.push_back(utils::string::va("%i", case_num));
 

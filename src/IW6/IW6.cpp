@@ -15,8 +15,49 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_End:
     case opcode::OP_Return:
     case opcode::OP_GetUndefined:
+    case opcode::OP_GetSelf:
+    case opcode::OP_GetLevel:
+    case opcode::OP_GetAnim:
+    case opcode::OP_GetGame:
+    case opcode::OP_GetGameRef:
+    case opcode::OP_GetSelfObject:
+    case opcode::OP_GetAnimObject:
+    case opcode::OP_GetLevelObject:
+    case opcode::OP_GetThisthread:
     case opcode::OP_GetZero:
+    case opcode::OP_inc:
+    case opcode::OP_dec:
+    case opcode::OP_bit_or:
+    case opcode::OP_bit_ex_or:
+    case opcode::OP_bit_and:
+    case opcode::OP_equality:
+    case opcode::OP_inequality:
+    case opcode::OP_less:
+    case opcode::OP_greater:
+    case opcode::OP_less_equal:
+    case opcode::OP_greater_equal:
+    case opcode::OP_shift_left:
+    case opcode::OP_shift_right:
+    case opcode::OP_plus:
+    case opcode::OP_minus:
+    case opcode::OP_multiply:
+    case opcode::OP_divide:
+    case opcode::OP_mod:
+    case opcode::OP_size:
+    case opcode::OP_CastFieldObject:
+    case opcode::OP_CastBool:
+    case opcode::OP_BoolNot:
+    case opcode::OP_BoolComplement:
     case opcode::OP_waittillFrameEnd:
+    case opcode::OP_waittill:
+    case opcode::OP_notify:
+    case opcode::OP_endon:
+    case opcode::OP_voidCodepos:
+    case opcode::OP_vector:
+    case opcode::OP_clearparams:
+    case opcode::OP_checkclearparams:
+    case opcode::OP_wait:
+    case opcode::OP_DecTop:
     case opcode::OP_EvalLocalVariableCached0:
     case opcode::OP_EvalLocalVariableCached1:
     case opcode::OP_EvalLocalVariableCached2:
@@ -31,62 +72,28 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_PreScriptCall:
     case opcode::OP_ScriptFunctionCallPointer:
     case opcode::OP_ScriptMethodCallPointer:
-    case opcode::OP_GetSelf:
-    case opcode::OP_GetLevel:
-    case opcode::OP_GetGame:
-    case opcode::OP_GetGameRef:
-    case opcode::OP_inc:
-    case opcode::OP_dec:
-    case opcode::OP_bit_or:
-    case opcode::OP_bit_ex_or:
-    case opcode::OP_bit_and:
-    case opcode::OP_equality:
-    case opcode::OP_inequality:
-    case opcode::OP_less:
-    case opcode::OP_greater:
-    case opcode::OP_less_equal:
-    case opcode::OP_waittill:
-    case opcode::OP_notify:
-    case opcode::OP_endon:
-    case opcode::OP_voidCodepos:
-    case opcode::OP_vector:
-    case opcode::OP_greater_equal:
-    case opcode::OP_plus:
-    case opcode::OP_minus:
-    case opcode::OP_multiply:
-    case opcode::OP_divide:
-    case opcode::OP_mod:
-    case opcode::OP_size:
-    case opcode::OP_GetSelfObject:
     case opcode::OP_SafeSetVariableFieldCached0:
-    case opcode::OP_clearparams:
-    case opcode::OP_checkclearparams:
     case opcode::OP_EvalLocalVariableRefCached0:
     case opcode::OP_SetVariableField:
     case opcode::OP_SetLocalVariableFieldCached0:
     case opcode::OP_ClearLocalVariableFieldCached0:
-    case opcode::OP_wait:
-    case opcode::OP_DecTop:
-    case opcode::OP_CastFieldObject:
-    case opcode::OP_CastBool:
-    case opcode::OP_BoolNot:
-    case opcode::OP_BoolComplement:
-    case opcode::OP_GetAnimObject:
-    case opcode::OP_GetLevelObject:
     case opcode::OP_EvalLocalArrayRefCached0:
         return 1;
         break;
     case opcode::OP_GetByte:
+    case opcode::OP_GetNegByte:
+    case opcode::OP_GetAnimTree:
+    case opcode::OP_CallBuiltinPointer:
+    case opcode::OP_CallBuiltinMethodPointer:
+    case opcode::OP_ScriptThreadCallPointer:
+    case opcode::OP_ScriptChildThreadCallPointer:
+    case opcode::OP_ScriptMethodThreadCallPointer:
+    case opcode::OP_ScriptMethodChildThreadCallPointer:
     case opcode::OP_CreateLocalVariable:
     case opcode::OP_RemoveLocalVariables:
     case opcode::OP_EvalLocalVariableCached:
     case opcode::OP_EvalLocalArrayCached:
     case opcode::OP_EvalLocalArrayRefCached:
-    case opcode::OP_ScriptThreadCallPointer:
-    case opcode::OP_ScriptMethodThreadCallPointer:
-    case opcode::OP_ScriptMethodChildThreadCallPointer:
-    case opcode::OP_CallBuiltinPointer:
-    case opcode::OP_CallBuiltinMethodPointer:
     case opcode::OP_SafeCreateVariableFieldCached:
     case opcode::OP_SafeSetVariableFieldCached:
     case opcode::OP_SafeSetWaittillVariableFieldCached:
@@ -95,14 +102,14 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_SetLocalVariableFieldCached:
     case opcode::OP_ClearLocalVariableFieldCached:
     case opcode::OP_EvalLocalVariableObjectCached:
-    case opcode::OP_GetNegByte:
     case opcode::OP_EvalNewLocalArrayRefCached0:
         return 2;
         break;
     case opcode::OP_GetUnsignedShort:
-    case opcode::OP_jumpback:
-    case opcode::OP_waittillmatch:
     case opcode::OP_GetNegUnsignedShort:
+    case opcode::OP_endswitch:
+    case opcode::OP_waittillmatch:
+    case opcode::OP_jumpback:
     case opcode::OP_JumpOnFalseExpr:
     case opcode::OP_JumpOnTrueExpr:
     case opcode::OP_JumpOnFalse:
@@ -133,28 +140,26 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_SetLevelFieldVariableField:
     case opcode::OP_SetAnimFieldVariableField:
     case opcode::OP_SetSelfFieldVariableField:
-    case opcode::OP_GetAnimTree:
-    case opcode::OP_endswitch:
         return 3;
         break;
-    case opcode::OP_ScriptLocalFunctionCall2:
-    case opcode::OP_ScriptLocalFunctionCall:
-    case opcode::OP_ScriptLocalMethodCall:
     case opcode::OP_GetLocalFunction:
-    case opcode::OP_ScriptFarFunctionCall2:
-    case opcode::OP_ScriptFarFunctionCall:
-    case opcode::OP_ScriptFarMethodCall:
     case opcode::OP_GetFarFunction:
     case opcode::OP_CallBuiltin:
     case opcode::OP_CallBuiltinMethod:
+    case opcode::OP_ScriptLocalFunctionCall2:
+    case opcode::OP_ScriptLocalFunctionCall:
+    case opcode::OP_ScriptLocalMethodCall:
+    case opcode::OP_ScriptFarFunctionCall2:
+    case opcode::OP_ScriptFarFunctionCall:
+    case opcode::OP_ScriptFarMethodCall:
         return 4;
         break;
+    case opcode::OP_GetInteger:
+    case opcode::OP_GetFloat:
     case opcode::OP_GetString:
     case opcode::OP_GetIString:
-    case opcode::OP_GetInteger:
     case opcode::OP_switch:
     case opcode::OP_jump:
-    case opcode::OP_GetFloat:
     case opcode::OP_ScriptLocalThreadCall:
     case opcode::OP_ScriptLocalChildThreadCall:
     case opcode::OP_ScriptLocalMethodThreadCall:
