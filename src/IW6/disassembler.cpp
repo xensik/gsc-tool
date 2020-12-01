@@ -316,7 +316,7 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
         this->disassemble_end_switch(inst);
         break;
     default:
-        LOG_ERROR("Unhandled opcode 0x%hhX at index '%04X'!", inst->opcode, inst->index);
+        DISASSEMBLER_ERROR("Unhandled opcode 0x%hhX at index '%04X'!", inst->opcode, inst->index);
         break;
     }
 }
@@ -352,7 +352,7 @@ void disassembler::disassemble_local_call(const gsc::instruction_ptr& inst, bool
 
 void disassembler::disassemble_far_call(const gsc::instruction_ptr& inst, bool thread)
 {
-    script_->seek(3); // IW6: 3 bytes placeholder
+    script_->seek(3);
 
     if (thread)
     {
@@ -433,7 +433,7 @@ void disassembler::disassemble_end_switch(const gsc::instruction_ptr& inst)
             else if (case_label < 0x40000)
             {
                 inst->data.push_back("default");
-                stack_->read<std::uint16_t>(); // should be 01 00 (opaque string id)
+                stack_->read<std::uint16_t>(); // should always be 01 00
             }
             else
             {
@@ -514,12 +514,12 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
             }
         }
 
-        LOG_ERROR("Couldn't resolve function name at index '0x%04X'!", idx);
+        DISASSEMBLER_ERROR("Couldn't resolve function name at index '0x%04X'!", idx);
         return index;
     }
     else
     {
-        LOG_ERROR("\"%s\" is not valid function address!", index.data());
+        DISASSEMBLER_ERROR("\"%s\" is not valid function address!", index.data());
         return index;
     }
 }

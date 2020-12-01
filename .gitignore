@@ -145,3 +145,6 @@ UpgradeLog*.htm
 ### Custom user files
 # User scripts
 user*.bat
+
+# VScode
+.vscode/
