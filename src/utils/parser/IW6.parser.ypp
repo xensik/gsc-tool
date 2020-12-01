@@ -536,6 +536,5 @@ level 		: LEVEL 		{ $$ = std::make_unique<gsc::node_level>(""); };
 
 void yy::parser::error(const std::string& msg)
 {
-    std::cout << "An error occured: " << msg << std::endl;
-	exit(1);
+    COMPILER_ERROR("%s", msg.data());
 }

@@ -51,55 +51,56 @@
 
 %token <std::string> FILEPATH IDENTIFIER STRING STRING_LOC FLOAT INTEGER
 
-%type <script_ptr> 					script
-%type <include_ptr> 				include
-%type <using_animtree_ptr> 			using_animtree
-%type <using_animtree_ptr> 			animtree
-%type <thread_ptr> 					thread
-%type <parameters_ptr> 				parameters
-%type <block_ptr> 					block
-%type <stmt_ptr> 					stmt
-%type <stmt_call_ptr> 				stmt_call
-%type <stmt_assign_ptr> 			stmt_assign
-%type <stmt_endon_ptr> 				stmt_endon
-%type <stmt_notify_ptr> 			stmt_notify
-%type <stmt_wait_ptr> 				stmt_wait
-%type <stmt_waittill_ptr> 			stmt_waittill
-%type <stmt_waittillmatch_ptr> 		stmt_waittillmatch
-%type <stmt_waittillframeend_ptr> 	stmt_waittillframeend
-%type <stmt_if_ptr> 				stmt_if
-%type <stmt_ifelse_ptr> 			stmt_ifelse
-%type <stmt_while_ptr> 				stmt_while
-%type <stmt_for_ptr> 				stmt_for
-%type <stmt_foreach_ptr> 			stmt_foreach
-%type <stmt_switch_ptr> 			stmt_switch
-%type <stmt_case_ptr> 				stmt_case
-%type <stmt_default_ptr> 			stmt_default
-%type <stmt_break_ptr> 				stmt_break
-%type <stmt_continue_ptr> 			stmt_continue
-%type <stmt_return_ptr> 			stmt_return
-%type <node_ptr> 					for_assign for_cond
-%type <expr_assign_ptr> 			expr_assign
-%type <node_ptr> 					expr expr_cmp expr_primitive expr_binary expr_ternary
-%type <expr_call_ptr> 				expr_call expr_call_thread
-%type <expr_call_type_ptr> 			expr_call_function expr_call_pointer
-%type <expr_arguments_ptr> 			expr_arguments
-%type <node_ptr> 					expr_function_ref
-%type <node_ptr> 					expr_array   
-%type <node_ptr> 					expr_field
-%type <node_ptr> 					expr_size
-%type <node_ptr> 					expr_vector
-%type <node_ptr> 					object
-%type <node_ptr> 					vector       
-%type <node_ptr> 					num
-%type <node_ptr> 					false true 
-%type <float_ptr> 					data_float
-%type <integer_ptr> 				data_integer
-%type <localized_string_ptr> 		data_localized_string
-%type <string_ptr> 					data_string
-%type <identifier_ptr> 				identifier
-%type <filepath_ptr> 				filepath
-%type <node_ptr> 					level anim self game size undefined empty_array
+%type <gsc::script_ptr> 				script
+%type <gsc::include_ptr> 				include
+%type <gsc::using_animtree_ptr> 		using_animtree
+%type <gsc::using_animtree_ptr> 		animtree
+%type <gsc::thread_ptr> 				thread
+%type <gsc::parameters_ptr> 			parameters
+%type <gsc::block_ptr> 					block
+%type <gsc::stmt_ptr> 					stmt
+%type <gsc::stmt_call_ptr> 				stmt_call
+%type <gsc::stmt_assign_ptr> 			stmt_assign
+%type <gsc::stmt_endon_ptr> 			stmt_endon
+%type <gsc::stmt_notify_ptr> 			stmt_notify
+%type <gsc::stmt_wait_ptr> 				stmt_wait
+%type <gsc::stmt_waittill_ptr> 			stmt_waittill
+%type <gsc::stmt_waittillmatch_ptr> 	stmt_waittillmatch
+%type <gsc::stmt_waittillframeend_ptr> 	stmt_waittillframeend
+%type <gsc::stmt_if_ptr> 				stmt_if
+%type <gsc::stmt_ifelse_ptr> 			stmt_ifelse
+%type <gsc::stmt_while_ptr> 			stmt_while
+%type <gsc::stmt_for_ptr> 				stmt_for
+%type <gsc::stmt_foreach_ptr> 			stmt_foreach
+%type <gsc::stmt_switch_ptr> 			stmt_switch
+%type <gsc::stmt_case_ptr> 				stmt_case
+%type <gsc::stmt_default_ptr> 			stmt_default
+%type <gsc::stmt_break_ptr> 			stmt_break
+%type <gsc::stmt_continue_ptr> 			stmt_continue
+%type <gsc::stmt_return_ptr> 			stmt_return
+%type <gsc::expr_ptr> 					for_assign for_cond
+%type <gsc::expr_assign_ptr> 			expr_assign
+%type <gsc::expr_ptr> 					expr expr_cmp expr_primitive expr_binary expr_ternary
+%type <gsc::expr_call_ptr> 				expr_call expr_call_thread
+%type <gsc::expr_call_type_ptr> 		expr_call_function expr_call_pointer
+%type <gsc::expr_arguments_ptr> 		expr_arguments
+%type <gsc::node_ptr> 					expr_function_ref
+%type <gsc::node_ptr> 					expr_array   
+%type <gsc::node_ptr> 					expr_field
+%type <gsc::node_ptr> 					expr_size
+%type <gsc::node_ptr> 					expr_vector
+%type <gsc::node_ptr> 					expr_add_array
+%type <gsc::node_ptr> 					object
+%type <gsc::node_ptr> 					vector       
+%type <gsc::node_ptr> 					num
+%type <gsc::node_ptr> 					false true 
+%type <gsc::float_ptr> 					data_float
+%type <gsc::integer_ptr> 				data_integer
+%type <gsc::localized_string_ptr> 		data_localized_string
+%type <gsc::string_ptr> 				data_string
+%type <gsc::identifier_ptr> 			identifier
+%type <gsc::filepath_ptr> 				filepath
+%type <gsc::node_ptr> 					level anim self game size undefined empty_array
 
 %nonassoc IFX
 %nonassoc ELSE
@@ -110,7 +111,7 @@
 
 root
 	: script { astout = std::move($1); }
-	|        { astout = std::make_unique<node_script>(); }
+	|        { astout = std::make_unique<gsc::node_script>(""); }
 	;
 
 script
@@ -123,51 +124,51 @@ script
 	| script thread
 		{ $$ = std::move($1); $$->threads.push_back(std::move($2)); }
 	| include
-		{ $$ = std::make_unique<node_script>(); $$->includes.push_back(std::move($1));}
+		{ $$ = std::make_unique<gsc::node_script>(""); $$->includes.push_back(std::move($1));}
 	| using_animtree
-		{ $$ = std::make_unique<node_script>(); $$->animtrees.push_back(std::move($1));}
+		{ $$ = std::make_unique<gsc::node_script>(""); $$->animtrees.push_back(std::move($1));}
 	| animtree
-		{ $$ = std::make_unique<node_script>(); $$->animtrees.push_back(std::move($1));}
+		{ $$ = std::make_unique<gsc::node_script>(""); $$->animtrees.push_back(std::move($1));}
 	| thread
-		{ $$ = std::make_unique<node_script>(); $$->threads.push_back(std::move($1));}
+		{ $$ = std::make_unique<gsc::node_script>(""); $$->threads.push_back(std::move($1));}
 	;
 
 include
 	: INCLUDE filepath SEMICOLON
-		{ $$ = std::make_unique<node_include>(std::move($2)); }
+		{ $$ = std::make_unique<gsc::node_include>("", std::move($2)); }
 	;
 
 using_animtree
 	: USING_ANIMTREE LPAREN data_string RPAREN SEMICOLON
-		{ $$ = std::make_unique<node_using_animtree>(std::move($3)); }
+		{ $$ = std::make_unique<gsc::node_using_animtree>("", std::move($3)); }
 	;
 
 animtree
 	: ANIMTREE LPAREN data_string RPAREN SEMICOLON
-		{ $$ = std::make_unique<node_using_animtree>(std::move($3)); }
+		{ $$ = std::make_unique<gsc::node_using_animtree>("", std::move($3)); }
 	;
 
 thread
 	: identifier LPAREN parameters RPAREN LBRACE block RBRACE
-		{ $$ = std::make_unique<node_thread>(std::move($1), std::move($3), std::move($6)); }
+		{ $$ = std::make_unique<gsc::node_thread>("", std::move($1), std::move($3), std::move($6)); }
 	;
 
 parameters
 	: parameters COMMA identifier
 		{ $$ = std::move($1); $$->list.push_back(std::move($3)); }
 	| identifier
-		{ $$ = std::make_unique<node_parameters>(); $$->list.push_back(std::move($1)); }
+		{ $$ = std::make_unique<gsc::node_parameters>(""); $$->list.push_back(std::move($1)); }
 	|
-		{ $$ = std::make_unique<node_parameters>(); }
+		{ $$ = std::make_unique<gsc::node_parameters>(""); }
 	;
 
 block
 	: block stmt
 		{ $$ = std::move($1); $$->stmts.push_back(std::move($2)); }
 	| stmt
-		{ $$ = std::make_unique<node_block>(); $$->stmts.push_back(std::move($1)); }
+		{ $$ = std::make_unique<gsc::node_block>(""); $$->stmts.push_back(std::move($1)); }
 	|
-		{ $$ = std::make_unique<node_block>(); }
+		{ $$ = std::make_unique<gsc::node_block>(""); }
 	;
 
 stmt
@@ -194,132 +195,157 @@ stmt
 
 stmt_call
 	: expr_call SEMICOLON
-		{ $$ = std::make_unique<node_stmt_call>(std::move($1)); }
+		{ $$ = std::make_unique<gsc::node_stmt_call>("", std::move($1)); }
 	| expr_call_thread SEMICOLON
-		{ $$ = std::make_unique<node_stmt_call>(std::move($1)); }
+		{ $$ = std::make_unique<gsc::node_stmt_call>("", std::move($1)); }
 	;
 
 stmt_assign
 	: expr_assign SEMICOLON
-		{ $$ = std::make_unique<node_stmt_assign>(std::move($1)); }
+		{ $$ = std::make_unique<gsc::node_stmt_assign>("", std::move($1)); }
 	;
 
 stmt_endon
 	: object ENDON LPAREN expr RPAREN SEMICOLON
-		{ $$ = std::make_unique<node_stmt_endon>(std::move($1), std::move($4)); }
+		{ $$ = std::make_unique<gsc::node_stmt_endon>("", std::move($1), std::move($4)); }
 	;
 
 stmt_notify
 	: object NOTIFY LPAREN expr COMMA expr_arguments RPAREN SEMICOLON
-		{ $$ = std::make_unique<node_stmt_notify>(std::move($1), std::move($4), std::move($6)); }
+		{ $$ = std::make_unique<gsc::node_stmt_notify>("", std::move($1), std::move($4), std::move($6)); }
 	| object NOTIFY LPAREN expr RPAREN SEMICOLON
-		{ $$ = std::make_unique<node_stmt_notify>(std::move($1), std::move($4), std::make_unique<node_expr_arguments>()); }
+		{ $$ = std::make_unique<gsc::node_stmt_notify>("", std::move($1), std::move($4), std::make_unique<gsc::node_expr_arguments>("")); }
 	;
 
 stmt_wait
 	: WAIT LPAREN expr RPAREN SEMICOLON
-		{ $$ = std::make_unique<node_stmt_wait>(std::move($3)); }
+		{ $$ = std::make_unique<gsc::node_stmt_wait>("", std::move($3)); }
 	| WAIT num SEMICOLON
-		{ $$ = std::make_unique<node_stmt_wait>(std::move($2)); }
+		{ $$ = std::make_unique<gsc::node_stmt_wait>("", std::move($2)); }
 	;
 
 stmt_waittill
 	: object WAITTILL LPAREN expr COMMA expr_arguments RPAREN SEMICOLON
-		{ $$ = std::make_unique<node_stmt_waittill>(std::move($1), std::move($4), std::move($6)); }
+		{ $$ = std::make_unique<gsc::node_stmt_waittill>("", std::move($1), std::move($4), std::move($6)); }
 	| object WAITTILL LPAREN expr RPAREN SEMICOLON
-		{ $$ = std::make_unique<node_stmt_waittill>(std::move($1), std::move($4), std::make_unique<node_expr_arguments>()); }
+		{ $$ = std::make_unique<gsc::node_stmt_waittill>("", std::move($1), std::move($4), std::make_unique<gsc::node_expr_arguments>("")); }
 	;
 
 stmt_waittillmatch
 	: object WAITTILLMATCH LPAREN expr COMMA expr RPAREN SEMICOLON
-		{ $$ = std::make_unique<node_stmt_waittillmatch>(std::move($1), std::move($4), std::move($6)); }
+		{ $$ = std::make_unique<gsc::node_stmt_waittillmatch>("", std::move($1), std::move($4), std::move($6)); }
 	;
 
 stmt_waittillframeend
 	: WAITTILLFRAMEEND SEMICOLON
-		{ $$ = std::make_unique<node_stmt_waittillframeend>(); }
+		{ $$ = std::make_unique<gsc::node_stmt_waittillframeend>(""); }
 	;
 
 stmt_if
 	: IF LPAREN expr RPAREN LBRACE block RBRACE %prec IFX
-		{ $$ = std::make_unique<node_stmt_if>(std::move($3), std::move($6)); }
+		{ $$ = std::make_unique<gsc::node_stmt_if>("", std::move($3), std::move($6)); }
 	| IF LPAREN expr RPAREN stmt %prec IFX
-		{ $$ = std::make_unique<node_stmt_if>(std::move($3), std::move($5.as_node)); }
+		{
+			auto blk = std::make_unique<gsc::node_block>("");
+			blk->stmts.push_back(std::move($5));
+			$$ = std::make_unique<gsc::node_stmt_if>("", std::move($3), std::move(blk)); }
 	;
 
 stmt_ifelse
 	: IF LPAREN expr RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE
-		{ $$ = std::make_unique<node_stmt_ifelse>(std::move($3), std::move($6), std::move($10)); }
+		{ $$ = std::make_unique<gsc::node_stmt_ifelse>("", std::move($3), std::move($6), std::move($10)); }
 	| IF LPAREN expr RPAREN stmt ELSE LBRACE block RBRACE
-		{ $$ = std::make_unique<node_stmt_ifelse>(std::move($3), std::move($5.as_node), std::move($8)); }
+		{
+			auto blk = std::make_unique<gsc::node_block>("");
+			blk->stmts.push_back(std::move($5));
+			$$ = std::make_unique<gsc::node_stmt_ifelse>("", std::move($3), std::move(blk), std::move($8)); }
 	| IF LPAREN expr RPAREN LBRACE block RBRACE ELSE stmt
-		{ $$ = std::make_unique<node_stmt_ifelse>(std::move($3), std::move($6), std::move($9.as_node)); }
+		{ 
+			auto blk = std::make_unique<gsc::node_block>("");
+			blk->stmts.push_back(std::move($9));
+			$$ = std::make_unique<gsc::node_stmt_ifelse>("", std::move($3), std::move($6), std::move(blk)); }
 	| IF LPAREN expr RPAREN stmt ELSE stmt
-		{ $$ = std::make_unique<node_stmt_ifelse>(std::move($3), std::move($5.as_node), std::move($7.as_node)); }
+		{
+			auto blk1 = std::make_unique<gsc::node_block>("");
+			blk1->stmts.push_back(std::move($5));
+			auto blk2 = std::make_unique<gsc::node_block>("");
+			blk2->stmts.push_back(std::move($7));
+			$$ = std::make_unique<gsc::node_stmt_ifelse>("", std::move($3), std::move(blk1), std::move(blk2)); }
 	;
 
 stmt_while
 	: WHILE LPAREN expr RPAREN LBRACE block RBRACE
-		{ $$ = std::make_unique<node_stmt_while>(std::move($3), std::move($6)); }
+		{ $$ = std::make_unique<gsc::node_stmt_while>("", std::move($3), std::move($6)); }
 	| WHILE LPAREN expr RPAREN stmt
-		{ $$ = std::make_unique<node_stmt_while>(std::move($3), std::move($5.as_node)); }
+		{
+			auto blk = std::make_unique<gsc::node_block>("");
+			blk->stmts.push_back(std::move($5));
+			$$ = std::make_unique<gsc::node_stmt_while>("", std::move($3), std::move(blk)); }
 	;
 
 stmt_for
 	: FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN LBRACE block RBRACE
-		{ $$ = std::make_unique<node_stmt_for>(std::move($3), std::move($5), std::move($7), std::move($10)); }
+		{ $$ = std::make_unique<gsc::node_stmt_for>("", std::move($3), std::move($5), std::move($7), std::move($10)); }
 	|FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN stmt
-		{ $$ = std::make_unique< node_stmt_for>(std::move($3), std::move($5), std::move($7), std::move($9.as_node)); }
+		{
+			auto blk = std::make_unique<gsc::node_block>("");
+			blk->stmts.push_back(std::move($9));
+			$$ = std::make_unique<gsc::node_stmt_for>("", std::move($3), std::move($5), std::move($7), std::move(blk));
+		}
 	;
 
 stmt_foreach
 	: FOREACH LPAREN expr IN expr RPAREN RBRACE block RBRACE
-		{ $$ = std::make_unique<node_stmt_foreach>(std::move($3), std::move($5), std::move($8)); }
+		{ $$ = std::make_unique<gsc::node_stmt_foreach>("", std::move($3), std::move($5), std::move($8)); }
 	| FOREACH LPAREN expr IN expr RPAREN stmt
-		{ $$ = std::make_unique<node_stmt_foreach>(std::move($3), std::move($5), std::move($7.as_node)); }
+		{
+			auto blk = std::make_unique<gsc::node_block>("");
+			blk->stmts.push_back(std::move($7));
+			$$ = std::make_unique<gsc::node_stmt_foreach>("", std::move($3), std::move($5), std::move(blk));
+		}
 	;
 
 stmt_switch
 	: SWITCH LPAREN expr RPAREN LBRACE block RBRACE
-		{ $$ = std::make_unique<node_stmt_switch>(std::move($3), std::move($6)); }
+		{ $$ = std::make_unique<gsc::node_stmt_switch>("", std::move($3), std::move($6)); }
 	;
 
 stmt_case
 	: CASE data_integer COLON
-		{ $$ = std::make_unique<node_stmt_case>(std::move($2)); }
+		{ $$ = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move($2))); }
 	| CASE data_string COLON
-		{ $$ = std::make_unique<node_stmt_case>(std::move($2)); }
+		{ $$ = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move($2))); }
 	;
 
 stmt_default
 	: DEFAULT COLON
-		{ $$ = std::make_unique<node_stmt_default>(); }
+		{ $$ = std::make_unique<gsc::node_stmt_default>(""); }
 	;
 
 stmt_break
 	: BREAK SEMICOLON 
-		{ $$ = std::make_unique<node_stmt_break>(); }
+		{ $$ = std::make_unique<gsc::node_stmt_break>(""); }
 	;
 stmt_continue
 	: CONTINUE SEMICOLON
-		{ $$ = std::make_unique<node_stmt_continue>(); }
+		{ $$ = std::make_unique<gsc::node_stmt_continue>(""); }
 	;
 
 stmt_return
 	: RETURN expr SEMICOLON	
-		{ $$ = std::make_unique<node_stmt_return>(std::move($2)); }
+		{ $$ = std::make_unique<gsc::node_stmt_return>("", std::move($2)); }
 	| RETURN SEMICOLON
-		{ $$ = std::make_unique<node_stmt_return>(std::make_unique<node>()); }
+		{ $$ = std::make_unique<gsc::node_stmt_return>("", std::make_unique<gsc::node>()); }
 	;
 
 for_assign
-	: expr_assign 						{ $$ = std::move($1); }
-	|									{ $$ = std::make_unique<node>(); }
+	: expr_assign 						{ $$.as_node = std::move($1); }
+	|									{ $$.as_node = std::make_unique<gsc::node>(); }
 	;
 
 for_cond
 	: expr_cmp 							{ $$ = std::move($1); }
-	|									{ $$ = std::make_unique<node>(); }
+	|									{ $$.as_node = std::make_unique<gsc::node>(); }
 	;
 
 expr
@@ -330,97 +356,98 @@ expr
 	;
 
 expr_assign
-	: object INCREMENT					{ $$ = std::make_unique<node_expr_increment>(std::move($1)); }
-	| object DECREMENT					{ $$ = std::make_unique<node_expr_decrement>(std::move($1)); }
-	| object ASSIGN expr				{ $$ = std::make_unique<node_expr_assign_equal>(std::move($1), std::move($3)); }
-	| object ASSIGN_BITWISE_OR expr		{ $$ = std::make_unique<node_expr_assign_bitwise_or>(std::move($1), std::move($3)); }
-	| object ASSIGN_BITWISE_AND expr	{ $$ = std::make_unique<node_expr_assign_bitwise_and>(std::move($1), std::move($3)); }
-	| object ASSIGN_BITWISE_EXOR expr	{ $$ = std::make_unique<node_expr_assign_bitwise_exor>(std::move($1), std::move($3)); }
-	| object ASSIGN_LSHIFT expr			{ $$ = std::make_unique<node_expr_assign_shift_left>(std::move($1),std::move( $3)); }
-	| object ASSIGN_RSHIFT expr 		{ $$ = std::make_unique<node_expr_assign_shift_right>(std::move($1), std::move($3)); }
-	| object ASSIGN_ADD expr			{ $$ = std::make_unique<node_expr_assign_add>(std::move($1), std::move($3)); }
-	| object ASSIGN_SUB expr			{ $$ = std::make_unique<node_expr_assign_sub>(std::move($1), std::move($3)); }
-	| object ASSIGN_MULT expr			{ $$ = std::make_unique<node_expr_assign_mult>(std::move($1), std::move($3)); }
-	| object ASSIGN_DIV expr			{ $$ = std::make_unique<node_expr_assign_div>(std::move($1), std::move($3)); }
-	| object ASSIGN_MOD expr 			{ $$ = std::make_unique<node_expr_assign_mod>(std::move($1), std::move($3)); }
+	: object INCREMENT					{ $$ = std::make_unique<gsc::node_expr_increment>("", std::move($1)); }
+	| object DECREMENT					{ $$ = std::make_unique<gsc::node_expr_decrement>("", std::move($1)); }
+	| object ASSIGN expr				{ $$ = std::make_unique<gsc::node_expr_assign_equal>("", std::move($1), std::move($3)); }
+	| object ASSIGN_BITWISE_OR expr		{ $$ = std::make_unique<gsc::node_expr_assign_bitwise_or>("", std::move($1), std::move($3)); }
+	| object ASSIGN_BITWISE_AND expr	{ $$ = std::make_unique<gsc::node_expr_assign_bitwise_and>("", std::move($1), std::move($3)); }
+	| object ASSIGN_BITWISE_EXOR expr	{ $$ = std::make_unique<gsc::node_expr_assign_bitwise_exor>("", std::move($1), std::move($3)); }
+	| object ASSIGN_LSHIFT expr			{ $$ = std::make_unique<gsc::node_expr_assign_shift_left>("", std::move($1),std::move( $3)); }
+	| object ASSIGN_RSHIFT expr 		{ $$ = std::make_unique<gsc::node_expr_assign_shift_right>("", std::move($1), std::move($3)); }
+	| object ASSIGN_ADD expr			{ $$ = std::make_unique<gsc::node_expr_assign_add>("", std::move($1), std::move($3)); }
+	| object ASSIGN_SUB expr			{ $$ = std::make_unique<gsc::node_expr_assign_sub>("", std::move($1), std::move($3)); }
+	| object ASSIGN_MULT expr			{ $$ = std::make_unique<gsc::node_expr_assign_mult>("", std::move($1), std::move($3)); }
+	| object ASSIGN_DIV expr			{ $$ = std::make_unique<gsc::node_expr_assign_div>("", std::move($1), std::move($3)); }
+	| object ASSIGN_MOD expr 			{ $$ = std::make_unique<gsc::node_expr_assign_mod>("", std::move($1), std::move($3)); }
 	;
 
 expr_cmp
-	: expr OR expr						{ $$ = std::make_unique<node_expr_or>(std::move($1), std::move($3)); }
-	| expr AND expr						{ $$ = std::make_unique<node_expr_and>(std::move($1), std::move($3)); }
-	| expr EQUALITY expr				{ $$ = std::make_unique<node_expr_equality>(std::move($1), std::move($3)); }
-	| expr INEQUALITY expr				{ $$ = std::make_unique<node_expr_inequality>(std::move($1), std::move($3)); }
-	| expr LESS_EQUAL expr				{ $$ = std::make_unique<node_expr_less_equal>(std::move($1), std::move($3)); }
-	| expr GREATER_EQUAL expr			{ $$ = std::make_unique<node_expr_greater_equal>(std::move($1), std::move($3)); }
-	| expr LESS expr					{ $$ = std::make_unique<node_expr_less>(std::move($1), std::move($3)); }
-	| expr GREATER expr					{ $$ = std::make_unique<node_expr_greater>(std::move($1), std::move($3)); }
+	: expr OR expr						{ $$.as_node = std::make_unique<gsc::node_expr_or>("", std::move($1), std::move($3)); }
+	| expr AND expr						{ $$.as_node = std::make_unique<gsc::node_expr_and>("", std::move($1), std::move($3)); }
+	| expr EQUALITY expr				{ $$.as_node = std::make_unique<gsc::node_expr_equality>("", std::move($1), std::move($3)); }
+	| expr INEQUALITY expr				{ $$.as_node = std::make_unique<gsc::node_expr_inequality>("", std::move($1), std::move($3)); }
+	| expr LESS_EQUAL expr				{ $$.as_node = std::make_unique<gsc::node_expr_less_equal>("", std::move($1), std::move($3)); }
+	| expr GREATER_EQUAL expr			{ $$.as_node = std::make_unique<gsc::node_expr_greater_equal>("", std::move($1), std::move($3)); }
+	| expr LESS expr					{ $$.as_node = std::make_unique<gsc::node_expr_less>("", std::move($1), std::move($3)); }
+	| expr GREATER expr					{ $$.as_node = std::make_unique<gsc::node_expr_greater>("", std::move($1), std::move($3)); }
 	;
 
 expr_ternary
-	: expr_cmp QMARK expr COLON expr   	{ $$ = std::make_unique<node_expr_ternary>(std::move($1), std::move($3), std::move($5)); }
+	: expr_cmp QMARK expr COLON expr   	{ $$.as_node = std::make_unique<gsc::node_expr_ternary>("", std::move($1), std::move($3), std::move($5)); }
 	;
 
 expr_binary
-	: expr BITWISE_OR expr				{ $$ = std::make_unique<node_expr_bitwise_or>(std::move($1), std::move($3)); }
-	| expr BITWISE_AND expr				{ $$ = std::make_unique<node_expr_bitwise_and>(std::move($1), std::move($3)); }
-	| expr BITWISE_EXOR expr			{ $$ = std::make_unique<node_expr_bitwise_exor>(std::move($1), std::move($3)); }
-	| expr LSHIFT expr					{ $$ = std::make_unique<node_expr_shift_left>(std::move($1), std::move($3)); }
-	| expr RSHIFT expr 					{ $$ = std::make_unique<node_expr_shift_right>(std::move($1), std::move($3)); }
-	| expr ADD expr						{ $$ = std::make_unique<node_expr_add>(std::move($1), std::move($3)); }
-	| expr SUB expr						{ $$ = std::make_unique<node_expr_sub>(std::move($1), std::move($3)); }
-	| expr MULT expr					{ $$ = std::make_unique<node_expr_mult>(std::move($1), std::move($3)); }
-	| expr DIV expr						{ $$ = std::make_unique<node_expr_div>(std::move($1), std::move($3)); }
-	| expr MOD expr 					{ $$ = std::make_unique<node_expr_mod>(std::move($1), std::move($3)); }
+	: expr BITWISE_OR expr				{ $$.as_node = std::make_unique<gsc::node_expr_bitwise_or>("", std::move($1), std::move($3)); }
+	| expr BITWISE_AND expr				{ $$.as_node = std::make_unique<gsc::node_expr_bitwise_and>("", std::move($1), std::move($3)); }
+	| expr BITWISE_EXOR expr			{ $$.as_node = std::make_unique<gsc::node_expr_bitwise_exor>("", std::move($1), std::move($3)); }
+	| expr LSHIFT expr					{ $$.as_node = std::make_unique<gsc::node_expr_shift_left>("", std::move($1), std::move($3)); }
+	| expr RSHIFT expr 					{ $$.as_node = std::make_unique<gsc::node_expr_shift_right>("", std::move($1), std::move($3)); }
+	| expr ADD expr						{ $$.as_node = std::make_unique<gsc::node_expr_add>("", std::move($1), std::move($3)); }
+	| expr SUB expr						{ $$.as_node = std::make_unique<gsc::node_expr_sub>("", std::move($1), std::move($3)); }
+	| expr MULT expr					{ $$.as_node = std::make_unique<gsc::node_expr_mult>("", std::move($1), std::move($3)); }
+	| expr DIV expr						{ $$.as_node = std::make_unique<gsc::node_expr_div>("", std::move($1), std::move($3)); }
+	| expr MOD expr 					{ $$.as_node = std::make_unique<gsc::node_expr_mod>("", std::move($1), std::move($3)); }
 	;
 
 expr_primitive
 	: LPAREN expr RPAREN				{ $$ = std::move($2); }
-	| COMPLEMENT expr					{ $$ = std::make_unique<node_expr_complement>(std::move($2)); }
-	| NOT expr							{ $$ = std::make_unique<node_expr_not>(std::move($2)); }
-	| expr_call							{ $$ = std::move($1); }
-	| expr_call_thread					{ $$ = std::move($1); }
-	| expr_function_ref					{ $$ = std::move($1); }
-	| expr_array						{ $$ = std::move($1); }
-	| expr_field						{ $$ = std::move($1); }
-	| expr_size 						{ $$ = std::move($1); }
-	| expr_vector						{ $$ = std::move($1); }
-	| vector							{ $$ = std::move($1); }
-	| num 								{ $$ = std::move($1); }
-	| data_localized_string				{ $$ = std::move($1); }
-	| data_string						{ $$ = std::move($1); }
-	| identifier 						{ $$ = std::move($1); }
-	| empty_array						{ $$ = std::move($1); }
-	| undefined							{ $$ = std::move($1); }
-	| game 								{ $$ = std::move($1); }
-	| self 								{ $$ = std::move($1); }
-	| anim 								{ $$ = std::move($1); }
-	| level 							{ $$ = std::move($1); }
+	| COMPLEMENT expr					{ $$.as_node = std::make_unique<gsc::node_expr_complement>("", std::move($2)); }
+	| NOT expr							{ $$.as_node = std::make_unique<gsc::node_expr_not>("", std::move($2)); }
+	| expr_call							{ $$.as_node = std::move($1); }
+	| expr_call_thread					{ $$.as_node = std::move($1); }
+	| expr_function_ref					{ $$.as_node = std::move($1); }
+	| expr_array						{ $$.as_node = std::move($1); }
+	| expr_field						{ $$.as_node = std::move($1); }
+	| expr_size 						{ $$.as_node = std::move($1); }
+	| expr_vector						{ $$.as_node = std::move($1); }
+	| expr_add_array					{ $$.as_node = std::move($1); }
+	| vector							{ $$.as_node = std::move($1); }
+	| num 								{ $$.as_node = std::move($1); }
+	| data_localized_string				{ $$.as_node = std::move($1); }
+	| data_string						{ $$.as_node = std::move($1); }
+	| identifier 						{ $$.as_node = std::move($1); }
+	| empty_array						{ $$.as_node = std::move($1); }
+	| undefined							{ $$.as_node = std::move($1); }
+	| game 								{ $$.as_node = std::move($1); }
+	| self 								{ $$.as_node = std::move($1); }
+	| anim 								{ $$.as_node = std::move($1); }
+	| level 							{ $$.as_node = std::move($1); }
 	;
 
 expr_call
-	: expr_call_function				{ $$ = std::make_unique<node_expr_call>(false, std::make_unique<node>(), std::move($1)); }
-	| expr_call_pointer					{ $$ = std::make_unique<node_expr_call>(false, std::make_unique<node>(), std::move($1)); }
-	| object expr_call_function			{ $$ = std::make_unique<node_expr_call>(false, std::move($1), std::move($2)); }
-	| object expr_call_pointer			{ $$ = std::make_unique<node_expr_call>(false, std::move($1), std::move($2)); }
+	: expr_call_function				{ $$ = std::make_unique<gsc::node_expr_call>("", false, std::make_unique<gsc::node>(), std::move($1)); }
+	| expr_call_pointer					{ $$ = std::make_unique<gsc::node_expr_call>("", false, std::make_unique<gsc::node>(), std::move($1)); }
+	| object expr_call_function			{ $$ = std::make_unique<gsc::node_expr_call>("", false, std::move($1), std::move($2)); }
+	| object expr_call_pointer			{ $$ = std::make_unique<gsc::node_expr_call>("", false, std::move($1), std::move($2)); }
 	;
 
 expr_call_thread
-	: THREAD expr_call_function			{ $$ = std::make_unique<node_expr_call>(true, std::make_unique<node>(), std::move($2)); }
-	| THREAD expr_call_pointer  		{ $$ = std::make_unique<node_expr_call>(true, std::make_unique<node>(), std::move($2)); }
-	| object THREAD expr_call_function  { $$ = std::make_unique<node_expr_call>(true, std::move($1), std::move($3)); }
-	| object THREAD expr_call_pointer 	{ $$ = std::make_unique<node_expr_call>(true, std::move($1), std::move($3)); }
+	: THREAD expr_call_function			{ $$ = std::make_unique<gsc::node_expr_call>("", true, std::make_unique<gsc::node>(), std::move($2)); }
+	| THREAD expr_call_pointer  		{ $$ = std::make_unique<gsc::node_expr_call>("", true, std::make_unique<gsc::node>(), std::move($2)); }
+	| object THREAD expr_call_function  { $$ = std::make_unique<gsc::node_expr_call>("", true, std::move($1), std::move($3)); }
+	| object THREAD expr_call_pointer 	{ $$ = std::make_unique<gsc::node_expr_call>("", true, std::move($1), std::move($3)); }
 	;
 
 expr_call_function
 	: identifier LPAREN expr_arguments RPAREN
-		{$$.as_func = std::make_unique<node_expr_call_function>(std::make_unique<node_filepath>(""), std::move($1), std::move($3)); }
+		{$$.as_func = std::make_unique<gsc::node_expr_call_function>("", std::make_unique<gsc::node_filepath>("", ""), std::move($1), std::move($3)); }
 	| filepath DOUBLECOLON identifier LPAREN expr_arguments RPAREN
-		{ $$.as_func = std::make_unique<node_expr_call_function>(std::move($1), std::move($3), std::move($5)); }
+		{ $$.as_func = std::make_unique<gsc::node_expr_call_function>("", std::move($1), std::move($3), std::move($5)); }
 	;
 
 expr_call_pointer
 	: LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
-		{ $$.as_pointer = std::make_unique<node_expr_call_pointer>("", false, std::move($3), std::move($7)); }
+		{ $$.as_pointer = std::make_unique<gsc::node_expr_call_pointer>("", false, std::move($3), std::move($7)); }
 	| CALL LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
 		{ $$.as_pointer = std::make_unique<gsc::node_expr_call_pointer>("", true, std::move($4), std::move($8)); }
 	;
@@ -429,36 +456,41 @@ expr_arguments
 	: expr_arguments COMMA expr
 		{ $$ = std::move($1); $$->list.push_back(std::move($3)); }
 	| expr
-		{ $$ = std::make_unique<node_expr_arguments>(); $$->list.push_back(std::move($1)); }
+		{ $$ = std::make_unique<gsc::node_expr_arguments>(""); $$->list.push_back(std::move($1)); }
 	|
-		{ $$ = std::make_unique<node_expr_arguments>(); }
+		{ $$ = std::make_unique<gsc::node_expr_arguments>(""); }
 	;
 
 expr_function_ref
  	: DOUBLECOLON identifier
-	 	{ $$ = std::make_unique<node_expr_function_ref>(std::make_unique<node_filepath>(""), std::move($2)); }
+	 	{ $$ = std::make_unique<gsc::node_expr_function_ref>("", std::make_unique<gsc::node_filepath>("", ""), std::move($2)); }
  	| filepath DOUBLECOLON identifier
-	 	{ $$ = std::make_unique<node_expr_function_ref>(std::move($1), std::move($3)); }
+	 	{ $$ = std::make_unique<gsc::node_expr_function_ref>("", std::move($1), std::move($3)); }
 	;
 
 expr_array
 	: object LBRACKET expr RBRACKET
-		{ $$ = std::make_unique<node_expr_array>(std::move($1), std::move($3)); }
+		{ $$ = std::make_unique<gsc::node_expr_array>("", std::move($1), std::move($3)); }
 	;
 
 expr_field
 	: object DOT identifier
-		{ $$ = std::make_unique<node_expr_field>(std::move($1), std::move($3)); }
+		{ $$ = std::make_unique<gsc::node_expr_field>("", std::move($1), std::move($3)); }
 	;
 
 expr_size
 	: object DOT size
-		{ $$ = std::make_unique<node_expr_size>(std::move($1)); }
+		{ $$ = std::make_unique<gsc::node_expr_size>("", std::move($1)); }
 	;
 
 expr_vector
 	: LPAREN expr COMMA expr COMMA expr RPAREN 
-		{ $$ = std::make_unique<node_expr_vector>(std::move($2), std::move($4), std::move($6)); }
+		{ $$ = std::make_unique<gsc::node_expr_vector>("", std::move($2), std::move($4), std::move($6)); }
+	;
+
+expr_add_array
+	: LBRACKET expr_arguments RBRACKET
+		{ $$ = std::make_unique<gsc::node_expr_add_array>("", std::move($2)); }
 	;
 
 object
@@ -474,7 +506,7 @@ object
 
 vector
 	: LPAREN num COMMA num COMMA num RPAREN
-		{ $$ = std::make_unique<node_vector>(std::move($2), std::move($4), std::move($6)); }
+		{ $$ = std::make_unique<gsc::node_vector>("", std::move($2), std::move($4), std::move($6)); }
 	;
 
 num
@@ -484,26 +516,25 @@ num
 	| true 					{ $$ = std::move($1); }
 	;
 
-false 		: FALSE 		{ $$ = std::make_unique<node_integer>("0"); };
-true 		: TRUE 			{ $$ = std::make_unique<node_integer>("1"); };
-data_float 	: FLOAT 		{ $$ = std::make_unique<node_float>($1); };
-data_integer : INTEGER 		{ $$ = std::make_unique<node_integer>($1); };
-data_localized_string : STRING_LOC { $$ = std::make_unique<node_localized_string>($1); };
-data_string : STRING 		{ $$ = std::make_unique<node_string>($1); };
-identifier 	: IDENTIFIER 	{ $$ = std::make_unique<node_identifier>($1); };
-filepath 	: FILEPATH 		{ $$ = std::make_unique<node_filepath>($1); };
-empty_array : EMPTY_ARRAY 	{ $$ = std::make_unique<node_empty_array>(); };
-undefined 	: UNDEFINED 	{ $$ = std::make_unique<node_undefined>(); };
-size 		: SIZE 			{ $$ = std::make_unique<node_size>(); };
-game 		: GAME 			{ $$ = std::make_unique<node_game>(); };
-self 		: SELF 			{ $$ = std::make_unique<node_self>(); };
-anim 		: ANIM 			{ $$ = std::make_unique<node_anim>(); };
-level 		: LEVEL 		{ $$ = std::make_unique<node_level>(); };
+false 		: FALSE 		{ $$ = std::make_unique<gsc::node_integer>("", "0"); };
+true 		: TRUE 			{ $$ = std::make_unique<gsc::node_integer>("", "1"); };
+data_float 	: FLOAT 		{ $$ = std::make_unique<gsc::node_float>("", $1); };
+data_integer : INTEGER 		{ $$ = std::make_unique<gsc::node_integer>("", $1); };
+data_localized_string : STRING_LOC { $$ = std::make_unique<gsc::node_localized_string>("", $1); };
+data_string : STRING 		{ $$ = std::make_unique<gsc::node_string>("", $1); };
+identifier 	: IDENTIFIER 	{ $$ = std::make_unique<gsc::node_identifier>("", $1); };
+filepath 	: FILEPATH 		{ $$ = std::make_unique<gsc::node_filepath>("", $1); };
+empty_array : EMPTY_ARRAY 	{ $$ = std::make_unique<gsc::node_empty_array>(""); };
+undefined 	: UNDEFINED 	{ $$ = std::make_unique<gsc::node_undefined>(""); };
+size 		: SIZE 			{ $$ = std::make_unique<gsc::node_size>(""); };
+game 		: GAME 			{ $$ = std::make_unique<gsc::node_game>(""); };
+self 		: SELF 			{ $$ = std::make_unique<gsc::node_self>(""); };
+anim 		: ANIM 			{ $$ = std::make_unique<gsc::node_anim>(""); };
+level 		: LEVEL 		{ $$ = std::make_unique<gsc::node_level>(""); };
 
 %%
 
 void yy::parser::error(const std::string& msg)
 {
-    std::cout << "An error occured: " << msg << std::endl;
-	exit(1);
+    COMPILER_ERROR("%s", msg.data());
 }

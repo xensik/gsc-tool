@@ -34,8 +34,6 @@ auto assembler::output_stack() -> std::string
 
 void assembler::assemble(std::string& data)
 {
-	LOG_DEBUG("parsing assembly file...");
-
 	std::vector<std::string> assembly = utils::string::clean_buffer_lines(data);
 
 	std::vector<gsc::function_ptr> functions;
@@ -98,6 +96,8 @@ void assembler::assemble(std::string& data)
 				inst->index = index;
 				inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(utils::string::to_lower(data[0])));
 				inst->size = opcode_size(opcode(inst->opcode));
+				
+				data.erase(data.begin());
 				inst->data = data;
 
 				// group switch in one instruction
@@ -128,9 +128,6 @@ void assembler::assemble(std::string& data)
 		func->size = index - func->index;
 		functions.push_back(std::move(func));
 	}
-
-	LOG_DEBUG("assembly file parse complete.");
-	LOG_DEBUG("%zu functions staged for assemble.", functions.size());
 
 	this->assemble(functions);
 }
@@ -220,11 +217,9 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_mod:
 	case opcode::OP_size:
 	case opcode::OP_GetSelfObject:
-	case opcode::OP_SafeSetVariableFieldCached0:
 	case opcode::OP_clearparams:
 	case opcode::OP_checkclearparams:
 	case opcode::OP_EvalLocalVariableRefCached0:
-	case opcode::OP_EvalNewLocalVariableRefCached0:
 	case opcode::OP_SetVariableField:
 	case opcode::OP_SetLocalVariableFieldCached0:
 	case opcode::OP_ClearLocalVariableFieldCached0:
@@ -240,7 +235,6 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_GetByte:
 	case opcode::OP_ScriptThreadCallPointer:
 	case opcode::OP_ScriptMethodThreadCallPointer:
-	case opcode::OP_ScriptMethodChildThreadCallPointer:
 	case opcode::OP_CallBuiltinPointer:
 	case opcode::OP_CallBuiltinMethodPointer:
 	case opcode::OP_GetAnimObject:
@@ -254,7 +248,6 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_EvalLocalArrayRefCached0:
 	case opcode::OP_EvalLocalArrayRefCached:
 	case opcode::OP_SafeCreateVariableFieldCached:
-	case opcode::OP_SafeSetVariableFieldCached:
 	case opcode::OP_SafeSetWaittillVariableFieldCached:
 	case opcode::OP_EvalLocalVariableRefCached:
 	case opcode::OP_SetNewLocalVariableFieldCached0:
@@ -330,9 +323,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 		this->assemble_far_call(inst, false);
 		break;
 	case opcode::OP_ScriptFarThreadCall:
-	case opcode::OP_ScriptFarChildThreadCall:
 	case opcode::OP_ScriptFarMethodThreadCall:
-	case opcode::OP_ScriptFarMethodChildThreadCall:
 		this->assemble_far_call(inst, true);
 		break;
 	case opcode::OP_CallBuiltin0:
@@ -592,8 +583,9 @@ void assembler::assemble_offset(std::int32_t offset)
 
 auto assembler::resolve_function(const std::string& name) -> std::uint32_t
 {
-	std::string temp = name.substr(4);
-
+	// dirty fix for assemble .gscasm files
+    auto temp = name.substr(0, 4) == "sub_" ? name.substr(4) : name;
+    
 	for (const auto& func : functions_)
 	{
 		if (func->name == temp)

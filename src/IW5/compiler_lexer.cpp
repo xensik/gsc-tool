@@ -1,6 +1,6 @@
-#line 1 "./IW6/compiler_lexer.cpp"
+#line 1 "./IW5/compiler_lexer.cpp"
 
-#line 3 "./IW6/compiler_lexer.cpp"
+#line 3 "./IW5/compiler_lexer.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -664,7 +664,7 @@ static const flex_int16_t yy_chk[702] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "IW6.lexer.lpp"
+#line 1 "IW5.lexer.lpp"
 /* Copyright 2020 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
@@ -672,12 +672,12 @@ static const flex_int16_t yy_chk[702] =
 */
 #define YY_NO_INPUT 1
 #define YY_NO_UNISTD_H 1
-#line 15 "IW6.lexer.lpp"
-#include "IW6.hpp"
+#line 15 "IW5.lexer.lpp"
+#include "IW5.hpp"
 #include "compiler_parser.hpp"
-#line 678 "./IW6/compiler_lexer.cpp"
+#line 678 "./IW5/compiler_lexer.cpp"
 
-#line 680 "./IW6/compiler_lexer.cpp"
+#line 680 "./IW5/compiler_lexer.cpp"
 
 #define INITIAL 0
 #define COMMENT_BLOCK_STATE 1
@@ -937,10 +937,10 @@ YY_DECL
 		}
 
 	{
-#line 29 "IW6.lexer.lpp"
+#line 29 "IW5.lexer.lpp"
 
 
-#line 943 "./IW6/compiler_lexer.cpp"
+#line 943 "./IW5/compiler_lexer.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -996,481 +996,481 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 31 "IW6.lexer.lpp"
+#line 31 "IW5.lexer.lpp"
 
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 33 "IW6.lexer.lpp"
+#line 33 "IW5.lexer.lpp"
 
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 35 "IW6.lexer.lpp"
+#line 35 "IW5.lexer.lpp"
 { BEGIN(COMMENT_BLOCK_STATE); }
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 36 "IW6.lexer.lpp"
+#line 36 "IW5.lexer.lpp"
 
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 37 "IW6.lexer.lpp"
+#line 37 "IW5.lexer.lpp"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 39 "IW6.lexer.lpp"
+#line 39 "IW5.lexer.lpp"
 { BEGIN(DEVELOPER_BLOCK_STATE); }
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 40 "IW6.lexer.lpp"
+#line 40 "IW5.lexer.lpp"
 
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 41 "IW6.lexer.lpp"
+#line 41 "IW5.lexer.lpp"
 { BEGIN(INITIAL); }	
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 43 "IW6.lexer.lpp"
+#line 43 "IW5.lexer.lpp"
 { return yy::parser::make_INCLUDE(); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 44 "IW6.lexer.lpp"
+#line 44 "IW5.lexer.lpp"
 { return yy::parser::make_USING_ANIMTREE(); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 45 "IW6.lexer.lpp"
+#line 45 "IW5.lexer.lpp"
 { return yy::parser::make_ANIMTREE(); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 46 "IW6.lexer.lpp"
+#line 46 "IW5.lexer.lpp"
 { return yy::parser::make_ENDON(); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 47 "IW6.lexer.lpp"
+#line 47 "IW5.lexer.lpp"
 { return yy::parser::make_NOTIFY(); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 48 "IW6.lexer.lpp"
+#line 48 "IW5.lexer.lpp"
 { return yy::parser::make_WAIT(); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 49 "IW6.lexer.lpp"
+#line 49 "IW5.lexer.lpp"
 { return yy::parser::make_WAITTILL(); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 50 "IW6.lexer.lpp"
+#line 50 "IW5.lexer.lpp"
 { return yy::parser::make_WAITTILLMATCH(); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 51 "IW6.lexer.lpp"
+#line 51 "IW5.lexer.lpp"
 { return yy::parser::make_WAITTILLFRAMEEND(); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 52 "IW6.lexer.lpp"
+#line 52 "IW5.lexer.lpp"
 { return yy::parser::make_IF(); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 53 "IW6.lexer.lpp"
+#line 53 "IW5.lexer.lpp"
 { return yy::parser::make_ELSE(); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 54 "IW6.lexer.lpp"
+#line 54 "IW5.lexer.lpp"
 { return yy::parser::make_WHILE(); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 55 "IW6.lexer.lpp"
+#line 55 "IW5.lexer.lpp"
 { return yy::parser::make_FOR(); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 56 "IW6.lexer.lpp"
+#line 56 "IW5.lexer.lpp"
 { return yy::parser::make_FOREACH(); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 57 "IW6.lexer.lpp"
+#line 57 "IW5.lexer.lpp"
 { return yy::parser::make_IN(); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 58 "IW6.lexer.lpp"
+#line 58 "IW5.lexer.lpp"
 { return yy::parser::make_SWITCH(); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 59 "IW6.lexer.lpp"
+#line 59 "IW5.lexer.lpp"
 { return yy::parser::make_CASE(); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 60 "IW6.lexer.lpp"
+#line 60 "IW5.lexer.lpp"
 { return yy::parser::make_DEFAULT(); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 61 "IW6.lexer.lpp"
+#line 61 "IW5.lexer.lpp"
 { return yy::parser::make_BREAK(); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 62 "IW6.lexer.lpp"
+#line 62 "IW5.lexer.lpp"
 { return yy::parser::make_CONTINUE(); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 63 "IW6.lexer.lpp"
+#line 63 "IW5.lexer.lpp"
 { return yy::parser::make_RETURN(); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 64 "IW6.lexer.lpp"
+#line 64 "IW5.lexer.lpp"
 { return yy::parser::make_THREAD(); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 65 "IW6.lexer.lpp"
+#line 65 "IW5.lexer.lpp"
 { return yy::parser::make_CALL(); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 66 "IW6.lexer.lpp"
+#line 66 "IW5.lexer.lpp"
 { return yy::parser::make_TRUE(); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 67 "IW6.lexer.lpp"
+#line 67 "IW5.lexer.lpp"
 { return yy::parser::make_FALSE(); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 68 "IW6.lexer.lpp"
+#line 68 "IW5.lexer.lpp"
 { return yy::parser::make_UNDEFINED(); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 69 "IW6.lexer.lpp"
+#line 69 "IW5.lexer.lpp"
 { return yy::parser::make_SIZE(); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 70 "IW6.lexer.lpp"
+#line 70 "IW5.lexer.lpp"
 { return yy::parser::make_GAME(); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 71 "IW6.lexer.lpp"
+#line 71 "IW5.lexer.lpp"
 { return yy::parser::make_SELF(); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 72 "IW6.lexer.lpp"
+#line 72 "IW5.lexer.lpp"
 { return yy::parser::make_ANIM(); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 73 "IW6.lexer.lpp"
+#line 73 "IW5.lexer.lpp"
 { return yy::parser::make_LEVEL(); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 74 "IW6.lexer.lpp"
+#line 74 "IW5.lexer.lpp"
 { return yy::parser::make_EMPTY_ARRAY(); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 75 "IW6.lexer.lpp"
+#line 75 "IW5.lexer.lpp"
 { return yy::parser::make_LPAREN(); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 76 "IW6.lexer.lpp"
+#line 76 "IW5.lexer.lpp"
 { return yy::parser::make_RPAREN(); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 77 "IW6.lexer.lpp"
+#line 77 "IW5.lexer.lpp"
 { return yy::parser::make_LBRACE(); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 78 "IW6.lexer.lpp"
+#line 78 "IW5.lexer.lpp"
 { return yy::parser::make_RBRACE(); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 79 "IW6.lexer.lpp"
+#line 79 "IW5.lexer.lpp"
 { return yy::parser::make_LBRACKET(); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 80 "IW6.lexer.lpp"
+#line 80 "IW5.lexer.lpp"
 { return yy::parser::make_RBRACKET(); }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 81 "IW6.lexer.lpp"
+#line 81 "IW5.lexer.lpp"
 { return yy::parser::make_COMMA(); }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 82 "IW6.lexer.lpp"
+#line 82 "IW5.lexer.lpp"
 { return yy::parser::make_DOT(); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 83 "IW6.lexer.lpp"
+#line 83 "IW5.lexer.lpp"
 { return yy::parser::make_DOUBLECOLON(); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 84 "IW6.lexer.lpp"
+#line 84 "IW5.lexer.lpp"
 { return yy::parser::make_COLON(); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 85 "IW6.lexer.lpp"
+#line 85 "IW5.lexer.lpp"
 { return yy::parser::make_SEMICOLON(); }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 86 "IW6.lexer.lpp"
+#line 86 "IW5.lexer.lpp"
 { return yy::parser::make_QMARK(); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 87 "IW6.lexer.lpp"
+#line 87 "IW5.lexer.lpp"
 { return yy::parser::make_INCREMENT(); }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 88 "IW6.lexer.lpp"
+#line 88 "IW5.lexer.lpp"
 { return yy::parser::make_DECREMENT(); }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 89 "IW6.lexer.lpp"
+#line 89 "IW5.lexer.lpp"
 { return yy::parser::make_ASSIGN_LSHIFT(); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 90 "IW6.lexer.lpp"
+#line 90 "IW5.lexer.lpp"
 { return yy::parser::make_ASSIGN_RSHIFT(); }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 91 "IW6.lexer.lpp"
+#line 91 "IW5.lexer.lpp"
 { return yy::parser::make_LSHIFT(); }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 92 "IW6.lexer.lpp"
+#line 92 "IW5.lexer.lpp"
 { return yy::parser::make_RSHIFT(); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 93 "IW6.lexer.lpp"
+#line 93 "IW5.lexer.lpp"
 { return yy::parser::make_OR(); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 94 "IW6.lexer.lpp"
+#line 94 "IW5.lexer.lpp"
 { return yy::parser::make_AND(); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 95 "IW6.lexer.lpp"
+#line 95 "IW5.lexer.lpp"
 { return yy::parser::make_EQUALITY(); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 96 "IW6.lexer.lpp"
+#line 96 "IW5.lexer.lpp"
 { return yy::parser::make_INEQUALITY(); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 97 "IW6.lexer.lpp"
+#line 97 "IW5.lexer.lpp"
 { return yy::parser::make_LESS_EQUAL(); }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 98 "IW6.lexer.lpp"
+#line 98 "IW5.lexer.lpp"
 { return yy::parser::make_GREATER_EQUAL(); }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 99 "IW6.lexer.lpp"
+#line 99 "IW5.lexer.lpp"
 { return yy::parser::make_LESS(); }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 100 "IW6.lexer.lpp"
+#line 100 "IW5.lexer.lpp"
 { return yy::parser::make_GREATER(); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 101 "IW6.lexer.lpp"
+#line 101 "IW5.lexer.lpp"
 { return yy::parser::make_ASSIGN_ADD(); }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 102 "IW6.lexer.lpp"
+#line 102 "IW5.lexer.lpp"
 { return yy::parser::make_ASSIGN_SUB(); }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 103 "IW6.lexer.lpp"
+#line 103 "IW5.lexer.lpp"
 { return yy::parser::make_ASSIGN_MULT(); }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 104 "IW6.lexer.lpp"
+#line 104 "IW5.lexer.lpp"
 { return yy::parser::make_ASSIGN_DIV(); }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 105 "IW6.lexer.lpp"
+#line 105 "IW5.lexer.lpp"
 { return yy::parser::make_ASSIGN_MOD(); }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 106 "IW6.lexer.lpp"
+#line 106 "IW5.lexer.lpp"
 { return yy::parser::make_ASSIGN_BITWISE_OR(); }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 107 "IW6.lexer.lpp"
+#line 107 "IW5.lexer.lpp"
 { return yy::parser::make_ASSIGN_BITWISE_AND(); }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 108 "IW6.lexer.lpp"
+#line 108 "IW5.lexer.lpp"
 { return yy::parser::make_ASSIGN_BITWISE_EXOR(); }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 109 "IW6.lexer.lpp"
+#line 109 "IW5.lexer.lpp"
 { return yy::parser::make_ASSIGN(); }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 110 "IW6.lexer.lpp"
+#line 110 "IW5.lexer.lpp"
 { return yy::parser::make_ADD(); }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 111 "IW6.lexer.lpp"
+#line 111 "IW5.lexer.lpp"
 { return yy::parser::make_SUB(); }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 112 "IW6.lexer.lpp"
+#line 112 "IW5.lexer.lpp"
 { return yy::parser::make_MULT(); }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 113 "IW6.lexer.lpp"
+#line 113 "IW5.lexer.lpp"
 { return yy::parser::make_DIV(); }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 114 "IW6.lexer.lpp"
+#line 114 "IW5.lexer.lpp"
 { return yy::parser::make_MOD(); }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 115 "IW6.lexer.lpp"
+#line 115 "IW5.lexer.lpp"
 { return yy::parser::make_NOT(); }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 116 "IW6.lexer.lpp"
+#line 116 "IW5.lexer.lpp"
 { return yy::parser::make_COMPLEMENT(); }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 117 "IW6.lexer.lpp"
+#line 117 "IW5.lexer.lpp"
 { return yy::parser::make_BITWISE_OR(); }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 118 "IW6.lexer.lpp"
+#line 118 "IW5.lexer.lpp"
 { return yy::parser::make_BITWISE_AND(); }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 119 "IW6.lexer.lpp"
+#line 119 "IW5.lexer.lpp"
 { return yy::parser::make_BITWISE_EXOR(); }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 121 "IW6.lexer.lpp"
+#line 121 "IW5.lexer.lpp"
 { return yy::parser::make_FILEPATH(std::string(yytext)); }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 122 "IW6.lexer.lpp"
+#line 122 "IW5.lexer.lpp"
 { return yy::parser::make_IDENTIFIER(utils::string::to_lower(yytext)); }
 	YY_BREAK
 case 88:
 /* rule 88 can match eol */
 YY_RULE_SETUP
-#line 123 "IW6.lexer.lpp"
+#line 123 "IW5.lexer.lpp"
 { return yy::parser::make_STRING_LOC(std::string(yytext)); }
 	YY_BREAK
 case 89:
 /* rule 89 can match eol */
 YY_RULE_SETUP
-#line 124 "IW6.lexer.lpp"
+#line 124 "IW5.lexer.lpp"
 { return yy::parser::make_STRING(std::string(yytext)); }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 125 "IW6.lexer.lpp"
+#line 125 "IW5.lexer.lpp"
 { return yy::parser::make_FLOAT(std::string(yytext)); }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 126 "IW6.lexer.lpp"
+#line 126 "IW5.lexer.lpp"
 { return yy::parser::make_INTEGER(std::string(yytext)); }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT_BLOCK_STATE):
 case YY_STATE_EOF(DEVELOPER_BLOCK_STATE):
-#line 128 "IW6.lexer.lpp"
+#line 128 "IW5.lexer.lpp"
 { return yy::parser::make_YYEOF(); }
 	YY_BREAK
 case 92:
 /* rule 92 can match eol */
 YY_RULE_SETUP
-#line 129 "IW6.lexer.lpp"
+#line 129 "IW5.lexer.lpp"
 { throw yy::parser::syntax_error("invalid character: " + std::string(yytext)); }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 130 "IW6.lexer.lpp"
+#line 130 "IW5.lexer.lpp"
 ECHO;
 	YY_BREAK
-#line 1473 "./IW6/compiler_lexer.cpp"
+#line 1473 "./IW5/compiler_lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2600,6 +2600,6 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 130 "IW6.lexer.lpp"
+#line 130 "IW5.lexer.lpp"
 
 

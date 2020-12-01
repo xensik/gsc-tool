@@ -59,11 +59,9 @@ auto opcode_size(opcode id) -> std::uint32_t
 	case opcode::OP_mod:
 	case opcode::OP_size:
 	case opcode::OP_GetSelfObject:
-	case opcode::OP_SafeSetVariableFieldCached0:
 	case opcode::OP_clearparams:
 	case opcode::OP_checkclearparams:
 	case opcode::OP_EvalLocalVariableRefCached0:
-	case opcode::OP_EvalNewLocalVariableRefCached0:
 	case opcode::OP_SetVariableField:
 	case opcode::OP_SetLocalVariableFieldCached0:
 	case opcode::OP_ClearLocalVariableFieldCached0:
@@ -78,32 +76,34 @@ auto opcode_size(opcode id) -> std::uint32_t
 		return 1;
 		break;
 	case opcode::OP_GetByte:
+	case opcode::OP_GetNegByte:
+	case opcode::OP_ScriptThreadCallPointer:
+	case opcode::OP_ScriptMethodThreadCallPointer:
+	case opcode::OP_CallBuiltinPointer:
+	case opcode::OP_CallBuiltinMethodPointer:
 	case opcode::OP_CreateLocalVariable:
 	case opcode::OP_RemoveLocalVariables:
+	case opcode::OP_SetNewLocalVariableFieldCached0:
+	case opcode::OP_SafeCreateVariableFieldCached:
+	case opcode::OP_SafeSetWaittillVariableFieldCached:
 	case opcode::OP_EvalLocalVariableCached:
+	case opcode::OP_EvalLocalVariableRefCached:
 	case opcode::OP_EvalLocalArrayCached:
 	case opcode::OP_EvalLocalArrayRefCached0:
 	case opcode::OP_EvalLocalArrayRefCached:
-	case opcode::OP_ScriptThreadCallPointer:
-	case opcode::OP_ScriptMethodThreadCallPointer:
-	case opcode::OP_ScriptMethodChildThreadCallPointer:
-	case opcode::OP_CallBuiltinPointer:
-	case opcode::OP_CallBuiltinMethodPointer:
-	case opcode::OP_SafeCreateVariableFieldCached:
-	case opcode::OP_SafeSetVariableFieldCached:
-	case opcode::OP_SafeSetWaittillVariableFieldCached:
-	case opcode::OP_EvalLocalVariableRefCached:
-	case opcode::OP_SetNewLocalVariableFieldCached0:
 	case opcode::OP_SetLocalVariableFieldCached:
 	case opcode::OP_ClearLocalVariableFieldCached:
 	case opcode::OP_EvalLocalVariableObjectCached:
-	case opcode::OP_GetNegByte:
 		return 2;
 		break;
 	case opcode::OP_GetUnsignedShort:
-	case opcode::OP_jumpback:
-	case opcode::OP_waittillmatch:
 	case opcode::OP_GetNegUnsignedShort:
+	case opcode::OP_GetString:
+	case opcode::OP_GetIString:
+	case opcode::OP_GetAnimTree:
+	case opcode::OP_waittillmatch:
+	case opcode::OP_endswitch:
+	case opcode::OP_jumpback:
 	case opcode::OP_JumpOnFalseExpr:
 	case opcode::OP_JumpOnTrueExpr:
 	case opcode::OP_JumpOnFalse:
@@ -122,8 +122,6 @@ auto opcode_size(opcode id) -> std::uint32_t
 	case opcode::OP_CallBuiltinMethod3:
 	case opcode::OP_CallBuiltinMethod4:
 	case opcode::OP_CallBuiltinMethod5:
-	case opcode::OP_GetString:
-	case opcode::OP_GetIString:
 	case opcode::OP_EvalLevelFieldVariable:
 	case opcode::OP_EvalAnimFieldVariable:
 	case opcode::OP_EvalSelfFieldVariable:
@@ -136,35 +134,31 @@ auto opcode_size(opcode id) -> std::uint32_t
 	case opcode::OP_SetLevelFieldVariableField:
 	case opcode::OP_SetAnimFieldVariableField:
 	case opcode::OP_SetSelfFieldVariableField:
-	case opcode::OP_GetAnimTree:
-	case opcode::OP_endswitch:
 		return 3;
 		break;
 	case opcode::OP_ScriptLocalFunctionCall2:
 	case opcode::OP_ScriptLocalFunctionCall:
 	case opcode::OP_ScriptLocalMethodCall:
-	case opcode::OP_GetLocalFunction:
 	case opcode::OP_ScriptFarFunctionCall2:
 	case opcode::OP_ScriptFarFunctionCall:
 	case opcode::OP_ScriptFarMethodCall:
+	case opcode::OP_GetLocalFunction:
 	case opcode::OP_GetFarFunction:
 	case opcode::OP_CallBuiltin:
 	case opcode::OP_CallBuiltinMethod:
 		return 4;
 		break;
-	case opcode::OP_GetInteger:
-	case opcode::OP_switch:
-	case opcode::OP_jump:
 	case opcode::OP_GetFloat:
+	case opcode::OP_GetInteger:
+	case opcode::OP_GetAnimation:
+	case opcode::OP_jump:
+	case opcode::OP_switch:
 	case opcode::OP_ScriptLocalThreadCall:
 	case opcode::OP_ScriptLocalChildThreadCall:
 	case opcode::OP_ScriptLocalMethodThreadCall:
 	case opcode::OP_ScriptLocalMethodChildThreadCall:
 	case opcode::OP_ScriptFarThreadCall:
-	case opcode::OP_ScriptFarChildThreadCall:
 	case opcode::OP_ScriptFarMethodThreadCall:
-	case opcode::OP_ScriptFarMethodChildThreadCall:
-	case opcode::OP_GetAnimation:
 		return 5;
 		break;
 	case opcode::OP_GetVector:

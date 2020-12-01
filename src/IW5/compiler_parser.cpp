@@ -35,14 +35,14 @@
 // private implementation details that can be changed or removed.
 
 // "%code top" blocks.
-#line 33 "IW6.parser.ypp"
+#line 33 "IW5.parser.ypp"
 
-    #include "IW6.hpp"
+    #include "IW5.hpp"
 	#include "compiler_parser.hpp"
 	#include "compiler_lexer.hpp"
 	yy::parser::symbol_type yylex(yyscan_t yyscanner);
 
-#line 46 "./IW6/compiler_parser.cpp"
+#line 46 "./IW5/compiler_parser.cpp"
 
 
 
@@ -122,7 +122,7 @@
 #define YYRECOVERING()  (!!yyerrstatus_)
 
 namespace yy {
-#line 126 "./IW6/compiler_parser.cpp"
+#line 126 "./IW5/compiler_parser.cpp"
 
   /// Build a parser object.
   parser::parser (yyscan_t yyscanner_yyarg, gsc::script_ptr& astout_yyarg)
@@ -1449,1130 +1449,1130 @@ namespace yy {
           switch (yyn)
             {
   case 2: // root: script
-#line 113 "IW6.parser.ypp"
+#line 113 "IW5.parser.ypp"
                  { astout = std::move(yystack_[0].value.as < gsc::script_ptr > ()); }
-#line 1455 "./IW6/compiler_parser.cpp"
+#line 1455 "./IW5/compiler_parser.cpp"
     break;
 
   case 3: // root: %empty
-#line 114 "IW6.parser.ypp"
+#line 114 "IW5.parser.ypp"
                  { astout = std::make_unique<gsc::node_script>(""); }
-#line 1461 "./IW6/compiler_parser.cpp"
+#line 1461 "./IW5/compiler_parser.cpp"
     break;
 
   case 4: // script: script include
-#line 119 "IW6.parser.ypp"
+#line 119 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::move(yystack_[1].value.as < gsc::script_ptr > ()); yylhs.value.as < gsc::script_ptr > ()->includes.push_back(std::move(yystack_[0].value.as < gsc::include_ptr > ())); }
-#line 1467 "./IW6/compiler_parser.cpp"
+#line 1467 "./IW5/compiler_parser.cpp"
     break;
 
   case 5: // script: script using_animtree
-#line 121 "IW6.parser.ypp"
+#line 121 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::move(yystack_[1].value.as < gsc::script_ptr > ()); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ())); }
-#line 1473 "./IW6/compiler_parser.cpp"
+#line 1473 "./IW5/compiler_parser.cpp"
     break;
 
   case 6: // script: script animtree
-#line 123 "IW6.parser.ypp"
+#line 123 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::move(yystack_[1].value.as < gsc::script_ptr > ()); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ())); }
-#line 1479 "./IW6/compiler_parser.cpp"
+#line 1479 "./IW5/compiler_parser.cpp"
     break;
 
   case 7: // script: script thread
-#line 125 "IW6.parser.ypp"
+#line 125 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::move(yystack_[1].value.as < gsc::script_ptr > ()); yylhs.value.as < gsc::script_ptr > ()->threads.push_back(std::move(yystack_[0].value.as < gsc::thread_ptr > ())); }
-#line 1485 "./IW6/compiler_parser.cpp"
+#line 1485 "./IW5/compiler_parser.cpp"
     break;
 
   case 8: // script: include
-#line 127 "IW6.parser.ypp"
+#line 127 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->includes.push_back(std::move(yystack_[0].value.as < gsc::include_ptr > ()));}
-#line 1491 "./IW6/compiler_parser.cpp"
+#line 1491 "./IW5/compiler_parser.cpp"
     break;
 
   case 9: // script: using_animtree
-#line 129 "IW6.parser.ypp"
+#line 129 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ()));}
-#line 1497 "./IW6/compiler_parser.cpp"
+#line 1497 "./IW5/compiler_parser.cpp"
     break;
 
   case 10: // script: animtree
-#line 131 "IW6.parser.ypp"
+#line 131 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ()));}
-#line 1503 "./IW6/compiler_parser.cpp"
+#line 1503 "./IW5/compiler_parser.cpp"
     break;
 
   case 11: // script: thread
-#line 133 "IW6.parser.ypp"
+#line 133 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->threads.push_back(std::move(yystack_[0].value.as < gsc::thread_ptr > ()));}
-#line 1509 "./IW6/compiler_parser.cpp"
+#line 1509 "./IW5/compiler_parser.cpp"
     break;
 
   case 12: // include: INCLUDE filepath SEMICOLON
-#line 138 "IW6.parser.ypp"
+#line 138 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::include_ptr > () = std::make_unique<gsc::node_include>("", std::move(yystack_[1].value.as < gsc::filepath_ptr > ())); }
-#line 1515 "./IW6/compiler_parser.cpp"
+#line 1515 "./IW5/compiler_parser.cpp"
     break;
 
   case 13: // using_animtree: USING_ANIMTREE LPAREN data_string RPAREN SEMICOLON
-#line 143 "IW6.parser.ypp"
+#line 143 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::using_animtree_ptr > () = std::make_unique<gsc::node_using_animtree>("", std::move(yystack_[2].value.as < gsc::string_ptr > ())); }
-#line 1521 "./IW6/compiler_parser.cpp"
+#line 1521 "./IW5/compiler_parser.cpp"
     break;
 
   case 14: // animtree: ANIMTREE LPAREN data_string RPAREN SEMICOLON
-#line 148 "IW6.parser.ypp"
+#line 148 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::using_animtree_ptr > () = std::make_unique<gsc::node_using_animtree>("", std::move(yystack_[2].value.as < gsc::string_ptr > ())); }
-#line 1527 "./IW6/compiler_parser.cpp"
+#line 1527 "./IW5/compiler_parser.cpp"
     break;
 
   case 15: // thread: identifier LPAREN parameters RPAREN LBRACE block RBRACE
-#line 153 "IW6.parser.ypp"
+#line 153 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::thread_ptr > () = std::make_unique<gsc::node_thread>("", std::move(yystack_[6].value.as < gsc::identifier_ptr > ()), std::move(yystack_[4].value.as < gsc::parameters_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1533 "./IW6/compiler_parser.cpp"
+#line 1533 "./IW5/compiler_parser.cpp"
     break;
 
   case 16: // parameters: parameters COMMA identifier
-#line 158 "IW6.parser.ypp"
+#line 158 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::parameters_ptr > () = std::move(yystack_[2].value.as < gsc::parameters_ptr > ()); yylhs.value.as < gsc::parameters_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
-#line 1539 "./IW6/compiler_parser.cpp"
+#line 1539 "./IW5/compiler_parser.cpp"
     break;
 
   case 17: // parameters: identifier
-#line 160 "IW6.parser.ypp"
+#line 160 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::parameters_ptr > () = std::make_unique<gsc::node_parameters>(""); yylhs.value.as < gsc::parameters_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
-#line 1545 "./IW6/compiler_parser.cpp"
+#line 1545 "./IW5/compiler_parser.cpp"
     break;
 
   case 18: // parameters: %empty
-#line 162 "IW6.parser.ypp"
+#line 162 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::parameters_ptr > () = std::make_unique<gsc::node_parameters>(""); }
-#line 1551 "./IW6/compiler_parser.cpp"
+#line 1551 "./IW5/compiler_parser.cpp"
     break;
 
   case 19: // block: block stmt
-#line 167 "IW6.parser.ypp"
+#line 167 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::block_ptr > () = std::move(yystack_[1].value.as < gsc::block_ptr > ()); yylhs.value.as < gsc::block_ptr > ()->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ())); }
-#line 1557 "./IW6/compiler_parser.cpp"
+#line 1557 "./IW5/compiler_parser.cpp"
     break;
 
   case 20: // block: stmt
-#line 169 "IW6.parser.ypp"
+#line 169 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::block_ptr > () = std::make_unique<gsc::node_block>(""); yylhs.value.as < gsc::block_ptr > ()->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ())); }
-#line 1563 "./IW6/compiler_parser.cpp"
+#line 1563 "./IW5/compiler_parser.cpp"
     break;
 
   case 21: // block: %empty
-#line 171 "IW6.parser.ypp"
+#line 171 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::block_ptr > () = std::make_unique<gsc::node_block>(""); }
-#line 1569 "./IW6/compiler_parser.cpp"
+#line 1569 "./IW5/compiler_parser.cpp"
     break;
 
   case 22: // stmt: stmt_call
-#line 175 "IW6.parser.ypp"
+#line 175 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_call = std::move(yystack_[0].value.as < gsc::stmt_call_ptr > ()); }
-#line 1575 "./IW6/compiler_parser.cpp"
+#line 1575 "./IW5/compiler_parser.cpp"
     break;
 
   case 23: // stmt: stmt_assign
-#line 176 "IW6.parser.ypp"
+#line 176 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_assign = std::move(yystack_[0].value.as < gsc::stmt_assign_ptr > ()); }
-#line 1581 "./IW6/compiler_parser.cpp"
+#line 1581 "./IW5/compiler_parser.cpp"
     break;
 
   case 24: // stmt: stmt_endon
-#line 177 "IW6.parser.ypp"
+#line 177 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_endon = std::move(yystack_[0].value.as < gsc::stmt_endon_ptr > ()); }
-#line 1587 "./IW6/compiler_parser.cpp"
+#line 1587 "./IW5/compiler_parser.cpp"
     break;
 
   case 25: // stmt: stmt_notify
-#line 178 "IW6.parser.ypp"
+#line 178 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_notify = std::move(yystack_[0].value.as < gsc::stmt_notify_ptr > ()); }
-#line 1593 "./IW6/compiler_parser.cpp"
+#line 1593 "./IW5/compiler_parser.cpp"
     break;
 
   case 26: // stmt: stmt_wait
-#line 179 "IW6.parser.ypp"
+#line 179 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_wait = std::move(yystack_[0].value.as < gsc::stmt_wait_ptr > ()); }
-#line 1599 "./IW6/compiler_parser.cpp"
+#line 1599 "./IW5/compiler_parser.cpp"
     break;
 
   case 27: // stmt: stmt_waittill
-#line 180 "IW6.parser.ypp"
+#line 180 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_waittill = std::move(yystack_[0].value.as < gsc::stmt_waittill_ptr > ()); }
-#line 1605 "./IW6/compiler_parser.cpp"
+#line 1605 "./IW5/compiler_parser.cpp"
     break;
 
   case 28: // stmt: stmt_waittillmatch
-#line 181 "IW6.parser.ypp"
+#line 181 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::stmt_ptr > ().as_waittillmatch = std::move(yystack_[0].value.as < gsc::stmt_waittillmatch_ptr > ()); }
-#line 1611 "./IW6/compiler_parser.cpp"
+#line 1611 "./IW5/compiler_parser.cpp"
     break;
 
   case 29: // stmt: stmt_waittillframeend
-#line 182 "IW6.parser.ypp"
+#line 182 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::stmt_ptr > ().as_waittillframeend = std::move(yystack_[0].value.as < gsc::stmt_waittillframeend_ptr > ()); }
-#line 1617 "./IW6/compiler_parser.cpp"
+#line 1617 "./IW5/compiler_parser.cpp"
     break;
 
   case 30: // stmt: stmt_if
-#line 183 "IW6.parser.ypp"
+#line 183 "IW5.parser.ypp"
                                                                                         { yylhs.value.as < gsc::stmt_ptr > ().as_if = std::move(yystack_[0].value.as < gsc::stmt_if_ptr > ()); }
-#line 1623 "./IW6/compiler_parser.cpp"
+#line 1623 "./IW5/compiler_parser.cpp"
     break;
 
   case 31: // stmt: stmt_ifelse
-#line 184 "IW6.parser.ypp"
+#line 184 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_ifelse = std::move(yystack_[0].value.as < gsc::stmt_ifelse_ptr > ()); }
-#line 1629 "./IW6/compiler_parser.cpp"
+#line 1629 "./IW5/compiler_parser.cpp"
     break;
 
   case 32: // stmt: stmt_while
-#line 185 "IW6.parser.ypp"
+#line 185 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_while = std::move(yystack_[0].value.as < gsc::stmt_while_ptr > ()); }
-#line 1635 "./IW6/compiler_parser.cpp"
+#line 1635 "./IW5/compiler_parser.cpp"
     break;
 
   case 33: // stmt: stmt_for
-#line 186 "IW6.parser.ypp"
+#line 186 "IW5.parser.ypp"
                                                                                         { yylhs.value.as < gsc::stmt_ptr > ().as_for = std::move(yystack_[0].value.as < gsc::stmt_for_ptr > ()); }
-#line 1641 "./IW6/compiler_parser.cpp"
+#line 1641 "./IW5/compiler_parser.cpp"
     break;
 
   case 34: // stmt: stmt_foreach
-#line 187 "IW6.parser.ypp"
+#line 187 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_foreach = std::move(yystack_[0].value.as < gsc::stmt_foreach_ptr > ()); }
-#line 1647 "./IW6/compiler_parser.cpp"
+#line 1647 "./IW5/compiler_parser.cpp"
     break;
 
   case 35: // stmt: stmt_switch
-#line 188 "IW6.parser.ypp"
+#line 188 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_switch = std::move(yystack_[0].value.as < gsc::stmt_switch_ptr > ()); }
-#line 1653 "./IW6/compiler_parser.cpp"
+#line 1653 "./IW5/compiler_parser.cpp"
     break;
 
   case 36: // stmt: stmt_case
-#line 189 "IW6.parser.ypp"
+#line 189 "IW5.parser.ypp"
                                                                                         { yylhs.value.as < gsc::stmt_ptr > ().as_case = std::move(yystack_[0].value.as < gsc::stmt_case_ptr > ()); }
-#line 1659 "./IW6/compiler_parser.cpp"
+#line 1659 "./IW5/compiler_parser.cpp"
     break;
 
   case 37: // stmt: stmt_default
-#line 190 "IW6.parser.ypp"
+#line 190 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_default = std::move(yystack_[0].value.as < gsc::stmt_default_ptr > ()); }
-#line 1665 "./IW6/compiler_parser.cpp"
+#line 1665 "./IW5/compiler_parser.cpp"
     break;
 
   case 38: // stmt: stmt_break
-#line 191 "IW6.parser.ypp"
+#line 191 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_break = std::move(yystack_[0].value.as < gsc::stmt_break_ptr > ()); }
-#line 1671 "./IW6/compiler_parser.cpp"
+#line 1671 "./IW5/compiler_parser.cpp"
     break;
 
   case 39: // stmt: stmt_continue
-#line 192 "IW6.parser.ypp"
+#line 192 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_continue = std::move(yystack_[0].value.as < gsc::stmt_continue_ptr > ()); }
-#line 1677 "./IW6/compiler_parser.cpp"
+#line 1677 "./IW5/compiler_parser.cpp"
     break;
 
   case 40: // stmt: stmt_return
-#line 193 "IW6.parser.ypp"
+#line 193 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_return = std::move(yystack_[0].value.as < gsc::stmt_return_ptr > ()); }
-#line 1683 "./IW6/compiler_parser.cpp"
+#line 1683 "./IW5/compiler_parser.cpp"
     break;
 
   case 41: // stmt_call: expr_call SEMICOLON
-#line 198 "IW6.parser.ypp"
+#line 198 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_call_ptr > () = std::make_unique<gsc::node_stmt_call>("", std::move(yystack_[1].value.as < gsc::expr_call_ptr > ())); }
-#line 1689 "./IW6/compiler_parser.cpp"
+#line 1689 "./IW5/compiler_parser.cpp"
     break;
 
   case 42: // stmt_call: expr_call_thread SEMICOLON
-#line 200 "IW6.parser.ypp"
+#line 200 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_call_ptr > () = std::make_unique<gsc::node_stmt_call>("", std::move(yystack_[1].value.as < gsc::expr_call_ptr > ())); }
-#line 1695 "./IW6/compiler_parser.cpp"
+#line 1695 "./IW5/compiler_parser.cpp"
     break;
 
   case 43: // stmt_assign: expr_assign SEMICOLON
-#line 205 "IW6.parser.ypp"
+#line 205 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_assign_ptr > () = std::make_unique<gsc::node_stmt_assign>("", std::move(yystack_[1].value.as < gsc::expr_assign_ptr > ())); }
-#line 1701 "./IW6/compiler_parser.cpp"
+#line 1701 "./IW5/compiler_parser.cpp"
     break;
 
   case 44: // stmt_endon: object ENDON LPAREN expr RPAREN SEMICOLON
-#line 210 "IW6.parser.ypp"
+#line 210 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_endon_ptr > () = std::make_unique<gsc::node_stmt_endon>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
-#line 1707 "./IW6/compiler_parser.cpp"
+#line 1707 "./IW5/compiler_parser.cpp"
     break;
 
   case 45: // stmt_notify: object NOTIFY LPAREN expr COMMA expr_arguments RPAREN SEMICOLON
-#line 215 "IW6.parser.ypp"
+#line 215 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_notify_ptr > () = std::make_unique<gsc::node_stmt_notify>("", std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ())); }
-#line 1713 "./IW6/compiler_parser.cpp"
+#line 1713 "./IW5/compiler_parser.cpp"
     break;
 
   case 46: // stmt_notify: object NOTIFY LPAREN expr RPAREN SEMICOLON
-#line 217 "IW6.parser.ypp"
+#line 217 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_notify_ptr > () = std::make_unique<gsc::node_stmt_notify>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::make_unique<gsc::node_expr_arguments>("")); }
-#line 1719 "./IW6/compiler_parser.cpp"
+#line 1719 "./IW5/compiler_parser.cpp"
     break;
 
   case 47: // stmt_wait: WAIT LPAREN expr RPAREN SEMICOLON
-#line 222 "IW6.parser.ypp"
+#line 222 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_wait_ptr > () = std::make_unique<gsc::node_stmt_wait>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
-#line 1725 "./IW6/compiler_parser.cpp"
+#line 1725 "./IW5/compiler_parser.cpp"
     break;
 
   case 48: // stmt_wait: WAIT num SEMICOLON
-#line 224 "IW6.parser.ypp"
+#line 224 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_wait_ptr > () = std::make_unique<gsc::node_stmt_wait>("", std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
-#line 1731 "./IW6/compiler_parser.cpp"
+#line 1731 "./IW5/compiler_parser.cpp"
     break;
 
   case 49: // stmt_waittill: object WAITTILL LPAREN expr COMMA expr_arguments RPAREN SEMICOLON
-#line 229 "IW6.parser.ypp"
+#line 229 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_waittill_ptr > () = std::make_unique<gsc::node_stmt_waittill>("", std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ())); }
-#line 1737 "./IW6/compiler_parser.cpp"
+#line 1737 "./IW5/compiler_parser.cpp"
     break;
 
   case 50: // stmt_waittill: object WAITTILL LPAREN expr RPAREN SEMICOLON
-#line 231 "IW6.parser.ypp"
+#line 231 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_waittill_ptr > () = std::make_unique<gsc::node_stmt_waittill>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::make_unique<gsc::node_expr_arguments>("")); }
-#line 1743 "./IW6/compiler_parser.cpp"
+#line 1743 "./IW5/compiler_parser.cpp"
     break;
 
   case 51: // stmt_waittillmatch: object WAITTILLMATCH LPAREN expr COMMA expr RPAREN SEMICOLON
-#line 236 "IW6.parser.ypp"
+#line 236 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_waittillmatch_ptr > () = std::make_unique<gsc::node_stmt_waittillmatch>("", std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
-#line 1749 "./IW6/compiler_parser.cpp"
+#line 1749 "./IW5/compiler_parser.cpp"
     break;
 
   case 52: // stmt_waittillframeend: WAITTILLFRAMEEND SEMICOLON
-#line 241 "IW6.parser.ypp"
+#line 241 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_waittillframeend_ptr > () = std::make_unique<gsc::node_stmt_waittillframeend>(""); }
-#line 1755 "./IW6/compiler_parser.cpp"
+#line 1755 "./IW5/compiler_parser.cpp"
     break;
 
   case 53: // stmt_if: IF LPAREN expr RPAREN LBRACE block RBRACE
-#line 246 "IW6.parser.ypp"
+#line 246 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_if_ptr > () = std::make_unique<gsc::node_stmt_if>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1761 "./IW6/compiler_parser.cpp"
+#line 1761 "./IW5/compiler_parser.cpp"
     break;
 
   case 54: // stmt_if: IF LPAREN expr RPAREN stmt
-#line 248 "IW6.parser.ypp"
+#line 248 "IW5.parser.ypp"
                 {
 			auto blk = std::make_unique<gsc::node_block>("");
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
 			yylhs.value.as < gsc::stmt_if_ptr > () = std::make_unique<gsc::node_stmt_if>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk)); }
-#line 1770 "./IW6/compiler_parser.cpp"
+#line 1770 "./IW5/compiler_parser.cpp"
     break;
 
   case 55: // stmt_ifelse: IF LPAREN expr RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE
-#line 256 "IW6.parser.ypp"
+#line 256 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[8].value.as < gsc::expr_ptr > ()), std::move(yystack_[5].value.as < gsc::block_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1776 "./IW6/compiler_parser.cpp"
+#line 1776 "./IW5/compiler_parser.cpp"
     break;
 
   case 56: // stmt_ifelse: IF LPAREN expr RPAREN stmt ELSE LBRACE block RBRACE
-#line 258 "IW6.parser.ypp"
+#line 258 "IW5.parser.ypp"
                 {
 			auto blk = std::make_unique<gsc::node_block>("");
 			blk->stmts.push_back(std::move(yystack_[4].value.as < gsc::stmt_ptr > ()));
 			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(blk), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1785 "./IW6/compiler_parser.cpp"
+#line 1785 "./IW5/compiler_parser.cpp"
     break;
 
   case 57: // stmt_ifelse: IF LPAREN expr RPAREN LBRACE block RBRACE ELSE stmt
-#line 263 "IW6.parser.ypp"
+#line 263 "IW5.parser.ypp"
                 { 
 			auto blk = std::make_unique<gsc::node_block>("");
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
 			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[3].value.as < gsc::block_ptr > ()), std::move(blk)); }
-#line 1794 "./IW6/compiler_parser.cpp"
+#line 1794 "./IW5/compiler_parser.cpp"
     break;
 
   case 58: // stmt_ifelse: IF LPAREN expr RPAREN stmt ELSE stmt
-#line 268 "IW6.parser.ypp"
+#line 268 "IW5.parser.ypp"
                 {
 			auto blk1 = std::make_unique<gsc::node_block>("");
 			blk1->stmts.push_back(std::move(yystack_[2].value.as < gsc::stmt_ptr > ()));
 			auto blk2 = std::make_unique<gsc::node_block>("");
 			blk2->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
 			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(blk1), std::move(blk2)); }
-#line 1805 "./IW6/compiler_parser.cpp"
+#line 1805 "./IW5/compiler_parser.cpp"
     break;
 
   case 59: // stmt_while: WHILE LPAREN expr RPAREN LBRACE block RBRACE
-#line 278 "IW6.parser.ypp"
+#line 278 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_while_ptr > () = std::make_unique<gsc::node_stmt_while>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1811 "./IW6/compiler_parser.cpp"
+#line 1811 "./IW5/compiler_parser.cpp"
     break;
 
   case 60: // stmt_while: WHILE LPAREN expr RPAREN stmt
-#line 280 "IW6.parser.ypp"
+#line 280 "IW5.parser.ypp"
                 {
 			auto blk = std::make_unique<gsc::node_block>("");
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
 			yylhs.value.as < gsc::stmt_while_ptr > () = std::make_unique<gsc::node_stmt_while>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk)); }
-#line 1820 "./IW6/compiler_parser.cpp"
+#line 1820 "./IW5/compiler_parser.cpp"
     break;
 
   case 61: // stmt_for: FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN LBRACE block RBRACE
-#line 288 "IW6.parser.ypp"
+#line 288 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_for_ptr > () = std::make_unique<gsc::node_stmt_for>("", std::move(yystack_[8].value.as < gsc::expr_ptr > ()), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1826 "./IW6/compiler_parser.cpp"
+#line 1826 "./IW5/compiler_parser.cpp"
     break;
 
   case 62: // stmt_for: FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN stmt
-#line 290 "IW6.parser.ypp"
+#line 290 "IW5.parser.ypp"
                 {
 			auto blk = std::make_unique<gsc::node_block>("");
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
 			yylhs.value.as < gsc::stmt_for_ptr > () = std::make_unique<gsc::node_stmt_for>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk));
 		}
-#line 1836 "./IW6/compiler_parser.cpp"
+#line 1836 "./IW5/compiler_parser.cpp"
     break;
 
   case 63: // stmt_foreach: FOREACH LPAREN expr IN expr RPAREN RBRACE block RBRACE
-#line 299 "IW6.parser.ypp"
+#line 299 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_foreach_ptr > () = std::make_unique<gsc::node_stmt_foreach>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1842 "./IW6/compiler_parser.cpp"
+#line 1842 "./IW5/compiler_parser.cpp"
     break;
 
   case 64: // stmt_foreach: FOREACH LPAREN expr IN expr RPAREN stmt
-#line 301 "IW6.parser.ypp"
+#line 301 "IW5.parser.ypp"
                 {
 			auto blk = std::make_unique<gsc::node_block>("");
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
 			yylhs.value.as < gsc::stmt_foreach_ptr > () = std::make_unique<gsc::node_stmt_foreach>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk));
 		}
-#line 1852 "./IW6/compiler_parser.cpp"
+#line 1852 "./IW5/compiler_parser.cpp"
     break;
 
   case 65: // stmt_switch: SWITCH LPAREN expr RPAREN LBRACE block RBRACE
-#line 310 "IW6.parser.ypp"
+#line 310 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_switch_ptr > () = std::make_unique<gsc::node_stmt_switch>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1858 "./IW6/compiler_parser.cpp"
+#line 1858 "./IW5/compiler_parser.cpp"
     break;
 
   case 66: // stmt_case: CASE data_integer COLON
-#line 315 "IW6.parser.ypp"
+#line 315 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::integer_ptr > ()))); }
-#line 1864 "./IW6/compiler_parser.cpp"
+#line 1864 "./IW5/compiler_parser.cpp"
     break;
 
   case 67: // stmt_case: CASE data_string COLON
-#line 317 "IW6.parser.ypp"
+#line 317 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::string_ptr > ()))); }
-#line 1870 "./IW6/compiler_parser.cpp"
+#line 1870 "./IW5/compiler_parser.cpp"
     break;
 
   case 68: // stmt_default: DEFAULT COLON
-#line 322 "IW6.parser.ypp"
+#line 322 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_default_ptr > () = std::make_unique<gsc::node_stmt_default>(""); }
-#line 1876 "./IW6/compiler_parser.cpp"
+#line 1876 "./IW5/compiler_parser.cpp"
     break;
 
   case 69: // stmt_break: BREAK SEMICOLON
-#line 327 "IW6.parser.ypp"
+#line 327 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_break_ptr > () = std::make_unique<gsc::node_stmt_break>(""); }
-#line 1882 "./IW6/compiler_parser.cpp"
+#line 1882 "./IW5/compiler_parser.cpp"
     break;
 
   case 70: // stmt_continue: CONTINUE SEMICOLON
-#line 331 "IW6.parser.ypp"
+#line 331 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_continue_ptr > () = std::make_unique<gsc::node_stmt_continue>(""); }
-#line 1888 "./IW6/compiler_parser.cpp"
+#line 1888 "./IW5/compiler_parser.cpp"
     break;
 
   case 71: // stmt_return: RETURN expr SEMICOLON
-#line 336 "IW6.parser.ypp"
+#line 336 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_return_ptr > () = std::make_unique<gsc::node_stmt_return>("", std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
-#line 1894 "./IW6/compiler_parser.cpp"
+#line 1894 "./IW5/compiler_parser.cpp"
     break;
 
   case 72: // stmt_return: RETURN SEMICOLON
-#line 338 "IW6.parser.ypp"
+#line 338 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::stmt_return_ptr > () = std::make_unique<gsc::node_stmt_return>("", std::make_unique<gsc::node>()); }
-#line 1900 "./IW6/compiler_parser.cpp"
+#line 1900 "./IW5/compiler_parser.cpp"
     break;
 
   case 73: // for_assign: expr_assign
-#line 342 "IW6.parser.ypp"
+#line 342 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::expr_assign_ptr > ()); }
-#line 1906 "./IW6/compiler_parser.cpp"
+#line 1906 "./IW5/compiler_parser.cpp"
     break;
 
   case 74: // for_assign: %empty
-#line 343 "IW6.parser.ypp"
+#line 343 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node>(); }
-#line 1912 "./IW6/compiler_parser.cpp"
+#line 1912 "./IW5/compiler_parser.cpp"
     break;
 
   case 75: // for_cond: expr_cmp
-#line 347 "IW6.parser.ypp"
+#line 347 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[0].value.as < gsc::expr_ptr > ()); }
-#line 1918 "./IW6/compiler_parser.cpp"
+#line 1918 "./IW5/compiler_parser.cpp"
     break;
 
   case 76: // for_cond: %empty
-#line 348 "IW6.parser.ypp"
+#line 348 "IW5.parser.ypp"
                                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node>(); }
-#line 1924 "./IW6/compiler_parser.cpp"
+#line 1924 "./IW5/compiler_parser.cpp"
     break;
 
   case 77: // expr: expr_cmp
-#line 352 "IW6.parser.ypp"
+#line 352 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[0].value.as < gsc::expr_ptr > ()); }
-#line 1930 "./IW6/compiler_parser.cpp"
+#line 1930 "./IW5/compiler_parser.cpp"
     break;
 
   case 78: // expr: expr_ternary
-#line 353 "IW6.parser.ypp"
+#line 353 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[0].value.as < gsc::expr_ptr > ()); }
-#line 1936 "./IW6/compiler_parser.cpp"
+#line 1936 "./IW5/compiler_parser.cpp"
     break;
 
   case 79: // expr: expr_binary
-#line 354 "IW6.parser.ypp"
+#line 354 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[0].value.as < gsc::expr_ptr > ()); }
-#line 1942 "./IW6/compiler_parser.cpp"
+#line 1942 "./IW5/compiler_parser.cpp"
     break;
 
   case 80: // expr: expr_primitive
-#line 355 "IW6.parser.ypp"
+#line 355 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[0].value.as < gsc::expr_ptr > ()); }
-#line 1948 "./IW6/compiler_parser.cpp"
+#line 1948 "./IW5/compiler_parser.cpp"
     break;
 
   case 81: // expr_assign: object INCREMENT
-#line 359 "IW6.parser.ypp"
+#line 359 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_increment>("", std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
-#line 1954 "./IW6/compiler_parser.cpp"
+#line 1954 "./IW5/compiler_parser.cpp"
     break;
 
   case 82: // expr_assign: object DECREMENT
-#line 360 "IW6.parser.ypp"
+#line 360 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_decrement>("", std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
-#line 1960 "./IW6/compiler_parser.cpp"
+#line 1960 "./IW5/compiler_parser.cpp"
     break;
 
   case 83: // expr_assign: object ASSIGN expr
-#line 361 "IW6.parser.ypp"
+#line 361 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_equal>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 1966 "./IW6/compiler_parser.cpp"
+#line 1966 "./IW5/compiler_parser.cpp"
     break;
 
   case 84: // expr_assign: object ASSIGN_BITWISE_OR expr
-#line 362 "IW6.parser.ypp"
+#line 362 "IW5.parser.ypp"
                                                 { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_or>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 1972 "./IW6/compiler_parser.cpp"
+#line 1972 "./IW5/compiler_parser.cpp"
     break;
 
   case 85: // expr_assign: object ASSIGN_BITWISE_AND expr
-#line 363 "IW6.parser.ypp"
+#line 363 "IW5.parser.ypp"
                                                 { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_and>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 1978 "./IW6/compiler_parser.cpp"
+#line 1978 "./IW5/compiler_parser.cpp"
     break;
 
   case 86: // expr_assign: object ASSIGN_BITWISE_EXOR expr
-#line 364 "IW6.parser.ypp"
+#line 364 "IW5.parser.ypp"
                                                 { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_exor>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 1984 "./IW6/compiler_parser.cpp"
+#line 1984 "./IW5/compiler_parser.cpp"
     break;
 
   case 87: // expr_assign: object ASSIGN_LSHIFT expr
-#line 365 "IW6.parser.ypp"
+#line 365 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_shift_left>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()),std::move( yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 1990 "./IW6/compiler_parser.cpp"
+#line 1990 "./IW5/compiler_parser.cpp"
     break;
 
   case 88: // expr_assign: object ASSIGN_RSHIFT expr
-#line 366 "IW6.parser.ypp"
+#line 366 "IW5.parser.ypp"
                                                 { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_shift_right>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 1996 "./IW6/compiler_parser.cpp"
+#line 1996 "./IW5/compiler_parser.cpp"
     break;
 
   case 89: // expr_assign: object ASSIGN_ADD expr
-#line 367 "IW6.parser.ypp"
+#line 367 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_add>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2002 "./IW6/compiler_parser.cpp"
+#line 2002 "./IW5/compiler_parser.cpp"
     break;
 
   case 90: // expr_assign: object ASSIGN_SUB expr
-#line 368 "IW6.parser.ypp"
+#line 368 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_sub>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2008 "./IW6/compiler_parser.cpp"
+#line 2008 "./IW5/compiler_parser.cpp"
     break;
 
   case 91: // expr_assign: object ASSIGN_MULT expr
-#line 369 "IW6.parser.ypp"
+#line 369 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_mult>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2014 "./IW6/compiler_parser.cpp"
+#line 2014 "./IW5/compiler_parser.cpp"
     break;
 
   case 92: // expr_assign: object ASSIGN_DIV expr
-#line 370 "IW6.parser.ypp"
+#line 370 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_div>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2020 "./IW6/compiler_parser.cpp"
+#line 2020 "./IW5/compiler_parser.cpp"
     break;
 
   case 93: // expr_assign: object ASSIGN_MOD expr
-#line 371 "IW6.parser.ypp"
+#line 371 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_mod>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2026 "./IW6/compiler_parser.cpp"
+#line 2026 "./IW5/compiler_parser.cpp"
     break;
 
   case 94: // expr_cmp: expr OR expr
-#line 375 "IW6.parser.ypp"
+#line 375 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_or>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2032 "./IW6/compiler_parser.cpp"
+#line 2032 "./IW5/compiler_parser.cpp"
     break;
 
   case 95: // expr_cmp: expr AND expr
-#line 376 "IW6.parser.ypp"
+#line 376 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_and>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2038 "./IW6/compiler_parser.cpp"
+#line 2038 "./IW5/compiler_parser.cpp"
     break;
 
   case 96: // expr_cmp: expr EQUALITY expr
-#line 377 "IW6.parser.ypp"
+#line 377 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_equality>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2044 "./IW6/compiler_parser.cpp"
+#line 2044 "./IW5/compiler_parser.cpp"
     break;
 
   case 97: // expr_cmp: expr INEQUALITY expr
-#line 378 "IW6.parser.ypp"
+#line 378 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_inequality>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2050 "./IW6/compiler_parser.cpp"
+#line 2050 "./IW5/compiler_parser.cpp"
     break;
 
   case 98: // expr_cmp: expr LESS_EQUAL expr
-#line 379 "IW6.parser.ypp"
+#line 379 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_less_equal>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2056 "./IW6/compiler_parser.cpp"
+#line 2056 "./IW5/compiler_parser.cpp"
     break;
 
   case 99: // expr_cmp: expr GREATER_EQUAL expr
-#line 380 "IW6.parser.ypp"
+#line 380 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_greater_equal>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2062 "./IW6/compiler_parser.cpp"
+#line 2062 "./IW5/compiler_parser.cpp"
     break;
 
   case 100: // expr_cmp: expr LESS expr
-#line 381 "IW6.parser.ypp"
+#line 381 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_less>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2068 "./IW6/compiler_parser.cpp"
+#line 2068 "./IW5/compiler_parser.cpp"
     break;
 
   case 101: // expr_cmp: expr GREATER expr
-#line 382 "IW6.parser.ypp"
+#line 382 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_greater>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2074 "./IW6/compiler_parser.cpp"
+#line 2074 "./IW5/compiler_parser.cpp"
     break;
 
   case 102: // expr_ternary: expr_cmp QMARK expr COLON expr
-#line 386 "IW6.parser.ypp"
+#line 386 "IW5.parser.ypp"
                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_ternary>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2080 "./IW6/compiler_parser.cpp"
+#line 2080 "./IW5/compiler_parser.cpp"
     break;
 
   case 103: // expr_binary: expr BITWISE_OR expr
-#line 390 "IW6.parser.ypp"
+#line 390 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_or>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2086 "./IW6/compiler_parser.cpp"
+#line 2086 "./IW5/compiler_parser.cpp"
     break;
 
   case 104: // expr_binary: expr BITWISE_AND expr
-#line 391 "IW6.parser.ypp"
+#line 391 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_and>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2092 "./IW6/compiler_parser.cpp"
+#line 2092 "./IW5/compiler_parser.cpp"
     break;
 
   case 105: // expr_binary: expr BITWISE_EXOR expr
-#line 392 "IW6.parser.ypp"
+#line 392 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_exor>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2098 "./IW6/compiler_parser.cpp"
+#line 2098 "./IW5/compiler_parser.cpp"
     break;
 
   case 106: // expr_binary: expr LSHIFT expr
-#line 393 "IW6.parser.ypp"
+#line 393 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_shift_left>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2104 "./IW6/compiler_parser.cpp"
+#line 2104 "./IW5/compiler_parser.cpp"
     break;
 
   case 107: // expr_binary: expr RSHIFT expr
-#line 394 "IW6.parser.ypp"
+#line 394 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_shift_right>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2110 "./IW6/compiler_parser.cpp"
+#line 2110 "./IW5/compiler_parser.cpp"
     break;
 
   case 108: // expr_binary: expr ADD expr
-#line 395 "IW6.parser.ypp"
+#line 395 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_add>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2116 "./IW6/compiler_parser.cpp"
+#line 2116 "./IW5/compiler_parser.cpp"
     break;
 
   case 109: // expr_binary: expr SUB expr
-#line 396 "IW6.parser.ypp"
+#line 396 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_sub>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2122 "./IW6/compiler_parser.cpp"
+#line 2122 "./IW5/compiler_parser.cpp"
     break;
 
   case 110: // expr_binary: expr MULT expr
-#line 397 "IW6.parser.ypp"
+#line 397 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_mult>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2128 "./IW6/compiler_parser.cpp"
+#line 2128 "./IW5/compiler_parser.cpp"
     break;
 
   case 111: // expr_binary: expr DIV expr
-#line 398 "IW6.parser.ypp"
+#line 398 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_div>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2134 "./IW6/compiler_parser.cpp"
+#line 2134 "./IW5/compiler_parser.cpp"
     break;
 
   case 112: // expr_binary: expr MOD expr
-#line 399 "IW6.parser.ypp"
+#line 399 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_mod>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2140 "./IW6/compiler_parser.cpp"
+#line 2140 "./IW5/compiler_parser.cpp"
     break;
 
   case 113: // expr_primitive: LPAREN expr RPAREN
-#line 403 "IW6.parser.ypp"
+#line 403 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[1].value.as < gsc::expr_ptr > ()); }
-#line 2146 "./IW6/compiler_parser.cpp"
+#line 2146 "./IW5/compiler_parser.cpp"
     break;
 
   case 114: // expr_primitive: COMPLEMENT expr
-#line 404 "IW6.parser.ypp"
+#line 404 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_complement>("", std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2152 "./IW6/compiler_parser.cpp"
+#line 2152 "./IW5/compiler_parser.cpp"
     break;
 
   case 115: // expr_primitive: NOT expr
-#line 405 "IW6.parser.ypp"
+#line 405 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_not>("", std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2158 "./IW6/compiler_parser.cpp"
+#line 2158 "./IW5/compiler_parser.cpp"
     break;
 
   case 116: // expr_primitive: expr_call
-#line 406 "IW6.parser.ypp"
+#line 406 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::expr_call_ptr > ()); }
-#line 2164 "./IW6/compiler_parser.cpp"
+#line 2164 "./IW5/compiler_parser.cpp"
     break;
 
   case 117: // expr_primitive: expr_call_thread
-#line 407 "IW6.parser.ypp"
+#line 407 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::expr_call_ptr > ()); }
-#line 2170 "./IW6/compiler_parser.cpp"
+#line 2170 "./IW5/compiler_parser.cpp"
     break;
 
   case 118: // expr_primitive: expr_function_ref
-#line 408 "IW6.parser.ypp"
+#line 408 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2176 "./IW6/compiler_parser.cpp"
+#line 2176 "./IW5/compiler_parser.cpp"
     break;
 
   case 119: // expr_primitive: expr_array
-#line 409 "IW6.parser.ypp"
+#line 409 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2182 "./IW6/compiler_parser.cpp"
+#line 2182 "./IW5/compiler_parser.cpp"
     break;
 
   case 120: // expr_primitive: expr_field
-#line 410 "IW6.parser.ypp"
+#line 410 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2188 "./IW6/compiler_parser.cpp"
+#line 2188 "./IW5/compiler_parser.cpp"
     break;
 
   case 121: // expr_primitive: expr_size
-#line 411 "IW6.parser.ypp"
+#line 411 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2194 "./IW6/compiler_parser.cpp"
+#line 2194 "./IW5/compiler_parser.cpp"
     break;
 
   case 122: // expr_primitive: expr_vector
-#line 412 "IW6.parser.ypp"
+#line 412 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2200 "./IW6/compiler_parser.cpp"
+#line 2200 "./IW5/compiler_parser.cpp"
     break;
 
   case 123: // expr_primitive: expr_add_array
-#line 413 "IW6.parser.ypp"
+#line 413 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2206 "./IW6/compiler_parser.cpp"
+#line 2206 "./IW5/compiler_parser.cpp"
     break;
 
   case 124: // expr_primitive: vector
-#line 414 "IW6.parser.ypp"
+#line 414 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2212 "./IW6/compiler_parser.cpp"
+#line 2212 "./IW5/compiler_parser.cpp"
     break;
 
   case 125: // expr_primitive: num
-#line 415 "IW6.parser.ypp"
+#line 415 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2218 "./IW6/compiler_parser.cpp"
+#line 2218 "./IW5/compiler_parser.cpp"
     break;
 
   case 126: // expr_primitive: data_localized_string
-#line 416 "IW6.parser.ypp"
+#line 416 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::localized_string_ptr > ()); }
-#line 2224 "./IW6/compiler_parser.cpp"
+#line 2224 "./IW5/compiler_parser.cpp"
     break;
 
   case 127: // expr_primitive: data_string
-#line 417 "IW6.parser.ypp"
+#line 417 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::string_ptr > ()); }
-#line 2230 "./IW6/compiler_parser.cpp"
+#line 2230 "./IW5/compiler_parser.cpp"
     break;
 
   case 128: // expr_primitive: identifier
-#line 418 "IW6.parser.ypp"
+#line 418 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::identifier_ptr > ()); }
-#line 2236 "./IW6/compiler_parser.cpp"
+#line 2236 "./IW5/compiler_parser.cpp"
     break;
 
   case 129: // expr_primitive: empty_array
-#line 419 "IW6.parser.ypp"
+#line 419 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2242 "./IW6/compiler_parser.cpp"
+#line 2242 "./IW5/compiler_parser.cpp"
     break;
 
   case 130: // expr_primitive: undefined
-#line 420 "IW6.parser.ypp"
+#line 420 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2248 "./IW6/compiler_parser.cpp"
+#line 2248 "./IW5/compiler_parser.cpp"
     break;
 
   case 131: // expr_primitive: game
-#line 421 "IW6.parser.ypp"
+#line 421 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2254 "./IW6/compiler_parser.cpp"
+#line 2254 "./IW5/compiler_parser.cpp"
     break;
 
   case 132: // expr_primitive: self
-#line 422 "IW6.parser.ypp"
+#line 422 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2260 "./IW6/compiler_parser.cpp"
+#line 2260 "./IW5/compiler_parser.cpp"
     break;
 
   case 133: // expr_primitive: anim
-#line 423 "IW6.parser.ypp"
+#line 423 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2266 "./IW6/compiler_parser.cpp"
+#line 2266 "./IW5/compiler_parser.cpp"
     break;
 
   case 134: // expr_primitive: level
-#line 424 "IW6.parser.ypp"
+#line 424 "IW5.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2272 "./IW6/compiler_parser.cpp"
+#line 2272 "./IW5/compiler_parser.cpp"
     break;
 
   case 135: // expr_call: expr_call_function
-#line 428 "IW6.parser.ypp"
+#line 428 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2278 "./IW6/compiler_parser.cpp"
+#line 2278 "./IW5/compiler_parser.cpp"
     break;
 
   case 136: // expr_call: expr_call_pointer
-#line 429 "IW6.parser.ypp"
+#line 429 "IW5.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2284 "./IW6/compiler_parser.cpp"
+#line 2284 "./IW5/compiler_parser.cpp"
     break;
 
   case 137: // expr_call: object expr_call_function
-#line 430 "IW6.parser.ypp"
+#line 430 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::move(yystack_[1].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2290 "./IW6/compiler_parser.cpp"
+#line 2290 "./IW5/compiler_parser.cpp"
     break;
 
   case 138: // expr_call: object expr_call_pointer
-#line 431 "IW6.parser.ypp"
+#line 431 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::move(yystack_[1].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2296 "./IW6/compiler_parser.cpp"
+#line 2296 "./IW5/compiler_parser.cpp"
     break;
 
   case 139: // expr_call_thread: THREAD expr_call_function
-#line 435 "IW6.parser.ypp"
+#line 435 "IW5.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2302 "./IW6/compiler_parser.cpp"
+#line 2302 "./IW5/compiler_parser.cpp"
     break;
 
   case 140: // expr_call_thread: THREAD expr_call_pointer
-#line 436 "IW6.parser.ypp"
+#line 436 "IW5.parser.ypp"
                                                 { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2308 "./IW6/compiler_parser.cpp"
+#line 2308 "./IW5/compiler_parser.cpp"
     break;
 
   case 141: // expr_call_thread: object THREAD expr_call_function
-#line 437 "IW6.parser.ypp"
+#line 437 "IW5.parser.ypp"
                                             { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2314 "./IW6/compiler_parser.cpp"
+#line 2314 "./IW5/compiler_parser.cpp"
     break;
 
   case 142: // expr_call_thread: object THREAD expr_call_pointer
-#line 438 "IW6.parser.ypp"
+#line 438 "IW5.parser.ypp"
                                                 { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2320 "./IW6/compiler_parser.cpp"
+#line 2320 "./IW5/compiler_parser.cpp"
     break;
 
   case 143: // expr_call_function: identifier LPAREN expr_arguments RPAREN
-#line 443 "IW6.parser.ypp"
+#line 443 "IW5.parser.ypp"
                 {yylhs.value.as < gsc::expr_call_type_ptr > ().as_func = std::make_unique<gsc::node_expr_call_function>("", std::make_unique<gsc::node_filepath>("", ""), std::move(yystack_[3].value.as < gsc::identifier_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
-#line 2326 "./IW6/compiler_parser.cpp"
+#line 2326 "./IW5/compiler_parser.cpp"
     break;
 
   case 144: // expr_call_function: filepath DOUBLECOLON identifier LPAREN expr_arguments RPAREN
-#line 445 "IW6.parser.ypp"
+#line 445 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::expr_call_type_ptr > ().as_func = std::make_unique<gsc::node_expr_call_function>("", std::move(yystack_[5].value.as < gsc::filepath_ptr > ()), std::move(yystack_[3].value.as < gsc::identifier_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
-#line 2332 "./IW6/compiler_parser.cpp"
+#line 2332 "./IW5/compiler_parser.cpp"
     break;
 
   case 145: // expr_call_pointer: LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
-#line 450 "IW6.parser.ypp"
+#line 450 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::expr_call_type_ptr > ().as_pointer = std::make_unique<gsc::node_expr_call_pointer>("", false, std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
-#line 2338 "./IW6/compiler_parser.cpp"
+#line 2338 "./IW5/compiler_parser.cpp"
     break;
 
   case 146: // expr_call_pointer: CALL LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
-#line 452 "IW6.parser.ypp"
+#line 452 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::expr_call_type_ptr > ().as_pointer = std::make_unique<gsc::node_expr_call_pointer>("", true, std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
-#line 2344 "./IW6/compiler_parser.cpp"
+#line 2344 "./IW5/compiler_parser.cpp"
     break;
 
   case 147: // expr_arguments: expr_arguments COMMA expr
-#line 457 "IW6.parser.ypp"
+#line 457 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::expr_arguments_ptr > () = std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ()); yylhs.value.as < gsc::expr_arguments_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2350 "./IW6/compiler_parser.cpp"
+#line 2350 "./IW5/compiler_parser.cpp"
     break;
 
   case 148: // expr_arguments: expr
-#line 459 "IW6.parser.ypp"
+#line 459 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::expr_arguments_ptr > () = std::make_unique<gsc::node_expr_arguments>(""); yylhs.value.as < gsc::expr_arguments_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2356 "./IW6/compiler_parser.cpp"
+#line 2356 "./IW5/compiler_parser.cpp"
     break;
 
   case 149: // expr_arguments: %empty
-#line 461 "IW6.parser.ypp"
+#line 461 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::expr_arguments_ptr > () = std::make_unique<gsc::node_expr_arguments>(""); }
-#line 2362 "./IW6/compiler_parser.cpp"
+#line 2362 "./IW5/compiler_parser.cpp"
     break;
 
   case 150: // expr_function_ref: DOUBLECOLON identifier
-#line 466 "IW6.parser.ypp"
+#line 466 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_function_ref>("", std::make_unique<gsc::node_filepath>("", ""), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
-#line 2368 "./IW6/compiler_parser.cpp"
+#line 2368 "./IW5/compiler_parser.cpp"
     break;
 
   case 151: // expr_function_ref: filepath DOUBLECOLON identifier
-#line 468 "IW6.parser.ypp"
+#line 468 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_function_ref>("", std::move(yystack_[2].value.as < gsc::filepath_ptr > ()), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
-#line 2374 "./IW6/compiler_parser.cpp"
+#line 2374 "./IW5/compiler_parser.cpp"
     break;
 
   case 152: // expr_array: object LBRACKET expr RBRACKET
-#line 473 "IW6.parser.ypp"
+#line 473 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_array>("", std::move(yystack_[3].value.as < gsc::node_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
-#line 2380 "./IW6/compiler_parser.cpp"
+#line 2380 "./IW5/compiler_parser.cpp"
     break;
 
   case 153: // expr_field: object DOT identifier
-#line 478 "IW6.parser.ypp"
+#line 478 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_field>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
-#line 2386 "./IW6/compiler_parser.cpp"
+#line 2386 "./IW5/compiler_parser.cpp"
     break;
 
   case 154: // expr_size: object DOT size
-#line 483 "IW6.parser.ypp"
+#line 483 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_size>("", std::move(yystack_[2].value.as < gsc::node_ptr > ())); }
-#line 2392 "./IW6/compiler_parser.cpp"
+#line 2392 "./IW5/compiler_parser.cpp"
     break;
 
   case 155: // expr_vector: LPAREN expr COMMA expr COMMA expr RPAREN
-#line 488 "IW6.parser.ypp"
+#line 488 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_vector>("", std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[3].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
-#line 2398 "./IW6/compiler_parser.cpp"
+#line 2398 "./IW5/compiler_parser.cpp"
     break;
 
   case 156: // expr_add_array: LBRACKET expr_arguments RBRACKET
-#line 493 "IW6.parser.ypp"
+#line 493 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_add_array>("", std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
-#line 2404 "./IW6/compiler_parser.cpp"
+#line 2404 "./IW5/compiler_parser.cpp"
     break;
 
   case 157: // object: expr_call
-#line 497 "IW6.parser.ypp"
+#line 497 "IW5.parser.ypp"
                                 { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::expr_call_ptr > ()); }
-#line 2410 "./IW6/compiler_parser.cpp"
+#line 2410 "./IW5/compiler_parser.cpp"
     break;
 
   case 158: // object: expr_array
-#line 498 "IW6.parser.ypp"
+#line 498 "IW5.parser.ypp"
                                 { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2416 "./IW6/compiler_parser.cpp"
+#line 2416 "./IW5/compiler_parser.cpp"
     break;
 
   case 159: // object: expr_field
-#line 499 "IW6.parser.ypp"
+#line 499 "IW5.parser.ypp"
                                 { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2422 "./IW6/compiler_parser.cpp"
+#line 2422 "./IW5/compiler_parser.cpp"
     break;
 
   case 160: // object: identifier
-#line 500 "IW6.parser.ypp"
+#line 500 "IW5.parser.ypp"
                                 { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::identifier_ptr > ()); }
-#line 2428 "./IW6/compiler_parser.cpp"
+#line 2428 "./IW5/compiler_parser.cpp"
     break;
 
   case 161: // object: level
-#line 501 "IW6.parser.ypp"
+#line 501 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2434 "./IW6/compiler_parser.cpp"
+#line 2434 "./IW5/compiler_parser.cpp"
     break;
 
   case 162: // object: anim
-#line 502 "IW6.parser.ypp"
+#line 502 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2440 "./IW6/compiler_parser.cpp"
+#line 2440 "./IW5/compiler_parser.cpp"
     break;
 
   case 163: // object: self
-#line 503 "IW6.parser.ypp"
+#line 503 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2446 "./IW6/compiler_parser.cpp"
+#line 2446 "./IW5/compiler_parser.cpp"
     break;
 
   case 164: // object: game
-#line 504 "IW6.parser.ypp"
+#line 504 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2452 "./IW6/compiler_parser.cpp"
+#line 2452 "./IW5/compiler_parser.cpp"
     break;
 
   case 165: // vector: LPAREN num COMMA num COMMA num RPAREN
-#line 509 "IW6.parser.ypp"
+#line 509 "IW5.parser.ypp"
                 { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_vector>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[3].value.as < gsc::node_ptr > ()), std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
-#line 2458 "./IW6/compiler_parser.cpp"
+#line 2458 "./IW5/compiler_parser.cpp"
     break;
 
   case 166: // num: data_float
-#line 513 "IW6.parser.ypp"
+#line 513 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::float_ptr > ()); }
-#line 2464 "./IW6/compiler_parser.cpp"
+#line 2464 "./IW5/compiler_parser.cpp"
     break;
 
   case 167: // num: data_integer
-#line 514 "IW6.parser.ypp"
+#line 514 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::integer_ptr > ()); }
-#line 2470 "./IW6/compiler_parser.cpp"
+#line 2470 "./IW5/compiler_parser.cpp"
     break;
 
   case 168: // num: false
-#line 515 "IW6.parser.ypp"
+#line 515 "IW5.parser.ypp"
                                                 { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2476 "./IW6/compiler_parser.cpp"
+#line 2476 "./IW5/compiler_parser.cpp"
     break;
 
   case 169: // num: true
-#line 516 "IW6.parser.ypp"
+#line 516 "IW5.parser.ypp"
                                                 { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2482 "./IW6/compiler_parser.cpp"
+#line 2482 "./IW5/compiler_parser.cpp"
     break;
 
   case 170: // false: FALSE
-#line 519 "IW6.parser.ypp"
+#line 519 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_integer>("", "0"); }
-#line 2488 "./IW6/compiler_parser.cpp"
+#line 2488 "./IW5/compiler_parser.cpp"
     break;
 
   case 171: // true: TRUE
-#line 520 "IW6.parser.ypp"
+#line 520 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_integer>("", "1"); }
-#line 2494 "./IW6/compiler_parser.cpp"
+#line 2494 "./IW5/compiler_parser.cpp"
     break;
 
   case 172: // data_float: FLOAT
-#line 521 "IW6.parser.ypp"
+#line 521 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::float_ptr > () = std::make_unique<gsc::node_float>("", yystack_[0].value.as < std::string > ()); }
-#line 2500 "./IW6/compiler_parser.cpp"
+#line 2500 "./IW5/compiler_parser.cpp"
     break;
 
   case 173: // data_integer: INTEGER
-#line 522 "IW6.parser.ypp"
+#line 522 "IW5.parser.ypp"
                                 { yylhs.value.as < gsc::integer_ptr > () = std::make_unique<gsc::node_integer>("", yystack_[0].value.as < std::string > ()); }
-#line 2506 "./IW6/compiler_parser.cpp"
+#line 2506 "./IW5/compiler_parser.cpp"
     break;
 
   case 174: // data_localized_string: STRING_LOC
-#line 523 "IW6.parser.ypp"
+#line 523 "IW5.parser.ypp"
                                    { yylhs.value.as < gsc::localized_string_ptr > () = std::make_unique<gsc::node_localized_string>("", yystack_[0].value.as < std::string > ()); }
-#line 2512 "./IW6/compiler_parser.cpp"
+#line 2512 "./IW5/compiler_parser.cpp"
     break;
 
   case 175: // data_string: STRING
-#line 524 "IW6.parser.ypp"
+#line 524 "IW5.parser.ypp"
                                 { yylhs.value.as < gsc::string_ptr > () = std::make_unique<gsc::node_string>("", yystack_[0].value.as < std::string > ()); }
-#line 2518 "./IW6/compiler_parser.cpp"
+#line 2518 "./IW5/compiler_parser.cpp"
     break;
 
   case 176: // identifier: IDENTIFIER
-#line 525 "IW6.parser.ypp"
+#line 525 "IW5.parser.ypp"
                                 { yylhs.value.as < gsc::identifier_ptr > () = std::make_unique<gsc::node_identifier>("", yystack_[0].value.as < std::string > ()); }
-#line 2524 "./IW6/compiler_parser.cpp"
+#line 2524 "./IW5/compiler_parser.cpp"
     break;
 
   case 177: // filepath: FILEPATH
-#line 526 "IW6.parser.ypp"
+#line 526 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::filepath_ptr > () = std::make_unique<gsc::node_filepath>("", yystack_[0].value.as < std::string > ()); }
-#line 2530 "./IW6/compiler_parser.cpp"
+#line 2530 "./IW5/compiler_parser.cpp"
     break;
 
   case 178: // empty_array: EMPTY_ARRAY
-#line 527 "IW6.parser.ypp"
+#line 527 "IW5.parser.ypp"
                                 { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_empty_array>(""); }
-#line 2536 "./IW6/compiler_parser.cpp"
+#line 2536 "./IW5/compiler_parser.cpp"
     break;
 
   case 179: // undefined: UNDEFINED
-#line 528 "IW6.parser.ypp"
+#line 528 "IW5.parser.ypp"
                                 { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_undefined>(""); }
-#line 2542 "./IW6/compiler_parser.cpp"
+#line 2542 "./IW5/compiler_parser.cpp"
     break;
 
   case 180: // size: SIZE
-#line 529 "IW6.parser.ypp"
+#line 529 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_size>(""); }
-#line 2548 "./IW6/compiler_parser.cpp"
+#line 2548 "./IW5/compiler_parser.cpp"
     break;
 
   case 181: // game: GAME
-#line 530 "IW6.parser.ypp"
+#line 530 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_game>(""); }
-#line 2554 "./IW6/compiler_parser.cpp"
+#line 2554 "./IW5/compiler_parser.cpp"
     break;
 
   case 182: // self: SELF
-#line 531 "IW6.parser.ypp"
+#line 531 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_self>(""); }
-#line 2560 "./IW6/compiler_parser.cpp"
+#line 2560 "./IW5/compiler_parser.cpp"
     break;
 
   case 183: // anim: ANIM
-#line 532 "IW6.parser.ypp"
+#line 532 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_anim>(""); }
-#line 2566 "./IW6/compiler_parser.cpp"
+#line 2566 "./IW5/compiler_parser.cpp"
     break;
 
   case 184: // level: LEVEL
-#line 533 "IW6.parser.ypp"
+#line 533 "IW5.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_level>(""); }
-#line 2572 "./IW6/compiler_parser.cpp"
+#line 2572 "./IW5/compiler_parser.cpp"
     break;
 
 
-#line 2576 "./IW6/compiler_parser.cpp"
+#line 2576 "./IW5/compiler_parser.cpp"
 
             default:
               break;
@@ -3779,9 +3779,9 @@ namespace yy {
 
 
 } // yy
-#line 3783 "./IW6/compiler_parser.cpp"
+#line 3783 "./IW5/compiler_parser.cpp"
 
-#line 535 "IW6.parser.ypp"
+#line 535 "IW5.parser.ypp"
 
 
 void yy::parser::error(const std::string& msg)

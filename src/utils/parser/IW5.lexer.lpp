@@ -3,6 +3,7 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 */
+
 %option outfile="./IW5/compiler_lexer.cpp"
 %option header-file="./IW5/compiler_lexer.hpp"
 %option reentrant
@@ -16,7 +17,7 @@
 %}
 
 RGX_FILEPATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
-RGX_IDENTIFIER      [_A-Za-z][_A-Za-z0-9\-]*
+RGX_IDENTIFIER      (id\#[0-9]*|[_A-Za-z][_A-Za-z0-9\-]*)
 RGX_STRING		    \"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\'
 RGX_FLOAT		    -?[0-9]+\.(?:[0-9]*)?f?|\.[0-9]+f?
 RGX_INTEGER		    -?[0-9]+
@@ -61,7 +62,7 @@ RGX_DEFAULT		    (.|\n)
 "continue"		    { return yy::parser::make_CONTINUE(); }
 "return"		    { return yy::parser::make_RETURN(); }
 "thread"		    { return yy::parser::make_THREAD(); }
-"call"		        { return yy::parser::make_CALL(); }
+"call"              { return yy::parser::make_CALL(); }
 "true"		        { return yy::parser::make_TRUE(); }
 "false"		        { return yy::parser::make_FALSE(); }
 "undefined"		    { return yy::parser::make_UNDEFINED(); }

@@ -3,6 +3,7 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 */
+
 %option outfile="./IW6/compiler_lexer.cpp"
 %option header-file="./IW6/compiler_lexer.hpp"
 %option reentrant
