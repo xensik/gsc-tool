@@ -8,11 +8,11 @@ end
 
 function tool:link()
     self:include()
-	
+    
     links
     {
-		"gsc-tool"
-	}
+        "gsc-tool"
+    }
 end
 
 function tool:project()

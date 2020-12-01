@@ -9,10 +9,10 @@ end
 
 function SH1:link()
     self:include()
-	links
+    links
     {
-		"SH1"
-	}
+        "SH1"
+    }
 end
 
 function SH1:project()
@@ -21,9 +21,6 @@ function SH1:project()
     project "SH1"
         kind "StaticLib"
         language "C++"
-        
-        pchheader "SH1.hpp"
-        pchsource(path.join(folder, "SH1/SH1.cpp"))
 
         files
         {

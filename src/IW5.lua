@@ -9,10 +9,10 @@ end
 
 function IW5:link()
     self:include()
-	links
+    links
     {
-		"IW5"
-	}
+        "IW5"
+    }
 end
 
 function IW5:project()
@@ -21,9 +21,6 @@ function IW5:project()
     project "IW5"
         kind "StaticLib"
         language "C++"
-        
-        pchheader "IW5.hpp"
-        pchsource(path.join(folder, "IW5/IW5.cpp"))
 
         files
         {
