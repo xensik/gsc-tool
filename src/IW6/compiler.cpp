@@ -80,8 +80,9 @@ void compiler::compile_script(const gsc::script_ptr& script)
         emit_thread(thread);
     }
 
-    // DEBUG
+#ifdef DEBUG
     print_debug_info();
+#endif
 }
 
 void compiler::emit_include(const gsc::include_ptr& include)
