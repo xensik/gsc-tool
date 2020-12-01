@@ -1859,13 +1859,13 @@ namespace yy {
 
   case 66: // stmt_case: CASE data_integer COLON
 #line 315 "IW6.parser.ypp"
-                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>("", std::move(yystack_[1].value.as < gsc::integer_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::integer_ptr > ()))); }
 #line 1864 "./IW6/compiler_parser.cpp"
     break;
 
   case 67: // stmt_case: CASE data_string COLON
 #line 317 "IW6.parser.ypp"
-                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>("", std::move(yystack_[1].value.as < gsc::string_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::string_ptr > ()))); }
 #line 1870 "./IW6/compiler_parser.cpp"
     break;
 

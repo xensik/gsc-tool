@@ -312,9 +312,9 @@ stmt_switch
 
 stmt_case
 	: CASE data_integer COLON
-		{ $$ = std::make_unique<gsc::node_stmt_case>("", std::move($2)); }
+		{ $$ = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move($2))); }
 	| CASE data_string COLON
-		{ $$ = std::make_unique<gsc::node_stmt_case>("", std::move($2)); }
+		{ $$ = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move($2))); }
 	;
 
 stmt_default

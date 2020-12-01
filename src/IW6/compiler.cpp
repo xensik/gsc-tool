@@ -400,42 +400,85 @@ void compiler::emit_stmt_foreach(const gsc::context_ptr& ctx, const gsc::stmt_fo
 
 void compiler::emit_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_switch_ptr& stmt)
 {
-    COMPILER_ERROR("SWITCH STATEMENT NOT SUPPORTED!");
+    printf("good\n");
+    auto jmptable_loc = create_label();
+    auto break_loc = create_label();
 
-    // set can break.
+    auto switch_ctx = ctx->transfer();
 
-    // emit expression
-    // emit switch + label to jumptable
+    switch_ctx->is_switch = true;
+    switch_ctx->loc_break = break_loc;
 
-    // emit case blocks + label
-    // ...
+    // calc local vars & emit ?
 
-    // emit enswitxh jumptable
-    // case x jump case block label
+    emit_expr(ctx, stmt->expr);
+    emit_opcode(ctx, opcode::OP_switch, jmptable_loc);
+    
+    emit_block(switch_ctx, stmt->block, false);
+
+    insert_label(jmptable_loc);
+
+    std::vector<std::string> data;
+    data.push_back(utils::string::va("%d", switch_ctx->case_id.size()));
+    
+    auto i = 0;
+    for(auto& id : switch_ctx->case_id)
+    {
+        if(id != "default")
+        {
+            data.push_back("case");
+            data.push_back(id);
+            data.push_back(switch_ctx->case_loc.at(i));
+            i++;
+        }
+        else
+        {
+            data.push_back(id);
+            data.push_back(switch_ctx->case_loc.at(i));
+            i++;
+        }   
+    }
+
+    emit_opcode(ctx, opcode::OP_endswitch, data);
+
+    insert_label(break_loc);
 }
 
 void compiler::emit_stmt_case(const gsc::context_ptr& ctx, const gsc::stmt_case_ptr& stmt)
 {
-    COMPILER_ERROR("CASE STATEMENT NOT SUPPORTED!");
-
     if(!ctx->is_switch)
     {
         COMPILER_ERROR("illegal case statement outside a switch.");
     }
 
-    // TODO:
+    if(stmt->value.as_node->type == gsc::node_type::data_integer)
+    {
+        auto loc = insert_label();
+        ctx->case_id.push_back(stmt->value.as_integer->value);
+        ctx->case_loc.push_back(loc);
+    }
+    else if(stmt->value.as_node->type == gsc::node_type::data_string)
+    {
+        auto loc = insert_label();
+        ctx->case_id.push_back(stmt->value.as_string->value);
+        ctx->case_loc.push_back(loc);
+    }
+    else
+    {
+        COMPILER_ERROR("illegal case type.");
+    }
 }
 
 void compiler::emit_stmt_default(const gsc::context_ptr& ctx, const gsc::stmt_default_ptr& stmt)
 {
-    COMPILER_ERROR("DEFAULT STATEMENT NOT SUPPORTED!");
-
     if(!ctx->is_switch)
     {
         COMPILER_ERROR("illegal default statement outside a switch.");
     }
 
-    // TODO:
+    auto loc = insert_label();
+    ctx->case_id.push_back("default");
+    ctx->case_loc.push_back(loc);
 }
 
 void compiler::emit_stmt_break(const gsc::context_ptr& ctx, const gsc::stmt_break_ptr& stmt)
@@ -694,7 +737,7 @@ void compiler::emit_expr_call(const gsc::context_ptr& ctx, const gsc::expr_call_
             else
             {
                 // maybe a far call, but include files not supported!
-                LOG_ERROR("compiler: unknown function call '%s'", name.data());
+                COMPILER_ERROR("unknown function call '%s'", name.data());
             }
         }
 
@@ -1318,36 +1361,36 @@ void compiler::calc_local_vars_block(const gsc::context_ptr& ctx, const gsc::blo
     {
         switch(stmt.as_node->type)
         {
-            case gsc::node_type::stmt_assign:
-                calc_local_vars_expr_assign(ctx, stmt.as_assign->expr);
-                break;
-            case gsc::node_type::stmt_waittill:
-                calc_local_vars_waittill(ctx, stmt.as_waittill);
-                break;
-            case gsc::node_type::stmt_for:
-                // for pre assign
-                break;
-            case gsc::node_type::stmt_foreach:
-                // foreach pre assign
-                break;
-            default:
-                break;
+            case gsc::node_type::stmt_assign:   calc_local_vars_expr(ctx, stmt.as_assign->expr->lvalue); break;
+            case gsc::node_type::stmt_waittill: calc_local_vars_waittill(ctx, stmt.as_waittill); break;
+            case gsc::node_type::stmt_for:      calc_local_vars_for(ctx, stmt.as_for); break;
+            case gsc::node_type::stmt_foreach: /* foreach pre assign */ break;
+            default: break;
         }
     }
 }
 
-void compiler::calc_local_vars_expr_assign(const gsc::context_ptr& ctx, const gsc::expr_assign_ptr& expr)
+void compiler::calc_local_vars_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
 {
-    if(expr->lvalue.as_node->type == gsc::node_type::identifier)
+    if(expr.as_node->type == gsc::node_type::identifier)
     {
-        auto it = std::find(ctx->local_vars.begin(), ctx->local_vars.end(), expr->lvalue.as_identifier->value);
-
-        if(it == ctx->local_vars.end())
-        {
-            ctx->local_vars.push_back(expr->lvalue.as_identifier->value);
-        }
+        calc_local_vars_variable(ctx, expr.as_identifier->value);
     }
-    // TODO: array case?
+    else if(expr.as_node->type == gsc::node_type::expr_array)
+    {
+        calc_local_vars_expr(ctx, expr.as_array->obj);
+    }
+}
+
+void compiler::calc_local_vars_variable(const gsc::context_ptr& ctx, const std::string& name)
+{
+    auto it = std::find(ctx->local_vars.begin(), ctx->local_vars.end(), name);
+
+    if(it == ctx->local_vars.end())
+    {
+        ctx->local_vars.push_back(name);
+        ctx->local_vars_init.push_back(false);
+    }
 }
 
 void compiler::calc_local_vars_waittill(const gsc::context_ptr& ctx, const gsc::stmt_waittill_ptr& stmt)
@@ -1361,10 +1404,20 @@ void compiler::calc_local_vars_waittill(const gsc::context_ptr& ctx, const gsc::
         if(it == ctx->local_vars.end())
         {
             ctx->local_vars.push_back(arg.as_identifier->value);
+            ctx->local_vars_init.push_back(false);
         }
     }
 
     std::reverse(stmt->args->list.begin(), stmt->args->list.end());
+}
+
+void compiler::calc_local_vars_for(const gsc::context_ptr& ctx, const gsc::stmt_for_ptr& stmt)
+{
+    // TODO: modify this
+    if(stmt->pre_expr.as_node->type == gsc::node_type::expr_assign_equal)
+    {
+        calc_local_vars_expr(ctx, stmt->pre_expr.as_assign->lvalue);
+    }
 }
 
 void compiler::create_local_var(const gsc::context_ptr& ctx, const std::string& name)
@@ -1457,11 +1510,9 @@ auto compiler::is_local_call(const std::string& name) -> bool
 
 auto compiler::is_builtin_call(const std::string& name) -> bool
 {
-    if(is_builtin_func(name))
-        return true;
+    if(is_builtin_func(name)) return true;
     
-    if(is_builtin_method(name))
-        return true;
+    if(is_builtin_method(name)) return true;
 
     return false;
 }

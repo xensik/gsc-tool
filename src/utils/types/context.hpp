@@ -21,6 +21,9 @@ struct context
     std::string loc_break;
     std::string loc_continue;
 
+    std::vector<std::string> case_id;
+    std::vector<std::string> case_loc;
+
     std::uint32_t local_vars_create_count;
     std::uint32_t local_vars_public_count;
     std::vector<bool> local_vars_init;

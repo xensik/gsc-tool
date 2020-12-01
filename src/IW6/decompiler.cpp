@@ -2386,7 +2386,7 @@ void decompiler::decompile_switch(const gsc::block_ptr& block, std::uint32_t sta
         {
             auto loc = data.at(idx+2);
             auto loc_idx = find_location_index(block, loc);
-            auto value = std::make_unique<gsc::node_string>(loc, data.at(idx+1));
+            auto value = gsc::expr_ptr(std::make_unique<gsc::node_string>(loc, data.at(idx+1)));
             auto stmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_case>(loc, std::move(value)));
             block->stmts.insert(block->stmts.begin() + loc_idx, std::move(stmt));
             idx += 3;

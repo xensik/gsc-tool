@@ -13,13 +13,13 @@ enum class opcode : std::uint8_t;
 
 class compiler : public gsc::compiler
 {
-    std::vector<gsc::function_ptr> 	assembly_;
-    gsc::function_ptr 				function_;
-    std::uint32_t 					index_;
-    std::vector<std::string> 		local_functions_;
-    std::vector<std::string> 		includes_;
-    std::vector<std::string> 		animtrees_;
-    std::uint32_t 					label_idx_;
+    std::vector<gsc::function_ptr> assembly_;
+    gsc::function_ptr function_;
+    std::uint32_t index_;
+    std::uint32_t label_idx_;
+    std::vector<std::string> local_functions_;
+    std::vector<std::string> includes_;
+    std::vector<std::string> animtrees_;
 
 public:
     auto output() -> std::vector<gsc::function_ptr>;
@@ -95,8 +95,10 @@ private:
     void calc_local_vars(const gsc::context_ptr& ctx, const gsc::thread_ptr& thread);
     void calc_local_vars_parameters(const gsc::context_ptr& ctx, const gsc::parameters_ptr& params);
     void calc_local_vars_block(const gsc::context_ptr& ctx, const gsc::block_ptr& block);
-    void calc_local_vars_expr_assign(const gsc::context_ptr& ctx, const gsc::expr_assign_ptr& expr);
+    void calc_local_vars_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr);
+    void calc_local_vars_variable(const gsc::context_ptr& ctx, const std::string& name);
     void calc_local_vars_waittill(const gsc::context_ptr& ctx, const gsc::stmt_waittill_ptr& stmt);
+    void calc_local_vars_for(const gsc::context_ptr& ctx, const gsc::stmt_for_ptr& stmt);
 
     void create_local_var(const gsc::context_ptr& ctx, const std::string& name);
     auto find_local_var_create_index(const gsc::context_ptr& ctx, const std::string& name) -> std::int8_t;

@@ -11,15 +11,15 @@ namespace IW6
 
 class decompiler : public gsc::decompiler
 {
-    std::unique_ptr<utils::byte_buffer> 			output_;
-    gsc::script_ptr 								script_;
-    gsc::thread_ptr									func_;
-    std::unordered_map<std::uint32_t, std::string> 	labels_;
-    std::uint32_t 									params_;
-    std::vector<std::string> 						local_vars_;
-    std::stack<gsc::node_ptr> 						stack_;
-    std::vector<std::string> 						expr_labels_;
-    std::vector<gsc::context> 						blocks_;
+    std::unique_ptr<utils::byte_buffer> output_;
+    gsc::script_ptr script_;
+    gsc::thread_ptr func_;
+    std::uint32_t params_;
+    std::unordered_map<std::uint32_t, std::string> labels_;
+    std::vector<std::string> expr_labels_;
+    std::vector<std::string> local_vars_;
+    std::stack<gsc::node_ptr> stack_;
+    std::vector<gsc::context> blocks_;
 
 public:
     auto output() -> std::string;

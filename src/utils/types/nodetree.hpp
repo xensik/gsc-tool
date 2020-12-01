@@ -369,6 +369,7 @@ union expr_ptr
     expr_and_ptr as_and;
     expr_binary_ptr as_binary;
     expr_ternary_ptr as_ternary;
+    expr_assign_ptr as_assign;
     expr_assign_equal_ptr as_assign_equal;
     expr_assign_add_ptr as_assign_add;
     expr_assign_sub_ptr as_assign_sub;
@@ -1641,14 +1642,14 @@ struct node_stmt_switch : public node
 
 struct node_stmt_case : public node
 {
-    node_ptr value;
+    expr_ptr value;
 
-    node_stmt_case(const std::string& location, node_ptr value)
+    node_stmt_case(const std::string& location, expr_ptr value)
         : node(node_type::stmt_case, location), value(std::move(value)) {}
 
     auto print() -> std::string override
     {
-        return "case " + value->print() + ":";
+        return "case " + value.as_node->print() + ":";
     };
 };
 
