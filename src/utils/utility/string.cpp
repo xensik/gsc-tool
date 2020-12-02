@@ -45,6 +45,13 @@ auto string::split(std::string& str, char delimiter) -> std::vector<std::string>
 	std::stringstream ss(str);
 	std::string tok;
 
+	if(str.find(delimiter) == std::string::npos)
+	{
+		internal.push_back(tok);
+		return internal;
+	}
+
+	// fix literals  ("hello there"), ("ok \n next")
 	while (std::getline(ss, tok, delimiter))
 	{
 		internal.push_back(tok);

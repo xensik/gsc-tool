@@ -100,29 +100,22 @@ void assembler::assemble(std::string& data)
 				inst->size = opcode_size(opcode(inst->opcode));
 				inst->data = data;
 
-				// group switch in one instruction
 				if (opcode(inst->opcode) == opcode::OP_endswitch)
 				{
-					if (utils::string::is_number(data[1]))
-					{
-						switchnum = static_cast<std::uint16_t>(std::stoul(data[1]));
-						inst->size += 7 * switchnum;
-					}
-					else
-					{
-						LOG_ERROR("endswitch arg is not a number! %s", line.data());
-						return;
-					}
+					switchnum = static_cast<std::uint16_t>(std::stoul(data[1]));
+					inst->size += 7 * switchnum;
 				}
 
 				index += inst->size;
 			}
 		}
 	}
+
 	if(inst != nullptr)
 	{
 		func->instructions.push_back(std::move(inst));
 	}
+	
 	if (func != nullptr)
 	{
 		func->size = index - func->index;
@@ -143,6 +136,7 @@ void assembler::assemble(std::vector<gsc::function_ptr>& functions)
 	functions_ = std::move(functions);
 
 	script_->write<std::uint8_t>(0x34);
+	stack_->write<std::uint32_t>(0x73683130);
 
 	for (const auto& func : functions_)
 	{

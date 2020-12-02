@@ -66,10 +66,7 @@ void assembler::assemble(std::string& data)
         }
         else
         {
-            // TODO: BUG! take care of string literals!
-            std::vector<std::string> data;
-            
-            line.find(' ') != std::string::npos ? (void)(data = utils::string::split(line, ' ')) : data.push_back(line);
+            std::vector<std::string> data = utils::string::split(line, ' ');
 
             if (switchnum)
             {
@@ -88,42 +85,32 @@ void assembler::assemble(std::string& data)
             }
             else
             {
-                if(inst != nullptr)
-                {
-                    func->instructions.push_back(std::move(inst));
-                }
+                if(inst != nullptr) func->instructions.push_back(std::move(inst));
+
+                data.erase(data.begin());
 
                 inst = std::make_unique<gsc::instruction>();
                 inst->index = index;
                 inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(utils::string::to_lower(data[0])));
                 inst->size = opcode_size(opcode(inst->opcode));
-                
-                data.erase(data.begin());
                 inst->data = data;
 
-                // group switch in one instruction
                 if (opcode(inst->opcode) == opcode::OP_endswitch)
                 {
-                    if (utils::string::is_number(data[0]))
-                    {
-                        switchnum = static_cast<std::uint16_t>(std::stoul(data[0]));
-                        inst->size += 7 * switchnum;
-                    }
-                    else
-                    {
-                        LOG_ERROR("endswitch arg is not a number! %s", line.data());
-                        return;
-                    }
+                    switchnum = static_cast<std::uint16_t>(std::stoul(data[0]));
+                    inst->size += 7 * switchnum;
                 }
 
                 index += inst->size;
             }
         }
     }
+    
     if(inst != nullptr)
     {
         func->instructions.push_back(std::move(inst));
     }
+
     if (func != nullptr)
     {
         func->size = index - func->index;
@@ -141,6 +128,7 @@ void assembler::assemble(std::vector<gsc::function_ptr>& functions)
     functions_ = std::move(functions);
 
     script_->write<std::uint8_t>(0x34);
+    stack_->write<std::uint32_t>(0x69773630);
 
     for (const auto& func : functions_)
     {
