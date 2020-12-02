@@ -266,13 +266,13 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_GetString:
     case opcode::OP_GetIString:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-        script_->write<std::uint32_t>(0); // IW6: 4 bytes placeholder
+        script_->write<std::uint32_t>(0);
         stack_->write_c_string(utils::string::get_string_literal(inst->data[0]));
         break;
     case opcode::OP_GetAnimation:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         script_->write<std::uint32_t>(0);
-        script_->write<std::uint32_t>(0); // IW6: 8 bytes placeholder
+        script_->write<std::uint32_t>(0);
         stack_->write_c_string(utils::string::get_string_literal(inst->data[0]));
         stack_->write_c_string(utils::string::get_string_literal(inst->data[1]));
         break;
@@ -282,7 +282,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
         stack_->write_c_string(utils::string::get_string_literal(inst->data[0]));
         break;
 // WAITTILLMATCH
-    case opcode::OP_waittillmatch:// IW6 placeholder is 2 or 4????
+    case opcode::OP_waittillmatch:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         script_->write<std::uint16_t>(0);
         break;
@@ -400,7 +400,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
         this->assemble_end_switch(inst);
         break;
     default:
-        LOG_ERROR("Unhandled opcode (0x%hhX) at index '%04X'!", inst->opcode, inst->index);
+        ASSEMBLER_ERROR("Unhandled opcode (0x%hhX) at index '%04X'!", inst->opcode, inst->index);
         break;
     }
 }
@@ -451,7 +451,7 @@ void assembler::assemble_local_call(const gsc::instruction_ptr& inst, bool threa
 void assembler::assemble_far_call(const gsc::instruction_ptr& inst, bool thread)
 {
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-    script_->write<std::uint8_t>(0); // 3 bytes placeholder
+    script_->write<std::uint8_t>(0);
     script_->write<std::uint16_t>(0);
 
     std::uint16_t file_id = 0;
@@ -497,7 +497,7 @@ void assembler::assemble_end_switch(const gsc::instruction_ptr& inst)
     }
     else
     {
-        LOG_ERROR("invalid endswitch number!");
+        ASSEMBLER_ERROR("invalid endswitch number!");
     }
 
     script_->write<std::uint16_t>(casenum);
@@ -600,7 +600,6 @@ void assembler::assemble_offset(std::int32_t offset)
 
 auto assembler::resolve_function(const std::string& name) -> std::uint32_t
 {
-    // dirty fix for assemble .gscasm files
     auto temp = name.substr(0, 4) == "sub_" ? name.substr(4) : name;
     
     for (const auto& func : functions_)
@@ -611,7 +610,7 @@ auto assembler::resolve_function(const std::string& name) -> std::uint32_t
         }
     }
 
-    LOG_ERROR("Couldn't resolve local function address of '%s'!", name.data());
+    ASSEMBLER_ERROR("Couldn't resolve local function address of '%s'!", name.data());
     return 0;
 }
 
@@ -625,7 +624,7 @@ auto assembler::resolve_label(const gsc::instruction_ptr& inst, const std::strin
         }
     }
 
-    LOG_ERROR("Couldn't resolve label address of '%s'!", name.data());
+    ASSEMBLER_ERROR("Couldn't resolve label address of '%s'!", name.data());
     return 0;
 }
 

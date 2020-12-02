@@ -13,7 +13,7 @@ enum class opcode : std::uint8_t;
 
 class compiler : public gsc::compiler
 {
-std::vector<gsc::function_ptr> assembly_;
+    std::vector<gsc::function_ptr> assembly_;
     gsc::function_ptr function_;
     std::uint32_t index_;
     std::uint32_t label_idx_;

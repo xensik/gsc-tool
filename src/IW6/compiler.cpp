@@ -1496,7 +1496,7 @@ auto compiler::is_local_var_initialized(const gsc::context_ptr& ctx, const std::
     }
 
     COMPILER_ERROR("local variable '%s' not found.", name.data());
-    return -1;
+    return false;
 }
 
 auto compiler::is_local_call(const std::string& name) -> bool

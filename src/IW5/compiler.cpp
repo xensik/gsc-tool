@@ -58,7 +58,7 @@ auto compiler::parse_file(const std::string& file) -> gsc::script_ptr
 
 void compiler::compile_script(const gsc::script_ptr& script)
 {
-    index_ = 1; // skip magic
+    index_ = 1;
 
     for(const auto& thread : script->threads)
     {
@@ -1496,7 +1496,7 @@ auto compiler::is_local_var_initialized(const gsc::context_ptr& ctx, const std::
     }
 
     COMPILER_ERROR("local variable '%s' not found.", name.data());
-    return -1;
+    return false;
 }
 
 auto compiler::is_local_call(const std::string& name) -> bool
