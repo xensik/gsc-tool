@@ -9,7 +9,7 @@
 namespace gsc
 {
 
-struct xscript
+struct asset
 {
     std::string name;
     std::uint32_t compressedLen;
@@ -72,7 +72,7 @@ struct xscript
     }
 };
 
-using xscript_ptr = std::unique_ptr<xscript>;
+using asset_ptr = std::unique_ptr<asset>;
 
 } // namespace gsc
 
