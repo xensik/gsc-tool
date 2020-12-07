@@ -1,22 +1,16 @@
 SH1 = {}
 
 function SH1:include()
-    includedirs
-    {
-        path.join(project_dir(), "SH1")
-    }
+    includedirs { path.join(project_folder(), "SH1") }
 end
 
 function SH1:link()
     self:include()
-    links
-    {
-        "SH1"
-    }
+    links { "SH1" }
 end
 
 function SH1:project()
-    local folder = project_dir();
+    local folder = project_folder();
 
     project "SH1"
         kind "StaticLib"

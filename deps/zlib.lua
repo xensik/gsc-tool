@@ -1,7 +1,7 @@
-zlib = { source = path.join(dependencies.basePath, "zlib") }
+zlib = {}
 
 function zlib:include()
-    includedirs { zlib.source }
+    includedirs { path.join(deps_folder(), "zlib") }
 end
 
 function zlib:link()
@@ -10,6 +10,8 @@ function zlib:link()
 end
 
 function zlib:project()
+    local folder = path.join(deps_folder(), "zlib");
+
     project "zlib"
         kind "StaticLib"
         language "C"
@@ -18,8 +20,8 @@ function zlib:project()
 
         files
         { 
-            path.join(zlib.source, "*.h"),
-            path.join(zlib.source, "*.c")
+            path.join(folder, "*.h"),
+            path.join(folder, "*.c")
         }
         
         defines
