@@ -12,9 +12,10 @@ namespace utils
 class file
 {
 public:
-	static auto read(const std::string& name) -> std::string;
-	static void save(const std::string& name, const std::string& data);
-	static auto length(FILE* fp) -> long;
+    static auto read(const std::string& file) -> std::vector<std::uint8_t>;
+    static auto read_text(const std::string& file) -> std::string;
+    static void save(const std::string& file, const std::vector<std::uint8_t>& data);
+    static auto length(FILE* fp) -> long;
 };
 
 } // namespace utils

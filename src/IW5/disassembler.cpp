@@ -13,7 +13,7 @@ auto disassembler::output() -> std::vector<gsc::function_ptr>
     return std::move(functions_);
 }
 
-auto disassembler::output_data() -> std::string
+auto disassembler::output_data() -> std::vector<std::uint8_t>
 {
     output_ = std::make_unique<utils::byte_buffer>(0x100000);
 
@@ -37,7 +37,7 @@ auto disassembler::output_data() -> std::string
         }
     }
 
-    std::string output;
+    std::vector<std::uint8_t> output;
 
     output.resize(output_->pos());
     memcpy(output.data(), output_->buffer().data(), output.size());
@@ -45,7 +45,7 @@ auto disassembler::output_data() -> std::string
     return output;
 }
 
-void disassembler::disassemble(std::string& script, std::string& stack)
+void disassembler::disassemble(std::vector<std::uint8_t>& script, std::vector<std::uint8_t>& stack)
 {
     script_ = std::make_unique<utils::byte_buffer>(script);
     stack_ = std::make_unique<utils::byte_buffer>(stack);

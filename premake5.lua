@@ -1,17 +1,37 @@
--- ========================
--- Path
--- ========================
+local _deps_folder = path.getabsolute("deps")
 
-local _project_dir = path.getabsolute("src")
-
-function project_dir()
-    return path.getrelative(os.getcwd(), _project_dir)
+function deps_folder()
+	return path.getrelative(os.getcwd(), _deps_folder)
 end
 
--- ========================
--- Workspace
--- ========================
+local _project_folder = path.getabsolute("src")
 
+function project_folder()
+    return path.getrelative(os.getcwd(), _project_folder)
+end
+
+dependencies = { basePath = path.getrelative(os.getcwd(), path.getabsolute("deps")) }
+
+function dependencies.load()
+	dir = path.join(dependencies.basePath, "*.lua")
+	deps = os.matchfiles(dir)
+
+	for i, dep in pairs(deps) do
+		dep = dep:gsub(".lua", "")
+		require(dep)
+	end
+end
+
+function dependencies.link()
+	for i, proj in pairs(dependencies) do
+		if type(i) == 'number' then
+			proj.link()
+		end
+	end
+end
+
+dependencies.load()
+-------------------------------------------------
 workspace "gsc-tool"
 location "./build"
 objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{prj.name}"
@@ -41,17 +61,19 @@ configuration "debug"
 configuration {}
 
 startproject "gsc-tool"
+-------------------------------------------------
+group "Dependencies"
 
--- ========================
--- Projects
--- ========================
+include "deps/zlib.lua"
+zlib:project()
+
+group ""
 
 include "src/tool.lua"
 include "src/utils.lua"
 include "src/IW5.lua"
 include "src/IW6.lua"
 include "src/SH1.lua"
-
 tool:project()
 utils:project()
 IW5:project()

@@ -1,23 +1,16 @@
 utils = {}
 
 function utils:include()
-    includedirs
-    {
-        path.join(project_dir(), "utils")
-    }
+    includedirs { path.join(project_folder(), "utils") }
 end
 
 function utils:link()
     self:include()
-    
-    links
-    {
-        "utils"
-    }
+    links { "utils" }
 end
 
 function utils:project()
-    local folder = project_dir();
+    local folder = project_folder();
 
     project "utils"
         kind "StaticLib"
@@ -34,4 +27,5 @@ function utils:project()
         }
         
         self:include()
+        zlib:include()
 end

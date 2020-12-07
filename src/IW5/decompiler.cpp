@@ -8,14 +8,16 @@
 namespace IW5
 {
 
-auto decompiler::output() -> std::string
+auto decompiler::output() -> std::vector<std::uint8_t>
 {
-    std::string output;
+    std::vector<std::uint8_t> output;
+    
+    auto data = std::make_unique<utils::byte_buffer>(0x100000);
+    data->write_string("// IW5 PC GSC\n// Decompiled by https://github.com/xensik/gsc-tool\n");
+    data->write_string(script_->print());
 
-    output.reserve(0x1000000);
-    output.append("// IW5 PC GSC\n");
-    output.append("// Decompiled by https://github.com/xensik/gsc-tool\n");
-    output.append(script_->print());
+    output.resize(data->pos());
+    std::memcpy(output.data(), data->buffer().data(), output.size());
 
     return output;
 }

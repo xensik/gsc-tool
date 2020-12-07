@@ -11,30 +11,30 @@ namespace gsc
 
 struct instruction
 {
-	std::uint32_t index;
-	std::uint32_t size;
-	std::uint8_t opcode;
-	std::vector<std::string> data;
+    std::uint32_t index;
+    std::uint32_t size;
+    std::uint8_t opcode;
+    std::vector<std::string> data;
 
-	instruction() : index(0), size(0), opcode(0xFF) { }
+    instruction() : index(0), size(0), opcode(0xFF) { }
 };
 
 using instruction_ptr = std::unique_ptr<instruction>;
 
 struct function
 {
-	std::uint32_t index;
-	std::uint32_t size;
-	std::uint16_t id;
-	std::string name;
-	std::vector<instruction_ptr> instructions;
-	std::unordered_map<std::uint32_t, std::string> labels;
+    std::uint32_t index;
+    std::uint32_t size;
+    std::uint16_t id;
+    std::string name;
+    std::vector<instruction_ptr> instructions;
+    std::unordered_map<std::uint32_t, std::string> labels;
 
-	function() : index(0), size(0), id(0) { }
+    function() : index(0), size(0), id(0) { }
 };
 
 using function_ptr = std::unique_ptr<function>;
 
-}// namespace gsc
+} // namespace gsc
 
 #endif // _GSC_ASSEMBLY_HPP_

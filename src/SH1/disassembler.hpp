@@ -19,8 +19,8 @@ class disassembler : public gsc::disassembler
 
 public:
 	auto output() -> std::vector<gsc::function_ptr>;
-	auto output_data() -> std::string;
-	void disassemble(std::string& script, std::string& stack);
+	auto output_data() -> std::vector<std::uint8_t>;
+	void disassemble(std::vector<std::uint8_t>& script, std::vector<std::uint8_t>& stack);
 
 private:
 	void dissasemble_function(const gsc::function_ptr& func);

@@ -1,22 +1,16 @@
 IW5 = {}
 
 function IW5:include()
-    includedirs
-    {
-        path.join(project_dir(), "IW5")
-    }
+    includedirs { path.join(project_folder(), "IW5") }
 end
 
 function IW5:link()
     self:include()
-    links
-    {
-        "IW5"
-    }
+    links { "IW5" }
 end
 
 function IW5:project()
-    local folder = project_dir();
+    local folder = project_folder();
 
     project "IW5"
         kind "StaticLib"

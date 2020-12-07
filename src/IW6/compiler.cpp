@@ -15,25 +15,27 @@ auto compiler::output() -> std::vector<gsc::function_ptr>
     return std::move(assembly_);
 }
 
-void compiler::compile(std::string& data)
+void compiler::compile(std::vector<std::uint8_t>& data)
 {
     auto result = parse_buffer(data);
 
     compile_script(result);
 }
 
-auto compiler::parse_buffer(std::string& data) -> gsc::script_ptr
+auto compiler::parse_buffer(std::vector<std::uint8_t>& data) -> gsc::script_ptr
 {
     yyscan_t scanner;
     gsc::script_ptr result(nullptr);
     
-    // Add the two NULL terminators, required by flex.   
-    data.append("\0\0", 2);
+    // Add the two NULL terminators, required by flex.
+    data.reserve(2);
+    data.push_back(0);
+    data.push_back(0);
 
     if (yylex_init(&scanner))
         exit(1);
 
-    YY_BUFFER_STATE yybuffer = yy_scan_buffer(data.data(), data.size(), scanner);
+    YY_BUFFER_STATE yybuffer = yy_scan_buffer(reinterpret_cast<char*>(data.data()), data.size(), scanner);
 
     yy::parser parser(scanner, result);
     

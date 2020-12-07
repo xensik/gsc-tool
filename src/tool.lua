@@ -1,22 +1,16 @@
 tool = {}
 
 function tool:include()
-    includedirs {
-        path.join(project_dir(), "tool")
-    }
+    includedirs { path.join(project_folder(), "tool") }
 end
 
 function tool:link()
     self:include()
-    
-    links
-    {
-        "gsc-tool"
-    }
+    links { "gsc-tool" }
 end
 
 function tool:project()
-    local folder = project_dir();
+    local folder = project_folder();
 
     project "gsc-tool"
         kind "ConsoleApp"
@@ -25,7 +19,8 @@ function tool:project()
         pchheader "stdinc.hpp"
         pchsource(path.join(folder, "tool/stdinc.cpp"))
 
-        files {
+        files
+        {
             path.join(folder, "tool/**.h"),
             path.join(folder, "tool/**.hpp"),
             path.join(folder, "tool/**.cpp")
@@ -37,5 +32,5 @@ function tool:project()
         IW5:link()
         IW6:link()
         SH1:link()
-
+        zlib.link()
 end

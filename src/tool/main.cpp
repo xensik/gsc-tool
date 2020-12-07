@@ -5,268 +5,501 @@
 
 #include "stdinc.hpp"
 
+#define USE_XSCRIPT
+
 auto overwrite_prompt(const std::string& file) -> bool
 {
-	auto overwrite = true;
+    auto overwrite = true;
 
-	if (std::filesystem::exists(file))
-	{
-		do
-		{
-			printf("File \"%s\" already exists, overwrite? [Y/n]: ", file.data());
-			auto result = std::getchar();
+    if (std::filesystem::exists(file))
+    {
+        do
+        {
+            printf("File \"%s\" already exists, overwrite? [Y/n]: ", file.data());
+            auto result = std::getchar();
 
-			if (result == '\n' || result == 'Y' || result == 'y')
-			{
-				break;
-			}
-			else if (result == 'N' || result == 'n')
-			{
-				overwrite = false;
-				break;
-			}
-		} while (true);
-	}
+            if (result == '\n' || result == 'Y' || result == 'y')
+            {
+                break;
+            }
+            else if (result == 'N' || result == 'n')
+            {
+                overwrite = false;
+                break;
+            }
+        } while (true);
+    }
 
-	return overwrite;
+    return overwrite;
 }
 
 void assemble_file(gsc::assembler& assembler, std::string file)
 {
-	auto scriptfile = utils::file::read(file + ".gscasm");
+#ifndef USE_XSCRIPT
+    auto data = utils::file::read(file + ".gscasm");
 
-	assembler.assemble(scriptfile);
+    assembler.assemble(data);
 
-	if (overwrite_prompt(file + ".cgsc"))
-	{
-		utils::file::save(file + ".cgsc", assembler.output_script());
-		utils::file::save(file + ".cgsc.stack", assembler.output_stack());
-	}
+    if (overwrite_prompt(file + ".cgsc"))
+    {
+        utils::file::save(file + ".cgsc", assembler.output_script());
+        utils::file::save(file + ".cgsc.stack", assembler.output_stack());
+    }
+#else
+    const auto ext = std::string(".gscasm");
+    const auto extpos = file.find(ext);
+    
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
+
+    auto data = utils::file::read(file + ext);
+
+    assembler.assemble(data);
+
+    if (overwrite_prompt(file + ".xgsc"))
+    {
+        gsc::xscript script;
+
+        auto uncompressed = assembler.output_stack();
+        auto compressed = utils::zlib::compress(uncompressed);
+
+        script.name = file; // add name conversor to ids
+        script.bytecode = assembler.output_script();
+        script.buffer = std::move(compressed);
+        script.len = uncompressed.size();
+        script.compressedLen = script.buffer.size();
+        script.bytecodeLen = script.bytecode.size();
+
+        auto output = script.serialize();
+        utils::file::save(file + ".xgsc", output);
+    }
+#endif
 }
 
 void disassemble_file(gsc::disassembler& disassembler, std::string file)
 {
-	if (file.find(".stack") != std::string::npos)
-	{
-		printf("Cannot disassemble stack files\n");
-		return;
-	}
+#ifndef USE_XSCRIPT
+    if (file.find(".stack") != std::string::npos)
+    {
+        printf("Cannot disassemble stack files\n");
+        return;
+    }
 
-	const auto ext = std::string(".cgsc");
-	const auto extpos = file.find(ext);
-	if (extpos != std::string::npos)
-	{
-		file.replace(extpos, ext.length(), "");
-	}
+    const auto ext = std::string(".cgsc");
+    const auto extpos = file.find(ext);
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
 
-	// TODO: open files here instead inside byte_buffer
-	auto script = file + ".cgsc";
-	auto stack = file + ".cgsc.stack";
+    auto script = utils::file::read(file + ".cgsc");
+    auto stack = utils::file::read(file + ".cgsc.stack");
 
-	disassembler.disassemble(script, stack);
-	
-	utils::file::save(file + ".gscasm", disassembler.output_data());
+    disassembler.disassemble(script, stack);
+    
+    utils::file::save(file + ".gscasm", disassembler.output_data());
+
+#else
+    const auto ext = std::string(".xgsc");
+    const auto extpos = file.find(ext);
+    
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
+
+    auto data = utils::file::read(file + ".xgsc");
+
+    gsc::xscript script;
+
+    script.deserialize(data);
+
+    auto stack = utils::zlib::decompress(script.buffer, script.len);
+
+    disassembler.disassemble(script.bytecode, stack);
+    
+    utils::file::save(file + ".gscasm", disassembler.output_data());
+#endif
 }
 
 void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::string file)
 {
-	const auto ext = std::string(".gsc");
-	const auto extpos = file.find(ext);
-	if (extpos != std::string::npos)
-	{
-		file.replace(extpos, ext.length(), "");
-	}
+#ifndef USE_XSCRIPT
+    const auto ext = std::string(".gsc");
+    const auto extpos = file.find(ext);
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
 
-	auto source = utils::file::read(file + ".gsc");
+    auto data = utils::file::read(file + ".gsc");
 
-	compiler.compile(source);
+    compiler.compile(data);
 
-	auto output = compiler.output();
+    auto output = compiler.output();
 
-	assembler.assemble(output);
+    assembler.assemble(output);
 
-	if (overwrite_prompt(file + ".cgsc"))
-	{
-		utils::file::save(file + ".cgsc", assembler.output_script());
-		utils::file::save(file + ".cgsc.stack", assembler.output_stack());
-	}
+    if (overwrite_prompt(file + ".cgsc"))
+    {
+        utils::file::save(file + ".cgsc", assembler.output_script());
+        utils::file::save(file + ".cgsc.stack", assembler.output_stack());
+    }
+#else
+    const auto ext = std::string(".gsc");
+    const auto extpos = file.find(ext);
+    
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
+
+    auto data = utils::file::read(file + ext);
+
+    compiler.compile(data);
+
+    auto assembly = compiler.output();
+
+    assembler.assemble(assembly);
+
+    if (overwrite_prompt(file + ".xgsc"))
+    {
+        gsc::xscript script;
+
+        auto uncompressed = assembler.output_stack();
+        auto compressed = utils::zlib::compress(uncompressed);
+
+        script.name = file; // add name conversor to ids
+        script.bytecode = assembler.output_script();
+        script.buffer = std::move(compressed);
+        script.len = uncompressed.size();
+        script.compressedLen = script.buffer.size();
+        script.bytecodeLen = script.bytecode.size();
+
+        auto output = script.serialize();
+        utils::file::save(file + ".xgsc", output);
+    }
+#endif
 }
 
 void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler, std::string file)
 {
-	if (file.find(".stack") != std::string::npos)
-	{
-		printf("Cannot decompile stack files\n");
-		return;
-	}
+#ifndef USE_XSCRIPT
+    if (file.find(".stack") != std::string::npos)
+    {
+        printf("Cannot decompile stack files\n");
+        return;
+    }
 
-	const auto ext = std::string(".cgsc");
-	const auto extpos = file.find(ext);
-	if (extpos != std::string::npos)
-	{
-		file.replace(extpos, ext.length(), "");
-	}
+    const auto ext = std::string(".cgsc");
+    const auto extpos = file.find(ext);
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
 
-	// TODO: open files here instead inside byte_buffer
-	auto script = file + ".cgsc";
-	auto stack = file + ".cgsc.stack";
+    auto script = utils::file::read(file + ".cgsc");
+    auto stack = utils::file::read(file + ".cgsc.stack");
 
-	disassembler.disassemble(script, stack);
+    disassembler.disassemble(script, stack);
 
-	auto output = disassembler.output();
+    auto output = disassembler.output();
 
-	decompiler.decompile(output);
+    decompiler.decompile(output);
 
-	if (overwrite_prompt(file + ".gsc"))
-	{
-		utils::file::save(file + ".gsc", decompiler.output());
-	}
-	
+    if (overwrite_prompt(file + ".gsc"))
+    {
+        utils::file::save(file + ".gsc", decompiler.output());
+    }
+#else
+    const auto ext = std::string(".xgsc");
+    const auto extpos = file.find(ext);
+    
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
+
+    auto data = utils::file::read(file + ".xgsc");
+
+    gsc::xscript script;
+
+    script.deserialize(data);
+
+    auto stack = utils::zlib::decompress(script.buffer, script.len);
+
+    disassembler.disassemble(script.bytecode, stack);
+    
+    auto output = disassembler.output();
+
+    decompiler.decompile(output);
+
+    utils::file::save(file + ".gsc", decompiler.output());
+#endif
 }
 
 int parse_flags(int argc, char** argv, game& game, mode& mode)
 {
-	if (argc != 4) return 1;
+    if (argc != 4) return 1;
 
-	std::string arg = utils::string::to_lower(argv[1]);
+    std::string arg = utils::string::to_lower(argv[1]);
 
-	if (arg == "-iw5")
-	{
-		game = game::IW5;
-	}
-	else if (arg == "-iw6")
-	{
-		game = game::IW6;
-	}
-	else if (arg == "-sh1")
-	{
-		game = game::SH1;
-	}
-	else
-	{
-		printf("Unknown game \"%s\".\n", argv[1]);
-		return 1;
-	}
+    if (arg == "-iw5")
+    {
+        game = game::IW5;
+    }
+    else if (arg == "-iw6")
+    {
+        game = game::IW6;
+    }
+    else if (arg == "-sh1")
+    {
+        game = game::SH1;
+    }
+    else
+    {
+        printf("Unknown game \"%s\".\n", argv[1]);
+        return 1;
+    }
 
-	arg = utils::string::to_lower(argv[2]);
+    arg = utils::string::to_lower(argv[2]);
 
-	if (arg == "-asm")
-	{
-		mode = mode::ASM;
-	}
-	else if (arg == "-disasm")
-	{
-		mode = mode::DISASM;
-	}
-	else if (arg == "-comp")
-	{
-		mode = mode::COMP;
-	}
-	else if (arg == "-decomp")
-	{
-		mode = mode::DECOMP;
-	}
-	else
-	{
-		printf("Unknown mode \"%s\".\n\n", argv[2]);
-		return 1;
-	}
+    if (arg == "-asm")
+    {
+        mode = mode::ASM;
+    }
+    else if (arg == "-disasm")
+    {
+        mode = mode::DISASM;
+    }
+    else if (arg == "-comp")
+    {
+        mode = mode::COMP;
+    }
+    else if (arg == "-decomp")
+    {
+        mode = mode::DECOMP;
+    }
+    else
+    {
+        printf("Unknown mode \"%s\".\n\n", argv[2]);
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }
+
+
+
+void reformat();
 
 int main(int argc, char** argv)
 {
-	std::string file = argv[argc - 1];
-	mode mode = mode::__;
-	game game = game::__;
+    std::string file = argv[argc - 1];
+    mode mode = mode::__;
+    game game = game::__;
 
-	if (parse_flags(argc, argv, game, mode))
-	{
-		printf("usage: gsc-tool.exe <game> <mode> <file>\n");
-		printf("	- games: -iw5, -iw6, -sh1\n");
-		printf("	- modes: -asm, -disasm, -comp, -decomp\n");
-		return 0;
-	}
+    if (parse_flags(argc, argv, game, mode))
+    {
+        printf("usage: gsc-tool.exe <game> <mode> <file>\n");
+        printf("	- games: -iw5, -iw6, -sh1\n");
+        printf("	- modes: -asm, -disasm, -comp, -decomp\n");
+        return 0;
+    }
 
-	if (mode == mode::ASM)
-	{
-		if( game == game::IW5)
-		{
-			IW5::assembler assembler;
-			assemble_file(assembler, file);
-		}
-		else if (game == game::IW6)
-		{
-			IW6::assembler assembler;
-			assemble_file(assembler, file);
-		}
-		else if (game == game::SH1)
-		{
-			SH1::assembler assembler;
-			assemble_file(assembler, file);
-		}
-	}
-	else if (mode == mode::DISASM)
-	{
-		if (game == game::IW5)
-		{
-			IW5::disassembler disassembler;
-			disassemble_file(disassembler, file);
-		}
-		else if (game == game::IW6)
-		{
-			IW6::disassembler disassembler;
-			disassemble_file(disassembler, file);
-		}
-		else if (game == game::SH1)
-		{
-			SH1::disassembler disassembler;
-			disassemble_file(disassembler, file);
-		}
-	}
-	else if (mode == mode::COMP)
-	{
-		if (game == game::IW5)
-		{
-			IW5::assembler assembler;
-			IW5::compiler compiler;
-			compile_file(assembler,compiler, file);
-		}
-		else if (game == game::IW6)
-		{
-			IW6::assembler assembler;
-			IW6::compiler compiler;
-			compile_file(assembler, compiler, file);
-		}
-		if (game == game::SH1)
-		{
-			SH1::assembler assembler;
-			SH1::compiler compiler;
-			compile_file(assembler, compiler, file);
-		}
-	}
-	else if (mode == mode::DECOMP)
-	{
-		if (game == game::IW5)
-		{
-			IW5::disassembler disassembler;
-			IW5::decompiler decompiler;
-			decompile_file(disassembler, decompiler, file);
-		}
-		else if (game == game::IW6)
-		{
-			IW6::disassembler disassembler;
-			IW6::decompiler decompiler;
-			decompile_file(disassembler, decompiler, file);
-		}
-		if (game == game::SH1)
-		{
-			SH1::disassembler disassembler;
-			SH1::decompiler decompiler;
-			decompile_file(disassembler, decompiler, file);
-		}
-	}
+    if (mode == mode::ASM)
+    {
+        if( game == game::IW5)
+        {
+            IW5::assembler assembler;
+            assemble_file(assembler, file);
+        }
+        else if (game == game::IW6)
+        {
+            IW6::assembler assembler;
+            assemble_file(assembler, file);
+        }
+        else if (game == game::SH1)
+        {
+            SH1::assembler assembler;
+            assemble_file(assembler, file);
+        }
+    }
+    else if (mode == mode::DISASM)
+    {
+        if (game == game::IW5)
+        {
+            IW5::disassembler disassembler;
+            disassemble_file(disassembler, file);
+        }
+        else if (game == game::IW6)
+        {
+            IW6::disassembler disassembler;
+            disassemble_file(disassembler, file);
+        }
+        else if (game == game::SH1)
+        {
+            SH1::disassembler disassembler;
+            disassemble_file(disassembler, file);
+        }
+    }
+    else if (mode == mode::COMP)
+    {
+        if (game == game::IW5)
+        {
+            IW5::assembler assembler;
+            IW5::compiler compiler;
+            compile_file(assembler,compiler, file);
+        }
+        else if (game == game::IW6)
+        {
+            IW6::assembler assembler;
+            IW6::compiler compiler;
+            compile_file(assembler, compiler, file);
+        }
+        if (game == game::SH1)
+        {
+            SH1::assembler assembler;
+            SH1::compiler compiler;
+            compile_file(assembler, compiler, file);
+        }
+    }
+    else if (mode == mode::DECOMP)
+    {
+        if (game == game::IW5)
+        {
+            IW5::disassembler disassembler;
+            IW5::decompiler decompiler;
+            decompile_file(disassembler, decompiler, file);
+        }
+        else if (game == game::IW6)
+        {
+            IW6::disassembler disassembler;
+            IW6::decompiler decompiler;
+            decompile_file(disassembler, decompiler, file);
+        }
+        if (game == game::SH1)
+        {
+            SH1::disassembler disassembler;
+            SH1::decompiler decompiler;
+            decompile_file(disassembler, decompiler, file);
+        }
+    }
 
-	return 0;
+    return 0;
 }
+
+using namespace std::filesystem;
+
+void recurse_dir(const std::filesystem::path& dir_path)
+{
+    if (!std::filesystem::exists(dir_path)) 
+        return;
+
+    for (const directory_entry& entry : recursive_directory_iterator(dir_path))
+    {
+        auto path = entry.path();
+
+        if (is_directory(entry.status()) && std::string(path).find(".DS_Store") != std::string::npos)
+        {
+            recurse_dir(entry.path());
+        }
+        else if(entry.is_regular_file() && std::string(path).find(".cgsc.stack") != std::string::npos)
+        {
+            continue;
+        }
+        else if(entry.is_regular_file() && std::string(path).find(".cgsc") != std::string::npos)
+        {
+
+            auto file = std::string(path);
+            auto ext = std::string(".cgsc");
+            auto extpos = file.find(ext);
+            
+            if (extpos != std::string::npos)
+            {
+                file.replace(extpos, ext.length(), "");
+            }
+
+            auto code = utils::file::read(file + ".cgsc");
+            auto stack = utils::file::read(file + ".cgsc.stack");
+
+            auto compressed = utils::zlib::compress(stack);
+
+            gsc::xscript script;   
+            script.name = file;
+            script.compressedLen = compressed.size();
+            script.len = stack.size();
+            script.bytecodeLen = code.size();
+            script.buffer = std::move(compressed);
+            script.bytecode = std::move(code);
+
+            auto output = script.serialize();
+            utils::file::save(file + ".xgsc", output);
+            std::cout << file << std::endl;
+
+            remove(file + ".xscript");
+        }
+    }
+}
+
+void recurse_del(const std::filesystem::path& dir_path)
+{
+    if (!std::filesystem::exists(dir_path)) 
+        return;
+
+    for (const directory_entry& entry : recursive_directory_iterator(dir_path))
+    {
+        auto path = entry.path();
+
+        if (is_directory(entry.status()) && std::string(path).find(".DS_Store") != std::string::npos)
+        {
+            recurse_del(entry.path());
+        }
+        else if(entry.is_regular_file() && std::string(path).find(".cgsc.stack") != std::string::npos)
+        {
+            remove(path);
+        }
+        else if(entry.is_regular_file() && std::string(path).find(".cgsc") != std::string::npos)
+        {
+            remove(path);
+        }
+    }
+}
+
+void reformat()
+{
+    std::string path = "./data/IW6";
+    recurse_dir(path);
+    recurse_del(path);
+    /*for (const auto & entry : std::filesystem::directory_iterator(path))
+    {
+        std::cout << entry.path() << std::endl;
+    }*/
+        
+    /*auto file = std::string("sd.cgsc");
+    auto ext = std::string(".cgsc");
+    auto extpos = file.find(ext);
+    
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
+
+    auto code = utils::file::read(file + ".cgsc");
+    auto stack = utils::file::read(file + ".cgsc.stack");
+
+    auto compressed = utils::zlib::compress(stack);
+
+    gsc::xscript script;   
+    script.name = std::string("sd");
+    script.compressedLen = compressed.size();
+    script.len = stack.size();
+    script.bytecodeLen = code.size();
+    script.buffer = std::move(compressed);
+    script.bytecode = std::move(code);
+
+    utils::file::save( + ".xscript", script.serialize());*/
+}
+

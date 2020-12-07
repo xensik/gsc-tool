@@ -8,9 +8,9 @@
 namespace SH1
 {
 
-auto decompiler::output() -> std::string
+auto decompiler::output() -> std::vector<std::uint8_t>
 {
-	std::string output;
+	std::vector<std::uint8_t> output;
 
 	return output;
 }

@@ -8,9 +8,9 @@
 namespace SH1
 {
 
-auto assembler::output_script() -> std::string
+auto assembler::output_script() -> std::vector<std::uint8_t>
 {
-	std::string script;
+	std::vector<std::uint8_t> script;
 
 	if(script_ == nullptr) return script;
 
@@ -20,9 +20,9 @@ auto assembler::output_script() -> std::string
 	return script;
 }
 
-auto assembler::output_stack() -> std::string
+auto assembler::output_stack() -> std::vector<std::uint8_t>
 {
-	std::string stack;
+	std::vector<std::uint8_t> stack;
 
 	if(stack_ == nullptr) return stack;
 
@@ -32,7 +32,7 @@ auto assembler::output_stack() -> std::string
 	return stack;
 }
 
-void assembler::assemble(std::string& data)
+void assembler::assemble(std::vector<std::uint8_t>& data)
 {
 	LOG_DEBUG("parsing assembly file...");
 
@@ -69,14 +69,14 @@ void assembler::assemble(std::string& data)
 		else
 		{
 			// TODO: BUG! take care of string literals!
-			std::vector<std::string> data;
-			line.find(' ') != std::string::npos ? (void)(data = utils::string::split(line, ' ')) : data.push_back(line);
+			std::vector<std::string> idata;
+			line.find(' ') != std::string::npos ? (void)(idata = utils::string::split(line, ' ')) : idata.push_back(line);
 
 			if (switchnum)
 			{
 				if (line.substr(0, 4) == "case" || line.substr(0, 7) == "default")
 				{
-					for (auto& d : data)
+					for (auto& d : idata)
 					{
 						inst->data.push_back(d);
 					}
@@ -96,13 +96,14 @@ void assembler::assemble(std::string& data)
 
 				inst = std::make_unique<gsc::instruction>();
 				inst->index = index;
-				inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(utils::string::to_lower(data[0])));
+				inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(utils::string::to_lower(idata[0])));
 				inst->size = opcode_size(opcode(inst->opcode));
-				inst->data = data;
+				idata.erase(idata.begin());
+                inst->data = idata;
 
 				if (opcode(inst->opcode) == opcode::OP_endswitch)
 				{
-					switchnum = static_cast<std::uint16_t>(std::stoul(data[1]));
+					switchnum = static_cast<std::uint16_t>(std::stoul(idata[0]));
 					inst->size += 7 * switchnum;
 				}
 

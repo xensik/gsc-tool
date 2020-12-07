@@ -22,7 +22,7 @@ class decompiler : public gsc::decompiler
     std::vector<gsc::context> blocks_;
 
 public:
-    auto output() -> std::string;
+    auto output() -> std::vector<std::uint8_t>;
     void decompile(std::vector<gsc::function_ptr>& functions);
 
 private:
