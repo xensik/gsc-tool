@@ -47,7 +47,7 @@ void assemble_file(gsc::assembler& assembler, std::string file)
 
     if (overwrite_prompt(file + ".xgsc"))
     {
-        gsc::xscript script;
+        gsc::asset script;
 
         auto uncompressed = assembler.output_stack();
         auto compressed = utils::zlib::compress(uncompressed);
@@ -76,7 +76,7 @@ void disassemble_file(gsc::disassembler& disassembler, std::string file)
 
     auto data = utils::file::read(file + ".xgsc");
 
-    gsc::xscript script;
+    gsc::asset script;
 
     script.deserialize(data);
 
@@ -107,7 +107,7 @@ void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::strin
 
     if (overwrite_prompt(file + ".xgsc"))
     {
-        gsc::xscript script;
+        gsc::asset script;
 
         auto uncompressed = assembler.output_stack();
         auto compressed = utils::zlib::compress(uncompressed);
@@ -136,7 +136,7 @@ void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler
 
     auto data = utils::file::read(file + ".xgsc");
 
-    gsc::xscript script;
+    gsc::asset script;
 
     script.deserialize(data);
 

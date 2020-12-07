@@ -403,7 +403,6 @@ void compiler::emit_stmt_foreach(const gsc::context_ptr& ctx, const gsc::stmt_fo
 
 void compiler::emit_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_switch_ptr& stmt)
 {
-    printf("good\n");
     auto jmptable_loc = create_label();
     auto break_loc = create_label();
 

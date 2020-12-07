@@ -24,7 +24,6 @@ auto opcode_size(opcode id) -> std::uint32_t
 	case opcode::OP_EvalLocalVariableCached4:
 	case opcode::OP_EvalLocalVariableCached5:
 	case opcode::OP_EvalArray:
-	case opcode::OP_EvalNewLocalArrayRefCached0:
 	case opcode::OP_EvalArrayRef:
 	case opcode::OP_ClearArray:
 	case opcode::OP_EmptyArray:
@@ -73,6 +72,7 @@ auto opcode_size(opcode id) -> std::uint32_t
 	case opcode::OP_BoolComplement:
 	case opcode::OP_GetAnimObject:
 	case opcode::OP_GetLevelObject:
+	case opcode::OP_EvalLocalArrayRefCached0:
 		return 1;
 		break;
 	case opcode::OP_GetByte:
@@ -89,11 +89,11 @@ auto opcode_size(opcode id) -> std::uint32_t
 	case opcode::OP_EvalLocalVariableCached:
 	case opcode::OP_EvalLocalVariableRefCached:
 	case opcode::OP_EvalLocalArrayCached:
-	case opcode::OP_EvalLocalArrayRefCached0:
 	case opcode::OP_EvalLocalArrayRefCached:
 	case opcode::OP_SetLocalVariableFieldCached:
 	case opcode::OP_ClearLocalVariableFieldCached:
 	case opcode::OP_EvalLocalVariableObjectCached:
+	case opcode::OP_EvalNewLocalArrayRefCached0:
 		return 2;
 		break;
 	case opcode::OP_GetUnsignedShort:

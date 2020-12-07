@@ -201,15 +201,12 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_EvalLocalVariableCached3:
     case opcode::OP_EvalLocalVariableCached4:
     case opcode::OP_EvalLocalVariableCached5:
-        break;
-    case opcode::OP_EvalNewLocalArrayRefCached0:
-        inst->size = 1;
+    case opcode::OP_EvalLocalArrayRefCached0:
         break;
     case opcode::OP_CreateLocalVariable:
     case opcode::OP_RemoveLocalVariables:
     case opcode::OP_EvalLocalVariableCached:
     case opcode::OP_EvalLocalArrayCached:
-    case opcode::OP_EvalLocalArrayRefCached0:
     case opcode::OP_EvalLocalArrayRefCached:
     case opcode::OP_SafeCreateVariableFieldCached:
     case opcode::OP_SafeSetWaittillVariableFieldCached:
@@ -218,6 +215,7 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_SetLocalVariableFieldCached:
     case opcode::OP_ClearLocalVariableFieldCached:
     case opcode::OP_EvalLocalVariableObjectCached:
+    case opcode::OP_EvalNewLocalArrayRefCached0:
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
         break;
     case opcode::OP_EvalLevelFieldVariable:
@@ -366,8 +364,8 @@ void disassembler::disassemble_far_call(const gsc::instruction_ptr& inst, bool t
     auto func_id = stack_->read<std::uint16_t>();
     auto func_name = func_id == 0 ? stack_->read_string() : resolver::token_name(func_id);
 
-    inst->data.push_back(file_name != "" ? file_name : utils::string::va("id#%i", file_id));
-    inst->data.push_back(func_name != "" ? func_name : utils::string::va("id#%i", func_id));
+    inst->data.push_back(file_name != "" ? file_name : utils::string::va("_ID%i", file_id));
+    inst->data.push_back(func_name != "" ? func_name : utils::string::va("_ID%i", func_id));
 }
 
 void disassembler::disassemble_jump(const gsc::instruction_ptr& inst, bool expr, bool back)
@@ -402,7 +400,7 @@ void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
     std::uint16_t field_id = script_->read<std::uint16_t>();
     std::string field_name = field_id > 33386 ? stack_->read_opaque_string() : resolver::token_name(field_id);
 
-    inst->data.push_back(field_name != "" ? field_name : utils::string::va("id#%i", field_id));
+    inst->data.push_back(field_name != "" ? field_name : utils::string::va("_ID%i", field_id));
 }
 
 void disassembler::disassemble_switch(const gsc::instruction_ptr& inst)
