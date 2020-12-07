@@ -12,10 +12,10 @@ namespace gsc
 class assembler
 {
 public:
-	virtual auto output_script() -> std::vector<std::uint8_t> = 0;
-	virtual auto output_stack() -> std::vector<std::uint8_t> = 0;
-	virtual void assemble(std::vector<std::uint8_t>& data) = 0;
-	virtual void assemble(std::vector<gsc::function_ptr>& functions) = 0;
+    virtual auto output_script() -> std::vector<std::uint8_t> = 0;
+    virtual auto output_stack() -> std::vector<std::uint8_t> = 0;
+    virtual void assemble(std::vector<std::uint8_t>& data) = 0;
+    virtual void assemble(std::vector<gsc::function_ptr>& functions) = 0;
 };
 
 } // namespace gsc

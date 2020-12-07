@@ -67,7 +67,7 @@ struct xscript
         std::memcpy(buffer.data(), data.data() + pos, compressedLen);
         pos += buffer.size();
 
-        buffer.resize(bytecodeLen);
+        bytecode.resize(bytecodeLen);
         std::memcpy(bytecode.data(), data.data() + pos, bytecodeLen);
     }
 };
