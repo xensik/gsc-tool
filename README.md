@@ -9,11 +9,11 @@ A utility to assemble/disassemble, compile & decompile IW engine game scripts.
 ``./gsc-tool.exe <game> <mode> <file>``
 
 **game**: `-iw5`, `-iw6`, `-sh1`
-| Modes    |Description                                  | Output                        |
-|:---------|:--------------------------------------------|:------------------------------|
-|`-asm`    |assemble a `file.gscasm`                     |`file.cgsc` + `file.cgsc.stack`|
-|`-disasm` |dissasemble a `file.cgsc` + `file.cgsc.stack`|`file.gscasm`                  |
-|`-comp`   |compile a `file.gsc`                         |`file.cgsc` + `file.cgsc.stack`|
-|`-decomp` |decompile a `file.cgsc` + `file.cgsc.stack`  |`file.gsc`                     |
+| Modes    |Description                  | Output       |
+|:---------|:----------------------------|:-------------|
+|`-asm`    |assemble a `file.gscasm`     |`file.xscript`|
+|`-disasm` |dissasemble a `file.xscript` |`file.gscasm` |
+|`-comp`   |compile a `file.gsc`         |`file.xscript`|
+|`-decomp` |decompile a `file.xscript`   |`file.gsc`    |
 ## Credits
 This project is based on  [*RektInator's* gsc-asm](https://github.com/ZoneTool/gsc-asm). Special thanks to **RektInator** & **JTAG**.
