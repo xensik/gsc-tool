@@ -5,8 +5,6 @@
 
 #include "stdinc.hpp"
 
-#define USE_XSCRIPT
-
 auto overwrite_prompt(const std::string& file) -> bool
 {
     auto overwrite = true;
@@ -35,17 +33,6 @@ auto overwrite_prompt(const std::string& file) -> bool
 
 void assemble_file(gsc::assembler& assembler, std::string file)
 {
-#ifndef USE_XSCRIPT
-    auto data = utils::file::read(file + ".gscasm");
-
-    assembler.assemble(data);
-
-    if (overwrite_prompt(file + ".cgsc"))
-    {
-        utils::file::save(file + ".cgsc", assembler.output_script());
-        utils::file::save(file + ".cgsc.stack", assembler.output_stack());
-    }
-#else
     const auto ext = std::string(".gscasm");
     const auto extpos = file.find(ext);
     
@@ -75,33 +62,10 @@ void assemble_file(gsc::assembler& assembler, std::string file)
         auto output = script.serialize();
         utils::file::save(file + ".xgsc", output);
     }
-#endif
 }
 
 void disassemble_file(gsc::disassembler& disassembler, std::string file)
 {
-#ifndef USE_XSCRIPT
-    if (file.find(".stack") != std::string::npos)
-    {
-        printf("Cannot disassemble stack files\n");
-        return;
-    }
-
-    const auto ext = std::string(".cgsc");
-    const auto extpos = file.find(ext);
-    if (extpos != std::string::npos)
-    {
-        file.replace(extpos, ext.length(), "");
-    }
-
-    auto script = utils::file::read(file + ".cgsc");
-    auto stack = utils::file::read(file + ".cgsc.stack");
-
-    disassembler.disassemble(script, stack);
-    
-    utils::file::save(file + ".gscasm", disassembler.output_data());
-
-#else
     const auto ext = std::string(".xgsc");
     const auto extpos = file.find(ext);
     
@@ -121,33 +85,10 @@ void disassemble_file(gsc::disassembler& disassembler, std::string file)
     disassembler.disassemble(script.bytecode, stack);
     
     utils::file::save(file + ".gscasm", disassembler.output_data());
-#endif
 }
 
 void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::string file)
 {
-#ifndef USE_XSCRIPT
-    const auto ext = std::string(".gsc");
-    const auto extpos = file.find(ext);
-    if (extpos != std::string::npos)
-    {
-        file.replace(extpos, ext.length(), "");
-    }
-
-    auto data = utils::file::read(file + ".gsc");
-
-    compiler.compile(data);
-
-    auto output = compiler.output();
-
-    assembler.assemble(output);
-
-    if (overwrite_prompt(file + ".cgsc"))
-    {
-        utils::file::save(file + ".cgsc", assembler.output_script());
-        utils::file::save(file + ".cgsc.stack", assembler.output_stack());
-    }
-#else
     const auto ext = std::string(".gsc");
     const auto extpos = file.find(ext);
     
@@ -181,39 +122,10 @@ void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::strin
         auto output = script.serialize();
         utils::file::save(file + ".xgsc", output);
     }
-#endif
 }
 
 void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler, std::string file)
 {
-#ifndef USE_XSCRIPT
-    if (file.find(".stack") != std::string::npos)
-    {
-        printf("Cannot decompile stack files\n");
-        return;
-    }
-
-    const auto ext = std::string(".cgsc");
-    const auto extpos = file.find(ext);
-    if (extpos != std::string::npos)
-    {
-        file.replace(extpos, ext.length(), "");
-    }
-
-    auto script = utils::file::read(file + ".cgsc");
-    auto stack = utils::file::read(file + ".cgsc.stack");
-
-    disassembler.disassemble(script, stack);
-
-    auto output = disassembler.output();
-
-    decompiler.decompile(output);
-
-    if (overwrite_prompt(file + ".gsc"))
-    {
-        utils::file::save(file + ".gsc", decompiler.output());
-    }
-#else
     const auto ext = std::string(".xgsc");
     const auto extpos = file.find(ext);
     
@@ -237,7 +149,6 @@ void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler
     decompiler.decompile(output);
 
     utils::file::save(file + ".gsc", decompiler.output());
-#endif
 }
 
 int parse_flags(int argc, char** argv, game& game, mode& mode)
@@ -290,10 +201,6 @@ int parse_flags(int argc, char** argv, game& game, mode& mode)
 
     return 0;
 }
-
-
-
-void reformat();
 
 int main(int argc, char** argv)
 {
@@ -390,116 +297,3 @@ int main(int argc, char** argv)
 
     return 0;
 }
-
-using namespace std::filesystem;
-
-void recurse_dir(const std::filesystem::path& dir_path)
-{
-    if (!std::filesystem::exists(dir_path)) 
-        return;
-
-    for (const directory_entry& entry : recursive_directory_iterator(dir_path))
-    {
-        auto path = entry.path();
-
-        if (is_directory(entry.status()) && std::string(path).find(".DS_Store") != std::string::npos)
-        {
-            recurse_dir(entry.path());
-        }
-        else if(entry.is_regular_file() && std::string(path).find(".cgsc.stack") != std::string::npos)
-        {
-            continue;
-        }
-        else if(entry.is_regular_file() && std::string(path).find(".cgsc") != std::string::npos)
-        {
-
-            auto file = std::string(path);
-            auto ext = std::string(".cgsc");
-            auto extpos = file.find(ext);
-            
-            if (extpos != std::string::npos)
-            {
-                file.replace(extpos, ext.length(), "");
-            }
-
-            auto code = utils::file::read(file + ".cgsc");
-            auto stack = utils::file::read(file + ".cgsc.stack");
-
-            auto compressed = utils::zlib::compress(stack);
-
-            gsc::xscript script;   
-            script.name = file;
-            script.compressedLen = compressed.size();
-            script.len = stack.size();
-            script.bytecodeLen = code.size();
-            script.buffer = std::move(compressed);
-            script.bytecode = std::move(code);
-
-            auto output = script.serialize();
-            utils::file::save(file + ".xgsc", output);
-            std::cout << file << std::endl;
-
-            remove(file + ".xscript");
-        }
-    }
-}
-
-void recurse_del(const std::filesystem::path& dir_path)
-{
-    if (!std::filesystem::exists(dir_path)) 
-        return;
-
-    for (const directory_entry& entry : recursive_directory_iterator(dir_path))
-    {
-        auto path = entry.path();
-
-        if (is_directory(entry.status()) && std::string(path).find(".DS_Store") != std::string::npos)
-        {
-            recurse_del(entry.path());
-        }
-        else if(entry.is_regular_file() && std::string(path).find(".cgsc.stack") != std::string::npos)
-        {
-            remove(path);
-        }
-        else if(entry.is_regular_file() && std::string(path).find(".cgsc") != std::string::npos)
-        {
-            remove(path);
-        }
-    }
-}
-
-void reformat()
-{
-    std::string path = "./data/IW6";
-    recurse_dir(path);
-    recurse_del(path);
-    /*for (const auto & entry : std::filesystem::directory_iterator(path))
-    {
-        std::cout << entry.path() << std::endl;
-    }*/
-        
-    /*auto file = std::string("sd.cgsc");
-    auto ext = std::string(".cgsc");
-    auto extpos = file.find(ext);
-    
-    if (extpos != std::string::npos)
-    {
-        file.replace(extpos, ext.length(), "");
-    }
-
-    auto code = utils::file::read(file + ".cgsc");
-    auto stack = utils::file::read(file + ".cgsc.stack");
-
-    auto compressed = utils::zlib::compress(stack);
-
-    gsc::xscript script;   
-    script.name = std::string("sd");
-    script.compressedLen = compressed.size();
-    script.len = stack.size();
-    script.bytecodeLen = code.size();
-    script.buffer = std::move(compressed);
-    script.bytecode = std::move(code);
-
-    utils::file::save( + ".xscript", script.serialize());*/
-}
-

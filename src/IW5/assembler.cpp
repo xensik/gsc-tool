@@ -127,7 +127,7 @@ void assembler::assemble(std::vector<gsc::function_ptr>& functions)
     functions_ = std::move(functions);
 
     script_->write<std::uint8_t>(0x00);
-    //stack_->write<std::uint32_t>(0x62727568);
+    stack_->write<std::uint32_t>(0x62727568);
 
     for (const auto& func : functions_)
     {
