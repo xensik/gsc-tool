@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_UTILS_ZLIB_HPP_
-#define _GSC_UTILS_ZLIB_HPP_
+#ifndef _GSC_UTILS_COMPRESSION_HPP_
+#define _GSC_UTILS_COMPRESSION_HPP_
 
 namespace utils
 {
@@ -18,4 +18,4 @@ public:
 
 } // namespace utils
 
-#endif // _GSC_UTILS_ZLIB_HPP_
+#endif // _GSC_UTILS_COMPRESSION_HPP_
