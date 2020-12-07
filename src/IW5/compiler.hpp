@@ -23,10 +23,10 @@ class compiler : public gsc::compiler
 
 public:
     auto output() -> std::vector<gsc::function_ptr>;
-    void compile(std::string& data);
+    void compile(std::vector<std::uint8_t>& data);
 
 private:
-    auto parse_buffer(std::string& data) -> gsc::script_ptr;
+    auto parse_buffer(std::vector<std::uint8_t>& data) -> gsc::script_ptr;
     auto parse_file(const std::string& file) -> gsc::script_ptr;
     void compile_script(const gsc::script_ptr& script);
     void emit_include(const gsc::include_ptr& include);

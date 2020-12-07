@@ -39,8 +39,10 @@ using namespace std::literals;
 #include "utility/string.hpp"
 #include "utility/file.hpp"
 #include "utility/byte_buffer.hpp"
+#include "utility/zlib.hpp"
 
 // GSC Types
+#include "types/asset.hpp"
 #include "types/assembly.hpp"
 #include "types/nodetree.hpp"
 #include "types/context.hpp"

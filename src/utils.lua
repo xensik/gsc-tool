@@ -1,19 +1,12 @@
 utils = {}
 
 function utils:include()
-    includedirs
-    {
-        path.join(project_dir(), "utils")
-    }
+    includedirs { path.join(project_dir(), "utils") }
 end
 
 function utils:link()
     self:include()
-    
-    links
-    {
-        "utils"
-    }
+    links { "utils" }
 end
 
 function utils:project()
@@ -34,4 +27,5 @@ function utils:project()
         }
         
         self:include()
+        dependencies.link()
 end

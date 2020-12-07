@@ -13,7 +13,7 @@ auto compiler::output() -> std::vector<gsc::function_ptr>
     return std::vector<gsc::function_ptr>();
 }
 
-void compiler::compile(std::string& data)
+void compiler::compile(std::vector<std::uint8_t>& data)
 {
     LOG_ERROR("SH1 compiler not implemented!");
 }

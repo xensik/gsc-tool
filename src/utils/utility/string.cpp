@@ -47,7 +47,7 @@ auto string::split(std::string& str, char delimiter) -> std::vector<std::string>
 
 	if(str.find(delimiter) == std::string::npos)
 	{
-		internal.push_back(tok);
+		internal.push_back(str);
 		return internal;
 	}
 
@@ -60,20 +60,22 @@ auto string::split(std::string& str, char delimiter) -> std::vector<std::string>
 	return internal;
 }
 
-auto string::clean_buffer_lines(std::string& buffer) -> std::vector<std::string>
+auto string::clean_buffer_lines(std::vector<std::uint8_t>& buffer) -> std::vector<std::string>
 {
 	std::size_t pos;
+	// TODO: optimize
+	std::string data = std::string(reinterpret_cast<char*>(buffer.data()), buffer.size());
 
-	while ((pos = buffer.find("\t")) != std::string::npos)
+	while ((pos = data.find("\t")) != std::string::npos)
 	{
-		buffer = buffer.replace(pos, 1, "");
+		data = data.replace(pos, 1, "");
 	}
-	while ((pos = buffer.find("\r")) != std::string::npos)
+	while ((pos = data.find("\r")) != std::string::npos)
 	{
-		buffer = buffer.replace(pos, 1, "");
+		data = data.replace(pos, 1, "");
 	}
 
-	return string::split(buffer, '\n');
+	return string::split(data, '\n');
 }
 
 auto string::get_string_literal(std::string str) -> std::string

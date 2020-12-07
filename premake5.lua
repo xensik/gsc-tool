@@ -1,6 +1,32 @@
--- ========================
--- Path
--- ========================
+dependencies = { basePath = "./deps" }
+
+function dependencies.load()
+	dir = path.join(dependencies.basePath, "*.lua")
+	deps = os.matchfiles(dir)
+
+	for i, dep in pairs(deps) do
+		dep = dep:gsub(".lua", "")
+		require(dep)
+	end
+end
+
+function dependencies.link()
+	for i, proj in pairs(dependencies) do
+		if type(i) == 'number' then
+			proj.link()
+		end
+	end
+end
+
+function dependencies.projects()
+	for i, proj in pairs(dependencies) do
+		if type(i) == 'number' then
+			proj.project()
+		end
+	end
+end
+
+dependencies.load()
 
 local _project_dir = path.getabsolute("src")
 
@@ -8,9 +34,6 @@ function project_dir()
     return path.getrelative(os.getcwd(), _project_dir)
 end
 
--- ========================
--- Workspace
--- ========================
 
 workspace "gsc-tool"
 location "./build"
@@ -42,10 +65,6 @@ configuration {}
 
 startproject "gsc-tool"
 
--- ========================
--- Projects
--- ========================
-
 include "src/tool.lua"
 include "src/utils.lua"
 include "src/IW5.lua"
@@ -57,3 +76,6 @@ utils:project()
 IW5:project()
 IW6:project()
 SH1:project()
+
+group "Dependencies"
+dependencies.projects()

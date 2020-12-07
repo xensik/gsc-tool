@@ -8,47 +8,68 @@
 namespace utils
 {
 
-auto file::read(const std::string& name) -> std::string
+auto file::read(const std::string& file) -> std::vector<std::uint8_t>
 {
-	std::string buffer;
+    std::vector<std::uint8_t> data;
 
-	std::ifstream stream(name, std::ios::binary);
-	if (stream.good())
-	{
-		if (!stream.is_open()) return buffer;
+    FILE* fp = fopen(file.data(), "rb");
+    if (fp)
+    {
+        long len = utils::file::length(fp);
+        data.resize(len);
+        fread(data.data(), len, 1, fp);
+        fclose(fp);
+    }
+    else
+    {
+        printf("Couldn't open file %s!\n", file.data());
+        std::exit(-1);
+    }
 
-		stream.seekg(0, std::ios::end);
-		std::streamsize size = stream.tellg();
-		stream.seekg(0, std::ios::beg);
-
-		if (size > -1)
-		{
-			buffer.clear();
-			buffer.resize(static_cast<uint32_t>(size));
-
-			stream.read(const_cast<char*>(buffer.data()), size);
-		}
-
-		stream.close();
-	}
-
-	return buffer;
+    return data;
 }
 
-void file::save(const std::string& name, const std::string& data)
+auto file::read_text(const std::string& file) -> std::string
 {
-	FILE* fp = fopen(name.data(), "wb");
-	fwrite(data.data(), 1, data.size(), fp);
-	fclose(fp);
+    std::string data;
+
+    std::ifstream stream(file, std::ios::binary);
+    if (stream.good())
+    {
+        if (!stream.is_open()) return data;
+
+        stream.seekg(0, std::ios::end);
+        std::streamsize size = stream.tellg();
+        stream.seekg(0, std::ios::beg);
+
+        if (size > -1)
+        {
+            data.clear();
+            data.resize(static_cast<uint32_t>(size));
+
+            stream.read(reinterpret_cast<char*>(data.data()), size);
+        }
+
+        stream.close();
+    }
+    return data;
+}
+
+
+void file::save(const std::string& file, const std::vector<std::uint8_t>& data)
+{
+    FILE* fp = fopen(file.data(), "wb");
+    fwrite(data.data(), 1, data.size(), fp);
+    fclose(fp);
 }
 
 auto file::length(FILE* fp) -> long
 {
-	long i = ftell(fp);
-	fseek(fp, 0, SEEK_END);
-	long ret = ftell(fp);
-	fseek(fp, i, SEEK_SET);
-	return ret;
+    long i = ftell(fp);
+    fseek(fp, 0, SEEK_END);
+    long ret = ftell(fp);
+    fseek(fp, i, SEEK_SET);
+    return ret;
 }
 
 } // namespace utils

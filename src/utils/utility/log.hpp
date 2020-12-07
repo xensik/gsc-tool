@@ -15,7 +15,7 @@
 #define LOG_DEBUG(__FMT__, ...)
 #define LOG_INFO(__FMT__, ...)
 #define LOG_WARN(__FMT__, ...)
-#define LOG_ERROR(__FMT__, ...)  printf("[E]: " __FMT__ "\n", ## __VA_ARGS__);
+#define LOG_ERROR(__FMT__, ...)  printf("[E]: " __FMT__ "\n", ## __VA_ARGS__); exit(-1);
 #endif // DEBUG
 
 #define ASSEMBLER_ERROR(__FMT__, ...) printf("[ERROR] ASSEMBLER: " __FMT__ "\n", ## __VA_ARGS__); exit(-1);

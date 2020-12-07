@@ -13,8 +13,8 @@ class disassembler
 {
 public:
 	virtual auto output() -> std::vector<gsc::function_ptr> = 0;
-	virtual auto output_data() -> std::string = 0;
-	virtual void disassemble(std::string& script, std::string& stack) = 0;
+	virtual auto output_data() -> std::vector<std::uint8_t> = 0;
+	virtual void disassemble(std::vector<std::uint8_t>& script, std::vector<std::uint8_t>& stack) = 0;
 };
 
 } // namespace gsc

@@ -13,7 +13,7 @@ class compiler : public gsc::compiler
 {
 public:
 	auto output() -> std::vector<gsc::function_ptr>;
-	void compile(std::string& data);
+	void compile(std::vector<std::uint8_t>& data);
 };
 
 } // namespace SH1

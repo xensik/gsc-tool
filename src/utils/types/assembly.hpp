@@ -35,6 +35,6 @@ struct function
 
 using function_ptr = std::unique_ptr<function>;
 
-}// namespace gsc
+} // namespace gsc
 
 #endif // _GSC_ASSEMBLY_HPP_

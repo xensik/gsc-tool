@@ -13,7 +13,7 @@ class compiler
 {
 public:
 	virtual auto output() -> std::vector<gsc::function_ptr> = 0;
-	virtual void compile(std::string& data) = 0;
+	virtual void compile(std::vector<std::uint8_t>& data) = 0;
 };
 
 } // namespace gsc

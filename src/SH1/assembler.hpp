@@ -17,9 +17,9 @@ class assembler : public gsc::assembler
 	std::unordered_map<std::uint32_t, std::string> labels_;
 
 public:
-	auto output_script() -> std::string;
-	auto output_stack() -> std::string;
-	void assemble(std::string& data);
+	auto output_script() -> std::vector<std::uint8_t>;
+	auto output_stack() -> std::vector<std::uint8_t>;
+	void assemble(std::vector<std::uint8_t>& data);
 	void assemble(std::vector<gsc::function_ptr>& functions);
 
 private:
