@@ -4,7 +4,7 @@
 // that can be found in the LICENSE file.
 
 #include "utils.hpp"
-#include <zlib.h>
+#include "zlib.h"
 
 namespace utils
 {

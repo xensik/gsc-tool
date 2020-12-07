@@ -33,9 +33,9 @@ function tool:project()
 
         -- Linked projects
         self:include()
+        dependencies.link()
         utils:link()
         IW5:link()
         IW6:link()
         SH1:link()
-
 end

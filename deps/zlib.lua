@@ -1,12 +1,12 @@
 zlib = { source = path.join(dependencies.basePath, "zlib") }
 
+function zlib:include()
+    includedirs { zlib.source }
+end
+
 function zlib:link()
     zlib.include()
     links { "zlib" }
-end
-
-function zlib:include()
-    includedirs { zlib.source }
 end
 
 function zlib:project()
