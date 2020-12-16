@@ -210,6 +210,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_ScriptFunctionCallPointer:
     case opcode::OP_ScriptMethodCallPointer:
 // VARS
+    case opcode::OP_EvalLocalArrayRefCached0:
     case opcode::OP_EvalLocalVariableCached0:
     case opcode::OP_EvalLocalVariableCached1:
     case opcode::OP_EvalLocalVariableCached2:
@@ -217,7 +218,6 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_EvalLocalVariableCached4:
     case opcode::OP_EvalLocalVariableCached5:
     case opcode::OP_EvalLocalVariableRefCached0:
-    case opcode::OP_EvalNewLocalArrayRefCached0:
     case opcode::OP_SetLocalVariableFieldCached0:
     case opcode::OP_ClearLocalVariableFieldCached0:
     case opcode::OP_EvalArray:
@@ -293,11 +293,11 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_EvalLocalVariableRefCached:
     case opcode::OP_EvalLocalVariableObjectCached:
     case opcode::OP_EvalLocalArrayCached:
-    case opcode::OP_EvalLocalArrayRefCached0:
     case opcode::OP_EvalLocalArrayRefCached:
     case opcode::OP_SetNewLocalVariableFieldCached0:
     case opcode::OP_SetLocalVariableFieldCached:
     case opcode::OP_ClearLocalVariableFieldCached:
+    case opcode::OP_EvalNewLocalArrayRefCached0:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
         break;

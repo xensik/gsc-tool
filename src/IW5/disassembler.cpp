@@ -201,15 +201,12 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_EvalLocalVariableCached3:
     case opcode::OP_EvalLocalVariableCached4:
     case opcode::OP_EvalLocalVariableCached5:
-        break;
-    case opcode::OP_EvalNewLocalArrayRefCached0:
-        inst->size = 1;
+    case opcode::OP_EvalLocalArrayRefCached0:
         break;
     case opcode::OP_CreateLocalVariable:
     case opcode::OP_RemoveLocalVariables:
     case opcode::OP_EvalLocalVariableCached:
     case opcode::OP_EvalLocalArrayCached:
-    case opcode::OP_EvalLocalArrayRefCached0:
     case opcode::OP_EvalLocalArrayRefCached:
     case opcode::OP_SafeCreateVariableFieldCached:
     case opcode::OP_SafeSetWaittillVariableFieldCached:
@@ -218,6 +215,7 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_SetLocalVariableFieldCached:
     case opcode::OP_ClearLocalVariableFieldCached:
     case opcode::OP_EvalLocalVariableObjectCached:
+    case opcode::OP_EvalNewLocalArrayRefCached0:
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
         break;
     case opcode::OP_EvalLevelFieldVariable:
