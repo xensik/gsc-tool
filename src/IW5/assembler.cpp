@@ -141,7 +141,7 @@ void assembler::assemble_function(const gsc::function_ptr& func)
 
     stack_->write<std::uint32_t>(func->size);
 
-    func->id = func->name.substr(0, 3) == "id#" ? std::stoul(func->name.substr(3)) : resolver::token_id(func->name);
+    func->id = func->name.substr(0, 3) == "_ID" ? std::stoul(func->name.substr(3)) : resolver::token_id(func->name);
     stack_->write<std::uint16_t>(func->id);
         
     if (func->id == 0)
@@ -408,17 +408,17 @@ void assembler::assemble_builtin_call(const gsc::instruction_ptr& inst, bool met
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
 
         if (method)
-            id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_method_id(inst->data[1]);
+            id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_method_id(inst->data[1]);
         else
-            id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_func_id(inst->data[1]);
+            id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_func_id(inst->data[1]);
 
     }
     else
     {
         if (method)
-            id = inst->data[0].substr(0, 3) == "id#" ? std::stol(inst->data[0].substr(3)) : resolver::builtin_method_id(inst->data[0]);
+            id = inst->data[0].substr(0, 3) == "_ID" ? std::stol(inst->data[0].substr(3)) : resolver::builtin_method_id(inst->data[0]);
         else
-            id = inst->data[0].substr(0, 3) == "id#" ? std::stol(inst->data[0].substr(3)) : resolver::builtin_func_id(inst->data[0]);
+            id = inst->data[0].substr(0, 3) == "_ID" ? std::stol(inst->data[0].substr(3)) : resolver::builtin_func_id(inst->data[0]);
     }
 
     script_->write<std::uint16_t>(id);
@@ -453,13 +453,13 @@ void assembler::assemble_far_call(const gsc::instruction_ptr& inst, bool thread)
     {
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
 
-        file_id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : resolver::file_id(inst->data[1]);
-        func_id = inst->data[2].substr(0, 3) == "id#" ? std::stol(inst->data[2].substr(3)) : resolver::token_id(inst->data[2]);
+        file_id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::file_id(inst->data[1]);
+        func_id = inst->data[2].substr(0, 3) == "_ID" ? std::stol(inst->data[2].substr(3)) : resolver::token_id(inst->data[2]);
     }
     else
     {
-        file_id = inst->data[0].substr(0, 3) == "id#" ? std::stol(inst->data[0].substr(3)) : resolver::file_id(inst->data[0]);
-        func_id = inst->data[1].substr(0, 3) == "id#" ? std::stol(inst->data[1].substr(3)) : resolver::token_id(inst->data[1]);
+        file_id = inst->data[0].substr(0, 3) == "_ID" ? std::stol(inst->data[0].substr(3)) : resolver::file_id(inst->data[0]);
+        func_id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::token_id(inst->data[1]);
     }
 
     stack_->write<std::uint16_t>(file_id);
@@ -532,7 +532,7 @@ void assembler::assemble_field_variable(const gsc::instruction_ptr& inst)
 
     std::uint16_t field_id = 0;
 
-    if (inst->data[0].substr(0, 3) == "id#")
+    if (inst->data[0].substr(0, 3) == "_ID")
     {
         field_id = (std::uint16_t)std::stol(inst->data[0].substr(3));
     }

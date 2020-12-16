@@ -59,7 +59,7 @@ auto resolver::builtin_func_name(std::uint16_t id) -> std::string
     }
 
     LOG_ERROR("Couldn't resolve builtin function name for id '%i'!", id);
-    return utils::string::va("id#%i", id);
+    return utils::string::va("_ID%i", id);
 }
 
 auto resolver::builtin_method_id(const std::string& name) -> std::uint16_t
@@ -86,7 +86,7 @@ auto resolver::builtin_method_name(std::uint16_t id) -> std::string
     }
 
     LOG_ERROR("Couldn't resolve builtin method name for id '%i'!", id);
-    return utils::string::va("id#%i", id);
+    return utils::string::va("_ID%i", id);
 }
 
 auto resolver::file_id(const std::string& name) -> std::uint16_t
@@ -112,7 +112,7 @@ auto resolver::file_name(std::uint16_t id) -> std::string
     }
 
     LOG_DEBUG("missing file name for id '%i'!", id);
-    return utils::string::va("id#%i", id);
+    return utils::string::va("_ID%i", id);
 }
 
 auto resolver::token_id(const std::string& name) -> std::uint16_t
@@ -138,7 +138,7 @@ auto resolver::token_name(std::uint16_t id) -> std::string
     }
 
     //LOG_DEBUG("missing token name for id '%i'!", id);
-    return utils::string::va("id#%i", id);
+    return utils::string::va("_ID%i", id);
 }
 
 auto resolver::find_builtin_func(const std::string& name) -> bool

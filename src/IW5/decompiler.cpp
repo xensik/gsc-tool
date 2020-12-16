@@ -11,7 +11,7 @@ namespace IW5
 auto decompiler::output() -> std::vector<std::uint8_t>
 {
     std::vector<std::uint8_t> output;
-    
+
     auto data = std::make_unique<utils::byte_buffer>(0x100000);
     data->write_string("// IW5 PC GSC\n// Decompiled by https://github.com/xensik/gsc-tool\n");
     data->write_string(script_->print());
