@@ -45,7 +45,7 @@ void assemble_file(gsc::assembler& assembler, std::string file)
 
     assembler.assemble(data);
 
-    if (overwrite_prompt(file + ".xgsc"))
+    if (overwrite_prompt(file + ".gscbin"))
     {
         gsc::asset script;
 
@@ -60,13 +60,13 @@ void assemble_file(gsc::assembler& assembler, std::string file)
         script.bytecodeLen = script.bytecode.size();
 
         auto output = script.serialize();
-        utils::file::save(file + ".xgsc", output);
+        utils::file::save(file + ".gscbin", output);
     }
 }
 
 void disassemble_file(gsc::disassembler& disassembler, std::string file)
 {
-    const auto ext = std::string(".xgsc");
+    const auto ext = std::string(".gscbin");
     const auto extpos = file.find(ext);
     
     if (extpos != std::string::npos)
@@ -74,7 +74,7 @@ void disassemble_file(gsc::disassembler& disassembler, std::string file)
         file.replace(extpos, ext.length(), "");
     }
 
-    auto data = utils::file::read(file + ".xgsc");
+    auto data = utils::file::read(file + ".gscbin");
 
     gsc::asset script;
 
@@ -105,7 +105,7 @@ void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::strin
 
     assembler.assemble(assembly);
 
-    if (overwrite_prompt(file + ".xgsc"))
+    if (overwrite_prompt(file + ".gscbin"))
     {
         gsc::asset script;
 
@@ -120,13 +120,13 @@ void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::strin
         script.bytecodeLen = script.bytecode.size();
 
         auto output = script.serialize();
-        utils::file::save(file + ".xgsc", output);
+        utils::file::save(file + ".gscbin", output);
     }
 }
 
 void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler, std::string file)
 {
-    const auto ext = std::string(".xgsc");
+    const auto ext = std::string(".gscbin");
     const auto extpos = file.find(ext);
     
     if (extpos != std::string::npos)
@@ -134,7 +134,7 @@ void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler
         file.replace(extpos, ext.length(), "");
     }
 
-    auto data = utils::file::read(file + ".xgsc");
+    auto data = utils::file::read(file + ".gscbin");
 
     gsc::asset script;
 
@@ -165,9 +165,21 @@ int parse_flags(int argc, char** argv, game& game, mode& mode)
     {
         game = game::IW6;
     }
-    else if (arg == "-sh1")
+    else if (arg == "-s1")
     {
-        game = game::SH1;
+        game = game::S1;
+    }
+    else if (arg == "-s2")
+    {
+        game = game::S2;
+    }
+    else if (arg == "-h1")
+    {
+        game = game::H1;
+    }
+    else if (arg == "-h2")
+    {
+        game = game::H2;
     }
     else
     {
@@ -211,8 +223,8 @@ int main(int argc, char** argv)
     if (parse_flags(argc, argv, game, mode))
     {
         printf("usage: gsc-tool.exe <game> <mode> <file>\n");
-        printf("	- games: -iw5, -iw6, -sh1\n");
-        printf("	- modes: -asm, -disasm, -comp, -decomp\n");
+        printf("	* games: -iw5, -iw6, -s1, -s2, -h1, -h2\n");
+        printf("	* modes: -asm, -disasm, -comp, -decomp\n");
         return 0;
     }
 
@@ -228,9 +240,24 @@ int main(int argc, char** argv)
             IW6::assembler assembler;
             assemble_file(assembler, file);
         }
-        else if (game == game::SH1)
+        else if (game == game::S1)
         {
-            SH1::assembler assembler;
+            S1::assembler assembler;
+            assemble_file(assembler, file);
+        }
+        else if (game == game::S2)
+        {
+            S2::assembler assembler;
+            assemble_file(assembler, file);
+        }
+        else if (game == game::H1)
+        {
+            H1::assembler assembler;
+            assemble_file(assembler, file);
+        }
+        else if (game == game::H2)
+        {
+            H2::assembler assembler;
             assemble_file(assembler, file);
         }
     }
@@ -246,9 +273,24 @@ int main(int argc, char** argv)
             IW6::disassembler disassembler;
             disassemble_file(disassembler, file);
         }
-        else if (game == game::SH1)
+        else if (game == game::S1)
         {
-            SH1::disassembler disassembler;
+            S1::disassembler disassembler;
+            disassemble_file(disassembler, file);
+        }
+        else if (game == game::S2)
+        {
+            S2::disassembler disassembler;
+            disassemble_file(disassembler, file);
+        }
+        else if (game == game::H1)
+        {
+            H1::disassembler disassembler;
+            disassemble_file(disassembler, file);
+        }
+        else if (game == game::H2)
+        {
+            H2::disassembler disassembler;
             disassemble_file(disassembler, file);
         }
     }
@@ -266,10 +308,28 @@ int main(int argc, char** argv)
             IW6::compiler compiler;
             compile_file(assembler, compiler, file);
         }
-        if (game == game::SH1)
+        else if (game == game::S1)
         {
-            SH1::assembler assembler;
-            SH1::compiler compiler;
+            S1::assembler assembler;
+            S1::compiler compiler;
+            compile_file(assembler, compiler, file);
+        }
+        else if (game == game::S2)
+        {
+            S2::assembler assembler;
+            S2::compiler compiler;
+            compile_file(assembler, compiler, file);
+        }
+        else if (game == game::H1)
+        {
+            H1::assembler assembler;
+            H1::compiler compiler;
+            compile_file(assembler, compiler, file);
+        }
+        else if (game == game::H2)
+        {
+            H2::assembler assembler;
+            H2::compiler compiler;
             compile_file(assembler, compiler, file);
         }
     }
@@ -287,10 +347,28 @@ int main(int argc, char** argv)
             IW6::decompiler decompiler;
             decompile_file(disassembler, decompiler, file);
         }
-        if (game == game::SH1)
+        else if (game == game::S1)
         {
-            SH1::disassembler disassembler;
-            SH1::decompiler decompiler;
+            S1::disassembler disassembler;
+            S1::decompiler decompiler;
+            decompile_file(disassembler, decompiler, file);
+        }
+        else if (game == game::S2)
+        {
+            S2::disassembler disassembler;
+            S2::decompiler decompiler;
+            decompile_file(disassembler, decompiler, file);
+        }
+        else if (game == game::H1)
+        {
+            H1::disassembler disassembler;
+            H1::decompiler decompiler;
+            decompile_file(disassembler, decompiler, file);
+        }
+        else if (game == game::H2)
+        {
+            H2::disassembler disassembler;
+            H2::decompiler decompiler;
             decompile_file(disassembler, decompiler, file);
         }
     }

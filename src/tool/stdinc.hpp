@@ -9,7 +9,10 @@
 #include <utils.hpp>
 #include <IW5.hpp>
 #include <IW6.hpp>
-#include <SH1.hpp>
+#include <S1.hpp>
+#include <S2.hpp>
+#include <H1.hpp>
+#include <H2.hpp>
 
 enum class mode
 {
@@ -25,7 +28,10 @@ enum class game
     __,
     IW5,
     IW6,
-    SH1,
+    S1,
+    S2,
+    H1,
+    H2,
 
 };
 

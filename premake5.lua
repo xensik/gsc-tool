@@ -73,9 +73,15 @@ include "src/tool.lua"
 include "src/utils.lua"
 include "src/IW5.lua"
 include "src/IW6.lua"
-include "src/SH1.lua"
+include "src/S1.lua"
+include "src/S2.lua"
+include "src/H1.lua"
+include "src/H2.lua"
 tool:project()
 utils:project()
 IW5:project()
 IW6:project()
-SH1:project()
+S1:project()
+S2:project()
+H1:project()
+H2:project()
