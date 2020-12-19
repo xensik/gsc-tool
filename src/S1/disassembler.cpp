@@ -3,9 +3,9 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include "SH1.hpp"
+#include "S1.hpp"
 
-namespace SH1
+namespace S1
 {
 
 auto disassembler::output() -> std::vector<gsc::function_ptr>
@@ -198,7 +198,7 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
 		script_->seek(1);
 		inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
 		break;
-	case opcode::OP_waittillmatch: // SH1 placeholder is 2 bytes???
+	case opcode::OP_waittillmatch: // S1 placeholder is 2 bytes???
 		inst->size = 3;
 		inst->data.push_back(utils::string::va("%i", script_->read<std::uint16_t>()));
 		break;
@@ -388,7 +388,7 @@ void disassembler::disassemble_far_call(const gsc::instruction_ptr& inst, bool t
 {
 	inst->size = thread ? 5 : 4;
 
-	// SH1 seems to remove placeholders
+	// S1 seems to remove placeholders
 
 	if (thread)
 	{
@@ -680,4 +680,4 @@ void disassembler::print_label(const std::string& label)
 #endif
 }
 
-} // namespace SH1
+} // namespace S1

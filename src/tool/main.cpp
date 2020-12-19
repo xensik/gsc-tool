@@ -165,9 +165,9 @@ int parse_flags(int argc, char** argv, game& game, mode& mode)
     {
         game = game::IW6;
     }
-    else if (arg == "-sh1")
+    else if (arg == "-s1")
     {
-        game = game::SH1;
+        game = game::S1;
     }
     else
     {
@@ -228,9 +228,9 @@ int main(int argc, char** argv)
             IW6::assembler assembler;
             assemble_file(assembler, file);
         }
-        else if (game == game::SH1)
+        else if (game == game::S1)
         {
-            SH1::assembler assembler;
+            S1::assembler assembler;
             assemble_file(assembler, file);
         }
     }
@@ -246,9 +246,9 @@ int main(int argc, char** argv)
             IW6::disassembler disassembler;
             disassemble_file(disassembler, file);
         }
-        else if (game == game::SH1)
+        else if (game == game::S1)
         {
-            SH1::disassembler disassembler;
+            S1::disassembler disassembler;
             disassemble_file(disassembler, file);
         }
     }
@@ -266,10 +266,10 @@ int main(int argc, char** argv)
             IW6::compiler compiler;
             compile_file(assembler, compiler, file);
         }
-        if (game == game::SH1)
+        if (game == game::S1)
         {
-            SH1::assembler assembler;
-            SH1::compiler compiler;
+            S1::assembler assembler;
+            S1::compiler compiler;
             compile_file(assembler, compiler, file);
         }
     }
@@ -287,10 +287,10 @@ int main(int argc, char** argv)
             IW6::decompiler decompiler;
             decompile_file(disassembler, decompiler, file);
         }
-        if (game == game::SH1)
+        if (game == game::S1)
         {
-            SH1::disassembler disassembler;
-            SH1::decompiler decompiler;
+            S1::disassembler disassembler;
+            S1::decompiler decompiler;
             decompile_file(disassembler, decompiler, file);
         }
     }

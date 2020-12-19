@@ -31,6 +31,6 @@ function tool:project()
         utils:link()
         IW5:link()
         IW6:link()
-        SH1:link()
+        S1:link()
         zlib.link()
 end

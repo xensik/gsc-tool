@@ -3,9 +3,9 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include "SH1.hpp"
+#include "S1.hpp"
 
-namespace SH1
+namespace S1
 {
 
 auto assembler::output_script() -> std::vector<std::uint8_t>
@@ -264,7 +264,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 		script_->write<std::int8_t>(static_cast<std::int8_t>(std::stol(inst->data[0])));
 		break;
 	case opcode::OP_GetUnsignedShort:
-	case opcode::OP_waittillmatch:// SH1 seems remove placeholder
+	case opcode::OP_waittillmatch:// S1 seems remove placeholder
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		script_->write<std::uint16_t>(static_cast<std::uint16_t>(std::stol(inst->data[0])));
 		break;
@@ -294,7 +294,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		script_->write<float>(std::stof(inst->data[0]));
 		break;
-	case opcode::OP_GetVector: // SH1 total size is 4. op + 3 bytes !!!
+	case opcode::OP_GetVector: // S1 total size is 4. op + 3 bytes !!!
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 		script_->write<float>(std::stof(inst->data[0]));
 		script_->write<float>(std::stof(inst->data[1]));
@@ -355,12 +355,12 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 	case opcode::OP_GetString:
 	case opcode::OP_GetIString:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::uint8_t>(0); // SH1: 1 bytes placeholder
+		script_->write<std::uint8_t>(0); // S1: 1 bytes placeholder
 		stack_->write_c_string(utils::string::get_string_literal(inst->data[0]));
 		break;
 	case opcode::OP_GetAnimation:
 		script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-		script_->write<std::uint16_t>(0); // SH1: 2 byte placeholder
+		script_->write<std::uint16_t>(0); // S1: 2 byte placeholder
 		stack_->write_c_string(utils::string::get_string_literal(inst->data[0]));
 		stack_->write_c_string(utils::string::get_string_literal(inst->data[1]));
 		break;
@@ -613,4 +613,4 @@ auto assembler::resolve_label(const gsc::instruction_ptr& inst, const std::strin
 	return 0;
 }
 
-}  // namespace SH1
+}  // namespace S1

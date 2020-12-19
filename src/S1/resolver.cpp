@@ -3,9 +3,9 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include "SH1.hpp"
+#include "S1.hpp"
 
-namespace SH1
+namespace S1
 {
 
 auto resolver::opcode_id(const std::string& name) -> opcode
@@ -319,4 +319,4 @@ std::unordered_map <std::string, std::uint16_t> resolver::token_map
 
 };
 
-} // namespace SH1
+} // namespace S1

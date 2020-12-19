@@ -3,10 +3,10 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_SH1_DISASSEMBLER_HPP_
-#define _GSC_SH1_DISASSEMBLER_HPP_
+#ifndef _GSC_S1_DISASSEMBLER_HPP_
+#define _GSC_S1_DISASSEMBLER_HPP_
 
-namespace SH1
+namespace S1
 {
 
 class disassembler : public gsc::disassembler
@@ -41,6 +41,6 @@ private:
 	void print_label(const std::string& label);
 };
 
-} // namespace SH1
+} // namespace S1
 
-#endif // _GSC_SH1_DISASSEMBLER_HPP_
+#endif // _GSC_S1_DISASSEMBLER_HPP_

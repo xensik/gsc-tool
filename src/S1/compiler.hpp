@@ -3,10 +3,10 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_SH1_COMPILER_HPP_
-#define _GSC_SH1_COMPILER_HPP_
+#ifndef _GSC_S1_COMPILER_HPP_
+#define _GSC_S1_COMPILER_HPP_
 
-namespace SH1
+namespace S1
 {
 
 class compiler : public gsc::compiler
@@ -16,6 +16,6 @@ public:
 	void compile(std::vector<std::uint8_t>& data);
 };
 
-} // namespace SH1
+} // namespace S1
 
-#endif // _GSC_SH1_COMPILER_HPP_
+#endif // _GSC_S1_COMPILER_HPP_

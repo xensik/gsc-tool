@@ -3,9 +3,9 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include "SH1.hpp"
+#include "S1.hpp"
 
-namespace SH1
+namespace S1
 {
 
 auto decompiler::output() -> std::vector<std::uint8_t>
@@ -17,7 +17,7 @@ auto decompiler::output() -> std::vector<std::uint8_t>
 
 void decompiler::decompile(std::vector<gsc::function_ptr>& functions)
 {
-	LOG_ERROR("SH1 decompiler not implemented!");
+	LOG_ERROR("S1 decompiler not implemented!");
 }
 
-} // namespace SH1
+} // namespace S1

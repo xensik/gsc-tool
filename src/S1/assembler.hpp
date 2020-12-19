@@ -3,10 +3,10 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_SH1_ASSEMBLER_HPP_
-#define _GSC_SH1_ASSEMBLER_HPP_
+#ifndef _GSC_S1_ASSEMBLER_HPP_
+#define _GSC_S1_ASSEMBLER_HPP_
 
-namespace SH1
+namespace S1
 {
 
 class assembler : public gsc::assembler
@@ -37,6 +37,6 @@ private:
 	auto resolve_label(const gsc::instruction_ptr& inst, const std::string& name) -> std::uint32_t;
 };
 
-} // namespace SH1
+} // namespace S1
 
-#endif // _GSC_SH1_ASSEMBLER_HPP_
+#endif // _GSC_S1_ASSEMBLER_HPP_

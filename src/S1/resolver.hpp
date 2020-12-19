@@ -3,10 +3,10 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#ifndef _GSC_SH1_RESOLVER_HPP_
-#define _GSC_SH1_RESOLVER_HPP_
+#ifndef _GSC_S1_RESOLVER_HPP_
+#define _GSC_S1_RESOLVER_HPP_
 
-namespace SH1
+namespace S1
 {
 
 enum class opcode : std::uint8_t;
@@ -36,6 +36,6 @@ public:
     static auto token_name(std::uint16_t id) -> std::string;
 };
 
-} // namespace SH1
+} // namespace S1
 
-#endif // _GSC_SH1_RESOLVER_HPP_
+#endif // _GSC_S1_RESOLVER_HPP_
