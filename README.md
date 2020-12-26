@@ -4,12 +4,13 @@ A utility to compile & decompile IW engine game scripts.
 - **IW5** *(Call of Duty: Modern Warfare 3)*
 - **IW6** *(Call of Duty: Ghosts)*
 - **S1** *(Call of Duty: Advanced Warfare)* ***\*WIP\****
+- **S2** *(Call of Duty: WWII)* ***\*WIP\****
 - **H1** *(Call of Duty: Modern Warfare Remastered)* ***\*WIP\****
 - **H2** *(Call of Duty: Modern Warfare 2 Campaign Remastered)* ***\*WIP\****
 ## Usage
 ``./gsc-tool.exe <game> <mode> <file>``
 
-**game**: `-iw5`, `-iw6`, `-s1`, `-h1`, `-h2`
+**game**: `-iw5`, `-iw6`, `-s1`, `-s2`, `-h1`, `-h2`
 | Mode     |Description              | Output      |
 |:---------|:------------------------|:------------|
 |`-asm`    |assemble a `file.gscasm` |`file.xgsc`  |

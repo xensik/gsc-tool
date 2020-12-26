@@ -26,6 +26,7 @@ enum class game
     IW5,
     IW6,
     S1,
+    S2,
     H1,
     H2,
 
