@@ -45,7 +45,7 @@ void assemble_file(gsc::assembler& assembler, std::string file)
 
     assembler.assemble(data);
 
-    if (overwrite_prompt(file + ".xgsc"))
+    if (overwrite_prompt(file + ".gscbin"))
     {
         gsc::asset script;
 
@@ -60,13 +60,13 @@ void assemble_file(gsc::assembler& assembler, std::string file)
         script.bytecodeLen = script.bytecode.size();
 
         auto output = script.serialize();
-        utils::file::save(file + ".xgsc", output);
+        utils::file::save(file + ".gscbin", output);
     }
 }
 
 void disassemble_file(gsc::disassembler& disassembler, std::string file)
 {
-    const auto ext = std::string(".xgsc");
+    const auto ext = std::string(".gscbin");
     const auto extpos = file.find(ext);
     
     if (extpos != std::string::npos)
@@ -74,7 +74,7 @@ void disassemble_file(gsc::disassembler& disassembler, std::string file)
         file.replace(extpos, ext.length(), "");
     }
 
-    auto data = utils::file::read(file + ".xgsc");
+    auto data = utils::file::read(file + ".gscbin");
 
     gsc::asset script;
 
@@ -105,7 +105,7 @@ void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::strin
 
     assembler.assemble(assembly);
 
-    if (overwrite_prompt(file + ".xgsc"))
+    if (overwrite_prompt(file + ".gscbin"))
     {
         gsc::asset script;
 
@@ -120,13 +120,13 @@ void compile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::strin
         script.bytecodeLen = script.bytecode.size();
 
         auto output = script.serialize();
-        utils::file::save(file + ".xgsc", output);
+        utils::file::save(file + ".gscbin", output);
     }
 }
 
 void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler, std::string file)
 {
-    const auto ext = std::string(".xgsc");
+    const auto ext = std::string(".gscbin");
     const auto extpos = file.find(ext);
     
     if (extpos != std::string::npos)
@@ -134,7 +134,7 @@ void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler
         file.replace(extpos, ext.length(), "");
     }
 
-    auto data = utils::file::read(file + ".xgsc");
+    auto data = utils::file::read(file + ".gscbin");
 
     gsc::asset script;
 
