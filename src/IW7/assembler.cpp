@@ -142,7 +142,7 @@ void assembler::assemble_function(const gsc::function_ptr& func)
     stack_->write<std::uint32_t>(func->size);
 
     func->id = func->name.substr(0, 3) == "_ID" ? std::stoul(func->name.substr(3)) : resolver::token_id(func->name);
-    stack_->write<std::uint16_t>(func->id);
+    stack_->write<std::uint32_t>(func->id);
 
     if (func->id == 0)
     {
@@ -441,8 +441,8 @@ void assembler::assemble_far_call(const gsc::instruction_ptr& inst, bool thread)
     script_->write<std::uint8_t>(0);
     script_->write<std::uint16_t>(0);
 
-    std::uint16_t file_id = 0;
-    std::uint16_t func_id = 0;
+    std::uint32_t file_id = 0;
+    std::uint32_t func_id = 0;
 
     if (thread)
     {
@@ -457,9 +457,9 @@ void assembler::assemble_far_call(const gsc::instruction_ptr& inst, bool thread)
         func_id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::token_id(inst->data[1]);
     }
 
-    stack_->write<std::uint16_t>(file_id);
+    stack_->write<std::uint32_t>(file_id);
     if (file_id == 0) stack_->write_c_string(thread ? inst->data[1] : inst->data[0]);
-    stack_->write<std::uint16_t>(func_id);
+    stack_->write<std::uint32_t>(func_id);
     if (func_id == 0) stack_->write_c_string(thread ? inst->data[2] : inst->data[1]);
 }
 
@@ -525,11 +525,11 @@ void assembler::assemble_field_variable(const gsc::instruction_ptr& inst)
 {
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
-    std::uint16_t field_id = 0;
+    std::uint32_t field_id = 0;
 
     if (inst->data[0].substr(0, 3) == "_ID")
     {
-        field_id = (std::uint16_t)std::stol(inst->data[0].substr(3));
+        field_id = std::stoul(inst->data[0].substr(3));
     }
     else
     {
@@ -541,11 +541,11 @@ void assembler::assemble_field_variable(const gsc::instruction_ptr& inst)
         }
     }
 
-    script_->write<std::uint16_t>(field_id);
+    script_->write<std::uint32_t>(field_id);
 
     if (field_id > 0x13FCC)
     {
-        stack_->write<std::uint16_t>(0);
+        stack_->write<std::uint32_t>(0);
         stack_->write_c_string(inst->data[0]);
     }
 }

@@ -121,18 +121,6 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_CallBuiltinMethod3:
     case opcode::OP_CallBuiltinMethod4:
     case opcode::OP_CallBuiltinMethod5:
-    case opcode::OP_EvalLevelFieldVariable:
-    case opcode::OP_EvalAnimFieldVariable:
-    case opcode::OP_EvalSelfFieldVariable:
-    case opcode::OP_EvalFieldVariable:
-    case opcode::OP_EvalLevelFieldVariableRef:
-    case opcode::OP_EvalAnimFieldVariableRef:
-    case opcode::OP_EvalSelfFieldVariableRef:
-    case opcode::OP_EvalFieldVariableRef:
-    case opcode::OP_ClearFieldVariable:
-    case opcode::OP_SetLevelFieldVariableField:
-    case opcode::OP_SetAnimFieldVariableField:
-    case opcode::OP_SetSelfFieldVariableField:
         return 3;
     case opcode::OP_GetLocalFunction:
     case opcode::OP_GetFarFunction:
@@ -157,6 +145,18 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_ScriptLocalMethodChildThreadCall:
     case opcode::OP_ScriptFarThreadCall:
     case opcode::OP_ScriptFarMethodThreadCall:
+    case opcode::OP_EvalLevelFieldVariable:
+    case opcode::OP_EvalAnimFieldVariable:
+    case opcode::OP_EvalSelfFieldVariable:
+    case opcode::OP_EvalFieldVariable:
+    case opcode::OP_EvalLevelFieldVariableRef:
+    case opcode::OP_EvalAnimFieldVariableRef:
+    case opcode::OP_EvalSelfFieldVariableRef:
+    case opcode::OP_EvalFieldVariableRef:
+    case opcode::OP_ClearFieldVariable:
+    case opcode::OP_SetLevelFieldVariableField:
+    case opcode::OP_SetAnimFieldVariableField:
+    case opcode::OP_SetSelfFieldVariableField:
         return 5;
     case opcode::OP_GetAnimation:
         return 9;

@@ -89,7 +89,7 @@ auto resolver::builtin_method_name(std::uint16_t id) -> std::string
     return utils::string::va("_ID%i", id);
 }
 
-auto resolver::file_id(const std::string& name) -> std::uint16_t
+auto resolver::file_id(const std::string& name) -> std::uint32_t
 {
     for (auto& file : file_map)
     {
@@ -102,7 +102,7 @@ auto resolver::file_id(const std::string& name) -> std::uint16_t
     return 0;
 }
 
-auto resolver::file_name(std::uint16_t id) -> std::string
+auto resolver::file_name(std::uint32_t id) -> std::string
 {
     const auto itr = file_map.find(id);
 
@@ -115,7 +115,7 @@ auto resolver::file_name(std::uint16_t id) -> std::string
     return utils::string::va("_ID%i", id);
 }
 
-auto resolver::token_id(const std::string& name) -> std::uint16_t
+auto resolver::token_id(const std::string& name) -> std::uint32_t
 {
     for (auto& token : token_map)
     {
@@ -128,7 +128,7 @@ auto resolver::token_id(const std::string& name) -> std::uint16_t
     return 0;
 }
 
-auto resolver::token_name(std::uint16_t id) -> std::string
+auto resolver::token_name(std::uint32_t id) -> std::string
 {
     const auto itr = token_map.find(id);
 
@@ -322,11 +322,11 @@ std::unordered_map<std::uint16_t, std::string> resolver::builtin_method_map
 {
 };
 
-std::unordered_map<std::uint16_t, std::string> resolver::file_map
+std::unordered_map<std::uint32_t, std::string> resolver::file_map
 {
 };
 
-std::unordered_map<std::uint16_t, std::string> resolver::token_map
+std::unordered_map<std::uint32_t, std::string> resolver::token_map
 {
 };
 
