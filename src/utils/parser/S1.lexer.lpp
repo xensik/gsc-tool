@@ -1,0 +1,131 @@
+/* Copyright 2020 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
+*/
+
+%option outfile="./S1/compiler_lexer.cpp"
+%option header-file="./S1/compiler_lexer.hpp"
+%option reentrant
+%option noyywrap batch nounput noinput
+%option never-interactive
+%option nounistd
+
+%{
+#include "S1.hpp"
+#include "compiler_parser.hpp"
+%}
+
+RGX_FILEPATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
+RGX_IDENTIFIER      [_A-Za-z][_A-Za-z0-9\-]*
+RGX_STRING          \"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\'
+RGX_FLOAT           -?[0-9]+\.(?:[0-9]*)?f?|\.[0-9]+f?
+RGX_INTEGER         -?[0-9]+
+RGX_DEFAULT         (.|\n)
+
+%x COMMENT_BLOCK_STATE
+%x DEVELOPER_BLOCK_STATE
+
+%%
+
+[ \t\n\r]
+
+"//".*
+
+"/*"                         { BEGIN(COMMENT_BLOCK_STATE); }
+<COMMENT_BLOCK_STATE>(.|\n)
+<COMMENT_BLOCK_STATE>"*/"    { BEGIN(INITIAL); }
+
+"/#"                         { BEGIN(DEVELOPER_BLOCK_STATE); }
+<DEVELOPER_BLOCK_STATE>(.|\n)
+<DEVELOPER_BLOCK_STATE>"#/"  { BEGIN(INITIAL); }
+
+"#include"          { return yy::parser::make_INCLUDE(); }
+"#using_animtree"   { return yy::parser::make_USING_ANIMTREE(); }
+"#animtree"         { return yy::parser::make_ANIMTREE(); }
+"endon"             { return yy::parser::make_ENDON(); }
+"notify"            { return yy::parser::make_NOTIFY(); }
+"wait"              { return yy::parser::make_WAIT(); }
+"waittill"          { return yy::parser::make_WAITTILL(); }
+"waittillmatch"     { return yy::parser::make_WAITTILLMATCH(); }
+"waittillframeend"  { return yy::parser::make_WAITTILLFRAMEEND(); }
+"waitframe"         { return yy::parser::make_WAITFRAME(); }
+"if"                { return yy::parser::make_IF(); }
+"else"              { return yy::parser::make_ELSE(); }
+"while"             { return yy::parser::make_WHILE(); }
+"for"               { return yy::parser::make_FOR(); }
+"foreach"           { return yy::parser::make_FOREACH(); }
+"in"                { return yy::parser::make_IN(); }
+"switch"            { return yy::parser::make_SWITCH(); }
+"case"              { return yy::parser::make_CASE(); }
+"default"           { return yy::parser::make_DEFAULT(); }
+"break"             { return yy::parser::make_BREAK(); }
+"continue"          { return yy::parser::make_CONTINUE(); }
+"return"            { return yy::parser::make_RETURN(); }
+"thread"            { return yy::parser::make_THREAD(); }
+"call"              { return yy::parser::make_CALL(); }
+"true"              { return yy::parser::make_TRUE(); }
+"false"             { return yy::parser::make_FALSE(); }
+"undefined"         { return yy::parser::make_UNDEFINED(); }
+"size"              { return yy::parser::make_SIZE(); }
+"game"              { return yy::parser::make_GAME(); }
+"self"              { return yy::parser::make_SELF(); }
+"anim"              { return yy::parser::make_ANIM(); }
+"level"             { return yy::parser::make_LEVEL(); }
+"[]"                { return yy::parser::make_EMPTY_ARRAY(); }
+\(                  { return yy::parser::make_LPAREN(); }
+\)                  { return yy::parser::make_RPAREN(); }
+\{                  { return yy::parser::make_LBRACE(); }
+\}                  { return yy::parser::make_RBRACE(); }
+\[                  { return yy::parser::make_LBRACKET(); }
+\]                  { return yy::parser::make_RBRACKET(); }
+\,                  { return yy::parser::make_COMMA(); }
+\.                  { return yy::parser::make_DOT(); }
+\:\:                { return yy::parser::make_DOUBLECOLON(); }
+\:                  { return yy::parser::make_COLON(); }
+\;                  { return yy::parser::make_SEMICOLON(); }
+\?                  { return yy::parser::make_QMARK(); }
+\+\+                { return yy::parser::make_INCREMENT(); }
+\-\-                { return yy::parser::make_DECREMENT(); }
+\<\<\=              { return yy::parser::make_ASSIGN_LSHIFT(); }
+\>\>\=              { return yy::parser::make_ASSIGN_RSHIFT(); }
+\<\<                { return yy::parser::make_LSHIFT(); }
+\>\>                { return yy::parser::make_RSHIFT(); }
+\|\|                { return yy::parser::make_OR(); }
+\&\&                { return yy::parser::make_AND(); }
+\=\=                { return yy::parser::make_EQUALITY(); }
+\!\=                { return yy::parser::make_INEQUALITY(); }
+\<\=                { return yy::parser::make_LESS_EQUAL(); }
+\>\=                { return yy::parser::make_GREATER_EQUAL(); }
+\<                  { return yy::parser::make_LESS(); }
+\>                  { return yy::parser::make_GREATER(); }
+\+\=                { return yy::parser::make_ASSIGN_ADD(); }
+\-\=                { return yy::parser::make_ASSIGN_SUB(); }
+\*\=                { return yy::parser::make_ASSIGN_MULT(); }
+\/\=                { return yy::parser::make_ASSIGN_DIV(); }
+\%\=                { return yy::parser::make_ASSIGN_MOD(); }
+\|\=                { return yy::parser::make_ASSIGN_BITWISE_OR(); }
+\&\=                { return yy::parser::make_ASSIGN_BITWISE_AND(); }
+\^\=                { return yy::parser::make_ASSIGN_BITWISE_EXOR(); }
+\=                  { return yy::parser::make_ASSIGN(); }
+\+                  { return yy::parser::make_ADD(); }
+\-                  { return yy::parser::make_SUB(); }
+\*                  { return yy::parser::make_MULT(); }
+\/                  { return yy::parser::make_DIV(); }
+\%                  { return yy::parser::make_MOD(); }
+\!                  { return yy::parser::make_NOT(); }
+\~                  { return yy::parser::make_COMPLEMENT(); }
+\|                  { return yy::parser::make_BITWISE_OR(); }
+\&                  { return yy::parser::make_BITWISE_AND(); }
+\^                  { return yy::parser::make_BITWISE_EXOR(); }
+
+{RGX_FILEPATH}      { return yy::parser::make_FILEPATH(std::string(yytext)); }
+{RGX_IDENTIFIER}    { return yy::parser::make_IDENTIFIER(utils::string::to_lower(yytext)); }
+\&{RGX_STRING}      { return yy::parser::make_STRING_LOC(std::string(yytext)); }
+{RGX_STRING}        { return yy::parser::make_STRING(std::string(yytext)); }
+{RGX_FLOAT}         { return yy::parser::make_FLOAT(std::string(yytext)); }
+{RGX_INTEGER}       { return yy::parser::make_INTEGER(std::string(yytext)); }
+
+<<EOF>>             { return yy::parser::make_YYEOF(); }
+<*>{RGX_DEFAULT}    { throw yy::parser::syntax_error("invalid character: " + std::string(yytext)); }
+%%
