@@ -61,7 +61,7 @@ void disassembler::disassemble(std::vector<std::uint8_t>& script, std::vector<st
         func->index = static_cast<std::uint32_t>(script_->pos());
         func->size = stack_->read<std::uint32_t>();
         func->id = stack_->read<std::uint16_t>();
-        func->name = "sub_"s + (func->id == 0 ? stack_->read_string() : resolver::token_name(func->id));
+        func->name = "sub_"s + (func->id == 0 ? stack_->read_c_string() : resolver::token_name(func->id));
 
         this->dissasemble_function(func);
 
@@ -176,16 +176,16 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_GetString:
     case opcode::OP_GetIString:
         script_->seek(4);
-        inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
+        inst->data.push_back(utils::string::va("\"%s\"", stack_->read_c_string().data()));
         break;
     case opcode::OP_GetAnimation:
         script_->seek(8);
-        inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
-        inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
+        inst->data.push_back(utils::string::va("\"%s\"", stack_->read_c_string().data()));
+        inst->data.push_back(utils::string::va("\"%s\"", stack_->read_c_string().data()));
         break;
     case opcode::OP_GetAnimTree:
         script_->seek(1);
-        inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
+        inst->data.push_back(utils::string::va("\"%s\"", stack_->read_c_string().data()));
         break;
 // WAITTILLMATCH
     case opcode::OP_waittillmatch:
@@ -362,9 +362,9 @@ void disassembler::disassemble_far_call(const gsc::instruction_ptr& inst, bool t
     }
 
     auto file_id = stack_->read<std::uint16_t>();
-    auto file_name = file_id == 0 ? stack_->read_string() : resolver::file_name(file_id);
+    auto file_name = file_id == 0 ? stack_->read_c_string() : resolver::file_name(file_id);
     auto func_id = stack_->read<std::uint16_t>();
-    auto func_name = func_id == 0 ? stack_->read_string() : resolver::token_name(func_id);
+    auto func_name = func_id == 0 ? stack_->read_c_string() : resolver::token_name(func_id);
 
     inst->data.push_back(file_name != "" ? file_name : utils::string::va("_ID%i", file_id));
     inst->data.push_back(func_name != "" ? func_name : utils::string::va("_ID%i", func_id));
@@ -400,7 +400,17 @@ void disassembler::disassemble_jump(const gsc::instruction_ptr& inst, bool expr,
 void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
 {
     std::uint16_t field_id = script_->read<std::uint16_t>();
-    std::string field_name = field_id > 0xACEE ? stack_->read_opaque_string() : resolver::token_name(field_id);
+    std::string field_name;
+
+    if(field_id > 0xACEE)
+    {   
+        auto temp = stack_->read<std::uint32_t>();
+        field_name = temp == 0 ? stack_->read_c_string() : std::to_string(temp);
+    }
+    else
+    {
+        field_name = resolver::token_name(field_id);
+    }
 
     inst->data.push_back(field_name != "" ? field_name : utils::string::va("_ID%i", field_id));
 }
@@ -430,7 +440,7 @@ void disassembler::disassemble_end_switch(const gsc::instruction_ptr& inst)
             if (case_label < 0x10000 && case_label > 0)
             {
                 inst->data.push_back("case");
-                inst->data.push_back(utils::string::va("\"%s\"", stack_->read_string().data()));
+                inst->data.push_back(utils::string::va("\"%s\"", stack_->read_c_string().data()));
             }
             else if (case_label < 0x40000)
             {

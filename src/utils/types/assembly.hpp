@@ -25,7 +25,7 @@ struct function
 {
     std::uint32_t index;
     std::uint32_t size;
-    std::uint16_t id;
+    std::uint32_t id;
     std::string name;
     std::vector<instruction_ptr> instructions;
     std::unordered_map<std::uint32_t, std::string> labels;
