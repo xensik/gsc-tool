@@ -77,7 +77,6 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_ClearLocalVariableFieldCached0:
     case opcode::OP_EvalLocalArrayRefCached0:
         return 1;
-        break;
     case opcode::OP_GetByte:
     case opcode::OP_GetNegByte:
     case opcode::OP_GetAnimTree:
@@ -99,7 +98,6 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_EvalLocalVariableObjectCached:
     case opcode::OP_EvalNewLocalArrayRefCached0:
         return 2;
-        break;
     case opcode::OP_GetUnsignedShort:
     case opcode::OP_GetNegUnsignedShort:
     case opcode::OP_endswitch:
@@ -136,7 +134,6 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_SetAnimFieldVariableField:
     case opcode::OP_SetSelfFieldVariableField:
         return 3;
-        break;
     case opcode::OP_GetLocalFunction:
     case opcode::OP_GetFarFunction:
     case opcode::OP_CallBuiltin:
@@ -148,7 +145,6 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_ScriptFarFunctionCall:
     case opcode::OP_ScriptFarMethodCall:
         return 4;
-        break;
     case opcode::OP_GetInteger:
     case opcode::OP_GetFloat:
     case opcode::OP_GetString:
@@ -162,13 +158,10 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_ScriptFarThreadCall:
     case opcode::OP_ScriptFarMethodThreadCall:
         return 5;
-        break;
     case opcode::OP_GetAnimation:
         return 9;
-        break;
     case opcode::OP_GetVector:
         return 13;
-        break;
     default:
         LOG_ERROR("Couldn't resolve instruction size for 0x%hhX!", id);
         return 0;
