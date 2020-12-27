@@ -30,7 +30,7 @@ enum class opcode : std::uint8_t
     OP_CallBuiltin5 = 0x1F,
     OP_CallBuiltin = 0x20,
     OP_BoolNot = 0x21,
-    OP_ScriptFarMethodThreadCall = 0x22, //+=1, iW6 += 4
+    OP_ScriptFarMethodThreadCall = 0x22,
     OP_JumpOnTrueExpr = 0x23,
     OP_SetLevelFieldVariableField = 0x24,
     OP_CastBool = 0x25,
@@ -43,7 +43,7 @@ enum class opcode : std::uint8_t
     OP_SafeCreateVariableFieldCached = 0x2C,
     OP_ScriptFarFunctionCall2 = 0x2D,
     OP_ScriptFarFunctionCall = 0x2E,
-    OP_ScriptFarChildThreadCall = 0x2F,// +=1, iW6 += 4
+    OP_ScriptFarChildThreadCall = 0x2F,
     OP_ClearLocalVariableFieldCached0 = 0x30,
     OP_ClearLocalVariableFieldCached = 0x31,
     OP_checkclearparams = 0x32,
@@ -58,11 +58,11 @@ enum class opcode : std::uint8_t
     OP_endswitch = 0x3B,
     OP_ClearVariableField = 0x3C,
     OP_divide = 0x3D,
-    OP_ScriptFarMethodChildThreadCall = 0x3E,// +=1, iW6 += 4
+    OP_ScriptFarMethodChildThreadCall = 0x3E,
     OP_GetUnsignedShort = 0x3F,
     OP_JumpOnTrue = 0x40,
     OP_GetSelf = 0x41,
-    OP_ScriptFarThreadCall = 0x42, //+=1, iW6 += 4
+    OP_ScriptFarThreadCall = 0x42,
     OP_ScriptLocalThreadCall = 0x43,
     OP_SetLocalVariableFieldCached0 = 0x44,
     OP_SetLocalVariableFieldCached = 0x45,
@@ -79,10 +79,10 @@ enum class opcode : std::uint8_t
     OP_ScriptLocalMethodCall = 0x50,
     OP_EvalFieldVariable = 0x51,
     OP_EvalFieldVariableRef = 0x52,
-    OP_GetString = 0x53, // += 1, IW6 += 4
+    OP_GetString = 0x53,
     OP_ScriptFunctionCallPointer = 0x54,
     OP_EvalLevelFieldVariable = 0x55,
-    OP_GetVector = 0x56, // +=3, is += 12 on IW6!!!!
+    OP_GetVector = 0x56,
     OP_endon = 0x57,
     OP_greater_equal = 0x58,
     OP_GetSelfObject = 0x59,
@@ -95,7 +95,7 @@ enum class opcode : std::uint8_t
     OP_GetFarFunction = 0x60,
     OP_less = 0x61,
     OP_GetGameRef = 0x62,
-    OP_waitFrame = 0x63, // new OP
+    OP_waitFrame = 0x63,
     OP_waittillFrameEnd = 0x64,
     OP_SafeSetVariableFieldCached0 = 0x65,
     OP_SafeSetVariableFieldCached = 0x66,
@@ -143,10 +143,10 @@ enum class opcode : std::uint8_t
     OP_equality = 0x90,
     OP_ClearArray = 0x91,
     OP_jumpback = 0x92,
-    OP_GetAnimation = 0x93,// += 2, IW6 is +=8
+    OP_GetAnimation = 0x93,
     OP_EvalAnimFieldVariable = 0x94,
     OP_GetAnimTree = 0x95,
-    OP_GetIString = 0x96, // += 1, IW6 += 4
+    OP_GetIString = 0x96,
     OP_EvalArrayRef = 0x97,
     OP_EvalSelfFieldVariableRef = 0x98,
     OP_GetNegByte = 0x99,
