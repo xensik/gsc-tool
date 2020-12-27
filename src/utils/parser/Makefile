@@ -3,6 +3,7 @@ generate: IW6
 clean:
 	rm -rf ./IW5
 	rm -rf ./IW6
+	rm -rf ./IW7
 	rm -rf ./S1
 	rm -rf ./S2
 	rm -rf ./H1
@@ -13,6 +14,9 @@ copy-IW5:
 
 copy-IW6:
 	mv -f ./IW6/* ../../IW6/
+
+copy-IW7:
+	mv -f ./IW7/* ../../IW7/
 
 copy-S1:
 	mv -f ./S1/* ../../S1/
@@ -37,6 +41,12 @@ IW6: IW6.lexer.lpp IW6.parser.ypp
 	flex IW6.lexer.lpp
 	bison IW6.parser.ypp
 	touch ./IW6
+
+IW7: IW7.lexer.lpp IW7.parser.ypp
+	mkdir -p ./IW7
+	flex IW7.lexer.lpp
+	bison IW7.parser.ypp
+	touch ./IW7
 
 S1: S1.lexer.lpp S1.parser.ypp
 	mkdir -p ./S1

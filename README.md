@@ -3,6 +3,7 @@ A utility to compile & decompile IW engine game scripts.
 ## Supported Games 
 - **IW5** *(Call of Duty: Modern Warfare 3)*
 - **IW6** *(Call of Duty: Ghosts)*
+- **IW7** *(Call of Duty: Infinite Warfare)*
 - **S1** *(Call of Duty: Advanced Warfare)*
 - **S2** *(Call of Duty: WWII)*
 - **H1** *(Call of Duty: Modern Warfare Remastered)*
