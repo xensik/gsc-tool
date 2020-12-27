@@ -10,6 +10,9 @@
 #include <IW5.hpp>
 #include <IW6.hpp>
 #include <S1.hpp>
+#include <S2.hpp>
+#include <H1.hpp>
+#include <H2.hpp>
 
 enum class mode
 {

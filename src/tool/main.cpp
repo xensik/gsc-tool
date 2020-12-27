@@ -169,6 +169,18 @@ int parse_flags(int argc, char** argv, game& game, mode& mode)
     {
         game = game::S1;
     }
+    else if (arg == "-s2")
+    {
+        game = game::S2;
+    }
+    else if (arg == "-h1")
+    {
+        game = game::H1;
+    }
+    else if (arg == "-h2")
+    {
+        game = game::H2;
+    }
     else
     {
         printf("Unknown game \"%s\".\n", argv[1]);
@@ -211,8 +223,8 @@ int main(int argc, char** argv)
     if (parse_flags(argc, argv, game, mode))
     {
         printf("usage: gsc-tool.exe <game> <mode> <file>\n");
-        printf("	- games: -iw5, -iw6, -sh1\n");
-        printf("	- modes: -asm, -disasm, -comp, -decomp\n");
+        printf("	* games: -iw5, -iw6, -s1, -s2, -h1, -h2\n");
+        printf("	* modes: -asm, -disasm, -comp, -decomp\n");
         return 0;
     }
 
@@ -233,6 +245,21 @@ int main(int argc, char** argv)
             S1::assembler assembler;
             assemble_file(assembler, file);
         }
+        else if (game == game::S2)
+        {
+            S2::assembler assembler;
+            assemble_file(assembler, file);
+        }
+        else if (game == game::H1)
+        {
+            H1::assembler assembler;
+            assemble_file(assembler, file);
+        }
+        else if (game == game::H2)
+        {
+            H2::assembler assembler;
+            assemble_file(assembler, file);
+        }
     }
     else if (mode == mode::DISASM)
     {
@@ -251,6 +278,21 @@ int main(int argc, char** argv)
             S1::disassembler disassembler;
             disassemble_file(disassembler, file);
         }
+        else if (game == game::S2)
+        {
+            S2::disassembler disassembler;
+            disassemble_file(disassembler, file);
+        }
+        else if (game == game::H1)
+        {
+            H1::disassembler disassembler;
+            disassemble_file(disassembler, file);
+        }
+        else if (game == game::H2)
+        {
+            H2::disassembler disassembler;
+            disassemble_file(disassembler, file);
+        }
     }
     else if (mode == mode::COMP)
     {
@@ -266,10 +308,28 @@ int main(int argc, char** argv)
             IW6::compiler compiler;
             compile_file(assembler, compiler, file);
         }
-        if (game == game::S1)
+        else if (game == game::S1)
         {
             S1::assembler assembler;
             S1::compiler compiler;
+            compile_file(assembler, compiler, file);
+        }
+        else if (game == game::S2)
+        {
+            S2::assembler assembler;
+            S2::compiler compiler;
+            compile_file(assembler, compiler, file);
+        }
+        else if (game == game::H1)
+        {
+            H1::assembler assembler;
+            H1::compiler compiler;
+            compile_file(assembler, compiler, file);
+        }
+        else if (game == game::H2)
+        {
+            H2::assembler assembler;
+            H2::compiler compiler;
             compile_file(assembler, compiler, file);
         }
     }
@@ -287,10 +347,28 @@ int main(int argc, char** argv)
             IW6::decompiler decompiler;
             decompile_file(disassembler, decompiler, file);
         }
-        if (game == game::S1)
+        else if (game == game::S1)
         {
             S1::disassembler disassembler;
             S1::decompiler decompiler;
+            decompile_file(disassembler, decompiler, file);
+        }
+        else if (game == game::S2)
+        {
+            S2::disassembler disassembler;
+            S2::decompiler decompiler;
+            decompile_file(disassembler, decompiler, file);
+        }
+        else if (game == game::H1)
+        {
+            H1::disassembler disassembler;
+            H1::decompiler decompiler;
+            decompile_file(disassembler, decompiler, file);
+        }
+        else if (game == game::H2)
+        {
+            H2::disassembler disassembler;
+            H2::decompiler decompiler;
             decompile_file(disassembler, decompiler, file);
         }
     }
