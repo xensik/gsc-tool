@@ -400,7 +400,7 @@ void disassembler::disassemble_jump(const gsc::instruction_ptr& inst, bool expr,
 void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
 {
     std::uint16_t field_id = script_->read<std::uint16_t>();
-    std::string field_name = field_id > 0xACEE ? stack_->read_opaque_string() : resolver::token_name(field_id);
+    std::string field_name = field_id > 0xA7ED ? stack_->read_opaque_string() : resolver::token_name(field_id);
 
     inst->data.push_back(field_name != "" ? field_name : utils::string::va("_ID%i", field_id));
 }

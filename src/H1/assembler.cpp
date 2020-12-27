@@ -544,7 +544,7 @@ void assembler::assemble_field_variable(const gsc::instruction_ptr& inst)
 
     script_->write<std::uint16_t>(field_id);
 
-    if (field_id > 0xACEE)
+    if (field_id > 0xA7ED)
     {
         stack_->write<std::uint16_t>(0);
         stack_->write_c_string(inst->data[0]);
