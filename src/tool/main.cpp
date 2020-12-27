@@ -165,6 +165,10 @@ int parse_flags(int argc, char** argv, game& game, mode& mode)
     {
         game = game::IW6;
     }
+    else if (arg == "-iw7")
+    {
+        game = game::IW7;
+    }
     else if (arg == "-s1")
     {
         game = game::S1;
@@ -240,6 +244,11 @@ int main(int argc, char** argv)
             IW6::assembler assembler;
             assemble_file(assembler, file);
         }
+        else if (game == game::IW7)
+        {
+            IW7::assembler assembler;
+            assemble_file(assembler, file);
+        }
         else if (game == game::S1)
         {
             S1::assembler assembler;
@@ -271,6 +280,11 @@ int main(int argc, char** argv)
         else if (game == game::IW6)
         {
             IW6::disassembler disassembler;
+            disassemble_file(disassembler, file);
+        }
+        else if (game == game::IW7)
+        {
+            IW7::disassembler disassembler;
             disassemble_file(disassembler, file);
         }
         else if (game == game::S1)
@@ -306,6 +320,12 @@ int main(int argc, char** argv)
         {
             IW6::assembler assembler;
             IW6::compiler compiler;
+            compile_file(assembler, compiler, file);
+        }
+        else if (game == game::IW7)
+        {
+            IW7::assembler assembler;
+            IW7::compiler compiler;
             compile_file(assembler, compiler, file);
         }
         else if (game == game::S1)
@@ -345,6 +365,12 @@ int main(int argc, char** argv)
         {
             IW6::disassembler disassembler;
             IW6::decompiler decompiler;
+            decompile_file(disassembler, decompiler, file);
+        }
+        else if (game == game::IW7)
+        {
+            IW7::disassembler disassembler;
+            IW7::decompiler decompiler;
             decompile_file(disassembler, decompiler, file);
         }
         else if (game == game::S1)

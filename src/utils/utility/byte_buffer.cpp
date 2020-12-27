@@ -90,28 +90,11 @@ void byte_buffer::write_c_string(const std::string& data)
     pos_ += data.size() + 1;
 }
 
-void byte_buffer::write_opaque_string(std::uint16_t id, const std::string& data)
-{
-    // TODO
-}
-
-auto byte_buffer::read_string() -> std::string
+auto byte_buffer::read_c_string() -> std::string
 {
     auto ret = std::string(reinterpret_cast<const char*>(data_.data() + pos_));
     pos_ += ret.size() + 1;
     return ret;
-}
-
-auto byte_buffer::read_opaque_string() -> std::string
-{
-    auto temp = this->read<std::uint16_t>();
-
-    if (!temp)
-    {
-        return this->read_string();
-    }
-
-    return std::to_string(temp);
 }
 
 auto byte_buffer::print_bytes(std::size_t pos, std::size_t count) -> std::string

@@ -9,6 +9,7 @@
 #include <utils.hpp>
 #include <IW5.hpp>
 #include <IW6.hpp>
+#include <IW7.hpp>
 #include <S1.hpp>
 #include <S2.hpp>
 #include <H1.hpp>
@@ -28,6 +29,7 @@ enum class game
     __,
     IW5,
     IW6,
+    IW7,
     S1,
     S2,
     H1,

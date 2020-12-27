@@ -3,9 +3,9 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include "IW6.hpp"
+#include "IW7.hpp"
 
-namespace IW6
+namespace IW7
 {
 
 auto disassembler::output() -> std::vector<gsc::function_ptr>
@@ -17,7 +17,7 @@ auto disassembler::output_data() -> std::vector<std::uint8_t>
 {
     output_ = std::make_unique<utils::byte_buffer>(0x100000);
 
-    output_->write_string("// IW6 PC GSCASM\n");
+    output_->write_string("// IW7 PC GSCASM\n");
     output_->write_string("// Disassembled by https://github.com/xensik/gsc-tool\n");
 
     for (auto& func : functions_)
@@ -60,7 +60,7 @@ void disassembler::disassemble(std::vector<std::uint8_t>& script, std::vector<st
 
         func->index = static_cast<std::uint32_t>(script_->pos());
         func->size = stack_->read<std::uint32_t>();
-        func->id = stack_->read<std::uint16_t>();
+        func->id = stack_->read<std::uint32_t>();
         func->name = "sub_"s + (func->id == 0 ? stack_->read_c_string() : resolver::token_name(func->id));
 
         this->dissasemble_function(func);
@@ -359,9 +359,9 @@ void disassembler::disassemble_far_call(const gsc::instruction_ptr& inst, bool t
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
     }
 
-    auto file_id = stack_->read<std::uint16_t>();
+    auto file_id = stack_->read<std::uint32_t>();
     auto file_name = file_id == 0 ? stack_->read_c_string() : resolver::file_name(file_id);
-    auto func_id = stack_->read<std::uint16_t>();
+    auto func_id = stack_->read<std::uint32_t>();
     auto func_name = func_id == 0 ? stack_->read_c_string() : resolver::token_name(func_id);
 
     inst->data.push_back(file_name != "" ? file_name : utils::string::va("_ID%i", file_id));
@@ -397,12 +397,12 @@ void disassembler::disassemble_jump(const gsc::instruction_ptr& inst, bool expr,
 
 void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
 {
-    std::uint16_t field_id = script_->read<std::uint16_t>();
+    std::uint32_t field_id = script_->read<std::uint32_t>();
     std::string field_name;
 
-    if(field_id > 38305)
+    if(field_id > 0x13FCC)
     {   
-        auto temp = stack_->read<std::uint16_t>();
+        auto temp = stack_->read<std::uint32_t>();
         field_name = temp == 0 ? stack_->read_c_string() : std::to_string(temp);
     }
     else
@@ -594,4 +594,4 @@ void disassembler::print_label(const std::string& label)
     output_->write_string(utils::string::va("\t%s\n", label.data()));
 }
 
-} // namespace IW6
+} // namespace IW7

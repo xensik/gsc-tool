@@ -3,9 +3,9 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include "IW6.hpp"
+#include "IW7.hpp"
 
-namespace IW6
+namespace IW7
 {
 
 auto decompiler::output() -> std::vector<std::uint8_t>
@@ -13,7 +13,7 @@ auto decompiler::output() -> std::vector<std::uint8_t>
     std::vector<std::uint8_t> output;
 
     auto data = std::make_unique<utils::byte_buffer>(0x100000);
-    data->write_string("// IW6 PC GSC\n// Decompiled by https://github.com/xensik/gsc-tool\n");
+    data->write_string("// IW7 PC GSC\n// Decompiled by https://github.com/xensik/gsc-tool\n");
     data->write_string(script_->print());
 
     output.resize(data->pos());
@@ -1331,16 +1331,15 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             stack_.push(std::move(stmt));
         }
         break;
-        case opcode::OP_waittillmatch: // NEEDS REVISION
+        case opcode::OP_waittillmatch:
         {
             auto obj = gsc::expr_ptr(std::move(stack_.top()));
             stack_.pop();
             auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
             stack_.pop();
-            auto rvalue = gsc::expr_ptr(std::make_unique<gsc::node>()/*std::move(stack_.top())*/);
-            //stack_.pop();
-            
-            location = lvalue.as_node->location;
+            auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
+            stack_.pop();
+            location = rvalue.as_node->location;
             auto stmt = std::make_unique<gsc::node_stmt_waittillmatch>(location, std::move(obj), std::move(lvalue), std::move(rvalue));
             stack_.push(std::move(stmt));
         }
@@ -2475,9 +2474,9 @@ auto decompiler::last_location_index(const gsc::block_ptr& block, std::uint32_t 
 std::vector<std::string> unhandled =
 {
     // bots.gsc
-    "sub__ID5803", // infinite loop create var before
-    //"sub__ID5804", // local vars problem remove?
-    "sub__ID24514", //_damage
+    "sub_id#5803", // infinite loop create var before
+    //"sub_id#5804", // local vars problem remove?
+    "sub_id#24514", //_damage
 };
 
 auto decompiler::unhandled_function(const std::string& function) -> bool
@@ -2488,4 +2487,4 @@ auto decompiler::unhandled_function(const std::string& function) -> bool
     return false;
 }
 
-} // namespace IW6
+} // namespace IW7

@@ -47,9 +47,7 @@ public:
     void seek_neg(std::size_t pos);
     void write_string(const std::string& data);
     void write_c_string(const std::string& data);
-    void write_opaque_string(std::uint16_t id, const std::string& data = nullptr);
-    auto read_string() -> std::string;
-    auto read_opaque_string() -> std::string;
+    auto read_c_string() -> std::string;
     auto print_bytes(std::size_t pos, std::size_t count) -> std::string;
     auto pos() -> std::size_t;
     auto buffer() -> std::vector<std::uint8_t>&;
