@@ -8,6 +8,12 @@
 
 #include <utils.hpp>
 
+#include "assembler.hpp"
+#include "disassembler.hpp"
+#include "compiler.hpp"
+#include "decompiler.hpp"
+#include "resolver.hpp"
+
 namespace H2
 {
 
