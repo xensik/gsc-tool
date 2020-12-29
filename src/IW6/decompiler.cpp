@@ -1331,15 +1331,16 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             stack_.push(std::move(stmt));
         }
         break;
-        case opcode::OP_waittillmatch:
+        case opcode::OP_waittillmatch: // NEEDS REVISION
         {
             auto obj = gsc::expr_ptr(std::move(stack_.top()));
             stack_.pop();
             auto lvalue = gsc::expr_ptr(std::move(stack_.top()));
             stack_.pop();
-            auto rvalue = gsc::expr_ptr(std::move(stack_.top()));
-            stack_.pop();
-            location = rvalue.as_node->location;
+            auto rvalue = gsc::expr_ptr(std::make_unique<gsc::node>()/*std::move(stack_.top())*/);
+            //stack_.pop();
+            
+            location = lvalue.as_node->location;
             auto stmt = std::make_unique<gsc::node_stmt_waittillmatch>(location, std::move(obj), std::move(lvalue), std::move(rvalue));
             stack_.push(std::move(stmt));
         }
@@ -2474,9 +2475,9 @@ auto decompiler::last_location_index(const gsc::block_ptr& block, std::uint32_t 
 std::vector<std::string> unhandled =
 {
     // bots.gsc
-    "sub_id#5803", // infinite loop create var before
-    //"sub_id#5804", // local vars problem remove?
-    "sub_id#24514", //_damage
+    "sub__ID5803", // infinite loop create var before
+    //"sub__ID5804", // local vars problem remove?
+    "sub__ID24514", //_damage
 };
 
 auto decompiler::unhandled_function(const std::string& function) -> bool
