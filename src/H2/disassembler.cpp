@@ -404,7 +404,7 @@ void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
 
     if(field_id > 0xD5D7)
     {   
-        auto temp = stack_->read<std::uint32_t>();
+        auto temp = stack_->read<std::uint16_t>();
         field_name = temp == 0 ? stack_->read_c_string() : std::to_string(temp);
     }
     else
