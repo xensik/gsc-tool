@@ -1,36 +1,28 @@
-local _deps_folder = path.getabsolute("deps")
-
-function deps_folder()
-	return path.getrelative(os.getcwd(), _deps_folder)
-end
-
-local _project_folder = path.getabsolute("src")
-
-function project_folder()
-    return path.getrelative(os.getcwd(), _project_folder)
-end
-
-dependencies = { basePath = path.getrelative(os.getcwd(), path.getabsolute("deps")) }
+dependencies = { base = path.getrelative(os.getcwd(), path.getabsolute("deps")) }
+projects = { base = path.getrelative(os.getcwd(), path.getabsolute("src")) }
 
 function dependencies.load()
-	dir = path.join(dependencies.basePath, "*.lua")
-	deps = os.matchfiles(dir)
+    dir = path.join(dependencies.base, "*.lua")
+    deps = os.matchfiles(dir)
 
-	for i, dep in pairs(deps) do
-		dep = dep:gsub(".lua", "")
-		require(dep)
-	end
+    for i, dep in pairs(deps) do
+        dep = dep:gsub(".lua", "")
+        require(dep)
+    end
 end
 
-function dependencies.link()
-	for i, proj in pairs(dependencies) do
-		if type(i) == 'number' then
-			proj.link()
-		end
-	end
+function projects.load()
+    dir = path.join(projects.base, "*.lua")
+    deps = os.matchfiles(dir)
+
+    for i, dep in pairs(deps) do
+        dep = dep:gsub(".lua", "")
+        require(dep)
+    end
 end
 
 dependencies.load()
+projects.load()
 -------------------------------------------------
 workspace "gsc-tool"
 location "./build"
@@ -63,21 +55,9 @@ configuration {}
 startproject "gsc-tool"
 -------------------------------------------------
 group "Dependencies"
-
-include "deps/zlib.lua"
 zlib:project()
 
 group ""
-
-include "src/tool.lua"
-include "src/utils.lua"
-include "src/IW5.lua"
-include "src/IW6.lua"
-include "src/IW7.lua"
-include "src/S1.lua"
-include "src/S2.lua"
-include "src/H1.lua"
-include "src/H2.lua"
 tool:project()
 utils:project()
 IW5:project()

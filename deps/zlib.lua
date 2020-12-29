@@ -1,37 +1,34 @@
-zlib = {}
+zlib = { base = path.join(dependencies.base, "zlib") }
 
 function zlib:include()
-    includedirs { path.join(deps_folder(), "zlib") }
+    includedirs { zlib.base }
 end
 
 function zlib:link()
-    zlib.include()
     links { "zlib" }
+    self:include()
 end
 
 function zlib:project()
-    local folder = path.join(deps_folder(), "zlib");
-
     project "zlib"
-        kind "StaticLib"
-        language "C"
-        
-        zlib.include()
+    kind "StaticLib"
+    language "C"
+    warnings "off"
 
-        files
-        { 
-            path.join(folder, "*.h"),
-            path.join(folder, "*.c")
-        }
-        
-        defines
-        {
-            "_CRT_SECURE_NO_WARNINGS",
-            "_CRT_NONSTDC_NO_DEPRECATE",
-            "_CRT_SECURE_NO_DEPRECATE",
-        }
+    self:include()
 
-        warnings "off"
+    files
+    { 
+        path.join(zlib.base, "*.h"),
+        path.join(zlib.base, "*.c")
+    }
+    
+    defines
+    {
+        "_CRT_SECURE_NO_WARNINGS",
+        "_CRT_NONSTDC_NO_DEPRECATE",
+        "_CRT_SECURE_NO_DEPRECATE",
+    }
 end
 
 table.insert(dependencies, zlib)

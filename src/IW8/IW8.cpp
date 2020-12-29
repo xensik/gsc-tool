@@ -1,4 +1,4 @@
-// Copyright 2020 xensik. All rights reserved.
+// Copyright 2021 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -210,7 +210,7 @@ auto opcode_size(opcode id) -> std::uint32_t
     case opcode::OP_GetVector: // -- 13
         return 13;
     default:
-        LOG_ERROR("Couldn't resolve instruction size for 0x%hhX!", id);
+        GSC_LOG_ERROR("Couldn't resolve instruction size for 0x%hhX!", id);
         return 0;
     }
 }
