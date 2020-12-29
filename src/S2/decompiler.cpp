@@ -1,4 +1,4 @@
-// Copyright 2020 xensik. All rights reserved.
+// Copyright 2021 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -412,7 +412,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             }
             else
             {
-                LOG_ERROR("unknown add array type (could be an array variable name?)");
+                GSC_LOG_ERROR("unknown add array type (could be an array variable name?)");
             }
         }
         break;
@@ -1765,7 +1765,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
         }
         break;
         default:
-            LOG_ERROR("unhandled opcode '%s'!", resolver::opcode_name(opcode(inst->opcode)).data());
+            GSC_LOG_ERROR("unhandled opcode '%s'!", resolver::opcode_name(opcode(inst->opcode)).data());
         break;
         }
     }
@@ -1796,7 +1796,7 @@ void decompiler::decompile_expr()
     }
     else
     {
-        LOG_ERROR("TRIED TO DECOMPILE INVALID JUMP EXPR!");
+        GSC_LOG_ERROR("TRIED TO DECOMPILE INVALID JUMP EXPR!");
     }
 }
 
@@ -2463,7 +2463,7 @@ auto decompiler::find_location_index(const gsc::block_ptr& block, const std::str
         index++;
     }
 
-    LOG_ERROR("LOCATION NOT FOUND! (%s)", location.data());
+    GSC_LOG_ERROR("LOCATION NOT FOUND! (%s)", location.data());
     return 0;
 }
 

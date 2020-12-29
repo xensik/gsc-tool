@@ -1,4 +1,4 @@
-// Copyright 2020 xensik. All rights reserved.
+// Copyright 2021 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -450,6 +450,7 @@ struct node
     std::string location;
 
     node() : type(node_type::null) {}
+    node(node_type type) : type(type) {}
     node(node_type type, const std::string& location) : type(type), location(location) {}
     
     virtual ~node() = default;
@@ -468,6 +469,7 @@ protected:
 
 struct node_level : public node
 {
+    node_level() : node(node_type::level) {}
     node_level(const std::string& location) : node(node_type::level, location) {}
 
     auto print() -> std::string override
@@ -478,6 +480,7 @@ struct node_level : public node
 
 struct node_anim : public node
 {
+    node_anim() : node(node_type::anim) {}
     node_anim(const std::string& location) : node(node_type::anim, location) {}
 
     auto print() -> std::string override
@@ -488,6 +491,7 @@ struct node_anim : public node
 
 struct node_self : public node
 {
+    node_self() : node(node_type::self) {}
     node_self(const std::string& location) : node(node_type::self, location) {}
 
     auto print() -> std::string override
@@ -498,6 +502,7 @@ struct node_self : public node
 
 struct node_game : public node
 {
+    node_game() : node(node_type::game) {}
     node_game(const std::string& location) : node(node_type::game, location) {}
 
     auto print() -> std::string override
@@ -508,6 +513,7 @@ struct node_game : public node
 
 struct node_size : public node
 {
+    node_size() : node(node_type::size) {}
     node_size(const std::string& location) : node(node_type::size, location) {}
 
     auto print() -> std::string override
@@ -518,6 +524,7 @@ struct node_size : public node
 
 struct node_undefined : public node
 {
+    node_undefined() : node(node_type::undefined) {}
     node_undefined(const std::string& location) : node(node_type::undefined, location) {}
 
     auto print() -> std::string override
@@ -528,6 +535,7 @@ struct node_undefined : public node
 
 struct node_empty_array : public node
 {
+    node_empty_array() : node(node_type::empty_array) {}
     node_empty_array(const std::string& location) : node(node_type::empty_array, location) {}
 
     auto print() -> std::string override
@@ -539,6 +547,9 @@ struct node_empty_array : public node
 struct node_filepath : public node
 {
     std::string value;
+
+    node_filepath(const std::string& value)
+        : node(node_type::filepath), value(value) {}
 
     node_filepath(const std::string& location, const std::string& value)
         : node(node_type::filepath, location), value(value) {}
@@ -553,6 +564,9 @@ struct node_identifier : public node
 {
     std::string value;
 
+    node_identifier(const std::string& value)
+        : node(node_type::identifier), value(value) {}
+
     node_identifier(const std::string& location, const std::string& value)
         : node(node_type::identifier, location), value(value) {}
 
@@ -565,6 +579,9 @@ struct node_identifier : public node
 struct node_animref : public node
 {
     std::string value;
+
+    node_animref(const std::string& value)
+        : node(node_type::animref), value(value) {}
 
     node_animref(const std::string& location, const std::string& value)
         : node(node_type::animref, location), value(value) {}
@@ -579,6 +596,9 @@ struct node_string : public node
 {
     std::string value;
 
+    node_string(const std::string& value)
+        : node(node_type::data_string), value(value) {}
+
     node_string(const std::string& location, const std::string& value)
         : node(node_type::data_string, location), value(value) {}
 
@@ -591,6 +611,9 @@ struct node_string : public node
 struct node_localized_string : public node
 {
     std::string value;
+
+    node_localized_string(const std::string& value)
+        : node(node_type::data_localized_string), value(std::move(value)) {}
 
     node_localized_string(const std::string& location, const std::string& value)
         : node(node_type::data_localized_string, location), value(std::move(value)) {}
@@ -605,6 +628,9 @@ struct node_integer : public node
 {
     std::string value;
 
+    node_integer(const std::string& value)
+        : node(node_type::data_integer), value(std::move(value)) {}
+
     node_integer(const std::string& location, const std::string& value)
         : node(node_type::data_integer, location), value(std::move(value)) {}
 
@@ -617,6 +643,9 @@ struct node_integer : public node
 struct node_float : public node
 {
     std::string value;
+
+    node_float(const std::string& value)
+        : node(node_type::data_float), value(std::move(value)) {}
 
     node_float(const std::string& location, const std::string& value)
         : node(node_type::data_float, location), value(std::move(value)) {}
@@ -633,6 +662,9 @@ struct node_vector : public node
     node_ptr y;
     node_ptr z;
 
+    node_vector(node_ptr x, node_ptr y, node_ptr z)
+        : node(node_type::data_vector), x(std::move(x)), y(std::move(y)), z(std::move(z)) {}
+
     node_vector(const std::string& location, node_ptr x, node_ptr y, node_ptr z)
         : node(node_type::data_vector, location), x(std::move(x)), y(std::move(y)), z(std::move(z)) {}
 
@@ -648,6 +680,9 @@ struct node_expr_vector : public node
     expr_ptr y;
     expr_ptr z;
 
+    node_expr_vector(expr_ptr x, expr_ptr y, expr_ptr z)
+        : node(node_type::expr_vector), x(std::move(x)), y(std::move(y)), z(std::move(z)) {}
+
     node_expr_vector(const std::string& location, expr_ptr x, expr_ptr y, expr_ptr z)
         : node(node_type::expr_vector, location), x(std::move(x)), y(std::move(y)), z(std::move(z)) {}
 
@@ -660,6 +695,9 @@ struct node_expr_vector : public node
 struct node_expr_size : public node
 {
     expr_ptr obj;
+
+    node_expr_size(expr_ptr obj)
+        : node(node_type::expr_size), obj(std::move(obj)) {}
 
     node_expr_size(const std::string& location, expr_ptr obj)
         : node(node_type::expr_size, location), obj(std::move(obj)) {}
@@ -675,6 +713,9 @@ struct node_expr_field : public node
     expr_ptr obj;
     identifier_ptr field;
 
+    node_expr_field(expr_ptr obj, identifier_ptr field)
+        : node(node_type::expr_field), obj(std::move(obj)), field(std::move(field)) {}
+
     node_expr_field(const std::string& location, expr_ptr obj, identifier_ptr field)
         : node(node_type::expr_field, location), obj(std::move(obj)), field(std::move(field)) {}
 
@@ -688,6 +729,9 @@ struct node_expr_array : public node
 {
     expr_ptr obj;
     expr_ptr key;
+
+    node_expr_array(expr_ptr obj, expr_ptr key)
+        : node(node_type::expr_array), obj(std::move(obj)), key(std::move(key)) {}
 
     node_expr_array(const std::string& location, expr_ptr obj, expr_ptr key)
         : node(node_type::expr_array, location), obj(std::move(obj)), key(std::move(key)) {}
@@ -703,6 +747,9 @@ struct node_expr_function_ref : public node
     filepath_ptr file;
     identifier_ptr func;
 
+    node_expr_function_ref(filepath_ptr file, identifier_ptr func)
+        : node(node_type::expr_function_ref), file(std::move(file)), func(std::move(func)) {}
+
     node_expr_function_ref(const std::string& location, filepath_ptr file, identifier_ptr func)
         : node(node_type::expr_function_ref, location), file(std::move(file)), func(std::move(func)) {}
 
@@ -715,6 +762,9 @@ struct node_expr_function_ref : public node
 struct node_expr_arguments : public node
 {
     std::vector<expr_ptr> list;
+
+    node_expr_arguments()
+        : node(node_type::expr_arguments) {}
 
     node_expr_arguments(const std::string& location)
         : node(node_type::expr_arguments, location) {}
@@ -739,6 +789,9 @@ struct node_expr_call_pointer : public node
     expr_arguments_ptr args;
     bool builtin;
 
+    node_expr_call_pointer(bool builtin, expr_ptr expr, expr_arguments_ptr args)
+        : node(node_type::expr_call_pointer), builtin(builtin), expr(std::move(expr)), args(std::move(args)) {}
+
     node_expr_call_pointer(const std::string& location, bool builtin, expr_ptr expr, expr_arguments_ptr args)
         : node(node_type::expr_call_pointer, location), builtin(builtin), expr(std::move(expr)), args(std::move(args)) {}
 
@@ -756,6 +809,9 @@ struct node_expr_call_function : public node
     filepath_ptr file;
     identifier_ptr name;
     expr_arguments_ptr args;
+
+    node_expr_call_function(filepath_ptr file, identifier_ptr name, expr_arguments_ptr args)
+        : node(node_type::expr_call_function), file(std::move(file)), name(std::move(name)), args(std::move(args)) {}
 
     node_expr_call_function(const std::string& location, filepath_ptr file, identifier_ptr name, expr_arguments_ptr args)
         : node(node_type::expr_call_function, location), file(std::move(file)), name(std::move(name)), args(std::move(args)) {}
@@ -776,6 +832,9 @@ struct node_expr_call : public node
     expr_ptr obj;
     expr_call_type_ptr func;
     bool thread;
+
+    node_expr_call(bool thread, expr_ptr obj, expr_call_type_ptr func)
+        : node(node_type::expr_call), thread(thread), obj(std::move(obj)), func(std::move(func)){}
 
     node_expr_call(const std::string& location, bool thread, expr_ptr obj, expr_call_type_ptr func)
         : node(node_type::expr_call, location), thread(thread), obj(std::move(obj)), func(std::move(func)){}
@@ -800,6 +859,9 @@ struct node_expr_add_array : public node
 {
     expr_arguments_ptr args;
 
+    node_expr_add_array(expr_arguments_ptr args)
+        : node(node_type::expr_add_array), args(std::move(args)) {}
+
     node_expr_add_array(const std::string& location, expr_arguments_ptr args)
         : node(node_type::expr_add_array, location), args(std::move(args)) {}
 
@@ -813,6 +875,9 @@ struct node_expr_complement : public node
 {
     expr_ptr rvalue;
 
+    node_expr_complement(expr_ptr rvalue)
+        : node(node_type::expr_complement), rvalue(std::move(rvalue)) {}
+
     node_expr_complement(const std::string& location, expr_ptr rvalue)
         : node(node_type::expr_complement, location), rvalue(std::move(rvalue)) {}
 
@@ -825,6 +890,9 @@ struct node_expr_complement : public node
 struct node_expr_not : public node
 {
     expr_ptr rvalue;
+
+    node_expr_not(expr_ptr rvalue)
+        : node(node_type::expr_not), rvalue(std::move(rvalue)) {}
 
     node_expr_not(const std::string& location, expr_ptr rvalue)
         : node(node_type::expr_not, location), rvalue(std::move(rvalue)) {}
@@ -840,12 +908,18 @@ struct node_expr_binary : public node
     expr_ptr lvalue;
     expr_ptr rvalue;
 
+    node_expr_binary(node_type type, expr_ptr lvalue, expr_ptr rvalue)
+        : node(type), lvalue(std::move(lvalue)), rvalue(std::move(rvalue)) {}
+
     node_expr_binary(node_type type, const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node(type, location), lvalue(std::move(lvalue)), rvalue(std::move(rvalue)) {}
 };
 
 struct node_expr_add : public node_expr_binary
 {
+    node_expr_add(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_add, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_add(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_add, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -857,6 +931,9 @@ struct node_expr_add : public node_expr_binary
 
 struct node_expr_sub : public node_expr_binary
 {
+    node_expr_sub(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_sub, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_sub(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_sub, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -868,6 +945,9 @@ struct node_expr_sub : public node_expr_binary
 
 struct node_expr_mult : public node_expr_binary
 {
+    node_expr_mult( expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_mult, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_mult(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_mult, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -879,6 +959,9 @@ struct node_expr_mult : public node_expr_binary
 
 struct node_expr_div : public node_expr_binary
 {
+    node_expr_div(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_div, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_div(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_div, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -890,6 +973,9 @@ struct node_expr_div : public node_expr_binary
 
 struct node_expr_mod : public node_expr_binary
 {
+    node_expr_mod(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_mod, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_mod(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_mod, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -901,6 +987,9 @@ struct node_expr_mod : public node_expr_binary
 
 struct node_expr_shift_left : public node_expr_binary
 {
+    node_expr_shift_left(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_shift_left, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_shift_left(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_shift_left, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -912,6 +1001,9 @@ struct node_expr_shift_left : public node_expr_binary
 
 struct node_expr_shift_right : public node_expr_binary
 {
+    node_expr_shift_right(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_shift_right, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_shift_right(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_shift_right, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -923,6 +1015,9 @@ struct node_expr_shift_right : public node_expr_binary
 
 struct node_expr_bitwise_or : public node_expr_binary
 {
+    node_expr_bitwise_or(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_bitwise_or, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_bitwise_or(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_bitwise_or, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -934,6 +1029,9 @@ struct node_expr_bitwise_or : public node_expr_binary
 
 struct node_expr_bitwise_and : public node_expr_binary
 {
+    node_expr_bitwise_and(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_bitwise_and, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_bitwise_and(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_bitwise_and, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -945,6 +1043,9 @@ struct node_expr_bitwise_and : public node_expr_binary
 
 struct node_expr_bitwise_exor : public node_expr_binary
 {
+    node_expr_bitwise_exor(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_bitwise_exor, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_bitwise_exor(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_bitwise_exor, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -956,6 +1057,9 @@ struct node_expr_bitwise_exor : public node_expr_binary
 
 struct node_expr_equality : public node_expr_binary
 {
+    node_expr_equality(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_equality, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_equality(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_equality, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -967,6 +1071,9 @@ struct node_expr_equality : public node_expr_binary
 
 struct node_expr_inequality : public node_expr_binary
 {
+    node_expr_inequality(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_inequality, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_inequality(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_inequality, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -978,6 +1085,9 @@ struct node_expr_inequality : public node_expr_binary
 
 struct node_expr_less_equal : public node_expr_binary
 {
+    node_expr_less_equal(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_less_equal, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_less_equal(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_less_equal, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -989,6 +1099,9 @@ struct node_expr_less_equal : public node_expr_binary
 
 struct node_expr_greater_equal : public node_expr_binary
 {
+    node_expr_greater_equal(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_greater_equal, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_greater_equal(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_greater_equal, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -1000,6 +1113,9 @@ struct node_expr_greater_equal : public node_expr_binary
 
 struct node_expr_less : public node_expr_binary
 {
+    node_expr_less(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_less, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_less(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_less, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -1011,6 +1127,9 @@ struct node_expr_less : public node_expr_binary
 
 struct node_expr_greater : public node_expr_binary
 {
+    node_expr_greater(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_greater, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_greater(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_greater, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -1022,6 +1141,9 @@ struct node_expr_greater : public node_expr_binary
 
 struct node_expr_or : public node_expr_binary
 {
+    node_expr_or(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_or, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_or(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_or, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -1033,6 +1155,9 @@ struct node_expr_or : public node_expr_binary
 
 struct node_expr_and : public node_expr_binary
 {
+    node_expr_and(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_binary(node_type::expr_and, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_and(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_binary(node_type::expr_and, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -1048,6 +1173,9 @@ struct node_expr_ternary : public node
     expr_ptr lvalue;
     expr_ptr rvalue;
 
+    node_expr_ternary(expr_ptr cmp, expr_ptr lvalue, expr_ptr rvalue)
+        : node(node_type::expr_ternary), cmp(std::move(cmp)), lvalue(std::move(lvalue)), rvalue(std::move(rvalue)) {}
+
     node_expr_ternary(const std::string& location, expr_ptr cmp, expr_ptr lvalue, expr_ptr rvalue)
         : node(node_type::expr_ternary, location), cmp(std::move(cmp)), lvalue(std::move(lvalue)), rvalue(std::move(rvalue)) {}
 
@@ -1062,12 +1190,18 @@ struct node_expr_assign: public node
     expr_ptr lvalue;
     expr_ptr rvalue;
 
+    node_expr_assign(node_type type, expr_ptr lvalue, expr_ptr rvalue)
+        : node(type), lvalue(std::move(lvalue)), rvalue(std::move(rvalue)) {}
+
     node_expr_assign(node_type type, const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node(type, location), lvalue(std::move(lvalue)), rvalue(std::move(rvalue)) {}
 };
 
 struct node_expr_assign_equal : public node_expr_assign
 {
+    node_expr_assign_equal(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_assign(node_type::expr_assign_equal, std::move(lvalue), std::move(rvalue)) {}
+    
     node_expr_assign_equal(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_assign(node_type::expr_assign_equal, location, std::move(lvalue), std::move(rvalue)) {}
     
@@ -1079,6 +1213,9 @@ struct node_expr_assign_equal : public node_expr_assign
 
 struct node_expr_assign_add : public node_expr_assign
 {
+    node_expr_assign_add(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_assign(node_type::expr_assign_add, std::move(lvalue), std::move(rvalue)) {}
+    
     node_expr_assign_add(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_assign(node_type::expr_assign_add, location, std::move(lvalue), std::move(rvalue)) {}
     
@@ -1090,6 +1227,9 @@ struct node_expr_assign_add : public node_expr_assign
 
 struct node_expr_assign_sub : public node_expr_assign
 {
+    node_expr_assign_sub(expr_ptr lvalue, expr_ptr rvalue)
+       : node_expr_assign(node_type::expr_assign_sub, std::move(lvalue), std::move(rvalue)) {}
+    
     node_expr_assign_sub(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
        : node_expr_assign(node_type::expr_assign_sub, location, std::move(lvalue), std::move(rvalue)) {}
     
@@ -1101,6 +1241,9 @@ struct node_expr_assign_sub : public node_expr_assign
 
 struct node_expr_assign_mult : public node_expr_assign
 {
+    node_expr_assign_mult(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_assign(node_type::expr_assign_mult, std::move(lvalue), std::move(rvalue)) {}
+    
     node_expr_assign_mult(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_assign(node_type::expr_assign_mult, location, std::move(lvalue), std::move(rvalue)) {}
     
@@ -1112,6 +1255,9 @@ struct node_expr_assign_mult : public node_expr_assign
 
 struct node_expr_assign_div : public node_expr_assign
 {
+    node_expr_assign_div(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_assign(node_type::expr_assign_div, std::move(lvalue), std::move(rvalue)) {}
+    
     node_expr_assign_div(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_assign(node_type::expr_assign_div, location, std::move(lvalue), std::move(rvalue)) {}
     
@@ -1123,6 +1269,9 @@ struct node_expr_assign_div : public node_expr_assign
 
 struct node_expr_assign_mod : public node_expr_assign
 {
+    node_expr_assign_mod(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_assign(node_type::expr_assign_mod, std::move(lvalue), std::move(rvalue)) {}
+    
     node_expr_assign_mod(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_assign(node_type::expr_assign_mod, location, std::move(lvalue), std::move(rvalue)) {}
     
@@ -1134,6 +1283,9 @@ struct node_expr_assign_mod : public node_expr_assign
 
 struct node_expr_assign_shift_left : public node_expr_assign
 {
+    node_expr_assign_shift_left(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_assign(node_type::expr_assign_shift_left, std::move(lvalue), std::move(rvalue)) {}
+    
     node_expr_assign_shift_left(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_assign(node_type::expr_assign_shift_left, location, std::move(lvalue), std::move(rvalue)) {}
     
@@ -1145,6 +1297,9 @@ struct node_expr_assign_shift_left : public node_expr_assign
 
 struct node_expr_assign_shift_right : public node_expr_assign
 {
+    node_expr_assign_shift_right(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_assign(node_type::expr_assign_shift_right, std::move(lvalue), std::move(rvalue)) {}
+    
     node_expr_assign_shift_right(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_assign(node_type::expr_assign_shift_right, location, std::move(lvalue), std::move(rvalue)) {}
     
@@ -1156,6 +1311,10 @@ struct node_expr_assign_shift_right : public node_expr_assign
 
 struct node_expr_assign_bitwise_or : public node_expr_assign
 {
+    node_expr_assign_bitwise_or(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_assign(node_type::expr_assign_bitwise_or, std::move(lvalue),
+            std::move(rvalue)) {}
+
     node_expr_assign_bitwise_or(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_assign(node_type::expr_assign_bitwise_or, location, std::move(lvalue),
             std::move(rvalue)) {}
@@ -1168,6 +1327,9 @@ struct node_expr_assign_bitwise_or : public node_expr_assign
 
 struct node_expr_assign_bitwise_and : public node_expr_assign
 {
+    node_expr_assign_bitwise_and(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_assign(node_type::expr_assign_bitwise_and, std::move(lvalue), std::move(rvalue)) {}
+
     node_expr_assign_bitwise_and(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_assign(node_type::expr_assign_bitwise_and, location, std::move(lvalue), std::move(rvalue)) {}
 
@@ -1179,6 +1341,10 @@ struct node_expr_assign_bitwise_and : public node_expr_assign
 
 struct node_expr_assign_bitwise_exor : public node_expr_assign
 {
+    node_expr_assign_bitwise_exor(expr_ptr lvalue, expr_ptr rvalue)
+        : node_expr_assign(node_type::expr_assign_bitwise_exor, std::move(lvalue),
+            std::move(rvalue)) {}
+
     node_expr_assign_bitwise_exor(const std::string& location, expr_ptr lvalue, expr_ptr rvalue)
         : node_expr_assign(node_type::expr_assign_bitwise_exor, location, std::move(lvalue),
             std::move(rvalue)) {}
@@ -1191,6 +1357,9 @@ struct node_expr_assign_bitwise_exor : public node_expr_assign
 
 struct node_expr_increment : public node_expr_assign
 {
+    node_expr_increment(expr_ptr lvalue)
+        : node_expr_assign(node_type::expr_increment, std::move(lvalue), std::make_unique<node>()) {}
+
     node_expr_increment(const std::string& location, expr_ptr lvalue)
         : node_expr_assign(node_type::expr_increment, location, std::move(lvalue), std::make_unique<node>()) {}
 
@@ -1202,6 +1371,9 @@ struct node_expr_increment : public node_expr_assign
 
 struct node_expr_decrement : public node_expr_assign
 {
+    node_expr_decrement(expr_ptr lvalue)
+        : node_expr_assign(node_type::expr_decrement, std::move(lvalue), std::make_unique<node>()) {}
+
     node_expr_decrement(const std::string& location, expr_ptr lvalue)
         : node_expr_assign(node_type::expr_decrement, location, std::move(lvalue), std::make_unique<node>()) {}
 
@@ -1214,6 +1386,8 @@ struct node_expr_decrement : public node_expr_assign
 struct node_block : public node
 {
     std::vector<stmt_ptr> stmts;
+
+    node_block() : node(node_type::block) {}
 
     node_block(const std::string& location) : node(node_type::block, location) {}
 
@@ -1263,6 +1437,9 @@ struct node_stmt_call : public node
 {
     expr_call_ptr expr;
 
+    node_stmt_call(expr_call_ptr expr)
+        : node(node_type::stmt_call), expr(std::move(expr)) {}
+
     node_stmt_call(const std::string& location, expr_call_ptr expr)
         : node(node_type::stmt_call, location), expr(std::move(expr)) {}
 
@@ -1276,6 +1453,9 @@ struct node_stmt_assign : public node
 {
     expr_assign_ptr expr;
 
+    node_stmt_assign(expr_assign_ptr expr)
+        : node(node_type::stmt_assign), expr(std::move(expr)) {}
+    
     node_stmt_assign(const std::string& location, expr_assign_ptr expr)
         : node(node_type::stmt_assign, location), expr(std::move(expr)) {}
     
@@ -1289,6 +1469,9 @@ struct node_stmt_endon : public node
 {
     expr_ptr obj;
     expr_ptr expr;
+
+    node_stmt_endon(expr_ptr obj, expr_ptr expr)
+        : node(node_type::stmt_endon), obj(std::move(obj)), expr(std::move(expr)) {}
 
     node_stmt_endon(const std::string& location, expr_ptr obj, expr_ptr expr)
         : node(node_type::stmt_endon, location), obj(std::move(obj)), expr(std::move(expr)) {}
@@ -1304,6 +1487,9 @@ struct node_stmt_notify : public node
     expr_ptr obj;
     expr_ptr expr;
     expr_arguments_ptr args;
+
+    node_stmt_notify(expr_ptr obj, expr_ptr expr, expr_arguments_ptr args)
+        : node(node_type::stmt_notify), obj(std::move(obj)), expr(std::move(expr)), args(std::move(args)) {}
 
     node_stmt_notify(const std::string& location, expr_ptr obj, expr_ptr expr, expr_arguments_ptr args)
         : node(node_type::stmt_notify, location), obj(std::move(obj)), expr(std::move(expr)), args(std::move(args)) {}
@@ -1325,6 +1511,9 @@ struct node_stmt_wait : public node
 {
     expr_ptr expr;
 
+    node_stmt_wait(expr_ptr expr)
+        : node(node_type::stmt_wait), expr(std::move(expr)) {}
+
     node_stmt_wait(const std::string& location, expr_ptr expr)
         : node(node_type::stmt_wait, location), expr(std::move(expr)) {}
 
@@ -1342,6 +1531,9 @@ struct node_stmt_waittill : public node
     expr_ptr obj;
     expr_ptr expr;
     expr_arguments_ptr args;
+
+    node_stmt_waittill(expr_ptr obj, expr_ptr expr, expr_arguments_ptr args)
+        : node(node_type::stmt_waittill), obj(std::move(obj)), expr(std::move(expr)), args(std::move(args)) {}
 
     node_stmt_waittill(const std::string& location, expr_ptr obj, expr_ptr expr, expr_arguments_ptr args)
         : node(node_type::stmt_waittill, location), obj(std::move(obj)), expr(std::move(expr)), args(std::move(args)) {}
@@ -1365,6 +1557,9 @@ struct node_stmt_waittillmatch : public node
     expr_ptr lexpr;
     expr_ptr rexpr;
 
+    node_stmt_waittillmatch(expr_ptr obj, expr_ptr lexpr, expr_ptr rexpr)
+        : node(node_type::stmt_waittillmatch), obj(std::move(obj)), lexpr(std::move(lexpr)), rexpr(std::move(rexpr)) {}
+
     node_stmt_waittillmatch(const std::string& location, expr_ptr obj, expr_ptr lexpr, expr_ptr rexpr)
         : node(node_type::stmt_waittillmatch, location), obj(std::move(obj)), lexpr(std::move(lexpr)), rexpr(std::move(rexpr)) {}
 
@@ -1376,6 +1571,9 @@ struct node_stmt_waittillmatch : public node
 
 struct node_stmt_waittillframeend : public node
 {
+    node_stmt_waittillframeend()
+        : node(node_type::stmt_waittillframeend) {}
+
     node_stmt_waittillframeend(const std::string& location)
         : node(node_type::stmt_waittillframeend, location) {}
 
@@ -1387,6 +1585,9 @@ struct node_stmt_waittillframeend : public node
 
 struct node_stmt_waitframe : public node
 {
+    node_stmt_waitframe()
+        : node(node_type::stmt_waitframe) {}
+
     node_stmt_waitframe(const std::string& location)
         : node(node_type::stmt_waitframe, location) {}
 
@@ -1400,6 +1601,9 @@ struct node_stmt_if : public node
 {
     expr_ptr expr;
     block_ptr block;
+
+    node_stmt_if(expr_ptr expr, block_ptr block)
+        : node(node_type::stmt_if), expr(std::move(expr)), block(std::move(block)) {}
 
     node_stmt_if(const std::string& location, expr_ptr expr, block_ptr block)
         : node(node_type::stmt_if, location), expr(std::move(expr)), block(std::move(block)) {}
@@ -1436,6 +1640,9 @@ struct node_stmt_ifelse : public node
     expr_ptr expr;
     block_ptr block_if;
     block_ptr block_else;
+
+    node_stmt_ifelse(expr_ptr expr, block_ptr block_if, block_ptr block_else)
+        : node(node_type::stmt_ifelse), expr(std::move(expr)), block_if(std::move(block_if)), block_else(std::move(block_else)) {}
 
     node_stmt_ifelse(const std::string& location, expr_ptr expr, block_ptr block_if, block_ptr block_else)
         : node(node_type::stmt_ifelse, location), expr(std::move(expr)), block_if(std::move(block_if)), block_else(std::move(block_else)) {}
@@ -1495,6 +1702,9 @@ struct node_stmt_while : public node
     expr_ptr expr;
     block_ptr block;
 
+    node_stmt_while(expr_ptr expr, block_ptr block)
+        : node(node_type::stmt_while), expr(std::move(expr)), block(std::move(block)) {}
+
     node_stmt_while(const std::string& location, expr_ptr expr, block_ptr block)
         : node(node_type::stmt_while, location), expr(std::move(expr)), block(std::move(block)) {}
 
@@ -1540,6 +1750,10 @@ struct node_stmt_for : public node
     expr_ptr expr;
     expr_ptr post_expr;
     block_ptr block;
+
+    node_stmt_for(expr_ptr pre_expr, expr_ptr expr, expr_ptr post_expr, block_ptr block)
+        : node(node_type::stmt_for), pre_expr(std::move(pre_expr)), expr(std::move(expr)),
+            post_expr(std::move(post_expr)), block(std::move(block)) {}
 
     node_stmt_for(const std::string& location, expr_ptr pre_expr, expr_ptr expr, expr_ptr post_expr, block_ptr block)
         : node(node_type::stmt_for, location), pre_expr(std::move(pre_expr)), expr(std::move(expr)),
@@ -1587,6 +1801,10 @@ struct node_stmt_foreach : public node
     expr_ptr expr2;
     block_ptr block;
 
+    node_stmt_foreach(expr_ptr expr1, expr_ptr expr2, block_ptr block)
+        : node(node_type::stmt_foreach), expr1(std::move(expr1)), expr2(std::move(expr2)),
+            block(std::move(block)) {}
+
     node_stmt_foreach(const std::string& location, expr_ptr expr1, expr_ptr expr2, block_ptr block)
         : node(node_type::stmt_foreach, location), expr1(std::move(expr1)), expr2(std::move(expr2)),
             block(std::move(block)) {}
@@ -1625,6 +1843,9 @@ struct node_stmt_switch : public node
     expr_ptr expr;
     block_ptr block;
 
+    node_stmt_switch(expr_ptr expr, block_ptr block)
+        : node(node_type::stmt_switch), expr(std::move(expr)), block(std::move(block)) {}
+
     node_stmt_switch(const std::string& location, expr_ptr expr, block_ptr block)
         : node(node_type::stmt_switch, location), expr(std::move(expr)), block(std::move(block)) {}
 
@@ -1644,6 +1865,9 @@ struct node_stmt_case : public node
 {
     expr_ptr value;
 
+    node_stmt_case(expr_ptr value)
+        : node(node_type::stmt_case), value(std::move(value)) {}
+
     node_stmt_case(const std::string& location, expr_ptr value)
         : node(node_type::stmt_case, location), value(std::move(value)) {}
 
@@ -1655,6 +1879,9 @@ struct node_stmt_case : public node
 
 struct node_stmt_default : public node
 {
+    node_stmt_default()
+        : node(node_type::stmt_default) {}
+
     node_stmt_default(const std::string& location)
         : node(node_type::stmt_default, location) {}
 
@@ -1666,6 +1893,9 @@ struct node_stmt_default : public node
 
 struct node_stmt_break : public node
 {
+    node_stmt_break()
+        : node(node_type::stmt_break) {}
+
     node_stmt_break(const std::string& location)
         : node(node_type::stmt_break, location) {}
 
@@ -1677,6 +1907,9 @@ struct node_stmt_break : public node
 
 struct node_stmt_continue : public node
 {
+    node_stmt_continue()
+        : node(node_type::stmt_continue) {}
+
     node_stmt_continue(const std::string& location)
         : node(node_type::stmt_continue, location) {}
 
@@ -1689,6 +1922,9 @@ struct node_stmt_continue : public node
 struct node_stmt_return : public node
 {
     expr_ptr expr;
+
+    node_stmt_return(expr_ptr expr)
+        : node(node_type::stmt_return), expr(std::move(expr)) {}
 
     node_stmt_return(const std::string& location, expr_ptr expr)
         : node(node_type::stmt_return, location), expr(std::move(expr)) {}
@@ -1705,6 +1941,9 @@ struct node_stmt_return : public node
 struct node_parameters : public node
 {
     std::vector<identifier_ptr> list;
+
+    node_parameters()
+        : node(node_type::parameters) {}
 
     node_parameters(const std::string& location)
         : node(node_type::parameters, location) {}
@@ -1729,6 +1968,10 @@ struct node_thread : public node
     parameters_ptr params;
     block_ptr block;
 
+    node_thread(identifier_ptr name, parameters_ptr params, block_ptr block)
+        : node(node_type::thread), name(std::move(name)), params(std::move(params)),
+            block(std::move(block)) {}
+
     node_thread(const std::string& location, identifier_ptr name, parameters_ptr params, block_ptr block)
         : node(node_type::thread, location), name(std::move(name)), params(std::move(params)),
             block(std::move(block)) {}
@@ -1743,6 +1986,9 @@ struct node_animtree : public node
 {
      string_ptr animtree;
 
+    node_animtree(string_ptr animtree)
+        : node(node_type::animtree), animtree(std::move(animtree)) {}
+
     node_animtree(const std::string& location, string_ptr animtree)
         : node(node_type::animtree, location), animtree(std::move(animtree)) {}
 
@@ -1756,6 +2002,9 @@ struct node_using_animtree : public node
 {
     string_ptr animtree;
 
+    node_using_animtree(string_ptr animtree)
+        : node(node_type::using_animtree), animtree(std::move(animtree)) {}
+
     node_using_animtree(const std::string& location, string_ptr animtree)
         : node(node_type::using_animtree, location), animtree(std::move(animtree)) {}
 
@@ -1768,6 +2017,9 @@ struct node_using_animtree : public node
 struct node_include : public node
 {
     filepath_ptr file;
+
+    node_include(filepath_ptr file)
+        : node(node_type::include), file(std::move(file)) {}
 
     node_include(const std::string& location, filepath_ptr file)
         : node(node_type::include, location), file(std::move(file)) {}
@@ -1784,6 +2036,9 @@ struct node_script : public node
     std::vector<using_animtree_ptr> animtrees;
     std::vector<thread_ptr> threads;
     
+    node_script()
+        : node(node_type::script) {}
+
     node_script(const std::string& location)
         : node(node_type::script, location) {}
 
@@ -1812,6 +2067,9 @@ struct node_asm_loc : public node
 {
     std::string value;
 
+    node_asm_loc(std::string value)
+        : node(node_type::asm_loc), value(std::move(value)) {}
+
     node_asm_loc(const std::string& location, std::string value)
         : node(node_type::asm_loc, location), value(std::move(value)) {}
 
@@ -1825,6 +2083,9 @@ struct node_asm_jump : public node
 {
     std::string value;
 
+    node_asm_jump(std::string value)
+        : node(node_type::asm_jump), value(std::move(value)) {}
+
     node_asm_jump(const std::string& location, std::string value)
         : node(node_type::asm_jump, location), value(std::move(value)) {}
 
@@ -1837,6 +2098,9 @@ struct node_asm_jump : public node
 struct node_asm_jump_back : public node
 {
     std::string value;
+
+    node_asm_jump_back(std::string value)
+        : node(node_type::asm_jump_back), value(std::move(value)) {}
 
     node_asm_jump_back(const std::string& location, std::string value)
         : node(node_type::asm_jump_back, location), value(std::move(value)) {}
@@ -1852,6 +2116,9 @@ struct node_asm_jump_cond : public node
     std::string value;
     expr_ptr expr;
 
+    node_asm_jump_cond(expr_ptr expr, std::string value)
+        : node(node_type::asm_jump_cond), expr(std::move(expr)), value(std::move(value)) {}
+
     node_asm_jump_cond(const std::string& location, expr_ptr expr, std::string value)
         : node(node_type::asm_jump_cond, location), expr(std::move(expr)), value(std::move(value)) {}
 
@@ -1865,6 +2132,9 @@ struct node_asm_jump_true_expr : public node
 {
     expr_ptr expr;
     std::string value;
+
+    node_asm_jump_true_expr(expr_ptr expr, std::string value)
+        : node(node_type::asm_jump_true_expr), expr(std::move(expr)), value(std::move(value)) {}
 
     node_asm_jump_true_expr(const std::string& location, expr_ptr expr, std::string value)
         : node(node_type::asm_jump_true_expr, location), expr(std::move(expr)), value(std::move(value)) {}
@@ -1880,6 +2150,9 @@ struct node_asm_jump_false_expr : public node
     expr_ptr expr;
     std::string value;
 
+    node_asm_jump_false_expr(expr_ptr expr, std::string value)
+        : node(node_type::asm_jump_false_expr), expr(std::move(expr)), value(std::move(value)) {}
+
     node_asm_jump_false_expr(const std::string& location, expr_ptr expr, std::string value)
         : node(node_type::asm_jump_false_expr, location), expr(std::move(expr)), value(std::move(value)) {}
 
@@ -1894,6 +2167,9 @@ struct node_asm_switch : public node
     expr_ptr expr;
     std::string value;
 
+    node_asm_switch(expr_ptr expr, std::string value)
+        : node(node_type::asm_switch), expr(std::move(expr)), value(std::move(value)) {}
+
     node_asm_switch(const std::string& location, expr_ptr expr, std::string value)
         : node(node_type::asm_switch, location), expr(std::move(expr)), value(std::move(value)) {}
 
@@ -1907,6 +2183,9 @@ struct node_asm_endswitch : public node
 {
     std::vector<std::string> data;
     std::string count;
+
+    node_asm_endswitch(std::vector<std::string> data, std::string count)
+        : node(node_type::asm_endswitch), data(std::move(data)), count(std::move(count)) {}
 
     node_asm_endswitch(const std::string& location, std::vector<std::string> data, std::string count)
         : node(node_type::asm_endswitch, location), data(std::move(data)), count(std::move(count)) {}
@@ -1924,6 +2203,9 @@ struct node_asm_endswitch : public node
 
 struct node_asm_prescriptcall : public node
 {
+    node_asm_prescriptcall()
+        : node(node_type::asm_prescriptcall) {}
+
     node_asm_prescriptcall(const std::string& location)
         : node(node_type::asm_prescriptcall, location) {}
 
@@ -1935,6 +2217,9 @@ struct node_asm_prescriptcall : public node
 
 struct node_asm_voidcodepos : public node
 {
+    node_asm_voidcodepos()
+        : node(node_type::asm_voidcodepos) {}
+
     node_asm_voidcodepos(const std::string& location)
         : node(node_type::asm_voidcodepos, location) {}
 

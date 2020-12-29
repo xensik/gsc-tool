@@ -1,4 +1,4 @@
-// Copyright 2020 xensik. All rights reserved.
+// Copyright 2021 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -316,7 +316,7 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
         this->disassemble_end_switch(inst);
         break;
     default:
-        DISASSEMBLER_ERROR("Unhandled opcode 0xhh%X at index '%04X'!", inst->opcode, inst->index);
+        GSC_DISASM_ERROR("Unhandled opcode 0xhh%X at index '%04X'!", inst->opcode, inst->index);
         break;
     }
 }
@@ -400,7 +400,7 @@ void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
     std::uint16_t field_id = script_->read<std::uint16_t>();
     std::string field_name;
 
-    if(field_id > 33386)
+    if(field_id > 0x826A)
     {   
         auto temp = stack_->read<std::uint16_t>();
         field_name = temp == 0 ? stack_->read_c_string() : std::to_string(temp);
@@ -524,12 +524,12 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
             }
         }
 
-        DISASSEMBLER_ERROR("Couldn't resolve function name at index '0x%04X'!", idx);
+        GSC_DISASM_ERROR("Couldn't resolve function name at index '0x%04X'!", idx);
         return index;
     }
     else
     {
-        DISASSEMBLER_ERROR("\"%s\" is not valid function address!", index.data());
+        GSC_DISASM_ERROR("\"%s\" is not valid function address!", index.data());
         return index;
     }
 }

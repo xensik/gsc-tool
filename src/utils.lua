@@ -1,31 +1,26 @@
-utils = {}
+utils = { base = path.join(projects.base, "utils") }
 
 function utils:include()
-    includedirs { path.join(project_folder(), "utils") }
+    includedirs { utils.base }
 end
 
 function utils:link()
-    self:include()
     links { "utils" }
+    self:include()
 end
 
 function utils:project()
-    local folder = project_folder();
-
     project "utils"
-        kind "StaticLib"
-        language "C++"
-        
-        pchheader "utils.hpp"
-        pchsource(path.join(folder, "utils/utils.cpp"))
+    kind "StaticLib"
+    language "C++"
 
-        files
-        {
-            path.join(folder, "utils/**.h"),
-            path.join(folder, "utils/**.hpp"),
-            path.join(folder, "utils/**.cpp")
-        }
-        
-        self:include()
-        zlib:include()
+    self:include()
+    zlib:include()
+
+    files
+    {
+        path.join(utils.base, "**.h"),
+        path.join(utils.base, "**.hpp"),
+        path.join(utils.base, "**.cpp")
+    }
 end

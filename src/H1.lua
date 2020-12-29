@@ -1,28 +1,26 @@
-H1 = {}
+H1 = { base = path.join(projects.base, "H1") }
 
 function H1:include()
-    includedirs { path.join(project_folder(), "H1") }
+    includedirs { H1.base }
 end
 
 function H1:link()
-    self:include()
     links { "H1" }
+    self:include()
 end
 
 function H1:project()
-    local folder = project_folder();
-
     project "H1"
-        kind "StaticLib"
-        language "C++"
+    kind "StaticLib"
+    language "C++"
 
-        files
-        {
-            path.join(folder, "H1/**.h"),
-            path.join(folder, "H1/**.hpp"),
-            path.join(folder, "H1/**.cpp")
-        }
+    self:include()
+    utils:include()
 
-        self:include()
-        utils:include()
+    files
+    {
+        path.join(H1.base, "**.h"),
+        path.join(H1.base, "**.hpp"),
+        path.join(H1.base, "**.cpp")
+    }
 end

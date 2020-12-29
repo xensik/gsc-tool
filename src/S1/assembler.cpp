@@ -1,4 +1,4 @@
-// Copyright 2020 xensik. All rights reserved.
+// Copyright 2021 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -80,7 +80,7 @@ void assembler::assemble(std::vector<std::uint8_t>& data)
                     continue;
                 }
 
-                LOG_ERROR("invalid instruction inside endswitch \"%s\"!", line.data());
+                GSC_LOG_ERROR("invalid instruction inside endswitch \"%s\"!", line.data());
                 return;
             }
             else
@@ -388,7 +388,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
         this->assemble_end_switch(inst);
         break;
     default:
-        ASSEMBLER_ERROR("Unhandled opcode (0x%hhX) at index '%04X'!", inst->opcode, inst->index);
+        GSC_ASM_ERROR("Unhandled opcode (0x%hhX) at index '%04X'!", inst->opcode, inst->index);
         break;
     }
 }
@@ -407,7 +407,6 @@ void assembler::assemble_builtin_call(const gsc::instruction_ptr& inst, bool met
             id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_method_id(inst->data[1]);
         else
             id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_func_id(inst->data[1]);
-
     }
     else
     {
@@ -485,7 +484,7 @@ void assembler::assemble_end_switch(const gsc::instruction_ptr& inst)
     }
     else
     {
-        ASSEMBLER_ERROR("invalid endswitch number!");
+        GSC_ASM_ERROR("invalid endswitch number!");
     }
 
     script_->write<std::uint16_t>(casenum);
@@ -598,7 +597,7 @@ auto assembler::resolve_function(const std::string& name) -> std::uint32_t
         }
     }
 
-    ASSEMBLER_ERROR("Couldn't resolve local function address of '%s'!", name.data());
+    GSC_ASM_ERROR("Couldn't resolve local function address of '%s'!", name.data());
     return 0;
 }
 
@@ -612,7 +611,7 @@ auto assembler::resolve_label(const gsc::instruction_ptr& inst, const std::strin
         }
     }
 
-    ASSEMBLER_ERROR("Couldn't resolve label address of '%s'!", name.data());
+    GSC_ASM_ERROR("Couldn't resolve label address of '%s'!", name.data());
     return 0;
 }
 

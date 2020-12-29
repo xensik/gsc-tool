@@ -1,4 +1,4 @@
-// Copyright 2020 xensik. All rights reserved.
+// Copyright 2021 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -227,7 +227,7 @@ int main(int argc, char** argv)
     if (parse_flags(argc, argv, game, mode))
     {
         printf("usage: gsc-tool.exe <game> <mode> <file>\n");
-        printf("	* games: -iw5, -iw6, -s1, -s2, -h1, -h2\n");
+        printf("	* games: -iw5, -iw6, -iw7, -s1, -s2, -h1, -h2\n");
         printf("	* modes: -asm, -disasm, -comp, -decomp\n");
         return 0;
     }

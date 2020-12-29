@@ -667,7 +667,7 @@ static const flex_int16_t yy_chk[718] =
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 #line 1 "S1.lexer.lpp"
-/* Copyright 2020 xensik. All rights reserved.
+/* Copyright 2021 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.

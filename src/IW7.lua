@@ -1,28 +1,26 @@
-IW7 = {}
+IW7 = { base = path.join(projects.base, "IW7") }
 
 function IW7:include()
-    includedirs { path.join(project_folder(), "IW7") }
+    includedirs { IW7.base }
 end
 
 function IW7:link()
-    self:include()
     links { "IW7" }
+    self:include()
 end
 
 function IW7:project()
-    local folder = project_folder();
-
     project "IW7"
-        kind "StaticLib"
-        language "C++"
+    kind "StaticLib"
+    language "C++"
 
-        files
-        {
-            path.join(folder, "IW7/**.h"),
-            path.join(folder, "IW7/**.hpp"),
-            path.join(folder, "IW7/**.cpp")
-        }
+    self:include()
+    utils:include()
 
-        self:include()
-        utils:include()
+    files
+    {
+        path.join(IW7.base, "**.h"),
+        path.join(IW7.base, "**.hpp"),
+        path.join(IW7.base, "**.cpp")
+    }
 end

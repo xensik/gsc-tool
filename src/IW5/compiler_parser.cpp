@@ -3786,5 +3786,5 @@ namespace yy {
 
 void yy::parser::error(const std::string& msg)
 {
-    COMPILER_ERROR("%s", msg.data());
+    GSC_COMP_ERROR("%s", msg.data());
 }
