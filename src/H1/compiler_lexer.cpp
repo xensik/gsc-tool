@@ -1041,436 +1041,436 @@ YY_RULE_SETUP
 case 9:
 YY_RULE_SETUP
 #line 43 "H1.lexer.lpp"
-{ return yy::parser::make_INCLUDE(); }
+{ return H1::parser::make_INCLUDE(); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 44 "H1.lexer.lpp"
-{ return yy::parser::make_USING_ANIMTREE(); }
+{ return H1::parser::make_USING_ANIMTREE(); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 45 "H1.lexer.lpp"
-{ return yy::parser::make_ANIMTREE(); }
+{ return H1::parser::make_ANIMTREE(); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 46 "H1.lexer.lpp"
-{ return yy::parser::make_ENDON(); }
+{ return H1::parser::make_ENDON(); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 47 "H1.lexer.lpp"
-{ return yy::parser::make_NOTIFY(); }
+{ return H1::parser::make_NOTIFY(); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 48 "H1.lexer.lpp"
-{ return yy::parser::make_WAIT(); }
+{ return H1::parser::make_WAIT(); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 49 "H1.lexer.lpp"
-{ return yy::parser::make_WAITTILL(); }
+{ return H1::parser::make_WAITTILL(); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 50 "H1.lexer.lpp"
-{ return yy::parser::make_WAITTILLMATCH(); }
+{ return H1::parser::make_WAITTILLMATCH(); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 51 "H1.lexer.lpp"
-{ return yy::parser::make_WAITTILLFRAMEEND(); }
+{ return H1::parser::make_WAITTILLFRAMEEND(); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 52 "H1.lexer.lpp"
-{ return yy::parser::make_WAITFRAME(); }
+{ return H1::parser::make_WAITFRAME(); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 53 "H1.lexer.lpp"
-{ return yy::parser::make_IF(); }
+{ return H1::parser::make_IF(); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 54 "H1.lexer.lpp"
-{ return yy::parser::make_ELSE(); }
+{ return H1::parser::make_ELSE(); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 55 "H1.lexer.lpp"
-{ return yy::parser::make_WHILE(); }
+{ return H1::parser::make_WHILE(); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 56 "H1.lexer.lpp"
-{ return yy::parser::make_FOR(); }
+{ return H1::parser::make_FOR(); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 57 "H1.lexer.lpp"
-{ return yy::parser::make_FOREACH(); }
+{ return H1::parser::make_FOREACH(); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 58 "H1.lexer.lpp"
-{ return yy::parser::make_IN(); }
+{ return H1::parser::make_IN(); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 59 "H1.lexer.lpp"
-{ return yy::parser::make_SWITCH(); }
+{ return H1::parser::make_SWITCH(); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 60 "H1.lexer.lpp"
-{ return yy::parser::make_CASE(); }
+{ return H1::parser::make_CASE(); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 61 "H1.lexer.lpp"
-{ return yy::parser::make_DEFAULT(); }
+{ return H1::parser::make_DEFAULT(); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 62 "H1.lexer.lpp"
-{ return yy::parser::make_BREAK(); }
+{ return H1::parser::make_BREAK(); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 63 "H1.lexer.lpp"
-{ return yy::parser::make_CONTINUE(); }
+{ return H1::parser::make_CONTINUE(); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 64 "H1.lexer.lpp"
-{ return yy::parser::make_RETURN(); }
+{ return H1::parser::make_RETURN(); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 65 "H1.lexer.lpp"
-{ return yy::parser::make_THREAD(); }
+{ return H1::parser::make_THREAD(); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 66 "H1.lexer.lpp"
-{ return yy::parser::make_CALL(); }
+{ return H1::parser::make_CALL(); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 67 "H1.lexer.lpp"
-{ return yy::parser::make_TRUE(); }
+{ return H1::parser::make_TRUE(); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 68 "H1.lexer.lpp"
-{ return yy::parser::make_FALSE(); }
+{ return H1::parser::make_FALSE(); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 69 "H1.lexer.lpp"
-{ return yy::parser::make_UNDEFINED(); }
+{ return H1::parser::make_UNDEFINED(); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 70 "H1.lexer.lpp"
-{ return yy::parser::make_SIZE(); }
+{ return H1::parser::make_SIZE(); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 71 "H1.lexer.lpp"
-{ return yy::parser::make_GAME(); }
+{ return H1::parser::make_GAME(); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 72 "H1.lexer.lpp"
-{ return yy::parser::make_SELF(); }
+{ return H1::parser::make_SELF(); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 73 "H1.lexer.lpp"
-{ return yy::parser::make_ANIM(); }
+{ return H1::parser::make_ANIM(); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 74 "H1.lexer.lpp"
-{ return yy::parser::make_LEVEL(); }
+{ return H1::parser::make_LEVEL(); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 75 "H1.lexer.lpp"
-{ return yy::parser::make_EMPTY_ARRAY(); }
+{ return H1::parser::make_EMPTY_ARRAY(); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 76 "H1.lexer.lpp"
-{ return yy::parser::make_LPAREN(); }
+{ return H1::parser::make_LPAREN(); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
 #line 77 "H1.lexer.lpp"
-{ return yy::parser::make_RPAREN(); }
+{ return H1::parser::make_RPAREN(); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
 #line 78 "H1.lexer.lpp"
-{ return yy::parser::make_LBRACE(); }
+{ return H1::parser::make_LBRACE(); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
 #line 79 "H1.lexer.lpp"
-{ return yy::parser::make_RBRACE(); }
+{ return H1::parser::make_RBRACE(); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
 #line 80 "H1.lexer.lpp"
-{ return yy::parser::make_LBRACKET(); }
+{ return H1::parser::make_LBRACKET(); }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
 #line 81 "H1.lexer.lpp"
-{ return yy::parser::make_RBRACKET(); }
+{ return H1::parser::make_RBRACKET(); }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
 #line 82 "H1.lexer.lpp"
-{ return yy::parser::make_COMMA(); }
+{ return H1::parser::make_COMMA(); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
 #line 83 "H1.lexer.lpp"
-{ return yy::parser::make_DOT(); }
+{ return H1::parser::make_DOT(); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
 #line 84 "H1.lexer.lpp"
-{ return yy::parser::make_DOUBLECOLON(); }
+{ return H1::parser::make_DOUBLECOLON(); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
 #line 85 "H1.lexer.lpp"
-{ return yy::parser::make_COLON(); }
+{ return H1::parser::make_COLON(); }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
 #line 86 "H1.lexer.lpp"
-{ return yy::parser::make_SEMICOLON(); }
+{ return H1::parser::make_SEMICOLON(); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
 #line 87 "H1.lexer.lpp"
-{ return yy::parser::make_QMARK(); }
+{ return H1::parser::make_QMARK(); }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
 #line 88 "H1.lexer.lpp"
-{ return yy::parser::make_INCREMENT(); }
+{ return H1::parser::make_INCREMENT(); }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
 #line 89 "H1.lexer.lpp"
-{ return yy::parser::make_DECREMENT(); }
+{ return H1::parser::make_DECREMENT(); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
 #line 90 "H1.lexer.lpp"
-{ return yy::parser::make_ASSIGN_LSHIFT(); }
+{ return H1::parser::make_ASSIGN_LSHIFT(); }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
 #line 91 "H1.lexer.lpp"
-{ return yy::parser::make_ASSIGN_RSHIFT(); }
+{ return H1::parser::make_ASSIGN_RSHIFT(); }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
 #line 92 "H1.lexer.lpp"
-{ return yy::parser::make_LSHIFT(); }
+{ return H1::parser::make_LSHIFT(); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
 #line 93 "H1.lexer.lpp"
-{ return yy::parser::make_RSHIFT(); }
+{ return H1::parser::make_RSHIFT(); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
 #line 94 "H1.lexer.lpp"
-{ return yy::parser::make_OR(); }
+{ return H1::parser::make_OR(); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
 #line 95 "H1.lexer.lpp"
-{ return yy::parser::make_AND(); }
+{ return H1::parser::make_AND(); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
 #line 96 "H1.lexer.lpp"
-{ return yy::parser::make_EQUALITY(); }
+{ return H1::parser::make_EQUALITY(); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
 #line 97 "H1.lexer.lpp"
-{ return yy::parser::make_INEQUALITY(); }
+{ return H1::parser::make_INEQUALITY(); }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
 #line 98 "H1.lexer.lpp"
-{ return yy::parser::make_LESS_EQUAL(); }
+{ return H1::parser::make_LESS_EQUAL(); }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
 #line 99 "H1.lexer.lpp"
-{ return yy::parser::make_GREATER_EQUAL(); }
+{ return H1::parser::make_GREATER_EQUAL(); }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
 #line 100 "H1.lexer.lpp"
-{ return yy::parser::make_LESS(); }
+{ return H1::parser::make_LESS(); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
 #line 101 "H1.lexer.lpp"
-{ return yy::parser::make_GREATER(); }
+{ return H1::parser::make_GREATER(); }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
 #line 102 "H1.lexer.lpp"
-{ return yy::parser::make_ASSIGN_ADD(); }
+{ return H1::parser::make_ASSIGN_ADD(); }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
 #line 103 "H1.lexer.lpp"
-{ return yy::parser::make_ASSIGN_SUB(); }
+{ return H1::parser::make_ASSIGN_SUB(); }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
 #line 104 "H1.lexer.lpp"
-{ return yy::parser::make_ASSIGN_MULT(); }
+{ return H1::parser::make_ASSIGN_MULT(); }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
 #line 105 "H1.lexer.lpp"
-{ return yy::parser::make_ASSIGN_DIV(); }
+{ return H1::parser::make_ASSIGN_DIV(); }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
 #line 106 "H1.lexer.lpp"
-{ return yy::parser::make_ASSIGN_MOD(); }
+{ return H1::parser::make_ASSIGN_MOD(); }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
 #line 107 "H1.lexer.lpp"
-{ return yy::parser::make_ASSIGN_BITWISE_OR(); }
+{ return H1::parser::make_ASSIGN_BITWISE_OR(); }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
 #line 108 "H1.lexer.lpp"
-{ return yy::parser::make_ASSIGN_BITWISE_AND(); }
+{ return H1::parser::make_ASSIGN_BITWISE_AND(); }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
 #line 109 "H1.lexer.lpp"
-{ return yy::parser::make_ASSIGN_BITWISE_EXOR(); }
+{ return H1::parser::make_ASSIGN_BITWISE_EXOR(); }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
 #line 110 "H1.lexer.lpp"
-{ return yy::parser::make_ASSIGN(); }
+{ return H1::parser::make_ASSIGN(); }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
 #line 111 "H1.lexer.lpp"
-{ return yy::parser::make_ADD(); }
+{ return H1::parser::make_ADD(); }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
 #line 112 "H1.lexer.lpp"
-{ return yy::parser::make_SUB(); }
+{ return H1::parser::make_SUB(); }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
 #line 113 "H1.lexer.lpp"
-{ return yy::parser::make_MULT(); }
+{ return H1::parser::make_MULT(); }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
 #line 114 "H1.lexer.lpp"
-{ return yy::parser::make_DIV(); }
+{ return H1::parser::make_DIV(); }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
 #line 115 "H1.lexer.lpp"
-{ return yy::parser::make_MOD(); }
+{ return H1::parser::make_MOD(); }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
 #line 116 "H1.lexer.lpp"
-{ return yy::parser::make_NOT(); }
+{ return H1::parser::make_NOT(); }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
 #line 117 "H1.lexer.lpp"
-{ return yy::parser::make_COMPLEMENT(); }
+{ return H1::parser::make_COMPLEMENT(); }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
 #line 118 "H1.lexer.lpp"
-{ return yy::parser::make_BITWISE_OR(); }
+{ return H1::parser::make_BITWISE_OR(); }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
 #line 119 "H1.lexer.lpp"
-{ return yy::parser::make_BITWISE_AND(); }
+{ return H1::parser::make_BITWISE_AND(); }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
 #line 120 "H1.lexer.lpp"
-{ return yy::parser::make_BITWISE_EXOR(); }
+{ return H1::parser::make_BITWISE_EXOR(); }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
 #line 122 "H1.lexer.lpp"
-{ return yy::parser::make_FILEPATH(std::string(yytext)); }
+{ return H1::parser::make_FILEPATH(std::string(yytext)); }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
 #line 123 "H1.lexer.lpp"
-{ return yy::parser::make_IDENTIFIER(utils::string::to_lower(yytext)); }
+{ return H1::parser::make_IDENTIFIER(utils::string::to_lower(yytext)); }
 	YY_BREAK
 case 89:
 /* rule 89 can match eol */
 YY_RULE_SETUP
 #line 124 "H1.lexer.lpp"
-{ return yy::parser::make_STRING_LOC(std::string(yytext)); }
+{ return H1::parser::make_STRING_LOC(std::string(yytext)); }
 	YY_BREAK
 case 90:
 /* rule 90 can match eol */
 YY_RULE_SETUP
 #line 125 "H1.lexer.lpp"
-{ return yy::parser::make_STRING(std::string(yytext)); }
+{ return H1::parser::make_STRING(std::string(yytext)); }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
 #line 126 "H1.lexer.lpp"
-{ return yy::parser::make_FLOAT(std::string(yytext)); }
+{ return H1::parser::make_FLOAT(std::string(yytext)); }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
 #line 127 "H1.lexer.lpp"
-{ return yy::parser::make_INTEGER(std::string(yytext)); }
+{ return H1::parser::make_INTEGER(std::string(yytext)); }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT_BLOCK_STATE):
 case YY_STATE_EOF(DEVELOPER_BLOCK_STATE):
 #line 129 "H1.lexer.lpp"
-{ return yy::parser::make_YYEOF(); }
+{ return H1::parser::make_YYEOF(); }
 	YY_BREAK
 case 93:
 /* rule 93 can match eol */
 YY_RULE_SETUP
 #line 130 "H1.lexer.lpp"
-{ throw yy::parser::syntax_error("invalid character: " + std::string(yytext)); }
+{ throw H1::parser::syntax_error("invalid character: " + std::string(yytext)); }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP

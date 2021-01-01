@@ -25,6 +25,7 @@ void compiler::compile(std::vector<std::uint8_t>& data)
 auto compiler::parse_buffer(std::vector<std::uint8_t>& data) -> gsc::script_ptr
 {
     yyscan_t scanner;
+    std::uint32_t location = 1;
     gsc::script_ptr result(nullptr);
     
     // Add the two NULL terminators, required by flex.
@@ -37,7 +38,7 @@ auto compiler::parse_buffer(std::vector<std::uint8_t>& data) -> gsc::script_ptr
 
     YY_BUFFER_STATE yybuffer = yy_scan_buffer(reinterpret_cast<char*>(data.data()), data.size(), scanner);
 
-    yy::parser parser(scanner, result);
+    parser parser(scanner, &location, result);
     
     if(parser.parse() || result == nullptr)
     {

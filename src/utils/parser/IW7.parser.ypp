@@ -10,6 +10,7 @@
 %output "./IW7/compiler_parser.cpp"
 %defines "./IW7/compiler_parser.hpp"
 
+%define api.namespace { IW7 }
 %define api.value.type variant
 %define api.token.constructor
 %define api.token.raw
@@ -18,15 +19,17 @@
 %define parse.error detailed
 %define parse.lac full
 
-%lex-param  { yyscan_t yyscanner } 
-%parse-param { yyscan_t yyscanner } 
+%lex-param  { yyscan_t yyscanner }
+%lex-param  { std::uint32_t *location }
+%parse-param { yyscan_t yyscanner }
+%parse-param  { std::uint32_t *location }
 %parse-param { gsc::script_ptr& astout }
 
 %code requires
 {
 	#include <utils.hpp>
 	typedef void *yyscan_t;
-	#define YY_DECL yy::parser::symbol_type yylex(yyscan_t yyscanner)
+	#define YY_DECL IW7::parser::symbol_type yylex(yyscan_t yyscanner, std::uint32_t *location)
 }
 
 %code top
@@ -34,7 +37,7 @@
     #include "IW7.hpp"
 	#include "compiler_parser.hpp"
 	#include "compiler_lexer.hpp"
-	yy::parser::symbol_type yylex(yyscan_t yyscanner);
+	IW7::parser::symbol_type yylex(yyscan_t yyscanner, std::uint32_t *location);
 }
 
 %token INCLUDE USING_ANIMTREE ANIMTREE IF ELSE SWITCH
@@ -534,7 +537,7 @@ level 		: LEVEL 		{ $$ = std::make_unique<gsc::node_level>(""); };
 
 %%
 
-void yy::parser::error(const std::string& msg)
+void IW7::parser::error(const std::string& msg)
 {
     GSC_COMP_ERROR("%s", msg.data());
 }

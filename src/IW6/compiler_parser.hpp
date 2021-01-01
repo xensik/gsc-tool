@@ -33,7 +33,7 @@
 
 /**
  ** \file ./IW6/compiler_parser.hpp
- ** Define the yy::parser class.
+ ** Define the  IW6 ::parser class.
  */
 
 // C++ LALR(1) parser skeleton written by Akim Demaille.
@@ -45,11 +45,11 @@
 #ifndef YY_YY_IW6_COMPILER_PARSER_HPP_INCLUDED
 # define YY_YY_IW6_COMPILER_PARSER_HPP_INCLUDED
 // "%code requires" blocks.
-#line 26 "IW6.parser.ypp"
+#line 29 "IW6.parser.ypp"
 
 	#include <utils.hpp>
 	typedef void *yyscan_t;
-	#define YY_DECL yy::parser::symbol_type yylex(yyscan_t yyscanner)
+	#define YY_DECL IW6::parser::symbol_type yylex(yyscan_t yyscanner, std::uint32_t *location)
 
 #line 55 "./IW6/compiler_parser.hpp"
 
@@ -184,8 +184,9 @@
 # define YYDEBUG 1
 #endif
 
-namespace yy {
-#line 189 "./IW6/compiler_parser.hpp"
+#line 13 "IW6.parser.ypp"
+namespace  IW6  {
+#line 190 "./IW6/compiler_parser.hpp"
 
 
 
@@ -1838,7 +1839,7 @@ switch (yykind)
     };
 
     /// Build a parser object.
-    parser (yyscan_t yyscanner_yyarg, gsc::script_ptr& astout_yyarg);
+    parser (yyscan_t yyscanner_yyarg, std::uint32_t *location_yyarg, gsc::script_ptr& astout_yyarg);
     virtual ~parser ();
 
 #if 201103L <= YY_CPLUSPLUS
@@ -3537,6 +3538,7 @@ switch (yykind)
 
     // User arguments.
     yyscan_t yyscanner;
+    std::uint32_t *location;
     gsc::script_ptr& astout;
 
   };
@@ -4019,8 +4021,9 @@ switch (yykind)
     return this->kind ();
   }
 
-} // yy
-#line 4024 "./IW6/compiler_parser.hpp"
+#line 13 "IW6.parser.ypp"
+} //  IW6 
+#line 4027 "./IW6/compiler_parser.hpp"
 
 
 
