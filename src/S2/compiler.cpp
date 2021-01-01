@@ -33,10 +33,10 @@ auto compiler::parse_buffer(std::vector<std::uint8_t>& data) -> gsc::script_ptr
     data.push_back(0);
     data.push_back(0);
 
-    if (yylex_init(&scanner))
+    if (S2lex_init(&scanner))
         exit(1);
 
-    YY_BUFFER_STATE yybuffer = yy_scan_buffer(reinterpret_cast<char*>(data.data()), data.size(), scanner);
+    YY_BUFFER_STATE yybuffer = S2_scan_buffer(reinterpret_cast<char*>(data.data()), data.size(), scanner);
 
     parser parser(scanner, &location, result);
     
@@ -45,8 +45,8 @@ auto compiler::parse_buffer(std::vector<std::uint8_t>& data) -> gsc::script_ptr
         GSC_COMP_ERROR("An error ocurred while parsing gsc file.");
     }
 
-    yy_delete_buffer(yybuffer, scanner);
-    yylex_destroy(scanner);
+    S2_delete_buffer(yybuffer, scanner);
+    S2lex_destroy(scanner);
 
     return result;
 }

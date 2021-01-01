@@ -33,7 +33,7 @@
 
 /**
  ** \file ./S2/compiler_parser.hpp
- ** Define the  S2 ::parser class.
+ ** Define the S2::parser class.
  */
 
 // C++ LALR(1) parser skeleton written by Akim Demaille.
@@ -42,14 +42,14 @@
 // especially those whose name start with YY_ or yy_.  They are
 // private implementation details that can be changed or removed.
 
-#ifndef YY_YY_S2_COMPILER_PARSER_HPP_INCLUDED
-# define YY_YY_S2_COMPILER_PARSER_HPP_INCLUDED
+#ifndef YY_S2_S2_COMPILER_PARSER_HPP_INCLUDED
+# define YY_S2_S2_COMPILER_PARSER_HPP_INCLUDED
 // "%code requires" blocks.
-#line 29 "S2.parser.ypp"
+#line 30 "S2.parser.ypp"
 
 	#include <utils.hpp>
 	typedef void *yyscan_t;
-	#define YY_DECL S2::parser::symbol_type yylex(yyscan_t yyscanner, std::uint32_t *location)
+	#define YY_DECL S2::parser::symbol_type S2lex(yyscan_t yyscanner, std::uint32_t *location)
 
 #line 55 "./S2/compiler_parser.hpp"
 
@@ -180,13 +180,21 @@
 # endif
 
 /* Debug traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 1
-#endif
+#ifndef S2DEBUG
+# if defined YYDEBUG
+#if YYDEBUG
+#   define S2DEBUG 1
+#  else
+#   define S2DEBUG 0
+#  endif
+# else /* ! defined YYDEBUG */
+#  define S2DEBUG 1
+# endif /* ! defined YYDEBUG */
+#endif  /* ! defined S2DEBUG */
 
-#line 13 "S2.parser.ypp"
-namespace  S2  {
-#line 190 "./S2/compiler_parser.hpp"
+#line 14 "S2.parser.ypp"
+namespace S2 {
+#line 198 "./S2/compiler_parser.hpp"
 
 
 
@@ -195,7 +203,7 @@ namespace  S2  {
   class parser
   {
   public:
-#ifndef YYSTYPE
+#ifndef S2STYPE
   /// A buffer to store and retrieve objects.
   ///
   /// Sort of a variant, but does not keep track of the nature
@@ -569,7 +577,7 @@ namespace  S2  {
   };
 
 #else
-    typedef YYSTYPE semantic_type;
+    typedef S2STYPE semantic_type;
 #endif
 
     /// Syntax errors thrown from user actions.
@@ -591,10 +599,10 @@ namespace  S2  {
     {
       enum token_kind_type
       {
-        YYEMPTY = -2,
-    YYEOF = 0,                     // "end of file"
-    YYerror = 1,                   // error
-    YYUNDEF = 2,                   // "invalid token"
+        S2EMPTY = -2,
+    S2EOF = 0,                     // "end of file"
+    S2error = 1,                   // error
+    S2UNDEF = 2,                   // "invalid token"
     INCLUDE = 3,                   // INCLUDE
     USING_ANIMTREE = 4,            // USING_ANIMTREE
     ANIMTREE = 5,                  // ANIMTREE
@@ -1839,13 +1847,13 @@ switch (yykind)
       symbol_type (int tok)
         : super_type(token_type (tok))
       {
-        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::CALL || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::WAITFRAME || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INCREMENT || tok == token::DECREMENT || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::OR || tok == token::AND || tok == token::EQUALITY || tok == token::INEQUALITY || tok == token::LESS_EQUAL || tok == token::GREATER_EQUAL || tok == token::LESS || tok == token::GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BITWISE_OR || tok == token::ASSIGN_BITWISE_AND || tok == token::ASSIGN_BITWISE_EXOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BITWISE_OR || tok == token::BITWISE_AND || tok == token::BITWISE_EXOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
+        YY_ASSERT (tok == token::S2EOF || tok == token::S2error || tok == token::S2UNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::CALL || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::WAITFRAME || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INCREMENT || tok == token::DECREMENT || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::OR || tok == token::AND || tok == token::EQUALITY || tok == token::INEQUALITY || tok == token::LESS_EQUAL || tok == token::GREATER_EQUAL || tok == token::LESS || tok == token::GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BITWISE_OR || tok == token::ASSIGN_BITWISE_AND || tok == token::ASSIGN_BITWISE_EXOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BITWISE_OR || tok == token::BITWISE_AND || tok == token::BITWISE_EXOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
       }
 #else
       symbol_type (int tok)
         : super_type(token_type (tok))
       {
-        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::CALL || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::WAITFRAME || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INCREMENT || tok == token::DECREMENT || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::OR || tok == token::AND || tok == token::EQUALITY || tok == token::INEQUALITY || tok == token::LESS_EQUAL || tok == token::GREATER_EQUAL || tok == token::LESS || tok == token::GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BITWISE_OR || tok == token::ASSIGN_BITWISE_AND || tok == token::ASSIGN_BITWISE_EXOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BITWISE_OR || tok == token::BITWISE_AND || tok == token::BITWISE_EXOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
+        YY_ASSERT (tok == token::S2EOF || tok == token::S2error || tok == token::S2UNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::CALL || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::WAITFRAME || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INCREMENT || tok == token::DECREMENT || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::OR || tok == token::AND || tok == token::EQUALITY || tok == token::INEQUALITY || tok == token::LESS_EQUAL || tok == token::GREATER_EQUAL || tok == token::LESS || tok == token::GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BITWISE_OR || tok == token::ASSIGN_BITWISE_AND || tok == token::ASSIGN_BITWISE_EXOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BITWISE_OR || tok == token::BITWISE_AND || tok == token::BITWISE_EXOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1882,7 +1890,7 @@ switch (yykind)
     /// \returns  0 iff parsing succeeded.
     virtual int parse ();
 
-#if YYDEBUG
+#if S2DEBUG
     /// The current debugging stream.
     std::ostream& debug_stream () const YY_ATTRIBUTE_PURE;
     /// Set the current debugging stream.
@@ -1911,46 +1919,46 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_YYEOF ()
+      make_S2EOF ()
       {
-        return symbol_type (token::YYEOF);
+        return symbol_type (token::S2EOF);
       }
 #else
       static
       symbol_type
-      make_YYEOF ()
+      make_S2EOF ()
       {
-        return symbol_type (token::YYEOF);
+        return symbol_type (token::S2EOF);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_YYerror ()
+      make_S2error ()
       {
-        return symbol_type (token::YYerror);
+        return symbol_type (token::S2error);
       }
 #else
       static
       symbol_type
-      make_YYerror ()
+      make_S2error ()
       {
-        return symbol_type (token::YYerror);
+        return symbol_type (token::S2error);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_YYUNDEF ()
+      make_S2UNDEF ()
       {
-        return symbol_type (token::YYUNDEF);
+        return symbol_type (token::S2UNDEF);
       }
 #else
       static
       symbol_type
-      make_YYUNDEF ()
+      make_S2UNDEF ()
       {
-        return symbol_type (token::YYUNDEF);
+        return symbol_type (token::S2UNDEF);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -3332,7 +3340,7 @@ switch (yykind)
     static const signed char yyr2_[];
 
 
-#if YYDEBUG
+#if S2DEBUG
     // YYRLINE[YYN] -- Source line where rule number YYN was defined.
     static const short yyrline_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
@@ -4069,11 +4077,11 @@ switch (yykind)
     return this->kind ();
   }
 
-#line 13 "S2.parser.ypp"
-} //  S2 
-#line 4075 "./S2/compiler_parser.hpp"
+#line 14 "S2.parser.ypp"
+} // S2
+#line 4083 "./S2/compiler_parser.hpp"
 
 
 
 
-#endif // !YY_YY_S2_COMPILER_PARSER_HPP_INCLUDED
+#endif // !YY_S2_S2_COMPILER_PARSER_HPP_INCLUDED

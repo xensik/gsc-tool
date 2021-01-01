@@ -14,6 +14,216 @@
 #define FLEX_BETA
 #endif
 
+#ifdef yy_create_buffer
+#define S2_create_buffer_ALREADY_DEFINED
+#else
+#define yy_create_buffer S2_create_buffer
+#endif
+
+#ifdef yy_delete_buffer
+#define S2_delete_buffer_ALREADY_DEFINED
+#else
+#define yy_delete_buffer S2_delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define S2_scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer S2_scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define S2_scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string S2_scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define S2_scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes S2_scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define S2_init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer S2_init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define S2_flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer S2_flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define S2_load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state S2_load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define S2_switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer S2_switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define S2push_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state S2push_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define S2pop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state S2pop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define S2ensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack S2ensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define S2lex_ALREADY_DEFINED
+#else
+#define yylex S2lex
+#endif
+
+#ifdef yyrestart
+#define S2restart_ALREADY_DEFINED
+#else
+#define yyrestart S2restart
+#endif
+
+#ifdef yylex_init
+#define S2lex_init_ALREADY_DEFINED
+#else
+#define yylex_init S2lex_init
+#endif
+
+#ifdef yylex_init_extra
+#define S2lex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra S2lex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define S2lex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy S2lex_destroy
+#endif
+
+#ifdef yyget_debug
+#define S2get_debug_ALREADY_DEFINED
+#else
+#define yyget_debug S2get_debug
+#endif
+
+#ifdef yyset_debug
+#define S2set_debug_ALREADY_DEFINED
+#else
+#define yyset_debug S2set_debug
+#endif
+
+#ifdef yyget_extra
+#define S2get_extra_ALREADY_DEFINED
+#else
+#define yyget_extra S2get_extra
+#endif
+
+#ifdef yyset_extra
+#define S2set_extra_ALREADY_DEFINED
+#else
+#define yyset_extra S2set_extra
+#endif
+
+#ifdef yyget_in
+#define S2get_in_ALREADY_DEFINED
+#else
+#define yyget_in S2get_in
+#endif
+
+#ifdef yyset_in
+#define S2set_in_ALREADY_DEFINED
+#else
+#define yyset_in S2set_in
+#endif
+
+#ifdef yyget_out
+#define S2get_out_ALREADY_DEFINED
+#else
+#define yyget_out S2get_out
+#endif
+
+#ifdef yyset_out
+#define S2set_out_ALREADY_DEFINED
+#else
+#define yyset_out S2set_out
+#endif
+
+#ifdef yyget_leng
+#define S2get_leng_ALREADY_DEFINED
+#else
+#define yyget_leng S2get_leng
+#endif
+
+#ifdef yyget_text
+#define S2get_text_ALREADY_DEFINED
+#else
+#define yyget_text S2get_text
+#endif
+
+#ifdef yyget_lineno
+#define S2get_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno S2get_lineno
+#endif
+
+#ifdef yyset_lineno
+#define S2set_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno S2set_lineno
+#endif
+
+#ifdef yyget_column
+#define S2get_column_ALREADY_DEFINED
+#else
+#define yyget_column S2get_column
+#endif
+
+#ifdef yyset_column
+#define S2set_column_ALREADY_DEFINED
+#else
+#define yyset_column S2set_column
+#endif
+
+#ifdef yywrap
+#define S2wrap_ALREADY_DEFINED
+#else
+#define yywrap S2wrap
+#endif
+
+#ifdef yyalloc
+#define S2alloc_ALREADY_DEFINED
+#else
+#define yyalloc S2alloc
+#endif
+
+#ifdef yyrealloc
+#define S2realloc_ALREADY_DEFINED
+#else
+#define yyrealloc S2realloc
+#endif
+
+#ifdef yyfree
+#define S2free_ALREADY_DEFINED
+#else
+#define yyfree S2free
+#endif
+
 /* First, we deal with  platform-specific or compiler-specific issues. */
 
 /* begin standard C headers. */
@@ -317,7 +527,7 @@ void yyfree ( void * , yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define yywrap(yyscanner) (/*CONSTCOND*/1)
+#define S2wrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 typedef flex_uint8_t YY_CHAR;
 
@@ -674,12 +884,12 @@ static const flex_int16_t yy_chk[718] =
 */
 #define YY_NO_INPUT 1
 #define YY_NO_UNISTD_H 1
-#line 15 "S2.lexer.lpp"
+#line 16 "S2.lexer.lpp"
 #include "S2.hpp"
 #include "compiler_parser.hpp"
-#line 680 "./S2/compiler_lexer.cpp"
+#line 890 "./S2/compiler_lexer.cpp"
 
-#line 682 "./S2/compiler_lexer.cpp"
+#line 892 "./S2/compiler_lexer.cpp"
 
 #define INITIAL 0
 #define COMMENT_BLOCK_STATE 1
@@ -939,10 +1149,10 @@ YY_DECL
 		}
 
 	{
-#line 29 "S2.lexer.lpp"
+#line 30 "S2.lexer.lpp"
 
 
-#line 945 "./S2/compiler_lexer.cpp"
+#line 1155 "./S2/compiler_lexer.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -998,486 +1208,486 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 31 "S2.lexer.lpp"
+#line 32 "S2.lexer.lpp"
 
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 33 "S2.lexer.lpp"
+#line 34 "S2.lexer.lpp"
 
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 35 "S2.lexer.lpp"
+#line 36 "S2.lexer.lpp"
 { BEGIN(COMMENT_BLOCK_STATE); }
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 36 "S2.lexer.lpp"
+#line 37 "S2.lexer.lpp"
 
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 37 "S2.lexer.lpp"
+#line 38 "S2.lexer.lpp"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 39 "S2.lexer.lpp"
+#line 40 "S2.lexer.lpp"
 { BEGIN(DEVELOPER_BLOCK_STATE); }
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 40 "S2.lexer.lpp"
+#line 41 "S2.lexer.lpp"
 
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 41 "S2.lexer.lpp"
+#line 42 "S2.lexer.lpp"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 43 "S2.lexer.lpp"
+#line 44 "S2.lexer.lpp"
 { return S2::parser::make_INCLUDE(); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 44 "S2.lexer.lpp"
+#line 45 "S2.lexer.lpp"
 { return S2::parser::make_USING_ANIMTREE(); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 45 "S2.lexer.lpp"
+#line 46 "S2.lexer.lpp"
 { return S2::parser::make_ANIMTREE(); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 46 "S2.lexer.lpp"
+#line 47 "S2.lexer.lpp"
 { return S2::parser::make_ENDON(); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 47 "S2.lexer.lpp"
+#line 48 "S2.lexer.lpp"
 { return S2::parser::make_NOTIFY(); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 48 "S2.lexer.lpp"
+#line 49 "S2.lexer.lpp"
 { return S2::parser::make_WAIT(); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 49 "S2.lexer.lpp"
+#line 50 "S2.lexer.lpp"
 { return S2::parser::make_WAITTILL(); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 50 "S2.lexer.lpp"
+#line 51 "S2.lexer.lpp"
 { return S2::parser::make_WAITTILLMATCH(); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 51 "S2.lexer.lpp"
+#line 52 "S2.lexer.lpp"
 { return S2::parser::make_WAITTILLFRAMEEND(); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 52 "S2.lexer.lpp"
+#line 53 "S2.lexer.lpp"
 { return S2::parser::make_WAITFRAME(); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 53 "S2.lexer.lpp"
+#line 54 "S2.lexer.lpp"
 { return S2::parser::make_IF(); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 54 "S2.lexer.lpp"
+#line 55 "S2.lexer.lpp"
 { return S2::parser::make_ELSE(); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 55 "S2.lexer.lpp"
+#line 56 "S2.lexer.lpp"
 { return S2::parser::make_WHILE(); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 56 "S2.lexer.lpp"
+#line 57 "S2.lexer.lpp"
 { return S2::parser::make_FOR(); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 57 "S2.lexer.lpp"
+#line 58 "S2.lexer.lpp"
 { return S2::parser::make_FOREACH(); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 58 "S2.lexer.lpp"
+#line 59 "S2.lexer.lpp"
 { return S2::parser::make_IN(); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 59 "S2.lexer.lpp"
+#line 60 "S2.lexer.lpp"
 { return S2::parser::make_SWITCH(); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 60 "S2.lexer.lpp"
+#line 61 "S2.lexer.lpp"
 { return S2::parser::make_CASE(); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 61 "S2.lexer.lpp"
+#line 62 "S2.lexer.lpp"
 { return S2::parser::make_DEFAULT(); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 62 "S2.lexer.lpp"
+#line 63 "S2.lexer.lpp"
 { return S2::parser::make_BREAK(); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 63 "S2.lexer.lpp"
+#line 64 "S2.lexer.lpp"
 { return S2::parser::make_CONTINUE(); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 64 "S2.lexer.lpp"
+#line 65 "S2.lexer.lpp"
 { return S2::parser::make_RETURN(); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 65 "S2.lexer.lpp"
+#line 66 "S2.lexer.lpp"
 { return S2::parser::make_THREAD(); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 66 "S2.lexer.lpp"
+#line 67 "S2.lexer.lpp"
 { return S2::parser::make_CALL(); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 67 "S2.lexer.lpp"
+#line 68 "S2.lexer.lpp"
 { return S2::parser::make_TRUE(); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 68 "S2.lexer.lpp"
+#line 69 "S2.lexer.lpp"
 { return S2::parser::make_FALSE(); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 69 "S2.lexer.lpp"
+#line 70 "S2.lexer.lpp"
 { return S2::parser::make_UNDEFINED(); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 70 "S2.lexer.lpp"
+#line 71 "S2.lexer.lpp"
 { return S2::parser::make_SIZE(); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 71 "S2.lexer.lpp"
+#line 72 "S2.lexer.lpp"
 { return S2::parser::make_GAME(); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 72 "S2.lexer.lpp"
+#line 73 "S2.lexer.lpp"
 { return S2::parser::make_SELF(); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 73 "S2.lexer.lpp"
+#line 74 "S2.lexer.lpp"
 { return S2::parser::make_ANIM(); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 74 "S2.lexer.lpp"
+#line 75 "S2.lexer.lpp"
 { return S2::parser::make_LEVEL(); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 75 "S2.lexer.lpp"
+#line 76 "S2.lexer.lpp"
 { return S2::parser::make_EMPTY_ARRAY(); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 76 "S2.lexer.lpp"
+#line 77 "S2.lexer.lpp"
 { return S2::parser::make_LPAREN(); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 77 "S2.lexer.lpp"
+#line 78 "S2.lexer.lpp"
 { return S2::parser::make_RPAREN(); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 78 "S2.lexer.lpp"
+#line 79 "S2.lexer.lpp"
 { return S2::parser::make_LBRACE(); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 79 "S2.lexer.lpp"
+#line 80 "S2.lexer.lpp"
 { return S2::parser::make_RBRACE(); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 80 "S2.lexer.lpp"
+#line 81 "S2.lexer.lpp"
 { return S2::parser::make_LBRACKET(); }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 81 "S2.lexer.lpp"
+#line 82 "S2.lexer.lpp"
 { return S2::parser::make_RBRACKET(); }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 82 "S2.lexer.lpp"
+#line 83 "S2.lexer.lpp"
 { return S2::parser::make_COMMA(); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 83 "S2.lexer.lpp"
+#line 84 "S2.lexer.lpp"
 { return S2::parser::make_DOT(); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 84 "S2.lexer.lpp"
+#line 85 "S2.lexer.lpp"
 { return S2::parser::make_DOUBLECOLON(); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 85 "S2.lexer.lpp"
+#line 86 "S2.lexer.lpp"
 { return S2::parser::make_COLON(); }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 86 "S2.lexer.lpp"
+#line 87 "S2.lexer.lpp"
 { return S2::parser::make_SEMICOLON(); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 87 "S2.lexer.lpp"
+#line 88 "S2.lexer.lpp"
 { return S2::parser::make_QMARK(); }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 88 "S2.lexer.lpp"
+#line 89 "S2.lexer.lpp"
 { return S2::parser::make_INCREMENT(); }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 89 "S2.lexer.lpp"
+#line 90 "S2.lexer.lpp"
 { return S2::parser::make_DECREMENT(); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 90 "S2.lexer.lpp"
+#line 91 "S2.lexer.lpp"
 { return S2::parser::make_ASSIGN_LSHIFT(); }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 91 "S2.lexer.lpp"
+#line 92 "S2.lexer.lpp"
 { return S2::parser::make_ASSIGN_RSHIFT(); }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 92 "S2.lexer.lpp"
+#line 93 "S2.lexer.lpp"
 { return S2::parser::make_LSHIFT(); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 93 "S2.lexer.lpp"
+#line 94 "S2.lexer.lpp"
 { return S2::parser::make_RSHIFT(); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 94 "S2.lexer.lpp"
+#line 95 "S2.lexer.lpp"
 { return S2::parser::make_OR(); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 95 "S2.lexer.lpp"
+#line 96 "S2.lexer.lpp"
 { return S2::parser::make_AND(); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 96 "S2.lexer.lpp"
+#line 97 "S2.lexer.lpp"
 { return S2::parser::make_EQUALITY(); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 97 "S2.lexer.lpp"
+#line 98 "S2.lexer.lpp"
 { return S2::parser::make_INEQUALITY(); }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 98 "S2.lexer.lpp"
+#line 99 "S2.lexer.lpp"
 { return S2::parser::make_LESS_EQUAL(); }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 99 "S2.lexer.lpp"
+#line 100 "S2.lexer.lpp"
 { return S2::parser::make_GREATER_EQUAL(); }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 100 "S2.lexer.lpp"
+#line 101 "S2.lexer.lpp"
 { return S2::parser::make_LESS(); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 101 "S2.lexer.lpp"
+#line 102 "S2.lexer.lpp"
 { return S2::parser::make_GREATER(); }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 102 "S2.lexer.lpp"
+#line 103 "S2.lexer.lpp"
 { return S2::parser::make_ASSIGN_ADD(); }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 103 "S2.lexer.lpp"
+#line 104 "S2.lexer.lpp"
 { return S2::parser::make_ASSIGN_SUB(); }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 104 "S2.lexer.lpp"
+#line 105 "S2.lexer.lpp"
 { return S2::parser::make_ASSIGN_MULT(); }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 105 "S2.lexer.lpp"
+#line 106 "S2.lexer.lpp"
 { return S2::parser::make_ASSIGN_DIV(); }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 106 "S2.lexer.lpp"
+#line 107 "S2.lexer.lpp"
 { return S2::parser::make_ASSIGN_MOD(); }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 107 "S2.lexer.lpp"
+#line 108 "S2.lexer.lpp"
 { return S2::parser::make_ASSIGN_BITWISE_OR(); }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 108 "S2.lexer.lpp"
+#line 109 "S2.lexer.lpp"
 { return S2::parser::make_ASSIGN_BITWISE_AND(); }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 109 "S2.lexer.lpp"
+#line 110 "S2.lexer.lpp"
 { return S2::parser::make_ASSIGN_BITWISE_EXOR(); }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 110 "S2.lexer.lpp"
+#line 111 "S2.lexer.lpp"
 { return S2::parser::make_ASSIGN(); }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 111 "S2.lexer.lpp"
+#line 112 "S2.lexer.lpp"
 { return S2::parser::make_ADD(); }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 112 "S2.lexer.lpp"
+#line 113 "S2.lexer.lpp"
 { return S2::parser::make_SUB(); }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 113 "S2.lexer.lpp"
+#line 114 "S2.lexer.lpp"
 { return S2::parser::make_MULT(); }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 114 "S2.lexer.lpp"
+#line 115 "S2.lexer.lpp"
 { return S2::parser::make_DIV(); }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 115 "S2.lexer.lpp"
+#line 116 "S2.lexer.lpp"
 { return S2::parser::make_MOD(); }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 116 "S2.lexer.lpp"
+#line 117 "S2.lexer.lpp"
 { return S2::parser::make_NOT(); }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 117 "S2.lexer.lpp"
+#line 118 "S2.lexer.lpp"
 { return S2::parser::make_COMPLEMENT(); }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 118 "S2.lexer.lpp"
+#line 119 "S2.lexer.lpp"
 { return S2::parser::make_BITWISE_OR(); }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 119 "S2.lexer.lpp"
+#line 120 "S2.lexer.lpp"
 { return S2::parser::make_BITWISE_AND(); }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 120 "S2.lexer.lpp"
+#line 121 "S2.lexer.lpp"
 { return S2::parser::make_BITWISE_EXOR(); }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 122 "S2.lexer.lpp"
+#line 123 "S2.lexer.lpp"
 { return S2::parser::make_FILEPATH(std::string(yytext)); }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 123 "S2.lexer.lpp"
+#line 124 "S2.lexer.lpp"
 { return S2::parser::make_IDENTIFIER(utils::string::to_lower(yytext)); }
 	YY_BREAK
 case 89:
 /* rule 89 can match eol */
 YY_RULE_SETUP
-#line 124 "S2.lexer.lpp"
+#line 125 "S2.lexer.lpp"
 { return S2::parser::make_STRING_LOC(std::string(yytext)); }
 	YY_BREAK
 case 90:
 /* rule 90 can match eol */
 YY_RULE_SETUP
-#line 125 "S2.lexer.lpp"
+#line 126 "S2.lexer.lpp"
 { return S2::parser::make_STRING(std::string(yytext)); }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 126 "S2.lexer.lpp"
+#line 127 "S2.lexer.lpp"
 { return S2::parser::make_FLOAT(std::string(yytext)); }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 127 "S2.lexer.lpp"
+#line 128 "S2.lexer.lpp"
 { return S2::parser::make_INTEGER(std::string(yytext)); }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT_BLOCK_STATE):
 case YY_STATE_EOF(DEVELOPER_BLOCK_STATE):
-#line 129 "S2.lexer.lpp"
-{ return S2::parser::make_YYEOF(); }
+#line 130 "S2.lexer.lpp"
+{ return S2::parser::make_S2EOF(); }
 	YY_BREAK
 case 93:
 /* rule 93 can match eol */
 YY_RULE_SETUP
-#line 130 "S2.lexer.lpp"
+#line 131 "S2.lexer.lpp"
 { throw S2::parser::syntax_error("invalid character: " + std::string(yytext)); }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 131 "S2.lexer.lpp"
+#line 132 "S2.lexer.lpp"
 ECHO;
 	YY_BREAK
-#line 1480 "./S2/compiler_lexer.cpp"
+#line 1690 "./S2/compiler_lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2607,6 +2817,6 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 131 "S2.lexer.lpp"
+#line 132 "S2.lexer.lpp"
 
 

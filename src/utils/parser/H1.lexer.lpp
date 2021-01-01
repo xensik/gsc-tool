@@ -6,6 +6,7 @@
 
 %option outfile="./H1/compiler_lexer.cpp"
 %option header-file="./H1/compiler_lexer.hpp"
+%option prefix = "H1"
 %option reentrant
 %option noyywrap batch nounput noinput
 %option never-interactive
@@ -126,6 +127,6 @@ RGX_DEFAULT         (.|\n)
 {RGX_FLOAT}         { return H1::parser::make_FLOAT(std::string(yytext)); }
 {RGX_INTEGER}       { return H1::parser::make_INTEGER(std::string(yytext)); }
 
-<<EOF>>             { return H1::parser::make_YYEOF(); }
+<<EOF>>             { return H1::parser::make_H1EOF(); }
 <*>{RGX_DEFAULT}    { throw H1::parser::syntax_error("invalid character: " + std::string(yytext)); }
 %%

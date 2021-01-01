@@ -6,6 +6,7 @@
 
 %option outfile="./S2/compiler_lexer.cpp"
 %option header-file="./S2/compiler_lexer.hpp"
+%option prefix = "S2"
 %option reentrant
 %option noyywrap batch nounput noinput
 %option never-interactive
@@ -126,6 +127,6 @@ RGX_DEFAULT         (.|\n)
 {RGX_FLOAT}         { return S2::parser::make_FLOAT(std::string(yytext)); }
 {RGX_INTEGER}       { return S2::parser::make_INTEGER(std::string(yytext)); }
 
-<<EOF>>             { return S2::parser::make_YYEOF(); }
+<<EOF>>             { return S2::parser::make_S2EOF(); }
 <*>{RGX_DEFAULT}    { throw S2::parser::syntax_error("invalid character: " + std::string(yytext)); }
 %%

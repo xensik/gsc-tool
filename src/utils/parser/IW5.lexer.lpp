@@ -6,6 +6,7 @@
 
 %option outfile="./IW5/compiler_lexer.cpp"
 %option header-file="./IW5/compiler_lexer.hpp"
+%option prefix = "IW5"
 %option reentrant
 %option noyywrap batch nounput noinput
 %option never-interactive
@@ -129,6 +130,6 @@ RGX_DEFAULT		    (.|\n)
 {RGX_FLOAT}		    { return IW5::parser::make_FLOAT(std::string(yytext)); }
 {RGX_INTEGER}	    { return IW5::parser::make_INTEGER(std::string(yytext)); }
 
-<<EOF>>             { return IW5::parser::make_YYEOF(); }
+<<EOF>>             { return IW5::parser::make_IW5EOF(); }
 <*>{RGX_DEFAULT}    { throw IW5::parser::syntax_error("invalid character: \'" + std::string(yytext) + "\' at line " + std::to_string(*location)); }
 %%

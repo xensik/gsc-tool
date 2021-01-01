@@ -1,6 +1,6 @@
-#ifndef yyHEADER_H
-#define yyHEADER_H 1
-#define yyIN_HEADER 1
+#ifndef IW7HEADER_H
+#define IW7HEADER_H 1
+#define IW7IN_HEADER 1
 
 #line 5 "./IW7/compiler_lexer.hpp"
 
@@ -16,6 +16,216 @@
 #define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
+#endif
+
+#ifdef yy_create_buffer
+#define IW7_create_buffer_ALREADY_DEFINED
+#else
+#define yy_create_buffer IW7_create_buffer
+#endif
+
+#ifdef yy_delete_buffer
+#define IW7_delete_buffer_ALREADY_DEFINED
+#else
+#define yy_delete_buffer IW7_delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define IW7_scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer IW7_scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define IW7_scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string IW7_scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define IW7_scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes IW7_scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define IW7_init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer IW7_init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define IW7_flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer IW7_flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define IW7_load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state IW7_load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define IW7_switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer IW7_switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define IW7push_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state IW7push_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define IW7pop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state IW7pop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define IW7ensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack IW7ensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define IW7lex_ALREADY_DEFINED
+#else
+#define yylex IW7lex
+#endif
+
+#ifdef yyrestart
+#define IW7restart_ALREADY_DEFINED
+#else
+#define yyrestart IW7restart
+#endif
+
+#ifdef yylex_init
+#define IW7lex_init_ALREADY_DEFINED
+#else
+#define yylex_init IW7lex_init
+#endif
+
+#ifdef yylex_init_extra
+#define IW7lex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra IW7lex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define IW7lex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy IW7lex_destroy
+#endif
+
+#ifdef yyget_debug
+#define IW7get_debug_ALREADY_DEFINED
+#else
+#define yyget_debug IW7get_debug
+#endif
+
+#ifdef yyset_debug
+#define IW7set_debug_ALREADY_DEFINED
+#else
+#define yyset_debug IW7set_debug
+#endif
+
+#ifdef yyget_extra
+#define IW7get_extra_ALREADY_DEFINED
+#else
+#define yyget_extra IW7get_extra
+#endif
+
+#ifdef yyset_extra
+#define IW7set_extra_ALREADY_DEFINED
+#else
+#define yyset_extra IW7set_extra
+#endif
+
+#ifdef yyget_in
+#define IW7get_in_ALREADY_DEFINED
+#else
+#define yyget_in IW7get_in
+#endif
+
+#ifdef yyset_in
+#define IW7set_in_ALREADY_DEFINED
+#else
+#define yyset_in IW7set_in
+#endif
+
+#ifdef yyget_out
+#define IW7get_out_ALREADY_DEFINED
+#else
+#define yyget_out IW7get_out
+#endif
+
+#ifdef yyset_out
+#define IW7set_out_ALREADY_DEFINED
+#else
+#define yyset_out IW7set_out
+#endif
+
+#ifdef yyget_leng
+#define IW7get_leng_ALREADY_DEFINED
+#else
+#define yyget_leng IW7get_leng
+#endif
+
+#ifdef yyget_text
+#define IW7get_text_ALREADY_DEFINED
+#else
+#define yyget_text IW7get_text
+#endif
+
+#ifdef yyget_lineno
+#define IW7get_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno IW7get_lineno
+#endif
+
+#ifdef yyset_lineno
+#define IW7set_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno IW7set_lineno
+#endif
+
+#ifdef yyget_column
+#define IW7get_column_ALREADY_DEFINED
+#else
+#define yyget_column IW7get_column
+#endif
+
+#ifdef yyset_column
+#define IW7set_column_ALREADY_DEFINED
+#else
+#define yyset_column IW7set_column
+#endif
+
+#ifdef yywrap
+#define IW7wrap_ALREADY_DEFINED
+#else
+#define yywrap IW7wrap
+#endif
+
+#ifdef yyalloc
+#define IW7alloc_ALREADY_DEFINED
+#else
+#define yyalloc IW7alloc
+#endif
+
+#ifdef yyrealloc
+#define IW7realloc_ALREADY_DEFINED
+#else
+#define yyrealloc IW7realloc
+#endif
+
+#ifdef yyfree
+#define IW7free_ALREADY_DEFINED
+#else
+#define yyfree IW7free
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -216,7 +426,7 @@ void yyfree ( void * , yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define yywrap(yyscanner) (/*CONSTCOND*/1)
+#define IW7wrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 
 #define yytext_ptr yytext_r
@@ -341,154 +551,154 @@ extern int yylex (yyscan_t yyscanner);
 #undef YY_DECL
 #endif
 
-#ifndef yy_create_buffer_ALREADY_DEFINED
+#ifndef IW7_create_buffer_ALREADY_DEFINED
 #undef yy_create_buffer
 #endif
-#ifndef yy_delete_buffer_ALREADY_DEFINED
+#ifndef IW7_delete_buffer_ALREADY_DEFINED
 #undef yy_delete_buffer
 #endif
-#ifndef yy_scan_buffer_ALREADY_DEFINED
+#ifndef IW7_scan_buffer_ALREADY_DEFINED
 #undef yy_scan_buffer
 #endif
-#ifndef yy_scan_string_ALREADY_DEFINED
+#ifndef IW7_scan_string_ALREADY_DEFINED
 #undef yy_scan_string
 #endif
-#ifndef yy_scan_bytes_ALREADY_DEFINED
+#ifndef IW7_scan_bytes_ALREADY_DEFINED
 #undef yy_scan_bytes
 #endif
-#ifndef yy_init_buffer_ALREADY_DEFINED
+#ifndef IW7_init_buffer_ALREADY_DEFINED
 #undef yy_init_buffer
 #endif
-#ifndef yy_flush_buffer_ALREADY_DEFINED
+#ifndef IW7_flush_buffer_ALREADY_DEFINED
 #undef yy_flush_buffer
 #endif
-#ifndef yy_load_buffer_state_ALREADY_DEFINED
+#ifndef IW7_load_buffer_state_ALREADY_DEFINED
 #undef yy_load_buffer_state
 #endif
-#ifndef yy_switch_to_buffer_ALREADY_DEFINED
+#ifndef IW7_switch_to_buffer_ALREADY_DEFINED
 #undef yy_switch_to_buffer
 #endif
-#ifndef yypush_buffer_state_ALREADY_DEFINED
+#ifndef IW7push_buffer_state_ALREADY_DEFINED
 #undef yypush_buffer_state
 #endif
-#ifndef yypop_buffer_state_ALREADY_DEFINED
+#ifndef IW7pop_buffer_state_ALREADY_DEFINED
 #undef yypop_buffer_state
 #endif
-#ifndef yyensure_buffer_stack_ALREADY_DEFINED
+#ifndef IW7ensure_buffer_stack_ALREADY_DEFINED
 #undef yyensure_buffer_stack
 #endif
-#ifndef yylex_ALREADY_DEFINED
+#ifndef IW7lex_ALREADY_DEFINED
 #undef yylex
 #endif
-#ifndef yyrestart_ALREADY_DEFINED
+#ifndef IW7restart_ALREADY_DEFINED
 #undef yyrestart
 #endif
-#ifndef yylex_init_ALREADY_DEFINED
+#ifndef IW7lex_init_ALREADY_DEFINED
 #undef yylex_init
 #endif
-#ifndef yylex_init_extra_ALREADY_DEFINED
+#ifndef IW7lex_init_extra_ALREADY_DEFINED
 #undef yylex_init_extra
 #endif
-#ifndef yylex_destroy_ALREADY_DEFINED
+#ifndef IW7lex_destroy_ALREADY_DEFINED
 #undef yylex_destroy
 #endif
-#ifndef yyget_debug_ALREADY_DEFINED
+#ifndef IW7get_debug_ALREADY_DEFINED
 #undef yyget_debug
 #endif
-#ifndef yyset_debug_ALREADY_DEFINED
+#ifndef IW7set_debug_ALREADY_DEFINED
 #undef yyset_debug
 #endif
-#ifndef yyget_extra_ALREADY_DEFINED
+#ifndef IW7get_extra_ALREADY_DEFINED
 #undef yyget_extra
 #endif
-#ifndef yyset_extra_ALREADY_DEFINED
+#ifndef IW7set_extra_ALREADY_DEFINED
 #undef yyset_extra
 #endif
-#ifndef yyget_in_ALREADY_DEFINED
+#ifndef IW7get_in_ALREADY_DEFINED
 #undef yyget_in
 #endif
-#ifndef yyset_in_ALREADY_DEFINED
+#ifndef IW7set_in_ALREADY_DEFINED
 #undef yyset_in
 #endif
-#ifndef yyget_out_ALREADY_DEFINED
+#ifndef IW7get_out_ALREADY_DEFINED
 #undef yyget_out
 #endif
-#ifndef yyset_out_ALREADY_DEFINED
+#ifndef IW7set_out_ALREADY_DEFINED
 #undef yyset_out
 #endif
-#ifndef yyget_leng_ALREADY_DEFINED
+#ifndef IW7get_leng_ALREADY_DEFINED
 #undef yyget_leng
 #endif
-#ifndef yyget_text_ALREADY_DEFINED
+#ifndef IW7get_text_ALREADY_DEFINED
 #undef yyget_text
 #endif
-#ifndef yyget_lineno_ALREADY_DEFINED
+#ifndef IW7get_lineno_ALREADY_DEFINED
 #undef yyget_lineno
 #endif
-#ifndef yyset_lineno_ALREADY_DEFINED
+#ifndef IW7set_lineno_ALREADY_DEFINED
 #undef yyset_lineno
 #endif
-#ifndef yyget_column_ALREADY_DEFINED
+#ifndef IW7get_column_ALREADY_DEFINED
 #undef yyget_column
 #endif
-#ifndef yyset_column_ALREADY_DEFINED
+#ifndef IW7set_column_ALREADY_DEFINED
 #undef yyset_column
 #endif
-#ifndef yywrap_ALREADY_DEFINED
+#ifndef IW7wrap_ALREADY_DEFINED
 #undef yywrap
 #endif
-#ifndef yyget_lval_ALREADY_DEFINED
+#ifndef IW7get_lval_ALREADY_DEFINED
 #undef yyget_lval
 #endif
-#ifndef yyset_lval_ALREADY_DEFINED
+#ifndef IW7set_lval_ALREADY_DEFINED
 #undef yyset_lval
 #endif
-#ifndef yyget_lloc_ALREADY_DEFINED
+#ifndef IW7get_lloc_ALREADY_DEFINED
 #undef yyget_lloc
 #endif
-#ifndef yyset_lloc_ALREADY_DEFINED
+#ifndef IW7set_lloc_ALREADY_DEFINED
 #undef yyset_lloc
 #endif
-#ifndef yyalloc_ALREADY_DEFINED
+#ifndef IW7alloc_ALREADY_DEFINED
 #undef yyalloc
 #endif
-#ifndef yyrealloc_ALREADY_DEFINED
+#ifndef IW7realloc_ALREADY_DEFINED
 #undef yyrealloc
 #endif
-#ifndef yyfree_ALREADY_DEFINED
+#ifndef IW7free_ALREADY_DEFINED
 #undef yyfree
 #endif
-#ifndef yytext_ALREADY_DEFINED
+#ifndef IW7text_ALREADY_DEFINED
 #undef yytext
 #endif
-#ifndef yyleng_ALREADY_DEFINED
+#ifndef IW7leng_ALREADY_DEFINED
 #undef yyleng
 #endif
-#ifndef yyin_ALREADY_DEFINED
+#ifndef IW7in_ALREADY_DEFINED
 #undef yyin
 #endif
-#ifndef yyout_ALREADY_DEFINED
+#ifndef IW7out_ALREADY_DEFINED
 #undef yyout
 #endif
-#ifndef yy_flex_debug_ALREADY_DEFINED
+#ifndef IW7_flex_debug_ALREADY_DEFINED
 #undef yy_flex_debug
 #endif
-#ifndef yylineno_ALREADY_DEFINED
+#ifndef IW7lineno_ALREADY_DEFINED
 #undef yylineno
 #endif
-#ifndef yytables_fload_ALREADY_DEFINED
+#ifndef IW7tables_fload_ALREADY_DEFINED
 #undef yytables_fload
 #endif
-#ifndef yytables_destroy_ALREADY_DEFINED
+#ifndef IW7tables_destroy_ALREADY_DEFINED
 #undef yytables_destroy
 #endif
-#ifndef yyTABLES_NAME_ALREADY_DEFINED
+#ifndef IW7TABLES_NAME_ALREADY_DEFINED
 #undef yyTABLES_NAME
 #endif
 
-#line 130 "IW7.lexer.lpp"
+#line 131 "IW7.lexer.lpp"
 
 
-#line 492 "./IW7/compiler_lexer.hpp"
-#undef yyIN_HEADER
-#endif /* yyHEADER_H */
+#line 702 "./IW7/compiler_lexer.hpp"
+#undef IW7IN_HEADER
+#endif /* IW7HEADER_H */

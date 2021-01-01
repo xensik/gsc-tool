@@ -10,7 +10,8 @@
 %output "./IW6/compiler_parser.cpp"
 %defines "./IW6/compiler_parser.hpp"
 
-%define api.namespace { IW6 }
+%define api.prefix {IW6}
+%define api.namespace {IW6}
 %define api.value.type variant
 %define api.token.constructor
 %define api.token.raw
@@ -29,7 +30,7 @@
 {
 	#include <utils.hpp>
 	typedef void *yyscan_t;
-	#define YY_DECL IW6::parser::symbol_type yylex(yyscan_t yyscanner, std::uint32_t *location)
+	#define YY_DECL IW6::parser::symbol_type IW6lex(yyscan_t yyscanner, std::uint32_t *location)
 }
 
 %code top
@@ -37,7 +38,7 @@
     #include "IW6.hpp"
 	#include "compiler_parser.hpp"
 	#include "compiler_lexer.hpp"
-	IW6::parser::symbol_type yylex(yyscan_t yyscanner, std::uint32_t *location);
+	IW6::parser::symbol_type IW6lex(yyscan_t yyscanner, std::uint32_t *location);
 }
 
 %token INCLUDE USING_ANIMTREE ANIMTREE IF ELSE SWITCH

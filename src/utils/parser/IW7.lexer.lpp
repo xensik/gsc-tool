@@ -6,6 +6,7 @@
 
 %option outfile="./IW7/compiler_lexer.cpp"
 %option header-file="./IW7/compiler_lexer.hpp"
+%option prefix = "IW7"
 %option reentrant
 %option noyywrap batch nounput noinput
 %option never-interactive
@@ -125,6 +126,6 @@ RGX_DEFAULT		    (.|\n)
 {RGX_FLOAT}		    { return IW7::parser::make_FLOAT(std::string(yytext)); }
 {RGX_INTEGER}	    { return IW7::parser::make_INTEGER(std::string(yytext)); }
 
-<<EOF>>             { return IW7::parser::make_YYEOF(); }
+<<EOF>>             { return IW7::parser::make_IW7EOF(); }
 <*>{RGX_DEFAULT}    { throw IW7::parser::syntax_error("invalid character: " + std::string(yytext)); }
 %%

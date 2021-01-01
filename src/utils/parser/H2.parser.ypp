@@ -10,7 +10,8 @@
 %output "./H2/compiler_parser.cpp"
 %defines "./H2/compiler_parser.hpp"
 
-%define api.namespace { H2 }
+%define api.prefix {H2}
+%define api.namespace {H2}
 %define api.value.type variant
 %define api.token.constructor
 %define api.token.raw
@@ -29,7 +30,7 @@
 {
 	#include <utils.hpp>
 	typedef void *yyscan_t;
-	#define YY_DECL H2::parser::symbol_type yylex(yyscan_t yyscanner, std::uint32_t *location)
+	#define YY_DECL H2::parser::symbol_type H2lex(yyscan_t yyscanner, std::uint32_t *location)
 }
 
 %code top
@@ -37,7 +38,7 @@
     #include "H2.hpp"
 	#include "compiler_parser.hpp"
 	#include "compiler_lexer.hpp"
-	H2::parser::symbol_type yylex(yyscan_t yyscanner, std::uint32_t *location);
+	H2::parser::symbol_type H2lex(yyscan_t yyscanner, std::uint32_t *location);
 }
 
 %token INCLUDE USING_ANIMTREE ANIMTREE IF ELSE SWITCH
