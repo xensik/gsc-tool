@@ -346,7 +346,8 @@ void compiler::emit_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_pt
     auto break_loc = create_label();
     auto continue_loc = create_label();
 
-    emit_expr(ctx, stmt->pre_expr);
+    if(stmt->pre_expr.as_node->type != gsc::node_type::null)
+        emit_expr(ctx, stmt->pre_expr);
 
     auto for_ctx = ctx->transfer();
 
@@ -359,12 +360,17 @@ void compiler::emit_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_pt
 
     // TODO: check if constant condition
     insert_label(begin_loc);
-    emit_expr(ctx, stmt->expr);
+
+    if(stmt->expr.as_node->type != gsc::node_type::null)
+        emit_expr(ctx, stmt->expr);
 
     emit_block(for_ctx, stmt->block, false);
 
     insert_label(continue_loc);
-    emit_expr(ctx, stmt->post_expr);
+
+    if(stmt->post_expr.as_node->type != gsc::node_type::null)
+        emit_expr(ctx, stmt->post_expr);
+
     emit_opcode(ctx, opcode::OP_jumpback, begin_loc);
     
     insert_label(break_loc);
@@ -835,19 +841,19 @@ void compiler::emit_expr_call_local(const gsc::context_ptr& ctx, const std::stri
 {
     if(thread && method && child)
     {
-        emit_opcode(ctx, opcode::OP_ScriptLocalMethodChildThreadCall, { utils::string::va("%d", args), func });
+        emit_opcode(ctx, opcode::OP_ScriptLocalMethodChildThreadCall, { func, utils::string::va("%d", args) });
     }
     else if(thread && method && !child)
     {
-        emit_opcode(ctx, opcode::OP_ScriptLocalMethodThreadCall, { utils::string::va("%d", args), func });
+        emit_opcode(ctx, opcode::OP_ScriptLocalMethodThreadCall, { func, utils::string::va("%d", args) });
     }
    else if(thread && !method && child)
     {
-        emit_opcode(ctx, opcode::OP_ScriptLocalChildThreadCall, { utils::string::va("%d", args), func });
+        emit_opcode(ctx, opcode::OP_ScriptLocalChildThreadCall, { func, utils::string::va("%d", args) });
     }
     else if(thread && !method && !child)
     {
-        emit_opcode(ctx, opcode::OP_ScriptLocalThreadCall, { utils::string::va("%d", args), func });
+        emit_opcode(ctx, opcode::OP_ScriptLocalThreadCall, { func, utils::string::va("%d", args) });
     }
     else if(!thread && method)
     {
