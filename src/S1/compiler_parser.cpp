@@ -35,15 +35,17 @@
 // private implementation details that can be changed or removed.
 
 // "%code top" blocks.
-#line 33 "S1.parser.ypp"
+#line 37 "S1.parser.ypp"
 
     #include "S1.hpp"
 	#include "compiler_parser.hpp"
 	#include "compiler_lexer.hpp"
-	yy::parser::symbol_type yylex(yyscan_t yyscanner);
+	S1::parser::symbol_type S1lex(yyscan_t yyscanner, std::uint32_t *location);
 
 #line 46 "./S1/compiler_parser.cpp"
 
+// Take the name prefix into account.
+#define yylex   S1lex
 
 
 
@@ -77,7 +79,7 @@
 
 
 // Enable debugging if requested.
-#if YYDEBUG
+#if S1DEBUG
 
 // A pseudo ostream that takes yydebug_ into account.
 # define YYCDEBUG if (yydebug_) (*yycdebug_)
@@ -104,14 +106,14 @@
       yy_stack_print_ ();                \
   } while (false)
 
-#else // !YYDEBUG
+#else // !S1DEBUG
 
 # define YYCDEBUG if (false) std::cerr
 # define YY_SYMBOL_PRINT(Title, Symbol)  YYUSE (Symbol)
 # define YY_REDUCE_PRINT(Rule)           static_cast<void> (0)
 # define YY_STACK_PRINT()                static_cast<void> (0)
 
-#endif // !YYDEBUG
+#endif // !S1DEBUG
 
 #define yyerrok         (yyerrstatus_ = 0)
 #define yyclearin       (yyla.clear ())
@@ -121,12 +123,13 @@
 #define YYERROR         goto yyerrorlab
 #define YYRECOVERING()  (!!yyerrstatus_)
 
-namespace yy {
-#line 126 "./S1/compiler_parser.cpp"
+#line 14 "S1.parser.ypp"
+namespace S1 {
+#line 129 "./S1/compiler_parser.cpp"
 
   /// Build a parser object.
-  parser::parser (yyscan_t yyscanner_yyarg, gsc::script_ptr& astout_yyarg)
-#if YYDEBUG
+  parser::parser (yyscan_t yyscanner_yyarg, std::uint32_t *location_yyarg, gsc::script_ptr& astout_yyarg)
+#if S1DEBUG
     : yydebug_ (false),
       yycdebug_ (&std::cerr),
 #else
@@ -134,6 +137,7 @@ namespace yy {
 #endif
       yy_lac_established_ (false),
       yyscanner (yyscanner_yyarg),
+      location (location_yyarg),
       astout (astout_yyarg)
   {}
 
@@ -192,6 +196,10 @@ namespace yy {
   {
     switch (that.kind ())
     {
+      case symbol_kind::S_animref: // animref
+        value.YY_MOVE_OR_COPY< gsc::animref_ptr > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_block: // block
         value.YY_MOVE_OR_COPY< gsc::block_ptr > (YY_MOVE (that.value));
         break;
@@ -376,6 +384,7 @@ namespace yy {
 
       case symbol_kind::S_FILEPATH: // FILEPATH
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
+      case symbol_kind::S_ANIMREF: // ANIMREF
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
       case symbol_kind::S_FLOAT: // FLOAT
@@ -398,6 +407,10 @@ namespace yy {
   {
     switch (that.kind ())
     {
+      case symbol_kind::S_animref: // animref
+        value.move< gsc::animref_ptr > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_block: // block
         value.move< gsc::block_ptr > (YY_MOVE (that.value));
         break;
@@ -582,6 +595,7 @@ namespace yy {
 
       case symbol_kind::S_FILEPATH: // FILEPATH
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
+      case symbol_kind::S_ANIMREF: // ANIMREF
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
       case symbol_kind::S_FLOAT: // FLOAT
@@ -604,6 +618,10 @@ namespace yy {
     state = that.state;
     switch (that.kind ())
     {
+      case symbol_kind::S_animref: // animref
+        value.copy< gsc::animref_ptr > (that.value);
+        break;
+
       case symbol_kind::S_block: // block
         value.copy< gsc::block_ptr > (that.value);
         break;
@@ -788,6 +806,7 @@ namespace yy {
 
       case symbol_kind::S_FILEPATH: // FILEPATH
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
+      case symbol_kind::S_ANIMREF: // ANIMREF
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
       case symbol_kind::S_FLOAT: // FLOAT
@@ -808,6 +827,10 @@ namespace yy {
     state = that.state;
     switch (that.kind ())
     {
+      case symbol_kind::S_animref: // animref
+        value.move< gsc::animref_ptr > (that.value);
+        break;
+
       case symbol_kind::S_block: // block
         value.move< gsc::block_ptr > (that.value);
         break;
@@ -992,6 +1015,7 @@ namespace yy {
 
       case symbol_kind::S_FILEPATH: // FILEPATH
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
+      case symbol_kind::S_ANIMREF: // ANIMREF
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
       case symbol_kind::S_FLOAT: // FLOAT
@@ -1017,7 +1041,7 @@ namespace yy {
       YY_SYMBOL_PRINT (yymsg, yysym);
   }
 
-#if YYDEBUG
+#if S1DEBUG
   template <typename Base>
   void
   parser::yy_print_ (std::ostream& yyo, const basic_symbol<Base>& yysym) const
@@ -1062,7 +1086,7 @@ namespace yy {
     yystack_.pop (n);
   }
 
-#if YYDEBUG
+#if S1DEBUG
   std::ostream&
   parser::debug_stream () const
   {
@@ -1087,7 +1111,7 @@ namespace yy {
   {
     yydebug_ = l;
   }
-#endif // YYDEBUG
+#endif // S1DEBUG
 
   parser::state_type
   parser::yy_lr_goto_state_ (state_type yystate, int yysym)
@@ -1183,7 +1207,7 @@ namespace yy {
         try
 #endif // YY_EXCEPTIONS
           {
-            symbol_type yylookahead (yylex (yyscanner));
+            symbol_type yylookahead (yylex (yyscanner, location));
             yyla.move (yylookahead);
           }
 #if YY_EXCEPTIONS
@@ -1263,6 +1287,10 @@ namespace yy {
          when using variants.  */
       switch (yyr1_[yyn])
     {
+      case symbol_kind::S_animref: // animref
+        yylhs.value.emplace< gsc::animref_ptr > ();
+        break;
+
       case symbol_kind::S_block: // block
         yylhs.value.emplace< gsc::block_ptr > ();
         break;
@@ -1447,6 +1475,7 @@ namespace yy {
 
       case symbol_kind::S_FILEPATH: // FILEPATH
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
+      case symbol_kind::S_ANIMREF: // ANIMREF
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
       case symbol_kind::S_FLOAT: // FLOAT
@@ -1469,1142 +1498,1154 @@ namespace yy {
           switch (yyn)
             {
   case 2: // root: script
-#line 114 "S1.parser.ypp"
+#line 119 "S1.parser.ypp"
                  { astout = std::move(yystack_[0].value.as < gsc::script_ptr > ()); }
-#line 1475 "./S1/compiler_parser.cpp"
+#line 1504 "./S1/compiler_parser.cpp"
     break;
 
   case 3: // root: %empty
-#line 115 "S1.parser.ypp"
-                 { astout = std::make_unique<gsc::node_script>(""); }
-#line 1481 "./S1/compiler_parser.cpp"
+#line 120 "S1.parser.ypp"
+                 { astout = std::make_unique<gsc::node_script>(); }
+#line 1510 "./S1/compiler_parser.cpp"
     break;
 
   case 4: // script: script include
-#line 120 "S1.parser.ypp"
+#line 125 "S1.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::move(yystack_[1].value.as < gsc::script_ptr > ()); yylhs.value.as < gsc::script_ptr > ()->includes.push_back(std::move(yystack_[0].value.as < gsc::include_ptr > ())); }
-#line 1487 "./S1/compiler_parser.cpp"
+#line 1516 "./S1/compiler_parser.cpp"
     break;
 
   case 5: // script: script using_animtree
-#line 122 "S1.parser.ypp"
+#line 127 "S1.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::move(yystack_[1].value.as < gsc::script_ptr > ()); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ())); }
-#line 1493 "./S1/compiler_parser.cpp"
+#line 1522 "./S1/compiler_parser.cpp"
     break;
 
   case 6: // script: script animtree
-#line 124 "S1.parser.ypp"
+#line 129 "S1.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::move(yystack_[1].value.as < gsc::script_ptr > ()); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ())); }
-#line 1499 "./S1/compiler_parser.cpp"
+#line 1528 "./S1/compiler_parser.cpp"
     break;
 
   case 7: // script: script thread
-#line 126 "S1.parser.ypp"
+#line 131 "S1.parser.ypp"
                 { yylhs.value.as < gsc::script_ptr > () = std::move(yystack_[1].value.as < gsc::script_ptr > ()); yylhs.value.as < gsc::script_ptr > ()->threads.push_back(std::move(yystack_[0].value.as < gsc::thread_ptr > ())); }
-#line 1505 "./S1/compiler_parser.cpp"
+#line 1534 "./S1/compiler_parser.cpp"
     break;
 
   case 8: // script: include
-#line 128 "S1.parser.ypp"
-                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->includes.push_back(std::move(yystack_[0].value.as < gsc::include_ptr > ()));}
-#line 1511 "./S1/compiler_parser.cpp"
+#line 133 "S1.parser.ypp"
+                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(std::to_string(*location)); yylhs.value.as < gsc::script_ptr > ()->includes.push_back(std::move(yystack_[0].value.as < gsc::include_ptr > ()));}
+#line 1540 "./S1/compiler_parser.cpp"
     break;
 
   case 9: // script: using_animtree
-#line 130 "S1.parser.ypp"
-                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ()));}
-#line 1517 "./S1/compiler_parser.cpp"
+#line 135 "S1.parser.ypp"
+                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(std::to_string(*location)); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ()));}
+#line 1546 "./S1/compiler_parser.cpp"
     break;
 
   case 10: // script: animtree
-#line 132 "S1.parser.ypp"
-                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ()));}
-#line 1523 "./S1/compiler_parser.cpp"
+#line 137 "S1.parser.ypp"
+                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(std::to_string(*location)); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ()));}
+#line 1552 "./S1/compiler_parser.cpp"
     break;
 
   case 11: // script: thread
-#line 134 "S1.parser.ypp"
-                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->threads.push_back(std::move(yystack_[0].value.as < gsc::thread_ptr > ()));}
-#line 1529 "./S1/compiler_parser.cpp"
+#line 139 "S1.parser.ypp"
+                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(std::to_string(*location)); yylhs.value.as < gsc::script_ptr > ()->threads.push_back(std::move(yystack_[0].value.as < gsc::thread_ptr > ()));}
+#line 1558 "./S1/compiler_parser.cpp"
     break;
 
   case 12: // include: INCLUDE filepath SEMICOLON
-#line 139 "S1.parser.ypp"
-                { yylhs.value.as < gsc::include_ptr > () = std::make_unique<gsc::node_include>("", std::move(yystack_[1].value.as < gsc::filepath_ptr > ())); }
-#line 1535 "./S1/compiler_parser.cpp"
+#line 144 "S1.parser.ypp"
+                { yylhs.value.as < gsc::include_ptr > () = std::make_unique<gsc::node_include>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::filepath_ptr > ())); }
+#line 1564 "./S1/compiler_parser.cpp"
     break;
 
   case 13: // using_animtree: USING_ANIMTREE LPAREN data_string RPAREN SEMICOLON
-#line 144 "S1.parser.ypp"
-                { yylhs.value.as < gsc::using_animtree_ptr > () = std::make_unique<gsc::node_using_animtree>("", std::move(yystack_[2].value.as < gsc::string_ptr > ())); }
-#line 1541 "./S1/compiler_parser.cpp"
+#line 149 "S1.parser.ypp"
+                { yylhs.value.as < gsc::using_animtree_ptr > () = std::make_unique<gsc::node_using_animtree>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::string_ptr > ())); }
+#line 1570 "./S1/compiler_parser.cpp"
     break;
 
   case 14: // animtree: ANIMTREE LPAREN data_string RPAREN SEMICOLON
-#line 149 "S1.parser.ypp"
-                { yylhs.value.as < gsc::using_animtree_ptr > () = std::make_unique<gsc::node_using_animtree>("", std::move(yystack_[2].value.as < gsc::string_ptr > ())); }
-#line 1547 "./S1/compiler_parser.cpp"
+#line 154 "S1.parser.ypp"
+                { yylhs.value.as < gsc::using_animtree_ptr > () = std::make_unique<gsc::node_using_animtree>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::string_ptr > ())); }
+#line 1576 "./S1/compiler_parser.cpp"
     break;
 
   case 15: // thread: identifier LPAREN parameters RPAREN LBRACE block RBRACE
-#line 154 "S1.parser.ypp"
-                { yylhs.value.as < gsc::thread_ptr > () = std::make_unique<gsc::node_thread>("", std::move(yystack_[6].value.as < gsc::identifier_ptr > ()), std::move(yystack_[4].value.as < gsc::parameters_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1553 "./S1/compiler_parser.cpp"
+#line 159 "S1.parser.ypp"
+                { yylhs.value.as < gsc::thread_ptr > () = std::make_unique<gsc::node_thread>(std::to_string(*location), std::move(yystack_[6].value.as < gsc::identifier_ptr > ()), std::move(yystack_[4].value.as < gsc::parameters_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+#line 1582 "./S1/compiler_parser.cpp"
     break;
 
   case 16: // parameters: parameters COMMA identifier
-#line 159 "S1.parser.ypp"
+#line 164 "S1.parser.ypp"
                 { yylhs.value.as < gsc::parameters_ptr > () = std::move(yystack_[2].value.as < gsc::parameters_ptr > ()); yylhs.value.as < gsc::parameters_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
-#line 1559 "./S1/compiler_parser.cpp"
+#line 1588 "./S1/compiler_parser.cpp"
     break;
 
   case 17: // parameters: identifier
-#line 161 "S1.parser.ypp"
-                { yylhs.value.as < gsc::parameters_ptr > () = std::make_unique<gsc::node_parameters>(""); yylhs.value.as < gsc::parameters_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
-#line 1565 "./S1/compiler_parser.cpp"
+#line 166 "S1.parser.ypp"
+                { yylhs.value.as < gsc::parameters_ptr > () = std::make_unique<gsc::node_parameters>(std::to_string(*location)); yylhs.value.as < gsc::parameters_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
+#line 1594 "./S1/compiler_parser.cpp"
     break;
 
   case 18: // parameters: %empty
-#line 163 "S1.parser.ypp"
-                { yylhs.value.as < gsc::parameters_ptr > () = std::make_unique<gsc::node_parameters>(""); }
-#line 1571 "./S1/compiler_parser.cpp"
+#line 168 "S1.parser.ypp"
+                { yylhs.value.as < gsc::parameters_ptr > () = std::make_unique<gsc::node_parameters>(std::to_string(*location)); }
+#line 1600 "./S1/compiler_parser.cpp"
     break;
 
   case 19: // block: block stmt
-#line 168 "S1.parser.ypp"
+#line 173 "S1.parser.ypp"
                 { yylhs.value.as < gsc::block_ptr > () = std::move(yystack_[1].value.as < gsc::block_ptr > ()); yylhs.value.as < gsc::block_ptr > ()->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ())); }
-#line 1577 "./S1/compiler_parser.cpp"
+#line 1606 "./S1/compiler_parser.cpp"
     break;
 
   case 20: // block: stmt
-#line 170 "S1.parser.ypp"
-                { yylhs.value.as < gsc::block_ptr > () = std::make_unique<gsc::node_block>(""); yylhs.value.as < gsc::block_ptr > ()->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ())); }
-#line 1583 "./S1/compiler_parser.cpp"
+#line 175 "S1.parser.ypp"
+                { yylhs.value.as < gsc::block_ptr > () = std::make_unique<gsc::node_block>(std::to_string(*location)); yylhs.value.as < gsc::block_ptr > ()->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ())); }
+#line 1612 "./S1/compiler_parser.cpp"
     break;
 
   case 21: // block: %empty
-#line 172 "S1.parser.ypp"
-                { yylhs.value.as < gsc::block_ptr > () = std::make_unique<gsc::node_block>(""); }
-#line 1589 "./S1/compiler_parser.cpp"
+#line 177 "S1.parser.ypp"
+                { yylhs.value.as < gsc::block_ptr > () = std::make_unique<gsc::node_block>(std::to_string(*location)); }
+#line 1618 "./S1/compiler_parser.cpp"
     break;
 
   case 22: // stmt: stmt_call
-#line 176 "S1.parser.ypp"
+#line 181 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_call = std::move(yystack_[0].value.as < gsc::stmt_call_ptr > ()); }
-#line 1595 "./S1/compiler_parser.cpp"
+#line 1624 "./S1/compiler_parser.cpp"
     break;
 
   case 23: // stmt: stmt_assign
-#line 177 "S1.parser.ypp"
+#line 182 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_assign = std::move(yystack_[0].value.as < gsc::stmt_assign_ptr > ()); }
-#line 1601 "./S1/compiler_parser.cpp"
+#line 1630 "./S1/compiler_parser.cpp"
     break;
 
   case 24: // stmt: stmt_endon
-#line 178 "S1.parser.ypp"
+#line 183 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_endon = std::move(yystack_[0].value.as < gsc::stmt_endon_ptr > ()); }
-#line 1607 "./S1/compiler_parser.cpp"
+#line 1636 "./S1/compiler_parser.cpp"
     break;
 
   case 25: // stmt: stmt_notify
-#line 179 "S1.parser.ypp"
+#line 184 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_notify = std::move(yystack_[0].value.as < gsc::stmt_notify_ptr > ()); }
-#line 1613 "./S1/compiler_parser.cpp"
+#line 1642 "./S1/compiler_parser.cpp"
     break;
 
   case 26: // stmt: stmt_wait
-#line 180 "S1.parser.ypp"
+#line 185 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_wait = std::move(yystack_[0].value.as < gsc::stmt_wait_ptr > ()); }
-#line 1619 "./S1/compiler_parser.cpp"
+#line 1648 "./S1/compiler_parser.cpp"
     break;
 
   case 27: // stmt: stmt_waittill
-#line 181 "S1.parser.ypp"
+#line 186 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_waittill = std::move(yystack_[0].value.as < gsc::stmt_waittill_ptr > ()); }
-#line 1625 "./S1/compiler_parser.cpp"
+#line 1654 "./S1/compiler_parser.cpp"
     break;
 
   case 28: // stmt: stmt_waittillmatch
-#line 182 "S1.parser.ypp"
+#line 187 "S1.parser.ypp"
                                                                         { yylhs.value.as < gsc::stmt_ptr > ().as_waittillmatch = std::move(yystack_[0].value.as < gsc::stmt_waittillmatch_ptr > ()); }
-#line 1631 "./S1/compiler_parser.cpp"
+#line 1660 "./S1/compiler_parser.cpp"
     break;
 
   case 29: // stmt: stmt_waittillframeend
-#line 183 "S1.parser.ypp"
+#line 188 "S1.parser.ypp"
                                                                         { yylhs.value.as < gsc::stmt_ptr > ().as_waittillframeend = std::move(yystack_[0].value.as < gsc::stmt_waittillframeend_ptr > ()); }
-#line 1637 "./S1/compiler_parser.cpp"
+#line 1666 "./S1/compiler_parser.cpp"
     break;
 
   case 30: // stmt: stmt_waitframe
-#line 184 "S1.parser.ypp"
+#line 189 "S1.parser.ypp"
                                                                             { yylhs.value.as < gsc::stmt_ptr > ().as_waitframe = std::move(yystack_[0].value.as < gsc::stmt_waitframe_ptr > ()); }
-#line 1643 "./S1/compiler_parser.cpp"
+#line 1672 "./S1/compiler_parser.cpp"
     break;
 
   case 31: // stmt: stmt_if
-#line 185 "S1.parser.ypp"
+#line 190 "S1.parser.ypp"
                                                                                         { yylhs.value.as < gsc::stmt_ptr > ().as_if = std::move(yystack_[0].value.as < gsc::stmt_if_ptr > ()); }
-#line 1649 "./S1/compiler_parser.cpp"
+#line 1678 "./S1/compiler_parser.cpp"
     break;
 
   case 32: // stmt: stmt_ifelse
-#line 186 "S1.parser.ypp"
+#line 191 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_ifelse = std::move(yystack_[0].value.as < gsc::stmt_ifelse_ptr > ()); }
-#line 1655 "./S1/compiler_parser.cpp"
+#line 1684 "./S1/compiler_parser.cpp"
     break;
 
   case 33: // stmt: stmt_while
-#line 187 "S1.parser.ypp"
+#line 192 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_while = std::move(yystack_[0].value.as < gsc::stmt_while_ptr > ()); }
-#line 1661 "./S1/compiler_parser.cpp"
+#line 1690 "./S1/compiler_parser.cpp"
     break;
 
   case 34: // stmt: stmt_for
-#line 188 "S1.parser.ypp"
+#line 193 "S1.parser.ypp"
                                                                                         { yylhs.value.as < gsc::stmt_ptr > ().as_for = std::move(yystack_[0].value.as < gsc::stmt_for_ptr > ()); }
-#line 1667 "./S1/compiler_parser.cpp"
+#line 1696 "./S1/compiler_parser.cpp"
     break;
 
   case 35: // stmt: stmt_foreach
-#line 189 "S1.parser.ypp"
+#line 194 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_foreach = std::move(yystack_[0].value.as < gsc::stmt_foreach_ptr > ()); }
-#line 1673 "./S1/compiler_parser.cpp"
+#line 1702 "./S1/compiler_parser.cpp"
     break;
 
   case 36: // stmt: stmt_switch
-#line 190 "S1.parser.ypp"
+#line 195 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_switch = std::move(yystack_[0].value.as < gsc::stmt_switch_ptr > ()); }
-#line 1679 "./S1/compiler_parser.cpp"
+#line 1708 "./S1/compiler_parser.cpp"
     break;
 
   case 37: // stmt: stmt_case
-#line 191 "S1.parser.ypp"
+#line 196 "S1.parser.ypp"
                                                                                         { yylhs.value.as < gsc::stmt_ptr > ().as_case = std::move(yystack_[0].value.as < gsc::stmt_case_ptr > ()); }
-#line 1685 "./S1/compiler_parser.cpp"
+#line 1714 "./S1/compiler_parser.cpp"
     break;
 
   case 38: // stmt: stmt_default
-#line 192 "S1.parser.ypp"
+#line 197 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_default = std::move(yystack_[0].value.as < gsc::stmt_default_ptr > ()); }
-#line 1691 "./S1/compiler_parser.cpp"
+#line 1720 "./S1/compiler_parser.cpp"
     break;
 
   case 39: // stmt: stmt_break
-#line 193 "S1.parser.ypp"
+#line 198 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_break = std::move(yystack_[0].value.as < gsc::stmt_break_ptr > ()); }
-#line 1697 "./S1/compiler_parser.cpp"
+#line 1726 "./S1/compiler_parser.cpp"
     break;
 
   case 40: // stmt: stmt_continue
-#line 194 "S1.parser.ypp"
+#line 199 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_continue = std::move(yystack_[0].value.as < gsc::stmt_continue_ptr > ()); }
-#line 1703 "./S1/compiler_parser.cpp"
+#line 1732 "./S1/compiler_parser.cpp"
     break;
 
   case 41: // stmt: stmt_return
-#line 195 "S1.parser.ypp"
+#line 200 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::stmt_ptr > ().as_return = std::move(yystack_[0].value.as < gsc::stmt_return_ptr > ()); }
-#line 1709 "./S1/compiler_parser.cpp"
+#line 1738 "./S1/compiler_parser.cpp"
     break;
 
   case 42: // stmt_call: expr_call SEMICOLON
-#line 200 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_call_ptr > () = std::make_unique<gsc::node_stmt_call>("", std::move(yystack_[1].value.as < gsc::expr_call_ptr > ())); }
-#line 1715 "./S1/compiler_parser.cpp"
+#line 205 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_call_ptr > () = std::make_unique<gsc::node_stmt_call>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::expr_call_ptr > ())); }
+#line 1744 "./S1/compiler_parser.cpp"
     break;
 
   case 43: // stmt_call: expr_call_thread SEMICOLON
-#line 202 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_call_ptr > () = std::make_unique<gsc::node_stmt_call>("", std::move(yystack_[1].value.as < gsc::expr_call_ptr > ())); }
-#line 1721 "./S1/compiler_parser.cpp"
+#line 207 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_call_ptr > () = std::make_unique<gsc::node_stmt_call>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::expr_call_ptr > ())); }
+#line 1750 "./S1/compiler_parser.cpp"
     break;
 
   case 44: // stmt_assign: expr_assign SEMICOLON
-#line 207 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_assign_ptr > () = std::make_unique<gsc::node_stmt_assign>("", std::move(yystack_[1].value.as < gsc::expr_assign_ptr > ())); }
-#line 1727 "./S1/compiler_parser.cpp"
+#line 212 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_assign_ptr > () = std::make_unique<gsc::node_stmt_assign>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::expr_assign_ptr > ())); }
+#line 1756 "./S1/compiler_parser.cpp"
     break;
 
   case 45: // stmt_endon: object ENDON LPAREN expr RPAREN SEMICOLON
-#line 212 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_endon_ptr > () = std::make_unique<gsc::node_stmt_endon>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
-#line 1733 "./S1/compiler_parser.cpp"
+#line 217 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_endon_ptr > () = std::make_unique<gsc::node_stmt_endon>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
+#line 1762 "./S1/compiler_parser.cpp"
     break;
 
   case 46: // stmt_notify: object NOTIFY LPAREN expr COMMA expr_arguments RPAREN SEMICOLON
-#line 217 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_notify_ptr > () = std::make_unique<gsc::node_stmt_notify>("", std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ())); }
-#line 1739 "./S1/compiler_parser.cpp"
+#line 222 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_notify_ptr > () = std::make_unique<gsc::node_stmt_notify>(std::to_string(*location), std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ())); }
+#line 1768 "./S1/compiler_parser.cpp"
     break;
 
   case 47: // stmt_notify: object NOTIFY LPAREN expr RPAREN SEMICOLON
-#line 219 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_notify_ptr > () = std::make_unique<gsc::node_stmt_notify>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::make_unique<gsc::node_expr_arguments>("")); }
-#line 1745 "./S1/compiler_parser.cpp"
+#line 224 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_notify_ptr > () = std::make_unique<gsc::node_stmt_notify>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::make_unique<gsc::node_expr_arguments>(std::to_string(*location))); }
+#line 1774 "./S1/compiler_parser.cpp"
     break;
 
   case 48: // stmt_wait: WAIT LPAREN expr RPAREN SEMICOLON
-#line 224 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_wait_ptr > () = std::make_unique<gsc::node_stmt_wait>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
-#line 1751 "./S1/compiler_parser.cpp"
+#line 229 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_wait_ptr > () = std::make_unique<gsc::node_stmt_wait>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
+#line 1780 "./S1/compiler_parser.cpp"
     break;
 
   case 49: // stmt_wait: WAIT num SEMICOLON
-#line 226 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_wait_ptr > () = std::make_unique<gsc::node_stmt_wait>("", std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
-#line 1757 "./S1/compiler_parser.cpp"
+#line 231 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_wait_ptr > () = std::make_unique<gsc::node_stmt_wait>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
+#line 1786 "./S1/compiler_parser.cpp"
     break;
 
   case 50: // stmt_waittill: object WAITTILL LPAREN expr COMMA expr_arguments RPAREN SEMICOLON
-#line 231 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_waittill_ptr > () = std::make_unique<gsc::node_stmt_waittill>("", std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ())); }
-#line 1763 "./S1/compiler_parser.cpp"
+#line 236 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_waittill_ptr > () = std::make_unique<gsc::node_stmt_waittill>(std::to_string(*location), std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ())); }
+#line 1792 "./S1/compiler_parser.cpp"
     break;
 
   case 51: // stmt_waittill: object WAITTILL LPAREN expr RPAREN SEMICOLON
-#line 233 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_waittill_ptr > () = std::make_unique<gsc::node_stmt_waittill>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::make_unique<gsc::node_expr_arguments>("")); }
-#line 1769 "./S1/compiler_parser.cpp"
+#line 238 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_waittill_ptr > () = std::make_unique<gsc::node_stmt_waittill>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::make_unique<gsc::node_expr_arguments>(std::to_string(*location))); }
+#line 1798 "./S1/compiler_parser.cpp"
     break;
 
   case 52: // stmt_waittillmatch: object WAITTILLMATCH LPAREN expr COMMA expr RPAREN SEMICOLON
-#line 238 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_waittillmatch_ptr > () = std::make_unique<gsc::node_stmt_waittillmatch>("", std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
-#line 1775 "./S1/compiler_parser.cpp"
+#line 243 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_waittillmatch_ptr > () = std::make_unique<gsc::node_stmt_waittillmatch>(std::to_string(*location), std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
+#line 1804 "./S1/compiler_parser.cpp"
     break;
 
   case 53: // stmt_waittillframeend: WAITTILLFRAMEEND SEMICOLON
-#line 243 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_waittillframeend_ptr > () = std::make_unique<gsc::node_stmt_waittillframeend>(""); }
-#line 1781 "./S1/compiler_parser.cpp"
+#line 248 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_waittillframeend_ptr > () = std::make_unique<gsc::node_stmt_waittillframeend>(std::to_string(*location)); }
+#line 1810 "./S1/compiler_parser.cpp"
     break;
 
   case 54: // stmt_waitframe: WAITFRAME SEMICOLON
-#line 248 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_waitframe_ptr > () = std::make_unique<gsc::node_stmt_waitframe>(""); }
-#line 1787 "./S1/compiler_parser.cpp"
+#line 253 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_waitframe_ptr > () = std::make_unique<gsc::node_stmt_waitframe>(std::to_string(*location)); }
+#line 1816 "./S1/compiler_parser.cpp"
     break;
 
   case 55: // stmt_if: IF LPAREN expr RPAREN LBRACE block RBRACE
-#line 253 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_if_ptr > () = std::make_unique<gsc::node_stmt_if>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1793 "./S1/compiler_parser.cpp"
+#line 258 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_if_ptr > () = std::make_unique<gsc::node_stmt_if>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+#line 1822 "./S1/compiler_parser.cpp"
     break;
 
   case 56: // stmt_if: IF LPAREN expr RPAREN stmt
-#line 255 "S1.parser.ypp"
+#line 260 "S1.parser.ypp"
                 {
-			auto blk = std::make_unique<gsc::node_block>("");
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_if_ptr > () = std::make_unique<gsc::node_stmt_if>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk)); }
-#line 1802 "./S1/compiler_parser.cpp"
+			yylhs.value.as < gsc::stmt_if_ptr > () = std::make_unique<gsc::node_stmt_if>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk)); }
+#line 1831 "./S1/compiler_parser.cpp"
     break;
 
   case 57: // stmt_ifelse: IF LPAREN expr RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE
-#line 263 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[8].value.as < gsc::expr_ptr > ()), std::move(yystack_[5].value.as < gsc::block_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1808 "./S1/compiler_parser.cpp"
-    break;
-
-  case 58: // stmt_ifelse: IF LPAREN expr RPAREN stmt ELSE LBRACE block RBRACE
-#line 265 "S1.parser.ypp"
-                {
-			auto blk = std::make_unique<gsc::node_block>("");
-			blk->stmts.push_back(std::move(yystack_[4].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(blk), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1817 "./S1/compiler_parser.cpp"
-    break;
-
-  case 59: // stmt_ifelse: IF LPAREN expr RPAREN LBRACE block RBRACE ELSE stmt
-#line 270 "S1.parser.ypp"
-                { 
-			auto blk = std::make_unique<gsc::node_block>("");
-			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[3].value.as < gsc::block_ptr > ()), std::move(blk)); }
-#line 1826 "./S1/compiler_parser.cpp"
-    break;
-
-  case 60: // stmt_ifelse: IF LPAREN expr RPAREN stmt ELSE stmt
-#line 275 "S1.parser.ypp"
-                {
-			auto blk1 = std::make_unique<gsc::node_block>("");
-			blk1->stmts.push_back(std::move(yystack_[2].value.as < gsc::stmt_ptr > ()));
-			auto blk2 = std::make_unique<gsc::node_block>("");
-			blk2->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(blk1), std::move(blk2)); }
+#line 268 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>(std::to_string(*location), std::move(yystack_[8].value.as < gsc::expr_ptr > ()), std::move(yystack_[5].value.as < gsc::block_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
 #line 1837 "./S1/compiler_parser.cpp"
     break;
 
+  case 58: // stmt_ifelse: IF LPAREN expr RPAREN stmt ELSE LBRACE block RBRACE
+#line 270 "S1.parser.ypp"
+                {
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
+			blk->stmts.push_back(std::move(yystack_[4].value.as < gsc::stmt_ptr > ()));
+			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>(std::to_string(*location), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(blk), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+#line 1846 "./S1/compiler_parser.cpp"
+    break;
+
+  case 59: // stmt_ifelse: IF LPAREN expr RPAREN LBRACE block RBRACE ELSE stmt
+#line 275 "S1.parser.ypp"
+                { 
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
+			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
+			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>(std::to_string(*location), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[3].value.as < gsc::block_ptr > ()), std::move(blk)); }
+#line 1855 "./S1/compiler_parser.cpp"
+    break;
+
+  case 60: // stmt_ifelse: IF LPAREN expr RPAREN stmt ELSE stmt
+#line 280 "S1.parser.ypp"
+                {
+			auto blk1 = std::make_unique<gsc::node_block>(std::to_string(*location));
+			blk1->stmts.push_back(std::move(yystack_[2].value.as < gsc::stmt_ptr > ()));
+			auto blk2 = std::make_unique<gsc::node_block>(std::to_string(*location));
+			blk2->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
+			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(blk1), std::move(blk2)); }
+#line 1866 "./S1/compiler_parser.cpp"
+    break;
+
   case 61: // stmt_while: WHILE LPAREN expr RPAREN LBRACE block RBRACE
-#line 285 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_while_ptr > () = std::make_unique<gsc::node_stmt_while>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1843 "./S1/compiler_parser.cpp"
+#line 290 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_while_ptr > () = std::make_unique<gsc::node_stmt_while>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+#line 1872 "./S1/compiler_parser.cpp"
     break;
 
   case 62: // stmt_while: WHILE LPAREN expr RPAREN stmt
-#line 287 "S1.parser.ypp"
+#line 292 "S1.parser.ypp"
                 {
-			auto blk = std::make_unique<gsc::node_block>("");
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_while_ptr > () = std::make_unique<gsc::node_stmt_while>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk)); }
-#line 1852 "./S1/compiler_parser.cpp"
+			yylhs.value.as < gsc::stmt_while_ptr > () = std::make_unique<gsc::node_stmt_while>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk)); }
+#line 1881 "./S1/compiler_parser.cpp"
     break;
 
   case 63: // stmt_for: FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN LBRACE block RBRACE
-#line 295 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_for_ptr > () = std::make_unique<gsc::node_stmt_for>("", std::move(yystack_[8].value.as < gsc::expr_ptr > ()), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1858 "./S1/compiler_parser.cpp"
+#line 300 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_for_ptr > () = std::make_unique<gsc::node_stmt_for>(std::to_string(*location), std::move(yystack_[8].value.as < gsc::expr_ptr > ()), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+#line 1887 "./S1/compiler_parser.cpp"
     break;
 
   case 64: // stmt_for: FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN stmt
-#line 297 "S1.parser.ypp"
+#line 302 "S1.parser.ypp"
                 {
-			auto blk = std::make_unique<gsc::node_block>("");
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_for_ptr > () = std::make_unique<gsc::node_stmt_for>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk));
+			yylhs.value.as < gsc::stmt_for_ptr > () = std::make_unique<gsc::node_stmt_for>(std::to_string(*location), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk));
 		}
-#line 1868 "./S1/compiler_parser.cpp"
+#line 1897 "./S1/compiler_parser.cpp"
     break;
 
   case 65: // stmt_foreach: FOREACH LPAREN expr IN expr RPAREN RBRACE block RBRACE
-#line 306 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_foreach_ptr > () = std::make_unique<gsc::node_stmt_foreach>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1874 "./S1/compiler_parser.cpp"
+#line 311 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_foreach_ptr > () = std::make_unique<gsc::node_stmt_foreach>(std::to_string(*location), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+#line 1903 "./S1/compiler_parser.cpp"
     break;
 
   case 66: // stmt_foreach: FOREACH LPAREN expr IN expr RPAREN stmt
-#line 308 "S1.parser.ypp"
+#line 313 "S1.parser.ypp"
                 {
-			auto blk = std::make_unique<gsc::node_block>("");
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_foreach_ptr > () = std::make_unique<gsc::node_stmt_foreach>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk));
+			yylhs.value.as < gsc::stmt_foreach_ptr > () = std::make_unique<gsc::node_stmt_foreach>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk));
 		}
-#line 1884 "./S1/compiler_parser.cpp"
+#line 1913 "./S1/compiler_parser.cpp"
     break;
 
   case 67: // stmt_switch: SWITCH LPAREN expr RPAREN LBRACE block RBRACE
-#line 317 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_switch_ptr > () = std::make_unique<gsc::node_stmt_switch>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
-#line 1890 "./S1/compiler_parser.cpp"
+#line 322 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_switch_ptr > () = std::make_unique<gsc::node_stmt_switch>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+#line 1919 "./S1/compiler_parser.cpp"
     break;
 
   case 68: // stmt_case: CASE data_integer COLON
-#line 322 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::integer_ptr > ()))); }
-#line 1896 "./S1/compiler_parser.cpp"
+#line 327 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>(std::to_string(*location), gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::integer_ptr > ()))); }
+#line 1925 "./S1/compiler_parser.cpp"
     break;
 
   case 69: // stmt_case: CASE data_string COLON
-#line 324 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::string_ptr > ()))); }
-#line 1902 "./S1/compiler_parser.cpp"
+#line 329 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>(std::to_string(*location), gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::string_ptr > ()))); }
+#line 1931 "./S1/compiler_parser.cpp"
     break;
 
   case 70: // stmt_default: DEFAULT COLON
-#line 329 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_default_ptr > () = std::make_unique<gsc::node_stmt_default>(""); }
-#line 1908 "./S1/compiler_parser.cpp"
+#line 334 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_default_ptr > () = std::make_unique<gsc::node_stmt_default>(std::to_string(*location)); }
+#line 1937 "./S1/compiler_parser.cpp"
     break;
 
   case 71: // stmt_break: BREAK SEMICOLON
-#line 334 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_break_ptr > () = std::make_unique<gsc::node_stmt_break>(""); }
-#line 1914 "./S1/compiler_parser.cpp"
+#line 339 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_break_ptr > () = std::make_unique<gsc::node_stmt_break>(std::to_string(*location)); }
+#line 1943 "./S1/compiler_parser.cpp"
     break;
 
   case 72: // stmt_continue: CONTINUE SEMICOLON
-#line 338 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_continue_ptr > () = std::make_unique<gsc::node_stmt_continue>(""); }
-#line 1920 "./S1/compiler_parser.cpp"
+#line 343 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_continue_ptr > () = std::make_unique<gsc::node_stmt_continue>(std::to_string(*location)); }
+#line 1949 "./S1/compiler_parser.cpp"
     break;
 
   case 73: // stmt_return: RETURN expr SEMICOLON
-#line 343 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_return_ptr > () = std::make_unique<gsc::node_stmt_return>("", std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
-#line 1926 "./S1/compiler_parser.cpp"
+#line 348 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_return_ptr > () = std::make_unique<gsc::node_stmt_return>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
+#line 1955 "./S1/compiler_parser.cpp"
     break;
 
   case 74: // stmt_return: RETURN SEMICOLON
-#line 345 "S1.parser.ypp"
-                { yylhs.value.as < gsc::stmt_return_ptr > () = std::make_unique<gsc::node_stmt_return>("", std::make_unique<gsc::node>()); }
-#line 1932 "./S1/compiler_parser.cpp"
+#line 350 "S1.parser.ypp"
+                { yylhs.value.as < gsc::stmt_return_ptr > () = std::make_unique<gsc::node_stmt_return>(std::to_string(*location), std::make_unique<gsc::node>()); }
+#line 1961 "./S1/compiler_parser.cpp"
     break;
 
   case 75: // for_assign: expr_assign
-#line 349 "S1.parser.ypp"
+#line 354 "S1.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::expr_assign_ptr > ()); }
-#line 1938 "./S1/compiler_parser.cpp"
+#line 1967 "./S1/compiler_parser.cpp"
     break;
 
   case 76: // for_assign: %empty
-#line 350 "S1.parser.ypp"
+#line 355 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node>(); }
-#line 1944 "./S1/compiler_parser.cpp"
+#line 1973 "./S1/compiler_parser.cpp"
     break;
 
   case 77: // for_cond: expr_cmp
-#line 354 "S1.parser.ypp"
+#line 359 "S1.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[0].value.as < gsc::expr_ptr > ()); }
-#line 1950 "./S1/compiler_parser.cpp"
+#line 1979 "./S1/compiler_parser.cpp"
     break;
 
   case 78: // for_cond: %empty
-#line 355 "S1.parser.ypp"
+#line 360 "S1.parser.ypp"
                                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node>(); }
-#line 1956 "./S1/compiler_parser.cpp"
+#line 1985 "./S1/compiler_parser.cpp"
     break;
 
   case 79: // expr: expr_cmp
-#line 359 "S1.parser.ypp"
+#line 364 "S1.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[0].value.as < gsc::expr_ptr > ()); }
-#line 1962 "./S1/compiler_parser.cpp"
+#line 1991 "./S1/compiler_parser.cpp"
     break;
 
   case 80: // expr: expr_ternary
-#line 360 "S1.parser.ypp"
+#line 365 "S1.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[0].value.as < gsc::expr_ptr > ()); }
-#line 1968 "./S1/compiler_parser.cpp"
+#line 1997 "./S1/compiler_parser.cpp"
     break;
 
   case 81: // expr: expr_binary
-#line 361 "S1.parser.ypp"
+#line 366 "S1.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[0].value.as < gsc::expr_ptr > ()); }
-#line 1974 "./S1/compiler_parser.cpp"
+#line 2003 "./S1/compiler_parser.cpp"
     break;
 
   case 82: // expr: expr_primitive
-#line 362 "S1.parser.ypp"
+#line 367 "S1.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[0].value.as < gsc::expr_ptr > ()); }
-#line 1980 "./S1/compiler_parser.cpp"
+#line 2009 "./S1/compiler_parser.cpp"
     break;
 
   case 83: // expr_assign: object INCREMENT
-#line 366 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_increment>("", std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
-#line 1986 "./S1/compiler_parser.cpp"
+#line 371 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_increment>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
+#line 2015 "./S1/compiler_parser.cpp"
     break;
 
   case 84: // expr_assign: object DECREMENT
-#line 367 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_decrement>("", std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
-#line 1992 "./S1/compiler_parser.cpp"
+#line 372 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_decrement>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
+#line 2021 "./S1/compiler_parser.cpp"
     break;
 
   case 85: // expr_assign: object ASSIGN expr
-#line 368 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_equal>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 1998 "./S1/compiler_parser.cpp"
+#line 373 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_equal>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2027 "./S1/compiler_parser.cpp"
     break;
 
   case 86: // expr_assign: object ASSIGN_BITWISE_OR expr
-#line 369 "S1.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_or>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2004 "./S1/compiler_parser.cpp"
+#line 374 "S1.parser.ypp"
+                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_or>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2033 "./S1/compiler_parser.cpp"
     break;
 
   case 87: // expr_assign: object ASSIGN_BITWISE_AND expr
-#line 370 "S1.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_and>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2010 "./S1/compiler_parser.cpp"
+#line 375 "S1.parser.ypp"
+                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_and>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2039 "./S1/compiler_parser.cpp"
     break;
 
   case 88: // expr_assign: object ASSIGN_BITWISE_EXOR expr
-#line 371 "S1.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_exor>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2016 "./S1/compiler_parser.cpp"
+#line 376 "S1.parser.ypp"
+                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_exor>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2045 "./S1/compiler_parser.cpp"
     break;
 
   case 89: // expr_assign: object ASSIGN_LSHIFT expr
-#line 372 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_shift_left>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()),std::move( yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2022 "./S1/compiler_parser.cpp"
+#line 377 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_shift_left>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()),std::move( yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2051 "./S1/compiler_parser.cpp"
     break;
 
   case 90: // expr_assign: object ASSIGN_RSHIFT expr
-#line 373 "S1.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_shift_right>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2028 "./S1/compiler_parser.cpp"
+#line 378 "S1.parser.ypp"
+                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_shift_right>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2057 "./S1/compiler_parser.cpp"
     break;
 
   case 91: // expr_assign: object ASSIGN_ADD expr
-#line 374 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_add>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2034 "./S1/compiler_parser.cpp"
+#line 379 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_add>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2063 "./S1/compiler_parser.cpp"
     break;
 
   case 92: // expr_assign: object ASSIGN_SUB expr
-#line 375 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_sub>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2040 "./S1/compiler_parser.cpp"
+#line 380 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_sub>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2069 "./S1/compiler_parser.cpp"
     break;
 
   case 93: // expr_assign: object ASSIGN_MULT expr
-#line 376 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_mult>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2046 "./S1/compiler_parser.cpp"
+#line 381 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_mult>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2075 "./S1/compiler_parser.cpp"
     break;
 
   case 94: // expr_assign: object ASSIGN_DIV expr
-#line 377 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_div>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2052 "./S1/compiler_parser.cpp"
+#line 382 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_div>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2081 "./S1/compiler_parser.cpp"
     break;
 
   case 95: // expr_assign: object ASSIGN_MOD expr
-#line 378 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_mod>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2058 "./S1/compiler_parser.cpp"
+#line 383 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_mod>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2087 "./S1/compiler_parser.cpp"
     break;
 
   case 96: // expr_cmp: expr OR expr
-#line 382 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_or>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2064 "./S1/compiler_parser.cpp"
+#line 387 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_or>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2093 "./S1/compiler_parser.cpp"
     break;
 
   case 97: // expr_cmp: expr AND expr
-#line 383 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_and>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2070 "./S1/compiler_parser.cpp"
+#line 388 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_and>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2099 "./S1/compiler_parser.cpp"
     break;
 
   case 98: // expr_cmp: expr EQUALITY expr
-#line 384 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_equality>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2076 "./S1/compiler_parser.cpp"
+#line 389 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_equality>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2105 "./S1/compiler_parser.cpp"
     break;
 
   case 99: // expr_cmp: expr INEQUALITY expr
-#line 385 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_inequality>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2082 "./S1/compiler_parser.cpp"
+#line 390 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_inequality>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2111 "./S1/compiler_parser.cpp"
     break;
 
   case 100: // expr_cmp: expr LESS_EQUAL expr
-#line 386 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_less_equal>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2088 "./S1/compiler_parser.cpp"
+#line 391 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_less_equal>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2117 "./S1/compiler_parser.cpp"
     break;
 
   case 101: // expr_cmp: expr GREATER_EQUAL expr
-#line 387 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_greater_equal>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2094 "./S1/compiler_parser.cpp"
+#line 392 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_greater_equal>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2123 "./S1/compiler_parser.cpp"
     break;
 
   case 102: // expr_cmp: expr LESS expr
-#line 388 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_less>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2100 "./S1/compiler_parser.cpp"
+#line 393 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_less>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2129 "./S1/compiler_parser.cpp"
     break;
 
   case 103: // expr_cmp: expr GREATER expr
-#line 389 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_greater>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2106 "./S1/compiler_parser.cpp"
+#line 394 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_greater>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2135 "./S1/compiler_parser.cpp"
     break;
 
   case 104: // expr_ternary: expr_cmp QMARK expr COLON expr
-#line 393 "S1.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_ternary>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2112 "./S1/compiler_parser.cpp"
+#line 398 "S1.parser.ypp"
+                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_ternary>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2141 "./S1/compiler_parser.cpp"
     break;
 
   case 105: // expr_binary: expr BITWISE_OR expr
-#line 397 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_or>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2118 "./S1/compiler_parser.cpp"
+#line 402 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_or>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2147 "./S1/compiler_parser.cpp"
     break;
 
   case 106: // expr_binary: expr BITWISE_AND expr
-#line 398 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_and>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2124 "./S1/compiler_parser.cpp"
+#line 403 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_and>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2153 "./S1/compiler_parser.cpp"
     break;
 
   case 107: // expr_binary: expr BITWISE_EXOR expr
-#line 399 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_exor>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2130 "./S1/compiler_parser.cpp"
+#line 404 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_exor>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2159 "./S1/compiler_parser.cpp"
     break;
 
   case 108: // expr_binary: expr LSHIFT expr
-#line 400 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_shift_left>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2136 "./S1/compiler_parser.cpp"
+#line 405 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_shift_left>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2165 "./S1/compiler_parser.cpp"
     break;
 
   case 109: // expr_binary: expr RSHIFT expr
-#line 401 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_shift_right>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2142 "./S1/compiler_parser.cpp"
+#line 406 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_shift_right>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2171 "./S1/compiler_parser.cpp"
     break;
 
   case 110: // expr_binary: expr ADD expr
-#line 402 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_add>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2148 "./S1/compiler_parser.cpp"
+#line 407 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_add>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2177 "./S1/compiler_parser.cpp"
     break;
 
   case 111: // expr_binary: expr SUB expr
-#line 403 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_sub>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2154 "./S1/compiler_parser.cpp"
+#line 408 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_sub>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2183 "./S1/compiler_parser.cpp"
     break;
 
   case 112: // expr_binary: expr MULT expr
-#line 404 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_mult>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2160 "./S1/compiler_parser.cpp"
+#line 409 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_mult>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2189 "./S1/compiler_parser.cpp"
     break;
 
   case 113: // expr_binary: expr DIV expr
-#line 405 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_div>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2166 "./S1/compiler_parser.cpp"
+#line 410 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_div>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2195 "./S1/compiler_parser.cpp"
     break;
 
   case 114: // expr_binary: expr MOD expr
-#line 406 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_mod>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2172 "./S1/compiler_parser.cpp"
+#line 411 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_mod>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2201 "./S1/compiler_parser.cpp"
     break;
 
   case 115: // expr_primitive: LPAREN expr RPAREN
-#line 410 "S1.parser.ypp"
+#line 415 "S1.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_ptr > () = std::move(yystack_[1].value.as < gsc::expr_ptr > ()); }
-#line 2178 "./S1/compiler_parser.cpp"
+#line 2207 "./S1/compiler_parser.cpp"
     break;
 
   case 116: // expr_primitive: COMPLEMENT expr
-#line 411 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_complement>("", std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2184 "./S1/compiler_parser.cpp"
+#line 416 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_complement>(std::to_string(*location), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2213 "./S1/compiler_parser.cpp"
     break;
 
   case 117: // expr_primitive: NOT expr
-#line 412 "S1.parser.ypp"
-                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_not>("", std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2190 "./S1/compiler_parser.cpp"
+#line 417 "S1.parser.ypp"
+                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_not>(std::to_string(*location), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2219 "./S1/compiler_parser.cpp"
     break;
 
   case 118: // expr_primitive: expr_call
-#line 413 "S1.parser.ypp"
+#line 418 "S1.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::expr_call_ptr > ()); }
-#line 2196 "./S1/compiler_parser.cpp"
+#line 2225 "./S1/compiler_parser.cpp"
     break;
 
   case 119: // expr_primitive: expr_call_thread
-#line 414 "S1.parser.ypp"
+#line 419 "S1.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::expr_call_ptr > ()); }
-#line 2202 "./S1/compiler_parser.cpp"
+#line 2231 "./S1/compiler_parser.cpp"
     break;
 
   case 120: // expr_primitive: expr_function_ref
-#line 415 "S1.parser.ypp"
+#line 420 "S1.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2208 "./S1/compiler_parser.cpp"
+#line 2237 "./S1/compiler_parser.cpp"
     break;
 
   case 121: // expr_primitive: expr_array
-#line 416 "S1.parser.ypp"
+#line 421 "S1.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2214 "./S1/compiler_parser.cpp"
+#line 2243 "./S1/compiler_parser.cpp"
     break;
 
   case 122: // expr_primitive: expr_field
-#line 417 "S1.parser.ypp"
+#line 422 "S1.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2220 "./S1/compiler_parser.cpp"
+#line 2249 "./S1/compiler_parser.cpp"
     break;
 
   case 123: // expr_primitive: expr_size
-#line 418 "S1.parser.ypp"
+#line 423 "S1.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2226 "./S1/compiler_parser.cpp"
+#line 2255 "./S1/compiler_parser.cpp"
     break;
 
   case 124: // expr_primitive: expr_vector
-#line 419 "S1.parser.ypp"
+#line 424 "S1.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2232 "./S1/compiler_parser.cpp"
+#line 2261 "./S1/compiler_parser.cpp"
     break;
 
   case 125: // expr_primitive: expr_add_array
-#line 420 "S1.parser.ypp"
+#line 425 "S1.parser.ypp"
                                                                 { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2238 "./S1/compiler_parser.cpp"
+#line 2267 "./S1/compiler_parser.cpp"
     break;
 
   case 126: // expr_primitive: vector
-#line 421 "S1.parser.ypp"
+#line 426 "S1.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2244 "./S1/compiler_parser.cpp"
+#line 2273 "./S1/compiler_parser.cpp"
     break;
 
   case 127: // expr_primitive: num
-#line 422 "S1.parser.ypp"
+#line 427 "S1.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2250 "./S1/compiler_parser.cpp"
+#line 2279 "./S1/compiler_parser.cpp"
     break;
 
   case 128: // expr_primitive: data_localized_string
-#line 423 "S1.parser.ypp"
+#line 428 "S1.parser.ypp"
                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::localized_string_ptr > ()); }
-#line 2256 "./S1/compiler_parser.cpp"
+#line 2285 "./S1/compiler_parser.cpp"
     break;
 
   case 129: // expr_primitive: data_string
-#line 424 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::string_ptr > ()); }
-#line 2262 "./S1/compiler_parser.cpp"
-    break;
-
-  case 130: // expr_primitive: identifier
-#line 425 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::identifier_ptr > ()); }
-#line 2268 "./S1/compiler_parser.cpp"
-    break;
-
-  case 131: // expr_primitive: empty_array
-#line 426 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2274 "./S1/compiler_parser.cpp"
-    break;
-
-  case 132: // expr_primitive: undefined
-#line 427 "S1.parser.ypp"
-                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2280 "./S1/compiler_parser.cpp"
-    break;
-
-  case 133: // expr_primitive: game
-#line 428 "S1.parser.ypp"
-                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2286 "./S1/compiler_parser.cpp"
-    break;
-
-  case 134: // expr_primitive: self
 #line 429 "S1.parser.ypp"
-                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2292 "./S1/compiler_parser.cpp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::string_ptr > ()); }
+#line 2291 "./S1/compiler_parser.cpp"
     break;
 
-  case 135: // expr_primitive: anim
+  case 130: // expr_primitive: animref
 #line 430 "S1.parser.ypp"
-                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2298 "./S1/compiler_parser.cpp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::animref_ptr > ()); }
+#line 2297 "./S1/compiler_parser.cpp"
     break;
 
-  case 136: // expr_primitive: level
+  case 131: // expr_primitive: identifier
 #line 431 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::identifier_ptr > ()); }
+#line 2303 "./S1/compiler_parser.cpp"
+    break;
+
+  case 132: // expr_primitive: empty_array
+#line 432 "S1.parser.ypp"
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2309 "./S1/compiler_parser.cpp"
+    break;
+
+  case 133: // expr_primitive: undefined
+#line 433 "S1.parser.ypp"
                                                                         { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2304 "./S1/compiler_parser.cpp"
+#line 2315 "./S1/compiler_parser.cpp"
     break;
 
-  case 137: // expr_call: expr_call_function
+  case 134: // expr_primitive: game
+#line 434 "S1.parser.ypp"
+                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2321 "./S1/compiler_parser.cpp"
+    break;
+
+  case 135: // expr_primitive: self
 #line 435 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2310 "./S1/compiler_parser.cpp"
+                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2327 "./S1/compiler_parser.cpp"
     break;
 
-  case 138: // expr_call: expr_call_pointer
+  case 136: // expr_primitive: anim
 #line 436 "S1.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2316 "./S1/compiler_parser.cpp"
+                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2333 "./S1/compiler_parser.cpp"
     break;
 
-  case 139: // expr_call: object expr_call_function
+  case 137: // expr_primitive: level
 #line 437 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::move(yystack_[1].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2322 "./S1/compiler_parser.cpp"
+                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2339 "./S1/compiler_parser.cpp"
     break;
 
-  case 140: // expr_call: object expr_call_pointer
-#line 438 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::move(yystack_[1].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2328 "./S1/compiler_parser.cpp"
+  case 138: // expr_call: expr_call_function
+#line 441 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), false, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+#line 2345 "./S1/compiler_parser.cpp"
     break;
 
-  case 141: // expr_call_thread: THREAD expr_call_function
+  case 139: // expr_call: expr_call_pointer
 #line 442 "S1.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2334 "./S1/compiler_parser.cpp"
+                                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), false, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+#line 2351 "./S1/compiler_parser.cpp"
     break;
 
-  case 142: // expr_call_thread: THREAD expr_call_pointer
+  case 140: // expr_call: object expr_call_function
 #line 443 "S1.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2340 "./S1/compiler_parser.cpp"
+                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), false, std::move(yystack_[1].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+#line 2357 "./S1/compiler_parser.cpp"
     break;
 
-  case 143: // expr_call_thread: object THREAD expr_call_function
+  case 141: // expr_call: object expr_call_pointer
 #line 444 "S1.parser.ypp"
-                                            { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2346 "./S1/compiler_parser.cpp"
+                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), false, std::move(yystack_[1].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+#line 2363 "./S1/compiler_parser.cpp"
     break;
 
-  case 144: // expr_call_thread: object THREAD expr_call_pointer
-#line 445 "S1.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
-#line 2352 "./S1/compiler_parser.cpp"
+  case 142: // expr_call_thread: THREAD expr_call_function
+#line 448 "S1.parser.ypp"
+                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), true, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+#line 2369 "./S1/compiler_parser.cpp"
     break;
 
-  case 145: // expr_call_function: identifier LPAREN expr_arguments RPAREN
+  case 143: // expr_call_thread: THREAD expr_call_pointer
+#line 449 "S1.parser.ypp"
+                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), true, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+#line 2375 "./S1/compiler_parser.cpp"
+    break;
+
+  case 144: // expr_call_thread: object THREAD expr_call_function
 #line 450 "S1.parser.ypp"
-                {yylhs.value.as < gsc::expr_call_type_ptr > ().as_func = std::make_unique<gsc::node_expr_call_function>("", std::make_unique<gsc::node_filepath>("", ""), std::move(yystack_[3].value.as < gsc::identifier_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
-#line 2358 "./S1/compiler_parser.cpp"
+                                            { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), true, std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+#line 2381 "./S1/compiler_parser.cpp"
     break;
 
-  case 146: // expr_call_function: filepath DOUBLECOLON identifier LPAREN expr_arguments RPAREN
-#line 452 "S1.parser.ypp"
-                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_func = std::make_unique<gsc::node_expr_call_function>("", std::move(yystack_[5].value.as < gsc::filepath_ptr > ()), std::move(yystack_[3].value.as < gsc::identifier_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
-#line 2364 "./S1/compiler_parser.cpp"
+  case 145: // expr_call_thread: object THREAD expr_call_pointer
+#line 451 "S1.parser.ypp"
+                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), true, std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+#line 2387 "./S1/compiler_parser.cpp"
     break;
 
-  case 147: // expr_call_pointer: LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
-#line 457 "S1.parser.ypp"
-                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_pointer = std::make_unique<gsc::node_expr_call_pointer>("", false, std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
-#line 2370 "./S1/compiler_parser.cpp"
+  case 146: // expr_call_function: identifier LPAREN expr_arguments RPAREN
+#line 456 "S1.parser.ypp"
+                {yylhs.value.as < gsc::expr_call_type_ptr > ().as_func = std::make_unique<gsc::node_expr_call_function>(std::to_string(*location), std::make_unique<gsc::node_filepath>(std::to_string(*location), ""), std::move(yystack_[3].value.as < gsc::identifier_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
+#line 2393 "./S1/compiler_parser.cpp"
     break;
 
-  case 148: // expr_call_pointer: CALL LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
-#line 459 "S1.parser.ypp"
-                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_pointer = std::make_unique<gsc::node_expr_call_pointer>("", true, std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
-#line 2376 "./S1/compiler_parser.cpp"
+  case 147: // expr_call_function: filepath DOUBLECOLON identifier LPAREN expr_arguments RPAREN
+#line 458 "S1.parser.ypp"
+                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_func = std::make_unique<gsc::node_expr_call_function>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::filepath_ptr > ()), std::move(yystack_[3].value.as < gsc::identifier_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
+#line 2399 "./S1/compiler_parser.cpp"
     break;
 
-  case 149: // expr_arguments: expr_arguments COMMA expr
-#line 464 "S1.parser.ypp"
+  case 148: // expr_call_pointer: LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
+#line 463 "S1.parser.ypp"
+                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_pointer = std::make_unique<gsc::node_expr_call_pointer>(std::to_string(*location), false, std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
+#line 2405 "./S1/compiler_parser.cpp"
+    break;
+
+  case 149: // expr_call_pointer: CALL LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
+#line 465 "S1.parser.ypp"
+                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_pointer = std::make_unique<gsc::node_expr_call_pointer>(std::to_string(*location), true, std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
+#line 2411 "./S1/compiler_parser.cpp"
+    break;
+
+  case 150: // expr_arguments: expr_arguments COMMA expr
+#line 470 "S1.parser.ypp"
                 { yylhs.value.as < gsc::expr_arguments_ptr > () = std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ()); yylhs.value.as < gsc::expr_arguments_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2382 "./S1/compiler_parser.cpp"
+#line 2417 "./S1/compiler_parser.cpp"
     break;
 
-  case 150: // expr_arguments: expr
-#line 466 "S1.parser.ypp"
-                { yylhs.value.as < gsc::expr_arguments_ptr > () = std::make_unique<gsc::node_expr_arguments>(""); yylhs.value.as < gsc::expr_arguments_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
-#line 2388 "./S1/compiler_parser.cpp"
+  case 151: // expr_arguments: expr
+#line 472 "S1.parser.ypp"
+                { yylhs.value.as < gsc::expr_arguments_ptr > () = std::make_unique<gsc::node_expr_arguments>(std::to_string(*location)); yylhs.value.as < gsc::expr_arguments_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+#line 2423 "./S1/compiler_parser.cpp"
     break;
 
-  case 151: // expr_arguments: %empty
-#line 468 "S1.parser.ypp"
-                { yylhs.value.as < gsc::expr_arguments_ptr > () = std::make_unique<gsc::node_expr_arguments>(""); }
-#line 2394 "./S1/compiler_parser.cpp"
+  case 152: // expr_arguments: %empty
+#line 474 "S1.parser.ypp"
+                { yylhs.value.as < gsc::expr_arguments_ptr > () = std::make_unique<gsc::node_expr_arguments>(std::to_string(*location)); }
+#line 2429 "./S1/compiler_parser.cpp"
     break;
 
-  case 152: // expr_function_ref: DOUBLECOLON identifier
-#line 473 "S1.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_function_ref>("", std::make_unique<gsc::node_filepath>("", ""), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
-#line 2400 "./S1/compiler_parser.cpp"
+  case 153: // expr_function_ref: DOUBLECOLON identifier
+#line 479 "S1.parser.ypp"
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_function_ref>(std::to_string(*location), std::make_unique<gsc::node_filepath>(std::to_string(*location), ""), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
+#line 2435 "./S1/compiler_parser.cpp"
     break;
 
-  case 153: // expr_function_ref: filepath DOUBLECOLON identifier
-#line 475 "S1.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_function_ref>("", std::move(yystack_[2].value.as < gsc::filepath_ptr > ()), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
-#line 2406 "./S1/compiler_parser.cpp"
+  case 154: // expr_function_ref: filepath DOUBLECOLON identifier
+#line 481 "S1.parser.ypp"
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_function_ref>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::filepath_ptr > ()), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
+#line 2441 "./S1/compiler_parser.cpp"
     break;
 
-  case 154: // expr_array: object LBRACKET expr RBRACKET
-#line 480 "S1.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_array>("", std::move(yystack_[3].value.as < gsc::node_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
-#line 2412 "./S1/compiler_parser.cpp"
+  case 155: // expr_array: object LBRACKET expr RBRACKET
+#line 486 "S1.parser.ypp"
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_array>(std::to_string(*location), std::move(yystack_[3].value.as < gsc::node_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
+#line 2447 "./S1/compiler_parser.cpp"
     break;
 
-  case 155: // expr_field: object DOT identifier
-#line 485 "S1.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_field>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
-#line 2418 "./S1/compiler_parser.cpp"
+  case 156: // expr_field: object DOT identifier
+#line 491 "S1.parser.ypp"
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_field>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
+#line 2453 "./S1/compiler_parser.cpp"
     break;
 
-  case 156: // expr_size: object DOT size
-#line 490 "S1.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_size>("", std::move(yystack_[2].value.as < gsc::node_ptr > ())); }
-#line 2424 "./S1/compiler_parser.cpp"
+  case 157: // expr_size: object DOT size
+#line 496 "S1.parser.ypp"
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_size>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ())); }
+#line 2459 "./S1/compiler_parser.cpp"
     break;
 
-  case 157: // expr_vector: LPAREN expr COMMA expr COMMA expr RPAREN
-#line 495 "S1.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_vector>("", std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[3].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
-#line 2430 "./S1/compiler_parser.cpp"
+  case 158: // expr_vector: LPAREN expr COMMA expr COMMA expr RPAREN
+#line 501 "S1.parser.ypp"
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_vector>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[3].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
+#line 2465 "./S1/compiler_parser.cpp"
     break;
 
-  case 158: // expr_add_array: LBRACKET expr_arguments RBRACKET
-#line 500 "S1.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_add_array>("", std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
-#line 2436 "./S1/compiler_parser.cpp"
-    break;
-
-  case 159: // object: expr_call
-#line 504 "S1.parser.ypp"
-                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::expr_call_ptr > ()); }
-#line 2442 "./S1/compiler_parser.cpp"
-    break;
-
-  case 160: // object: expr_array
-#line 505 "S1.parser.ypp"
-                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2448 "./S1/compiler_parser.cpp"
-    break;
-
-  case 161: // object: expr_field
+  case 159: // expr_add_array: LBRACKET expr_arguments RBRACKET
 #line 506 "S1.parser.ypp"
-                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2454 "./S1/compiler_parser.cpp"
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_add_array>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
+#line 2471 "./S1/compiler_parser.cpp"
     break;
 
-  case 162: // object: identifier
-#line 507 "S1.parser.ypp"
-                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::identifier_ptr > ()); }
-#line 2460 "./S1/compiler_parser.cpp"
-    break;
-
-  case 163: // object: level
-#line 508 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2466 "./S1/compiler_parser.cpp"
-    break;
-
-  case 164: // object: anim
-#line 509 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2472 "./S1/compiler_parser.cpp"
-    break;
-
-  case 165: // object: self
+  case 160: // object: expr_call
 #line 510 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2478 "./S1/compiler_parser.cpp"
+                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::expr_call_ptr > ()); }
+#line 2477 "./S1/compiler_parser.cpp"
     break;
 
-  case 166: // object: game
+  case 161: // object: expr_array
 #line 511 "S1.parser.ypp"
+                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2483 "./S1/compiler_parser.cpp"
+    break;
+
+  case 162: // object: expr_field
+#line 512 "S1.parser.ypp"
+                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2489 "./S1/compiler_parser.cpp"
+    break;
+
+  case 163: // object: identifier
+#line 513 "S1.parser.ypp"
+                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::identifier_ptr > ()); }
+#line 2495 "./S1/compiler_parser.cpp"
+    break;
+
+  case 164: // object: level
+#line 514 "S1.parser.ypp"
                                         { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2484 "./S1/compiler_parser.cpp"
+#line 2501 "./S1/compiler_parser.cpp"
     break;
 
-  case 167: // vector: LPAREN num COMMA num COMMA num RPAREN
+  case 165: // object: anim
+#line 515 "S1.parser.ypp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2507 "./S1/compiler_parser.cpp"
+    break;
+
+  case 166: // object: self
 #line 516 "S1.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_vector>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[3].value.as < gsc::node_ptr > ()), std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
-#line 2490 "./S1/compiler_parser.cpp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2513 "./S1/compiler_parser.cpp"
     break;
 
-  case 168: // num: data_float
-#line 520 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::float_ptr > ()); }
-#line 2496 "./S1/compiler_parser.cpp"
+  case 167: // object: game
+#line 517 "S1.parser.ypp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2519 "./S1/compiler_parser.cpp"
     break;
 
-  case 169: // num: data_integer
-#line 521 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::integer_ptr > ()); }
-#line 2502 "./S1/compiler_parser.cpp"
-    break;
-
-  case 170: // num: false
+  case 168: // vector: LPAREN num COMMA num COMMA num RPAREN
 #line 522 "S1.parser.ypp"
-                                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2508 "./S1/compiler_parser.cpp"
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_vector>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[3].value.as < gsc::node_ptr > ()), std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
+#line 2525 "./S1/compiler_parser.cpp"
     break;
 
-  case 171: // num: true
-#line 523 "S1.parser.ypp"
-                                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
-#line 2514 "./S1/compiler_parser.cpp"
-    break;
-
-  case 172: // false: FALSE
+  case 169: // num: data_float
 #line 526 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_integer>("", "0"); }
-#line 2520 "./S1/compiler_parser.cpp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::float_ptr > ()); }
+#line 2531 "./S1/compiler_parser.cpp"
     break;
 
-  case 173: // true: TRUE
+  case 170: // num: data_integer
 #line 527 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_integer>("", "1"); }
-#line 2526 "./S1/compiler_parser.cpp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::integer_ptr > ()); }
+#line 2537 "./S1/compiler_parser.cpp"
     break;
 
-  case 174: // data_float: FLOAT
+  case 171: // num: false
 #line 528 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::float_ptr > () = std::make_unique<gsc::node_float>("", yystack_[0].value.as < std::string > ()); }
-#line 2532 "./S1/compiler_parser.cpp"
+                                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2543 "./S1/compiler_parser.cpp"
     break;
 
-  case 175: // data_integer: INTEGER
+  case 172: // num: true
 #line 529 "S1.parser.ypp"
-                                { yylhs.value.as < gsc::integer_ptr > () = std::make_unique<gsc::node_integer>("", yystack_[0].value.as < std::string > ()); }
-#line 2538 "./S1/compiler_parser.cpp"
+                                                { yylhs.value.as < gsc::node_ptr > () = std::move(yystack_[0].value.as < gsc::node_ptr > ()); }
+#line 2549 "./S1/compiler_parser.cpp"
     break;
 
-  case 176: // data_localized_string: STRING_LOC
-#line 530 "S1.parser.ypp"
-                                   { yylhs.value.as < gsc::localized_string_ptr > () = std::make_unique<gsc::node_localized_string>("", yystack_[0].value.as < std::string > ()); }
-#line 2544 "./S1/compiler_parser.cpp"
-    break;
-
-  case 177: // data_string: STRING
-#line 531 "S1.parser.ypp"
-                                { yylhs.value.as < gsc::string_ptr > () = std::make_unique<gsc::node_string>("", yystack_[0].value.as < std::string > ()); }
-#line 2550 "./S1/compiler_parser.cpp"
-    break;
-
-  case 178: // identifier: IDENTIFIER
+  case 173: // false: FALSE
 #line 532 "S1.parser.ypp"
-                                { yylhs.value.as < gsc::identifier_ptr > () = std::make_unique<gsc::node_identifier>("", yystack_[0].value.as < std::string > ()); }
-#line 2556 "./S1/compiler_parser.cpp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_integer>(std::to_string(*location), "0"); }
+#line 2555 "./S1/compiler_parser.cpp"
     break;
 
-  case 179: // filepath: FILEPATH
+  case 174: // true: TRUE
 #line 533 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::filepath_ptr > () = std::make_unique<gsc::node_filepath>("", yystack_[0].value.as < std::string > ()); }
-#line 2562 "./S1/compiler_parser.cpp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_integer>(std::to_string(*location), "1"); }
+#line 2561 "./S1/compiler_parser.cpp"
     break;
 
-  case 180: // empty_array: EMPTY_ARRAY
+  case 175: // data_float: FLOAT
 #line 534 "S1.parser.ypp"
-                                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_empty_array>(""); }
-#line 2568 "./S1/compiler_parser.cpp"
+                                        { yylhs.value.as < gsc::float_ptr > () = std::make_unique<gsc::node_float>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
+#line 2567 "./S1/compiler_parser.cpp"
     break;
 
-  case 181: // undefined: UNDEFINED
+  case 176: // data_integer: INTEGER
 #line 535 "S1.parser.ypp"
-                                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_undefined>(""); }
-#line 2574 "./S1/compiler_parser.cpp"
+                                { yylhs.value.as < gsc::integer_ptr > () = std::make_unique<gsc::node_integer>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
+#line 2573 "./S1/compiler_parser.cpp"
     break;
 
-  case 182: // size: SIZE
+  case 177: // data_localized_string: STRING_LOC
 #line 536 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_size>(""); }
-#line 2580 "./S1/compiler_parser.cpp"
+                                   { yylhs.value.as < gsc::localized_string_ptr > () = std::make_unique<gsc::node_localized_string>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
+#line 2579 "./S1/compiler_parser.cpp"
     break;
 
-  case 183: // game: GAME
+  case 178: // data_string: STRING
 #line 537 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_game>(""); }
-#line 2586 "./S1/compiler_parser.cpp"
+                                { yylhs.value.as < gsc::string_ptr > () = std::make_unique<gsc::node_string>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
+#line 2585 "./S1/compiler_parser.cpp"
     break;
 
-  case 184: // self: SELF
+  case 179: // animref: ANIMREF
 #line 538 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_self>(""); }
-#line 2592 "./S1/compiler_parser.cpp"
+                                { yylhs.value.as < gsc::animref_ptr > () = std::make_unique<gsc::node_animref>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
+#line 2591 "./S1/compiler_parser.cpp"
     break;
 
-  case 185: // anim: ANIM
+  case 180: // identifier: IDENTIFIER
 #line 539 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_anim>(""); }
-#line 2598 "./S1/compiler_parser.cpp"
+                                { yylhs.value.as < gsc::identifier_ptr > () = std::make_unique<gsc::node_identifier>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
+#line 2597 "./S1/compiler_parser.cpp"
     break;
 
-  case 186: // level: LEVEL
+  case 181: // filepath: FILEPATH
 #line 540 "S1.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_level>(""); }
-#line 2604 "./S1/compiler_parser.cpp"
+                                        { yylhs.value.as < gsc::filepath_ptr > () = std::make_unique<gsc::node_filepath>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
+#line 2603 "./S1/compiler_parser.cpp"
+    break;
+
+  case 182: // empty_array: EMPTY_ARRAY
+#line 541 "S1.parser.ypp"
+                                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_empty_array>(std::to_string(*location)); }
+#line 2609 "./S1/compiler_parser.cpp"
+    break;
+
+  case 183: // undefined: UNDEFINED
+#line 542 "S1.parser.ypp"
+                                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_undefined>(std::to_string(*location)); }
+#line 2615 "./S1/compiler_parser.cpp"
+    break;
+
+  case 184: // size: SIZE
+#line 543 "S1.parser.ypp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_size>(std::to_string(*location)); }
+#line 2621 "./S1/compiler_parser.cpp"
+    break;
+
+  case 185: // game: GAME
+#line 544 "S1.parser.ypp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_game>(std::to_string(*location)); }
+#line 2627 "./S1/compiler_parser.cpp"
+    break;
+
+  case 186: // self: SELF
+#line 545 "S1.parser.ypp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_self>(std::to_string(*location)); }
+#line 2633 "./S1/compiler_parser.cpp"
+    break;
+
+  case 187: // anim: ANIM
+#line 546 "S1.parser.ypp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_anim>(std::to_string(*location)); }
+#line 2639 "./S1/compiler_parser.cpp"
+    break;
+
+  case 188: // level: LEVEL
+#line 547 "S1.parser.ypp"
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_level>(std::to_string(*location)); }
+#line 2645 "./S1/compiler_parser.cpp"
     break;
 
 
-#line 2608 "./S1/compiler_parser.cpp"
+#line 2649 "./S1/compiler_parser.cpp"
 
             default:
               break;
@@ -2798,8 +2839,8 @@ namespace yy {
   "ASSIGN_BITWISE_AND", "ASSIGN_BITWISE_EXOR", "ASSIGN_LSHIFT",
   "ASSIGN_RSHIFT", "BITWISE_OR", "BITWISE_AND", "BITWISE_EXOR", "ADD",
   "SUB", "MULT", "DIV", "NOT", "COMPLEMENT", "FILEPATH", "IDENTIFIER",
-  "STRING", "STRING_LOC", "FLOAT", "INTEGER", "IFX", "$accept", "root",
-  "script", "include", "using_animtree", "animtree", "thread",
+  "ANIMREF", "STRING", "STRING_LOC", "FLOAT", "INTEGER", "IFX", "$accept",
+  "root", "script", "include", "using_animtree", "animtree", "thread",
   "parameters", "block", "stmt", "stmt_call", "stmt_assign", "stmt_endon",
   "stmt_notify", "stmt_wait", "stmt_waittill", "stmt_waittillmatch",
   "stmt_waittillframeend", "stmt_waitframe", "stmt_if", "stmt_ifelse",
@@ -2811,8 +2852,8 @@ namespace yy {
   "expr_arguments", "expr_function_ref", "expr_array", "expr_field",
   "expr_size", "expr_vector", "expr_add_array", "object", "vector", "num",
   "false", "true", "data_float", "data_integer", "data_localized_string",
-  "data_string", "identifier", "filepath", "empty_array", "undefined",
-  "size", "game", "self", "anim", "level", YY_NULLPTR
+  "data_string", "animref", "identifier", "filepath", "empty_array",
+  "undefined", "size", "game", "self", "anim", "level", YY_NULLPTR
     };
     return yy_sname[yysymbol];
   }
@@ -2831,7 +2872,7 @@ namespace yy {
     // Actual number of expected tokens
     int yycount = 0;
 
-#if YYDEBUG
+#if S1DEBUG
     // Execute LAC once. We don't care if it is successful, we
     // only do it for the sake of debugging output.
     if (!yyparser_.yy_lac_established_)
@@ -2866,7 +2907,7 @@ namespace yy {
     // Clear it, to get rid of potential left-overs from previous call.
     yylac_stack_.clear ();
     // Reduce until we encounter a shift and thereby accept the token.
-#if YYDEBUG
+#if S1DEBUG
     YYCDEBUG << "LAC: checking lookahead " << symbol_name (yytoken) << ':';
 #endif
     std::ptrdiff_t lac_top = 0;
@@ -2965,7 +3006,7 @@ namespace yy {
        shifted if syntactic actions continue from the current context.  */
     if (!yy_lac_established_)
       {
-#if YYDEBUG
+#if S1DEBUG
         YYCDEBUG << "LAC: initial context established for "
                  << symbol_name (yytoken) << '\n';
 #endif
@@ -3077,104 +3118,106 @@ namespace yy {
   }
 
 
-  const short parser::yypact_ninf_ = -280;
+  const short parser::yypact_ninf_ = -287;
 
-  const short parser::yytable_ninf_ = -167;
+  const short parser::yytable_ninf_ = -168;
 
   const short
   parser::yypact_[] =
   {
-       6,   -73,     2,    17,  -280,    16,     6,  -280,  -280,  -280,
-    -280,    21,  -280,    -4,   -59,   -59,  -280,  -280,  -280,  -280,
-    -280,   -11,  -280,  -280,    41,    52,   -22,  -280,    49,    56,
-      60,   -11,  -280,  -280,   224,  -280,    93,    95,   -51,    70,
-      89,   104,   105,   106,   101,  1537,    11,   111,   126,   112,
-     117,  -280,  -280,  -280,  -280,   124,  1000,  -280,  -280,  -280,
-    -280,  -280,  -280,  -280,  -280,  -280,  -280,  -280,  -280,  -280,
-    -280,  -280,  -280,  -280,  -280,  -280,  -280,  -280,   121,   123,
-     127,  -280,  -280,  -280,  -280,  1645,   134,   130,  -280,  -280,
-    -280,  -280,  1557,  1557,  -280,   135,   136,  -280,  -280,    43,
-    1557,  1557,  -280,  -280,  -280,  -280,  -280,  1557,  1617,   -11,
-    -280,  1557,  1557,  -280,  -280,  2241,   132,  -280,  -280,  -280,
-      19,  -280,  -280,    23,    30,  -280,  -280,  -280,    63,  -280,
-    -280,  -280,  -280,  -280,  -280,  -280,  -280,     9,   139,  -280,
-    -280,    79,    90,    96,   103,  -280,  -280,   134,   146,  1557,
-     141,  -280,  -280,  1557,  -280,  -280,  -280,  -280,  -280,    11,
-     153,   155,   156,   157,  1617,   -11,  -280,  -280,  1557,  1557,
-    1557,  1557,  1557,  1557,  1557,  1557,  1557,  1557,  1557,  -280,
-    -280,  1557,   -11,  1807,  1838,  -280,  -280,   150,  -280,  -280,
-    1699,   564,  1869,   647,   158,  1617,  2272,    26,  -280,  2272,
-    2272,  -280,  1557,  1557,  1557,  1557,  1557,  1557,  1557,  1557,
-    1557,  1557,  1557,  1557,  1557,  1557,  1557,  1557,  1557,  1557,
-    1557,   -17,   -11,  1557,  1900,  -280,  1555,  -280,  -280,  1557,
-    1557,  1557,  1557,  2062,  -280,  2272,  2272,  2272,  2272,  2272,
-    2272,  2272,  2272,  2272,  2272,  2272,   -20,   162,  1036,   163,
-    1557,  1557,  1088,  -280,  1557,   128,  1555,  -280,  1557,  2272,
-    2272,  2272,  2272,  2272,  2272,  2272,  2272,  2272,  2272,  2272,
-    2272,  2272,  2272,  2272,  2272,  2272,  2272,  2208,  -280,  -280,
-     162,  2100,   159,   161,  1734,  2137,  1931,  1776,  -280,  -280,
-    1557,   224,   196,   224,   169,  2272,    80,  1962,   224,  -280,
-    2174,   164,  2272,  1557,   166,  -280,   168,   171,  1557,  1557,
-     172,   173,  1557,   -19,  1121,  1166,  1199,    43,  1243,  1278,
-    1557,   128,  2272,   187,  1557,  -280,   -12,  1993,  -280,  -280,
-      -9,  -280,   202,   224,  -280,  -280,   188,   224,  -280,  -280,
-    2024,   189,  1557,    13,   178,   181,   183,  1323,  1356,  1401,
-    1434,  -280,  -280,    27,  -280,  -280,  -280,  -280,   224,  -280,
-    -280,   224,  -280,  -280,  -280,  1478,  1513,  -280,  -280
+      13,   -41,    16,    21,  -287,    51,    13,  -287,  -287,  -287,
+    -287,    27,  -287,    32,   -23,   -23,  -287,  -287,  -287,  -287,
+    -287,    -9,  -287,  -287,    44,    45,   -27,  -287,    38,    46,
+      52,    -9,  -287,  -287,  1526,  -287,    68,    72,   -12,    65,
+      66,    85,    94,    98,    73,  1547,    36,   105,   104,    92,
+      95,  -287,  -287,  -287,  -287,   108,   163,  -287,  -287,  -287,
+    -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,
+    -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,   103,   109,
+     110,  -287,  -287,  -287,  -287,  1666,   114,   107,  -287,  -287,
+    -287,  -287,  1618,  1618,  -287,   113,   115,  -287,  -287,   202,
+    1618,  1618,  -287,  -287,  -287,  -287,  -287,  1618,  1638,    -9,
+    -287,  1618,  1618,  -287,  -287,  -287,  2288,   112,  -287,  -287,
+    -287,   -15,  -287,  -287,    15,    19,  -287,  -287,  -287,    25,
+    -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,     5,
+     118,  -287,  -287,    62,    71,   187,   198,  -287,  -287,   114,
+     123,  1618,   122,  -287,  -287,  1618,  -287,  -287,  -287,  -287,
+    -287,    36,   128,   134,   147,   151,  1638,    -9,  -287,  -287,
+    1618,  1618,  1618,  1618,  1618,  1618,  1618,  1618,  1618,  1618,
+    1618,  -287,  -287,  1618,    -9,  1816,  1847,  -287,  -287,   142,
+    -287,  -287,   586,  1544,  1878,  1701,   157,  1638,  2319,   -22,
+    -287,  2319,  2319,  -287,  1618,  1618,  1618,  1618,  1618,  1618,
+    1618,  1618,  1618,  1618,  1618,  1618,  1618,  1618,  1618,  1618,
+    1618,  1618,  1618,   -18,    -9,  1618,  1909,  -287,  2071,  -287,
+    -287,  1618,  1618,  1618,  1618,  2109,  -287,  2319,  2319,  2319,
+    2319,  2319,  2319,  2319,  2319,  2319,  2319,  2319,   -13,   165,
+    1008,   155,  1618,  1618,  1044,  -287,  1618,    41,  2071,  -287,
+    1618,  2319,  2319,  2319,  2319,  2319,  2319,  2319,  2319,  2319,
+    2319,  2319,  2319,  2319,  2319,  2319,  2319,  2319,  2319,  2255,
+    -287,  -287,   165,  2147,   162,   168,  1743,  2184,  1940,  1785,
+    -287,  -287,  1618,  1526,   205,  1526,   167,  2319,   -20,  1971,
+    1526,  -287,  2221,   175,  2319,  1618,   173,  -287,   182,   180,
+    1618,  1618,   185,   186,  1618,    -7,  1096,  1131,  1175,   202,
+    1210,  1254,  1618,    41,  2319,   183,  1618,  -287,     2,  2002,
+    -287,  -287,    61,  -287,   214,  1526,  -287,  -287,   200,  1526,
+    -287,  -287,  2033,   203,  1618,    83,   193,   197,   201,  1289,
+    1333,  1368,  1412,  -287,  -287,   100,  -287,  -287,  -287,  -287,
+    1526,  -287,  -287,  1526,  -287,  -287,  -287,  1447,  1491,  -287,
+    -287
   };
 
   const unsigned char
   parser::yydefact_[] =
   {
-       3,     0,     0,     0,   178,     0,     2,     8,     9,    10,
-      11,     0,   179,     0,     0,     0,     1,     4,     5,     6,
-       7,    18,    12,   177,     0,     0,     0,    17,     0,     0,
+       3,     0,     0,     0,   180,     0,     2,     8,     9,    10,
+      11,     0,   181,     0,     0,     0,     1,     4,     5,     6,
+       7,    18,    12,   178,     0,     0,     0,    17,     0,     0,
        0,     0,    13,    14,    21,    16,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,   183,   186,   185,   184,     0,     0,    20,    22,    23,
+       0,   185,   188,   187,   186,     0,     0,    20,    22,    23,
       24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-      34,    35,    36,    37,    38,    39,    40,    41,     0,   159,
-       0,   137,   138,   160,   161,     0,   162,     0,   166,   165,
-     164,   163,     0,     0,   175,     0,     0,    70,    71,    76,
-       0,     0,    72,   181,   173,   172,   180,     0,   151,     0,
-      74,     0,     0,   176,   174,     0,    79,    80,    81,    82,
-     118,   119,   120,   121,   122,   123,   124,   125,     0,   126,
-     127,   170,   171,   168,   169,   128,   129,   130,     0,   131,
-     132,   133,   134,   135,   136,   141,   142,     0,     0,     0,
-       0,    53,    54,     0,    15,    19,    44,    42,    43,     0,
-       0,     0,     0,     0,     0,     0,    83,    84,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,   139,
-     140,   151,     0,     0,     0,    68,    69,     0,    75,   159,
-       0,     0,     0,     0,   127,   151,   150,     0,   152,   117,
-     116,    73,     0,     0,     0,     0,     0,     0,     0,     0,
+      34,    35,    36,    37,    38,    39,    40,    41,     0,   160,
+       0,   138,   139,   161,   162,     0,   163,     0,   167,   166,
+     165,   164,     0,     0,   176,     0,     0,    70,    71,    76,
+       0,     0,    72,   183,   174,   173,   182,     0,   152,     0,
+      74,     0,     0,   179,   177,   175,     0,    79,    80,    81,
+      82,   118,   119,   120,   121,   122,   123,   124,   125,     0,
+     126,   127,   171,   172,   169,   170,   128,   129,   130,   131,
+       0,   132,   133,   134,   135,   136,   137,   142,   143,     0,
+       0,     0,     0,    53,    54,     0,    15,    19,    44,    42,
+      43,     0,     0,     0,     0,     0,     0,     0,    83,    84,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,    49,     0,   143,   144,     0,
-       0,     0,     0,     0,   155,    85,    91,    92,    93,    94,
-      95,    86,    87,    88,    89,    90,     0,     0,     0,     0,
-      78,     0,     0,   115,     0,     0,   150,   158,     0,   114,
-     108,   109,    96,    97,    98,    99,   100,   101,   102,   103,
-     105,   106,   107,   110,   111,   112,   113,     0,   182,   156,
-     153,     0,     0,     0,     0,     0,     0,     0,   154,   145,
-     151,    21,    56,    21,     0,     0,    79,     0,    21,    62,
-       0,     0,   149,     0,     0,    48,     0,     0,   151,     0,
-       0,     0,   151,     0,     0,     0,     0,    76,     0,     0,
-       0,     0,   104,     0,   151,    51,     0,     0,    45,    47,
-       0,   146,    55,    21,    60,    67,     0,    21,    66,    61,
-       0,     0,   151,     0,     0,     0,     0,     0,     0,     0,
-       0,   157,   167,     0,   147,    50,    52,    46,    21,    59,
-      58,    21,    64,    65,   148,     0,     0,    57,    63
+       0,   140,   141,   152,     0,     0,     0,    68,    69,     0,
+      75,   160,     0,     0,     0,     0,   127,   152,   151,     0,
+     153,   117,   116,    73,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,    49,     0,   144,
+     145,     0,     0,     0,     0,     0,   156,    85,    91,    92,
+      93,    94,    95,    86,    87,    88,    89,    90,     0,     0,
+       0,     0,    78,     0,     0,   115,     0,     0,   151,   159,
+       0,   114,   108,   109,    96,    97,    98,    99,   100,   101,
+     102,   103,   105,   106,   107,   110,   111,   112,   113,     0,
+     184,   157,   154,     0,     0,     0,     0,     0,     0,     0,
+     155,   146,   152,    21,    56,    21,     0,     0,    79,     0,
+      21,    62,     0,     0,   150,     0,     0,    48,     0,     0,
+     152,     0,     0,     0,   152,     0,     0,     0,     0,    76,
+       0,     0,     0,     0,   104,     0,   152,    51,     0,     0,
+      45,    47,     0,   147,    55,    21,    60,    67,     0,    21,
+      66,    61,     0,     0,   152,     0,     0,     0,     0,     0,
+       0,     0,     0,   158,   168,     0,   148,    50,    52,    46,
+      21,    59,    58,    21,    64,    65,   149,     0,     0,    57,
+      63
   };
 
   const short
   parser::yypgoto_[] =
   {
-    -280,  -280,  -280,   225,   238,   239,   243,  -280,  -279,   -53,
-    -280,  -280,  -280,  -280,  -280,  -280,  -280,  -280,  -280,  -280,
-    -280,  -280,  -280,  -280,  -280,  -280,  -280,  -280,  -280,  -280,
-     -67,  -280,   770,   -97,     1,  -280,  -280,  -280,    76,   542,
-     -42,   -41,  -174,  -280,   154,   160,  -280,  -280,  -280,   236,
-    -280,   -47,  -280,  -280,  -280,   216,  -280,   138,     0,    38,
-    -280,  -280,  -280,   312,   399,   460,   536
+    -287,  -287,  -287,   240,   242,   243,   245,  -287,  -286,   -43,
+    -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,
+    -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,  -287,
+     -67,  -287,   776,   -94,     1,  -287,  -287,  -287,    90,   546,
+     -38,   -35,  -179,  -287,   166,   172,  -287,  -287,  -287,   248,
+    -287,   -47,  -287,  -287,  -287,   217,  -287,   101,  -287,     0,
+      37,  -287,  -287,  -287,   325,   378,   415,   493
   };
 
   const short
@@ -3183,439 +3226,447 @@ namespace yy {
       -1,     5,     6,     7,     8,     9,    10,    26,    56,    57,
       58,    59,    60,    61,    62,    63,    64,    65,    66,    67,
       68,    69,    70,    71,    72,    73,    74,    75,    76,    77,
-     187,   294,   196,    78,   116,   117,   118,   119,   120,   121,
-      81,    82,   197,   122,   123,   124,   125,   126,   127,   128,
-     129,   130,   131,   132,   133,   134,   135,   136,   137,   138,
-     139,   140,   279,   141,   142,   143,   144
+     189,   296,   198,    78,   117,   118,   119,   120,   121,   122,
+      81,    82,   199,   123,   124,   125,   126,   127,   128,   129,
+     130,   131,   132,   133,   134,   135,   136,   137,   138,   139,
+     140,   141,   142,   281,   143,   144,   145,   146
   };
 
   const short
   parser::yytable_[] =
   {
-      11,   150,   188,   155,   145,   146,    11,   246,    12,     1,
-       2,     3,   314,   278,   316,    30,    16,   289,   331,   319,
-      31,    27,   258,   258,    23,   344,  -162,  -162,   346,    47,
-     258,    35,    23,   258,    86,    94,  -159,  -159,    14,    13,
-    -160,  -160,    22,   179,   180,   181,   147,  -161,  -161,  -162,
-     354,    55,  -162,    15,   348,   258,    86,    21,   350,  -159,
-     194,    47,  -159,  -160,   364,     4,  -160,   257,   258,   258,
-    -161,     4,    87,  -161,    51,    52,    53,    54,    28,   365,
-     159,    47,   366,    55,    87,   147,   179,   180,     4,    29,
-    -162,  -162,    12,     4,    87,    32,  -166,  -166,    34,    86,
-    -159,  -159,    33,   164,  -160,  -160,   221,  -165,  -165,   198,
-      79,  -161,  -161,  -164,  -164,    97,   313,   227,   228,  -166,
-    -163,  -163,  -166,    87,    12,     4,   -77,   220,   147,    92,
-    -165,    93,    79,  -165,   326,    98,  -164,    87,   330,  -164,
-      99,   100,   101,  -163,    12,     4,  -163,   102,   179,   180,
-     343,   148,    24,    25,   104,   105,   104,   105,   151,   147,
-    -166,  -166,   149,   152,   153,   234,    87,   156,   353,   157,
-     181,  -165,  -165,   158,   182,   189,    96,  -164,  -164,   220,
-     185,   186,   247,   222,  -163,  -163,   223,   225,    83,   229,
-     147,   230,   231,   232,    84,   292,   250,    87,   290,   299,
-     255,   293,   306,   315,   324,   305,   321,   323,   301,   347,
-      83,   114,    94,   114,    94,   317,    84,   325,   328,   329,
-     188,   234,   280,   342,   355,   349,   352,   356,    87,   357,
-      36,    17,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    46,    47,    48,    18,    19,    49,    50,    86,    20,
-     336,   296,    86,    83,    95,    51,    52,    53,    54,    84,
-       0,   155,   334,   155,    55,   338,   155,     0,     0,     0,
-      85,     0,     0,     0,   341,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,    87,     0,     0,     0,
-      87,    86,    85,    86,   359,   155,   362,   155,    86,     0,
-       0,     0,     0,     0,     0,    12,     4,     0,     0,     0,
-       0,     0,   155,   155,    86,    86,    86,    86,    86,    86,
-       0,     0,     0,     0,    79,     0,     0,     0,    79,    87,
-       0,    87,     0,    86,     0,   190,    87,    86,     0,     0,
-       0,     0,     0,     0,     0,     0,    88,    86,    86,    86,
-      86,     0,    87,    87,    87,    87,    87,    87,    86,     0,
-       0,    86,     0,     0,     0,    86,    86,    79,    88,    79,
-       0,    87,     0,     0,    79,    87,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,    87,    87,    87,    87,     0,
-      79,    79,    79,   189,    79,    79,    87,     0,     0,    87,
-       0,     0,    83,    87,    87,     0,    83,     0,    84,    79,
-       0,    88,    84,    79,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,    79,    79,    79,    79,     0,     0,     0,
-       0,     0,     0,    89,    79,     0,     0,    79,     0,     0,
-       0,    79,    79,     0,     0,    83,     0,    83,     0,     0,
-       0,    84,    83,    84,     0,    89,     0,     0,    84,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,    83,    83,
-      83,    83,    83,    83,    84,    84,    84,    84,    84,    84,
-       0,     0,     0,     0,    85,     0,     0,    83,    85,     0,
-       0,    83,     0,    84,    90,     0,     0,    84,    89,     0,
-       0,    83,    83,    83,    83,     0,     0,    84,    84,    84,
-      84,     0,    83,     0,     0,    83,    90,     0,    84,    83,
-      83,    84,     0,     0,     0,    84,    84,    85,     0,    85,
-       0,     0,     0,     0,    85,     0,     0,     0,     0,     0,
+      11,   152,  -160,  -160,   248,   190,    11,   316,   147,   318,
+      30,   148,   280,   157,   321,    31,     1,     2,     3,   259,
+     260,    27,  -163,  -163,   291,  -160,   -77,   222,  -160,   260,
+     333,    35,  -161,  -161,    86,   260,  -162,  -162,    13,   346,
+      12,   183,   161,    47,   260,  -163,   149,   181,  -163,   350,
+     182,    16,    14,   352,    47,  -161,    86,    15,  -161,  -162,
+     196,    23,  -162,    21,     4,   166,  -160,  -160,   223,   104,
+     105,    87,    23,     4,   367,    94,    55,   368,    22,  -167,
+    -167,    28,    29,    87,    32,   149,  -163,  -163,  -166,  -166,
+      34,   181,    33,    87,   182,     4,  -161,  -161,   348,    86,
+    -162,  -162,  -167,   260,    92,  -167,    12,     4,    93,   200,
+      97,  -166,    98,   315,  -166,    24,    25,    12,     4,   102,
+     356,    99,    87,   229,    79,   260,   230,   115,    94,   149,
+     100,   328,   104,   105,   101,   332,    87,   366,   153,    96,
+     151,   154,   260,  -167,  -167,   150,    79,   345,   155,   158,
+     183,   184,  -166,  -166,   181,   159,   160,   182,   187,   222,
+     188,   149,   224,   225,   231,   355,    87,   236,   227,    36,
+     232,    37,    38,    39,    40,    41,    42,    43,    44,    45,
+      46,    47,    48,   233,   249,    49,    50,   234,   252,   191,
+     115,    94,   149,   295,    51,    52,    53,    54,    87,   257,
+      83,   292,   156,    55,  -165,  -165,    84,   294,   307,   308,
+     303,   301,   317,   319,   325,  -164,  -164,   323,   326,   344,
+      47,   349,    83,   236,   282,   190,   327,  -165,    84,    87,
+    -165,   330,   331,    51,    52,    53,    54,   351,  -164,   357,
+     354,  -164,    55,   358,    12,     4,    17,   359,    18,    19,
+      86,    20,   338,   298,    86,    95,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,    83,     0,     0,  -165,  -165,
+       0,    84,     0,   157,   336,   157,   343,   340,   157,  -164,
+    -164,     0,    85,    12,     4,     0,     0,    87,     0,     0,
+       0,    87,     0,    86,     0,    86,     0,     0,     0,     0,
+      86,     0,     0,     0,    85,     0,   361,   157,   364,   157,
+       0,     0,     0,     0,     0,     0,    86,    86,    86,    86,
+      86,    86,     0,     0,   157,   157,     0,     0,     0,     0,
+      87,     0,    87,     0,     0,    86,     0,    87,     0,    86,
+      79,     0,     0,     0,    79,     0,     0,   192,     0,    86,
+      86,    86,    86,    87,    87,    87,    87,    87,    87,    88,
+      86,     0,     0,    86,     0,     0,     0,    86,    86,     0,
+       0,     0,    87,     0,     0,     0,    87,     0,     0,     0,
+       0,    88,     0,    79,     0,    79,    87,    87,    87,    87,
+      79,     0,     0,     0,     0,     0,     0,    87,     0,     0,
+      87,     0,     0,     0,    87,    87,    79,    79,    79,   191,
+      79,    79,    89,     0,     0,     0,    83,     0,     0,     0,
+      83,     0,    84,     0,    88,    79,    84,     0,     0,    79,
+       0,     0,     0,     0,    89,     0,     0,     0,     0,    79,
+      79,    79,    79,     0,     0,     0,     0,     0,     0,    90,
+      79,     0,     0,    79,     0,     0,     0,    79,    79,    83,
+       0,    83,     0,     0,     0,    84,    83,    84,     0,     0,
+       0,    90,    84,     0,     0,     0,     0,    89,     0,     0,
+       0,     0,    83,    83,    83,    83,    83,    83,    84,    84,
+      84,    84,    84,    84,     0,     0,     0,     0,    85,     0,
+       0,    83,    85,     0,     0,    83,     0,    84,     0,     0,
+       0,    84,     0,     0,    90,    83,    83,    83,    83,     0,
+       0,    84,    84,    84,    84,     0,    83,    91,     0,    83,
+       0,     0,    84,    83,    83,    84,     0,     0,     0,    84,
+      84,    85,     0,    85,     0,     0,     0,     0,    85,    91,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      85,    85,    85,   190,    85,    85,     0,     0,     0,    90,
-      88,     0,     0,     0,    88,     0,     0,     0,     0,    85,
-      91,     0,     0,    85,     0,     0,    80,     0,     0,     0,
-       0,     0,     0,    85,    85,    85,    85,     0,     0,     0,
-     251,     0,    91,     0,    85,     0,     0,    85,    80,     0,
-       0,    85,    85,    88,     0,    88,     0,     0,     0,     0,
-      88,     0,   202,     0,     0,   203,   204,   205,   206,   207,
-     208,   209,   210,   211,   212,     0,    88,    88,    88,    88,
-      88,    88,     0,     0,     0,    91,   213,   214,   215,   216,
-     217,   218,   219,     0,     0,    88,     0,    89,     0,    88,
-       0,    89,     0,     0,     0,     0,     0,     0,     0,    88,
-      88,    88,    88,     0,     0,     0,     0,     0,     0,     0,
-      88,     0,     0,    88,     0,     0,     0,    88,    88,     0,
-       0,     0,     0,     0,   253,     0,     0,     0,     0,   254,
-      89,     0,    89,     0,     0,   202,     0,    89,   203,   204,
-     205,   206,   207,   208,   209,   210,   211,   212,    90,     0,
-       0,     0,    90,    89,    89,    89,    89,    89,    89,   213,
-     214,   215,   216,   217,   218,   219,     0,     0,     0,     0,
-       0,     0,    89,     0,     0,     0,    89,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,    89,    89,    89,    89,
-       0,    90,     0,    90,     0,     0,     0,    89,    90,     0,
-      89,     0,     0,     0,    89,    89,     0,     0,     0,     0,
-       0,     0,     0,     0,    90,    90,    90,    90,    90,    90,
-       0,     0,     0,     0,    91,     0,     0,     0,    91,     0,
-      80,     0,     0,    90,    80,     0,     0,    90,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    90,    90,    90,
-      90,     0,     0,     0,     0,   115,     0,     0,    90,     0,
-       0,    90,     0,     0,     0,    90,    90,    91,     0,    91,
-       0,     0,     0,    80,    91,    80,     0,     0,     0,     0,
-      80,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      91,    91,    91,    91,    91,    91,    80,    80,    80,     0,
-      80,    80,   183,   184,     0,     0,     0,     0,     0,    91,
-     191,   192,     0,    91,     0,    80,     0,   193,     0,    80,
-       0,   199,   200,    91,    91,    91,    91,     0,     0,    80,
-      80,    80,    80,     0,    91,     0,     0,    91,     0,     0,
-      80,    91,    91,    80,     0,     0,     0,    80,    80,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,   224,
-       0,     0,     0,   226,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,   233,     0,     0,     0,   235,   236,
-     237,   238,   239,   240,   241,   242,   243,   244,   245,     0,
+       0,     0,     0,     0,    85,    85,    85,   192,    85,    85,
+       0,     0,     0,     0,     0,    88,     0,     0,     0,    88,
+      80,     0,     0,    85,     0,     0,     0,    85,     0,     0,
+       0,     0,    91,     0,     0,     0,     0,    85,    85,    85,
+      85,     0,    80,     0,    47,     0,     0,     0,    85,     0,
+       0,    85,     0,     0,     0,    85,    85,     0,    88,     0,
+      88,     0,     0,     0,     0,    88,   166,     0,    89,   167,
+       0,     0,    89,     0,     0,   168,   169,     0,     0,     0,
+       0,    88,    88,    88,    88,    88,    88,   170,   171,   172,
+     173,   174,   175,   176,   177,   178,   179,   180,     0,     0,
+      88,     0,     0,     0,    88,    90,     0,    12,     4,    90,
+       0,    89,     0,    89,    88,    88,    88,    88,    89,     0,
+       0,     0,     0,     0,     0,    88,     0,     0,    88,     0,
+       0,     0,    88,    88,    89,    89,    89,    89,    89,    89,
+       0,     0,     0,     0,     0,     0,     0,     0,    90,     0,
+      90,     0,     0,    89,     0,    90,     0,    89,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,    89,    89,    89,
+      89,    90,    90,    90,    90,    90,    90,     0,    89,     0,
+       0,    89,     0,    91,     0,    89,    89,    91,     0,     0,
+      90,     0,     0,     0,    90,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    90,    90,    90,    90,     0,     0,
+       0,     0,     0,     0,     0,    90,     0,     0,    90,     0,
+       0,     0,    90,    90,     0,     0,    91,     0,    91,     0,
+       0,     0,     0,    91,     0,     0,    80,     0,     0,     0,
+      80,     0,     0,     0,     0,     0,     0,     0,     0,    91,
+      91,    91,    91,    91,    91,     0,     0,     0,     0,     0,
+       0,   116,     0,     0,     0,     0,     0,     0,    91,     0,
+       0,     0,    91,     0,     0,     0,     0,     0,     0,    80,
+       0,    80,    91,    91,    91,    91,    80,     0,     0,     0,
+       0,     0,     0,    91,     0,     0,    91,     0,     0,     0,
+      91,    91,    80,    80,    80,     0,    80,    80,   185,   186,
+       0,     0,     0,     0,     0,     0,   193,   194,     0,     0,
+       0,    80,     0,   195,     0,    80,     0,   201,   202,     0,
+       0,     0,     0,     0,     0,    80,    80,    80,    80,     0,
+       0,     0,     0,     0,     0,     0,    80,     0,     0,    80,
+       0,     0,     0,    80,    80,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,   226,     0,     0,
+       0,   228,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,   235,     0,     0,     0,   237,   238,   239,   240,
+     241,   242,   243,   244,   245,   246,   247,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,   256,     0,     0,     0,     0,
-       0,     0,   259,   260,   261,   262,   263,   264,   265,   266,
-     267,   268,   269,   270,   271,   272,   273,   274,   275,   276,
-     277,     0,     0,   281,     0,     0,     0,     0,     0,   284,
-     285,   286,   287,     0,     0,     0,    36,     0,    37,    38,
-      39,    40,    41,    42,    43,    44,    45,    46,    47,    48,
-     295,   297,    49,    50,   300,     0,     0,     0,   302,     0,
-       0,    51,    52,    53,    54,     0,     0,     0,     0,   154,
-      55,     0,    36,     0,    37,    38,    39,    40,    41,    42,
-      43,    44,    45,    46,    47,    48,     0,     0,    49,    50,
-       0,     0,     0,     0,     0,     0,     0,    51,    52,    53,
-      54,     0,     0,   322,   291,     0,    55,     0,     0,   327,
-       0,    12,     4,     0,     0,     0,     0,     0,     0,     0,
-     340,     0,     0,     0,    36,     0,    37,    38,    39,    40,
-      41,    42,    43,    44,    45,    46,    47,    48,     0,     0,
-      49,    50,     0,     0,     0,     0,     0,    12,     4,    51,
-      52,    53,    54,     0,     0,     0,   298,    36,    55,    37,
-      38,    39,    40,    41,    42,    43,    44,    45,    46,    47,
-      48,     0,     0,    49,    50,     0,     0,     0,     0,     0,
-       0,     0,    51,    52,    53,    54,     0,     0,     0,     0,
-     332,    55,     0,     0,     0,     0,     0,     0,     0,    12,
-       4,     0,    36,     0,    37,    38,    39,    40,    41,    42,
-      43,    44,    45,    46,    47,    48,     0,     0,    49,    50,
-       0,     0,     0,     0,     0,     0,     0,    51,    52,    53,
-      54,     0,    12,     4,   333,    36,    55,    37,    38,    39,
-      40,    41,    42,    43,    44,    45,    46,    47,    48,     0,
-       0,    49,    50,     0,     0,     0,     0,     0,     0,     0,
-      51,    52,    53,    54,     0,     0,     0,     0,   335,    55,
-       0,     0,     0,     0,     0,     0,     0,    12,     4,    36,
-       0,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-      46,    47,    48,     0,     0,    49,    50,     0,     0,     0,
-       0,     0,     0,     0,    51,    52,    53,    54,     0,     0,
-      12,     4,   337,    55,    36,     0,    37,    38,    39,    40,
-      41,    42,    43,    44,    45,    46,    47,    48,     0,     0,
-      49,    50,     0,     0,     0,     0,     0,     0,     0,    51,
-      52,    53,    54,     0,     0,     0,     0,   339,    55,     0,
-       0,     0,     0,     0,    12,     4,     0,     0,     0,    36,
-       0,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-      46,    47,    48,     0,     0,    49,    50,     0,     0,     0,
-       0,     0,     0,     0,    51,    52,    53,    54,     0,    12,
-       4,   358,    36,    55,    37,    38,    39,    40,    41,    42,
-      43,    44,    45,    46,    47,    48,     0,     0,    49,    50,
-       0,     0,     0,     0,     0,     0,     0,    51,    52,    53,
-      54,     0,     0,     0,     0,   360,    55,     0,     0,     0,
-       0,     0,     0,     0,    12,     4,     0,    36,     0,    37,
-      38,    39,    40,    41,    42,    43,    44,    45,    46,    47,
-      48,     0,     0,    49,    50,     0,     0,     0,     0,     0,
-       0,     0,    51,    52,    53,    54,     0,    12,     4,   361,
-      36,    55,    37,    38,    39,    40,    41,    42,    43,    44,
+       0,     0,     0,   258,     0,     0,     0,     0,     0,     0,
+     261,   262,   263,   264,   265,   266,   267,   268,   269,   270,
+     271,   272,   273,   274,   275,   276,   277,   278,   279,     0,
+       0,   283,     0,     0,     0,     0,     0,   286,   287,   288,
+     289,     0,     0,     0,    36,     0,    37,    38,    39,    40,
+      41,    42,    43,    44,    45,    46,    47,    48,   297,   299,
+      49,    50,   302,     0,     0,     0,   304,     0,     0,    51,
+      52,    53,    54,     0,     0,     0,   293,     0,    55,     0,
+      36,     0,    37,    38,    39,    40,    41,    42,    43,    44,
       45,    46,    47,    48,     0,     0,    49,    50,     0,     0,
        0,     0,     0,     0,     0,    51,    52,    53,    54,     0,
-       0,     0,     0,   363,    55,     0,     0,     0,     0,     0,
-       0,     0,    12,     4,    36,     0,    37,    38,    39,    40,
-      41,    42,    43,    44,    45,    46,    47,    48,     0,     0,
-      49,    50,     0,     0,     0,     0,     0,     0,     0,    51,
-      52,    53,    54,     0,     0,    12,     4,   367,    55,    36,
+       0,   324,   300,     0,    55,     0,     0,   329,     0,    12,
+       4,     0,     0,     0,     0,     0,     0,     0,   342,     0,
+       0,     0,    36,     0,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,    47,    48,     0,     0,    49,    50,
+       0,     0,     0,     0,     0,    12,     4,    51,    52,    53,
+      54,     0,     0,     0,     0,   334,    55,    36,     0,    37,
+      38,    39,    40,    41,    42,    43,    44,    45,    46,    47,
+      48,     0,     0,    49,    50,     0,     0,     0,     0,     0,
+       0,     0,    51,    52,    53,    54,     0,     0,     0,   335,
+       0,    55,     0,     0,     0,     0,     0,    12,     4,     0,
+       0,    36,     0,    37,    38,    39,    40,    41,    42,    43,
+      44,    45,    46,    47,    48,     0,     0,    49,    50,     0,
+       0,     0,     0,     0,     0,     0,    51,    52,    53,    54,
+       0,     0,    12,     4,   337,    55,    36,     0,    37,    38,
+      39,    40,    41,    42,    43,    44,    45,    46,    47,    48,
+       0,     0,    49,    50,     0,     0,     0,     0,     0,     0,
+       0,    51,    52,    53,    54,     0,     0,     0,     0,   339,
+      55,     0,     0,     0,     0,     0,    12,     4,     0,     0,
+      36,     0,    37,    38,    39,    40,    41,    42,    43,    44,
+      45,    46,    47,    48,     0,     0,    49,    50,     0,     0,
+       0,     0,     0,     0,     0,    51,    52,    53,    54,     0,
+       0,    12,     4,   341,    55,    36,     0,    37,    38,    39,
+      40,    41,    42,    43,    44,    45,    46,    47,    48,     0,
+       0,    49,    50,     0,     0,     0,     0,     0,     0,     0,
+      51,    52,    53,    54,     0,     0,     0,   360,     0,    55,
+       0,     0,     0,     0,     0,    12,     4,     0,     0,    36,
        0,    37,    38,    39,    40,    41,    42,    43,    44,    45,
       46,    47,    48,     0,     0,    49,    50,     0,     0,     0,
        0,     0,     0,     0,    51,    52,    53,    54,     0,     0,
-       0,     0,   368,    55,    46,    47,     0,     0,     0,    12,
-       4,     0,     0,     0,   103,   104,   105,     0,    51,    52,
-      53,    54,   106,   107,    46,    47,     0,   108,     0,     0,
-       0,   109,     0,   110,   103,   104,   105,     0,    51,    52,
-      53,    54,   106,   107,    12,     4,   283,   108,     0,     0,
-       0,   109,     0,   202,     0,     0,   203,   204,   205,   206,
-     207,   208,   209,   210,   211,   212,   111,   112,    12,     4,
-      23,   113,   114,    94,     0,     0,     0,   213,   214,   215,
-     216,   217,   218,   219,    46,    47,   111,   112,    12,     4,
-      23,   113,   114,    94,   103,   104,   105,     0,    51,    52,
-      53,    54,   106,   107,     0,     0,     0,   195,     0,     0,
-       0,   109,   159,    47,     0,   160,   161,     0,     0,   162,
-     163,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,   164,     0,     0,   165,     0,
-       0,     0,     0,     0,   166,   167,   111,   112,    12,     4,
-      23,   113,   114,    94,     0,     0,   168,   169,   170,   171,
-     172,   173,   174,   175,   176,   177,   178,    47,     0,     0,
-       0,     0,     0,     0,     0,     0,    12,     4,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,   164,
-       0,     0,   165,     0,     0,     0,     0,     0,   166,   167,
+      12,     4,   362,    55,    36,     0,    37,    38,    39,    40,
+      41,    42,    43,    44,    45,    46,    47,    48,     0,     0,
+      49,    50,     0,     0,     0,     0,     0,     0,     0,    51,
+      52,    53,    54,     0,     0,     0,   363,     0,    55,     0,
+       0,     0,     0,     0,    12,     4,     0,     0,    36,     0,
+      37,    38,    39,    40,    41,    42,    43,    44,    45,    46,
+      47,    48,     0,     0,    49,    50,     0,     0,     0,     0,
+       0,     0,     0,    51,    52,    53,    54,     0,     0,    12,
+       4,   365,    55,    36,     0,    37,    38,    39,    40,    41,
+      42,    43,    44,    45,    46,    47,    48,     0,     0,    49,
+      50,     0,     0,     0,     0,     0,     0,     0,    51,    52,
+      53,    54,     0,     0,     0,     0,   369,    55,     0,     0,
+       0,     0,     0,    12,     4,     0,     0,    36,     0,    37,
+      38,    39,    40,    41,    42,    43,    44,    45,    46,    47,
+      48,     0,     0,    49,    50,     0,     0,     0,     0,     0,
+       0,     0,    51,    52,    53,    54,     0,     0,    12,     4,
+     370,    55,    36,     0,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,    47,    48,     0,     0,    49,    50,
+       0,     0,     0,     0,     0,     0,     0,    51,    52,    53,
+      54,     0,     0,     0,    46,    47,    55,     0,     0,     0,
+     253,     0,    12,     4,   103,   104,   105,     0,    51,    52,
+      53,    54,   106,   107,     0,     0,     0,   108,     0,     0,
+       0,   109,   204,   110,     0,   205,   206,   207,   208,   209,
+     210,   211,   212,   213,   214,     0,     0,    12,     4,     0,
+       0,     0,     0,     0,     0,     0,   215,   216,   217,   218,
+     219,   220,   221,     0,     0,     0,   111,   112,    12,     4,
+     113,    23,   114,   115,    94,    46,    47,     0,     0,     0,
+       0,     0,     0,     0,     0,   103,   104,   105,     0,    51,
+      52,    53,    54,   106,   107,    46,    47,     0,   108,     0,
+       0,     0,   109,     0,     0,   103,   104,   105,     0,    51,
+      52,    53,    54,   106,   107,     0,     0,     0,   197,     0,
+       0,     0,   109,   161,    47,     0,   162,   163,     0,     0,
+     164,   165,     0,     0,     0,     0,     0,   111,   112,    12,
+       4,   113,    23,   114,   115,    94,   166,     0,     0,   167,
+       0,     0,     0,     0,     0,   168,   169,   111,   112,    12,
+       4,   113,    23,   114,   115,    94,     0,   170,   171,   172,
+     173,   174,   175,   176,   177,   178,   179,   180,   255,     0,
+       0,     0,     0,   256,     0,     0,     0,    12,     4,   204,
+       0,     0,   205,   206,   207,   208,   209,   210,   211,   212,
+     213,   214,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,   215,   216,   217,   218,   219,   220,   221,
+     309,     0,     0,     0,     0,   310,     0,     0,     0,     0,
+       0,   204,     0,     0,   205,   206,   207,   208,   209,   210,
+     211,   212,   213,   214,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,   215,   216,   217,   218,   219,
+     220,   221,   313,     0,     0,     0,     0,   314,     0,     0,
+       0,     0,     0,   204,     0,     0,   205,   206,   207,   208,
+     209,   210,   211,   212,   213,   214,     0,     0,     0,     0,
+       0,     0,     0,   250,     0,     0,     0,   215,   216,   217,
+     218,   219,   220,   221,   204,     0,     0,   205,   206,   207,
+     208,   209,   210,   211,   212,   213,   214,     0,     0,     0,
+       0,     0,     0,     0,   251,     0,     0,     0,   215,   216,
+     217,   218,   219,   220,   221,   204,     0,     0,   205,   206,
+     207,   208,   209,   210,   211,   212,   213,   214,     0,     0,
+       0,     0,     0,     0,     0,   254,     0,     0,     0,   215,
+     216,   217,   218,   219,   220,   221,   204,     0,     0,   205,
+     206,   207,   208,   209,   210,   211,   212,   213,   214,     0,
+       0,     0,     0,     0,     0,     0,   284,     0,     0,     0,
+     215,   216,   217,   218,   219,   220,   221,   204,     0,     0,
+     205,   206,   207,   208,   209,   210,   211,   212,   213,   214,
+       0,     0,     0,     0,     0,     0,     0,   312,     0,     0,
+       0,   215,   216,   217,   218,   219,   220,   221,   204,     0,
+       0,   205,   206,   207,   208,   209,   210,   211,   212,   213,
+     214,     0,     0,     0,     0,     0,     0,     0,   320,     0,
+       0,     0,   215,   216,   217,   218,   219,   220,   221,   204,
+       0,     0,   205,   206,   207,   208,   209,   210,   211,   212,
+     213,   214,     0,     0,     0,     0,     0,     0,     0,   347,
+       0,     0,     0,   215,   216,   217,   218,   219,   220,   221,
+     204,     0,     0,   205,   206,   207,   208,   209,   210,   211,
+     212,   213,   214,     0,     0,     0,     0,     0,     0,     0,
+     353,     0,     0,     0,   215,   216,   217,   218,   219,   220,
+     221,   204,     0,     0,   205,   206,   207,   208,   209,   210,
+     211,   212,   213,   214,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,   215,   216,   217,   218,   219,
+     220,   221,   285,     0,     0,     0,     0,     0,     0,   204,
+       0,     0,   205,   206,   207,   208,   209,   210,   211,   212,
+     213,   214,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,   215,   216,   217,   218,   219,   220,   221,
+     290,     0,     0,     0,     0,     0,     0,   204,     0,     0,
+     205,   206,   207,   208,   209,   210,   211,   212,   213,   214,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-     168,   169,   170,   171,   172,   173,   174,   175,   176,   177,
-     178,   307,     0,     0,     0,     0,   308,     0,     0,     0,
-      12,     4,   202,     0,     0,   203,   204,   205,   206,   207,
-     208,   209,   210,   211,   212,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,   213,   214,   215,   216,
-     217,   218,   219,   311,     0,     0,     0,     0,   312,     0,
-       0,     0,     0,     0,   202,     0,     0,   203,   204,   205,
-     206,   207,   208,   209,   210,   211,   212,     0,     0,     0,
-       0,     0,     0,     0,   248,     0,     0,     0,   213,   214,
-     215,   216,   217,   218,   219,   202,     0,     0,   203,   204,
-     205,   206,   207,   208,   209,   210,   211,   212,     0,     0,
-       0,     0,     0,     0,     0,   249,     0,     0,     0,   213,
-     214,   215,   216,   217,   218,   219,   202,     0,     0,   203,
-     204,   205,   206,   207,   208,   209,   210,   211,   212,     0,
-       0,     0,     0,     0,     0,     0,   252,     0,     0,     0,
-     213,   214,   215,   216,   217,   218,   219,   202,     0,     0,
-     203,   204,   205,   206,   207,   208,   209,   210,   211,   212,
-       0,     0,     0,     0,     0,     0,     0,   282,     0,     0,
-       0,   213,   214,   215,   216,   217,   218,   219,   202,     0,
-       0,   203,   204,   205,   206,   207,   208,   209,   210,   211,
-     212,     0,     0,     0,     0,     0,     0,     0,   310,     0,
-       0,     0,   213,   214,   215,   216,   217,   218,   219,   202,
-       0,     0,   203,   204,   205,   206,   207,   208,   209,   210,
-     211,   212,     0,     0,     0,     0,     0,     0,     0,   318,
-       0,     0,     0,   213,   214,   215,   216,   217,   218,   219,
-     202,     0,     0,   203,   204,   205,   206,   207,   208,   209,
-     210,   211,   212,     0,     0,     0,     0,     0,     0,     0,
-     345,     0,     0,     0,   213,   214,   215,   216,   217,   218,
-     219,   202,     0,     0,   203,   204,   205,   206,   207,   208,
-     209,   210,   211,   212,     0,     0,     0,     0,     0,     0,
-       0,   351,     0,     0,     0,   213,   214,   215,   216,   217,
-     218,   219,   202,     0,     0,   203,   204,   205,   206,   207,
-     208,   209,   210,   211,   212,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,   213,   214,   215,   216,
-     217,   218,   219,   288,     0,     0,     0,     0,     0,     0,
-     202,     0,     0,   203,   204,   205,   206,   207,   208,   209,
-     210,   211,   212,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,   213,   214,   215,   216,   217,   218,
-     219,   304,     0,     0,     0,     0,     0,     0,   202,     0,
-       0,   203,   204,   205,   206,   207,   208,   209,   210,   211,
-     212,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,   213,   214,   215,   216,   217,   218,   219,   309,
-       0,     0,     0,     0,     0,   202,     0,     0,   203,   204,
-     205,   206,   207,   208,   209,   210,   211,   212,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,   213,
-     214,   215,   216,   217,   218,   219,   320,     0,     0,     0,
-       0,     0,   202,     0,     0,   203,   204,   205,   206,   207,
-     208,   209,   210,   211,   212,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,   213,   214,   215,   216,
-     217,   218,   219,   303,     0,     0,   202,     0,     0,   203,
-     204,   205,   206,   207,   208,   209,   210,   211,   212,     0,
+       0,   215,   216,   217,   218,   219,   220,   221,   306,     0,
+       0,     0,     0,     0,     0,   204,     0,     0,   205,   206,
+     207,   208,   209,   210,   211,   212,   213,   214,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,   215,
+     216,   217,   218,   219,   220,   221,   311,     0,     0,     0,
+       0,     0,   204,     0,     0,   205,   206,   207,   208,   209,
+     210,   211,   212,   213,   214,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,   215,   216,   217,   218,
+     219,   220,   221,   322,     0,     0,     0,     0,     0,   204,
+       0,     0,   205,   206,   207,   208,   209,   210,   211,   212,
+     213,   214,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,   215,   216,   217,   218,   219,   220,   221,
+     305,     0,     0,   204,     0,     0,   205,   206,   207,   208,
+     209,   210,   211,   212,   213,   214,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,   215,   216,   217,
+     218,   219,   220,   221,   203,     0,   204,     0,     0,   205,
+     206,   207,   208,   209,   210,   211,   212,   213,   214,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-     213,   214,   215,   216,   217,   218,   219,   201,     0,   202,
-       0,     0,   203,   204,   205,   206,   207,   208,   209,   210,
-     211,   212,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,   213,   214,   215,   216,   217,   218,   219,
-     202,     0,     0,   203,   204,   205,   206,   207,   208,   209,
-     210,   211,   212,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,   213,   214,   215,   216,   217,   218,
-     219
+     215,   216,   217,   218,   219,   220,   221,   204,     0,     0,
+     205,   206,   207,   208,   209,   210,   211,   212,   213,   214,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,   215,   216,   217,   218,   219,   220,   221
   };
 
   const short
   parser::yycheck_[] =
   {
-       0,    48,    99,    56,    46,    46,     6,   181,    81,     3,
-       4,     5,   291,    30,   293,    37,     0,    37,    37,   298,
-      42,    21,    42,    42,    83,    37,    17,    18,    37,    18,
-      42,    31,    83,    42,    34,    86,    17,    18,    36,     1,
-      17,    18,    46,    85,    85,    36,    46,    17,    18,    40,
-      37,    40,    43,    36,   333,    42,    56,    36,   337,    40,
-     107,    18,    43,    40,    37,    82,    43,    41,    42,    42,
-      40,    82,    34,    43,    31,    32,    33,    34,    37,   358,
-      17,    18,   361,    40,    46,    85,   128,   128,    82,    37,
-      81,    82,    81,    82,    56,    46,    17,    18,    38,    99,
-      81,    82,    46,    40,    81,    82,    43,    17,    18,   109,
-      34,    81,    82,    17,    18,    45,   290,   159,   159,    40,
-      17,    18,    43,    85,    81,    82,    46,    47,   128,    36,
-      40,    36,    56,    43,   308,    46,    40,    99,   312,    43,
-      36,    36,    36,    40,    81,    82,    43,    46,   190,   190,
-     324,    40,    14,    15,    28,    29,    28,    29,    46,   159,
-      81,    82,    36,    46,    40,   165,   128,    46,   342,    46,
-      36,    81,    82,    46,    44,    99,    38,    81,    82,    47,
-      45,    45,   182,    44,    81,    82,    40,    46,    34,    36,
-     190,    36,    36,    36,    34,   248,    46,   159,    36,   252,
-      42,    38,    41,     7,    36,    46,    42,    41,   255,     7,
-      56,    85,    86,    85,    86,    46,    56,    46,    46,    46,
-     317,   221,   222,    36,    46,    37,    37,    46,   190,    46,
-       6,     6,     8,     9,    10,    11,    12,    13,    14,    15,
-      16,    17,    18,    19,     6,     6,    22,    23,   248,     6,
-     317,   250,   252,    99,    38,    31,    32,    33,    34,    99,
-      -1,   314,   315,   316,    40,   318,   319,    -1,    -1,    -1,
-      34,    -1,    -1,    -1,   321,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,   248,    -1,    -1,    -1,
-     252,   291,    56,   293,   347,   348,   349,   350,   298,    -1,
-      -1,    -1,    -1,    -1,    -1,    81,    82,    -1,    -1,    -1,
-      -1,    -1,   365,   366,   314,   315,   316,   317,   318,   319,
-      -1,    -1,    -1,    -1,   248,    -1,    -1,    -1,   252,   291,
-      -1,   293,    -1,   333,    -1,    99,   298,   337,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    34,   347,   348,   349,
-     350,    -1,   314,   315,   316,   317,   318,   319,   358,    -1,
-      -1,   361,    -1,    -1,    -1,   365,   366,   291,    56,   293,
-      -1,   333,    -1,    -1,   298,   337,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,   347,   348,   349,   350,    -1,
-     314,   315,   316,   317,   318,   319,   358,    -1,    -1,   361,
-      -1,    -1,   248,   365,   366,    -1,   252,    -1,   248,   333,
-      -1,    99,   252,   337,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,   347,   348,   349,   350,    -1,    -1,    -1,
-      -1,    -1,    -1,    34,   358,    -1,    -1,   361,    -1,    -1,
-      -1,   365,   366,    -1,    -1,   291,    -1,   293,    -1,    -1,
-      -1,   291,   298,   293,    -1,    56,    -1,    -1,   298,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,   314,   315,
-     316,   317,   318,   319,   314,   315,   316,   317,   318,   319,
-      -1,    -1,    -1,    -1,   248,    -1,    -1,   333,   252,    -1,
-      -1,   337,    -1,   333,    34,    -1,    -1,   337,    99,    -1,
-      -1,   347,   348,   349,   350,    -1,    -1,   347,   348,   349,
-     350,    -1,   358,    -1,    -1,   361,    56,    -1,   358,   365,
-     366,   361,    -1,    -1,    -1,   365,   366,   291,    -1,   293,
-      -1,    -1,    -1,    -1,   298,    -1,    -1,    -1,    -1,    -1,
+       0,    48,    17,    18,   183,    99,     6,   293,    46,   295,
+      37,    46,    30,    56,   300,    42,     3,     4,     5,    41,
+      42,    21,    17,    18,    37,    40,    46,    47,    43,    42,
+      37,    31,    17,    18,    34,    42,    17,    18,     1,    37,
+      81,    36,    17,    18,    42,    40,    46,    85,    43,   335,
+      85,     0,    36,   339,    18,    40,    56,    36,    43,    40,
+     107,    84,    43,    36,    82,    40,    81,    82,    43,    28,
+      29,    34,    84,    82,   360,    87,    40,   363,    46,    17,
+      18,    37,    37,    46,    46,    85,    81,    82,    17,    18,
+      38,   129,    46,    56,   129,    82,    81,    82,    37,    99,
+      81,    82,    40,    42,    36,    43,    81,    82,    36,   109,
+      45,    40,    46,   292,    43,    14,    15,    81,    82,    46,
+      37,    36,    85,   161,    34,    42,   161,    86,    87,   129,
+      36,   310,    28,    29,    36,   314,    99,    37,    46,    38,
+      36,    46,    42,    81,    82,    40,    56,   326,    40,    46,
+      36,    44,    81,    82,   192,    46,    46,   192,    45,    47,
+      45,   161,    44,    40,    36,   344,   129,   167,    46,     6,
+      36,     8,     9,    10,    11,    12,    13,    14,    15,    16,
+      17,    18,    19,    36,   184,    22,    23,    36,    46,    99,
+      86,    87,   192,    38,    31,    32,    33,    34,   161,    42,
+      34,    36,    39,    40,    17,    18,    34,   250,    46,    41,
+     257,   254,     7,    46,    41,    17,    18,    42,    36,    36,
+      18,     7,    56,   223,   224,   319,    46,    40,    56,   192,
+      43,    46,    46,    31,    32,    33,    34,    37,    40,    46,
+      37,    43,    40,    46,    81,    82,     6,    46,     6,     6,
+     250,     6,   319,   252,   254,    38,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    99,    -1,    -1,    81,    82,
+      -1,    99,    -1,   316,   317,   318,   323,   320,   321,    81,
+      82,    -1,    34,    81,    82,    -1,    -1,   250,    -1,    -1,
+      -1,   254,    -1,   293,    -1,   295,    -1,    -1,    -1,    -1,
+     300,    -1,    -1,    -1,    56,    -1,   349,   350,   351,   352,
+      -1,    -1,    -1,    -1,    -1,    -1,   316,   317,   318,   319,
+     320,   321,    -1,    -1,   367,   368,    -1,    -1,    -1,    -1,
+     293,    -1,   295,    -1,    -1,   335,    -1,   300,    -1,   339,
+     250,    -1,    -1,    -1,   254,    -1,    -1,    99,    -1,   349,
+     350,   351,   352,   316,   317,   318,   319,   320,   321,    34,
+     360,    -1,    -1,   363,    -1,    -1,    -1,   367,   368,    -1,
+      -1,    -1,   335,    -1,    -1,    -1,   339,    -1,    -1,    -1,
+      -1,    56,    -1,   293,    -1,   295,   349,   350,   351,   352,
+     300,    -1,    -1,    -1,    -1,    -1,    -1,   360,    -1,    -1,
+     363,    -1,    -1,    -1,   367,   368,   316,   317,   318,   319,
+     320,   321,    34,    -1,    -1,    -1,   250,    -1,    -1,    -1,
+     254,    -1,   250,    -1,    99,   335,   254,    -1,    -1,   339,
+      -1,    -1,    -1,    -1,    56,    -1,    -1,    -1,    -1,   349,
+     350,   351,   352,    -1,    -1,    -1,    -1,    -1,    -1,    34,
+     360,    -1,    -1,   363,    -1,    -1,    -1,   367,   368,   293,
+      -1,   295,    -1,    -1,    -1,   293,   300,   295,    -1,    -1,
+      -1,    56,   300,    -1,    -1,    -1,    -1,    99,    -1,    -1,
+      -1,    -1,   316,   317,   318,   319,   320,   321,   316,   317,
+     318,   319,   320,   321,    -1,    -1,    -1,    -1,   250,    -1,
+      -1,   335,   254,    -1,    -1,   339,    -1,   335,    -1,    -1,
+      -1,   339,    -1,    -1,    99,   349,   350,   351,   352,    -1,
+      -1,   349,   350,   351,   352,    -1,   360,    34,    -1,   363,
+      -1,    -1,   360,   367,   368,   363,    -1,    -1,    -1,   367,
+     368,   293,    -1,   295,    -1,    -1,    -1,    -1,   300,    56,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-     314,   315,   316,   317,   318,   319,    -1,    -1,    -1,    99,
-     248,    -1,    -1,    -1,   252,    -1,    -1,    -1,    -1,   333,
-      34,    -1,    -1,   337,    -1,    -1,    34,    -1,    -1,    -1,
-      -1,    -1,    -1,   347,   348,   349,   350,    -1,    -1,    -1,
-      26,    -1,    56,    -1,   358,    -1,    -1,   361,    56,    -1,
-      -1,   365,   366,   291,    -1,   293,    -1,    -1,    -1,    -1,
-     298,    -1,    48,    -1,    -1,    51,    52,    53,    54,    55,
-      56,    57,    58,    59,    60,    -1,   314,   315,   316,   317,
-     318,   319,    -1,    -1,    -1,    99,    72,    73,    74,    75,
-      76,    77,    78,    -1,    -1,   333,    -1,   248,    -1,   337,
-      -1,   252,    -1,    -1,    -1,    -1,    -1,    -1,    -1,   347,
-     348,   349,   350,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-     358,    -1,    -1,   361,    -1,    -1,    -1,   365,   366,    -1,
-      -1,    -1,    -1,    -1,    37,    -1,    -1,    -1,    -1,    42,
-     291,    -1,   293,    -1,    -1,    48,    -1,   298,    51,    52,
-      53,    54,    55,    56,    57,    58,    59,    60,   248,    -1,
-      -1,    -1,   252,   314,   315,   316,   317,   318,   319,    72,
-      73,    74,    75,    76,    77,    78,    -1,    -1,    -1,    -1,
-      -1,    -1,   333,    -1,    -1,    -1,   337,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,   347,   348,   349,   350,
-      -1,   291,    -1,   293,    -1,    -1,    -1,   358,   298,    -1,
-     361,    -1,    -1,    -1,   365,   366,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,   314,   315,   316,   317,   318,   319,
-      -1,    -1,    -1,    -1,   248,    -1,    -1,    -1,   252,    -1,
-     248,    -1,    -1,   333,   252,    -1,    -1,   337,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,   347,   348,   349,
-     350,    -1,    -1,    -1,    -1,    45,    -1,    -1,   358,    -1,
-      -1,   361,    -1,    -1,    -1,   365,   366,   291,    -1,   293,
-      -1,    -1,    -1,   291,   298,   293,    -1,    -1,    -1,    -1,
-     298,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-     314,   315,   316,   317,   318,   319,   314,   315,   316,    -1,
-     318,   319,    92,    93,    -1,    -1,    -1,    -1,    -1,   333,
-     100,   101,    -1,   337,    -1,   333,    -1,   107,    -1,   337,
-      -1,   111,   112,   347,   348,   349,   350,    -1,    -1,   347,
-     348,   349,   350,    -1,   358,    -1,    -1,   361,    -1,    -1,
-     358,   365,   366,   361,    -1,    -1,    -1,   365,   366,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,   149,
-      -1,    -1,    -1,   153,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,   164,    -1,    -1,    -1,   168,   169,
-     170,   171,   172,   173,   174,   175,   176,   177,   178,    -1,
+      -1,    -1,    -1,    -1,   316,   317,   318,   319,   320,   321,
+      -1,    -1,    -1,    -1,    -1,   250,    -1,    -1,    -1,   254,
+      34,    -1,    -1,   335,    -1,    -1,    -1,   339,    -1,    -1,
+      -1,    -1,    99,    -1,    -1,    -1,    -1,   349,   350,   351,
+     352,    -1,    56,    -1,    18,    -1,    -1,    -1,   360,    -1,
+      -1,   363,    -1,    -1,    -1,   367,   368,    -1,   293,    -1,
+     295,    -1,    -1,    -1,    -1,   300,    40,    -1,   250,    43,
+      -1,    -1,   254,    -1,    -1,    49,    50,    -1,    -1,    -1,
+      -1,   316,   317,   318,   319,   320,   321,    61,    62,    63,
+      64,    65,    66,    67,    68,    69,    70,    71,    -1,    -1,
+     335,    -1,    -1,    -1,   339,   250,    -1,    81,    82,   254,
+      -1,   293,    -1,   295,   349,   350,   351,   352,   300,    -1,
+      -1,    -1,    -1,    -1,    -1,   360,    -1,    -1,   363,    -1,
+      -1,    -1,   367,   368,   316,   317,   318,   319,   320,   321,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,   293,    -1,
+     295,    -1,    -1,   335,    -1,   300,    -1,   339,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,   349,   350,   351,
+     352,   316,   317,   318,   319,   320,   321,    -1,   360,    -1,
+      -1,   363,    -1,   250,    -1,   367,   368,   254,    -1,    -1,
+     335,    -1,    -1,    -1,   339,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,   349,   350,   351,   352,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,   360,    -1,    -1,   363,    -1,
+      -1,    -1,   367,   368,    -1,    -1,   293,    -1,   295,    -1,
+      -1,    -1,    -1,   300,    -1,    -1,   250,    -1,    -1,    -1,
+     254,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,   316,
+     317,   318,   319,   320,   321,    -1,    -1,    -1,    -1,    -1,
+      -1,    45,    -1,    -1,    -1,    -1,    -1,    -1,   335,    -1,
+      -1,    -1,   339,    -1,    -1,    -1,    -1,    -1,    -1,   293,
+      -1,   295,   349,   350,   351,   352,   300,    -1,    -1,    -1,
+      -1,    -1,    -1,   360,    -1,    -1,   363,    -1,    -1,    -1,
+     367,   368,   316,   317,   318,    -1,   320,   321,    92,    93,
+      -1,    -1,    -1,    -1,    -1,    -1,   100,   101,    -1,    -1,
+      -1,   335,    -1,   107,    -1,   339,    -1,   111,   112,    -1,
+      -1,    -1,    -1,    -1,    -1,   349,   350,   351,   352,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,   360,    -1,    -1,   363,
+      -1,    -1,    -1,   367,   368,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,   151,    -1,    -1,
+      -1,   155,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,   166,    -1,    -1,    -1,   170,   171,   172,   173,
+     174,   175,   176,   177,   178,   179,   180,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,   195,    -1,    -1,    -1,    -1,
-      -1,    -1,   202,   203,   204,   205,   206,   207,   208,   209,
-     210,   211,   212,   213,   214,   215,   216,   217,   218,   219,
-     220,    -1,    -1,   223,    -1,    -1,    -1,    -1,    -1,   229,
-     230,   231,   232,    -1,    -1,    -1,     6,    -1,     8,     9,
-      10,    11,    12,    13,    14,    15,    16,    17,    18,    19,
-     250,   251,    22,    23,   254,    -1,    -1,    -1,   258,    -1,
-      -1,    31,    32,    33,    34,    -1,    -1,    -1,    -1,    39,
-      40,    -1,     6,    -1,     8,     9,    10,    11,    12,    13,
+      -1,    -1,    -1,   197,    -1,    -1,    -1,    -1,    -1,    -1,
+     204,   205,   206,   207,   208,   209,   210,   211,   212,   213,
+     214,   215,   216,   217,   218,   219,   220,   221,   222,    -1,
+      -1,   225,    -1,    -1,    -1,    -1,    -1,   231,   232,   233,
+     234,    -1,    -1,    -1,     6,    -1,     8,     9,    10,    11,
+      12,    13,    14,    15,    16,    17,    18,    19,   252,   253,
+      22,    23,   256,    -1,    -1,    -1,   260,    -1,    -1,    31,
+      32,    33,    34,    -1,    -1,    -1,    38,    -1,    40,    -1,
+       6,    -1,     8,     9,    10,    11,    12,    13,    14,    15,
+      16,    17,    18,    19,    -1,    -1,    22,    23,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    31,    32,    33,    34,    -1,
+      -1,   305,    38,    -1,    40,    -1,    -1,   311,    -1,    81,
+      82,    -1,    -1,    -1,    -1,    -1,    -1,    -1,   322,    -1,
+      -1,    -1,     6,    -1,     8,     9,    10,    11,    12,    13,
       14,    15,    16,    17,    18,    19,    -1,    -1,    22,    23,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    31,    32,    33,
-      34,    -1,    -1,   303,    38,    -1,    40,    -1,    -1,   309,
-      -1,    81,    82,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-     320,    -1,    -1,    -1,     6,    -1,     8,     9,    10,    11,
-      12,    13,    14,    15,    16,    17,    18,    19,    -1,    -1,
-      22,    23,    -1,    -1,    -1,    -1,    -1,    81,    82,    31,
-      32,    33,    34,    -1,    -1,    -1,    38,     6,    40,     8,
+      -1,    -1,    -1,    -1,    -1,    81,    82,    31,    32,    33,
+      34,    -1,    -1,    -1,    -1,    39,    40,     6,    -1,     8,
        9,    10,    11,    12,    13,    14,    15,    16,    17,    18,
       19,    -1,    -1,    22,    23,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    31,    32,    33,    34,    -1,    -1,    -1,    -1,
-      39,    40,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    81,
-      82,    -1,     6,    -1,     8,     9,    10,    11,    12,    13,
-      14,    15,    16,    17,    18,    19,    -1,    -1,    22,    23,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    31,    32,    33,
-      34,    -1,    81,    82,    38,     6,    40,     8,     9,    10,
+      -1,    -1,    31,    32,    33,    34,    -1,    -1,    -1,    38,
+      -1,    40,    -1,    -1,    -1,    -1,    -1,    81,    82,    -1,
+      -1,     6,    -1,     8,     9,    10,    11,    12,    13,    14,
+      15,    16,    17,    18,    19,    -1,    -1,    22,    23,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    31,    32,    33,    34,
+      -1,    -1,    81,    82,    39,    40,     6,    -1,     8,     9,
+      10,    11,    12,    13,    14,    15,    16,    17,    18,    19,
+      -1,    -1,    22,    23,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    31,    32,    33,    34,    -1,    -1,    -1,    -1,    39,
+      40,    -1,    -1,    -1,    -1,    -1,    81,    82,    -1,    -1,
+       6,    -1,     8,     9,    10,    11,    12,    13,    14,    15,
+      16,    17,    18,    19,    -1,    -1,    22,    23,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    31,    32,    33,    34,    -1,
+      -1,    81,    82,    39,    40,     6,    -1,     8,     9,    10,
       11,    12,    13,    14,    15,    16,    17,    18,    19,    -1,
       -1,    22,    23,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      31,    32,    33,    34,    -1,    -1,    -1,    -1,    39,    40,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    81,    82,     6,
+      31,    32,    33,    34,    -1,    -1,    -1,    38,    -1,    40,
+      -1,    -1,    -1,    -1,    -1,    81,    82,    -1,    -1,     6,
       -1,     8,     9,    10,    11,    12,    13,    14,    15,    16,
       17,    18,    19,    -1,    -1,    22,    23,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    31,    32,    33,    34,    -1,    -1,
       81,    82,    39,    40,     6,    -1,     8,     9,    10,    11,
       12,    13,    14,    15,    16,    17,    18,    19,    -1,    -1,
       22,    23,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    31,
-      32,    33,    34,    -1,    -1,    -1,    -1,    39,    40,    -1,
-      -1,    -1,    -1,    -1,    81,    82,    -1,    -1,    -1,     6,
-      -1,     8,     9,    10,    11,    12,    13,    14,    15,    16,
-      17,    18,    19,    -1,    -1,    22,    23,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    31,    32,    33,    34,    -1,    81,
-      82,    38,     6,    40,     8,     9,    10,    11,    12,    13,
-      14,    15,    16,    17,    18,    19,    -1,    -1,    22,    23,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    31,    32,    33,
-      34,    -1,    -1,    -1,    -1,    39,    40,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    81,    82,    -1,     6,    -1,     8,
+      32,    33,    34,    -1,    -1,    -1,    38,    -1,    40,    -1,
+      -1,    -1,    -1,    -1,    81,    82,    -1,    -1,     6,    -1,
+       8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
+      18,    19,    -1,    -1,    22,    23,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    31,    32,    33,    34,    -1,    -1,    81,
+      82,    39,    40,     6,    -1,     8,     9,    10,    11,    12,
+      13,    14,    15,    16,    17,    18,    19,    -1,    -1,    22,
+      23,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    31,    32,
+      33,    34,    -1,    -1,    -1,    -1,    39,    40,    -1,    -1,
+      -1,    -1,    -1,    81,    82,    -1,    -1,     6,    -1,     8,
        9,    10,    11,    12,    13,    14,    15,    16,    17,    18,
       19,    -1,    -1,    22,    23,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    31,    32,    33,    34,    -1,    81,    82,    38,
-       6,    40,     8,     9,    10,    11,    12,    13,    14,    15,
-      16,    17,    18,    19,    -1,    -1,    22,    23,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    31,    32,    33,    34,    -1,
-      -1,    -1,    -1,    39,    40,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    81,    82,     6,    -1,     8,     9,    10,    11,
-      12,    13,    14,    15,    16,    17,    18,    19,    -1,    -1,
-      22,    23,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    31,
-      32,    33,    34,    -1,    -1,    81,    82,    39,    40,     6,
-      -1,     8,     9,    10,    11,    12,    13,    14,    15,    16,
-      17,    18,    19,    -1,    -1,    22,    23,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    31,    32,    33,    34,    -1,    -1,
-      -1,    -1,    39,    40,    17,    18,    -1,    -1,    -1,    81,
-      82,    -1,    -1,    -1,    27,    28,    29,    -1,    31,    32,
-      33,    34,    35,    36,    17,    18,    -1,    40,    -1,    -1,
-      -1,    44,    -1,    46,    27,    28,    29,    -1,    31,    32,
-      33,    34,    35,    36,    81,    82,    41,    40,    -1,    -1,
-      -1,    44,    -1,    48,    -1,    -1,    51,    52,    53,    54,
-      55,    56,    57,    58,    59,    60,    79,    80,    81,    82,
-      83,    84,    85,    86,    -1,    -1,    -1,    72,    73,    74,
-      75,    76,    77,    78,    17,    18,    79,    80,    81,    82,
-      83,    84,    85,    86,    27,    28,    29,    -1,    31,    32,
+      -1,    -1,    31,    32,    33,    34,    -1,    -1,    81,    82,
+      39,    40,     6,    -1,     8,     9,    10,    11,    12,    13,
+      14,    15,    16,    17,    18,    19,    -1,    -1,    22,    23,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    31,    32,    33,
+      34,    -1,    -1,    -1,    17,    18,    40,    -1,    -1,    -1,
+      26,    -1,    81,    82,    27,    28,    29,    -1,    31,    32,
       33,    34,    35,    36,    -1,    -1,    -1,    40,    -1,    -1,
-      -1,    44,    17,    18,    -1,    20,    21,    -1,    -1,    24,
-      25,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    40,    -1,    -1,    43,    -1,
-      -1,    -1,    -1,    -1,    49,    50,    79,    80,    81,    82,
-      83,    84,    85,    86,    -1,    -1,    61,    62,    63,    64,
-      65,    66,    67,    68,    69,    70,    71,    18,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    81,    82,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    40,
-      -1,    -1,    43,    -1,    -1,    -1,    -1,    -1,    49,    50,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      61,    62,    63,    64,    65,    66,    67,    68,    69,    70,
-      71,    37,    -1,    -1,    -1,    -1,    42,    -1,    -1,    -1,
-      81,    82,    48,    -1,    -1,    51,    52,    53,    54,    55,
-      56,    57,    58,    59,    60,    -1,    -1,    -1,    -1,    -1,
+      -1,    44,    48,    46,    -1,    51,    52,    53,    54,    55,
+      56,    57,    58,    59,    60,    -1,    -1,    81,    82,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    72,    73,    74,    75,
-      76,    77,    78,    37,    -1,    -1,    -1,    -1,    42,    -1,
-      -1,    -1,    -1,    -1,    48,    -1,    -1,    51,    52,    53,
+      76,    77,    78,    -1,    -1,    -1,    79,    80,    81,    82,
+      83,    84,    85,    86,    87,    17,    18,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    27,    28,    29,    -1,    31,
+      32,    33,    34,    35,    36,    17,    18,    -1,    40,    -1,
+      -1,    -1,    44,    -1,    -1,    27,    28,    29,    -1,    31,
+      32,    33,    34,    35,    36,    -1,    -1,    -1,    40,    -1,
+      -1,    -1,    44,    17,    18,    -1,    20,    21,    -1,    -1,
+      24,    25,    -1,    -1,    -1,    -1,    -1,    79,    80,    81,
+      82,    83,    84,    85,    86,    87,    40,    -1,    -1,    43,
+      -1,    -1,    -1,    -1,    -1,    49,    50,    79,    80,    81,
+      82,    83,    84,    85,    86,    87,    -1,    61,    62,    63,
+      64,    65,    66,    67,    68,    69,    70,    71,    37,    -1,
+      -1,    -1,    -1,    42,    -1,    -1,    -1,    81,    82,    48,
+      -1,    -1,    51,    52,    53,    54,    55,    56,    57,    58,
+      59,    60,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    72,    73,    74,    75,    76,    77,    78,
+      37,    -1,    -1,    -1,    -1,    42,    -1,    -1,    -1,    -1,
+      -1,    48,    -1,    -1,    51,    52,    53,    54,    55,    56,
+      57,    58,    59,    60,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    72,    73,    74,    75,    76,
+      77,    78,    37,    -1,    -1,    -1,    -1,    42,    -1,    -1,
+      -1,    -1,    -1,    48,    -1,    -1,    51,    52,    53,    54,
+      55,    56,    57,    58,    59,    60,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    37,    -1,    -1,    -1,    72,    73,    74,
+      75,    76,    77,    78,    48,    -1,    -1,    51,    52,    53,
       54,    55,    56,    57,    58,    59,    60,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    37,    -1,    -1,    -1,    72,    73,
       74,    75,    76,    77,    78,    48,    -1,    -1,    51,    52,
@@ -3639,18 +3690,15 @@ namespace yy {
       37,    -1,    -1,    -1,    72,    73,    74,    75,    76,    77,
       78,    48,    -1,    -1,    51,    52,    53,    54,    55,    56,
       57,    58,    59,    60,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    37,    -1,    -1,    -1,    72,    73,    74,    75,    76,
-      77,    78,    48,    -1,    -1,    51,    52,    53,    54,    55,
-      56,    57,    58,    59,    60,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    72,    73,    74,    75,
-      76,    77,    78,    41,    -1,    -1,    -1,    -1,    -1,    -1,
-      48,    -1,    -1,    51,    52,    53,    54,    55,    56,    57,
-      58,    59,    60,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    72,    73,    74,    75,    76,    77,
-      78,    41,    -1,    -1,    -1,    -1,    -1,    -1,    48,    -1,
-      -1,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    72,    73,    74,    75,    76,    77,    78,    42,
+      -1,    -1,    -1,    -1,    -1,    72,    73,    74,    75,    76,
+      77,    78,    41,    -1,    -1,    -1,    -1,    -1,    -1,    48,
+      -1,    -1,    51,    52,    53,    54,    55,    56,    57,    58,
+      59,    60,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    72,    73,    74,    75,    76,    77,    78,
+      41,    -1,    -1,    -1,    -1,    -1,    -1,    48,    -1,    -1,
+      51,    52,    53,    54,    55,    56,    57,    58,    59,    60,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    72,    73,    74,    75,    76,    77,    78,    41,    -1,
       -1,    -1,    -1,    -1,    -1,    48,    -1,    -1,    51,    52,
       53,    54,    55,    56,    57,    58,    59,    60,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    72,
@@ -3658,83 +3706,87 @@ namespace yy {
       -1,    -1,    48,    -1,    -1,    51,    52,    53,    54,    55,
       56,    57,    58,    59,    60,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    72,    73,    74,    75,
-      76,    77,    78,    45,    -1,    -1,    48,    -1,    -1,    51,
-      52,    53,    54,    55,    56,    57,    58,    59,    60,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      72,    73,    74,    75,    76,    77,    78,    46,    -1,    48,
+      76,    77,    78,    42,    -1,    -1,    -1,    -1,    -1,    48,
       -1,    -1,    51,    52,    53,    54,    55,    56,    57,    58,
       59,    60,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    -1,    72,    73,    74,    75,    76,    77,    78,
-      48,    -1,    -1,    51,    52,    53,    54,    55,    56,    57,
-      58,    59,    60,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    72,    73,    74,    75,    76,    77,
-      78
+      45,    -1,    -1,    48,    -1,    -1,    51,    52,    53,    54,
+      55,    56,    57,    58,    59,    60,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    72,    73,    74,
+      75,    76,    77,    78,    46,    -1,    48,    -1,    -1,    51,
+      52,    53,    54,    55,    56,    57,    58,    59,    60,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      72,    73,    74,    75,    76,    77,    78,    48,    -1,    -1,
+      51,    52,    53,    54,    55,    56,    57,    58,    59,    60,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    72,    73,    74,    75,    76,    77,    78
   };
 
   const unsigned char
   parser::yystos_[] =
   {
-       0,     3,     4,     5,    82,    89,    90,    91,    92,    93,
-      94,   146,    81,   147,    36,    36,     0,    91,    92,    93,
-      94,    36,    46,    83,   145,   145,    95,   146,    37,    37,
-      37,    42,    46,    46,    38,   146,     6,     8,     9,    10,
+       0,     3,     4,     5,    82,    90,    91,    92,    93,    94,
+      95,   148,    81,   149,    36,    36,     0,    92,    93,    94,
+      95,    36,    46,    84,   146,   146,    96,   148,    37,    37,
+      37,    42,    46,    46,    38,   148,     6,     8,     9,    10,
       11,    12,    13,    14,    15,    16,    17,    18,    19,    22,
-      23,    31,    32,    33,    34,    40,    96,    97,    98,    99,
-     100,   101,   102,   103,   104,   105,   106,   107,   108,   109,
-     110,   111,   112,   113,   114,   115,   116,   117,   121,   126,
-     127,   128,   129,   132,   133,   137,   146,   147,   151,   152,
-     153,   154,    36,    36,    86,   143,   145,    45,    46,    36,
+      23,    31,    32,    33,    34,    40,    97,    98,    99,   100,
+     101,   102,   103,   104,   105,   106,   107,   108,   109,   110,
+     111,   112,   113,   114,   115,   116,   117,   118,   122,   127,
+     128,   129,   130,   133,   134,   138,   148,   149,   153,   154,
+     155,   156,    36,    36,    87,   144,   146,    45,    46,    36,
       36,    36,    46,    27,    28,    29,    35,    36,    40,    44,
-      46,    79,    80,    84,    85,   120,   122,   123,   124,   125,
-     126,   127,   131,   132,   133,   134,   135,   136,   137,   138,
+      46,    79,    80,    83,    85,    86,   121,   123,   124,   125,
+     126,   127,   128,   132,   133,   134,   135,   136,   137,   138,
      139,   140,   141,   142,   143,   144,   145,   146,   147,   148,
-     149,   151,   152,   153,   154,   128,   129,   146,    40,    36,
-     139,    46,    46,    40,    39,    97,    46,    46,    46,    17,
-      20,    21,    24,    25,    40,    43,    49,    50,    61,    62,
-      63,    64,    65,    66,    67,    68,    69,    70,    71,   128,
-     129,    36,    44,   120,   120,    45,    45,   118,   121,   126,
-     137,   120,   120,   120,   139,    40,   120,   130,   146,   120,
-     120,    46,    48,    51,    52,    53,    54,    55,    56,    57,
-      58,    59,    60,    72,    73,    74,    75,    76,    77,    78,
-      47,    43,    44,    40,   120,    46,   120,   128,   129,    36,
-      36,    36,    36,   120,   146,   120,   120,   120,   120,   120,
-     120,   120,   120,   120,   120,   120,   130,   146,    37,    37,
-      46,    26,    37,    37,    42,    42,   120,    41,    42,   120,
-     120,   120,   120,   120,   120,   120,   120,   120,   120,   120,
-     120,   120,   120,   120,   120,   120,   120,   120,    30,   150,
-     146,   120,    37,    41,   120,   120,   120,   120,    41,    37,
-      36,    38,    97,    38,   119,   120,   122,   120,    38,    97,
-     120,   139,   120,    45,    41,    46,    41,    37,    42,    42,
-      37,    37,    42,   130,    96,     7,    96,    46,    37,    96,
-      42,    42,   120,    41,    36,    46,   130,   120,    46,    46,
-     130,    37,    39,    38,    97,    39,   118,    39,    97,    39,
-     120,   139,    36,   130,    37,    37,    37,     7,    96,    37,
-      96,    37,    37,   130,    37,    46,    46,    46,    38,    97,
-      39,    38,    97,    39,    37,    96,    96,    39,    39
+     149,   150,   151,   153,   154,   155,   156,   129,   130,   148,
+      40,    36,   140,    46,    46,    40,    39,    98,    46,    46,
+      46,    17,    20,    21,    24,    25,    40,    43,    49,    50,
+      61,    62,    63,    64,    65,    66,    67,    68,    69,    70,
+      71,   129,   130,    36,    44,   121,   121,    45,    45,   119,
+     122,   127,   138,   121,   121,   121,   140,    40,   121,   131,
+     148,   121,   121,    46,    48,    51,    52,    53,    54,    55,
+      56,    57,    58,    59,    60,    72,    73,    74,    75,    76,
+      77,    78,    47,    43,    44,    40,   121,    46,   121,   129,
+     130,    36,    36,    36,    36,   121,   148,   121,   121,   121,
+     121,   121,   121,   121,   121,   121,   121,   121,   131,   148,
+      37,    37,    46,    26,    37,    37,    42,    42,   121,    41,
+      42,   121,   121,   121,   121,   121,   121,   121,   121,   121,
+     121,   121,   121,   121,   121,   121,   121,   121,   121,   121,
+      30,   152,   148,   121,    37,    41,   121,   121,   121,   121,
+      41,    37,    36,    38,    98,    38,   120,   121,   123,   121,
+      38,    98,   121,   140,   121,    45,    41,    46,    41,    37,
+      42,    42,    37,    37,    42,   131,    97,     7,    97,    46,
+      37,    97,    42,    42,   121,    41,    36,    46,   131,   121,
+      46,    46,   131,    37,    39,    38,    98,    39,   119,    39,
+      98,    39,   121,   140,    36,   131,    37,    37,    37,     7,
+      97,    37,    97,    37,    37,   131,    37,    46,    46,    46,
+      38,    98,    39,    38,    98,    39,    37,    97,    97,    39,
+      39
   };
 
   const unsigned char
   parser::yyr1_[] =
   {
-       0,    88,    89,    89,    90,    90,    90,    90,    90,    90,
-      90,    90,    91,    92,    93,    94,    95,    95,    95,    96,
-      96,    96,    97,    97,    97,    97,    97,    97,    97,    97,
-      97,    97,    97,    97,    97,    97,    97,    97,    97,    97,
-      97,    97,    98,    98,    99,   100,   101,   101,   102,   102,
-     103,   103,   104,   105,   106,   107,   107,   108,   108,   108,
-     108,   109,   109,   110,   110,   111,   111,   112,   113,   113,
-     114,   115,   116,   117,   117,   118,   118,   119,   119,   120,
-     120,   120,   120,   121,   121,   121,   121,   121,   121,   121,
-     121,   121,   121,   121,   121,   121,   122,   122,   122,   122,
-     122,   122,   122,   122,   123,   124,   124,   124,   124,   124,
-     124,   124,   124,   124,   124,   125,   125,   125,   125,   125,
-     125,   125,   125,   125,   125,   125,   125,   125,   125,   125,
-     125,   125,   125,   125,   125,   125,   125,   126,   126,   126,
-     126,   127,   127,   127,   127,   128,   128,   129,   129,   130,
-     130,   130,   131,   131,   132,   133,   134,   135,   136,   137,
-     137,   137,   137,   137,   137,   137,   137,   138,   139,   139,
-     139,   139,   140,   141,   142,   143,   144,   145,   146,   147,
-     148,   149,   150,   151,   152,   153,   154
+       0,    89,    90,    90,    91,    91,    91,    91,    91,    91,
+      91,    91,    92,    93,    94,    95,    96,    96,    96,    97,
+      97,    97,    98,    98,    98,    98,    98,    98,    98,    98,
+      98,    98,    98,    98,    98,    98,    98,    98,    98,    98,
+      98,    98,    99,    99,   100,   101,   102,   102,   103,   103,
+     104,   104,   105,   106,   107,   108,   108,   109,   109,   109,
+     109,   110,   110,   111,   111,   112,   112,   113,   114,   114,
+     115,   116,   117,   118,   118,   119,   119,   120,   120,   121,
+     121,   121,   121,   122,   122,   122,   122,   122,   122,   122,
+     122,   122,   122,   122,   122,   122,   123,   123,   123,   123,
+     123,   123,   123,   123,   124,   125,   125,   125,   125,   125,
+     125,   125,   125,   125,   125,   126,   126,   126,   126,   126,
+     126,   126,   126,   126,   126,   126,   126,   126,   126,   126,
+     126,   126,   126,   126,   126,   126,   126,   126,   127,   127,
+     127,   127,   128,   128,   128,   128,   129,   129,   130,   130,
+     131,   131,   131,   132,   132,   133,   134,   135,   136,   137,
+     138,   138,   138,   138,   138,   138,   138,   138,   139,   140,
+     140,   140,   140,   141,   142,   143,   144,   145,   146,   147,
+     148,   149,   150,   151,   152,   153,   154,   155,   156
   };
 
   const signed char
@@ -3753,40 +3805,40 @@ namespace yy {
        3,     3,     3,     3,     5,     3,     3,     3,     3,     3,
        3,     3,     3,     3,     3,     3,     2,     2,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     1,     1,     2,
-       2,     2,     2,     3,     3,     4,     6,     8,     9,     3,
-       1,     0,     2,     3,     4,     3,     3,     7,     3,     1,
-       1,     1,     1,     1,     1,     1,     1,     7,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     1
+       2,     2,     2,     2,     3,     3,     4,     6,     8,     9,
+       3,     1,     0,     2,     3,     4,     3,     3,     7,     3,
+       1,     1,     1,     1,     1,     1,     1,     1,     7,     1,
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     1,     1,     1,     1,     1,     1,     1,     1
   };
 
 
 
 
-#if YYDEBUG
+#if S1DEBUG
   const short
   parser::yyrline_[] =
   {
-       0,   114,   114,   115,   119,   121,   123,   125,   127,   129,
-     131,   133,   138,   143,   148,   153,   158,   160,   163,   167,
-     169,   172,   176,   177,   178,   179,   180,   181,   182,   183,
-     184,   185,   186,   187,   188,   189,   190,   191,   192,   193,
-     194,   195,   199,   201,   206,   211,   216,   218,   223,   225,
-     230,   232,   237,   242,   247,   252,   254,   262,   264,   269,
-     274,   284,   286,   294,   296,   305,   307,   316,   321,   323,
-     328,   333,   337,   342,   344,   349,   350,   354,   355,   359,
-     360,   361,   362,   366,   367,   368,   369,   370,   371,   372,
-     373,   374,   375,   376,   377,   378,   382,   383,   384,   385,
-     386,   387,   388,   389,   393,   397,   398,   399,   400,   401,
-     402,   403,   404,   405,   406,   410,   411,   412,   413,   414,
-     415,   416,   417,   418,   419,   420,   421,   422,   423,   424,
-     425,   426,   427,   428,   429,   430,   431,   435,   436,   437,
-     438,   442,   443,   444,   445,   449,   451,   456,   458,   463,
-     465,   468,   472,   474,   479,   484,   489,   494,   499,   504,
-     505,   506,   507,   508,   509,   510,   511,   515,   520,   521,
-     522,   523,   526,   527,   528,   529,   530,   531,   532,   533,
-     534,   535,   536,   537,   538,   539,   540
+       0,   119,   119,   120,   124,   126,   128,   130,   132,   134,
+     136,   138,   143,   148,   153,   158,   163,   165,   168,   172,
+     174,   177,   181,   182,   183,   184,   185,   186,   187,   188,
+     189,   190,   191,   192,   193,   194,   195,   196,   197,   198,
+     199,   200,   204,   206,   211,   216,   221,   223,   228,   230,
+     235,   237,   242,   247,   252,   257,   259,   267,   269,   274,
+     279,   289,   291,   299,   301,   310,   312,   321,   326,   328,
+     333,   338,   342,   347,   349,   354,   355,   359,   360,   364,
+     365,   366,   367,   371,   372,   373,   374,   375,   376,   377,
+     378,   379,   380,   381,   382,   383,   387,   388,   389,   390,
+     391,   392,   393,   394,   398,   402,   403,   404,   405,   406,
+     407,   408,   409,   410,   411,   415,   416,   417,   418,   419,
+     420,   421,   422,   423,   424,   425,   426,   427,   428,   429,
+     430,   431,   432,   433,   434,   435,   436,   437,   441,   442,
+     443,   444,   448,   449,   450,   451,   455,   457,   462,   464,
+     469,   471,   474,   478,   480,   485,   490,   495,   500,   505,
+     510,   511,   512,   513,   514,   515,   516,   517,   521,   526,
+     527,   528,   529,   532,   533,   534,   535,   536,   537,   538,
+     539,   540,   541,   542,   543,   544,   545,   546,   547
   };
 
   void
@@ -3814,16 +3866,17 @@ namespace yy {
       YY_SYMBOL_PRINT ("   $" << yyi + 1 << " =",
                        yystack_[(yynrhs) - (yyi + 1)]);
   }
-#endif // YYDEBUG
+#endif // S1DEBUG
 
 
-} // yy
-#line 3822 "./S1/compiler_parser.cpp"
+#line 14 "S1.parser.ypp"
+} // S1
+#line 3875 "./S1/compiler_parser.cpp"
 
-#line 542 "S1.parser.ypp"
+#line 549 "S1.parser.ypp"
 
 
-void yy::parser::error(const std::string& msg)
+void S1::parser::error(const std::string& msg)
 {
     GSC_COMP_ERROR("%s", msg.data());
 }

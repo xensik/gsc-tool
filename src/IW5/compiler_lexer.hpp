@@ -1,10 +1,15 @@
-#ifndef yyHEADER_H
-#define yyHEADER_H 1
-#define yyIN_HEADER 1
+#ifndef IW5HEADER_H
+#define IW5HEADER_H 1
+#define IW5IN_HEADER 1
 
 #line 5 "./IW5/compiler_lexer.hpp"
+#include "IW5.hpp"
+#include "compiler_parser.hpp"
+#ifndef YY_NO_UNISTD_H
+#define YY_NO_UNISTD_H
+#endif
 
-#line 7 "./IW5/compiler_lexer.hpp"
+#line 12 "./IW5/compiler_lexer.hpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -16,6 +21,216 @@
 #define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
+#endif
+
+#ifdef yy_create_buffer
+#define IW5_create_buffer_ALREADY_DEFINED
+#else
+#define yy_create_buffer IW5_create_buffer
+#endif
+
+#ifdef yy_delete_buffer
+#define IW5_delete_buffer_ALREADY_DEFINED
+#else
+#define yy_delete_buffer IW5_delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define IW5_scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer IW5_scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define IW5_scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string IW5_scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define IW5_scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes IW5_scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define IW5_init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer IW5_init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define IW5_flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer IW5_flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define IW5_load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state IW5_load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define IW5_switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer IW5_switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define IW5push_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state IW5push_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define IW5pop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state IW5pop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define IW5ensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack IW5ensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define IW5lex_ALREADY_DEFINED
+#else
+#define yylex IW5lex
+#endif
+
+#ifdef yyrestart
+#define IW5restart_ALREADY_DEFINED
+#else
+#define yyrestart IW5restart
+#endif
+
+#ifdef yylex_init
+#define IW5lex_init_ALREADY_DEFINED
+#else
+#define yylex_init IW5lex_init
+#endif
+
+#ifdef yylex_init_extra
+#define IW5lex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra IW5lex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define IW5lex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy IW5lex_destroy
+#endif
+
+#ifdef yyget_debug
+#define IW5get_debug_ALREADY_DEFINED
+#else
+#define yyget_debug IW5get_debug
+#endif
+
+#ifdef yyset_debug
+#define IW5set_debug_ALREADY_DEFINED
+#else
+#define yyset_debug IW5set_debug
+#endif
+
+#ifdef yyget_extra
+#define IW5get_extra_ALREADY_DEFINED
+#else
+#define yyget_extra IW5get_extra
+#endif
+
+#ifdef yyset_extra
+#define IW5set_extra_ALREADY_DEFINED
+#else
+#define yyset_extra IW5set_extra
+#endif
+
+#ifdef yyget_in
+#define IW5get_in_ALREADY_DEFINED
+#else
+#define yyget_in IW5get_in
+#endif
+
+#ifdef yyset_in
+#define IW5set_in_ALREADY_DEFINED
+#else
+#define yyset_in IW5set_in
+#endif
+
+#ifdef yyget_out
+#define IW5get_out_ALREADY_DEFINED
+#else
+#define yyget_out IW5get_out
+#endif
+
+#ifdef yyset_out
+#define IW5set_out_ALREADY_DEFINED
+#else
+#define yyset_out IW5set_out
+#endif
+
+#ifdef yyget_leng
+#define IW5get_leng_ALREADY_DEFINED
+#else
+#define yyget_leng IW5get_leng
+#endif
+
+#ifdef yyget_text
+#define IW5get_text_ALREADY_DEFINED
+#else
+#define yyget_text IW5get_text
+#endif
+
+#ifdef yyget_lineno
+#define IW5get_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno IW5get_lineno
+#endif
+
+#ifdef yyset_lineno
+#define IW5set_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno IW5set_lineno
+#endif
+
+#ifdef yyget_column
+#define IW5get_column_ALREADY_DEFINED
+#else
+#define yyget_column IW5get_column
+#endif
+
+#ifdef yyset_column
+#define IW5set_column_ALREADY_DEFINED
+#else
+#define yyset_column IW5set_column
+#endif
+
+#ifdef yywrap
+#define IW5wrap_ALREADY_DEFINED
+#else
+#define yywrap IW5wrap
+#endif
+
+#ifdef yyalloc
+#define IW5alloc_ALREADY_DEFINED
+#else
+#define yyalloc IW5alloc
+#endif
+
+#ifdef yyrealloc
+#define IW5realloc_ALREADY_DEFINED
+#else
+#define yyrealloc IW5realloc
+#endif
+
+#ifdef yyfree
+#define IW5free_ALREADY_DEFINED
+#else
+#define yyfree IW5free
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -216,7 +431,7 @@ void yyfree ( void * , yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define yywrap(yyscanner) (/*CONSTCOND*/1)
+#define IW5wrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 
 #define yytext_ptr yytext_r
@@ -341,154 +556,154 @@ extern int yylex (yyscan_t yyscanner);
 #undef YY_DECL
 #endif
 
-#ifndef yy_create_buffer_ALREADY_DEFINED
+#ifndef IW5_create_buffer_ALREADY_DEFINED
 #undef yy_create_buffer
 #endif
-#ifndef yy_delete_buffer_ALREADY_DEFINED
+#ifndef IW5_delete_buffer_ALREADY_DEFINED
 #undef yy_delete_buffer
 #endif
-#ifndef yy_scan_buffer_ALREADY_DEFINED
+#ifndef IW5_scan_buffer_ALREADY_DEFINED
 #undef yy_scan_buffer
 #endif
-#ifndef yy_scan_string_ALREADY_DEFINED
+#ifndef IW5_scan_string_ALREADY_DEFINED
 #undef yy_scan_string
 #endif
-#ifndef yy_scan_bytes_ALREADY_DEFINED
+#ifndef IW5_scan_bytes_ALREADY_DEFINED
 #undef yy_scan_bytes
 #endif
-#ifndef yy_init_buffer_ALREADY_DEFINED
+#ifndef IW5_init_buffer_ALREADY_DEFINED
 #undef yy_init_buffer
 #endif
-#ifndef yy_flush_buffer_ALREADY_DEFINED
+#ifndef IW5_flush_buffer_ALREADY_DEFINED
 #undef yy_flush_buffer
 #endif
-#ifndef yy_load_buffer_state_ALREADY_DEFINED
+#ifndef IW5_load_buffer_state_ALREADY_DEFINED
 #undef yy_load_buffer_state
 #endif
-#ifndef yy_switch_to_buffer_ALREADY_DEFINED
+#ifndef IW5_switch_to_buffer_ALREADY_DEFINED
 #undef yy_switch_to_buffer
 #endif
-#ifndef yypush_buffer_state_ALREADY_DEFINED
+#ifndef IW5push_buffer_state_ALREADY_DEFINED
 #undef yypush_buffer_state
 #endif
-#ifndef yypop_buffer_state_ALREADY_DEFINED
+#ifndef IW5pop_buffer_state_ALREADY_DEFINED
 #undef yypop_buffer_state
 #endif
-#ifndef yyensure_buffer_stack_ALREADY_DEFINED
+#ifndef IW5ensure_buffer_stack_ALREADY_DEFINED
 #undef yyensure_buffer_stack
 #endif
-#ifndef yylex_ALREADY_DEFINED
+#ifndef IW5lex_ALREADY_DEFINED
 #undef yylex
 #endif
-#ifndef yyrestart_ALREADY_DEFINED
+#ifndef IW5restart_ALREADY_DEFINED
 #undef yyrestart
 #endif
-#ifndef yylex_init_ALREADY_DEFINED
+#ifndef IW5lex_init_ALREADY_DEFINED
 #undef yylex_init
 #endif
-#ifndef yylex_init_extra_ALREADY_DEFINED
+#ifndef IW5lex_init_extra_ALREADY_DEFINED
 #undef yylex_init_extra
 #endif
-#ifndef yylex_destroy_ALREADY_DEFINED
+#ifndef IW5lex_destroy_ALREADY_DEFINED
 #undef yylex_destroy
 #endif
-#ifndef yyget_debug_ALREADY_DEFINED
+#ifndef IW5get_debug_ALREADY_DEFINED
 #undef yyget_debug
 #endif
-#ifndef yyset_debug_ALREADY_DEFINED
+#ifndef IW5set_debug_ALREADY_DEFINED
 #undef yyset_debug
 #endif
-#ifndef yyget_extra_ALREADY_DEFINED
+#ifndef IW5get_extra_ALREADY_DEFINED
 #undef yyget_extra
 #endif
-#ifndef yyset_extra_ALREADY_DEFINED
+#ifndef IW5set_extra_ALREADY_DEFINED
 #undef yyset_extra
 #endif
-#ifndef yyget_in_ALREADY_DEFINED
+#ifndef IW5get_in_ALREADY_DEFINED
 #undef yyget_in
 #endif
-#ifndef yyset_in_ALREADY_DEFINED
+#ifndef IW5set_in_ALREADY_DEFINED
 #undef yyset_in
 #endif
-#ifndef yyget_out_ALREADY_DEFINED
+#ifndef IW5get_out_ALREADY_DEFINED
 #undef yyget_out
 #endif
-#ifndef yyset_out_ALREADY_DEFINED
+#ifndef IW5set_out_ALREADY_DEFINED
 #undef yyset_out
 #endif
-#ifndef yyget_leng_ALREADY_DEFINED
+#ifndef IW5get_leng_ALREADY_DEFINED
 #undef yyget_leng
 #endif
-#ifndef yyget_text_ALREADY_DEFINED
+#ifndef IW5get_text_ALREADY_DEFINED
 #undef yyget_text
 #endif
-#ifndef yyget_lineno_ALREADY_DEFINED
+#ifndef IW5get_lineno_ALREADY_DEFINED
 #undef yyget_lineno
 #endif
-#ifndef yyset_lineno_ALREADY_DEFINED
+#ifndef IW5set_lineno_ALREADY_DEFINED
 #undef yyset_lineno
 #endif
-#ifndef yyget_column_ALREADY_DEFINED
+#ifndef IW5get_column_ALREADY_DEFINED
 #undef yyget_column
 #endif
-#ifndef yyset_column_ALREADY_DEFINED
+#ifndef IW5set_column_ALREADY_DEFINED
 #undef yyset_column
 #endif
-#ifndef yywrap_ALREADY_DEFINED
+#ifndef IW5wrap_ALREADY_DEFINED
 #undef yywrap
 #endif
-#ifndef yyget_lval_ALREADY_DEFINED
+#ifndef IW5get_lval_ALREADY_DEFINED
 #undef yyget_lval
 #endif
-#ifndef yyset_lval_ALREADY_DEFINED
+#ifndef IW5set_lval_ALREADY_DEFINED
 #undef yyset_lval
 #endif
-#ifndef yyget_lloc_ALREADY_DEFINED
+#ifndef IW5get_lloc_ALREADY_DEFINED
 #undef yyget_lloc
 #endif
-#ifndef yyset_lloc_ALREADY_DEFINED
+#ifndef IW5set_lloc_ALREADY_DEFINED
 #undef yyset_lloc
 #endif
-#ifndef yyalloc_ALREADY_DEFINED
+#ifndef IW5alloc_ALREADY_DEFINED
 #undef yyalloc
 #endif
-#ifndef yyrealloc_ALREADY_DEFINED
+#ifndef IW5realloc_ALREADY_DEFINED
 #undef yyrealloc
 #endif
-#ifndef yyfree_ALREADY_DEFINED
+#ifndef IW5free_ALREADY_DEFINED
 #undef yyfree
 #endif
-#ifndef yytext_ALREADY_DEFINED
+#ifndef IW5text_ALREADY_DEFINED
 #undef yytext
 #endif
-#ifndef yyleng_ALREADY_DEFINED
+#ifndef IW5leng_ALREADY_DEFINED
 #undef yyleng
 #endif
-#ifndef yyin_ALREADY_DEFINED
+#ifndef IW5in_ALREADY_DEFINED
 #undef yyin
 #endif
-#ifndef yyout_ALREADY_DEFINED
+#ifndef IW5out_ALREADY_DEFINED
 #undef yyout
 #endif
-#ifndef yy_flex_debug_ALREADY_DEFINED
+#ifndef IW5_flex_debug_ALREADY_DEFINED
 #undef yy_flex_debug
 #endif
-#ifndef yylineno_ALREADY_DEFINED
+#ifndef IW5lineno_ALREADY_DEFINED
 #undef yylineno
 #endif
-#ifndef yytables_fload_ALREADY_DEFINED
+#ifndef IW5tables_fload_ALREADY_DEFINED
 #undef yytables_fload
 #endif
-#ifndef yytables_destroy_ALREADY_DEFINED
+#ifndef IW5tables_destroy_ALREADY_DEFINED
 #undef yytables_destroy
 #endif
-#ifndef yyTABLES_NAME_ALREADY_DEFINED
+#ifndef IW5TABLES_NAME_ALREADY_DEFINED
 #undef yyTABLES_NAME
 #endif
 
-#line 130 "IW5.lexer.lpp"
+#line 141 "IW5.lexer.lpp"
 
 
-#line 492 "./IW5/compiler_lexer.hpp"
-#undef yyIN_HEADER
-#endif /* yyHEADER_H */
+#line 707 "./IW5/compiler_lexer.hpp"
+#undef IW5IN_HEADER
+#endif /* IW5HEADER_H */

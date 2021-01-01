@@ -1,10 +1,15 @@
-#ifndef yyHEADER_H
-#define yyHEADER_H 1
-#define yyIN_HEADER 1
+#ifndef H1HEADER_H
+#define H1HEADER_H 1
+#define H1IN_HEADER 1
 
 #line 5 "./H1/compiler_lexer.hpp"
+#include "H1.hpp"
+#include "compiler_parser.hpp"
+#ifndef YY_NO_UNISTD_H
+#define YY_NO_UNISTD_H
+#endif
 
-#line 7 "./H1/compiler_lexer.hpp"
+#line 12 "./H1/compiler_lexer.hpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -16,6 +21,216 @@
 #define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
+#endif
+
+#ifdef yy_create_buffer
+#define H1_create_buffer_ALREADY_DEFINED
+#else
+#define yy_create_buffer H1_create_buffer
+#endif
+
+#ifdef yy_delete_buffer
+#define H1_delete_buffer_ALREADY_DEFINED
+#else
+#define yy_delete_buffer H1_delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define H1_scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer H1_scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define H1_scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string H1_scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define H1_scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes H1_scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define H1_init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer H1_init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define H1_flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer H1_flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define H1_load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state H1_load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define H1_switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer H1_switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define H1push_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state H1push_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define H1pop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state H1pop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define H1ensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack H1ensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define H1lex_ALREADY_DEFINED
+#else
+#define yylex H1lex
+#endif
+
+#ifdef yyrestart
+#define H1restart_ALREADY_DEFINED
+#else
+#define yyrestart H1restart
+#endif
+
+#ifdef yylex_init
+#define H1lex_init_ALREADY_DEFINED
+#else
+#define yylex_init H1lex_init
+#endif
+
+#ifdef yylex_init_extra
+#define H1lex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra H1lex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define H1lex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy H1lex_destroy
+#endif
+
+#ifdef yyget_debug
+#define H1get_debug_ALREADY_DEFINED
+#else
+#define yyget_debug H1get_debug
+#endif
+
+#ifdef yyset_debug
+#define H1set_debug_ALREADY_DEFINED
+#else
+#define yyset_debug H1set_debug
+#endif
+
+#ifdef yyget_extra
+#define H1get_extra_ALREADY_DEFINED
+#else
+#define yyget_extra H1get_extra
+#endif
+
+#ifdef yyset_extra
+#define H1set_extra_ALREADY_DEFINED
+#else
+#define yyset_extra H1set_extra
+#endif
+
+#ifdef yyget_in
+#define H1get_in_ALREADY_DEFINED
+#else
+#define yyget_in H1get_in
+#endif
+
+#ifdef yyset_in
+#define H1set_in_ALREADY_DEFINED
+#else
+#define yyset_in H1set_in
+#endif
+
+#ifdef yyget_out
+#define H1get_out_ALREADY_DEFINED
+#else
+#define yyget_out H1get_out
+#endif
+
+#ifdef yyset_out
+#define H1set_out_ALREADY_DEFINED
+#else
+#define yyset_out H1set_out
+#endif
+
+#ifdef yyget_leng
+#define H1get_leng_ALREADY_DEFINED
+#else
+#define yyget_leng H1get_leng
+#endif
+
+#ifdef yyget_text
+#define H1get_text_ALREADY_DEFINED
+#else
+#define yyget_text H1get_text
+#endif
+
+#ifdef yyget_lineno
+#define H1get_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno H1get_lineno
+#endif
+
+#ifdef yyset_lineno
+#define H1set_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno H1set_lineno
+#endif
+
+#ifdef yyget_column
+#define H1get_column_ALREADY_DEFINED
+#else
+#define yyget_column H1get_column
+#endif
+
+#ifdef yyset_column
+#define H1set_column_ALREADY_DEFINED
+#else
+#define yyset_column H1set_column
+#endif
+
+#ifdef yywrap
+#define H1wrap_ALREADY_DEFINED
+#else
+#define yywrap H1wrap
+#endif
+
+#ifdef yyalloc
+#define H1alloc_ALREADY_DEFINED
+#else
+#define yyalloc H1alloc
+#endif
+
+#ifdef yyrealloc
+#define H1realloc_ALREADY_DEFINED
+#else
+#define yyrealloc H1realloc
+#endif
+
+#ifdef yyfree
+#define H1free_ALREADY_DEFINED
+#else
+#define yyfree H1free
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -216,7 +431,7 @@ void yyfree ( void * , yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define yywrap(yyscanner) (/*CONSTCOND*/1)
+#define H1wrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 
 #define yytext_ptr yytext_r
@@ -341,154 +556,154 @@ extern int yylex (yyscan_t yyscanner);
 #undef YY_DECL
 #endif
 
-#ifndef yy_create_buffer_ALREADY_DEFINED
+#ifndef H1_create_buffer_ALREADY_DEFINED
 #undef yy_create_buffer
 #endif
-#ifndef yy_delete_buffer_ALREADY_DEFINED
+#ifndef H1_delete_buffer_ALREADY_DEFINED
 #undef yy_delete_buffer
 #endif
-#ifndef yy_scan_buffer_ALREADY_DEFINED
+#ifndef H1_scan_buffer_ALREADY_DEFINED
 #undef yy_scan_buffer
 #endif
-#ifndef yy_scan_string_ALREADY_DEFINED
+#ifndef H1_scan_string_ALREADY_DEFINED
 #undef yy_scan_string
 #endif
-#ifndef yy_scan_bytes_ALREADY_DEFINED
+#ifndef H1_scan_bytes_ALREADY_DEFINED
 #undef yy_scan_bytes
 #endif
-#ifndef yy_init_buffer_ALREADY_DEFINED
+#ifndef H1_init_buffer_ALREADY_DEFINED
 #undef yy_init_buffer
 #endif
-#ifndef yy_flush_buffer_ALREADY_DEFINED
+#ifndef H1_flush_buffer_ALREADY_DEFINED
 #undef yy_flush_buffer
 #endif
-#ifndef yy_load_buffer_state_ALREADY_DEFINED
+#ifndef H1_load_buffer_state_ALREADY_DEFINED
 #undef yy_load_buffer_state
 #endif
-#ifndef yy_switch_to_buffer_ALREADY_DEFINED
+#ifndef H1_switch_to_buffer_ALREADY_DEFINED
 #undef yy_switch_to_buffer
 #endif
-#ifndef yypush_buffer_state_ALREADY_DEFINED
+#ifndef H1push_buffer_state_ALREADY_DEFINED
 #undef yypush_buffer_state
 #endif
-#ifndef yypop_buffer_state_ALREADY_DEFINED
+#ifndef H1pop_buffer_state_ALREADY_DEFINED
 #undef yypop_buffer_state
 #endif
-#ifndef yyensure_buffer_stack_ALREADY_DEFINED
+#ifndef H1ensure_buffer_stack_ALREADY_DEFINED
 #undef yyensure_buffer_stack
 #endif
-#ifndef yylex_ALREADY_DEFINED
+#ifndef H1lex_ALREADY_DEFINED
 #undef yylex
 #endif
-#ifndef yyrestart_ALREADY_DEFINED
+#ifndef H1restart_ALREADY_DEFINED
 #undef yyrestart
 #endif
-#ifndef yylex_init_ALREADY_DEFINED
+#ifndef H1lex_init_ALREADY_DEFINED
 #undef yylex_init
 #endif
-#ifndef yylex_init_extra_ALREADY_DEFINED
+#ifndef H1lex_init_extra_ALREADY_DEFINED
 #undef yylex_init_extra
 #endif
-#ifndef yylex_destroy_ALREADY_DEFINED
+#ifndef H1lex_destroy_ALREADY_DEFINED
 #undef yylex_destroy
 #endif
-#ifndef yyget_debug_ALREADY_DEFINED
+#ifndef H1get_debug_ALREADY_DEFINED
 #undef yyget_debug
 #endif
-#ifndef yyset_debug_ALREADY_DEFINED
+#ifndef H1set_debug_ALREADY_DEFINED
 #undef yyset_debug
 #endif
-#ifndef yyget_extra_ALREADY_DEFINED
+#ifndef H1get_extra_ALREADY_DEFINED
 #undef yyget_extra
 #endif
-#ifndef yyset_extra_ALREADY_DEFINED
+#ifndef H1set_extra_ALREADY_DEFINED
 #undef yyset_extra
 #endif
-#ifndef yyget_in_ALREADY_DEFINED
+#ifndef H1get_in_ALREADY_DEFINED
 #undef yyget_in
 #endif
-#ifndef yyset_in_ALREADY_DEFINED
+#ifndef H1set_in_ALREADY_DEFINED
 #undef yyset_in
 #endif
-#ifndef yyget_out_ALREADY_DEFINED
+#ifndef H1get_out_ALREADY_DEFINED
 #undef yyget_out
 #endif
-#ifndef yyset_out_ALREADY_DEFINED
+#ifndef H1set_out_ALREADY_DEFINED
 #undef yyset_out
 #endif
-#ifndef yyget_leng_ALREADY_DEFINED
+#ifndef H1get_leng_ALREADY_DEFINED
 #undef yyget_leng
 #endif
-#ifndef yyget_text_ALREADY_DEFINED
+#ifndef H1get_text_ALREADY_DEFINED
 #undef yyget_text
 #endif
-#ifndef yyget_lineno_ALREADY_DEFINED
+#ifndef H1get_lineno_ALREADY_DEFINED
 #undef yyget_lineno
 #endif
-#ifndef yyset_lineno_ALREADY_DEFINED
+#ifndef H1set_lineno_ALREADY_DEFINED
 #undef yyset_lineno
 #endif
-#ifndef yyget_column_ALREADY_DEFINED
+#ifndef H1get_column_ALREADY_DEFINED
 #undef yyget_column
 #endif
-#ifndef yyset_column_ALREADY_DEFINED
+#ifndef H1set_column_ALREADY_DEFINED
 #undef yyset_column
 #endif
-#ifndef yywrap_ALREADY_DEFINED
+#ifndef H1wrap_ALREADY_DEFINED
 #undef yywrap
 #endif
-#ifndef yyget_lval_ALREADY_DEFINED
+#ifndef H1get_lval_ALREADY_DEFINED
 #undef yyget_lval
 #endif
-#ifndef yyset_lval_ALREADY_DEFINED
+#ifndef H1set_lval_ALREADY_DEFINED
 #undef yyset_lval
 #endif
-#ifndef yyget_lloc_ALREADY_DEFINED
+#ifndef H1get_lloc_ALREADY_DEFINED
 #undef yyget_lloc
 #endif
-#ifndef yyset_lloc_ALREADY_DEFINED
+#ifndef H1set_lloc_ALREADY_DEFINED
 #undef yyset_lloc
 #endif
-#ifndef yyalloc_ALREADY_DEFINED
+#ifndef H1alloc_ALREADY_DEFINED
 #undef yyalloc
 #endif
-#ifndef yyrealloc_ALREADY_DEFINED
+#ifndef H1realloc_ALREADY_DEFINED
 #undef yyrealloc
 #endif
-#ifndef yyfree_ALREADY_DEFINED
+#ifndef H1free_ALREADY_DEFINED
 #undef yyfree
 #endif
-#ifndef yytext_ALREADY_DEFINED
+#ifndef H1text_ALREADY_DEFINED
 #undef yytext
 #endif
-#ifndef yyleng_ALREADY_DEFINED
+#ifndef H1leng_ALREADY_DEFINED
 #undef yyleng
 #endif
-#ifndef yyin_ALREADY_DEFINED
+#ifndef H1in_ALREADY_DEFINED
 #undef yyin
 #endif
-#ifndef yyout_ALREADY_DEFINED
+#ifndef H1out_ALREADY_DEFINED
 #undef yyout
 #endif
-#ifndef yy_flex_debug_ALREADY_DEFINED
+#ifndef H1_flex_debug_ALREADY_DEFINED
 #undef yy_flex_debug
 #endif
-#ifndef yylineno_ALREADY_DEFINED
+#ifndef H1lineno_ALREADY_DEFINED
 #undef yylineno
 #endif
-#ifndef yytables_fload_ALREADY_DEFINED
+#ifndef H1tables_fload_ALREADY_DEFINED
 #undef yytables_fload
 #endif
-#ifndef yytables_destroy_ALREADY_DEFINED
+#ifndef H1tables_destroy_ALREADY_DEFINED
 #undef yytables_destroy
 #endif
-#ifndef yyTABLES_NAME_ALREADY_DEFINED
+#ifndef H1TABLES_NAME_ALREADY_DEFINED
 #undef yyTABLES_NAME
 #endif
 
-#line 131 "H1.lexer.lpp"
+#line 142 "H1.lexer.lpp"
 
 
-#line 492 "./H1/compiler_lexer.hpp"
-#undef yyIN_HEADER
-#endif /* yyHEADER_H */
+#line 707 "./H1/compiler_lexer.hpp"
+#undef H1IN_HEADER
+#endif /* H1HEADER_H */

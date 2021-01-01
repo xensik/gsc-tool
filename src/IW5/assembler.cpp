@@ -35,10 +35,8 @@ auto assembler::output_stack() -> std::vector<std::uint8_t>
 void assembler::assemble(std::vector<std::uint8_t>& data)
 {
     std::vector<std::string> assembly = utils::string::clean_buffer_lines(data);
-
     std::vector<gsc::function_ptr> functions;
     gsc::function_ptr func = nullptr;
-    gsc::instruction_ptr inst = nullptr;
     std::uint32_t index = 1;
     std::uint16_t switchnum = 0;
 
@@ -50,15 +48,17 @@ void assembler::assemble(std::vector<std::uint8_t>& data)
         }
         else if (line.substr(0, 4) == "sub_")
         {
+            func = std::make_unique<gsc::function>();
+            func->index = index;
+            func->name = line.substr(4);
+        }
+        else if (line.substr(0, 4) == "end_")
+        {
             if (func != nullptr)
             {
                 func->size = index - func->index;
                 functions.push_back(std::move(func));
             }
-
-            func = std::make_unique<gsc::function>();
-            func->index = index;
-            func->name = line.substr(4);
         }
         else if (line.substr(0, 4) == "loc_")
         {
@@ -66,15 +66,15 @@ void assembler::assemble(std::vector<std::uint8_t>& data)
         }
         else
         {
-            std::vector<std::string> idata = utils::string::split(line, ' ');
+            std::vector<std::string> data = utils::string::split(line, ' ');
 
             if (switchnum)
             {
                 if (line.substr(0, 4) == "case" || line.substr(0, 7) == "default")
                 {
-                    for (auto& d : idata)
+                    for (auto& entry : data)
                     {
-                        inst->data.push_back(d);
+                        func->instructions.back()->data.push_back(entry);
                     }
                     switchnum--;
                     continue;
@@ -85,35 +85,23 @@ void assembler::assemble(std::vector<std::uint8_t>& data)
             }
             else
             {
-                if(inst != nullptr) func->instructions.push_back(std::move(inst));
-
-                inst = std::make_unique<gsc::instruction>();
+                auto inst = std::make_unique<gsc::instruction>();
                 inst->index = index;
-                inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(utils::string::to_lower(idata[0])));
+                inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(utils::string::to_lower(data[0])));
                 inst->size = opcode_size(opcode(inst->opcode));
-                idata.erase(idata.begin());
-                inst->data = idata;
+                data.erase(data.begin());
+                inst->data = data;
 
                 if (opcode(inst->opcode) == opcode::OP_endswitch)
                 {
-                    switchnum = static_cast<std::uint16_t>(std::stoul(idata[1]));
+                    switchnum = static_cast<std::uint16_t>(std::stoul(inst->data[0]));
                     inst->size += 7 * switchnum;
                 }
 
                 index += inst->size;
+                func->instructions.push_back(std::move(inst));
             }
         }
-    }
-
-    if(inst != nullptr) 
-    {
-        func->instructions.push_back(std::move(inst));
-    }
-
-    if (func != nullptr)
-    {
-        func->size = index - func->index;
-        functions.push_back(std::move(func));
     }
 
     this->assemble(functions);

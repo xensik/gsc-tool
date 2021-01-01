@@ -14,6 +14,9 @@ function IW7:project()
     kind "StaticLib"
     language "C++"
 
+    pchheader "IW7.hpp"
+    pchsource(path.join(IW7.base, "IW7.cpp"))
+
     self:include()
     utils:include()
 

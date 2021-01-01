@@ -33,7 +33,7 @@
 
 /**
  ** \file ./IW7/compiler_parser.hpp
- ** Define the yy::parser class.
+ ** Define the IW7::parser class.
  */
 
 // C++ LALR(1) parser skeleton written by Akim Demaille.
@@ -42,14 +42,14 @@
 // especially those whose name start with YY_ or yy_.  They are
 // private implementation details that can be changed or removed.
 
-#ifndef YY_YY_IW7_COMPILER_PARSER_HPP_INCLUDED
-# define YY_YY_IW7_COMPILER_PARSER_HPP_INCLUDED
+#ifndef YY_IW7_IW7_COMPILER_PARSER_HPP_INCLUDED
+# define YY_IW7_IW7_COMPILER_PARSER_HPP_INCLUDED
 // "%code requires" blocks.
-#line 26 "IW7.parser.ypp"
+#line 30 "IW7.parser.ypp"
 
 	#include <utils.hpp>
 	typedef void *yyscan_t;
-	#define YY_DECL yy::parser::symbol_type yylex(yyscan_t yyscanner)
+	#define YY_DECL IW7::parser::symbol_type IW7lex(yyscan_t yyscanner, std::uint32_t *location)
 
 #line 55 "./IW7/compiler_parser.hpp"
 
@@ -180,12 +180,21 @@
 # endif
 
 /* Debug traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 1
-#endif
+#ifndef IW7DEBUG
+# if defined YYDEBUG
+#if YYDEBUG
+#   define IW7DEBUG 1
+#  else
+#   define IW7DEBUG 0
+#  endif
+# else /* ! defined YYDEBUG */
+#  define IW7DEBUG 1
+# endif /* ! defined YYDEBUG */
+#endif  /* ! defined IW7DEBUG */
 
-namespace yy {
-#line 189 "./IW7/compiler_parser.hpp"
+#line 14 "IW7.parser.ypp"
+namespace IW7 {
+#line 198 "./IW7/compiler_parser.hpp"
 
 
 
@@ -194,7 +203,7 @@ namespace yy {
   class parser
   {
   public:
-#ifndef YYSTYPE
+#ifndef IW7STYPE
   /// A buffer to store and retrieve objects.
   ///
   /// Sort of a variant, but does not keep track of the nature
@@ -399,22 +408,25 @@ namespace yy {
     /// An auxiliary type to compute the largest semantic type.
     union union_type
     {
+      // animref
+      char dummy1[sizeof (gsc::animref_ptr)];
+
       // block
-      char dummy1[sizeof (gsc::block_ptr)];
+      char dummy2[sizeof (gsc::block_ptr)];
 
       // expr_arguments
-      char dummy2[sizeof (gsc::expr_arguments_ptr)];
+      char dummy3[sizeof (gsc::expr_arguments_ptr)];
 
       // expr_assign
-      char dummy3[sizeof (gsc::expr_assign_ptr)];
+      char dummy4[sizeof (gsc::expr_assign_ptr)];
 
       // expr_call
       // expr_call_thread
-      char dummy4[sizeof (gsc::expr_call_ptr)];
+      char dummy5[sizeof (gsc::expr_call_ptr)];
 
       // expr_call_function
       // expr_call_pointer
-      char dummy5[sizeof (gsc::expr_call_type_ptr)];
+      char dummy6[sizeof (gsc::expr_call_type_ptr)];
 
       // for_assign
       // for_cond
@@ -423,25 +435,25 @@ namespace yy {
       // expr_ternary
       // expr_binary
       // expr_primitive
-      char dummy6[sizeof (gsc::expr_ptr)];
+      char dummy7[sizeof (gsc::expr_ptr)];
 
       // filepath
-      char dummy7[sizeof (gsc::filepath_ptr)];
+      char dummy8[sizeof (gsc::filepath_ptr)];
 
       // data_float
-      char dummy8[sizeof (gsc::float_ptr)];
+      char dummy9[sizeof (gsc::float_ptr)];
 
       // identifier
-      char dummy9[sizeof (gsc::identifier_ptr)];
+      char dummy10[sizeof (gsc::identifier_ptr)];
 
       // include
-      char dummy10[sizeof (gsc::include_ptr)];
+      char dummy11[sizeof (gsc::include_ptr)];
 
       // data_integer
-      char dummy11[sizeof (gsc::integer_ptr)];
+      char dummy12[sizeof (gsc::integer_ptr)];
 
       // data_localized_string
-      char dummy12[sizeof (gsc::localized_string_ptr)];
+      char dummy13[sizeof (gsc::localized_string_ptr)];
 
       // expr_function_ref
       // expr_array
@@ -461,91 +473,92 @@ namespace yy {
       // self
       // anim
       // level
-      char dummy13[sizeof (gsc::node_ptr)];
+      char dummy14[sizeof (gsc::node_ptr)];
 
       // parameters
-      char dummy14[sizeof (gsc::parameters_ptr)];
+      char dummy15[sizeof (gsc::parameters_ptr)];
 
       // script
-      char dummy15[sizeof (gsc::script_ptr)];
+      char dummy16[sizeof (gsc::script_ptr)];
 
       // stmt_assign
-      char dummy16[sizeof (gsc::stmt_assign_ptr)];
+      char dummy17[sizeof (gsc::stmt_assign_ptr)];
 
       // stmt_break
-      char dummy17[sizeof (gsc::stmt_break_ptr)];
+      char dummy18[sizeof (gsc::stmt_break_ptr)];
 
       // stmt_call
-      char dummy18[sizeof (gsc::stmt_call_ptr)];
+      char dummy19[sizeof (gsc::stmt_call_ptr)];
 
       // stmt_case
-      char dummy19[sizeof (gsc::stmt_case_ptr)];
+      char dummy20[sizeof (gsc::stmt_case_ptr)];
 
       // stmt_continue
-      char dummy20[sizeof (gsc::stmt_continue_ptr)];
+      char dummy21[sizeof (gsc::stmt_continue_ptr)];
 
       // stmt_default
-      char dummy21[sizeof (gsc::stmt_default_ptr)];
+      char dummy22[sizeof (gsc::stmt_default_ptr)];
 
       // stmt_endon
-      char dummy22[sizeof (gsc::stmt_endon_ptr)];
+      char dummy23[sizeof (gsc::stmt_endon_ptr)];
 
       // stmt_for
-      char dummy23[sizeof (gsc::stmt_for_ptr)];
+      char dummy24[sizeof (gsc::stmt_for_ptr)];
 
       // stmt_foreach
-      char dummy24[sizeof (gsc::stmt_foreach_ptr)];
+      char dummy25[sizeof (gsc::stmt_foreach_ptr)];
 
       // stmt_if
-      char dummy25[sizeof (gsc::stmt_if_ptr)];
+      char dummy26[sizeof (gsc::stmt_if_ptr)];
 
       // stmt_ifelse
-      char dummy26[sizeof (gsc::stmt_ifelse_ptr)];
+      char dummy27[sizeof (gsc::stmt_ifelse_ptr)];
 
       // stmt_notify
-      char dummy27[sizeof (gsc::stmt_notify_ptr)];
+      char dummy28[sizeof (gsc::stmt_notify_ptr)];
 
       // stmt
-      char dummy28[sizeof (gsc::stmt_ptr)];
+      char dummy29[sizeof (gsc::stmt_ptr)];
 
       // stmt_return
-      char dummy29[sizeof (gsc::stmt_return_ptr)];
+      char dummy30[sizeof (gsc::stmt_return_ptr)];
 
       // stmt_switch
-      char dummy30[sizeof (gsc::stmt_switch_ptr)];
+      char dummy31[sizeof (gsc::stmt_switch_ptr)];
 
       // stmt_wait
-      char dummy31[sizeof (gsc::stmt_wait_ptr)];
+      char dummy32[sizeof (gsc::stmt_wait_ptr)];
 
       // stmt_waittill
-      char dummy32[sizeof (gsc::stmt_waittill_ptr)];
+      char dummy33[sizeof (gsc::stmt_waittill_ptr)];
 
       // stmt_waittillframeend
-      char dummy33[sizeof (gsc::stmt_waittillframeend_ptr)];
+      char dummy34[sizeof (gsc::stmt_waittillframeend_ptr)];
 
       // stmt_waittillmatch
-      char dummy34[sizeof (gsc::stmt_waittillmatch_ptr)];
+      char dummy35[sizeof (gsc::stmt_waittillmatch_ptr)];
 
       // stmt_while
-      char dummy35[sizeof (gsc::stmt_while_ptr)];
+      char dummy36[sizeof (gsc::stmt_while_ptr)];
 
       // data_string
-      char dummy36[sizeof (gsc::string_ptr)];
+      char dummy37[sizeof (gsc::string_ptr)];
 
       // thread
-      char dummy37[sizeof (gsc::thread_ptr)];
+      char dummy38[sizeof (gsc::thread_ptr)];
 
       // using_animtree
       // animtree
-      char dummy38[sizeof (gsc::using_animtree_ptr)];
+      char dummy39[sizeof (gsc::using_animtree_ptr)];
 
       // FILEPATH
       // IDENTIFIER
+      // ANIMREF
       // STRING
       // STRING_LOC
       // FLOAT
       // INTEGER
-      char dummy39[sizeof (std::string)];
+      char dummy40[sizeof (std::string)];
     };
 
     /// The size of the largest semantic type.
@@ -565,7 +578,7 @@ namespace yy {
   };
 
 #else
-    typedef YYSTYPE semantic_type;
+    typedef IW7STYPE semantic_type;
 #endif
 
     /// Syntax errors thrown from user actions.
@@ -587,10 +600,10 @@ namespace yy {
     {
       enum token_kind_type
       {
-        YYEMPTY = -2,
-    YYEOF = 0,                     // "end of file"
-    YYerror = 1,                   // error
-    YYUNDEF = 2,                   // "invalid token"
+        IW7EMPTY = -2,
+    IW7EOF = 0,                    // "end of file"
+    IW7error = 1,                  // error
+    IW7UNDEF = 2,                  // "invalid token"
     INCLUDE = 3,                   // INCLUDE
     USING_ANIMTREE = 4,            // USING_ANIMTREE
     ANIMTREE = 5,                  // ANIMTREE
@@ -670,11 +683,12 @@ namespace yy {
     COMPLEMENT = 79,               // COMPLEMENT
     FILEPATH = 80,                 // FILEPATH
     IDENTIFIER = 81,               // IDENTIFIER
-    STRING = 82,                   // STRING
-    STRING_LOC = 83,               // STRING_LOC
-    FLOAT = 84,                    // FLOAT
-    INTEGER = 85,                  // INTEGER
-    IFX = 86                       // IFX
+    ANIMREF = 82,                  // ANIMREF
+    STRING = 83,                   // STRING
+    STRING_LOC = 84,               // STRING_LOC
+    FLOAT = 85,                    // FLOAT
+    INTEGER = 86,                  // INTEGER
+    IFX = 87                       // IFX
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -691,7 +705,7 @@ namespace yy {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 87, ///< Number of tokens.
+        YYNTOKENS = 88, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -775,77 +789,79 @@ namespace yy {
         S_COMPLEMENT = 79,                       // COMPLEMENT
         S_FILEPATH = 80,                         // FILEPATH
         S_IDENTIFIER = 81,                       // IDENTIFIER
-        S_STRING = 82,                           // STRING
-        S_STRING_LOC = 83,                       // STRING_LOC
-        S_FLOAT = 84,                            // FLOAT
-        S_INTEGER = 85,                          // INTEGER
-        S_IFX = 86,                              // IFX
-        S_YYACCEPT = 87,                         // $accept
-        S_root = 88,                             // root
-        S_script = 89,                           // script
-        S_include = 90,                          // include
-        S_using_animtree = 91,                   // using_animtree
-        S_animtree = 92,                         // animtree
-        S_thread = 93,                           // thread
-        S_parameters = 94,                       // parameters
-        S_block = 95,                            // block
-        S_stmt = 96,                             // stmt
-        S_stmt_call = 97,                        // stmt_call
-        S_stmt_assign = 98,                      // stmt_assign
-        S_stmt_endon = 99,                       // stmt_endon
-        S_stmt_notify = 100,                     // stmt_notify
-        S_stmt_wait = 101,                       // stmt_wait
-        S_stmt_waittill = 102,                   // stmt_waittill
-        S_stmt_waittillmatch = 103,              // stmt_waittillmatch
-        S_stmt_waittillframeend = 104,           // stmt_waittillframeend
-        S_stmt_if = 105,                         // stmt_if
-        S_stmt_ifelse = 106,                     // stmt_ifelse
-        S_stmt_while = 107,                      // stmt_while
-        S_stmt_for = 108,                        // stmt_for
-        S_stmt_foreach = 109,                    // stmt_foreach
-        S_stmt_switch = 110,                     // stmt_switch
-        S_stmt_case = 111,                       // stmt_case
-        S_stmt_default = 112,                    // stmt_default
-        S_stmt_break = 113,                      // stmt_break
-        S_stmt_continue = 114,                   // stmt_continue
-        S_stmt_return = 115,                     // stmt_return
-        S_for_assign = 116,                      // for_assign
-        S_for_cond = 117,                        // for_cond
-        S_expr = 118,                            // expr
-        S_expr_assign = 119,                     // expr_assign
-        S_expr_cmp = 120,                        // expr_cmp
-        S_expr_ternary = 121,                    // expr_ternary
-        S_expr_binary = 122,                     // expr_binary
-        S_expr_primitive = 123,                  // expr_primitive
-        S_expr_call = 124,                       // expr_call
-        S_expr_call_thread = 125,                // expr_call_thread
-        S_expr_call_function = 126,              // expr_call_function
-        S_expr_call_pointer = 127,               // expr_call_pointer
-        S_expr_arguments = 128,                  // expr_arguments
-        S_expr_function_ref = 129,               // expr_function_ref
-        S_expr_array = 130,                      // expr_array
-        S_expr_field = 131,                      // expr_field
-        S_expr_size = 132,                       // expr_size
-        S_expr_vector = 133,                     // expr_vector
-        S_expr_add_array = 134,                  // expr_add_array
-        S_object = 135,                          // object
-        S_vector = 136,                          // vector
-        S_num = 137,                             // num
-        S_false = 138,                           // false
-        S_true = 139,                            // true
-        S_data_float = 140,                      // data_float
-        S_data_integer = 141,                    // data_integer
-        S_data_localized_string = 142,           // data_localized_string
-        S_data_string = 143,                     // data_string
-        S_identifier = 144,                      // identifier
-        S_filepath = 145,                        // filepath
-        S_empty_array = 146,                     // empty_array
-        S_undefined = 147,                       // undefined
-        S_size = 148,                            // size
-        S_game = 149,                            // game
-        S_self = 150,                            // self
-        S_anim = 151,                            // anim
-        S_level = 152                            // level
+        S_ANIMREF = 82,                          // ANIMREF
+        S_STRING = 83,                           // STRING
+        S_STRING_LOC = 84,                       // STRING_LOC
+        S_FLOAT = 85,                            // FLOAT
+        S_INTEGER = 86,                          // INTEGER
+        S_IFX = 87,                              // IFX
+        S_YYACCEPT = 88,                         // $accept
+        S_root = 89,                             // root
+        S_script = 90,                           // script
+        S_include = 91,                          // include
+        S_using_animtree = 92,                   // using_animtree
+        S_animtree = 93,                         // animtree
+        S_thread = 94,                           // thread
+        S_parameters = 95,                       // parameters
+        S_block = 96,                            // block
+        S_stmt = 97,                             // stmt
+        S_stmt_call = 98,                        // stmt_call
+        S_stmt_assign = 99,                      // stmt_assign
+        S_stmt_endon = 100,                      // stmt_endon
+        S_stmt_notify = 101,                     // stmt_notify
+        S_stmt_wait = 102,                       // stmt_wait
+        S_stmt_waittill = 103,                   // stmt_waittill
+        S_stmt_waittillmatch = 104,              // stmt_waittillmatch
+        S_stmt_waittillframeend = 105,           // stmt_waittillframeend
+        S_stmt_if = 106,                         // stmt_if
+        S_stmt_ifelse = 107,                     // stmt_ifelse
+        S_stmt_while = 108,                      // stmt_while
+        S_stmt_for = 109,                        // stmt_for
+        S_stmt_foreach = 110,                    // stmt_foreach
+        S_stmt_switch = 111,                     // stmt_switch
+        S_stmt_case = 112,                       // stmt_case
+        S_stmt_default = 113,                    // stmt_default
+        S_stmt_break = 114,                      // stmt_break
+        S_stmt_continue = 115,                   // stmt_continue
+        S_stmt_return = 116,                     // stmt_return
+        S_for_assign = 117,                      // for_assign
+        S_for_cond = 118,                        // for_cond
+        S_expr = 119,                            // expr
+        S_expr_assign = 120,                     // expr_assign
+        S_expr_cmp = 121,                        // expr_cmp
+        S_expr_ternary = 122,                    // expr_ternary
+        S_expr_binary = 123,                     // expr_binary
+        S_expr_primitive = 124,                  // expr_primitive
+        S_expr_call = 125,                       // expr_call
+        S_expr_call_thread = 126,                // expr_call_thread
+        S_expr_call_function = 127,              // expr_call_function
+        S_expr_call_pointer = 128,               // expr_call_pointer
+        S_expr_arguments = 129,                  // expr_arguments
+        S_expr_function_ref = 130,               // expr_function_ref
+        S_expr_array = 131,                      // expr_array
+        S_expr_field = 132,                      // expr_field
+        S_expr_size = 133,                       // expr_size
+        S_expr_vector = 134,                     // expr_vector
+        S_expr_add_array = 135,                  // expr_add_array
+        S_object = 136,                          // object
+        S_vector = 137,                          // vector
+        S_num = 138,                             // num
+        S_false = 139,                           // false
+        S_true = 140,                            // true
+        S_data_float = 141,                      // data_float
+        S_data_integer = 142,                    // data_integer
+        S_data_localized_string = 143,           // data_localized_string
+        S_data_string = 144,                     // data_string
+        S_animref = 145,                         // animref
+        S_identifier = 146,                      // identifier
+        S_filepath = 147,                        // filepath
+        S_empty_array = 148,                     // empty_array
+        S_undefined = 149,                       // undefined
+        S_size = 150,                            // size
+        S_game = 151,                            // game
+        S_self = 152,                            // self
+        S_anim = 153,                            // anim
+        S_level = 154                            // level
       };
     };
 
@@ -880,6 +896,10 @@ namespace yy {
       {
         switch (this->kind ())
     {
+      case symbol_kind::S_animref: // animref
+        value.move< gsc::animref_ptr > (std::move (that.value));
+        break;
+
       case symbol_kind::S_block: // block
         value.move< gsc::block_ptr > (std::move (that.value));
         break;
@@ -1060,6 +1080,7 @@ namespace yy {
 
       case symbol_kind::S_FILEPATH: // FILEPATH
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
+      case symbol_kind::S_ANIMREF: // ANIMREF
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
       case symbol_kind::S_FLOAT: // FLOAT
@@ -1085,6 +1106,17 @@ namespace yy {
 #else
       basic_symbol (typename Base::kind_type t)
         : Base (t)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::animref_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::animref_ptr& v)
+        : Base (t)
+        , value (v)
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1539,6 +1571,10 @@ namespace yy {
         // Value type destructor.
 switch (yykind)
     {
+      case symbol_kind::S_animref: // animref
+        value.template destroy< gsc::animref_ptr > ();
+        break;
+
       case symbol_kind::S_block: // block
         value.template destroy< gsc::block_ptr > ();
         break;
@@ -1719,6 +1755,7 @@ switch (yykind)
 
       case symbol_kind::S_FILEPATH: // FILEPATH
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
+      case symbol_kind::S_ANIMREF: // ANIMREF
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
       case symbol_kind::S_FLOAT: // FLOAT
@@ -1813,32 +1850,32 @@ switch (yykind)
       symbol_type (int tok)
         : super_type(token_type (tok))
       {
-        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::CALL || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INCREMENT || tok == token::DECREMENT || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::OR || tok == token::AND || tok == token::EQUALITY || tok == token::INEQUALITY || tok == token::LESS_EQUAL || tok == token::GREATER_EQUAL || tok == token::LESS || tok == token::GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BITWISE_OR || tok == token::ASSIGN_BITWISE_AND || tok == token::ASSIGN_BITWISE_EXOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BITWISE_OR || tok == token::BITWISE_AND || tok == token::BITWISE_EXOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
+        YY_ASSERT (tok == token::IW7EOF || tok == token::IW7error || tok == token::IW7UNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::CALL || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INCREMENT || tok == token::DECREMENT || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::OR || tok == token::AND || tok == token::EQUALITY || tok == token::INEQUALITY || tok == token::LESS_EQUAL || tok == token::GREATER_EQUAL || tok == token::LESS || tok == token::GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BITWISE_OR || tok == token::ASSIGN_BITWISE_AND || tok == token::ASSIGN_BITWISE_EXOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BITWISE_OR || tok == token::BITWISE_AND || tok == token::BITWISE_EXOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
       }
 #else
       symbol_type (int tok)
         : super_type(token_type (tok))
       {
-        YY_ASSERT (tok == token::YYEOF || tok == token::YYerror || tok == token::YYUNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::CALL || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INCREMENT || tok == token::DECREMENT || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::OR || tok == token::AND || tok == token::EQUALITY || tok == token::INEQUALITY || tok == token::LESS_EQUAL || tok == token::GREATER_EQUAL || tok == token::LESS || tok == token::GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BITWISE_OR || tok == token::ASSIGN_BITWISE_AND || tok == token::ASSIGN_BITWISE_EXOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BITWISE_OR || tok == token::BITWISE_AND || tok == token::BITWISE_EXOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
+        YY_ASSERT (tok == token::IW7EOF || tok == token::IW7error || tok == token::IW7UNDEF || tok == token::INCLUDE || tok == token::USING_ANIMTREE || tok == token::ANIMTREE || tok == token::IF || tok == token::ELSE || tok == token::SWITCH || tok == token::CASE || tok == token::DEFAULT || tok == token::BREAK || tok == token::FOR || tok == token::FOREACH || tok == token::WHILE || tok == token::CONTINUE || tok == token::RETURN || tok == token::THREAD || tok == token::CALL || tok == token::WAIT || tok == token::WAITTILL || tok == token::WAITTILLMATCH || tok == token::WAITTILLFRAMEEND || tok == token::ENDON || tok == token::NOTIFY || tok == token::IN || tok == token::UNDEFINED || tok == token::TRUE || tok == token::FALSE || tok == token::SIZE || tok == token::GAME || tok == token::LEVEL || tok == token::ANIM || tok == token::SELF || tok == token::EMPTY_ARRAY || tok == token::LPAREN || tok == token::RPAREN || tok == token::LBRACE || tok == token::RBRACE || tok == token::LBRACKET || tok == token::RBRACKET || tok == token::COMMA || tok == token::DOT || tok == token::DOUBLECOLON || tok == token::COLON || tok == token::SEMICOLON || tok == token::QMARK || tok == token::MOD || tok == token::INCREMENT || tok == token::DECREMENT || tok == token::LSHIFT || tok == token::RSHIFT || tok == token::OR || tok == token::AND || tok == token::EQUALITY || tok == token::INEQUALITY || tok == token::LESS_EQUAL || tok == token::GREATER_EQUAL || tok == token::LESS || tok == token::GREATER || tok == token::ASSIGN || tok == token::ASSIGN_ADD || tok == token::ASSIGN_SUB || tok == token::ASSIGN_MULT || tok == token::ASSIGN_DIV || tok == token::ASSIGN_MOD || tok == token::ASSIGN_BITWISE_OR || tok == token::ASSIGN_BITWISE_AND || tok == token::ASSIGN_BITWISE_EXOR || tok == token::ASSIGN_LSHIFT || tok == token::ASSIGN_RSHIFT || tok == token::BITWISE_OR || tok == token::BITWISE_AND || tok == token::BITWISE_EXOR || tok == token::ADD || tok == token::SUB || tok == token::MULT || tok == token::DIV || tok == token::NOT || tok == token::COMPLEMENT || tok == token::IFX);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       symbol_type (int tok, std::string v)
         : super_type(token_type (tok), std::move (v))
       {
-        YY_ASSERT (tok == token::FILEPATH || tok == token::IDENTIFIER || tok == token::STRING || tok == token::STRING_LOC || tok == token::FLOAT || tok == token::INTEGER);
+        YY_ASSERT (tok == token::FILEPATH || tok == token::IDENTIFIER || tok == token::ANIMREF || tok == token::STRING || tok == token::STRING_LOC || tok == token::FLOAT || tok == token::INTEGER);
       }
 #else
       symbol_type (int tok, const std::string& v)
         : super_type(token_type (tok), v)
       {
-        YY_ASSERT (tok == token::FILEPATH || tok == token::IDENTIFIER || tok == token::STRING || tok == token::STRING_LOC || tok == token::FLOAT || tok == token::INTEGER);
+        YY_ASSERT (tok == token::FILEPATH || tok == token::IDENTIFIER || tok == token::ANIMREF || tok == token::STRING || tok == token::STRING_LOC || tok == token::FLOAT || tok == token::INTEGER);
       }
 #endif
     };
 
     /// Build a parser object.
-    parser (yyscan_t yyscanner_yyarg, gsc::script_ptr& astout_yyarg);
+    parser (yyscan_t yyscanner_yyarg, std::uint32_t *location_yyarg, gsc::script_ptr& astout_yyarg);
     virtual ~parser ();
 
 #if 201103L <= YY_CPLUSPLUS
@@ -1856,7 +1893,7 @@ switch (yykind)
     /// \returns  0 iff parsing succeeded.
     virtual int parse ();
 
-#if YYDEBUG
+#if IW7DEBUG
     /// The current debugging stream.
     std::ostream& debug_stream () const YY_ATTRIBUTE_PURE;
     /// Set the current debugging stream.
@@ -1885,46 +1922,46 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_YYEOF ()
+      make_IW7EOF ()
       {
-        return symbol_type (token::YYEOF);
+        return symbol_type (token::IW7EOF);
       }
 #else
       static
       symbol_type
-      make_YYEOF ()
+      make_IW7EOF ()
       {
-        return symbol_type (token::YYEOF);
+        return symbol_type (token::IW7EOF);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_YYerror ()
+      make_IW7error ()
       {
-        return symbol_type (token::YYerror);
+        return symbol_type (token::IW7error);
       }
 #else
       static
       symbol_type
-      make_YYerror ()
+      make_IW7error ()
       {
-        return symbol_type (token::YYerror);
+        return symbol_type (token::IW7error);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_YYUNDEF ()
+      make_IW7UNDEF ()
       {
-        return symbol_type (token::YYUNDEF);
+        return symbol_type (token::IW7UNDEF);
       }
 #else
       static
       symbol_type
-      make_YYUNDEF ()
+      make_IW7UNDEF ()
       {
-        return symbol_type (token::YYUNDEF);
+        return symbol_type (token::IW7UNDEF);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -3115,6 +3152,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_ANIMREF (std::string v)
+      {
+        return symbol_type (token::ANIMREF, std::move (v));
+      }
+#else
+      static
+      symbol_type
+      make_ANIMREF (const std::string& v)
+      {
+        return symbol_type (token::ANIMREF, v);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_STRING (std::string v)
       {
         return symbol_type (token::STRING, std::move (v));
@@ -3291,7 +3343,7 @@ switch (yykind)
     static const signed char yyr2_[];
 
 
-#if YYDEBUG
+#if IW7DEBUG
     // YYRLINE[YYN] -- Source line where rule number YYN was defined.
     static const short yyrline_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
@@ -3529,14 +3581,15 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2326,     ///< Last index in yytable_.
-      yynnts_ = 66,  ///< Number of nonterminal symbols.
+      yylast_ = 2342,     ///< Last index in yytable_.
+      yynnts_ = 67,  ///< Number of nonterminal symbols.
       yyfinal_ = 16 ///< Termination state number.
     };
 
 
     // User arguments.
     yyscan_t yyscanner;
+    std::uint32_t *location;
     gsc::script_ptr& astout;
 
   };
@@ -3556,6 +3609,10 @@ switch (yykind)
   {
     switch (this->kind ())
     {
+      case symbol_kind::S_animref: // animref
+        value.copy< gsc::animref_ptr > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_block: // block
         value.copy< gsc::block_ptr > (YY_MOVE (that.value));
         break;
@@ -3736,6 +3793,7 @@ switch (yykind)
 
       case symbol_kind::S_FILEPATH: // FILEPATH
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
+      case symbol_kind::S_ANIMREF: // ANIMREF
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
       case symbol_kind::S_FLOAT: // FLOAT
@@ -3772,6 +3830,10 @@ switch (yykind)
     super_type::move (s);
     switch (this->kind ())
     {
+      case symbol_kind::S_animref: // animref
+        value.move< gsc::animref_ptr > (YY_MOVE (s.value));
+        break;
+
       case symbol_kind::S_block: // block
         value.move< gsc::block_ptr > (YY_MOVE (s.value));
         break;
@@ -3952,6 +4014,7 @@ switch (yykind)
 
       case symbol_kind::S_FILEPATH: // FILEPATH
       case symbol_kind::S_IDENTIFIER: // IDENTIFIER
+      case symbol_kind::S_ANIMREF: // ANIMREF
       case symbol_kind::S_STRING: // STRING
       case symbol_kind::S_STRING_LOC: // STRING_LOC
       case symbol_kind::S_FLOAT: // FLOAT
@@ -4019,10 +4082,11 @@ switch (yykind)
     return this->kind ();
   }
 
-} // yy
-#line 4024 "./IW7/compiler_parser.hpp"
+#line 14 "IW7.parser.ypp"
+} // IW7
+#line 4088 "./IW7/compiler_parser.hpp"
 
 
 
 
-#endif // !YY_YY_IW7_COMPILER_PARSER_HPP_INCLUDED
+#endif // !YY_IW7_IW7_COMPILER_PARSER_HPP_INCLUDED
