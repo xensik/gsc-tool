@@ -15,7 +15,7 @@ function utils:project()
     language "C++"
 
     pchheader "utils.hpp"
-    pchsource(path.join(tool.base, "utils.cpp"))
+    pchsource(path.join(utils.base, "utils.cpp"))
 
     self:include()
     zlib:include()

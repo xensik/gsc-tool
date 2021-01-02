@@ -15,7 +15,7 @@ function IW5:project()
     language "C++"
 
     pchheader "IW5.hpp"
-    pchsource(path.join(tool.base, "IW5.cpp"))
+    pchsource(path.join(IW5.base, "IW5.cpp"))
 
     self:include()
     utils:include()

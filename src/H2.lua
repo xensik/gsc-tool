@@ -15,7 +15,7 @@ function H2:project()
     language "C++"
 
     pchheader "H2.hpp"
-    pchsource(path.join(tool.base, "H2.cpp"))
+    pchsource(path.join(H2.base, "H2.cpp"))
 
     self:include()
     utils:include()

@@ -15,7 +15,7 @@ function S1:project()
     language "C++"
 
     pchheader "S1.hpp"
-    pchsource(path.join(tool.base, "S1.cpp"))
+    pchsource(path.join(S1.base, "S1.cpp"))
 
     self:include()
     utils:include()
