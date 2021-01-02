@@ -8,6 +8,7 @@
 %option header-file="./IW5/compiler_lexer.hpp"
 %option prefix = "IW5"
 %option reentrant
+%option case-insensitive
 %option noyywrap batch nounput noinput
 %option never-interactive
 %option nounistd

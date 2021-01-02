@@ -8,6 +8,7 @@
 %option header-file="./S2/compiler_lexer.hpp"
 %option prefix = "S2"
 %option reentrant
+%option case-insensitive
 %option noyywrap batch nounput noinput
 %option never-interactive
 %option nounistd
@@ -29,17 +30,19 @@ RGX_DEFAULT         (.|\n)
 
 %%
 
-[ \t\n\r]
-
+[ \t\r]
+\n                          { (*location)++; }
 "//".*
 
-"/*"                         { BEGIN(COMMENT_BLOCK_STATE); }
-<COMMENT_BLOCK_STATE>(.|\n)
-<COMMENT_BLOCK_STATE>"*/"    { BEGIN(INITIAL); }
+"/*"					    { BEGIN(COMMENT_BLOCK_STATE); }
+<COMMENT_BLOCK_STATE>.
+<COMMENT_BLOCK_STATE>\n     { (*location)++; }
+<COMMENT_BLOCK_STATE>"*/"	{ BEGIN(INITIAL); }
 
-"/#"                         { BEGIN(DEVELOPER_BLOCK_STATE); }
-<DEVELOPER_BLOCK_STATE>(.|\n)
-<DEVELOPER_BLOCK_STATE>"#/"  { BEGIN(INITIAL); }
+"/#"				        { BEGIN(DEVELOPER_BLOCK_STATE); }
+<DEVELOPER_BLOCK_STATE>.
+<DEVELOPER_BLOCK_STATE>\n     { (*location)++; }
+<DEVELOPER_BLOCK_STATE>"#/"	{ BEGIN(INITIAL); }
 
 "#include"          { return S2::parser::make_INCLUDE(); }
 "#using_animtree"   { return S2::parser::make_USING_ANIMTREE(); }
