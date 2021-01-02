@@ -165,7 +165,7 @@ void compiler::emit_stmt(const gsc::context_ptr& ctx, const gsc::stmt_ptr& stmt,
         case gsc::node_type::stmt_break:            emit_stmt_break(ctx, stmt.as_break); break;
         case gsc::node_type::stmt_continue:         emit_stmt_continue(ctx, stmt.as_continue); break;
         case gsc::node_type::stmt_return:           emit_stmt_return(ctx, stmt.as_return); break;
-        default: GSC_COMP_ERROR("UNKNOWN STATEMENT!"); break;
+        default: GSC_COMP_ERROR("unknown statement at line %s", stmt.as_node->location.data()); break;
     }
 }
 
@@ -450,6 +450,10 @@ void compiler::emit_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_swi
 
     emit_opcode(ctx, opcode::OP_endswitch, data);
 
+    auto offset =  7 * switch_ctx->case_id.size();
+    function_->instructions.back()->size += offset;
+    index_ += offset;
+
     insert_label(break_loc);
 }
 
@@ -457,7 +461,7 @@ void compiler::emit_stmt_case(const gsc::context_ptr& ctx, const gsc::stmt_case_
 {
     if(!ctx->is_switch)
     {
-        GSC_COMP_ERROR("illegal case statement outside a switch.");
+        GSC_COMP_ERROR("illegal case statement outside a switch at line %s", stmt->location.data());
     }
 
     if(stmt->value.as_node->type == gsc::node_type::data_integer)
@@ -474,7 +478,7 @@ void compiler::emit_stmt_case(const gsc::context_ptr& ctx, const gsc::stmt_case_
     }
     else
     {
-        GSC_COMP_ERROR("illegal case type.");
+        GSC_COMP_ERROR("illegal case type  at line %s", stmt->location.data());
     }
 }
 
@@ -482,7 +486,7 @@ void compiler::emit_stmt_default(const gsc::context_ptr& ctx, const gsc::stmt_de
 {
     if(!ctx->is_switch)
     {
-        GSC_COMP_ERROR("illegal default statement outside a switch.");
+        GSC_COMP_ERROR("illegal default statement outside a switch  at line %s", stmt->location.data());
     }
 
     auto loc = insert_label();
@@ -494,7 +498,7 @@ void compiler::emit_stmt_break(const gsc::context_ptr& ctx, const gsc::stmt_brea
 {
     if(ctx->loc_break == "")
     {
-        GSC_COMP_ERROR("illegal break statement outside a loop.");
+        GSC_COMP_ERROR("illegal break statement outside a loop  at line %s", stmt->location.data());
     }
 
     emit_remove_local_vars(ctx);
@@ -505,7 +509,7 @@ void compiler::emit_stmt_continue(const gsc::context_ptr& ctx, const gsc::stmt_c
 {
     if(ctx->loc_continue == "")
     {
-        GSC_COMP_ERROR("illegal continue statement outside a loop.");
+        GSC_COMP_ERROR("illegal continue statement outside a loop  at line %s", stmt->location.data());
     }
 
     emit_remove_local_vars(ctx);
@@ -567,7 +571,7 @@ void compiler::emit_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
         case gsc::node_type::data_integer:          emit_integer(ctx, expr.as_integer); break;
         case gsc::node_type::data_vector:           emit_vector(ctx, expr.as_vector); break;
         case gsc::node_type::expr_vector:           emit_expr_vector(ctx, expr.as_vector_expr); break;
-        default: GSC_COMP_ERROR("UNKNOWN EXPRESSION!"); break;
+        default: GSC_COMP_ERROR("unknown expression at line %s", expr.as_node->location.data()); break;
     }
 }
 
@@ -614,7 +618,7 @@ void compiler::emit_expr_assign(const gsc::context_ptr& ctx, const gsc::expr_ass
             case gsc::node_type::expr_assign_bitwise_or:    emit_opcode(ctx, opcode::OP_bit_or); break;
             case gsc::node_type::expr_assign_bitwise_and:   emit_opcode(ctx, opcode::OP_bit_and); break;
             case gsc::node_type::expr_assign_bitwise_exor:  emit_opcode(ctx, opcode::OP_bit_ex_or); break;
-            default: GSC_COMP_ERROR("UNKNOWN ASSIGN OPERATION!"); break;
+            default: GSC_COMP_ERROR("unknown assign operation at line %s", expr->location.data()); break;
         }
 
         emit_variable_ref(ctx, expr->lvalue, true);
@@ -649,7 +653,7 @@ void compiler::emit_expr_binary(const gsc::context_ptr& ctx, const gsc::expr_bin
         case gsc::node_type::expr_mult:             emit_opcode(ctx, opcode::OP_multiply); break;
         case gsc::node_type::expr_div:              emit_opcode(ctx, opcode::OP_divide); break;
         case gsc::node_type::expr_mod:              emit_opcode(ctx, opcode::OP_mod); break;
-        default: GSC_COMP_ERROR("UNKNOWN BINARY EXPRESSION!"); break;
+        default: GSC_COMP_ERROR("unknown binary expression at line %s", expr->location.data()); break;
     }
 }
 
@@ -746,7 +750,7 @@ void compiler::emit_expr_call(const gsc::context_ptr& ctx, const gsc::expr_call_
             else
             {
                 // maybe a far call, but include files not supported!
-                GSC_COMP_ERROR("unknown function call '%s'", name.data());
+                GSC_COMP_ERROR("unknown function call '%s' at line %s", name.data(), expr->location.data());
             }
         }
 
@@ -963,7 +967,7 @@ void compiler::emit_expr_clear_variable(const gsc::context_ptr& ctx, const gsc::
         emit_local_variable_ref(ctx, lvalue.as_identifier, true);
         break;
     default:
-        GSC_COMP_ERROR("UNKNOWN CLEAR VARIABLE LVALUE!");
+        GSC_COMP_ERROR("unknown clear variable lvalue at line %s", lvalue.as_node->location.data());
         break;
     }
 }

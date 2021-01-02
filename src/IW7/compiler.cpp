@@ -451,6 +451,10 @@ void compiler::emit_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_swi
 
     emit_opcode(ctx, opcode::OP_endswitch, data);
 
+    auto offset =  7 * switch_ctx->case_id.size();
+    function_->instructions.back()->size += offset;
+    index_ += offset;
+
     insert_label(break_loc);
 }
 
