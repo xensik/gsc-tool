@@ -1460,7 +1460,7 @@ namespace IW5 {
 
   case 3: // root: %empty
 #line 118 "IW5.parser.ypp"
-                 { astout = std::make_unique<gsc::node_script>(""); }
+                 { astout = std::make_unique<gsc::node_script>(); }
 #line 1465 "./IW5/compiler_parser.cpp"
     break;
 
@@ -1490,49 +1490,49 @@ namespace IW5 {
 
   case 8: // script: include
 #line 131 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->includes.push_back(std::move(yystack_[0].value.as < gsc::include_ptr > ()));}
+                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(std::to_string(*location)); yylhs.value.as < gsc::script_ptr > ()->includes.push_back(std::move(yystack_[0].value.as < gsc::include_ptr > ()));}
 #line 1495 "./IW5/compiler_parser.cpp"
     break;
 
   case 9: // script: using_animtree
 #line 133 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ()));}
+                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(std::to_string(*location)); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ()));}
 #line 1501 "./IW5/compiler_parser.cpp"
     break;
 
   case 10: // script: animtree
 #line 135 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ()));}
+                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(std::to_string(*location)); yylhs.value.as < gsc::script_ptr > ()->animtrees.push_back(std::move(yystack_[0].value.as < gsc::using_animtree_ptr > ()));}
 #line 1507 "./IW5/compiler_parser.cpp"
     break;
 
   case 11: // script: thread
 #line 137 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(""); yylhs.value.as < gsc::script_ptr > ()->threads.push_back(std::move(yystack_[0].value.as < gsc::thread_ptr > ()));}
+                { yylhs.value.as < gsc::script_ptr > () = std::make_unique<gsc::node_script>(std::to_string(*location)); yylhs.value.as < gsc::script_ptr > ()->threads.push_back(std::move(yystack_[0].value.as < gsc::thread_ptr > ()));}
 #line 1513 "./IW5/compiler_parser.cpp"
     break;
 
   case 12: // include: INCLUDE filepath SEMICOLON
 #line 142 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::include_ptr > () = std::make_unique<gsc::node_include>("", std::move(yystack_[1].value.as < gsc::filepath_ptr > ())); }
+                { yylhs.value.as < gsc::include_ptr > () = std::make_unique<gsc::node_include>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::filepath_ptr > ())); }
 #line 1519 "./IW5/compiler_parser.cpp"
     break;
 
   case 13: // using_animtree: USING_ANIMTREE LPAREN data_string RPAREN SEMICOLON
 #line 147 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::using_animtree_ptr > () = std::make_unique<gsc::node_using_animtree>("", std::move(yystack_[2].value.as < gsc::string_ptr > ())); }
+                { yylhs.value.as < gsc::using_animtree_ptr > () = std::make_unique<gsc::node_using_animtree>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::string_ptr > ())); }
 #line 1525 "./IW5/compiler_parser.cpp"
     break;
 
   case 14: // animtree: ANIMTREE LPAREN data_string RPAREN SEMICOLON
 #line 152 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::using_animtree_ptr > () = std::make_unique<gsc::node_using_animtree>("", std::move(yystack_[2].value.as < gsc::string_ptr > ())); }
+                { yylhs.value.as < gsc::using_animtree_ptr > () = std::make_unique<gsc::node_using_animtree>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::string_ptr > ())); }
 #line 1531 "./IW5/compiler_parser.cpp"
     break;
 
   case 15: // thread: identifier LPAREN parameters RPAREN LBRACE block RBRACE
 #line 157 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::thread_ptr > () = std::make_unique<gsc::node_thread>("", std::move(yystack_[6].value.as < gsc::identifier_ptr > ()), std::move(yystack_[4].value.as < gsc::parameters_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+                { yylhs.value.as < gsc::thread_ptr > () = std::make_unique<gsc::node_thread>(std::to_string(*location), std::move(yystack_[6].value.as < gsc::identifier_ptr > ()), std::move(yystack_[4].value.as < gsc::parameters_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
 #line 1537 "./IW5/compiler_parser.cpp"
     break;
 
@@ -1544,13 +1544,13 @@ namespace IW5 {
 
   case 17: // parameters: identifier
 #line 164 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::parameters_ptr > () = std::make_unique<gsc::node_parameters>(""); yylhs.value.as < gsc::parameters_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
+                { yylhs.value.as < gsc::parameters_ptr > () = std::make_unique<gsc::node_parameters>(std::to_string(*location)); yylhs.value.as < gsc::parameters_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
 #line 1549 "./IW5/compiler_parser.cpp"
     break;
 
   case 18: // parameters: %empty
 #line 166 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::parameters_ptr > () = std::make_unique<gsc::node_parameters>(""); }
+                { yylhs.value.as < gsc::parameters_ptr > () = std::make_unique<gsc::node_parameters>(std::to_string(*location)); }
 #line 1555 "./IW5/compiler_parser.cpp"
     break;
 
@@ -1562,13 +1562,13 @@ namespace IW5 {
 
   case 20: // block: stmt
 #line 173 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::block_ptr > () = std::make_unique<gsc::node_block>(""); yylhs.value.as < gsc::block_ptr > ()->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ())); }
+                { yylhs.value.as < gsc::block_ptr > () = std::make_unique<gsc::node_block>(std::to_string(*location)); yylhs.value.as < gsc::block_ptr > ()->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ())); }
 #line 1567 "./IW5/compiler_parser.cpp"
     break;
 
   case 21: // block: %empty
 #line 175 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::block_ptr > () = std::make_unique<gsc::node_block>(""); }
+                { yylhs.value.as < gsc::block_ptr > () = std::make_unique<gsc::node_block>(std::to_string(*location)); }
 #line 1573 "./IW5/compiler_parser.cpp"
     break;
 
@@ -1688,218 +1688,218 @@ namespace IW5 {
 
   case 41: // stmt_call: expr_call SEMICOLON
 #line 202 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_call_ptr > () = std::make_unique<gsc::node_stmt_call>("", std::move(yystack_[1].value.as < gsc::expr_call_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_call_ptr > () = std::make_unique<gsc::node_stmt_call>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::expr_call_ptr > ())); }
 #line 1693 "./IW5/compiler_parser.cpp"
     break;
 
   case 42: // stmt_call: expr_call_thread SEMICOLON
 #line 204 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_call_ptr > () = std::make_unique<gsc::node_stmt_call>("", std::move(yystack_[1].value.as < gsc::expr_call_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_call_ptr > () = std::make_unique<gsc::node_stmt_call>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::expr_call_ptr > ())); }
 #line 1699 "./IW5/compiler_parser.cpp"
     break;
 
   case 43: // stmt_assign: expr_assign SEMICOLON
 #line 209 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_assign_ptr > () = std::make_unique<gsc::node_stmt_assign>("", std::move(yystack_[1].value.as < gsc::expr_assign_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_assign_ptr > () = std::make_unique<gsc::node_stmt_assign>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::expr_assign_ptr > ())); }
 #line 1705 "./IW5/compiler_parser.cpp"
     break;
 
   case 44: // stmt_endon: object ENDON LPAREN expr RPAREN SEMICOLON
 #line 214 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_endon_ptr > () = std::make_unique<gsc::node_stmt_endon>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_endon_ptr > () = std::make_unique<gsc::node_stmt_endon>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
 #line 1711 "./IW5/compiler_parser.cpp"
     break;
 
   case 45: // stmt_notify: object NOTIFY LPAREN expr COMMA expr_arguments RPAREN SEMICOLON
 #line 219 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_notify_ptr > () = std::make_unique<gsc::node_stmt_notify>("", std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_notify_ptr > () = std::make_unique<gsc::node_stmt_notify>(std::to_string(*location), std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ())); }
 #line 1717 "./IW5/compiler_parser.cpp"
     break;
 
   case 46: // stmt_notify: object NOTIFY LPAREN expr RPAREN SEMICOLON
 #line 221 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_notify_ptr > () = std::make_unique<gsc::node_stmt_notify>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::make_unique<gsc::node_expr_arguments>("")); }
+                { yylhs.value.as < gsc::stmt_notify_ptr > () = std::make_unique<gsc::node_stmt_notify>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::make_unique<gsc::node_expr_arguments>(std::to_string(*location))); }
 #line 1723 "./IW5/compiler_parser.cpp"
     break;
 
   case 47: // stmt_wait: WAIT LPAREN expr RPAREN SEMICOLON
 #line 226 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_wait_ptr > () = std::make_unique<gsc::node_stmt_wait>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_wait_ptr > () = std::make_unique<gsc::node_stmt_wait>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
 #line 1729 "./IW5/compiler_parser.cpp"
     break;
 
   case 48: // stmt_wait: WAIT num SEMICOLON
 #line 228 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_wait_ptr > () = std::make_unique<gsc::node_stmt_wait>("", std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_wait_ptr > () = std::make_unique<gsc::node_stmt_wait>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
 #line 1735 "./IW5/compiler_parser.cpp"
     break;
 
   case 49: // stmt_waittill: object WAITTILL LPAREN expr COMMA expr_arguments RPAREN SEMICOLON
 #line 233 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_waittill_ptr > () = std::make_unique<gsc::node_stmt_waittill>("", std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_waittill_ptr > () = std::make_unique<gsc::node_stmt_waittill>(std::to_string(*location), std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_arguments_ptr > ())); }
 #line 1741 "./IW5/compiler_parser.cpp"
     break;
 
   case 50: // stmt_waittill: object WAITTILL LPAREN expr RPAREN SEMICOLON
 #line 235 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_waittill_ptr > () = std::make_unique<gsc::node_stmt_waittill>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::make_unique<gsc::node_expr_arguments>("")); }
+                { yylhs.value.as < gsc::stmt_waittill_ptr > () = std::make_unique<gsc::node_stmt_waittill>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::make_unique<gsc::node_expr_arguments>(std::to_string(*location))); }
 #line 1747 "./IW5/compiler_parser.cpp"
     break;
 
   case 51: // stmt_waittillmatch: object WAITTILLMATCH LPAREN expr COMMA expr RPAREN SEMICOLON
 #line 240 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_waittillmatch_ptr > () = std::make_unique<gsc::node_stmt_waittillmatch>("", std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_waittillmatch_ptr > () = std::make_unique<gsc::node_stmt_waittillmatch>(std::to_string(*location), std::move(yystack_[7].value.as < gsc::node_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ())); }
 #line 1753 "./IW5/compiler_parser.cpp"
     break;
 
   case 52: // stmt_waittillframeend: WAITTILLFRAMEEND SEMICOLON
 #line 245 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_waittillframeend_ptr > () = std::make_unique<gsc::node_stmt_waittillframeend>(""); }
+                { yylhs.value.as < gsc::stmt_waittillframeend_ptr > () = std::make_unique<gsc::node_stmt_waittillframeend>(std::to_string(*location)); }
 #line 1759 "./IW5/compiler_parser.cpp"
     break;
 
   case 53: // stmt_if: IF LPAREN expr RPAREN LBRACE block RBRACE
 #line 250 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_if_ptr > () = std::make_unique<gsc::node_stmt_if>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_if_ptr > () = std::make_unique<gsc::node_stmt_if>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
 #line 1765 "./IW5/compiler_parser.cpp"
     break;
 
   case 54: // stmt_if: IF LPAREN expr RPAREN stmt
 #line 252 "IW5.parser.ypp"
                 {
-			auto blk = std::make_unique<gsc::node_block>("");
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_if_ptr > () = std::make_unique<gsc::node_stmt_if>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk)); }
+			yylhs.value.as < gsc::stmt_if_ptr > () = std::make_unique<gsc::node_stmt_if>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk)); }
 #line 1774 "./IW5/compiler_parser.cpp"
     break;
 
   case 55: // stmt_ifelse: IF LPAREN expr RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE
 #line 260 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[8].value.as < gsc::expr_ptr > ()), std::move(yystack_[5].value.as < gsc::block_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>(std::to_string(*location), std::move(yystack_[8].value.as < gsc::expr_ptr > ()), std::move(yystack_[5].value.as < gsc::block_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
 #line 1780 "./IW5/compiler_parser.cpp"
     break;
 
   case 56: // stmt_ifelse: IF LPAREN expr RPAREN stmt ELSE LBRACE block RBRACE
 #line 262 "IW5.parser.ypp"
                 {
-			auto blk = std::make_unique<gsc::node_block>("");
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk->stmts.push_back(std::move(yystack_[4].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(blk), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>(std::to_string(*location), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(blk), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
 #line 1789 "./IW5/compiler_parser.cpp"
     break;
 
   case 57: // stmt_ifelse: IF LPAREN expr RPAREN LBRACE block RBRACE ELSE stmt
 #line 267 "IW5.parser.ypp"
                 { 
-			auto blk = std::make_unique<gsc::node_block>("");
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[3].value.as < gsc::block_ptr > ()), std::move(blk)); }
+			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>(std::to_string(*location), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[3].value.as < gsc::block_ptr > ()), std::move(blk)); }
 #line 1798 "./IW5/compiler_parser.cpp"
     break;
 
   case 58: // stmt_ifelse: IF LPAREN expr RPAREN stmt ELSE stmt
 #line 272 "IW5.parser.ypp"
                 {
-			auto blk1 = std::make_unique<gsc::node_block>("");
+			auto blk1 = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk1->stmts.push_back(std::move(yystack_[2].value.as < gsc::stmt_ptr > ()));
-			auto blk2 = std::make_unique<gsc::node_block>("");
+			auto blk2 = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk2->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(blk1), std::move(blk2)); }
+			yylhs.value.as < gsc::stmt_ifelse_ptr > () = std::make_unique<gsc::node_stmt_ifelse>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(blk1), std::move(blk2)); }
 #line 1809 "./IW5/compiler_parser.cpp"
     break;
 
   case 59: // stmt_while: WHILE LPAREN expr RPAREN LBRACE block RBRACE
 #line 282 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_while_ptr > () = std::make_unique<gsc::node_stmt_while>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_while_ptr > () = std::make_unique<gsc::node_stmt_while>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
 #line 1815 "./IW5/compiler_parser.cpp"
     break;
 
   case 60: // stmt_while: WHILE LPAREN expr RPAREN stmt
 #line 284 "IW5.parser.ypp"
                 {
-			auto blk = std::make_unique<gsc::node_block>("");
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_while_ptr > () = std::make_unique<gsc::node_stmt_while>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk)); }
+			yylhs.value.as < gsc::stmt_while_ptr > () = std::make_unique<gsc::node_stmt_while>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk)); }
 #line 1824 "./IW5/compiler_parser.cpp"
     break;
 
   case 61: // stmt_for: FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN LBRACE block RBRACE
 #line 292 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_for_ptr > () = std::make_unique<gsc::node_stmt_for>("", std::move(yystack_[8].value.as < gsc::expr_ptr > ()), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_for_ptr > () = std::make_unique<gsc::node_stmt_for>(std::to_string(*location), std::move(yystack_[8].value.as < gsc::expr_ptr > ()), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
 #line 1830 "./IW5/compiler_parser.cpp"
     break;
 
   case 62: // stmt_for: FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN stmt
 #line 294 "IW5.parser.ypp"
                 {
-			auto blk = std::make_unique<gsc::node_block>("");
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_for_ptr > () = std::make_unique<gsc::node_stmt_for>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk));
+			yylhs.value.as < gsc::stmt_for_ptr > () = std::make_unique<gsc::node_stmt_for>(std::to_string(*location), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk));
 		}
 #line 1840 "./IW5/compiler_parser.cpp"
     break;
 
   case 63: // stmt_foreach: FOREACH LPAREN expr IN expr RPAREN RBRACE block RBRACE
 #line 303 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_foreach_ptr > () = std::make_unique<gsc::node_stmt_foreach>("", std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_foreach_ptr > () = std::make_unique<gsc::node_stmt_foreach>(std::to_string(*location), std::move(yystack_[6].value.as < gsc::expr_ptr > ()), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
 #line 1846 "./IW5/compiler_parser.cpp"
     break;
 
   case 64: // stmt_foreach: FOREACH LPAREN expr IN expr RPAREN stmt
 #line 305 "IW5.parser.ypp"
                 {
-			auto blk = std::make_unique<gsc::node_block>("");
+			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk->stmts.push_back(std::move(yystack_[0].value.as < gsc::stmt_ptr > ()));
-			yylhs.value.as < gsc::stmt_foreach_ptr > () = std::make_unique<gsc::node_stmt_foreach>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk));
+			yylhs.value.as < gsc::stmt_foreach_ptr > () = std::make_unique<gsc::node_stmt_foreach>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(blk));
 		}
 #line 1856 "./IW5/compiler_parser.cpp"
     break;
 
   case 65: // stmt_switch: SWITCH LPAREN expr RPAREN LBRACE block RBRACE
 #line 314 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_switch_ptr > () = std::make_unique<gsc::node_stmt_switch>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_switch_ptr > () = std::make_unique<gsc::node_stmt_switch>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::block_ptr > ())); }
 #line 1862 "./IW5/compiler_parser.cpp"
     break;
 
   case 66: // stmt_case: CASE data_integer COLON
 #line 319 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::integer_ptr > ()))); }
+                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>(std::to_string(*location), gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::integer_ptr > ()))); }
 #line 1868 "./IW5/compiler_parser.cpp"
     break;
 
   case 67: // stmt_case: CASE data_string COLON
 #line 321 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>("", gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::string_ptr > ()))); }
+                { yylhs.value.as < gsc::stmt_case_ptr > () = std::make_unique<gsc::node_stmt_case>(std::to_string(*location), gsc::expr_ptr(std::move(yystack_[1].value.as < gsc::string_ptr > ()))); }
 #line 1874 "./IW5/compiler_parser.cpp"
     break;
 
   case 68: // stmt_default: DEFAULT COLON
 #line 326 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_default_ptr > () = std::make_unique<gsc::node_stmt_default>(""); }
+                { yylhs.value.as < gsc::stmt_default_ptr > () = std::make_unique<gsc::node_stmt_default>(std::to_string(*location)); }
 #line 1880 "./IW5/compiler_parser.cpp"
     break;
 
   case 69: // stmt_break: BREAK SEMICOLON
 #line 331 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_break_ptr > () = std::make_unique<gsc::node_stmt_break>(""); }
+                { yylhs.value.as < gsc::stmt_break_ptr > () = std::make_unique<gsc::node_stmt_break>(std::to_string(*location)); }
 #line 1886 "./IW5/compiler_parser.cpp"
     break;
 
   case 70: // stmt_continue: CONTINUE SEMICOLON
 #line 335 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_continue_ptr > () = std::make_unique<gsc::node_stmt_continue>(""); }
+                { yylhs.value.as < gsc::stmt_continue_ptr > () = std::make_unique<gsc::node_stmt_continue>(std::to_string(*location)); }
 #line 1892 "./IW5/compiler_parser.cpp"
     break;
 
   case 71: // stmt_return: RETURN expr SEMICOLON
 #line 340 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_return_ptr > () = std::make_unique<gsc::node_stmt_return>("", std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
+                { yylhs.value.as < gsc::stmt_return_ptr > () = std::make_unique<gsc::node_stmt_return>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
 #line 1898 "./IW5/compiler_parser.cpp"
     break;
 
   case 72: // stmt_return: RETURN SEMICOLON
 #line 342 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::stmt_return_ptr > () = std::make_unique<gsc::node_stmt_return>("", std::make_unique<gsc::node>()); }
+                { yylhs.value.as < gsc::stmt_return_ptr > () = std::make_unique<gsc::node_stmt_return>(std::to_string(*location), std::make_unique<gsc::node>()); }
 #line 1904 "./IW5/compiler_parser.cpp"
     break;
 
@@ -1953,193 +1953,193 @@ namespace IW5 {
 
   case 81: // expr_assign: object INCREMENT
 #line 363 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_increment>("", std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_increment>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
 #line 1958 "./IW5/compiler_parser.cpp"
     break;
 
   case 82: // expr_assign: object DECREMENT
 #line 364 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_decrement>("", std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_decrement>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
 #line 1964 "./IW5/compiler_parser.cpp"
     break;
 
   case 83: // expr_assign: object ASSIGN expr
 #line 365 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_equal>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_equal>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 1970 "./IW5/compiler_parser.cpp"
     break;
 
   case 84: // expr_assign: object ASSIGN_BITWISE_OR expr
 #line 366 "IW5.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_or>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_or>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 1976 "./IW5/compiler_parser.cpp"
     break;
 
   case 85: // expr_assign: object ASSIGN_BITWISE_AND expr
 #line 367 "IW5.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_and>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_and>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 1982 "./IW5/compiler_parser.cpp"
     break;
 
   case 86: // expr_assign: object ASSIGN_BITWISE_EXOR expr
 #line 368 "IW5.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_exor>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_bitwise_exor>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 1988 "./IW5/compiler_parser.cpp"
     break;
 
   case 87: // expr_assign: object ASSIGN_LSHIFT expr
 #line 369 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_shift_left>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()),std::move( yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_shift_left>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()),std::move( yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 1994 "./IW5/compiler_parser.cpp"
     break;
 
   case 88: // expr_assign: object ASSIGN_RSHIFT expr
 #line 370 "IW5.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_shift_right>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_shift_right>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2000 "./IW5/compiler_parser.cpp"
     break;
 
   case 89: // expr_assign: object ASSIGN_ADD expr
 #line 371 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_add>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_add>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2006 "./IW5/compiler_parser.cpp"
     break;
 
   case 90: // expr_assign: object ASSIGN_SUB expr
 #line 372 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_sub>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_sub>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2012 "./IW5/compiler_parser.cpp"
     break;
 
   case 91: // expr_assign: object ASSIGN_MULT expr
 #line 373 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_mult>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_mult>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2018 "./IW5/compiler_parser.cpp"
     break;
 
   case 92: // expr_assign: object ASSIGN_DIV expr
 #line 374 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_div>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_div>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2024 "./IW5/compiler_parser.cpp"
     break;
 
   case 93: // expr_assign: object ASSIGN_MOD expr
 #line 375 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_mod>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_assign_ptr > () = std::make_unique<gsc::node_expr_assign_mod>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2030 "./IW5/compiler_parser.cpp"
     break;
 
   case 94: // expr_cmp: expr OR expr
 #line 379 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_or>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_or>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2036 "./IW5/compiler_parser.cpp"
     break;
 
   case 95: // expr_cmp: expr AND expr
 #line 380 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_and>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_and>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2042 "./IW5/compiler_parser.cpp"
     break;
 
   case 96: // expr_cmp: expr EQUALITY expr
 #line 381 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_equality>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_equality>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2048 "./IW5/compiler_parser.cpp"
     break;
 
   case 97: // expr_cmp: expr INEQUALITY expr
 #line 382 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_inequality>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_inequality>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2054 "./IW5/compiler_parser.cpp"
     break;
 
   case 98: // expr_cmp: expr LESS_EQUAL expr
 #line 383 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_less_equal>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_less_equal>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2060 "./IW5/compiler_parser.cpp"
     break;
 
   case 99: // expr_cmp: expr GREATER_EQUAL expr
 #line 384 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_greater_equal>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_greater_equal>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2066 "./IW5/compiler_parser.cpp"
     break;
 
   case 100: // expr_cmp: expr LESS expr
 #line 385 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_less>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_less>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2072 "./IW5/compiler_parser.cpp"
     break;
 
   case 101: // expr_cmp: expr GREATER expr
 #line 386 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_greater>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_greater>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2078 "./IW5/compiler_parser.cpp"
     break;
 
   case 102: // expr_ternary: expr_cmp QMARK expr COLON expr
 #line 390 "IW5.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_ternary>("", std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_ternary>(std::to_string(*location), std::move(yystack_[4].value.as < gsc::expr_ptr > ()), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2084 "./IW5/compiler_parser.cpp"
     break;
 
   case 103: // expr_binary: expr BITWISE_OR expr
 #line 394 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_or>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_or>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2090 "./IW5/compiler_parser.cpp"
     break;
 
   case 104: // expr_binary: expr BITWISE_AND expr
 #line 395 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_and>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_and>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2096 "./IW5/compiler_parser.cpp"
     break;
 
   case 105: // expr_binary: expr BITWISE_EXOR expr
 #line 396 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_exor>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_bitwise_exor>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2102 "./IW5/compiler_parser.cpp"
     break;
 
   case 106: // expr_binary: expr LSHIFT expr
 #line 397 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_shift_left>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_shift_left>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2108 "./IW5/compiler_parser.cpp"
     break;
 
   case 107: // expr_binary: expr RSHIFT expr
 #line 398 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_shift_right>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_shift_right>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2114 "./IW5/compiler_parser.cpp"
     break;
 
   case 108: // expr_binary: expr ADD expr
 #line 399 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_add>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_add>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2120 "./IW5/compiler_parser.cpp"
     break;
 
   case 109: // expr_binary: expr SUB expr
 #line 400 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_sub>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_sub>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2126 "./IW5/compiler_parser.cpp"
     break;
 
   case 110: // expr_binary: expr MULT expr
 #line 401 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_mult>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_mult>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2132 "./IW5/compiler_parser.cpp"
     break;
 
   case 111: // expr_binary: expr DIV expr
 #line 402 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_div>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_div>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2138 "./IW5/compiler_parser.cpp"
     break;
 
   case 112: // expr_binary: expr MOD expr
 #line 403 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_mod>("", std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_mod>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::expr_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2144 "./IW5/compiler_parser.cpp"
     break;
 
@@ -2151,13 +2151,13 @@ namespace IW5 {
 
   case 114: // expr_primitive: COMPLEMENT expr
 #line 408 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_complement>("", std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_complement>(std::to_string(*location), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2156 "./IW5/compiler_parser.cpp"
     break;
 
   case 115: // expr_primitive: NOT expr
 #line 409 "IW5.parser.ypp"
-                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_not>("", std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                                                                        { yylhs.value.as < gsc::expr_ptr > ().as_node = std::make_unique<gsc::node_expr_not>(std::to_string(*location), std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2162 "./IW5/compiler_parser.cpp"
     break;
 
@@ -2277,73 +2277,73 @@ namespace IW5 {
 
   case 135: // expr_call: expr_call_function
 #line 432 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), false, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
 #line 2282 "./IW5/compiler_parser.cpp"
     break;
 
   case 136: // expr_call: expr_call_pointer
 #line 433 "IW5.parser.ypp"
-                                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+                                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), false, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
 #line 2288 "./IW5/compiler_parser.cpp"
     break;
 
   case 137: // expr_call: object expr_call_function
 #line 434 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::move(yystack_[1].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), false, std::move(yystack_[1].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
 #line 2294 "./IW5/compiler_parser.cpp"
     break;
 
   case 138: // expr_call: object expr_call_pointer
 #line 435 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", false, std::move(yystack_[1].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), false, std::move(yystack_[1].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
 #line 2300 "./IW5/compiler_parser.cpp"
     break;
 
   case 139: // expr_call_thread: THREAD expr_call_function
 #line 439 "IW5.parser.ypp"
-                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+                                                        { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), true, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
 #line 2306 "./IW5/compiler_parser.cpp"
     break;
 
   case 140: // expr_call_thread: THREAD expr_call_pointer
 #line 440 "IW5.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), true, std::make_unique<gsc::node>(), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
 #line 2312 "./IW5/compiler_parser.cpp"
     break;
 
   case 141: // expr_call_thread: object THREAD expr_call_function
 #line 441 "IW5.parser.ypp"
-                                            { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+                                            { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), true, std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
 #line 2318 "./IW5/compiler_parser.cpp"
     break;
 
   case 142: // expr_call_thread: object THREAD expr_call_pointer
 #line 442 "IW5.parser.ypp"
-                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>("", true, std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
+                                                { yylhs.value.as < gsc::expr_call_ptr > () = std::make_unique<gsc::node_expr_call>(std::to_string(*location), true, std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::expr_call_type_ptr > ())); }
 #line 2324 "./IW5/compiler_parser.cpp"
     break;
 
   case 143: // expr_call_function: identifier LPAREN expr_arguments RPAREN
 #line 447 "IW5.parser.ypp"
-                {yylhs.value.as < gsc::expr_call_type_ptr > ().as_func = std::make_unique<gsc::node_expr_call_function>("", std::make_unique<gsc::node_filepath>("", ""), std::move(yystack_[3].value.as < gsc::identifier_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
+                {yylhs.value.as < gsc::expr_call_type_ptr > ().as_func = std::make_unique<gsc::node_expr_call_function>(std::to_string(*location), std::make_unique<gsc::node_filepath>(std::to_string(*location), ""), std::move(yystack_[3].value.as < gsc::identifier_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
 #line 2330 "./IW5/compiler_parser.cpp"
     break;
 
   case 144: // expr_call_function: filepath DOUBLECOLON identifier LPAREN expr_arguments RPAREN
 #line 449 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_func = std::make_unique<gsc::node_expr_call_function>("", std::move(yystack_[5].value.as < gsc::filepath_ptr > ()), std::move(yystack_[3].value.as < gsc::identifier_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
+                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_func = std::make_unique<gsc::node_expr_call_function>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::filepath_ptr > ()), std::move(yystack_[3].value.as < gsc::identifier_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
 #line 2336 "./IW5/compiler_parser.cpp"
     break;
 
   case 145: // expr_call_pointer: LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
 #line 454 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_pointer = std::make_unique<gsc::node_expr_call_pointer>("", false, std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
+                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_pointer = std::make_unique<gsc::node_expr_call_pointer>(std::to_string(*location), false, std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
 #line 2342 "./IW5/compiler_parser.cpp"
     break;
 
   case 146: // expr_call_pointer: CALL LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
 #line 456 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_pointer = std::make_unique<gsc::node_expr_call_pointer>("", true, std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
+                { yylhs.value.as < gsc::expr_call_type_ptr > ().as_pointer = std::make_unique<gsc::node_expr_call_pointer>(std::to_string(*location), true, std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
 #line 2348 "./IW5/compiler_parser.cpp"
     break;
 
@@ -2355,55 +2355,55 @@ namespace IW5 {
 
   case 148: // expr_arguments: expr
 #line 463 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::expr_arguments_ptr > () = std::make_unique<gsc::node_expr_arguments>(""); yylhs.value.as < gsc::expr_arguments_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
+                { yylhs.value.as < gsc::expr_arguments_ptr > () = std::make_unique<gsc::node_expr_arguments>(std::to_string(*location)); yylhs.value.as < gsc::expr_arguments_ptr > ()->list.push_back(std::move(yystack_[0].value.as < gsc::expr_ptr > ())); }
 #line 2360 "./IW5/compiler_parser.cpp"
     break;
 
   case 149: // expr_arguments: %empty
 #line 465 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::expr_arguments_ptr > () = std::make_unique<gsc::node_expr_arguments>(""); }
+                { yylhs.value.as < gsc::expr_arguments_ptr > () = std::make_unique<gsc::node_expr_arguments>(std::to_string(*location)); }
 #line 2366 "./IW5/compiler_parser.cpp"
     break;
 
   case 150: // expr_function_ref: DOUBLECOLON identifier
 #line 470 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_function_ref>("", std::make_unique<gsc::node_filepath>("", ""), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_function_ref>(std::to_string(*location), std::make_unique<gsc::node_filepath>(std::to_string(*location), ""), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
 #line 2372 "./IW5/compiler_parser.cpp"
     break;
 
   case 151: // expr_function_ref: filepath DOUBLECOLON identifier
 #line 472 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_function_ref>("", std::move(yystack_[2].value.as < gsc::filepath_ptr > ()), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_function_ref>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::filepath_ptr > ()), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
 #line 2378 "./IW5/compiler_parser.cpp"
     break;
 
   case 152: // expr_array: object LBRACKET expr RBRACKET
 #line 477 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_array>("", std::move(yystack_[3].value.as < gsc::node_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_array>(std::to_string(*location), std::move(yystack_[3].value.as < gsc::node_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
 #line 2384 "./IW5/compiler_parser.cpp"
     break;
 
   case 153: // expr_field: object DOT identifier
 #line 482 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_field>("", std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_field>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ()), std::move(yystack_[0].value.as < gsc::identifier_ptr > ())); }
 #line 2390 "./IW5/compiler_parser.cpp"
     break;
 
   case 154: // expr_size: object DOT size
 #line 487 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_size>("", std::move(yystack_[2].value.as < gsc::node_ptr > ())); }
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_size>(std::to_string(*location), std::move(yystack_[2].value.as < gsc::node_ptr > ())); }
 #line 2396 "./IW5/compiler_parser.cpp"
     break;
 
   case 155: // expr_vector: LPAREN expr COMMA expr COMMA expr RPAREN
 #line 492 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_vector>("", std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[3].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_vector>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::expr_ptr > ()), std::move(yystack_[3].value.as < gsc::expr_ptr > ()), std::move(yystack_[1].value.as < gsc::expr_ptr > ())); }
 #line 2402 "./IW5/compiler_parser.cpp"
     break;
 
   case 156: // expr_add_array: LBRACKET expr_arguments RBRACKET
 #line 497 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_add_array>("", std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_expr_add_array>(std::to_string(*location), std::move(yystack_[1].value.as < gsc::expr_arguments_ptr > ())); }
 #line 2408 "./IW5/compiler_parser.cpp"
     break;
 
@@ -2457,7 +2457,7 @@ namespace IW5 {
 
   case 165: // vector: LPAREN num COMMA num COMMA num RPAREN
 #line 513 "IW5.parser.ypp"
-                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_vector>("", std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[3].value.as < gsc::node_ptr > ()), std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
+                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_vector>(std::to_string(*location), std::move(yystack_[5].value.as < gsc::node_ptr > ()), std::move(yystack_[3].value.as < gsc::node_ptr > ()), std::move(yystack_[1].value.as < gsc::node_ptr > ())); }
 #line 2462 "./IW5/compiler_parser.cpp"
     break;
 
@@ -2487,91 +2487,91 @@ namespace IW5 {
 
   case 170: // false: FALSE
 #line 523 "IW5.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_integer>("", "0"); }
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_integer>(std::to_string(*location), "0"); }
 #line 2492 "./IW5/compiler_parser.cpp"
     break;
 
   case 171: // true: TRUE
 #line 524 "IW5.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_integer>("", "1"); }
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_integer>(std::to_string(*location), "1"); }
 #line 2498 "./IW5/compiler_parser.cpp"
     break;
 
   case 172: // data_float: FLOAT
 #line 525 "IW5.parser.ypp"
-                                        { yylhs.value.as < gsc::float_ptr > () = std::make_unique<gsc::node_float>("", yystack_[0].value.as < std::string > ()); }
+                                        { yylhs.value.as < gsc::float_ptr > () = std::make_unique<gsc::node_float>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
 #line 2504 "./IW5/compiler_parser.cpp"
     break;
 
   case 173: // data_integer: INTEGER
 #line 526 "IW5.parser.ypp"
-                                { yylhs.value.as < gsc::integer_ptr > () = std::make_unique<gsc::node_integer>("", yystack_[0].value.as < std::string > ()); }
+                                { yylhs.value.as < gsc::integer_ptr > () = std::make_unique<gsc::node_integer>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
 #line 2510 "./IW5/compiler_parser.cpp"
     break;
 
   case 174: // data_localized_string: STRING_LOC
 #line 527 "IW5.parser.ypp"
-                                   { yylhs.value.as < gsc::localized_string_ptr > () = std::make_unique<gsc::node_localized_string>("", yystack_[0].value.as < std::string > ()); }
+                                   { yylhs.value.as < gsc::localized_string_ptr > () = std::make_unique<gsc::node_localized_string>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
 #line 2516 "./IW5/compiler_parser.cpp"
     break;
 
   case 175: // data_string: STRING
 #line 528 "IW5.parser.ypp"
-                                { yylhs.value.as < gsc::string_ptr > () = std::make_unique<gsc::node_string>("", yystack_[0].value.as < std::string > ()); }
+                                { yylhs.value.as < gsc::string_ptr > () = std::make_unique<gsc::node_string>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
 #line 2522 "./IW5/compiler_parser.cpp"
     break;
 
   case 176: // identifier: IDENTIFIER
 #line 529 "IW5.parser.ypp"
-                                { yylhs.value.as < gsc::identifier_ptr > () = std::make_unique<gsc::node_identifier>("", yystack_[0].value.as < std::string > ()); }
+                                { yylhs.value.as < gsc::identifier_ptr > () = std::make_unique<gsc::node_identifier>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
 #line 2528 "./IW5/compiler_parser.cpp"
     break;
 
   case 177: // filepath: FILEPATH
 #line 530 "IW5.parser.ypp"
-                                        { yylhs.value.as < gsc::filepath_ptr > () = std::make_unique<gsc::node_filepath>("", yystack_[0].value.as < std::string > ()); }
+                                        { yylhs.value.as < gsc::filepath_ptr > () = std::make_unique<gsc::node_filepath>(std::to_string(*location), yystack_[0].value.as < std::string > ()); }
 #line 2534 "./IW5/compiler_parser.cpp"
     break;
 
   case 178: // empty_array: EMPTY_ARRAY
 #line 531 "IW5.parser.ypp"
-                                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_empty_array>(""); }
+                                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_empty_array>(std::to_string(*location)); }
 #line 2540 "./IW5/compiler_parser.cpp"
     break;
 
   case 179: // undefined: UNDEFINED
 #line 532 "IW5.parser.ypp"
-                                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_undefined>(""); }
+                                { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_undefined>(std::to_string(*location)); }
 #line 2546 "./IW5/compiler_parser.cpp"
     break;
 
   case 180: // size: SIZE
 #line 533 "IW5.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_size>(""); }
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_size>(std::to_string(*location)); }
 #line 2552 "./IW5/compiler_parser.cpp"
     break;
 
   case 181: // game: GAME
 #line 534 "IW5.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_game>(""); }
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_game>(std::to_string(*location)); }
 #line 2558 "./IW5/compiler_parser.cpp"
     break;
 
   case 182: // self: SELF
 #line 535 "IW5.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_self>(""); }
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_self>(std::to_string(*location)); }
 #line 2564 "./IW5/compiler_parser.cpp"
     break;
 
   case 183: // anim: ANIM
 #line 536 "IW5.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_anim>(""); }
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_anim>(std::to_string(*location)); }
 #line 2570 "./IW5/compiler_parser.cpp"
     break;
 
   case 184: // level: LEVEL
 #line 537 "IW5.parser.ypp"
-                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_level>(""); }
+                                        { yylhs.value.as < gsc::node_ptr > () = std::make_unique<gsc::node_level>(std::to_string(*location)); }
 #line 2576 "./IW5/compiler_parser.cpp"
     break;
 
