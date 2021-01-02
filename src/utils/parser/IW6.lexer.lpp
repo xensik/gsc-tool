@@ -13,10 +13,13 @@
 %option never-interactive
 %option nounistd
 
-%{
+%top{
 #include "IW6.hpp"
 #include "compiler_parser.hpp"
-%}
+#ifndef YY_NO_UNISTD_H
+#define YY_NO_UNISTD_H
+#endif
+}
 
 RGX_FILEPATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
 RGX_IDENTIFIER      [_A-Za-z][_A-Za-z0-9\-]*

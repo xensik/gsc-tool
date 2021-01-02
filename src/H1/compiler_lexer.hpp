@@ -3,8 +3,13 @@
 #define H1IN_HEADER 1
 
 #line 5 "./H1/compiler_lexer.hpp"
+#include "H1.hpp"
+#include "compiler_parser.hpp"
+#ifndef YY_NO_UNISTD_H
+#define YY_NO_UNISTD_H
+#endif
 
-#line 7 "./H1/compiler_lexer.hpp"
+#line 12 "./H1/compiler_lexer.hpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -696,9 +701,9 @@ extern int yylex (yyscan_t yyscanner);
 #undef yyTABLES_NAME
 #endif
 
-#line 139 "H1.lexer.lpp"
+#line 142 "H1.lexer.lpp"
 
 
-#line 702 "./H1/compiler_lexer.hpp"
+#line 707 "./H1/compiler_lexer.hpp"
 #undef H1IN_HEADER
 #endif /* H1HEADER_H */

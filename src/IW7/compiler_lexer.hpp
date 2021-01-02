@@ -3,8 +3,13 @@
 #define IW7IN_HEADER 1
 
 #line 5 "./IW7/compiler_lexer.hpp"
+#include "IW7.hpp"
+#include "compiler_parser.hpp"
+#ifndef YY_NO_UNISTD_H
+#define YY_NO_UNISTD_H
+#endif
 
-#line 7 "./IW7/compiler_lexer.hpp"
+#line 12 "./IW7/compiler_lexer.hpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -696,9 +701,9 @@ extern int yylex (yyscan_t yyscanner);
 #undef yyTABLES_NAME
 #endif
 
-#line 136 "IW7.lexer.lpp"
+#line 139 "IW7.lexer.lpp"
 
 
-#line 702 "./IW7/compiler_lexer.hpp"
+#line 707 "./IW7/compiler_lexer.hpp"
 #undef IW7IN_HEADER
 #endif /* IW7HEADER_H */
