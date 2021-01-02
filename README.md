@@ -1,3 +1,7 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/defmhg4753c1ap1o?svg=true)](https://ci.appveyor.com/project/xensik/gsc-tool)
+![license](https://img.shields.io/github/license/xensik/gsc-tool.svg)
+![GitHub issues](https://img.shields.io/github/issues/xensik/gsc-tool)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/xensik/gsc-tool)
 # GSC Tool
 A utility to compile & decompile IW engine game scripts.
 ## Supported Games 
