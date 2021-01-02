@@ -35,10 +35,8 @@ private:
     auto disassemble_offset() -> std::int32_t;
     void resolve_local_functions();
     auto resolve_function(const std::string& index) -> std::string;
-    void print_opcodes(std::uint32_t index, std::uint32_t size);
     void print_function(const gsc::function_ptr& func);
     void print_instruction(const gsc::instruction_ptr& inst);
-    void print_label(const std::string& label);
 };
 
 } // namespace IW5

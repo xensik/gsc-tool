@@ -23,18 +23,6 @@ auto disassembler::output_data() -> std::vector<std::uint8_t>
     for (auto& func : functions_)
     {
         this->print_function(func);
-
-        for (auto& inst : func->instructions)
-        {
-            const auto itr = func->labels.find(inst->index);
-
-            if (itr != func->labels.end())
-            {
-                this->print_label(itr->second);
-            }
-
-            this->print_instruction(inst);
-        }
     }
 
     std::vector<std::uint8_t> output;
@@ -534,15 +522,24 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
     }
 }
 
-void disassembler::print_opcodes(std::uint32_t index, std::uint32_t size)
-{
-    output_->write_string("\t\t");
-}
-
 void disassembler::print_function(const gsc::function_ptr& func)
 {
     output_->write_string("\n");
     output_->write_string(utils::string::va("%s\n", func->name.data()));
+
+    for (auto& inst : func->instructions)
+    {
+        const auto itr = func->labels.find(inst->index);
+
+        if (itr != func->labels.end())
+        {
+            output_->write_string(utils::string::va("\t%s\n", itr->second.data()));
+        }
+
+        this->print_instruction(inst);
+    }
+
+    output_->write_string(utils::string::va("end_%s\n", func->name.substr(4).data()));
 }
 
 void disassembler::print_instruction(const gsc::instruction_ptr& inst)
@@ -550,48 +547,39 @@ void disassembler::print_instruction(const gsc::instruction_ptr& inst)
     switch (opcode(inst->opcode))
     {
     case opcode::OP_endswitch:
-        this->print_opcodes(inst->index, 3);
-        output_->write_string(utils::string::va("%s", resolver::opcode_name(opcode(inst->opcode)).data()));
+        output_->write_string(utils::string::va("\t\t%s", resolver::opcode_name(opcode(inst->opcode)).data()));
         output_->write_string(utils::string::va(" %s\n", inst->data[0].data()));
         {
             std::uint32_t totalcase = std::stoul(inst->data[0]);
             auto index = 0;
             for (auto casenum = 0u; casenum < totalcase; casenum++)
             {
-                this->print_opcodes(inst->index, 7);
                 if (inst->data[1 + index] == "case")
                 {
-                    output_->write_string(utils::string::va("%s %s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
+                    output_->write_string(utils::string::va("\t\t\t%s %s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
                     index += 3;
                 }
                 else if (inst->data[1 + index] == "default")
                 {
-                    output_->write_string(utils::string::va("%s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data()));
+                    output_->write_string(utils::string::va("\t\t\t%s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data()));
                     index += 2;
                 }
-                if (casenum != totalcase - 1)
-                {
-                    output_->write_string("\n");
-                }
+
+                output_->write_string("\n");
             }
         }
         break;
     default:
-        this->print_opcodes(inst->index, inst->size);
-        output_->write_string(utils::string::va("%s", resolver::opcode_name(opcode(inst->opcode)).data()));
+        output_->write_string(utils::string::va("\t\t%s", resolver::opcode_name(opcode(inst->opcode)).data()));
+
         for (auto& d : inst->data)
         {
             output_->write_string(utils::string::va(" %s", d.data()));
         }
+
+        output_->write_string("\n");
         break;
     }
-
-    output_->write_string("\n");
-}
-
-void disassembler::print_label(const std::string& label)
-{
-    output_->write_string(utils::string::va("\t%s\n", label.data()));
 }
 
 } // namespace IW5
