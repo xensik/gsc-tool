@@ -14,6 +14,9 @@ function S2:project()
     kind "StaticLib"
     language "C++"
 
+    pchheader "S2.hpp"
+    pchsource(path.join(tool.base, "S2.cpp"))
+
     self:include()
     utils:include()
 

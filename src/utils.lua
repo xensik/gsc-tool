@@ -14,6 +14,9 @@ function utils:project()
     kind "StaticLib"
     language "C++"
 
+    pchheader "utils.hpp"
+    pchsource(path.join(tool.base, "utils.cpp"))
+
     self:include()
     zlib:include()
 

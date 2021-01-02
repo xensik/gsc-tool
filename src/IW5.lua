@@ -14,6 +14,9 @@ function IW5:project()
     kind "StaticLib"
     language "C++"
 
+    pchheader "IW5.hpp"
+    pchsource(path.join(tool.base, "IW5.cpp"))
+
     self:include()
     utils:include()
 
