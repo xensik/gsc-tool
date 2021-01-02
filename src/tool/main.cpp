@@ -151,7 +151,109 @@ void decompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler
     utils::file::save(file + ".gsc", decompiler.output());
 }
 
-int parse_flags(int argc, char** argv, game& game, mode& mode)
+void zassemble_file(gsc::assembler& assembler, std::string file)
+{
+    const auto ext = std::string(".gscasm");
+    const auto extpos = file.find(ext);
+
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
+
+    auto data = utils::file::read(file + ".gscasm");
+
+    assembler.assemble(data);
+
+    if (overwrite_prompt(file + ".cgsc"))
+    {
+        utils::file::save(file + ".cgsc", assembler.output_script());
+        utils::file::save(file + ".cgsc.stack", assembler.output_stack());
+    }
+}
+
+void zdisassemble_file(gsc::disassembler& disassembler, std::string file)
+{
+    if (file.find(".stack") != std::string::npos)
+    {
+        printf("Cannot disassemble stack files\n");
+        return;
+    }
+
+    const auto ext = std::string(".cgsc");
+    const auto extpos = file.find(ext);
+
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
+
+    auto script = utils::file::read(file + ".cgsc");
+    auto stack = utils::file::read(file + ".cgsc.stack");
+
+    disassembler.disassemble(script, stack);
+
+    utils::file::save(file + ".gscasm", disassembler.output_data());
+}
+
+void zcompile_file(gsc::assembler& assembler, gsc::compiler& compiler, std::string file)
+{
+    const auto ext = std::string(".gsc");
+    const auto extpos = file.find(ext);
+
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
+
+    auto source = utils::file::read(file + ".gsc");
+
+    compiler.compile(source);
+
+    auto output = compiler.output();
+
+    assembler.assemble(output);
+
+    if (overwrite_prompt(file + ".cgsc"))
+    {
+        utils::file::save(file + ".cgsc", assembler.output_script());
+        utils::file::save(file + ".cgsc.stack", assembler.output_stack());
+    }
+}
+
+void zdecompile_file(gsc::disassembler& disassembler, gsc::decompiler& decompiler, std::string file)
+{
+    if (file.find(".stack") != std::string::npos)
+    {
+        printf("Cannot decompile stack files\n");
+        return;
+    }
+
+    const auto ext = std::string(".cgsc");
+    const auto extpos = file.find(ext);
+
+    if (extpos != std::string::npos)
+    {
+        file.replace(extpos, ext.length(), "");
+    }
+
+    auto script = utils::file::read(file + ".cgsc");
+    auto stack = utils::file::read(file + ".cgsc.stack");
+
+    disassembler.disassemble(script, stack);
+
+    auto output = disassembler.output();
+
+    decompiler.decompile(output);
+
+    if (overwrite_prompt(file + ".gsc"))
+    {
+        utils::file::save(file + ".gsc", decompiler.output());
+    }
+}
+
+
+int parse_flags(int argc, char** argv, game& game, mode& mode, bool& zonetool)
 {
     if (argc != 4) return 1;
 
@@ -193,6 +295,12 @@ int parse_flags(int argc, char** argv, game& game, mode& mode)
 
     arg = utils::string::to_lower(argv[2]);
 
+    if(arg.at(1) == 'z')
+    {
+        arg.erase(arg.begin() + 1);
+        zonetool = true;
+    }
+
     if (arg == "-asm")
     {
         mode = mode::ASM;
@@ -223,8 +331,9 @@ int main(int argc, char** argv)
     std::string file = argv[argc - 1];
     mode mode = mode::__;
     game game = game::__;
+    bool zonetool = false;
 
-    if (parse_flags(argc, argv, game, mode))
+    if (parse_flags(argc, argv, game, mode, zonetool))
     {
         printf("usage: gsc-tool.exe <game> <mode> <file>\n");
         printf("	* games: -iw5, -iw6, -iw7, -s1, -s2, -h1, -h2\n");
@@ -237,37 +346,37 @@ int main(int argc, char** argv)
         if( game == game::IW5)
         {
             IW5::assembler assembler;
-            assemble_file(assembler, file);
+            zonetool ? zassemble_file(assembler, file) : assemble_file(assembler, file);
         }
         else if (game == game::IW6)
         {
             IW6::assembler assembler;
-            assemble_file(assembler, file);
+            zonetool ? zassemble_file(assembler, file) : assemble_file(assembler, file);
         }
         else if (game == game::IW7)
         {
             IW7::assembler assembler;
-            assemble_file(assembler, file);
+            zonetool ? zassemble_file(assembler, file) : assemble_file(assembler, file);
         }
         else if (game == game::S1)
         {
             S1::assembler assembler;
-            assemble_file(assembler, file);
+            zonetool ? zassemble_file(assembler, file) : assemble_file(assembler, file);
         }
         else if (game == game::S2)
         {
             S2::assembler assembler;
-            assemble_file(assembler, file);
+            zonetool ? zassemble_file(assembler, file) : assemble_file(assembler, file);
         }
         else if (game == game::H1)
         {
             H1::assembler assembler;
-            assemble_file(assembler, file);
+            zonetool ? zassemble_file(assembler, file) : assemble_file(assembler, file);
         }
         else if (game == game::H2)
         {
             H2::assembler assembler;
-            assemble_file(assembler, file);
+            zonetool ? zassemble_file(assembler, file) : assemble_file(assembler, file);
         }
     }
     else if (mode == mode::DISASM)
@@ -275,37 +384,37 @@ int main(int argc, char** argv)
         if (game == game::IW5)
         {
             IW5::disassembler disassembler;
-            disassemble_file(disassembler, file);
+            zonetool ? zdisassemble_file(disassembler, file) : disassemble_file(disassembler, file);
         }
         else if (game == game::IW6)
         {
             IW6::disassembler disassembler;
-            disassemble_file(disassembler, file);
+            zonetool ? zdisassemble_file(disassembler, file) : disassemble_file(disassembler, file);
         }
         else if (game == game::IW7)
         {
             IW7::disassembler disassembler;
-            disassemble_file(disassembler, file);
+            zonetool ? zdisassemble_file(disassembler, file) : disassemble_file(disassembler, file);
         }
         else if (game == game::S1)
         {
             S1::disassembler disassembler;
-            disassemble_file(disassembler, file);
+            zonetool ? zdisassemble_file(disassembler, file) : disassemble_file(disassembler, file);
         }
         else if (game == game::S2)
         {
             S2::disassembler disassembler;
-            disassemble_file(disassembler, file);
+            zonetool ? zdisassemble_file(disassembler, file) : disassemble_file(disassembler, file);
         }
         else if (game == game::H1)
         {
             H1::disassembler disassembler;
-            disassemble_file(disassembler, file);
+            zonetool ? zdisassemble_file(disassembler, file) : disassemble_file(disassembler, file);
         }
         else if (game == game::H2)
         {
             H2::disassembler disassembler;
-            disassemble_file(disassembler, file);
+            zonetool ? zdisassemble_file(disassembler, file) : disassemble_file(disassembler, file);
         }
     }
     else if (mode == mode::COMP)
@@ -314,43 +423,43 @@ int main(int argc, char** argv)
         {
             IW5::assembler assembler;
             IW5::compiler compiler;
-            compile_file(assembler,compiler, file);
+            zonetool ? zcompile_file(assembler, compiler, file) : compile_file(assembler, compiler, file);
         }
         else if (game == game::IW6)
         {
             IW6::assembler assembler;
             IW6::compiler compiler;
-            compile_file(assembler, compiler, file);
+            zonetool ? zcompile_file(assembler, compiler, file) : compile_file(assembler, compiler, file);
         }
         else if (game == game::IW7)
         {
             IW7::assembler assembler;
             IW7::compiler compiler;
-            compile_file(assembler, compiler, file);
+            zonetool ? zcompile_file(assembler, compiler, file) : compile_file(assembler, compiler, file);
         }
         else if (game == game::S1)
         {
             S1::assembler assembler;
             S1::compiler compiler;
-            compile_file(assembler, compiler, file);
+            zonetool ? zcompile_file(assembler, compiler, file) : compile_file(assembler, compiler, file);
         }
         else if (game == game::S2)
         {
             S2::assembler assembler;
             S2::compiler compiler;
-            compile_file(assembler, compiler, file);
+            zonetool ? zcompile_file(assembler, compiler, file) : compile_file(assembler, compiler, file);
         }
         else if (game == game::H1)
         {
             H1::assembler assembler;
             H1::compiler compiler;
-            compile_file(assembler, compiler, file);
+            zonetool ? zcompile_file(assembler, compiler, file) : compile_file(assembler, compiler, file);
         }
         else if (game == game::H2)
         {
             H2::assembler assembler;
             H2::compiler compiler;
-            compile_file(assembler, compiler, file);
+            zonetool ? zcompile_file(assembler, compiler, file) : compile_file(assembler, compiler, file);
         }
     }
     else if (mode == mode::DECOMP)
@@ -359,43 +468,43 @@ int main(int argc, char** argv)
         {
             IW5::disassembler disassembler;
             IW5::decompiler decompiler;
-            decompile_file(disassembler, decompiler, file);
+            zonetool ? zdecompile_file(disassembler, decompiler, file) : decompile_file(disassembler, decompiler, file);
         }
         else if (game == game::IW6)
         {
             IW6::disassembler disassembler;
             IW6::decompiler decompiler;
-            decompile_file(disassembler, decompiler, file);
+            zonetool ? zdecompile_file(disassembler, decompiler, file) : decompile_file(disassembler, decompiler, file);
         }
         else if (game == game::IW7)
         {
             IW7::disassembler disassembler;
             IW7::decompiler decompiler;
-            decompile_file(disassembler, decompiler, file);
+            zonetool ? zdecompile_file(disassembler, decompiler, file) : decompile_file(disassembler, decompiler, file);
         }
         else if (game == game::S1)
         {
             S1::disassembler disassembler;
             S1::decompiler decompiler;
-            decompile_file(disassembler, decompiler, file);
+            zonetool ? zdecompile_file(disassembler, decompiler, file) : decompile_file(disassembler, decompiler, file);
         }
         else if (game == game::S2)
         {
             S2::disassembler disassembler;
             S2::decompiler decompiler;
-            decompile_file(disassembler, decompiler, file);
+            zonetool ? zdecompile_file(disassembler, decompiler, file) : decompile_file(disassembler, decompiler, file);
         }
         else if (game == game::H1)
         {
             H1::disassembler disassembler;
             H1::decompiler decompiler;
-            decompile_file(disassembler, decompiler, file);
+            zonetool ? zdecompile_file(disassembler, decompiler, file) : decompile_file(disassembler, decompiler, file);
         }
         else if (game == game::H2)
         {
             H2::disassembler disassembler;
             H2::decompiler decompiler;
-            decompile_file(disassembler, decompiler, file);
+            zonetool ? zdecompile_file(disassembler, decompiler, file) : decompile_file(disassembler, decompiler, file);
         }
     }
 
