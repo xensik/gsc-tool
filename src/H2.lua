@@ -14,8 +14,8 @@ function H2:project()
     kind "StaticLib"
     language "C++"
 
-    -- pchheader "H2.hpp"
-    -- pchsource(path.join(H2.base, "H2.cpp"))
+    pchheader "H2.hpp"
+    pchsource(path.join(H2.base, "H2.cpp"))
 
     self:include()
     utils:include()
