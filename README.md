@@ -23,5 +23,7 @@ A utility to compile & decompile IW engine game scripts.
 |`-disasm` |dissasemble a `file.gscbin`|`file.gscasm`|
 |`-comp`   |compile a `file.gsc`       |`file.gscbin`|
 |`-decomp` |decompile a `file.gscbin`  |`file.gsc`   |
+
+for zonetool files (*.cgsc*, *.cgsc.stack*) use: `-zasm`, `-zdisasm`, `-zcomp`, `-zdecomp`
 ## Credits
 This project is based on  [*RektInator's* gsc-asm](https://github.com/ZoneTool/gsc-asm). Special thanks to **RektInator** & **JTAG**.
