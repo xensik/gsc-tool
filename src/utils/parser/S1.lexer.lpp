@@ -20,6 +20,7 @@
 
 RGX_FILEPATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
 RGX_IDENTIFIER      [_A-Za-z][_A-Za-z0-9\-]*
+RGX_ANIMREF         \%[_A-Za-z][_A-Za-z0-9\-]*
 RGX_STRING          \"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\'
 RGX_FLOAT           -?[0-9]+\.(?:[0-9]*)?f?|\.[0-9]+f?
 RGX_INTEGER         -?[0-9]+
@@ -125,6 +126,7 @@ RGX_DEFAULT         (.|\n)
 
 {RGX_FILEPATH}      { return S1::parser::make_FILEPATH(std::string(yytext)); }
 {RGX_IDENTIFIER}    { return S1::parser::make_IDENTIFIER(utils::string::to_lower(yytext)); }
+{RGX_ANIMREF}       { return S1::parser::make_ANIMREF(utils::string::to_lower(yytext)); }
 \&{RGX_STRING}      { return S1::parser::make_STRING_LOC(std::string(yytext)); }
 {RGX_STRING}        { return S1::parser::make_STRING(std::string(yytext)); }
 {RGX_FLOAT}         { return S1::parser::make_FLOAT(std::string(yytext)); }

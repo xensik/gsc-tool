@@ -53,7 +53,7 @@
 %token ASSIGN_BITWISE_OR ASSIGN_BITWISE_AND ASSIGN_BITWISE_EXOR ASSIGN_LSHIFT ASSIGN_RSHIFT
 %token BITWISE_OR BITWISE_AND BITWISE_EXOR ADD SUB MULT DIV NOT COMPLEMENT
 
-%token <std::string> FILEPATH IDENTIFIER STRING STRING_LOC FLOAT INTEGER
+%token <std::string> FILEPATH IDENTIFIER ANIMREF STRING STRING_LOC FLOAT INTEGER
 
 %type <gsc::script_ptr> 				script
 %type <gsc::include_ptr> 				include
@@ -102,6 +102,7 @@
 %type <gsc::integer_ptr> 				data_integer
 %type <gsc::localized_string_ptr> 		data_localized_string
 %type <gsc::string_ptr> 				data_string
+%type <gsc::animref_ptr> 			    animref
 %type <gsc::identifier_ptr> 			identifier
 %type <gsc::filepath_ptr> 				filepath
 %type <gsc::node_ptr> 					level anim self game size undefined empty_array
@@ -419,6 +420,7 @@ expr_primitive
 	| num 								{ $$.as_node = std::move($1); }
 	| data_localized_string				{ $$.as_node = std::move($1); }
 	| data_string						{ $$.as_node = std::move($1); }
+	| animref 			     			{ $$.as_node = std::move($1); }
 	| identifier 						{ $$.as_node = std::move($1); }
 	| empty_array						{ $$.as_node = std::move($1); }
 	| undefined							{ $$.as_node = std::move($1); }
@@ -526,6 +528,7 @@ data_float 	: FLOAT 		{ $$ = std::make_unique<gsc::node_float>(std::to_string(*l
 data_integer : INTEGER 		{ $$ = std::make_unique<gsc::node_integer>(std::to_string(*location), $1); };
 data_localized_string : STRING_LOC { $$ = std::make_unique<gsc::node_localized_string>(std::to_string(*location), $1); };
 data_string : STRING 		{ $$ = std::make_unique<gsc::node_string>(std::to_string(*location), $1); };
+animref 	: ANIMREF    	{ $$ = std::make_unique<gsc::node_animref>(std::to_string(*location), $1); };
 identifier 	: IDENTIFIER 	{ $$ = std::make_unique<gsc::node_identifier>(std::to_string(*location), $1); };
 filepath 	: FILEPATH 		{ $$ = std::make_unique<gsc::node_filepath>(std::to_string(*location), $1); };
 empty_array : EMPTY_ARRAY 	{ $$ = std::make_unique<gsc::node_empty_array>(std::to_string(*location)); };
