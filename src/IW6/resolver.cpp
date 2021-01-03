@@ -932,7 +932,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::builtin_function_map
     { 0x25B, "GScr_StopCinematicForAll" },
     { 0x25C, "GScr_GetEnemySquadDogType" },
     { 0x25D, "GScr_CapsuleTracePassed" },
-}
+};
 
 std::unordered_map<std::uint16_t, std::string> resolver::builtin_method_map
 {
@@ -2148,9 +2148,11 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 0x38C, "character\\character_venezuela_army_assault_a" },
     { 0x38D, "character\\character_venezuela_army_smg_a" },
     { 0x38E, "character\\character_venezuela_army_smg_a_head_d" },
+// codescripts
     { 0x38F, "codescripts\\character" },
     { 0x390, "codescripts\\delete" },
     { 0x391, "codescripts\\struct" },
+// common_scripts
     { 0x392, "common_scripts\\_artcommon" },
     { 0x393, "common_scripts\\_bcs_location_trigs" },
     { 0x394, "common_scripts\\_createfx" },
@@ -2659,6 +2661,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 0x582, "maps\\mp\\mp_sovereign_fx" },
     { 0x583, "maps\\mp\\mp_sovereign_precache" },
     { 0x584, "maps\\mp\\mp_strikezone_fx" },
+    { 0x585, "maps\\mp\\mp_strikezone_precache" },
     { 0x586, "maps\\mp\\mp_warhawk_fx" },
     { 0x587, "maps\\mp\\mp_warhawk_precache" },
     { 0x588, "maps\\mp\\mp_zebra_fx" },
@@ -2668,6 +2671,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 0x58B, "maps\\mp\\alien\\_airdrop" },
     { 0x58C, "maps\\mp\\alien\\_alien_fx" },
     { 0x58D, "maps\\mp\\alien\\_autosentry_alien" },
+    { 0x58E, "maps\\mp\\alien\\_unk1422" },
     { 0x58F, "maps\\mp\\alien\\_challenge_function" },
     { 0x590, "maps\\mp\\alien\\_collectibles" },
     { 0x591, "maps\\mp\\alien\\_combat_resources" },
@@ -2684,9 +2688,11 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 0x59C, "maps\\mp\\alien\\_deployablebox_specialammo" },
     { 0x59D, "maps\\mp\\alien\\_deployablebox_specialammo_ap" },
     { 0x59E, "maps\\mp\\alien\\_deployablebox_specialammo_explo" },
+    { 0x59F, "maps\\mp\\alien\\_unk1439" },
     { 0x5A0, "maps\\mp\\alien\\_deployablebox_vest" },
     { 0x5A1, "maps\\mp\\alien\\_director" },
     { 0x5A2, "maps\\mp\\alien\\_drill" },
+    { 0x5A3, "maps\\mp\\alien\\_unk1443" },
     { 0x5A4, "maps\\mp\\alien\\_globallogic" },
     { 0x5A5, "maps\\mp\\alien\\_hud" },
     { 0x5A6, "maps\\mp\\alien\\_intro_sequence" },
@@ -2707,6 +2713,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 0x5B5, "maps\\mp\\alien\\_switchblade_alien" },
     { 0x5B6, "maps\\mp\\alien\\_trap" },
     { 0x5B7, "maps\\mp\\alien\\_unlock" },
+    { 0x5B8, "maps\\mp\\alien\\_unk1464" },
 // maps/mp/gametypes
     { 0x5B9, "maps\\mp\\gametypes\\_battlebuddy" },
     { 0x5BA, "maps\\mp\\gametypes\\_battlechatter_mp" },
@@ -2757,7 +2764,9 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 0x5E7, "maps\\mp\\gametypes\\_weapons" },
 // maps/mp/killstreaks
     { 0x5E8, "maps\\mp\\killstreaks\\_a10" },
+    { 0x5E9, "maps\\mp\\killstreaks\\_unk1513" },
     { 0x5EA, "maps\\mp\\killstreaks\\_aamissile" },
+    { 0x5EB, "maps\\mp\\killstreaks\\_unk1515" },
     { 0x5EC, "maps\\mp\\killstreaks\\_ac130" },
     { 0x5ED, "maps\\mp\\killstreaks\\_agent_killstreak" },
     { 0x5EE, "maps\\mp\\killstreaks\\_air_superiority" },
@@ -2765,6 +2774,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 0x5F0, "maps\\mp\\killstreaks\\_airstrike" },
     { 0x5F1, "maps\\mp\\killstreaks\\_autosentry" },
     { 0x5F2, "maps\\mp\\killstreaks\\_autoshotgun" },
+    { 0x5F3, "maps\\mp\\killstreaks\\_unk1523" },
     { 0x5F4, "maps\\mp\\killstreaks\\_deployablebox" },
     { 0x5F5, "maps\\mp\\killstreaks\\_deployablebox_ammo" },
     { 0x5F6, "maps\\mp\\killstreaks\\_deployablebox_grenades" },
@@ -2775,6 +2785,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 0x5FB, "maps\\mp\\killstreaks\\_dog_killstreak" },
     { 0x5FC, "maps\\mp\\killstreaks\\_dronehive" },
     { 0x5FD, "maps\\mp\\killstreaks\\_emp" },
+    { 0x5FE, "maps\\mp\\killstreaks\\_unk1534" },
     { 0x5FF, "maps\\mp\\killstreaks\\_escortairdrop" },
     { 0x600, "maps\\mp\\killstreaks\\_flares" },
     { 0x601, "maps\\mp\\killstreaks\\_gas_airstrike" },
@@ -2784,6 +2795,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 0x605, "maps\\mp\\killstreaks\\_helicopter_guard" },
     { 0x606, "maps\\mp\\killstreaks\\_helicopter_pilot" },
     { 0x607, "maps\\mp\\killstreaks\\_helisniper" },
+    { 0x608, "maps\\mp\\killstreaks\\_unk1544" },
     { 0x609, "maps\\mp\\killstreaks\\_ims" },
     { 0x60A, "maps\\mp\\killstreaks\\_jammer" },
     { 0x60B, "maps\\mp\\killstreaks\\_juggernaut" },
@@ -2795,10 +2807,12 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 0x611, "maps\\mp\\killstreaks\\_nuke" },
     { 0x612, "maps\\mp\\killstreaks\\_odin" },
     { 0x613, "maps\\mp\\killstreaks\\_perkstreaks" },
+    { 0x614, "maps\\mp\\killstreaks\\_unk1556" },
     { 0x615, "maps\\mp\\killstreaks\\_placeable_barrier" },
     { 0x616, "maps\\mp\\killstreaks\\_plane" },
     { 0x617, "maps\\mp\\killstreaks\\_portableaoegenerator" },
     { 0x618, "maps\\mp\\killstreaks\\_remotemissile" },
+    { 0x619, "maps\\mp\\killstreaks\\_unk1561" },
     { 0x61A, "maps\\mp\\killstreaks\\_remotetank" },
     { 0x61B, "maps\\mp\\killstreaks\\_remoteturret" },
     { 0x61C, "maps\\mp\\killstreaks\\_remoteuav" },
@@ -2812,7 +2826,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 0x623, "maps\\mp\\perks\\_perkfunctions" },
     { 0x624, "maps\\mp\\perks\\_perks" },
 // onslaugh dlc
-    { 36603, "destructible_scripts\\toy_wall_fan" },
+    { 0x8EFB, "destructible_scripts\\toy_wall_fan" },
     { 36604, "destructible_scripts\\vehicle_pickup" },
     { 36605, "maps\\createart\\mp_alien_armory_art" },
     { 36606, "maps\\createart\\mp_alien_armory_fog" },
