@@ -130,8 +130,8 @@ RGX_DEFAULT		    (.|\n)
 
 {RGX_FILEPATH}		{ return IW6::parser::make_FILEPATH(std::string(yytext)); }
 {RGX_IDENTIFIER}	{ return IW6::parser::make_IDENTIFIER(utils::string::to_lower(yytext)); }
-{RGX_ANIMREF}       { return IW6::parser::make_ANIMREF(utils::string::to_lower(yytext)); }
-\&{RGX_STRING}	    { return IW6::parser::make_STRING_LOC(std::string(yytext)); }
+{RGX_ANIMREF}       { return IW6::parser::make_ANIMREF(utils::string::to_lower(yytext).substr(1)); }
+\&{RGX_STRING}	    { return IW6::parser::make_STRING_LOC(std::string(yytext).substr(1)); }
 {RGX_STRING}	    { return IW6::parser::make_STRING(std::string(yytext)); }
 {RGX_FLOAT}		    { return IW6::parser::make_FLOAT(std::string(yytext)); }
 {RGX_INTEGER}	    { return IW6::parser::make_INTEGER(std::string(yytext)); }

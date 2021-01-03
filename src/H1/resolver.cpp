@@ -39,7 +39,7 @@ auto resolver::builtin_func_id(const std::string& name) -> std::uint16_t
 {
     for (auto& func : builtin_function_map)
     {
-        if (utils::string::to_lower(func.second) == utils::string::to_lower(name))
+        if (func.second == name)
         {
             return func.first;
         }
@@ -66,7 +66,7 @@ auto resolver::builtin_method_id(const std::string& name) -> std::uint16_t
 {
     for (auto& method : builtin_method_map)
     {
-        if (utils::string::to_lower(method.second) == utils::string::to_lower(name))
+        if (method.second == name)
         {
             return method.first;
         }
@@ -137,7 +137,6 @@ auto resolver::token_name(std::uint16_t id) -> std::string
         return itr->second;
     }
 
-//  GSC_LOG_DEBUG("missing token name for id '%i'!", id);
     return utils::string::va("_ID%i", id);
 }
 
@@ -145,7 +144,7 @@ auto resolver::find_builtin_func(const std::string& name) -> bool
 {
     for (auto& func : builtin_function_map)
     {
-        if (utils::string::to_lower(func.second) == utils::string::to_lower(name))
+        if (func.second == name)
         {
             return true;
         }
@@ -158,7 +157,7 @@ auto resolver::find_builtin_meth(const std::string& name) -> bool
 {
     for (auto& method : builtin_method_map)
     {
-        if (utils::string::to_lower(method.second) == utils::string::to_lower(name))
+        if (method.second == name)
         {
             return true;
         }

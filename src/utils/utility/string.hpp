@@ -25,10 +25,14 @@ public:
     static auto iequals(const std::string& a, const std::string& b) -> bool;
     static auto is_number(const std::string& s) -> bool;
     static auto is_hex_number(const std::string& s) -> bool;
-    static auto to_lower(std::string input) -> std::string;
+    static auto to_lower(const std::string& input) -> std::string;
+    static auto to_code(const std::string& input) -> std::string;
+    static auto to_literal(const std::string& input) -> std::string;
+    static auto quote(const std::string& s, bool single = true) -> std::string;
+    static auto unquote(const std::string& s) -> std::string;
     static auto split(std::string& str, char delimiter) -> std::vector<std::string>;
     static auto clean_buffer_lines(std::vector<std::uint8_t>& buffer) -> std::vector<std::string>;
-    static auto get_string_literal(std::string str) -> std::string;
+    static auto parse_code(std::string& line) -> std::vector<std::string>;
 };
 
 } // namespace utils

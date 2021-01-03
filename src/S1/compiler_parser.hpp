@@ -411,22 +411,31 @@ namespace S1 {
       // animref
       char dummy1[sizeof (gsc::animref_ptr)];
 
+      // animtree
+      char dummy2[sizeof (gsc::animtree_ptr)];
+
       // block
-      char dummy2[sizeof (gsc::block_ptr)];
+      char dummy3[sizeof (gsc::block_ptr)];
+
+      // constant
+      char dummy4[sizeof (gsc::constant_ptr)];
+
+      // definition
+      char dummy5[sizeof (gsc::definition_ptr)];
 
       // expr_arguments
-      char dummy3[sizeof (gsc::expr_arguments_ptr)];
+      char dummy6[sizeof (gsc::expr_arguments_ptr)];
 
       // expr_assign
-      char dummy4[sizeof (gsc::expr_assign_ptr)];
+      char dummy7[sizeof (gsc::expr_assign_ptr)];
 
       // expr_call
       // expr_call_thread
-      char dummy5[sizeof (gsc::expr_call_ptr)];
+      char dummy8[sizeof (gsc::expr_call_ptr)];
 
       // expr_call_function
       // expr_call_pointer
-      char dummy6[sizeof (gsc::expr_call_type_ptr)];
+      char dummy9[sizeof (gsc::expr_call_type_ptr)];
 
       // for_assign
       // for_cond
@@ -435,25 +444,28 @@ namespace S1 {
       // expr_ternary
       // expr_binary
       // expr_primitive
-      char dummy7[sizeof (gsc::expr_ptr)];
+      char dummy10[sizeof (gsc::expr_ptr)];
+
+      // data_false
+      char dummy11[sizeof (gsc::false_ptr)];
 
       // filepath
-      char dummy8[sizeof (gsc::filepath_ptr)];
+      char dummy12[sizeof (gsc::filepath_ptr)];
 
       // data_float
-      char dummy9[sizeof (gsc::float_ptr)];
+      char dummy13[sizeof (gsc::float_ptr)];
 
       // identifier
-      char dummy10[sizeof (gsc::identifier_ptr)];
+      char dummy14[sizeof (gsc::identifier_ptr)];
 
       // include
-      char dummy11[sizeof (gsc::include_ptr)];
+      char dummy15[sizeof (gsc::include_ptr)];
 
       // data_integer
-      char dummy12[sizeof (gsc::integer_ptr)];
+      char dummy16[sizeof (gsc::integer_ptr)];
 
       // data_localized_string
-      char dummy13[sizeof (gsc::localized_string_ptr)];
+      char dummy17[sizeof (gsc::localized_string_ptr)];
 
       // expr_function_ref
       // expr_array
@@ -463,9 +475,7 @@ namespace S1 {
       // expr_add_array
       // object
       // vector
-      // num
-      // false
-      // true
+      // number
       // empty_array
       // undefined
       // size
@@ -473,86 +483,88 @@ namespace S1 {
       // self
       // anim
       // level
-      char dummy14[sizeof (gsc::node_ptr)];
+      char dummy18[sizeof (gsc::node_ptr)];
 
       // parameters
-      char dummy15[sizeof (gsc::parameters_ptr)];
+      char dummy19[sizeof (gsc::parameters_ptr)];
 
       // script
-      char dummy16[sizeof (gsc::script_ptr)];
+      char dummy20[sizeof (gsc::script_ptr)];
 
       // stmt_assign
-      char dummy17[sizeof (gsc::stmt_assign_ptr)];
+      char dummy21[sizeof (gsc::stmt_assign_ptr)];
 
       // stmt_break
-      char dummy18[sizeof (gsc::stmt_break_ptr)];
+      char dummy22[sizeof (gsc::stmt_break_ptr)];
 
       // stmt_call
-      char dummy19[sizeof (gsc::stmt_call_ptr)];
+      char dummy23[sizeof (gsc::stmt_call_ptr)];
 
       // stmt_case
-      char dummy20[sizeof (gsc::stmt_case_ptr)];
+      char dummy24[sizeof (gsc::stmt_case_ptr)];
 
       // stmt_continue
-      char dummy21[sizeof (gsc::stmt_continue_ptr)];
+      char dummy25[sizeof (gsc::stmt_continue_ptr)];
 
       // stmt_default
-      char dummy22[sizeof (gsc::stmt_default_ptr)];
+      char dummy26[sizeof (gsc::stmt_default_ptr)];
 
       // stmt_endon
-      char dummy23[sizeof (gsc::stmt_endon_ptr)];
+      char dummy27[sizeof (gsc::stmt_endon_ptr)];
 
       // stmt_for
-      char dummy24[sizeof (gsc::stmt_for_ptr)];
+      char dummy28[sizeof (gsc::stmt_for_ptr)];
 
       // stmt_foreach
-      char dummy25[sizeof (gsc::stmt_foreach_ptr)];
+      char dummy29[sizeof (gsc::stmt_foreach_ptr)];
 
       // stmt_if
-      char dummy26[sizeof (gsc::stmt_if_ptr)];
+      char dummy30[sizeof (gsc::stmt_if_ptr)];
 
       // stmt_ifelse
-      char dummy27[sizeof (gsc::stmt_ifelse_ptr)];
+      char dummy31[sizeof (gsc::stmt_ifelse_ptr)];
 
       // stmt_notify
-      char dummy28[sizeof (gsc::stmt_notify_ptr)];
+      char dummy32[sizeof (gsc::stmt_notify_ptr)];
 
       // stmt
-      char dummy29[sizeof (gsc::stmt_ptr)];
+      char dummy33[sizeof (gsc::stmt_ptr)];
 
       // stmt_return
-      char dummy30[sizeof (gsc::stmt_return_ptr)];
+      char dummy34[sizeof (gsc::stmt_return_ptr)];
 
       // stmt_switch
-      char dummy31[sizeof (gsc::stmt_switch_ptr)];
+      char dummy35[sizeof (gsc::stmt_switch_ptr)];
 
       // stmt_wait
-      char dummy32[sizeof (gsc::stmt_wait_ptr)];
+      char dummy36[sizeof (gsc::stmt_wait_ptr)];
 
       // stmt_waitframe
-      char dummy33[sizeof (gsc::stmt_waitframe_ptr)];
+      char dummy37[sizeof (gsc::stmt_waitframe_ptr)];
 
       // stmt_waittill
-      char dummy34[sizeof (gsc::stmt_waittill_ptr)];
+      char dummy38[sizeof (gsc::stmt_waittill_ptr)];
 
       // stmt_waittillframeend
-      char dummy35[sizeof (gsc::stmt_waittillframeend_ptr)];
+      char dummy39[sizeof (gsc::stmt_waittillframeend_ptr)];
 
       // stmt_waittillmatch
-      char dummy36[sizeof (gsc::stmt_waittillmatch_ptr)];
+      char dummy40[sizeof (gsc::stmt_waittillmatch_ptr)];
 
       // stmt_while
-      char dummy37[sizeof (gsc::stmt_while_ptr)];
+      char dummy41[sizeof (gsc::stmt_while_ptr)];
 
       // data_string
-      char dummy38[sizeof (gsc::string_ptr)];
+      char dummy42[sizeof (gsc::string_ptr)];
 
       // thread
-      char dummy39[sizeof (gsc::thread_ptr)];
+      char dummy43[sizeof (gsc::thread_ptr)];
+
+      // data_true
+      char dummy44[sizeof (gsc::true_ptr)];
 
       // using_animtree
-      // animtree
-      char dummy40[sizeof (gsc::using_animtree_ptr)];
+      char dummy45[sizeof (gsc::using_animtree_ptr)];
 
       // FILEPATH
       // IDENTIFIER
@@ -561,7 +573,7 @@ namespace S1 {
       // STRING_LOC
       // FLOAT
       // INTEGER
-      char dummy41[sizeof (std::string)];
+      char dummy46[sizeof (std::string)];
     };
 
     /// The size of the largest semantic type.
@@ -804,70 +816,72 @@ namespace S1 {
         S_root = 90,                             // root
         S_script = 91,                           // script
         S_include = 92,                          // include
-        S_using_animtree = 93,                   // using_animtree
-        S_animtree = 94,                         // animtree
-        S_thread = 95,                           // thread
-        S_parameters = 96,                       // parameters
-        S_block = 97,                            // block
-        S_stmt = 98,                             // stmt
-        S_stmt_call = 99,                        // stmt_call
-        S_stmt_assign = 100,                     // stmt_assign
-        S_stmt_endon = 101,                      // stmt_endon
-        S_stmt_notify = 102,                     // stmt_notify
-        S_stmt_wait = 103,                       // stmt_wait
-        S_stmt_waittill = 104,                   // stmt_waittill
-        S_stmt_waittillmatch = 105,              // stmt_waittillmatch
-        S_stmt_waittillframeend = 106,           // stmt_waittillframeend
-        S_stmt_waitframe = 107,                  // stmt_waitframe
-        S_stmt_if = 108,                         // stmt_if
-        S_stmt_ifelse = 109,                     // stmt_ifelse
-        S_stmt_while = 110,                      // stmt_while
-        S_stmt_for = 111,                        // stmt_for
-        S_stmt_foreach = 112,                    // stmt_foreach
-        S_stmt_switch = 113,                     // stmt_switch
-        S_stmt_case = 114,                       // stmt_case
-        S_stmt_default = 115,                    // stmt_default
-        S_stmt_break = 116,                      // stmt_break
-        S_stmt_continue = 117,                   // stmt_continue
-        S_stmt_return = 118,                     // stmt_return
-        S_for_assign = 119,                      // for_assign
-        S_for_cond = 120,                        // for_cond
-        S_expr = 121,                            // expr
-        S_expr_assign = 122,                     // expr_assign
-        S_expr_cmp = 123,                        // expr_cmp
-        S_expr_ternary = 124,                    // expr_ternary
-        S_expr_binary = 125,                     // expr_binary
-        S_expr_primitive = 126,                  // expr_primitive
-        S_expr_call = 127,                       // expr_call
-        S_expr_call_thread = 128,                // expr_call_thread
-        S_expr_call_function = 129,              // expr_call_function
-        S_expr_call_pointer = 130,               // expr_call_pointer
-        S_expr_arguments = 131,                  // expr_arguments
-        S_expr_function_ref = 132,               // expr_function_ref
-        S_expr_array = 133,                      // expr_array
-        S_expr_field = 134,                      // expr_field
-        S_expr_size = 135,                       // expr_size
-        S_expr_vector = 136,                     // expr_vector
-        S_expr_add_array = 137,                  // expr_add_array
-        S_object = 138,                          // object
-        S_vector = 139,                          // vector
-        S_num = 140,                             // num
-        S_false = 141,                           // false
-        S_true = 142,                            // true
-        S_data_float = 143,                      // data_float
-        S_data_integer = 144,                    // data_integer
-        S_data_localized_string = 145,           // data_localized_string
-        S_data_string = 146,                     // data_string
-        S_animref = 147,                         // animref
-        S_identifier = 148,                      // identifier
-        S_filepath = 149,                        // filepath
-        S_empty_array = 150,                     // empty_array
-        S_undefined = 151,                       // undefined
-        S_size = 152,                            // size
-        S_game = 153,                            // game
-        S_self = 154,                            // self
-        S_anim = 155,                            // anim
-        S_level = 156                            // level
+        S_definition = 93,                       // definition
+        S_using_animtree = 94,                   // using_animtree
+        S_constant = 95,                         // constant
+        S_thread = 96,                           // thread
+        S_parameters = 97,                       // parameters
+        S_block = 98,                            // block
+        S_stmt = 99,                             // stmt
+        S_stmt_call = 100,                       // stmt_call
+        S_stmt_assign = 101,                     // stmt_assign
+        S_stmt_endon = 102,                      // stmt_endon
+        S_stmt_notify = 103,                     // stmt_notify
+        S_stmt_wait = 104,                       // stmt_wait
+        S_stmt_waittill = 105,                   // stmt_waittill
+        S_stmt_waittillmatch = 106,              // stmt_waittillmatch
+        S_stmt_waittillframeend = 107,           // stmt_waittillframeend
+        S_stmt_waitframe = 108,                  // stmt_waitframe
+        S_stmt_if = 109,                         // stmt_if
+        S_stmt_ifelse = 110,                     // stmt_ifelse
+        S_stmt_while = 111,                      // stmt_while
+        S_stmt_for = 112,                        // stmt_for
+        S_stmt_foreach = 113,                    // stmt_foreach
+        S_stmt_switch = 114,                     // stmt_switch
+        S_stmt_case = 115,                       // stmt_case
+        S_stmt_default = 116,                    // stmt_default
+        S_stmt_break = 117,                      // stmt_break
+        S_stmt_continue = 118,                   // stmt_continue
+        S_stmt_return = 119,                     // stmt_return
+        S_for_assign = 120,                      // for_assign
+        S_for_cond = 121,                        // for_cond
+        S_expr = 122,                            // expr
+        S_expr_assign = 123,                     // expr_assign
+        S_expr_cmp = 124,                        // expr_cmp
+        S_expr_ternary = 125,                    // expr_ternary
+        S_expr_binary = 126,                     // expr_binary
+        S_expr_primitive = 127,                  // expr_primitive
+        S_expr_call = 128,                       // expr_call
+        S_expr_call_thread = 129,                // expr_call_thread
+        S_expr_call_function = 130,              // expr_call_function
+        S_expr_call_pointer = 131,               // expr_call_pointer
+        S_expr_arguments = 132,                  // expr_arguments
+        S_expr_function_ref = 133,               // expr_function_ref
+        S_expr_array = 134,                      // expr_array
+        S_expr_field = 135,                      // expr_field
+        S_expr_size = 136,                       // expr_size
+        S_expr_vector = 137,                     // expr_vector
+        S_expr_add_array = 138,                  // expr_add_array
+        S_object = 139,                          // object
+        S_vector = 140,                          // vector
+        S_number = 141,                          // number
+        S_data_false = 142,                      // data_false
+        S_data_true = 143,                       // data_true
+        S_data_float = 144,                      // data_float
+        S_data_integer = 145,                    // data_integer
+        S_data_localized_string = 146,           // data_localized_string
+        S_data_string = 147,                     // data_string
+        S_animref = 148,                         // animref
+        S_animtree = 149,                        // animtree
+        S_identifier = 150,                      // identifier
+        S_filepath = 151,                        // filepath
+        S_empty_array = 152,                     // empty_array
+        S_undefined = 153,                       // undefined
+        S_size = 154,                            // size
+        S_game = 155,                            // game
+        S_self = 156,                            // self
+        S_anim = 157,                            // anim
+        S_level = 158                            // level
       };
     };
 
@@ -906,8 +920,20 @@ namespace S1 {
         value.move< gsc::animref_ptr > (std::move (that.value));
         break;
 
+      case symbol_kind::S_animtree: // animtree
+        value.move< gsc::animtree_ptr > (std::move (that.value));
+        break;
+
       case symbol_kind::S_block: // block
         value.move< gsc::block_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_constant: // constant
+        value.move< gsc::constant_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_definition: // definition
+        value.move< gsc::definition_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_expr_arguments: // expr_arguments
@@ -936,6 +962,10 @@ namespace S1 {
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
         value.move< gsc::expr_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_data_false: // data_false
+        value.move< gsc::false_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_filepath: // filepath
@@ -970,9 +1000,7 @@ namespace S1 {
       case symbol_kind::S_expr_add_array: // expr_add_array
       case symbol_kind::S_object: // object
       case symbol_kind::S_vector: // vector
-      case symbol_kind::S_num: // num
-      case symbol_kind::S_false: // false
-      case symbol_kind::S_true: // true
+      case symbol_kind::S_number: // number
       case symbol_kind::S_empty_array: // empty_array
       case symbol_kind::S_undefined: // undefined
       case symbol_kind::S_size: // size
@@ -1083,8 +1111,11 @@ namespace S1 {
         value.move< gsc::thread_ptr > (std::move (that.value));
         break;
 
+      case symbol_kind::S_data_true: // data_true
+        value.move< gsc::true_ptr > (std::move (that.value));
+        break;
+
       case symbol_kind::S_using_animtree: // using_animtree
-      case symbol_kind::S_animtree: // animtree
         value.move< gsc::using_animtree_ptr > (std::move (that.value));
         break;
 
@@ -1130,12 +1161,45 @@ namespace S1 {
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::animtree_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::animtree_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, gsc::block_ptr&& v)
         : Base (t)
         , value (std::move (v))
       {}
 #else
       basic_symbol (typename Base::kind_type t, const gsc::block_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::constant_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::constant_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::definition_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::definition_ptr& v)
         : Base (t)
         , value (v)
       {}
@@ -1191,6 +1255,17 @@ namespace S1 {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const gsc::expr_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::false_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::false_ptr& v)
         : Base (t)
         , value (v)
       {}
@@ -1548,6 +1623,17 @@ namespace S1 {
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, gsc::true_ptr&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const gsc::true_ptr& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, gsc::using_animtree_ptr&& v)
         : Base (t)
         , value (std::move (v))
@@ -1596,8 +1682,20 @@ switch (yykind)
         value.template destroy< gsc::animref_ptr > ();
         break;
 
+      case symbol_kind::S_animtree: // animtree
+        value.template destroy< gsc::animtree_ptr > ();
+        break;
+
       case symbol_kind::S_block: // block
         value.template destroy< gsc::block_ptr > ();
+        break;
+
+      case symbol_kind::S_constant: // constant
+        value.template destroy< gsc::constant_ptr > ();
+        break;
+
+      case symbol_kind::S_definition: // definition
+        value.template destroy< gsc::definition_ptr > ();
         break;
 
       case symbol_kind::S_expr_arguments: // expr_arguments
@@ -1626,6 +1724,10 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
         value.template destroy< gsc::expr_ptr > ();
+        break;
+
+      case symbol_kind::S_data_false: // data_false
+        value.template destroy< gsc::false_ptr > ();
         break;
 
       case symbol_kind::S_filepath: // filepath
@@ -1660,9 +1762,7 @@ switch (yykind)
       case symbol_kind::S_expr_add_array: // expr_add_array
       case symbol_kind::S_object: // object
       case symbol_kind::S_vector: // vector
-      case symbol_kind::S_num: // num
-      case symbol_kind::S_false: // false
-      case symbol_kind::S_true: // true
+      case symbol_kind::S_number: // number
       case symbol_kind::S_empty_array: // empty_array
       case symbol_kind::S_undefined: // undefined
       case symbol_kind::S_size: // size
@@ -1773,8 +1873,11 @@ switch (yykind)
         value.template destroy< gsc::thread_ptr > ();
         break;
 
+      case symbol_kind::S_data_true: // data_true
+        value.template destroy< gsc::true_ptr > ();
+        break;
+
       case symbol_kind::S_using_animtree: // using_animtree
-      case symbol_kind::S_animtree: // animtree
         value.template destroy< gsc::using_animtree_ptr > ();
         break;
 
@@ -3621,9 +3724,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2397,     ///< Last index in yytable_.
-      yynnts_ = 68,  ///< Number of nonterminal symbols.
-      yyfinal_ = 16 ///< Termination state number.
+      yylast_ = 2447,     ///< Last index in yytable_.
+      yynnts_ = 70,  ///< Number of nonterminal symbols.
+      yyfinal_ = 15 ///< Termination state number.
     };
 
 
@@ -3653,8 +3756,20 @@ switch (yykind)
         value.copy< gsc::animref_ptr > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_animtree: // animtree
+        value.copy< gsc::animtree_ptr > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_block: // block
         value.copy< gsc::block_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_constant: // constant
+        value.copy< gsc::constant_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_definition: // definition
+        value.copy< gsc::definition_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_expr_arguments: // expr_arguments
@@ -3683,6 +3798,10 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
         value.copy< gsc::expr_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_data_false: // data_false
+        value.copy< gsc::false_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_filepath: // filepath
@@ -3717,9 +3836,7 @@ switch (yykind)
       case symbol_kind::S_expr_add_array: // expr_add_array
       case symbol_kind::S_object: // object
       case symbol_kind::S_vector: // vector
-      case symbol_kind::S_num: // num
-      case symbol_kind::S_false: // false
-      case symbol_kind::S_true: // true
+      case symbol_kind::S_number: // number
       case symbol_kind::S_empty_array: // empty_array
       case symbol_kind::S_undefined: // undefined
       case symbol_kind::S_size: // size
@@ -3830,8 +3947,11 @@ switch (yykind)
         value.copy< gsc::thread_ptr > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_data_true: // data_true
+        value.copy< gsc::true_ptr > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_using_animtree: // using_animtree
-      case symbol_kind::S_animtree: // animtree
         value.copy< gsc::using_animtree_ptr > (YY_MOVE (that.value));
         break;
 
@@ -3878,8 +3998,20 @@ switch (yykind)
         value.move< gsc::animref_ptr > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_animtree: // animtree
+        value.move< gsc::animtree_ptr > (YY_MOVE (s.value));
+        break;
+
       case symbol_kind::S_block: // block
         value.move< gsc::block_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_constant: // constant
+        value.move< gsc::constant_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_definition: // definition
+        value.move< gsc::definition_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_expr_arguments: // expr_arguments
@@ -3908,6 +4040,10 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
         value.move< gsc::expr_ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_data_false: // data_false
+        value.move< gsc::false_ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_filepath: // filepath
@@ -3942,9 +4078,7 @@ switch (yykind)
       case symbol_kind::S_expr_add_array: // expr_add_array
       case symbol_kind::S_object: // object
       case symbol_kind::S_vector: // vector
-      case symbol_kind::S_num: // num
-      case symbol_kind::S_false: // false
-      case symbol_kind::S_true: // true
+      case symbol_kind::S_number: // number
       case symbol_kind::S_empty_array: // empty_array
       case symbol_kind::S_undefined: // undefined
       case symbol_kind::S_size: // size
@@ -4055,8 +4189,11 @@ switch (yykind)
         value.move< gsc::thread_ptr > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_data_true: // data_true
+        value.move< gsc::true_ptr > (YY_MOVE (s.value));
+        break;
+
       case symbol_kind::S_using_animtree: // using_animtree
-      case symbol_kind::S_animtree: // animtree
         value.move< gsc::using_animtree_ptr > (YY_MOVE (s.value));
         break;
 
@@ -4132,7 +4269,7 @@ switch (yykind)
 
 #line 14 "S1.parser.ypp"
 } // S1
-#line 4136 "./S1/compiler_parser.hpp"
+#line 4273 "./S1/compiler_parser.hpp"
 
 
 

@@ -1,7 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/defmhg4753c1ap1o?svg=true)](https://ci.appveyor.com/project/xensik/gsc-tool)
 ![license](https://img.shields.io/github/license/xensik/gsc-tool.svg)
-![GitHub issues](https://img.shields.io/github/issues/xensik/gsc-tool)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/xensik/gsc-tool)
+[![GitHub issues](https://img.shields.io/github/issues/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/issues)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/releases)
 # GSC Tool
 A utility to compile & decompile IW engine game scripts.
 ## Supported Games 
@@ -26,4 +26,4 @@ A utility to compile & decompile IW engine game scripts.
 
 for zonetool files (*.cgsc*, *.cgsc.stack*) use: `-zasm`, `-zdisasm`, `-zcomp`, `-zdecomp`
 ## Credits
-This project is based on  [*RektInator's* gsc-asm](https://github.com/ZoneTool/gsc-asm). Special thanks to **RektInator** & **JTAG**.
+This project is based on  [*RektInator's* gsc-asm](https://github.com/ZoneTool/gsc-asm). Special thanks to **RektInator**, **JTAG** & **Dasfonia**.

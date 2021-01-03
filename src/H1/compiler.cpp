@@ -61,11 +61,14 @@ auto compiler::parse_file(const std::string& file) -> gsc::script_ptr
 
 void compiler::compile_script(const gsc::script_ptr& script)
 {
-    index_ = 1; // skip magic
+    index_ = 1;
 
-    for(const auto& thread : script->threads)
+    for(const auto& def : script->definitions)
     {
-        local_functions_.push_back(thread->name->value);
+        if(def.as_node->type == gsc::node_type::thread)
+        {
+            local_functions_.push_back(def.as_thread->name->value);
+        }
     }
 
     for(const auto& include : script->includes)
@@ -73,14 +76,9 @@ void compiler::compile_script(const gsc::script_ptr& script)
         emit_include(include);
     }
 
-    for(const auto& animtree : script->animtrees)
+    for(const auto& def : script->definitions)
     {
-        emit_using_animtree(animtree);  
-    }
-
-    for(const auto& thread : script->threads)
-    {
-        emit_thread(thread);
+        emit_definition(def);  
     }
 
 #ifdef DEBUG
@@ -99,9 +97,25 @@ void compiler::emit_include(const gsc::include_ptr& include)
     // ...
 }
 
+void compiler::emit_definition(const gsc::definition_ptr& definition)
+{
+    switch(definition.as_node->type)
+    {
+        case gsc::node_type::using_animtree: emit_using_animtree(definition.as_using_animtree); break;
+        case gsc::node_type::constant:       emit_constant(definition.as_constant); break;
+        case gsc::node_type::thread:         emit_thread(definition.as_thread); break;
+        default: GSC_COMP_ERROR("line %s: unknown definition type", definition.as_node->location.data()); break;
+    }
+}
+
 void compiler::emit_using_animtree(const gsc::using_animtree_ptr& animtree)
 {
-    animtrees_.push_back(animtree->animtree->value);
+    animtrees_.push_back({ animtree->animtree->value, false });
+}
+
+void compiler::emit_constant(const gsc::constant_ptr& constant)
+{
+    constants_.insert({ constant->id->value, std::move(constant->value) });
 }
 
 void compiler::emit_thread(const gsc::thread_ptr& thread)
@@ -348,7 +362,7 @@ void compiler::emit_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_pt
     auto continue_loc = create_label();
 
     if(stmt->pre_expr.as_node->type != gsc::node_type::null)
-        emit_expr(ctx, stmt->pre_expr);
+        emit_expr_assign(ctx, stmt->pre_expr.as_assign);
 
     auto for_ctx = ctx->transfer();
 
@@ -363,14 +377,17 @@ void compiler::emit_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_pt
     insert_label(begin_loc);
 
     if(stmt->expr.as_node->type != gsc::node_type::null)
+    { 
         emit_expr(ctx, stmt->expr);
+        emit_opcode(ctx, opcode::OP_JumpOnFalse, break_loc);
+    }
 
     emit_block(for_ctx, stmt->block, false);
 
     insert_label(continue_loc);
 
     if(stmt->post_expr.as_node->type != gsc::node_type::null)
-        emit_expr(ctx, stmt->post_expr);
+        emit_expr_assign(ctx, stmt->post_expr.as_assign);
 
     emit_opcode(ctx, opcode::OP_jumpback, begin_loc);
     
@@ -562,6 +579,7 @@ void compiler::emit_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
         case gsc::node_type::expr_call:             emit_expr_call(ctx, expr.as_call); break;
         case gsc::node_type::expr_array:            emit_array_variable(ctx, expr.as_array); break;
         case gsc::node_type::expr_field:            emit_field_variable(ctx, expr.as_field); break;
+        case gsc::node_type::expr_vector:           emit_expr_vector(ctx, expr.as_vector_expr); break;
         case gsc::node_type::expr_size:             emit_expr_size(ctx, expr.as_size_expr); break;
         case gsc::node_type::expr_function_ref:     emit_expr_function_ref(ctx, expr.as_function_ref); break;
         case gsc::node_type::empty_array:           emit_opcode(ctx, opcode::OP_EmptyArray); break;
@@ -576,7 +594,10 @@ void compiler::emit_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
         case gsc::node_type::data_float:            emit_float(ctx, expr.as_float); break;
         case gsc::node_type::data_integer:          emit_integer(ctx, expr.as_integer); break;
         case gsc::node_type::data_vector:           emit_vector(ctx, expr.as_vector); break;
-        case gsc::node_type::expr_vector:           emit_expr_vector(ctx, expr.as_vector_expr); break;
+        case gsc::node_type::animtree:              emit_animtree(ctx, expr.as_animtree); break;
+        case gsc::node_type::animref:               emit_animation(ctx, expr.as_animref); break;
+        case gsc::node_type::data_true:             emit_true(ctx, expr.as_true); break;
+        case gsc::node_type::data_false:            emit_false(ctx, expr.as_false); break;
         default: GSC_COMP_ERROR("line %s: unknown expression", expr.as_node->location.data()); break;
     }
 }
@@ -1004,7 +1025,7 @@ void compiler::emit_expr_vector(const gsc::context_ptr& ctx, const gsc::expr_vec
 
 void compiler::emit_expr_size(const gsc::context_ptr& ctx, const gsc::expr_size_ptr& expr)
 {
-    emit_object(ctx, expr->obj);
+    emit_variable(ctx, expr->obj);
     emit_opcode(ctx, opcode::OP_size);
 }
 
@@ -1093,9 +1114,15 @@ void compiler::emit_field_variable_ref(const gsc::context_ptr& ctx, const gsc::e
         set ? emit_opcode(ctx, opcode::OP_SetSelfFieldVariableField, field) : emit_opcode(ctx, opcode::OP_EvalSelfFieldVariableRef, field);
         break;
     case gsc::node_type::expr_array:
-        emit_array_variable_ref(ctx, expr->obj.as_array, false);
-        emit_opcode(ctx, opcode::OP_CastFieldObject);             // TODO: need?
-        emit_opcode(ctx, opcode::OP_EvalFieldVariableRef, field);    
+        emit_array_variable(ctx, expr->obj.as_array);
+        emit_opcode(ctx, opcode::OP_CastFieldObject);
+        emit_opcode(ctx, opcode::OP_EvalFieldVariableRef, field);
+        if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
+        break;
+    case gsc::node_type::expr_field:
+        emit_field_variable(ctx, expr->obj.as_field);
+        emit_opcode(ctx, opcode::OP_CastFieldObject);
+        emit_opcode(ctx, opcode::OP_EvalFieldVariableRef, field);
         if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
         break;
     case gsc::node_type::identifier:
@@ -1103,12 +1130,11 @@ void compiler::emit_field_variable_ref(const gsc::context_ptr& ctx, const gsc::e
         emit_opcode(ctx, opcode::OP_EvalFieldVariableRef, field);
         if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
         break;
-    // case field:  var.field.field
     case gsc::node_type::expr_call:
         GSC_COMP_ERROR("line %s: function call result can't be referenced", expr->location.data());
         break;
     default:
-        GSC_COMP_ERROR("line %s: unknown field variable objet type", expr->location.data());
+        GSC_COMP_ERROR("line %s: unknown field variable object type", expr->location.data());
         break;
     }
 }
@@ -1142,6 +1168,19 @@ void compiler::emit_local_variable_ref(const gsc::context_ptr& ctx, const gsc::i
     }
 }
 
+void compiler::emit_variable(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
+{
+    // for obj.size
+    switch(expr.as_node->type)
+    {
+        case gsc::node_type::expr_array: emit_array_variable(ctx, expr.as_array); break;
+        case gsc::node_type::expr_field: emit_field_variable(ctx, expr.as_field); break;
+        case gsc::node_type::identifier: emit_local_variable(ctx, expr.as_identifier); break;
+        case gsc::node_type::expr_call:  emit_expr_call(ctx, expr.as_call); break;
+        default: GSC_COMP_ERROR("line %s: invalid variable type.", expr.as_node->location.data()); break;
+    }
+}
+
 void compiler::emit_array_variable(const gsc::context_ptr& ctx, const gsc::expr_array_ptr& expr)
 {
     emit_expr(ctx, expr->key);
@@ -1160,28 +1199,53 @@ void compiler::emit_array_variable(const gsc::context_ptr& ctx, const gsc::expr_
 
 void compiler::emit_field_variable(const gsc::context_ptr& ctx, const gsc::expr_field_ptr& expr)
 {
+    const auto& field = expr->field->value;
+
     switch(expr->obj.as_node->type)
     {
     case gsc::node_type::level:
-        emit_opcode(ctx, opcode::OP_EvalLevelFieldVariable, expr->field->value);
+        emit_opcode(ctx, opcode::OP_EvalLevelFieldVariable, field);
         break;
     case gsc::node_type::anim:
-        emit_opcode(ctx, opcode::OP_EvalAnimFieldVariable, expr->field->value);
+        emit_opcode(ctx, opcode::OP_EvalAnimFieldVariable, field);
         break;
     case gsc::node_type::self:
-        emit_opcode(ctx, opcode::OP_EvalSelfFieldVariable, expr->field->value);
+        emit_opcode(ctx, opcode::OP_EvalSelfFieldVariable, field);
+        break;
+    case gsc::node_type::expr_array:
+        emit_array_variable(ctx, expr->obj.as_array);
+        emit_opcode(ctx, opcode::OP_CastFieldObject);
+        emit_opcode(ctx, opcode::OP_EvalFieldVariable, field);  
+        break;
+    case gsc::node_type::expr_field:
+        emit_field_variable(ctx, expr->obj.as_field);
+        emit_opcode(ctx, opcode::OP_CastFieldObject);
+        emit_opcode(ctx, opcode::OP_EvalFieldVariable, field);
+        break;
+    case gsc::node_type::expr_call:
+        emit_expr_call(ctx, expr->obj.as_call);
+        emit_opcode(ctx, opcode::OP_CastFieldObject);
+        emit_opcode(ctx, opcode::OP_EvalFieldVariable, field);
         break;
     default:
-        emit_object(ctx, expr->obj);
-        emit_opcode(ctx, opcode::OP_EvalFieldVariable, expr->field->value);
+        GSC_COMP_ERROR("line %s: unknown field variable object type", expr->location.data());
         break;
-
-        // arrays?
     }
 }
 
 void compiler::emit_local_variable(const gsc::context_ptr& ctx, const gsc::identifier_ptr& expr)
 {
+    // is constant ( should only allow: string, loc string, number, vector)
+    const auto itr = constants_.find(expr->value);
+
+    if (itr != constants_.end())
+    {
+        const auto& value = itr->second;
+        emit_expr(ctx, value);
+        return;
+    }
+
+    // is local var
     auto index = find_local_var_index(ctx, expr->value);
 
     switch(index)
@@ -1313,6 +1377,56 @@ void compiler::emit_localized_string(const gsc::context_ptr& ctx, const gsc::loc
 void compiler::emit_string(const gsc::context_ptr& ctx, const gsc::string_ptr& str)
 {
     emit_opcode(ctx, opcode::OP_GetString, str->value);
+}
+
+void compiler::emit_animtree(const gsc::context_ptr& ctx, const gsc::animtree_ptr& animtree)
+{
+    if(animtrees_.size() == 0)
+    {
+        GSC_COMP_ERROR("line %s: trying to use animtree without specified using animtree", animtree->location.data());
+    }
+
+    auto& tree = animtrees_.back();
+
+    if(tree.loaded)
+    {
+        emit_opcode(ctx, opcode::OP_GetAnimTree, "''");
+    }
+    else
+    {
+        emit_opcode(ctx, opcode::OP_GetAnimTree, tree.name);
+        tree.loaded = true;
+    }
+}
+
+void compiler::emit_animation(const gsc::context_ptr& ctx, const gsc::animref_ptr& anim)
+{
+    if(animtrees_.size() == 0)
+    {
+        GSC_COMP_ERROR("line %s: trying to use animation without specified using animtree", anim->location.data());
+    }
+
+    auto& tree = animtrees_.back();
+
+    if(tree.loaded)
+    {
+        emit_opcode(ctx, opcode::OP_GetAnimation, { "''", anim->value });
+    }
+    else
+    {
+        emit_opcode(ctx, opcode::OP_GetAnimation, { tree.name, anim->value });
+        tree.loaded = true;
+    }
+}
+
+void compiler::emit_true(const gsc::context_ptr& ctx, const gsc::true_ptr& expr)
+{
+    emit_opcode(ctx, opcode::OP_GetByte, "1");
+}
+
+void compiler::emit_false(const gsc::context_ptr& ctx, const gsc::false_ptr& expr)
+{
+    emit_opcode(ctx, opcode::OP_GetZero);
 }
 
 void compiler::emit_opcode(const gsc::context_ptr& ctx, opcode op)

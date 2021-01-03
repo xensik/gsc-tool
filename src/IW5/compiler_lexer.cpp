@@ -1720,13 +1720,13 @@ YY_RULE_SETUP
 case 91:
 YY_RULE_SETUP
 #line 133 "IW5.lexer.lpp"
-{ return IW5::parser::make_ANIMREF(utils::string::to_lower(yytext)); }
+{ return IW5::parser::make_ANIMREF(utils::string::to_lower(yytext).substr(1)); }
 	YY_BREAK
 case 92:
 /* rule 92 can match eol */
 YY_RULE_SETUP
 #line 134 "IW5.lexer.lpp"
-{ return IW5::parser::make_STRING_LOC(std::string(yytext)); }
+{ return IW5::parser::make_STRING_LOC(std::string(yytext).substr(1)); }
 	YY_BREAK
 case 93:
 /* rule 93 can match eol */
