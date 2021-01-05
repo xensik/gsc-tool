@@ -8,6 +8,8 @@
 
 #include <utils.hpp>
 
+#include "resolver.hpp"
+
 namespace IW8
 {
 

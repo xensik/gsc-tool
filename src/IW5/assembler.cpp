@@ -205,6 +205,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_EvalLocalVariableCached3:
     case opcode::OP_EvalLocalVariableCached4:
     case opcode::OP_EvalLocalVariableCached5:
+    case opcode::OP_SafeSetVariableFieldCached0:
     case opcode::OP_EvalLocalVariableRefCached0:
     case opcode::OP_SetLocalVariableFieldCached0:
     case opcode::OP_ClearLocalVariableFieldCached0:
@@ -276,6 +277,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_CreateLocalVariable:
     case opcode::OP_RemoveLocalVariables:
     case opcode::OP_SafeCreateVariableFieldCached:
+    case opcode::OP_SafeSetVariableFieldCached:
     case opcode::OP_SafeSetWaittillVariableFieldCached:
     case opcode::OP_EvalLocalVariableCached:
     case opcode::OP_EvalLocalVariableRefCached:
@@ -330,7 +332,9 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
         this->assemble_far_call(inst, false);
         break;
     case opcode::OP_ScriptFarThreadCall:
+    case opcode::OP_ScriptFarChildThreadCall:
     case opcode::OP_ScriptFarMethodThreadCall:
+    case opcode::OP_ScriptFarMethodChildThreadCall:
         this->assemble_far_call(inst, true);
         break;
     case opcode::OP_CallBuiltin:

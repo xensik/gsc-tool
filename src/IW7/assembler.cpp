@@ -206,6 +206,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_BoolNot:
     case opcode::OP_BoolComplement:
     case opcode::OP_EvalLocalArrayRefCached0:
+    case opcode::OP_SafeSetVariableFieldCached0:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         break;
 // DATA
@@ -268,6 +269,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_EvalLocalArrayCached:
     case opcode::OP_EvalLocalArrayRefCached:
     case opcode::OP_SafeCreateVariableFieldCached:
+    case opcode::OP_SafeSetVariableFieldCached:
     case opcode::OP_SafeSetWaittillVariableFieldCached:
     case opcode::OP_EvalLocalVariableRefCached:
     case opcode::OP_SetNewLocalVariableFieldCached0:
@@ -313,7 +315,9 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
         this->assemble_far_call(inst, false);
         break;
     case opcode::OP_ScriptFarThreadCall:
+    case opcode::OP_ScriptFarChildThreadCall:
     case opcode::OP_ScriptFarMethodThreadCall:
+    case opcode::OP_ScriptFarMethodChildThreadCall:
         this->assemble_far_call(inst, true);
         break;
 // LOCAL CALL

@@ -39,7 +39,7 @@ auto resolver::builtin_func_id(const std::string& name) -> std::uint16_t
 {
     for (auto& func : builtin_function_map)
     {
-        if (utils::string::to_lower(func.second) == utils::string::to_lower(name))
+        if (func.second == name)
         {
             return func.first;
         }
@@ -66,7 +66,7 @@ auto resolver::builtin_method_id(const std::string& name) -> std::uint16_t
 {
     for (auto& method : builtin_method_map)
     {
-        if (utils::string::to_lower(method.second) == utils::string::to_lower(name))
+        if (method.second == name)
         {
             return method.first;
         }
@@ -137,7 +137,6 @@ auto resolver::token_name(std::uint16_t id) -> std::string
         return itr->second;
     }
 
-    //GSC_LOG_DEBUG("missing token name for id '%i'!", id);
     return utils::string::va("_ID%i", id);
 }
 
@@ -145,7 +144,7 @@ auto resolver::find_builtin_func(const std::string& name) -> bool
 {
     for (auto& func : builtin_function_map)
     {
-        if (utils::string::to_lower(func.second) == utils::string::to_lower(name))
+        if (func.second == name)
         {
             return true;
         }
@@ -158,7 +157,7 @@ auto resolver::find_builtin_meth(const std::string& name) -> bool
 {
     for (auto& method : builtin_method_map)
     {
-        if (utils::string::to_lower(method.second) == utils::string::to_lower(name))
+        if (method.second == name)
         {
             return true;
         }
@@ -1570,70 +1569,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::builtin_method_map
 
 std::unordered_map<std::uint16_t, std::string> resolver::file_map
 {
-// "maps\\_utility"
-// "maps\\_mgturret"
-// "maps\\_bcs_location_trigs"
-// "maps\\_anim"
-// "maps\\_gameskill"
-// "maps\\_vehicle"
-// "maps\\_mg_penetration"
-// "maps\\_rank"
-// "maps\\_hud_util"
-// "maps\\_hud"
-// "maps\\_missions"
-// "maps\\_colors"
-// "maps\\_spawner"
-// "maps\\_audio"
-// "maps\\_audio_stream_manager"
-// "maps\\_audio_dynamic_ambi"
-// "maps\\_audio_reverb"
-// "maps\\_audio_mix_manager"
-// "maps\\_audio_presets_vehicles"
-// "maps\\_specialops"
-// "maps\\_lights"
-// "maps\\_audio_zone_manager"
-// "maps\\_audio_music"
-// "maps\\_audio_whizby"
-// "maps\\_audio_vehicles"
-// "maps\\_specialops_code"
-// "maps\\_specialops_battlechatter"
-// "maps\\_endmission"
-// "maps\\_utility_code"
-// "maps\\_load"
-// "maps\\_quotes"
-// "maps\\_ambient"
-// "maps\\_coop"
-// "maps\\_arcademode"
-// "maps\\_damagefeedback"
-// "maps\\_laststand"
-// "maps\\_player_stats"
-// "maps\\_art"
-// "maps\\_noder"
-// "common_scripts\\_painter"
-// "maps\\_global_fx"
-// "maps\\_detonategrenades"
-// "maps\\_names"
-// "maps\\_autosave"
-// "maps\\_debug"
-// "maps\\_loadout"
-// "maps\\_introscreen"
-// "maps\\_shutter"
-// "maps\\_escalator"
-// "maps\\_friendlyfire"
-// "maps\\_interactive_objects"
-// "maps\\_intelligence"
-// "maps\\_animatedmodels"
-// "maps\\_fx"
-// "maps\\_compass" },
-// "maps\\_hiding_door" },
-// "maps\\_drone" },
-// "maps\\_patrol" },
-// "maps\\_vehicle_aianim" },
-// "maps\\_helicopter_ai" },
-// "maps\\_helicopter_globals" },
-// "vehicle_scripts\\_attack_heli" },
-// "maps\\_vehiclenames" },
-// "maps\\_treadfx" },
+
 // "character\\character_mp_ally_juggernaut"
 // "xmodelalias\\alias_us_army_heads"
 // "character\\mp_character_us_army_assault_a"
@@ -2013,26 +1949,94 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
 // "vehicle_scripts\\_russian_torpedo"
 // "maps\\_credits"
 // "maps\\createart\\paris_a_art"
-
+// 
     { 29, "maps\\mp\\gametypes\\_tweakables" },
     { 30, "common_scripts\\utility" },
     { 31, "common_scripts\\_createfxmenu" },
     { 32, "common_scripts\\_fx" },
-// ...
+    { 65, "maps\\_utility" },
+    { 66, "maps\\_mgturret" },
+    { 67, "maps\\_bcs_location_trigs" },
+    { 68, "maps\\_anim" },
+    { 69, "maps\\_gameskill" },
     { 70, "common_scripts\\_destructible" },
     { 94, "common_scripts\\_destructible_types" },
-// ...
+    { 95, "maps\\_vehicle" },
+    { 96, "maps\\_mg_penetration" },
+    { 97, "maps\\_rank" },
+    { 98, "maps\\_hud_util" },
+    { 99, "maps\\_hud" },
+    { 100, "maps\\_missions" },
+    { 101, "maps\\_colors" },
+    { 102, "maps\\_spawner" },
+    { 103, "maps\\_audio" },
+    { 104, "maps\\_audio_stream_manager" },
+    { 133, "maps\\_audio_dynamic_ambi" },
+    { 134, "maps\\_audio_reverb" },
+    { 135, "maps\\_audio_mix_manager" },
+    { 136, "maps\\_audio_presets_vehicles" },
+    { 137, "maps\\_specialops" },
+    { 138, "maps\\_lights" },
+    { 139, "maps\\_audio_zone_manager" },
+    { 176, "maps\\_audio_music" },
+    { 177, "maps\\_audio_whizby" },
+    { 178, "maps\\_audio_vehicles" },
+    { 179, "maps\\_specialops_code" },
+    { 180, "maps\\_specialops_battlechatter" },
+    { 181, "maps\\_endmission" },
+    { 182, "maps\\_utility_code" },
+    { 183, "maps\\_load" },
+    { 184, "maps\\_quotes" },
+    { 185, "maps\\_ambient" },
+    { 196, "character\\character_hero_europe_price_cc" },
+    { 224, "maps\\_coop" },
     { 225, "common_scripts\\_artcommon" },
-// ...
+    { 226, "maps\\_arcademode" },
+    { 227, "maps\\_damagefeedback" },
+    { 228, "maps\\_laststand" },
+    { 229, "maps\\_player_stats" },
+    { 230, "maps\\_art" },
+    { 234, "character\\character_tank_crew_a" },
+    { 235, "character\\character_tank_crew_b" },
+    { 264, "maps\\_noder" },
+    { 265, "common_scripts\\_painter" },
+    { 266, "maps\\_createfx" },
+    { 267, "maps\\_global_fx" },
+    { 268, "maps\\_detonategrenades" },
+    { 269, "maps\\_names" },
+    { 270, "maps\\_autosave" },
+    { 271, "maps\\_debug" },
+    { 272, "maps\\_loadout" },
     { 273, "common_scripts\\_elevator" },
     { 314, "common_scripts\\_pipes" },
     { 315, "common_scripts\\_dynamic_world" },
-// ...
+    { 316, "maps\\_introscreen" },
+    { 317, "maps\\_shutter" },
+    { 318, "maps\\_escalator" },
+    { 319, "maps\\_friendlyfire" },
+    { 320, "maps\\_interactive_objects" },
+    { 321, "maps\\_intelligence" },
+    { 322, "maps\\_animatedmodels" },
+    { 323, "maps\\_fx" },
     { 324, "codescripts\\character" },
-// ...
+    { 325, "maps\\_compass" },
+    { 326, "maps\\_hiding_door" },
+    { 330, "character\\character_opforce_henchmen_lmg_a" },
+    { 331, "character\\character_opforce_henchmen_lmg_b" },
+    { 332, "character\\character_hero_europe_price_a" },
+    { 358, "maps\\_drone" },
+    { 359, "maps\\_patrol" },
+    { 360, "maps\\_vehicle_aianim" },
+    { 361, "maps\\_helicopter_ai" },
+    { 362, "maps\\_helicopter_globals" },
+    { 363, "vehicle_scripts\\_attack_heli" },
+//  maps\\vehiclenames??
+    { 365, "maps\\_treadfx" },
     { 366, "maps\\mp\\_utility" },
     { 367, "maps\\mp\\gametypes\\_rank" },
     { 368, "maps\\mp\\gametypes\\_persistence" },
+    { 375, "character\\character_hero_europe_price_aa" },
+//  { 396, "" }, unk sp turret
     { 400, "maps\\mp\\gametypes\\_gamelogic" },
     { 401, "maps\\mp\\killstreaks\\_killstreaks" },
     { 402, "maps\\mp\\gametypes\\_missions" },
@@ -2060,7 +2064,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 489, "character\\mp_character_delta_elite_sniper" },
     { 490, "xmodelalias\\alias_sas_heads" },
     { 491, "character\\mp_character_sas_urban_assault" },
-// ...
+    { 501, "character\\character_hero_europe_soap_injured" },
     { 512, "common_scripts\\_createfx" },
 // ...
     { 532, "character\\mp_character_sas_urban_lmg" },
@@ -2369,7 +2373,23 @@ std::unordered_map<std::uint16_t, std::string> resolver::file_map
     { 1461, "maps\\createfx\\mp_dome_fx" },
     { 1462, "maps\\createart\\mp_dome_fog" },
 // ...
+//  { 1636, "" },
+//  { 1637, "" },
+//  { 1638, "" },
+    { 1639, "vehicle_scripts\\_gaz_dshk" },
+    { 1640, "vehicle_scripts\\_hind" },
+//  { 1641, "" },
     { 1642, "maps\\animated_models\\fence_tarp_108x76_med_01" },
+//  { 1643, "maps\\animated_models\\fence_tarp_132x82_med_01" },
+    { 1644, "maps\\_predator2" },
+//  { 1645, "maps\\_xm25" },
+    { 1646, "vehicle_scripts\\_blackhawk_minigun" },
+//  { 1647, "vehicle_scripts\\_stryker50cal" },
+// ------- files chunck end ---------
+//  { 1721,
+//  { 8217,
+//  { 8218,
+//  { 8219,
 // ...
     { 18649, "common_scripts\\_destructible_types_anim_generator" },
     { 18650, "common_scripts\\_destructible_types_anim_lockers" },
@@ -2509,6 +2529,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::token_map
     { 448, "reInitializeScoreLimitOnMigration" },
     { 950, "getHighestProgressedPlayers" },
     { 1023, "delay_createfx_seconds" },
+// ...
     { 1648, "initFX" },
     { 1649, "func" },
     { 1650, "main" },
@@ -2547,25 +2568,27 @@ std::unordered_map<std::uint16_t, std::string> resolver::token_map
     { 1682, "sessionteam" },
     { 1683, "sessionstate" },
     { 1684, "maxHealth" },
+// ...
+
+// ...
     { 1725, "score" },
     { 1726, "deaths" },
     { 1727, "statusicon" },
     { 1728, "headicon" },
     { 1729, "headiconteam" },
-    { 1730, "kills" },
-    { 1731, "assists" },
-    { 1732, "hasradar" },
-    { 1733, "isradarblocked" },
-    { 1734, "radarstrength" },
-    { 1735, "radarshowenemydirection" },
-    { 1736, "radarmode" },
-    { 1737, "forcespectatorclient" },
-    { 1738, "killcamentity" },
-    { 1739, "killcamentitylookat" },
+    { 1730, "canclimbladders" },
+    { 1731, "kills" },
+    { 1732, "assists" },
+    { 1733, "hasradar" },
+    { 1734, "isradarblocked" },
+    { 1735, "radarstrength" },
+    { 1736, "radarshowenemydirection" },
+    { 1737, "radarmode" },
+    { 1738, "forcespectatorclient" },
+    { 1739, "killcamentity" },
     { 1740, "archivetime" },
     { 1741, "psoffsettime" },
     { 1742, "pers" },
-// hudelem fields
     { 1743, "x" },
     { 1744, "y" },
     { 1745, "z" },
@@ -2589,7 +2612,6 @@ std::unordered_map<std::uint16_t, std::string> resolver::token_map
     { 1763, "archived" },
     { 1764, "hidein3rdperson" },
     { 1765, "hidewhenindemo" },
-// vehicle fields
     { 1766, "veh_speed" },
     { 1767, "veh_pathspeed" },
     { 1768, "veh_transmission" },
@@ -2598,11 +2620,9 @@ std::unordered_map<std::uint16_t, std::string> resolver::token_map
     { 1771, "veh_topspeed" },
     { 1772, "veh_brake" },
     { 1773, "veh_throttle" },
-// vehicle node fields
     { 1774, "script_noteworthy" },
     { 1775, "speed" },
     { 1776, "lookahead" },
-// 
     { 1777, "ambienttrack" },
     { 1778, "ambienttrack_ac130" },
     { 1779, "message" },
@@ -2632,8 +2652,6 @@ std::unordered_map<std::uint16_t, std::string> resolver::token_map
     { 1803, "weaponinfo" },
     { 1804, "vehicletype" },
     { 1805, "type" },
-/*
-// bad shift ids
     { 1806, "accuracy" },
     { 1807, "lookforward" },
     { 1808, "lookright" },
@@ -2661,100 +2679,100 @@ std::unordered_map<std::uint16_t, std::string> resolver::token_map
     { 1830, "damagemod" },
     { 1831, "proneok" },
     { 1832, "walkdistfacingmotion" },
-    { 1833, "walkdist" },
-    { 1834, "desiredangle" },
-    { 1835, "pacifist" },
-    { 1836, "pacifistwait" },
-    { 1837, "footstepdetectdist" },
-    { 1838, "footstepdetectdistwalk" },
-    { 1839, "footstepdetectdistsprint" },
-    { 1840, "reactiontargetpos" },
-    { 1841, "newenemyreactiondistsq" },
-    { 1842, "ignoreexplosionevents" },
-    { 1843, "ignoresuppression" },
-    { 1844, "suppressionwait" },
-    { 1845, "suppressionduration" },
-    { 1846, "suppressionstarttime" },
-    { 1847, "suppressionmeter" },
-    { 1848, "weapon" },
-    { 1849, "dontavoidplayer" },
-    { 1850, "grenadeawareness" },
-    { 1851, "grenade" },
-    { 1852, "grenadeweapon" },
-    { 1853, "grenadeammo" },
-    { 1854, "favoriteenemy" },
-    { 1855, "highlyawareradius" },
-    { 1856, "minpaindamage" },
-    { 1857, "allowpain" },
-    { 1858, "allowdeath" },
-    { 1859, "delayeddeath" },
-    { 1860, "diequietly" },
-    { 1861, "forceragdollimmediate" },
-    { 1862, "providecoveringfire" },
-    { 1863, "doingambush" },
-    { 1864, "combatmode" },
-    { 1865, "alertlevel" },
-    { 1866, "alertlevelint" },
-    { 1867, "useable" },
-    { 1868, "ignoretriggers" },
-    { 1869, "pushable" },
-    { 1870, "script_pushable" },
-    { 1871, "dropweapon" },
-    { 1872, "drawoncompass" },
-    { 1873, "groundtype" },
-    { 1874, "anim_pose" },
-    { 1875, "goalradius" },
-    { 1876, "goalheight" },
-    { 1877, "goalpos" },
-    { 1878, "nodeoffsetpos" },
-    { 1879, "ignoreforfixednodesafecheck" },
-    { 1880, "fixednode" },
-    { 1881, "fixednodesaferadius" },
-    { 1882, "pathgoalpos" },
-    { 1883, "pathrandompercent" },
-    { 1884, "usechokepoints" },
-    { 1885, "stopanimdistsq" },
-    { 1886, "lastenemysightpos" },
-    { 1887, "pathenemylookahead" },
-    { 1888, "pathenemyfightdist" },
-    { 1889, "meleeattackdist" },
-    { 1890, "movemode" },
-    { 1891, "usecombatscriptatcover" },
-    { 1892, "safetochangescript" },
-    { 1893, "keepclaimednode" },
-    { 1894, "keepclaimednodeifvalid" },
-    { 1895, "keepnodeduringscriptedanim" },
-    { 1896, "dodangerreact" },
-    { 1897, "dangerreactduration" },
-    { 1898, "nododgemove" },
-    { 1899, "leanamount" },
-    { 1900, "turnrate" },
-    { 1901, "badplaceawareness" },
-    { 1902, "damageshield" },
-    { 1903, "nogrenadereturnthrow" },
-    { 1904, "noattackeraccuracymod" },
-    { 1905, "frontshieldanglecos" },
-    { 1906, "lookaheaddir" },
-    { 1907, "lookaheaddist" },
-    { 1908, "lookaheadhitsstairs" },
-    { 1909, "velocity" },
-    { 1910, "prevanimdelta" },
-    { 1911, "exposedduration" },
-    { 1912, "requestarrivalnotify" },
-    { 1913, "scriptedarrivalent" },
-    { 1914, "goingtoruntopos" },
-    { 1915, "engagemindist" },
-    { 1916, "engageminfalloffdist" },
-    { 1917, "engagemaxdist" },
-    { 1918, "engagemaxfalloffdist" },
-    { 1919, "finalaccuracy" },
-    { 1920, "facemotion" },
+    { 1833, "killcamentitylookat" },
+    { 1834, "walkdist" },
+    { 1835, "desiredangle" },
+    { 1836, "pacifist" },
+    { 1837, "pacifistwait" },
+    { 1838, "footstepdetectdist" },
+    { 1839, "footstepdetectdistwalk" },
+    { 1840, "footstepdetectdistsprint" },
+    { 1841, "reactiontargetpos" },
+    { 1842, "newenemyreactiondistsq" },
+    { 1843, "ignoreexplosionevents" },
+    { 1844, "ignoresuppression" },
+    { 1845, "suppressionwait" },
+    { 1846, "suppressionduration" },
+    { 1847, "suppressionstarttime" },
+    { 1848, "suppressionmeter" },
+    { 1849, "weapon" },
+    { 1850, "dontavoidplayer" },
+    { 1851, "grenadeawareness" },
+    { 1852, "grenade" },
+    { 1853, "grenadeweapon" },
+    { 1854, "grenadeammo" },
+    { 1855, "favoriteenemy" },
+    { 1856, "highlyawareradius" },
+    { 1857, "minpaindamage" },
+    { 1858, "allowpain" },
+    { 1859, "allowdeath" },
+    { 1860, "delayeddeath" },
+    { 1861, "diequietly" },
+    { 1862, "forceragdollimmediate" },
+    { 1863, "providecoveringfire" },
+    { 1864, "doingambush" },
+    { 1865, "combatmode" },
+    { 1866, "alertlevel" },
+    { 1867, "alertlevelint" },
+    { 1868, "useable" },
+    { 1869, "ignoretriggers" },
+    { 1870, "pushable" },
+    { 1871, "script_pushable" },
+    { 1872, "dropweapon" },
+    { 1873, "drawoncompass" },
+    { 1874, "groundtype" },
+    { 1875, "anim_pose" },
+    { 1876, "goalradius" },
+    { 1877, "goalheight" },
+    { 1878, "goalpos" },
+    { 1879, "nodeoffsetpos" },
+    { 1880, "ignoreforfixednodesafecheck" },
+    { 1881, "fixednode" },
+    { 1882, "fixednodesaferadius" },
+    { 1883, "pathgoalpos" },
+    { 1884, "pathrandompercent" },
+    { 1885, "usechokepoints" },
+    { 1886, "stopanimdistsq" },
+    { 1887, "lastenemysightpos" },
+    { 1888, "pathenemylookahead" },
+    { 1889, "pathenemyfightdist" },
+    { 1890, "meleeattackdist" },
+    { 1891, "movemode" },
+    { 1892, "usecombatscriptatcover" },
+    { 1893, "safetochangescript" },
+    { 1894, "keepclaimednode" },
+    { 1895, "keepclaimednodeifvalid" },
+    { 1896, "keepnodeduringscriptedanim" },
+    { 1897, "dodangerreact" },
+    { 1898, "dangerreactduration" },
+    { 1899, "nododgemove" },
+    { 1900, "leanamount" },
+    { 1901, "turnrate" },
+    { 1902, "badplaceawareness" },
+    { 1903, "damageshield" },
+    { 1904, "nogrenadereturnthrow" },
+    { 1905, "noattackeraccuracymod" },
+    { 1906, "frontshieldanglecos" },
+    { 1907, "lookaheaddir" },
+    { 1908, "lookaheaddist" },
+    { 1909, "lookaheadhitsstairs" },
+    { 1910, "velocity" },
+    { 1911, "prevanimdelta" },
+    { 1912, "exposedduration" },
+    { 1913, "requestarrivalnotify" },
+    { 1914, "scriptedarrivalent" },
+    { 1915, "goingtoruntopos" },
+    { 1916, "engagemindist" },
+    { 1917, "engageminfalloffdist" },
+    { 1918, "engagemaxdist" },
+    { 1919, "engagemaxfalloffdist" },
+    { 1920, "finalaccuracy" },
+    { 1921, "facemotion" },
     { 1921, "gunblockedbywall" },
-    { 1922, "relativedir" },
-    { 1923, "lockorientation" },
-    { 1924, "maxfaceenemydist" },
-    { 1925, "stairsstate" },
-*/
+    { 1923, "relativedir" },
+    { 1924, "lockorientation" },
+    { 1925, "maxfaceenemydist" },
+    { 1926, "stairsstate" },
     { 1927, "script" },
     { 1928, "prevscript" },
     { 1929, "threatbias" },
@@ -2774,8 +2792,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::token_map
     { 1943, "attackercount" },
     { 1944, "damagemultiplier" },
     { 1945, "laststand" },
-    { 1946, "motiontrackerenabled" },   
-// unk fields
+    { 1946, "motiontrackerenabled" },
     { 1947, "team" },
     { 1948, "threatbiasgroup" },
     { 1949, "node" },
@@ -2783,7 +2800,6 @@ std::unordered_map<std::uint16_t, std::string> resolver::token_map
     { 1951, "enemy" },
     { 1952, "lastattacker" },
     { 1953, "attackeraccuracy" },
-// unk fields
     { 1954, "width" },
     { 1955, "enable" },
     { 1956, "freecamera" },
@@ -4297,6 +4313,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::token_map
     { 14986, "setUseBarScore" },
     { 14987, "updateHudElems" },
     { 15008, "setupReverb" },
+    { 15107, "meleeingPlayer" },
     { 17433, "attachmentMap" },
     { 17434, "checkRoundWin" },
 };

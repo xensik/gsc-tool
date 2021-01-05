@@ -63,9 +63,9 @@ enum class opcode : std::uint8_t
     OP_ScriptFarFunctionCall = 0x29,
     OP_ScriptFarMethodCall = 0x2A,
     OP_ScriptFarThreadCall = 0x2B,
-    OP_ScriptFarChildThreadCall = 0x2C, // not used
+    OP_ScriptFarChildThreadCall = 0x2C,
     OP_ScriptFarMethodThreadCall = 0x2D,
-    OP_ScriptFarMethodChildThreadCall = 0x2E, // not used
+    OP_ScriptFarMethodChildThreadCall = 0x2E,
     OP_ScriptFunctionCallPointer = 0x2F,
     OP_ScriptMethodCallPointer = 0x30,
     OP_ScriptThreadCallPointer = 0x31,
@@ -132,8 +132,8 @@ enum class opcode : std::uint8_t
     OP_EvalFieldVariableRef = 0x6E,
     OP_ClearFieldVariable = 0x6F,
     OP_SafeCreateVariableFieldCached = 0x70,
-    OP_SafeSetVariableFieldCached0 = 0x71, // not used
-    OP_SafeSetVariableFieldCached = 0x72, // not used
+    OP_SafeSetVariableFieldCached0 = 0x71,
+    OP_SafeSetVariableFieldCached = 0x72,
     OP_SafeSetWaittillVariableFieldCached = 0x73,
     OP_GetAnimTree = 0x74,
     OP_clearparams = 0x75,

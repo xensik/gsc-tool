@@ -43,7 +43,7 @@ enum class opcode : std::uint8_t
     OP_SafeCreateVariableFieldCached = 0x2C,
     OP_ScriptFarFunctionCall2 = 0x2D,
     OP_ScriptFarFunctionCall = 0x2E,
-    OP_ScriptFarChildThreadCall = 0x2F, // NOT USED size 5
+    OP_ScriptFarChildThreadCall = 0x2F,
     OP_ClearLocalVariableFieldCached0 = 0x30,
     OP_ClearLocalVariableFieldCached = 0x31,
     OP_checkclearparams = 0x32,
@@ -58,7 +58,7 @@ enum class opcode : std::uint8_t
     OP_endswitch = 0x3B,
     OP_ClearVariableField = 0x3C, // NOP // NOT USED size 1
     OP_divide = 0x3D,
-    OP_ScriptFarMethodChildThreadCall = 0x3E, // NOT USED size 5
+    OP_ScriptFarMethodChildThreadCall = 0x3E,
     OP_GetUnsignedShort = 0x3F,
     OP_JumpOnTrue = 0x40,
     OP_GetSelf = 0x41,
@@ -96,8 +96,8 @@ enum class opcode : std::uint8_t
     OP_less = 0x61,
     OP_GetGameRef = 0x62,
     OP_waittillFrameEnd = 0x63,
-    OP_SafeSetVariableFieldCached0 = 0x64, // NOT USED size 1
-    OP_SafeSetVariableFieldCached = 0x65, // NOT USED size 2
+    OP_SafeSetVariableFieldCached0 = 0x64,
+    OP_SafeSetVariableFieldCached = 0x65,
     OP_ScriptMethodChildThreadCallPointer = 0x66, // NOT USED size 2
     OP_GetLevel = 0x67,
     OP_notify = 0x68,
