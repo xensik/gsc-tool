@@ -377,7 +377,10 @@ void compiler::emit_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_pt
     insert_label(begin_loc);
 
     if(stmt->expr.as_node->type != gsc::node_type::null)
+    { 
         emit_expr(ctx, stmt->expr);
+        emit_opcode(ctx, opcode::OP_JumpOnFalse, break_loc);
+    }
 
     emit_block(for_ctx, stmt->block, false);
 
