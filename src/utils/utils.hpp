@@ -21,6 +21,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <regex>
 #include <string>
 #include <vector>
 #include <memory>

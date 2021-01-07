@@ -28,8 +28,11 @@ public:
     static auto to_lower(const std::string& input) -> std::string;
     static auto to_code(const std::string& input) -> std::string;
     static auto to_literal(const std::string& input) -> std::string;
+    static auto quote(const std::string& s) -> std::string;
+    static auto unquote(const std::string& s) -> std::string;
     static auto split(std::string& str, char delimiter) -> std::vector<std::string>;
     static auto clean_buffer_lines(std::vector<std::uint8_t>& buffer) -> std::vector<std::string>;
+    static auto parse_code(std::string& line) -> std::vector<std::string>;
 };
 
 } // namespace utils

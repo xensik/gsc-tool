@@ -41,7 +41,7 @@ auto string::to_lower(const std::string& input) -> std::string
 
 auto string::to_code(const std::string& input) -> std::string
 {
-    std::string data(input.begin() + 1, input.end() - 1);
+    std::string data = input.substr(1, input.size() - 2);
     std::size_t pos;
 
     while ((pos = data.find("\\n")) != std::string::npos)
@@ -102,32 +102,42 @@ auto string::to_literal(const std::string& input) -> std::string
     return data;
 }
 
+auto string::quote(const std::string& s) -> std::string
+{
+    std::string data(s.begin(), s.end());
+
+    data.insert(data.begin(), '\'');
+    data.insert(data.end(), '\'');
+
+    return data;
+}
+
+auto string::unquote(const std::string& s) -> std::string
+{
+    if(s.at(0) == '\'')
+        return s.substr(1, s.size() - 2);
+    
+    return s;
+}
+
 auto string::split(std::string& str, char delimiter) -> std::vector<std::string>
 {
-    std::vector<std::string> internal;
+    std::vector<std::string> tokens;
     std::stringstream ss(str);
     std::string tok;
 
-    if(str.find(delimiter) == std::string::npos)
-    {
-        internal.push_back(str);
-        return internal;
-    }
-
-    // fix literals  ("hello there"), ("ok \n next")
     while (std::getline(ss, tok, delimiter))
     {
-        internal.push_back(tok);
+        tokens.push_back(tok);
     }
 
-    return internal;
+    return tokens;
 }
 
 auto string::clean_buffer_lines(std::vector<std::uint8_t>& buffer) -> std::vector<std::string>
 {
-    std::size_t pos;
-    // TODO: optimize
     std::string data = std::string(reinterpret_cast<char*>(buffer.data()), buffer.size());
+    std::size_t pos;
 
     while ((pos = data.find("\t")) != std::string::npos)
     {
@@ -138,7 +148,29 @@ auto string::clean_buffer_lines(std::vector<std::uint8_t>& buffer) -> std::vecto
         data = data.replace(pos, 1, "");
     }
 
-    return string::split(data, '\n');
+    std::vector<std::string> lines;
+    std::stringstream ss(data);
+    std::string tok;
+
+    while (std::getline(ss, tok, '\n'))
+    {
+        lines.push_back(tok);
+    }
+
+    return lines;
+}
+
+auto string::parse_code(std::string& line) -> std::vector<std::string>
+{
+    std::vector<std::string> data;
+    std::regex exp(R"(([_A-Za-z0-9\-]+|\"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\')(?:\s+|$))");
+
+    for(auto i = std::sregex_iterator(line.begin(), line.end(), exp); i != std::sregex_iterator(); ++i)
+    {
+        data.push_back(i->format("$1"));
+    }
+
+    return data;
 }
 
 } // namespace utils

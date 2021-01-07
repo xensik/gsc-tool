@@ -66,11 +66,11 @@ void assembler::assemble(std::vector<std::uint8_t>& data)
         }
         else
         {
-            std::vector<std::string> data = utils::string::split(line, ' ');
+            auto data = utils::string::parse_code(line);
 
             if (switchnum)
             {
-                if (line.substr(0, 4) == "case" || line.substr(0, 7) == "default")
+                if (data[0] == "case" || data[0] == "default")
                 {
                     for (auto& entry : data)
                     {
@@ -87,10 +87,10 @@ void assembler::assemble(std::vector<std::uint8_t>& data)
             {
                 auto inst = std::make_unique<gsc::instruction>();
                 inst->index = index;
-                inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(utils::string::to_lower(data[0])));
+                inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(data[0]));
                 inst->size = opcode_size(opcode(inst->opcode));
                 data.erase(data.begin());
-                inst->data = data;
+                inst->data = std::move(data);
 
                 if (opcode(inst->opcode) == opcode::OP_endswitch)
                 {
@@ -257,13 +257,13 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_GetAnimation:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         script_->write<std::uint32_t>(0);
-        stack_->write_c_string(inst->data[0]);
-        stack_->write_c_string(inst->data[1]);
+        stack_->write_c_string(utils::string::unquote(inst->data[0]));
+        stack_->write_c_string(utils::string::unquote(inst->data[1]));
         break;
     case opcode::OP_GetAnimTree:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         script_->write<std::uint8_t>(0);
-        stack_->write_c_string(inst->data[0]);
+        stack_->write_c_string(utils::string::unquote(inst->data[0]));
         break;
     case opcode::OP_waittillmatch:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));

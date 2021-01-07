@@ -183,12 +183,12 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
         break;
     case opcode::OP_GetAnimation:
         script_->seek(8);
-        inst->data.push_back(stack_->read_c_string());
-        inst->data.push_back(stack_->read_c_string());
+        inst->data.push_back(utils::string::quote(stack_->read_c_string().data()));
+        inst->data.push_back(utils::string::quote(stack_->read_c_string().data()));
         break;
     case opcode::OP_GetAnimTree:
         script_->seek(1);
-        inst->data.push_back(stack_->read_c_string());
+        inst->data.push_back(utils::string::quote(stack_->read_c_string().data()));
         break;
     case opcode::OP_waittillmatch:
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint16_t>()));

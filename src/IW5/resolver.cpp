@@ -4312,7 +4312,7 @@ std::unordered_map<std::uint16_t, std::string> resolver::token_map
     { 14985, "activateNuke" },
     { 14986, "setUseBarScore" },
     { 14987, "updateHudElems" },
-    { 15008, "setupReverb" },
+    { 15008, "audio_settings" },
     { 15107, "meleeingPlayer" },
     { 17433, "attachmentMap" },
     { 17434, "checkRoundWin" },
