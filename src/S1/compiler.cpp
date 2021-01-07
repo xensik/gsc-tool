@@ -362,7 +362,7 @@ void compiler::emit_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_pt
     auto continue_loc = create_label();
 
     if(stmt->pre_expr.as_node->type != gsc::node_type::null)
-        emit_expr(ctx, stmt->pre_expr);
+        emit_expr_assign(ctx, stmt->pre_expr.as_assign);
 
     auto for_ctx = ctx->transfer();
 
@@ -384,7 +384,7 @@ void compiler::emit_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_pt
     insert_label(continue_loc);
 
     if(stmt->post_expr.as_node->type != gsc::node_type::null)
-        emit_expr(ctx, stmt->post_expr);
+        emit_expr_assign(ctx, stmt->post_expr.as_assign);
 
     emit_opcode(ctx, opcode::OP_jumpback, begin_loc);
     
