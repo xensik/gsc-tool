@@ -79,6 +79,7 @@ private:
     void emit_array_variable_ref(const gsc::context_ptr& ctx, const gsc::expr_array_ptr& expr, bool set);
     void emit_field_variable_ref(const gsc::context_ptr& ctx, const gsc::expr_field_ptr& expr, bool set);
     void emit_local_variable_ref(const gsc::context_ptr& ctx, const gsc::identifier_ptr& expr, bool set);
+    void emit_variable(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr);
     void emit_array_variable(const gsc::context_ptr& ctx, const gsc::expr_array_ptr& expr);
     void emit_field_variable(const gsc::context_ptr& ctx, const gsc::expr_field_ptr& expr);
     void emit_local_variable(const gsc::context_ptr& ctx, const gsc::identifier_ptr& expr);

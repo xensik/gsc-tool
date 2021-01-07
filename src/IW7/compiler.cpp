@@ -1016,7 +1016,7 @@ void compiler::emit_expr_vector(const gsc::context_ptr& ctx, const gsc::expr_vec
 
 void compiler::emit_expr_size(const gsc::context_ptr& ctx, const gsc::expr_size_ptr& expr)
 {
-    emit_object(ctx, expr->obj);
+    emit_variable(ctx, expr->obj);
     emit_opcode(ctx, opcode::OP_size);
 }
 
@@ -1105,9 +1105,15 @@ void compiler::emit_field_variable_ref(const gsc::context_ptr& ctx, const gsc::e
         set ? emit_opcode(ctx, opcode::OP_SetSelfFieldVariableField, field) : emit_opcode(ctx, opcode::OP_EvalSelfFieldVariableRef, field);
         break;
     case gsc::node_type::expr_array:
-        emit_array_variable_ref(ctx, expr->obj.as_array, false);
-        emit_opcode(ctx, opcode::OP_CastFieldObject);             // TODO: need?
-        emit_opcode(ctx, opcode::OP_EvalFieldVariableRef, field);    
+        emit_array_variable(ctx, expr->obj.as_array);
+        emit_opcode(ctx, opcode::OP_CastFieldObject);
+        emit_opcode(ctx, opcode::OP_EvalFieldVariableRef, field);
+        if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
+        break;
+    case gsc::node_type::expr_field:
+        emit_field_variable(ctx, expr->obj.as_field);
+        emit_opcode(ctx, opcode::OP_CastFieldObject);
+        emit_opcode(ctx, opcode::OP_EvalFieldVariableRef, field);
         if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
         break;
     case gsc::node_type::identifier:
@@ -1115,12 +1121,11 @@ void compiler::emit_field_variable_ref(const gsc::context_ptr& ctx, const gsc::e
         emit_opcode(ctx, opcode::OP_EvalFieldVariableRef, field);
         if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
         break;
-    // case field:  var.field.field
     case gsc::node_type::expr_call:
         GSC_COMP_ERROR("line %s: function call result can't be referenced", expr->location.data());
         break;
     default:
-        GSC_COMP_ERROR("line %s: unknown field variable objet type", expr->location.data());
+        GSC_COMP_ERROR("line %s: unknown field variable object type", expr->location.data());
         break;
     }
 }
@@ -1154,6 +1159,19 @@ void compiler::emit_local_variable_ref(const gsc::context_ptr& ctx, const gsc::i
     }
 }
 
+void compiler::emit_variable(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
+{
+    // for obj.size
+    switch(expr.as_node->type)
+    {
+        case gsc::node_type::expr_array: emit_array_variable(ctx, expr.as_array); break;
+        case gsc::node_type::expr_field: emit_field_variable(ctx, expr.as_field); break;
+        case gsc::node_type::identifier: emit_local_variable(ctx, expr.as_identifier); break;
+        case gsc::node_type::expr_call:  emit_expr_call(ctx, expr.as_call); break;
+        default: GSC_COMP_ERROR("line %s: invalid variable type.", expr.as_node->location.data()); break;
+    }
+}
+
 void compiler::emit_array_variable(const gsc::context_ptr& ctx, const gsc::expr_array_ptr& expr)
 {
     emit_expr(ctx, expr->key);
@@ -1172,23 +1190,37 @@ void compiler::emit_array_variable(const gsc::context_ptr& ctx, const gsc::expr_
 
 void compiler::emit_field_variable(const gsc::context_ptr& ctx, const gsc::expr_field_ptr& expr)
 {
+    const auto& field = expr->field->value;
+
     switch(expr->obj.as_node->type)
     {
     case gsc::node_type::level:
-        emit_opcode(ctx, opcode::OP_EvalLevelFieldVariable, expr->field->value);
+        emit_opcode(ctx, opcode::OP_EvalLevelFieldVariable, field);
         break;
     case gsc::node_type::anim:
-        emit_opcode(ctx, opcode::OP_EvalAnimFieldVariable, expr->field->value);
+        emit_opcode(ctx, opcode::OP_EvalAnimFieldVariable, field);
         break;
     case gsc::node_type::self:
-        emit_opcode(ctx, opcode::OP_EvalSelfFieldVariable, expr->field->value);
+        emit_opcode(ctx, opcode::OP_EvalSelfFieldVariable, field);
+        break;
+    case gsc::node_type::expr_array:
+        emit_array_variable(ctx, expr->obj.as_array);
+        emit_opcode(ctx, opcode::OP_CastFieldObject);
+        emit_opcode(ctx, opcode::OP_EvalFieldVariable, field);  
+        break;
+    case gsc::node_type::expr_field:
+        emit_field_variable(ctx, expr->obj.as_field);
+        emit_opcode(ctx, opcode::OP_CastFieldObject);
+        emit_opcode(ctx, opcode::OP_EvalFieldVariable, field);
+        break;
+    case gsc::node_type::expr_call:
+        emit_expr_call(ctx, expr->obj.as_call);
+        emit_opcode(ctx, opcode::OP_CastFieldObject);
+        emit_opcode(ctx, opcode::OP_EvalFieldVariable, field);
         break;
     default:
-        emit_object(ctx, expr->obj);
-        emit_opcode(ctx, opcode::OP_EvalFieldVariable, expr->field->value);
+        GSC_COMP_ERROR("line %s: unknown field variable object type", expr->location.data());
         break;
-
-        // arrays?
     }
 }
 
