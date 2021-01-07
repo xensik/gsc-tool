@@ -1734,13 +1734,13 @@ YY_RULE_SETUP
 case 92:
 YY_RULE_SETUP
 #line 132 "S2.lexer.lpp"
-{ return S2::parser::make_ANIMREF(utils::string::to_lower(yytext)); }
+{ return S2::parser::make_ANIMREF(utils::string::to_lower(yytext).substr(1)); }
 	YY_BREAK
 case 93:
 /* rule 93 can match eol */
 YY_RULE_SETUP
 #line 133 "S2.lexer.lpp"
-{ return S2::parser::make_STRING_LOC(std::string(yytext)); }
+{ return S2::parser::make_STRING_LOC(std::string(yytext).substr(1)); }
 	YY_BREAK
 case 94:
 /* rule 94 can match eol */

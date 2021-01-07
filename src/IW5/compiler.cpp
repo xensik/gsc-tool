@@ -63,9 +63,12 @@ void compiler::compile_script(const gsc::script_ptr& script)
 {
     index_ = 1;
 
-    for(const auto& thread : script->threads)
+    for(const auto& def : script->definitions)
     {
-        local_functions_.push_back(thread->name->value);
+        if(def.as_node->type == gsc::node_type::thread)
+        {
+            local_functions_.push_back(def.as_thread->name->value);
+        }
     }
 
     for(const auto& include : script->includes)
@@ -73,14 +76,9 @@ void compiler::compile_script(const gsc::script_ptr& script)
         emit_include(include);
     }
 
-    for(const auto& animtree : script->animtrees)
+    for(const auto& def : script->definitions)
     {
-        emit_using_animtree(animtree);  
-    }
-
-    for(const auto& thread : script->threads)
-    {
-        emit_thread(thread);
+        emit_definition(def);  
     }
 
 #ifdef DEBUG
@@ -99,9 +97,25 @@ void compiler::emit_include(const gsc::include_ptr& include)
     // ...
 }
 
+void compiler::emit_definition(const gsc::definition_ptr& definition)
+{
+    switch(definition.as_node->type)
+    {
+        case gsc::node_type::using_animtree: emit_using_animtree(definition.as_using_animtree); break;
+        case gsc::node_type::constant:       emit_constant(definition.as_constant); break;
+        case gsc::node_type::thread:         emit_thread(definition.as_thread); break;
+        default: GSC_COMP_ERROR("line %s: unknown definition type", definition.as_node->location.data()); break;
+    }
+}
+
 void compiler::emit_using_animtree(const gsc::using_animtree_ptr& animtree)
 {
     animtrees_.push_back(animtree->animtree->value);
+}
+
+void compiler::emit_constant(const gsc::constant_ptr& constant)
+{
+
 }
 
 void compiler::emit_thread(const gsc::thread_ptr& thread)
@@ -556,6 +570,7 @@ void compiler::emit_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
         case gsc::node_type::expr_call:             emit_expr_call(ctx, expr.as_call); break;
         case gsc::node_type::expr_array:            emit_array_variable(ctx, expr.as_array); break;
         case gsc::node_type::expr_field:            emit_field_variable(ctx, expr.as_field); break;
+        case gsc::node_type::expr_vector:           emit_expr_vector(ctx, expr.as_vector_expr); break;
         case gsc::node_type::expr_size:             emit_expr_size(ctx, expr.as_size_expr); break;
         case gsc::node_type::expr_function_ref:     emit_expr_function_ref(ctx, expr.as_function_ref); break;
         case gsc::node_type::empty_array:           emit_opcode(ctx, opcode::OP_EmptyArray); break;
@@ -570,7 +585,10 @@ void compiler::emit_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
         case gsc::node_type::data_float:            emit_float(ctx, expr.as_float); break;
         case gsc::node_type::data_integer:          emit_integer(ctx, expr.as_integer); break;
         case gsc::node_type::data_vector:           emit_vector(ctx, expr.as_vector); break;
-        case gsc::node_type::expr_vector:           emit_expr_vector(ctx, expr.as_vector_expr); break;
+        case gsc::node_type::animtree:              emit_animtree(ctx, expr.as_animtree); break;
+        case gsc::node_type::animref:               emit_animation(ctx, expr.as_animref); break;
+        case gsc::node_type::data_true:             emit_true(ctx, expr.as_true); break;
+        case gsc::node_type::data_false:            emit_false(ctx, expr.as_false); break;
         default: GSC_COMP_ERROR("line %s: unknown expression", expr.as_node->location.data()); break;
     }
 }
@@ -1307,6 +1325,27 @@ void compiler::emit_localized_string(const gsc::context_ptr& ctx, const gsc::loc
 void compiler::emit_string(const gsc::context_ptr& ctx, const gsc::string_ptr& str)
 {
     emit_opcode(ctx, opcode::OP_GetString, str->value);
+}
+
+void compiler::emit_animtree(const gsc::context_ptr& ctx, const gsc::animtree_ptr& tree)
+{
+    
+}
+
+void compiler::emit_animation(const gsc::context_ptr& ctx, const gsc::animref_ptr& anim)
+{
+    // check if animtree loaded
+    
+}
+
+void compiler::emit_true(const gsc::context_ptr& ctx, const gsc::true_ptr& expr)
+{
+    emit_opcode(ctx, opcode::OP_GetByte, "1");
+}
+
+void compiler::emit_false(const gsc::context_ptr& ctx, const gsc::false_ptr& expr)
+{
+    emit_opcode(ctx, opcode::OP_GetZero);
 }
 
 void compiler::emit_opcode(const gsc::context_ptr& ctx, opcode op)

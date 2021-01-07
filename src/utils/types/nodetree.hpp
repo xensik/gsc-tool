@@ -21,7 +21,10 @@ enum class node_type
     empty_array,
     filepath,
     identifier,
+    animtree,
     animref,
+    data_true,
+    data_false,
     data_string,
     data_localized_string,
     data_integer,
@@ -94,7 +97,7 @@ enum class node_type
     block,
     parameters,
     thread,
-    animtree,
+    constant,
     using_animtree,
     include,
     script,
@@ -121,7 +124,10 @@ struct node_undefined;
 struct node_empty_array;
 struct node_filepath;
 struct node_identifier;
+struct node_animtree;
 struct node_animref;
+struct node_true;
+struct node_false;
 struct node_string;
 struct node_localized_string;
 struct node_integer;
@@ -196,6 +202,7 @@ struct node_stmt_return;
 struct node_block;
 struct node_parameters;
 struct node_thread;
+struct node_constant;
 struct node_animtree;
 struct node_using_animtree;
 struct node_include;
@@ -219,7 +226,10 @@ using undefined_ptr = std::unique_ptr<node_undefined>;
 using empty_array_ptr = std::unique_ptr<node_empty_array>;
 using filepath_ptr = std::unique_ptr<node_filepath>;
 using identifier_ptr = std::unique_ptr<node_identifier>;
+using animtree_ptr = std::unique_ptr<node_animtree>;
 using animref_ptr = std::unique_ptr<node_animref>;
+using true_ptr = std::unique_ptr<node_true>;
+using false_ptr = std::unique_ptr<node_false>;
 using string_ptr = std::unique_ptr<node_string>;
 using localized_string_ptr = std::unique_ptr<node_localized_string>;
 using integer_ptr = std::unique_ptr<node_integer>;
@@ -294,6 +304,7 @@ using stmt_return_ptr = std::unique_ptr<node_stmt_return>;
 using block_ptr = std::unique_ptr<node_block>;
 using parameters_ptr = std::unique_ptr<node_parameters>;
 using thread_ptr = std::unique_ptr<node_thread>;
+using constant_ptr = std::unique_ptr<node_constant>;
 using animtree_ptr = std::unique_ptr<node_animtree>;
 using using_animtree_ptr = std::unique_ptr<node_using_animtree>;
 using include_ptr = std::unique_ptr<node_include>;
@@ -329,8 +340,11 @@ union expr_ptr
     size_ptr as_size;
     undefined_ptr as_undefined;
     empty_array_ptr as_empty_array;
+    true_ptr as_true;
+    false_ptr as_false;
     filepath_ptr as_filepath;
     identifier_ptr as_identifier;
+    animtree_ptr as_animtree;
     animref_ptr as_animref;
     string_ptr as_string;
     localized_string_ptr as_localized_string;
@@ -442,6 +456,19 @@ union stmt_ptr
         return *(stmt_ptr*)&as_node;
     }
     ~stmt_ptr(){}
+};
+
+union definition_ptr
+{
+    node_ptr as_node;
+    using_animtree_ptr as_using_animtree;
+    constant_ptr as_constant;
+    thread_ptr as_thread;
+
+    definition_ptr() {}
+    definition_ptr(node_ptr val): as_node(std::move(val)) {}
+    definition_ptr(definition_ptr && val) { new(&as_node) node_ptr(std::move(val.as_node)); }
+    ~definition_ptr(){}
 };
 
 struct node
@@ -576,6 +603,18 @@ struct node_identifier : public node
     }
 };
 
+struct node_animtree : public node
+{
+    node_animtree() : node(node_type::animref) {}
+
+    node_animtree(const std::string& location) : node(node_type::animtree, location) {}
+
+    auto print() -> std::string override
+    {
+        return "#animtree"s;
+    }
+};
+
 struct node_animref : public node
 {
     std::string value;
@@ -589,6 +628,28 @@ struct node_animref : public node
     auto print() -> std::string override
     {
         return "%"s += value;
+    }
+};
+
+struct node_true : public node
+{
+    node_true() : node(node_type::data_true) {}
+    node_true(const std::string& location) : node(node_type::data_true, location) {}
+
+    auto print() -> std::string override
+    {
+        return "true";
+    }
+};
+
+struct node_false : public node
+{
+    node_false() : node(node_type::data_false) {}
+    node_false(const std::string& location) : node(node_type::data_false, location) {}
+
+    auto print() -> std::string override
+    {
+        return "false";
     }
 };
 
@@ -1951,7 +2012,7 @@ struct node_parameters : public node
     auto print() -> std::string override
     {
         std::string data;
-        
+
         for (const auto& param : list)
         {
             data += " " + param->print();
@@ -1982,19 +2043,20 @@ struct node_thread : public node
     }
 };
 
-struct node_animtree : public node
+struct node_constant : public node
 {
-     string_ptr animtree;
+    identifier_ptr id;
+    expr_ptr value;
 
-    node_animtree(string_ptr animtree)
-        : node(node_type::animtree), animtree(std::move(animtree)) {}
+    node_constant(identifier_ptr id, expr_ptr value)
+        : node(node_type::constant), id(std::move(id)), value(std::move(value)) {}
 
-    node_animtree(const std::string& location, string_ptr animtree)
-        : node(node_type::animtree, location), animtree(std::move(animtree)) {}
+    node_constant(const std::string& location, identifier_ptr id, expr_ptr value)
+        : node(node_type::constant, location), id(std::move(id)), value(std::move(value)) {}
 
     auto print() -> std::string override
     {
-        return "#animtree"s + "(" + animtree->print() + ");\n";
+        return id->print() + " = "s + value.as_node->print() + ";\n";
     }
 };
 
@@ -2033,8 +2095,7 @@ struct node_include : public node
 struct node_script : public node
 {
     std::vector<include_ptr> includes;
-    std::vector<using_animtree_ptr> animtrees;
-    std::vector<thread_ptr> threads;
+    std::vector<definition_ptr> definitions;
     
     node_script()
         : node(node_type::script) {}
@@ -2050,13 +2111,15 @@ struct node_script : public node
         {
             data += include->print();
         }
-        for (const auto& animtree : animtrees)
+
+        for (const auto& def : definitions)
         {
-            data += animtree->print();
-        }
-        for (const auto& thread : threads)
-        {
-            data += "\n" + thread->print();
+            if(def.as_node->type == node_type::thread)
+            {
+                data += "\n";
+            }
+
+            data += def.as_node->print();
         }
 
         return data;

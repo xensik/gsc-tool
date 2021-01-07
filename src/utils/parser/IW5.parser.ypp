@@ -57,8 +57,9 @@
 
 %type <gsc::script_ptr> 				script
 %type <gsc::include_ptr> 				include
+%type <gsc::definition_ptr> 			definition
 %type <gsc::using_animtree_ptr> 		using_animtree
-%type <gsc::using_animtree_ptr> 		animtree
+%type <gsc::constant_ptr> 				constant
 %type <gsc::thread_ptr> 				thread
 %type <gsc::parameters_ptr> 			parameters
 %type <gsc::block_ptr> 					block
@@ -96,13 +97,15 @@
 %type <gsc::node_ptr> 					expr_add_array
 %type <gsc::node_ptr> 					object
 %type <gsc::node_ptr> 					vector       
-%type <gsc::node_ptr> 					num
-%type <gsc::node_ptr> 					false true 
+%type <gsc::node_ptr> 					number
 %type <gsc::float_ptr> 					data_float
 %type <gsc::integer_ptr> 				data_integer
 %type <gsc::localized_string_ptr> 		data_localized_string
 %type <gsc::string_ptr> 				data_string
+%type <gsc::true_ptr> 				    data_true
+%type <gsc::false_ptr> 				    data_false
 %type <gsc::animref_ptr> 			    animref
+%type <gsc::animtree_ptr>               animtree
 %type <gsc::identifier_ptr> 			identifier
 %type <gsc::filepath_ptr> 				filepath
 %type <gsc::node_ptr> 					level anim self game size undefined empty_array
@@ -122,20 +125,12 @@ root
 script
 	: script include
 		{ $$ = std::move($1); $$->includes.push_back(std::move($2)); }
-	| script using_animtree
-		{ $$ = std::move($1); $$->animtrees.push_back(std::move($2)); }
-	| script animtree
-		{ $$ = std::move($1); $$->animtrees.push_back(std::move($2)); }
-	| script thread
-		{ $$ = std::move($1); $$->threads.push_back(std::move($2)); }
+	| script definition
+		{ $$ = std::move($1); $$->definitions.push_back(std::move($2)); }
 	| include
 		{ $$ = std::make_unique<gsc::node_script>(std::to_string(*location)); $$->includes.push_back(std::move($1));}
-	| using_animtree
-		{ $$ = std::make_unique<gsc::node_script>(std::to_string(*location)); $$->animtrees.push_back(std::move($1));}
-	| animtree
-		{ $$ = std::make_unique<gsc::node_script>(std::to_string(*location)); $$->animtrees.push_back(std::move($1));}
-	| thread
-		{ $$ = std::make_unique<gsc::node_script>(std::to_string(*location)); $$->threads.push_back(std::move($1));}
+	| definition
+		{ $$ = std::make_unique<gsc::node_script>(std::to_string(*location)); $$->definitions.push_back(std::move($1));}
 	;
 
 include
@@ -143,14 +138,20 @@ include
 		{ $$ = std::make_unique<gsc::node_include>(std::to_string(*location), std::move($2)); }
 	;
 
+definition
+	: using_animtree 						{ $$.as_using_animtree = std::move($1); }
+	| constant 								{ $$.as_constant = std::move($1); }
+	| thread 								{ $$.as_thread = std::move($1); }
+	;
+
 using_animtree
 	: USING_ANIMTREE LPAREN data_string RPAREN SEMICOLON
 		{ $$ = std::make_unique<gsc::node_using_animtree>(std::to_string(*location), std::move($3)); }
 	;
 
-animtree
-	: ANIMTREE LPAREN data_string RPAREN SEMICOLON
-		{ $$ = std::make_unique<gsc::node_using_animtree>(std::to_string(*location), std::move($3)); }
+constant
+	: identifier ASSIGN expr SEMICOLON
+		{ $$ = std::make_unique<gsc::node_constant>(std::to_string(*location), std::move($1), std::move($3)); }
 	;
 
 thread
@@ -225,7 +226,7 @@ stmt_notify
 stmt_wait
 	: WAIT LPAREN expr RPAREN SEMICOLON
 		{ $$ = std::make_unique<gsc::node_stmt_wait>(std::to_string(*location), std::move($3)); }
-	| WAIT num SEMICOLON
+	| WAIT number SEMICOLON
 		{ $$ = std::make_unique<gsc::node_stmt_wait>(std::to_string(*location), std::move($2)); }
 	;
 
@@ -291,7 +292,7 @@ stmt_while
 stmt_for
 	: FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN LBRACE block RBRACE
 		{ $$ = std::make_unique<gsc::node_stmt_for>(std::to_string(*location), std::move($3), std::move($5), std::move($7), std::move($10)); }
-	|FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN stmt
+	| FOR LPAREN for_assign SEMICOLON for_cond SEMICOLON for_assign RPAREN stmt
 		{
 			auto blk = std::make_unique<gsc::node_block>(std::to_string(*location));
 			blk->stmts.push_back(std::move($9));
@@ -417,10 +418,13 @@ expr_primitive
 	| expr_vector						{ $$.as_node = std::move($1); }
 	| expr_add_array					{ $$.as_node = std::move($1); }
 	| vector							{ $$.as_node = std::move($1); }
-	| num 								{ $$.as_node = std::move($1); }
+	| number 							{ $$.as_node = std::move($1); }
 	| data_localized_string				{ $$.as_node = std::move($1); }
 	| data_string						{ $$.as_node = std::move($1); }
+	| data_false 						{ $$.as_node = std::move($1); }
+	| data_true 						{ $$.as_node = std::move($1); }
 	| animref 			     			{ $$.as_node = std::move($1); }
+	| animtree 			     			{ $$.as_node = std::move($1); }
 	| identifier 						{ $$.as_node = std::move($1); }
 	| empty_array						{ $$.as_node = std::move($1); }
 	| undefined							{ $$.as_node = std::move($1); }
@@ -511,24 +515,23 @@ object
 	;
 
 vector
-	: LPAREN num COMMA num COMMA num RPAREN
+	: LPAREN number COMMA number COMMA number RPAREN
 		{ $$ = std::make_unique<gsc::node_vector>(std::to_string(*location), std::move($2), std::move($4), std::move($6)); }
 	;
 
-num
+number
 	: data_float 			{ $$ = std::move($1); }
 	| data_integer 			{ $$ = std::move($1); }
-	| false 				{ $$ = std::move($1); }
-	| true 					{ $$ = std::move($1); }
 	;
 
-false 		: FALSE 		{ $$ = std::make_unique<gsc::node_integer>(std::to_string(*location), "0"); };
-true 		: TRUE 			{ $$ = std::make_unique<gsc::node_integer>(std::to_string(*location), "1"); };
+data_false  : FALSE 		{ $$ = std::make_unique<gsc::node_false>(std::to_string(*location)); };
+data_true 	: TRUE 			{ $$ = std::make_unique<gsc::node_true>(std::to_string(*location)); };
 data_float 	: FLOAT 		{ $$ = std::make_unique<gsc::node_float>(std::to_string(*location), $1); };
 data_integer : INTEGER 		{ $$ = std::make_unique<gsc::node_integer>(std::to_string(*location), $1); };
 data_localized_string : STRING_LOC { $$ = std::make_unique<gsc::node_localized_string>(std::to_string(*location), $1); };
 data_string : STRING 		{ $$ = std::make_unique<gsc::node_string>(std::to_string(*location), $1); };
 animref 	: ANIMREF    	{ $$ = std::make_unique<gsc::node_animref>(std::to_string(*location), $1); };
+animtree 	: ANIMTREE    	{ $$ = std::make_unique<gsc::node_animtree>(std::to_string(*location)); };
 identifier 	: IDENTIFIER 	{ $$ = std::make_unique<gsc::node_identifier>(std::to_string(*location), $1); };
 filepath 	: FILEPATH 		{ $$ = std::make_unique<gsc::node_filepath>(std::to_string(*location), $1); };
 empty_array : EMPTY_ARRAY 	{ $$ = std::make_unique<gsc::node_empty_array>(std::to_string(*location)); };

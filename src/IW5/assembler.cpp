@@ -147,33 +147,34 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
 {
     switch (opcode(inst->opcode))
     {
-// OBJ
-    case opcode::OP_GetLevel:
-    case opcode::OP_GetAnim:
-    case opcode::OP_GetSelf:
-    case opcode::OP_GetGame:
-    case opcode::OP_GetGameRef:
-    case opcode::OP_GetLevelObject:
-    case opcode::OP_GetAnimObject:
-    case opcode::OP_GetSelfObject:
-// DATA
-    case opcode::OP_GetZero:
-    case opcode::OP_GetUndefined:
-    case opcode::OP_vector:
-    case opcode::OP_size:
-// OPS
     case opcode::OP_End:
     case opcode::OP_Return:
+    case opcode::OP_GetUndefined:
+    case opcode::OP_GetZero:
     case opcode::OP_waittillFrameEnd:
-    case opcode::OP_waittill:
-    case opcode::OP_wait:
+    case opcode::OP_EvalLocalVariableCached0:
+    case opcode::OP_EvalLocalVariableCached1:
+    case opcode::OP_EvalLocalVariableCached2:
+    case opcode::OP_EvalLocalVariableCached3:
+    case opcode::OP_EvalLocalVariableCached4:
+    case opcode::OP_EvalLocalVariableCached5:
+    case opcode::OP_EvalArray:
+    case opcode::OP_EvalArrayRef:
+    case opcode::OP_EvalLocalArrayRefCached0:
+    case opcode::OP_ClearArray:
+    case opcode::OP_EmptyArray:
+    case opcode::OP_AddArray:
     case opcode::OP_PreScriptCall:
-    case opcode::OP_DecTop:
-    case opcode::OP_notify:
-    case opcode::OP_endon:
-    case opcode::OP_voidCodepos:
-    case opcode::OP_clearparams:
-    case opcode::OP_checkclearparams:
+    case opcode::OP_ScriptFunctionCallPointer:
+    case opcode::OP_ScriptMethodCallPointer:
+    case opcode::OP_GetLevelObject:
+    case opcode::OP_GetAnimObject:
+    case opcode::OP_GetSelf:
+    case opcode::OP_GetThisthread:
+    case opcode::OP_GetLevel:
+    case opcode::OP_GetGame:
+    case opcode::OP_GetAnim:
+    case opcode::OP_GetGameRef:
     case opcode::OP_inc:
     case opcode::OP_dec:
     case opcode::OP_bit_or:
@@ -184,40 +185,39 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_less:
     case opcode::OP_greater:
     case opcode::OP_less_equal:
+    case opcode::OP_waittillmatch2:
+    case opcode::OP_waittill:
+    case opcode::OP_notify:
+    case opcode::OP_endon:
+    case opcode::OP_voidCodepos:
+    case opcode::OP_vector:
     case opcode::OP_greater_equal:
+    case opcode::OP_shift_left:
+    case opcode::OP_shift_right:
     case opcode::OP_plus:
     case opcode::OP_minus:
     case opcode::OP_multiply:
     case opcode::OP_divide:
     case opcode::OP_mod:
+    case opcode::OP_size:
+    case opcode::OP_GetSelfObject:
+    case opcode::OP_SafeSetVariableFieldCached0:
+    case opcode::OP_clearparams:
+    case opcode::OP_checkclearparams:
+    case opcode::OP_EvalLocalVariableRefCached0:
+    case opcode::OP_EvalNewLocalVariableRefCached0:
+    case opcode::OP_SetVariableField:
+    case opcode::OP_ClearVariableField:
+    case opcode::OP_SetLocalVariableFieldCached0:
+    case opcode::OP_ClearLocalVariableFieldCached0:
+    case opcode::OP_wait:
+    case opcode::OP_DecTop:
     case opcode::OP_CastFieldObject:
     case opcode::OP_CastBool:
     case opcode::OP_BoolNot:
     case opcode::OP_BoolComplement:
-// POINTER
-    case opcode::OP_ScriptFunctionCallPointer:
-    case opcode::OP_ScriptMethodCallPointer:
-// VARS
-    case opcode::OP_EvalLocalArrayRefCached0:
-    case opcode::OP_EvalLocalVariableCached0:
-    case opcode::OP_EvalLocalVariableCached1:
-    case opcode::OP_EvalLocalVariableCached2:
-    case opcode::OP_EvalLocalVariableCached3:
-    case opcode::OP_EvalLocalVariableCached4:
-    case opcode::OP_EvalLocalVariableCached5:
-    case opcode::OP_SafeSetVariableFieldCached0:
-    case opcode::OP_EvalLocalVariableRefCached0:
-    case opcode::OP_SetLocalVariableFieldCached0:
-    case opcode::OP_ClearLocalVariableFieldCached0:
-    case opcode::OP_EvalArray:
-    case opcode::OP_EvalArrayRef:
-    case opcode::OP_ClearArray:
-    case opcode::OP_EmptyArray:
-    case opcode::OP_AddArray:
-    case opcode::OP_SetVariableField:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         break;
-// DATA
     case opcode::OP_GetByte:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
@@ -252,46 +252,40 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_GetIString:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         script_->write<std::uint16_t>(0);
-        stack_->write_c_string(utils::string::get_string_literal(inst->data[0]));
+        stack_->write_c_string(utils::string::to_code(inst->data[0]));
         break;
     case opcode::OP_GetAnimation:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         script_->write<std::uint32_t>(0);
-        stack_->write_c_string(utils::string::get_string_literal(inst->data[0]));
-        stack_->write_c_string(utils::string::get_string_literal(inst->data[1]));
+        stack_->write_c_string(inst->data[0]);
+        stack_->write_c_string(inst->data[1]);
         break;
     case opcode::OP_GetAnimTree:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         script_->write<std::uint8_t>(0);
-        stack_->write_c_string(utils::string::get_string_literal(inst->data[0]));
+        stack_->write_c_string(inst->data[0]);
         break;
-// POINTER
-    case opcode::OP_ScriptThreadCallPointer:
-    case opcode::OP_ScriptMethodThreadCallPointer:
-    case opcode::OP_CallBuiltinPointer:
-    case opcode::OP_CallBuiltinMethodPointer:
+    case opcode::OP_waittillmatch:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
+        script_->write<std::uint16_t>(static_cast<std::uint16_t>(std::stol(inst->data[0])));
         break;
-// VARS
     case opcode::OP_CreateLocalVariable:
     case opcode::OP_RemoveLocalVariables:
+    case opcode::OP_EvalLocalVariableCached:
+    case opcode::OP_EvalLocalArrayCached:
+    case opcode::OP_EvalNewLocalArrayRefCached0:
+    case opcode::OP_EvalLocalArrayRefCached:
     case opcode::OP_SafeCreateVariableFieldCached:
     case opcode::OP_SafeSetVariableFieldCached:
     case opcode::OP_SafeSetWaittillVariableFieldCached:
-    case opcode::OP_EvalLocalVariableCached:
     case opcode::OP_EvalLocalVariableRefCached:
-    case opcode::OP_EvalLocalVariableObjectCached:
-    case opcode::OP_EvalLocalArrayCached:
-    case opcode::OP_EvalLocalArrayRefCached:
     case opcode::OP_SetNewLocalVariableFieldCached0:
     case opcode::OP_SetLocalVariableFieldCached:
     case opcode::OP_ClearLocalVariableFieldCached:
-    case opcode::OP_EvalNewLocalArrayRefCached0:
+    case opcode::OP_EvalLocalVariableObjectCached:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
         break;
-// VARS FIELD
     case opcode::OP_EvalLevelFieldVariable:
     case opcode::OP_EvalAnimFieldVariable:
     case opcode::OP_EvalSelfFieldVariable:
@@ -306,12 +300,14 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_SetSelfFieldVariableField:
         this->assemble_field_variable(inst);
         break;
-// CALLS
-    case opcode::OP_GetBuiltinFunction:
-        this->assemble_builtin_call(inst, false, false);
-        break;
-    case opcode::OP_GetBuiltinMethod:
-        this->assemble_builtin_call(inst, true, false);
+    case opcode::OP_ScriptThreadCallPointer:
+    case opcode::OP_ScriptChildThreadCallPointer:
+    case opcode::OP_ScriptMethodThreadCallPointer:
+    case opcode::OP_ScriptMethodChildThreadCallPointer:
+    case opcode::OP_CallBuiltinPointer:
+    case opcode::OP_CallBuiltinMethodPointer:
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
         break;
     case opcode::OP_ScriptLocalFunctionCall2:
     case opcode::OP_ScriptLocalFunctionCall:
@@ -343,6 +339,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_CallBuiltinMethod:
         this->assemble_builtin_call(inst, true, true);
         break;
+    case opcode::OP_GetBuiltinFunction:
     case opcode::OP_CallBuiltin0:
     case opcode::OP_CallBuiltin1:
     case opcode::OP_CallBuiltin2:
@@ -351,6 +348,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_CallBuiltin5:
         this->assemble_builtin_call(inst, false, false);
         break;
+    case opcode::OP_GetBuiltinMethod:
     case opcode::OP_CallBuiltinMethod0:
     case opcode::OP_CallBuiltinMethod1:
     case opcode::OP_CallBuiltinMethod2:
@@ -359,7 +357,6 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_CallBuiltinMethod5:
         this->assemble_builtin_call(inst, true, false);
         break;
-// JUMPS
     case opcode::OP_JumpOnFalseExpr:
     case opcode::OP_JumpOnTrueExpr:
     case opcode::OP_JumpOnFalse:
@@ -371,11 +368,6 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
         break;
     case opcode::OP_jump:
         this->assemble_jump(inst, false, false);
-        break;
-// OPS
-    case opcode::OP_waittillmatch:
-        script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-        script_->write<std::uint16_t>(static_cast<std::uint16_t>(std::stol(inst->data[0])));
         break;
     case opcode::OP_switch:
         this->assemble_switch(inst);
@@ -492,7 +484,7 @@ void assembler::assemble_end_switch(const gsc::instruction_ptr& inst)
         if (inst->data[1 + (3 * i)] == "case")
         {
             script_->write<uint32_t>(i + 1);
-            stack_->write_c_string(utils::string::get_string_literal(inst->data[1 + (3 * i) + 1]));
+            stack_->write_c_string(utils::string::to_code(inst->data[1 + (3 * i) + 1]));
 
             internal_index += 4;
 

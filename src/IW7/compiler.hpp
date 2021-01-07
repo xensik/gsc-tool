@@ -30,7 +30,9 @@ private:
     auto parse_file(const std::string& file) -> gsc::script_ptr;
     void compile_script(const gsc::script_ptr& script);
     void emit_include(const gsc::include_ptr& include);
+    void emit_definition(const gsc::definition_ptr& definition);
     void emit_using_animtree(const gsc::using_animtree_ptr& animtree);
+    void emit_constant(const gsc::constant_ptr& constant);
     void emit_thread(const gsc::thread_ptr& thread);
     void emit_parameters(const gsc::context_ptr& ctx, const gsc::parameters_ptr& params);
     void emit_block(const gsc::context_ptr& ctx, const gsc::block_ptr& block, bool last);
@@ -88,6 +90,10 @@ private:
     void emit_integer(const gsc::context_ptr& ctx, const gsc::integer_ptr& num);
     void emit_localized_string(const gsc::context_ptr& ctx, const gsc::localized_string_ptr& str);
     void emit_string(const gsc::context_ptr& ctx, const gsc::string_ptr& str);
+    void emit_animtree(const gsc::context_ptr& ctx, const gsc::animtree_ptr& tree);
+    void emit_animation(const gsc::context_ptr& ctx, const gsc::animref_ptr& anim);
+    void emit_true(const gsc::context_ptr& ctx, const gsc::true_ptr& expr);
+    void emit_false(const gsc::context_ptr& ctx, const gsc::false_ptr& expr);
     void emit_opcode(const gsc::context_ptr& ctx, opcode op);
     void emit_opcode(const gsc::context_ptr& ctx, opcode op, const std::string& data);
     void emit_opcode(const gsc::context_ptr& ctx, opcode op, const std::vector<std::string>& data);

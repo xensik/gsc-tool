@@ -27,16 +27,79 @@ auto string::is_hex_number(const std::string& s) -> bool
     return !s.empty() && std::all_of(s.begin(), s.end(), isxdigit);
 }
 
-auto string::to_lower(std::string input) -> std::string
+auto string::to_lower(const std::string& input) -> std::string
 {
-    std::string output(input.begin(), input.end());
+    std::string data(input.begin(), input.end());
 
-    for (std::size_t i = 0; i < output.size(); i++)
+    for (std::size_t i = 0; i < data.size(); i++)
     {
-        output[i] = std::tolower(input[i]);
+        data[i] = std::tolower(input[i]);
     }
 
-    return output;
+    return data;
+}
+
+auto string::to_code(const std::string& input) -> std::string
+{
+    std::string data(input.begin() + 1, input.end() - 1);
+    std::size_t pos;
+
+    while ((pos = data.find("\\n")) != std::string::npos)
+    {
+        data.erase(data.begin() + pos);
+        data = data.replace(pos, 1, "\n");
+    }
+    while ((pos = data.find("\\t")) != std::string::npos)
+    {
+        data.erase(data.begin() + pos);
+        data = data.replace(pos, 1, "\t");
+    }
+    while ((pos = data.find("\\r")) != std::string::npos)
+    {
+        data.erase(data.begin() + pos);
+        data = data.replace(pos, 1, "\r");
+    }
+    while ((pos = data.find("\\\"")) != std::string::npos)
+    {
+        data.erase(data.begin() + pos);
+    }
+
+    return data;
+}
+
+auto string::to_literal(const std::string& input) -> std::string
+{
+    std::string data(input.begin(), input.end());
+    std::size_t pos;
+
+    while ((pos = data.find('\n')) != std::string::npos)
+    {
+        data = data.replace(pos, 1, "n");
+        data.insert(data.begin() + pos, '\\');
+    }
+    while ((pos = data.find('\t')) != std::string::npos)
+    {
+        data = data.replace(pos, 1, "t");
+        data.insert(data.begin() + pos, '\\');
+    }
+    while ((pos = data.find('\r')) != std::string::npos)
+    {
+        data = data.replace(pos, 1, "r");
+        data.insert(data.begin() + pos, '\\');
+    }
+    for(pos = 0; pos < data.size(); pos++)
+    {
+        if(data.at(pos) == '\"')
+        {
+            data.insert(data.begin() + pos, '\\');
+            pos++;
+        }
+    }
+
+    data.insert(data.begin(), '\"');
+    data.insert(data.end(), '\"');
+
+    return data;
 }
 
 auto string::split(std::string& str, char delimiter) -> std::vector<std::string>
@@ -76,11 +139,6 @@ auto string::clean_buffer_lines(std::vector<std::uint8_t>& buffer) -> std::vecto
     }
 
     return string::split(data, '\n');
-}
-
-auto string::get_string_literal(std::string str) -> std::string
-{
-    return str.substr(1, str.size() - 2);
 }
 
 } // namespace utils

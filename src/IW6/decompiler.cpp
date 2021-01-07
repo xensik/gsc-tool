@@ -41,7 +41,7 @@ void decompiler::decompile(std::vector<gsc::function_ptr>& functions)
         
         this->decompile_function(func);
 
-        script_->threads.push_back(std::move(func_));
+        script_->definitions.push_back(gsc::definition_ptr(std::move(func_)));
     }
 }
 
@@ -131,7 +131,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             {
                 auto str_ = std::make_unique<gsc::node_string>(location, inst->data[0]);
                 auto anim = std::make_unique<gsc::node_using_animtree>(location, std::move(str_));
-                script_->animtrees.push_back(std::move(anim));
+                script_->definitions.push_back(gsc::definition_ptr(std::move(anim)));
             }
             auto node = std::make_unique<gsc::node_animref>(location, inst->data[1].substr(1, inst->data[1].size() - 2));
             stack_.push(std::move(node));
@@ -143,7 +143,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             {
                 auto str_ = std::make_unique<gsc::node_string>(location, inst->data[0]);
                 auto anim = std::make_unique<gsc::node_using_animtree>(location, std::move(str_));
-                script_->animtrees.push_back(std::move(anim));
+                script_->definitions.push_back(gsc::definition_ptr(std::move(anim)));
             }
         }
         break;

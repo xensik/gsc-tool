@@ -69,9 +69,9 @@ enum class opcode : std::uint8_t
     OP_ScriptFunctionCallPointer = 0x2F,
     OP_ScriptMethodCallPointer = 0x30,
     OP_ScriptThreadCallPointer = 0x31,
-    OP_ScriptChildThreadCallPointer = 0x32, // not used
+    OP_ScriptChildThreadCallPointer = 0x32,
     OP_ScriptMethodThreadCallPointer = 0x33,
-    OP_ScriptMethodChildThreadCallPointer = 0x34, // not used
+    OP_ScriptMethodChildThreadCallPointer = 0x34,
     OP_CallBuiltinPointer = 0x35,
     OP_CallBuiltinMethodPointer = 0x36,
     OP_GetIString = 0x37,
@@ -79,7 +79,7 @@ enum class opcode : std::uint8_t
     OP_GetLevelObject = 0x39,
     OP_GetAnimObject = 0x3A,
     OP_GetSelf = 0x3B,
-    OP_GetThisthread = 0x3C, // not used
+    OP_GetThisthread = 0x3C,
     OP_GetLevel = 0x3D,
     OP_GetGame = 0x3E,
     OP_GetAnim = 0x3F,
@@ -98,7 +98,7 @@ enum class opcode : std::uint8_t
     OP_JumpOnTrueExpr = 0x4C,
     OP_less_equal = 0x4D,
     OP_jumpback = 0x4E,
-    OP_waittillmatch2 = 0x4F, // nop // not used
+    OP_waittillmatch2 = 0x4F,
     OP_waittill = 0x50,
     OP_notify = 0x51,
     OP_endon = 0x52,
@@ -139,11 +139,11 @@ enum class opcode : std::uint8_t
     OP_clearparams = 0x75,
     OP_checkclearparams = 0x76,
     OP_EvalLocalVariableRefCached0 = 0x77,
-    OP_EvalNewLocalVariableRefCached0 = 0x78, // nop // not used
+    OP_EvalNewLocalVariableRefCached0 = 0x78,
     OP_EvalLocalVariableRefCached = 0x79,
     OP_SetLevelFieldVariableField = 0x7A,
     OP_SetVariableField = 0x7B,
-    OP_ClearVariableField = 0x7C, // nop // not used
+    OP_ClearVariableField = 0x7C,
     OP_SetAnimFieldVariableField = 0x7D,
     OP_SetSelfFieldVariableField = 0x7E,
     OP_SetLocalVariableFieldCached0 = 0x7F,
