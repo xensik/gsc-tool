@@ -102,19 +102,27 @@ auto string::to_literal(const std::string& input) -> std::string
     return data;
 }
 
-auto string::quote(const std::string& s) -> std::string
+auto string::quote(const std::string& s, bool single) -> std::string
 {
     std::string data(s.begin(), s.end());
 
-    data.insert(data.begin(), '\'');
-    data.insert(data.end(), '\'');
+    if(single)
+    {
+        data.insert(data.begin(), '\'');
+        data.insert(data.end(), '\'');
+    }
+    else
+    {
+        data.insert(data.begin(), '\"');
+        data.insert(data.end(), '\"');
+    }
 
     return data;
 }
 
 auto string::unquote(const std::string& s) -> std::string
 {
-    if(s.at(0) == '\'')
+    if(s.at(0) == '\'' || s.at(0) == '\"')
         return s.substr(1, s.size() - 2);
     
     return s;

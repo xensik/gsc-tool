@@ -13,13 +13,20 @@ enum class opcode : std::uint8_t;
 
 class compiler : public gsc::compiler
 {
+    struct animtree
+    {
+        std::string name;
+        bool loaded;
+    };
+
     std::vector<gsc::function_ptr> assembly_;
     gsc::function_ptr function_;
     std::uint32_t index_;
     std::uint32_t label_idx_;
     std::vector<std::string> local_functions_;
     std::vector<std::string> includes_;
-    std::vector<std::string> animtrees_;
+    std::vector<animtree> animtrees_;
+    std::unordered_map<std::string, gsc::expr_ptr> constants_;
 
 public:
     auto output() -> std::vector<gsc::function_ptr>;

@@ -110,12 +110,12 @@ void compiler::emit_definition(const gsc::definition_ptr& definition)
 
 void compiler::emit_using_animtree(const gsc::using_animtree_ptr& animtree)
 {
-    animtrees_.push_back(animtree->animtree->value);
+    animtrees_.push_back({ animtree->animtree->value, false });
 }
 
 void compiler::emit_constant(const gsc::constant_ptr& constant)
 {
-
+    constants_.insert({ constant->id->value, std::move(constant->value) });
 }
 
 void compiler::emit_thread(const gsc::thread_ptr& thread)
@@ -1229,6 +1229,17 @@ void compiler::emit_field_variable(const gsc::context_ptr& ctx, const gsc::expr_
 
 void compiler::emit_local_variable(const gsc::context_ptr& ctx, const gsc::identifier_ptr& expr)
 {
+    // is constant ( should only allow: string, loc string, number, vector)
+    const auto itr = constants_.find(expr->value);
+
+    if (itr != constants_.end())
+    {
+        const auto& value = itr->second;
+        emit_expr(ctx, value);
+        return;
+    }
+
+    // is local var
     auto index = find_local_var_index(ctx, expr->value);
 
     switch(index)
@@ -1362,15 +1373,44 @@ void compiler::emit_string(const gsc::context_ptr& ctx, const gsc::string_ptr& s
     emit_opcode(ctx, opcode::OP_GetString, str->value);
 }
 
-void compiler::emit_animtree(const gsc::context_ptr& ctx, const gsc::animtree_ptr& tree)
+void compiler::emit_animtree(const gsc::context_ptr& ctx, const gsc::animtree_ptr& animtree)
 {
-    
+    if(animtrees_.size() == 0)
+    {
+        GSC_COMP_ERROR("line %s: trying to use animtree without specified using animtree", animtree->location.data());
+    }
+
+    auto& tree = animtrees_.back();
+
+    if(tree.loaded)
+    {
+        emit_opcode(ctx, opcode::OP_GetAnimTree, "''");
+    }
+    else
+    {
+        emit_opcode(ctx, opcode::OP_GetAnimTree, tree.name);
+        tree.loaded = true;
+    }
 }
 
 void compiler::emit_animation(const gsc::context_ptr& ctx, const gsc::animref_ptr& anim)
 {
-    // check if animtree loaded
-    
+    if(animtrees_.size() == 0)
+    {
+        GSC_COMP_ERROR("line %s: trying to use animation without specified using animtree", anim->location.data());
+    }
+
+    auto& tree = animtrees_.back();
+
+    if(tree.loaded)
+    {
+        emit_opcode(ctx, opcode::OP_GetAnimation, { "''", anim->value });
+    }
+    else
+    {
+        emit_opcode(ctx, opcode::OP_GetAnimation, { tree.name, anim->value });
+        tree.loaded = true;
+    }
 }
 
 void compiler::emit_true(const gsc::context_ptr& ctx, const gsc::true_ptr& expr)
