@@ -417,20 +417,20 @@ void disassembler::disassemble_end_switch(const gsc::instruction_ptr& inst)
         {
             std::uint32_t case_label = script_->read<std::uint32_t>();
 
-            if (case_label < 0x10000 && case_label > 0)
+            if (case_label < 0x40000 && case_label > 0)
             {
                 inst->data.push_back("case");
-                inst->data.push_back(utils::string::va("\"%s\"", stack_->read_c_string().data()));
+                inst->data.push_back(utils::string::quote(stack_->read_c_string(), false));
             }
-            else if (case_label < 0x40000)
+            else if (case_label == 0)
             {
                 inst->data.push_back("default");
-                stack_->read<std::uint16_t>(); // should always be 01 00
+                stack_->read<std::uint16_t>();
             }
             else
             {
                 inst->data.push_back("case");
-                inst->data.push_back(utils::string::va("%i", case_label & 0xFFFF));
+                inst->data.push_back(utils::string::va("%i", (case_label - 0x800000) & 0xFFFFFF));
             }
 
             inst->size += 4;

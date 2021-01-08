@@ -484,8 +484,15 @@ void assembler::assemble_end_switch(const gsc::instruction_ptr& inst)
     {
         if (inst->data[1 + (3 * i)] == "case")
         {
-            script_->write<uint32_t>(i + 1);
-            stack_->write_c_string(utils::string::to_code(inst->data[1 + (3 * i) + 1]));
+            if (utils::string::is_number(inst->data[1 + (3 * i) + 1]))
+            {
+                script_->write<uint32_t>((std::stol(inst->data[0]) & 0xFFFFFF) + 0x800000);
+            }
+            else
+            {
+                script_->write<uint32_t>(i + 1);
+                stack_->write_c_string(utils::string::unquote(inst->data[1 + (3 * i) + 1]));
+            }
 
             internal_index += 4;
 
