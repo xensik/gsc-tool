@@ -12,64 +12,63 @@ auto file::read(const std::string& file) -> std::vector<std::uint8_t>
 {
     std::vector<std::uint8_t> data;
 
-    FILE* fp = fopen(file.data(), "rb");
-    if (fp)
-    {
-        long len = utils::file::length(fp);
-        data.resize(len);
-        fread(data.data(), len, 1, fp);
-        fclose(fp);
-    }
-    else
+    std::ifstream stream(file, std::ios::binary);
+    
+    if (!stream.good() && !stream.is_open())
     {
         printf("Couldn't open file %s!\n", file.data());
         std::exit(-1);
     }
 
-    return data;
-}
+    stream.seekg(0, std::ios::end);
+    std::streamsize size = stream.tellg();
+    stream.seekg(0, std::ios::beg);
 
-auto file::read_text(const std::string& file) -> std::string
-{
-    std::string data;
-
-    std::ifstream stream(file, std::ios::binary);
-    if (stream.good())
+    if (size > -1)
     {
-        if (!stream.is_open()) return data;
-
-        stream.seekg(0, std::ios::end);
-        std::streamsize size = stream.tellg();
-        stream.seekg(0, std::ios::beg);
-
-        if (size > -1)
-        {
-            data.clear();
-            data.resize(static_cast<uint32_t>(size));
-
-            stream.read(reinterpret_cast<char*>(data.data()), size);
-        }
-
-        stream.close();
+        data.resize(static_cast<uint32_t>(size));
+        stream.read(reinterpret_cast<char*>(data.data()), size);
     }
+
+    stream.close();
+
     return data;
 }
-
 
 void file::save(const std::string& file, const std::vector<std::uint8_t>& data)
 {
-    FILE* fp = fopen(file.data(), "wb");
-    fwrite(data.data(), 1, data.size(), fp);
-    fclose(fp);
+    const auto pos = file.find_last_of("/\\");
+
+    if (pos != std::string::npos)
+    {
+        std::filesystem::create_directories(file.substr(0, pos));
+    }
+
+    std::ofstream stream(file, std::ios::binary | std::ofstream::out);
+
+    if (stream.is_open())
+    {
+        stream.write(reinterpret_cast<const char*>(data.data()), data.size());
+        stream.close();
+    }
 }
 
-auto file::length(FILE* fp) -> long
+auto file::length(const std::string& file) -> size_t
 {
-    long i = ftell(fp);
-    fseek(fp, 0, SEEK_END);
-    long ret = ftell(fp);
-    fseek(fp, i, SEEK_SET);
-    return ret;
+    auto stream = std::ifstream(file, std::ios::binary);
+
+    if (stream.good())
+    {
+        stream.seekg(0, std::ios::end);
+        return static_cast<size_t>(stream.tellg());
+    }
+
+    return 0;
+}
+
+auto file::exists(const std::string& file) -> bool
+{
+    return std::ifstream(file).good();
 }
 
 } // namespace utils

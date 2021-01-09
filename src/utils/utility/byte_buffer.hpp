@@ -18,8 +18,8 @@ class byte_buffer
 public:
     byte_buffer();
     byte_buffer(std::size_t size);
-    byte_buffer(std::vector<std::uint8_t> data);
-    byte_buffer(std::string filename);
+    byte_buffer(const std::vector<std::uint8_t>& data);
+    byte_buffer(const std::string& file);
     ~byte_buffer();
 
     template <typename T>

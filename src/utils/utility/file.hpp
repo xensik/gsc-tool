@@ -13,9 +13,9 @@ class file
 {
 public:
     static auto read(const std::string& file) -> std::vector<std::uint8_t>;
-    static auto read_text(const std::string& file) -> std::string;
     static void save(const std::string& file, const std::vector<std::uint8_t>& data);
-    static auto length(FILE* fp) -> long;
+    static auto length(const std::string& file) -> size_t;
+    static auto exists(const std::string& file) -> bool;
 };
 
 } // namespace utils

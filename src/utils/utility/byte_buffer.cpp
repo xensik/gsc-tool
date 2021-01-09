@@ -24,32 +24,18 @@ byte_buffer::byte_buffer(std::size_t size)
     pos_ = 0;
 }
 
-byte_buffer::byte_buffer(std::vector<std::uint8_t> data)
+byte_buffer::byte_buffer(const std::vector<std::uint8_t>& data)
 {
     data_ = data;
     size_ = data.size();
     pos_ = 0;
 }
 
-byte_buffer::byte_buffer(std::string filename)
+byte_buffer::byte_buffer(const std::string& file)
 {
-    size_ = 0;
     pos_ = 0;
-
-    FILE* fp = fopen(filename.c_str(), "rb");
-    if (fp)
-    {
-        long len = utils::file::length(fp);
-        data_.resize(len);
-        fread(data_.data(), len, 1, fp);
-        fclose(fp);
-        size_ = len;
-    }
-    else
-    {
-        printf("Couldn't open file %s!\n", filename.data());
-        std::exit(-1);
-    }
+    size_ = utils::file::length(file);
+    data_ = utils::file::read(file);
 }
 
 byte_buffer::~byte_buffer()
