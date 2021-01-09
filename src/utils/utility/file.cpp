@@ -68,7 +68,7 @@ auto file::length(const std::string& file) -> size_t
 
 auto file::exists(const std::string& file) -> bool
 {
-    return std::ifstream(file).good();
+    return std::filesystem::exists(file);
 }
 
 } // namespace utils
