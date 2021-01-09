@@ -1765,7 +1765,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
         }
         break;
         default:
-            GSC_LOG_ERROR("unhandled opcode '%s'!", resolver::opcode_name(opcode(inst->opcode)).data());
+            GSC_LOG_ERROR("unhandled opcode '%s'!", resolver::opcode_name(inst->opcode).data());
         break;
         }
     }

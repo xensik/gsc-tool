@@ -8,7 +8,13 @@
 namespace IW8
 {
 
-auto resolver::opcode_id(const std::string& name) -> opcode
+std::unordered_map<std::uint8_t, std::string> opcode_map;
+std::unordered_map<std::uint16_t, std::string> function_map;
+std::unordered_map<std::uint16_t, std::string> method_map;
+std::unordered_map<std::uint16_t, std::string> file_map;
+std::unordered_map<std::uint16_t, std::string> token_map;
+
+auto resolver::opcode_id(const std::string& name) -> std::uint8_t
 {
     for (auto& opcode : opcode_map)
     {
@@ -19,10 +25,10 @@ auto resolver::opcode_id(const std::string& name) -> opcode
     }
 
     GSC_LOG_ERROR("Couldn't resolve opcode id for name '%s'!", name.data());
-    return opcode::OP_Count;
+    return 0xFF;
 }
 
-auto resolver::opcode_name(opcode id) -> std::string
+auto resolver::opcode_name(std::uint8_t id) -> std::string
 {
     const auto itr = opcode_map.find(id);
 
@@ -35,9 +41,9 @@ auto resolver::opcode_name(opcode id) -> std::string
     return "";
 }
 
-auto resolver::builtin_func_id(const std::string& name) -> std::uint16_t
+auto resolver::function_id(const std::string& name) -> std::uint16_t
 {
-    for (auto& func : builtin_function_map)
+    for (auto& func : function_map)
     {
         if (func.second == name)
         {
@@ -49,11 +55,11 @@ auto resolver::builtin_func_id(const std::string& name) -> std::uint16_t
     return 0xFFFF;
 }
 
-auto resolver::builtin_func_name(std::uint16_t id) -> std::string
+auto resolver::function_name(std::uint16_t id) -> std::string
 {
-    const auto itr = builtin_function_map.find(id);
+    const auto itr = function_map.find(id);
 
-    if (itr != builtin_function_map.end())
+    if (itr != function_map.end())
     {
         return itr->second;
     }
@@ -62,9 +68,9 @@ auto resolver::builtin_func_name(std::uint16_t id) -> std::string
     return utils::string::va("_ID%i", id);
 }
 
-auto resolver::builtin_method_id(const std::string& name) -> std::uint16_t
+auto resolver::method_id(const std::string& name) -> std::uint16_t
 {
-    for (auto& method : builtin_method_map)
+    for (auto& method : method_map)
     {
         if (method.second == name)
         {
@@ -76,11 +82,11 @@ auto resolver::builtin_method_id(const std::string& name) -> std::uint16_t
     return 0xFFFF;
 }
 
-auto resolver::builtin_method_name(std::uint16_t id) -> std::string
+auto resolver::method_name(std::uint16_t id) -> std::string
 {
-    const auto itr = builtin_method_map.find(id);
+    const auto itr = method_map.find(id);
 
-    if (itr != builtin_method_map.end())
+    if (itr != method_map.end())
     {
         return itr->second;
     }
@@ -140,9 +146,9 @@ auto resolver::token_name(std::uint32_t id) -> std::string
     return utils::string::va("_ID%i", id);
 }
 
-auto resolver::find_builtin_func(const std::string& name) -> bool
+auto resolver::find_function(const std::string& name) -> bool
 {
-    for (auto& func : builtin_function_map)
+    for (auto& func : function_map)
     {
         if (func.second == name)
         {
@@ -153,9 +159,9 @@ auto resolver::find_builtin_func(const std::string& name) -> bool
     return false;
 }
 
-auto resolver::find_builtin_meth(const std::string& name) -> bool
+auto resolver::find_method(const std::string& name) -> bool
 {
-    for (auto& method : builtin_method_map)
+    for (auto& method : method_map)
     {
         if (method.second == name)
         {
@@ -166,29 +172,67 @@ auto resolver::find_builtin_meth(const std::string& name) -> bool
     return false;
 }
 
-std::unordered_map<opcode, std::string> resolver::opcode_map
-{
+#define CODE_LIST_SIZE 0
+#define FUNC_LIST_SIZE 0
+#define METH_LIST_SIZE 0
+#define FILE_LIST_SIZE 0
+#define TOKN_LIST_SIZE 0
 
+const gsc::pair_8_str opcode_list[]
+{
 };
 
-std::unordered_map<std::uint16_t, std::string> resolver::builtin_function_map
+const gsc::pair_16_str function_list[]
 {
-
 };
 
-std::unordered_map<std::uint16_t, std::string> resolver::builtin_method_map
+const gsc::pair_16_str method_list[]
 {
-
 };
 
-std::unordered_map<std::uint32_t, std::string> resolver::file_map
+const gsc::pair_32_str file_list[]
 {
-
 };
 
-std::unordered_map<std::uint32_t, std::string> resolver::token_map
+const gsc::pair_32_str token_list[]
 {
-
 };
+
+struct __init__
+{
+    __init__()
+    {
+        static bool init = false;
+        if(init) return;
+        init = true;
+
+        for(auto i = 0; i < CODE_LIST_SIZE; i++)
+        {
+            opcode_map.insert({ opcode_list[i].key, opcode_list[i].value });
+        }
+
+        for(auto i = 0; i < FUNC_LIST_SIZE; i++)
+        {
+            function_map.insert({ function_list[i].key, function_list[i].value });
+        }
+
+        for(auto i = 0; i < METH_LIST_SIZE; i++)
+        {
+            method_map.insert({ method_list[i].key, method_list[i].value });
+        }
+
+        for(auto i = 0; i < FILE_LIST_SIZE; i++)
+        {
+            file_map.insert({ file_list[i].key, file_list[i].value });
+        }
+
+        for(auto i = 0; i < TOKN_LIST_SIZE; i++)
+        {
+            token_map.insert({ token_list[i].key,  token_list[i].value });
+        }
+    }
+};
+
+static __init__ _;
 
 } // namespace IW8

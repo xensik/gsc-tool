@@ -1430,7 +1430,7 @@ void compiler::emit_opcode(const gsc::context_ptr& ctx, opcode op)
     
     auto& inst = function_->instructions.back();
     inst->opcode = static_cast<std::uint8_t>(op);
-    inst->size = opcode_size(op);
+    inst->size = opcode_size(std::uint8_t(op));
     inst->index = index_;
 
     index_ += inst->size;
@@ -1442,7 +1442,7 @@ void compiler::emit_opcode(const gsc::context_ptr& ctx, opcode op, const std::st
     
     auto& inst = function_->instructions.back();
     inst->opcode = static_cast<std::uint8_t>(op);
-    inst->size = opcode_size(op);
+    inst->size = opcode_size(std::uint8_t(op));
     inst->index = index_;
     inst->data.push_back(data);
 
@@ -1455,7 +1455,7 @@ void compiler::emit_opcode(const gsc::context_ptr& ctx, opcode op, const std::ve
     
     auto& inst = function_->instructions.back();
     inst->opcode = static_cast<std::uint8_t>(op);
-    inst->size = opcode_size(op);
+    inst->size = opcode_size(std::uint8_t(op));
     inst->index = index_;
     inst->data = data;
 
@@ -1647,11 +1647,11 @@ auto compiler::is_builtin_call(const std::string& name) -> bool
 
 auto compiler::is_builtin_func(const std::string& name) -> bool
 {
-    return resolver::find_builtin_func(name);
+    return resolver::find_function(name);
 }
 auto compiler::is_builtin_method(const std::string& name) -> bool
 {
-    return resolver::find_builtin_meth(name);
+    return resolver::find_method(name);
 }
 
 auto compiler::create_label() -> std::string
@@ -1718,7 +1718,7 @@ void compiler::print_instruction(const gsc::instruction_ptr& inst)
     {
     case opcode::OP_endswitch:
         this->print_opcodes(inst->index, 3);
-        printf("%s", resolver::opcode_name(opcode(inst->opcode)).data());
+        printf("%s", resolver::opcode_name(inst->opcode).data());
         printf(" %s\n", inst->data[0].data());
         {
             std::uint32_t totalcase = std::stoul(inst->data[0]);
@@ -1745,7 +1745,7 @@ void compiler::print_instruction(const gsc::instruction_ptr& inst)
         break;
     default:
         this->print_opcodes(inst->index, inst->size);
-        printf("%s", resolver::opcode_name(opcode(inst->opcode)).data());
+        printf("%s", resolver::opcode_name(inst->opcode).data());
         for (auto& d : inst->data)
         {
             printf(" %s", d.data());

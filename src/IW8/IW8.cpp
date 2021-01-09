@@ -8,9 +8,9 @@
 namespace IW8
 {
 
-auto opcode_size(opcode id) -> std::uint32_t
+auto opcode_size(std::uint8_t id) -> std::uint32_t
 {
-    switch (id)
+    switch (opcode(id))
     {
     case opcode::OP_02: // -- 1
     case opcode::OP_06: // -- 1

@@ -9,25 +9,17 @@
 namespace IW5
 {
 
-enum class opcode : std::uint8_t;
-
 class resolver
 {
-    static std::unordered_map<opcode, std::string> opcode_map;
-    static std::unordered_map<std::uint16_t, std::string> builtin_function_map;
-    static std::unordered_map<std::uint16_t, std::string> builtin_method_map;
-    static std::unordered_map<std::uint16_t, std::string> file_map;
-    static std::unordered_map<std::uint16_t, std::string> token_map;
-
 public:
-    static auto opcode_id(const std::string& name) -> opcode;
-    static auto opcode_name(opcode id) -> std::string;
+    static auto opcode_id(const std::string& name) -> std::uint8_t;
+    static auto opcode_name(std::uint8_t id) -> std::string;
 
-    static auto builtin_func_id(const std::string& name) -> std::uint16_t;
-    static auto builtin_func_name(std::uint16_t id) -> std::string;
+    static auto function_id(const std::string& name) -> std::uint16_t;
+    static auto function_name(std::uint16_t id) -> std::string;
 
-    static auto builtin_method_id(const std::string& name) -> std::uint16_t;
-    static auto builtin_method_name(std::uint16_t id) -> std::string;
+    static auto method_id(const std::string& name) -> std::uint16_t;
+    static auto method_name(std::uint16_t id) -> std::string;
 
     static auto file_id(const std::string& name) -> std::uint16_t;
     static auto file_name(std::uint16_t id) -> std::string;
@@ -35,8 +27,8 @@ public:
     static auto token_id(const std::string& name) -> std::uint16_t;
     static auto token_name(std::uint16_t id) -> std::string;
 
-    static auto find_builtin_func(const std::string& name) -> bool;
-    static auto find_builtin_meth(const std::string& name) -> bool;
+    static auto find_function(const std::string& name) -> bool;
+    static auto find_method(const std::string& name) -> bool;
 };
 
 } // namespace IW5

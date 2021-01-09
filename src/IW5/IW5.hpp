@@ -175,7 +175,7 @@ enum class opcode : std::uint8_t
     OP_Count = 0x99,
 };
 
-auto opcode_size(opcode id) -> std::uint32_t;
+auto opcode_size(std::uint8_t id) -> std::uint32_t;
 
 } // namespace IW5
 

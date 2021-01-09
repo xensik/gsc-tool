@@ -88,7 +88,7 @@ void assembler::assemble(std::vector<std::uint8_t>& data)
                 auto inst = std::make_unique<gsc::instruction>();
                 inst->index = index;
                 inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(data[0]));
-                inst->size = opcode_size(opcode(inst->opcode));
+                inst->size = opcode_size(inst->opcode);
                 data.erase(data.begin());
                 inst->data = std::move(data);
 
@@ -393,16 +393,16 @@ void assembler::assemble_builtin_call(const gsc::instruction_ptr& inst, bool met
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
 
         if (method)
-            id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_method_id(inst->data[1]);
+            id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::method_id(inst->data[1]);
         else
-            id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::builtin_func_id(inst->data[1]);
+            id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::function_id(inst->data[1]);
     }
     else
     {
         if (method)
-            id = inst->data[0].substr(0, 3) == "_ID" ? std::stol(inst->data[0].substr(3)) : resolver::builtin_method_id(inst->data[0]);
+            id = inst->data[0].substr(0, 3) == "_ID" ? std::stol(inst->data[0].substr(3)) : resolver::method_id(inst->data[0]);
         else
-            id = inst->data[0].substr(0, 3) == "_ID" ? std::stol(inst->data[0].substr(3)) : resolver::builtin_func_id(inst->data[0]);
+            id = inst->data[0].substr(0, 3) == "_ID" ? std::stol(inst->data[0].substr(3)) : resolver::function_id(inst->data[0]);
     }
 
     script_->write<std::uint16_t>(id);

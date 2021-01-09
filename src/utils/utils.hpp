@@ -43,6 +43,7 @@ using namespace std::literals;
 #include "utility/compression.hpp"
 
 // GSC Types
+#include "types/pair.hpp"
 #include "types/asset.hpp"
 #include "types/assembly.hpp"
 #include "types/nodetree.hpp"

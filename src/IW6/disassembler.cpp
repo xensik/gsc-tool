@@ -71,7 +71,7 @@ void disassembler::dissasemble_function(const gsc::function_ptr& func)
         auto& inst = func->instructions.back();
         inst->index = static_cast<std::uint32_t>(script_->pos());
         inst->opcode = script_->read<std::uint8_t>();
-        inst->size = opcode_size(opcode(inst->opcode));
+        inst->size = opcode_size(inst->opcode);
         
         this->dissasemble_instruction(inst);
         
@@ -312,11 +312,11 @@ void disassembler::disassemble_builtin_call(const gsc::instruction_ptr& inst, bo
 
     if (method)
     {
-        inst->data.push_back(resolver::builtin_method_name(script_->read<std::uint16_t>()));
+        inst->data.push_back(resolver::method_name(script_->read<std::uint16_t>()));
     }
     else
     {
-        inst->data.push_back(resolver::builtin_func_name(script_->read<std::uint16_t>()));
+        inst->data.push_back(resolver::function_name(script_->read<std::uint16_t>()));
     }
 }
 
@@ -542,7 +542,7 @@ void disassembler::print_instruction(const gsc::instruction_ptr& inst)
     switch (opcode(inst->opcode))
     {
     case opcode::OP_endswitch:
-        output_->write_string(utils::string::va("%s", resolver::opcode_name(opcode(inst->opcode)).data()));
+        output_->write_string(utils::string::va("%s", resolver::opcode_name(inst->opcode).data()));
         output_->write_string(utils::string::va(" %s\n", inst->data[0].data()));
         {
             std::uint32_t totalcase = std::stoul(inst->data[0]);
@@ -567,7 +567,7 @@ void disassembler::print_instruction(const gsc::instruction_ptr& inst)
         }
         break;
     default:
-        output_->write_string(utils::string::va("%s", resolver::opcode_name(opcode(inst->opcode)).data()));
+        output_->write_string(utils::string::va("%s", resolver::opcode_name(inst->opcode).data()));
         for (auto& d : inst->data)
         {
             output_->write_string(utils::string::va(" %s", d.data()));
