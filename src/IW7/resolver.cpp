@@ -337,18 +337,22 @@ const gsc::pair_8_str opcode_list[]
 
 const gsc::pair_16_str function_list[]
 {
+    { 0, "DUMMY" },
 };
 
 const gsc::pair_16_str method_list[]
 {
+    { 0, "DUMMY" },
 };
 
 const gsc::pair_32_str file_list[]
 {
+    { 0, "DUMMY" },
 };
 
 const gsc::pair_32_str token_list[]
 {
+    { 0, "DUMMY" },
 };
 
 struct __init__

@@ -172,7 +172,7 @@ auto resolver::find_method(const std::string& name) -> bool
     return false;
 }
 
-#define CODE_LIST_SIZE 0
+#define CODE_LIST_SIZE 153
 #define FUNC_LIST_SIZE 0
 #define METH_LIST_SIZE 0
 #define FILE_LIST_SIZE 0
@@ -180,22 +180,27 @@ auto resolver::find_method(const std::string& name) -> bool
 
 const gsc::pair_8_str opcode_list[]
 {
+    { 0, "DUMMY" },
 };
 
 const gsc::pair_16_str function_list[]
 {
+    { 0, "DUMMY" },
 };
 
 const gsc::pair_16_str method_list[]
 {
+    { 0, "DUMMY" },
 };
 
 const gsc::pair_32_str file_list[]
 {
+    { 0, "DUMMY" },
 };
 
 const gsc::pair_32_str token_list[]
 {
+    { 0, "DUMMY" },
 };
 
 struct __init__
