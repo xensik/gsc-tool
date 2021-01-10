@@ -172,14 +172,8 @@ auto resolver::find_method(const std::string& name) -> bool
     return false;
 }
 
-#define CODE_LIST_SIZE 153
-#define FUNC_LIST_SIZE 605
-#define METH_LIST_SIZE 1066
-#define FILE_LIST_SIZE 831
-#define TOKN_LIST_SIZE 13818
-
-const gsc::pair_8_str opcode_list[]
-{
+const std::array<gsc::pair_8C, 153> opcode_list
+{{
     { std::uint8_t(opcode::OP_End),"END" },
     { std::uint8_t(opcode::OP_Return),"RETN" },
     { std::uint8_t(opcode::OP_GetByte),"GET_BYTE" },
@@ -333,10 +327,10 @@ const gsc::pair_8_str opcode_list[]
     { std::uint8_t(opcode::OP_CastBool),"CAST_BOOL" },
     { std::uint8_t(opcode::OP_BoolNot),"BOOL_NOT" },
     { std::uint8_t(opcode::OP_BoolComplement),"BOOL_COMPLEMENT" },
-};
+}};
 
-const gsc::pair_16_str function_list[]
-{
+const std::array<gsc::pair_16C, 605> function_list
+{{
     { 0x001, "precacheturret" },
     { 0x002, "getweaponarray" },
     { 0x003, "createprintchannel" },
@@ -942,10 +936,10 @@ const gsc::pair_16_str function_list[]
     { 0x25B, "stopcinematicforall" },
     { 0x25C, "getenemysquaddogtype" },
     { 0x25D, "capsuletracepassed" },
-};
+}};
 
-const gsc::pair_16_str method_list[]
-{
+const std::array<gsc::pair_16C, 1066> method_list
+{{
     { 0x8000, "thermaldrawdisable" },
     { 0x8001, "setturretdismountorg" },
     { 0x8002, "setdamagestage" },
@@ -2012,10 +2006,10 @@ const gsc::pair_16_str method_list[]
     { 0x8427, "getjointype" },
     { 0x8428, "scragentsetwallruncost" },
     { 0x8429, "alienscheckisitempurchased" },
-};
+}};
 
-const gsc::pair_16_str file_list[]
-{
+const std::array<gsc::pair_16C, 831> file_list
+{{
     { 0x301, "character\\character_ajax_flood_a" },
     { 0x302, "character\\character_ajax_wood_shotgun_a" },
     { 0x303, "character\\character_ajax_wood_shotgun_b" },
@@ -2865,10 +2859,10 @@ const gsc::pair_16_str file_list[]
     { 36629, "maps\\mp\\mp_swamp_fx" },
     { 36630, "maps\\mp\\mp_swamp_precache" },
     // 36631-44, effects?
-};
+}};
 
-const gsc::pair_16_str token_list[]
-{
+const std::array<gsc::pair_16C, 13818> token_list
+{{
     //OPAQUE_STRING_VOID = 0x0,
     //OPAQUE_STRING_PL = 0x1,
     //OPAQUE_STRING_MINUS = 0x2,
@@ -16693,7 +16687,7 @@ const gsc::pair_16_str token_list[]
     { 0x8EE8, "zoffset" },
     { 0x8EE9, "zone" },
     { 0x8EF2, "zoom_lerp_dof" },
-};
+}};
 
 struct __init__
 {
@@ -16703,33 +16697,33 @@ struct __init__
         if(init) return;
         init = true;
 
-        for(auto i = 0; i < CODE_LIST_SIZE; i++)
+        for(const auto& entry : opcode_list)
         {
-            opcode_map.insert({ opcode_list[i].key, opcode_list[i].value });
+            opcode_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < FUNC_LIST_SIZE; i++)
+        for(const auto& entry : function_list)
         {
-            function_map.insert({ function_list[i].key, function_list[i].value });
+            function_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < METH_LIST_SIZE; i++)
+        for(const auto& entry : method_list)
         {
-            method_map.insert({ method_list[i].key, method_list[i].value });
+            method_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < FILE_LIST_SIZE; i++)
+        for(const auto& entry : file_list)
         {
-            file_map.insert({ file_list[i].key, file_list[i].value });
+            file_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < TOKN_LIST_SIZE; i++)
+        for(const auto& entry : token_list)
         {
-            token_map.insert({ token_list[i].key,  token_list[i].value });
+            token_map.insert({ entry.key, entry.value });
         }
     }
 };
 
-static __init__ _;
+__init__ _;
 
 } // namespace IW6

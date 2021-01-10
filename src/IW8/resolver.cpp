@@ -172,36 +172,30 @@ auto resolver::find_method(const std::string& name) -> bool
     return false;
 }
 
-#define CODE_LIST_SIZE 153
-#define FUNC_LIST_SIZE 0
-#define METH_LIST_SIZE 0
-#define FILE_LIST_SIZE 0
-#define TOKN_LIST_SIZE 0
-
-const gsc::pair_8_str opcode_list[]
-{
+const std::array<gsc::pair_8C, 1> opcode_list
+{{
     { 0, "DUMMY" },
-};
+}};
 
-const gsc::pair_16_str function_list[]
-{
+const std::array<gsc::pair_16C, 1> function_list
+{{
     { 0, "DUMMY" },
-};
+}};
 
-const gsc::pair_16_str method_list[]
-{
+const std::array<gsc::pair_16C, 1> method_list
+{{
     { 0, "DUMMY" },
-};
+}};
 
-const gsc::pair_32_str file_list[]
-{
+const std::array<gsc::pair_32C, 1> file_list
+{{
     { 0, "DUMMY" },
-};
+}};
 
-const gsc::pair_32_str token_list[]
-{
+const std::array<gsc::pair_32C, 1> token_list
+{{
     { 0, "DUMMY" },
-};
+}};
 
 struct __init__
 {
@@ -211,33 +205,33 @@ struct __init__
         if(init) return;
         init = true;
 
-        for(auto i = 0; i < CODE_LIST_SIZE; i++)
+        for(const auto& entry : opcode_list)
         {
-            opcode_map.insert({ opcode_list[i].key, opcode_list[i].value });
+            opcode_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < FUNC_LIST_SIZE; i++)
+        for(const auto& entry : function_list)
         {
-            function_map.insert({ function_list[i].key, function_list[i].value });
+            function_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < METH_LIST_SIZE; i++)
+        for(const auto& entry : method_list)
         {
-            method_map.insert({ method_list[i].key, method_list[i].value });
+            method_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < FILE_LIST_SIZE; i++)
+        for(const auto& entry : file_list)
         {
-            file_map.insert({ file_list[i].key, file_list[i].value });
+            file_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < TOKN_LIST_SIZE; i++)
+        for(const auto& entry : token_list)
         {
-            token_map.insert({ token_list[i].key,  token_list[i].value });
+            token_map.insert({ entry.key, entry.value });
         }
     }
 };
 
-static __init__ _;
+__init__ _;
 
 } // namespace IW8

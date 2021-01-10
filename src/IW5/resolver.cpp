@@ -172,14 +172,8 @@ auto resolver::find_method(const std::string& name) -> bool
     return false;
 }
 
-#define CODE_LIST_SIZE 153
-#define FUNC_LIST_SIZE 455
-#define METH_LIST_SIZE 780
-#define FILE_LIST_SIZE 512
-#define TOKN_LIST_SIZE 1789
-
-const gsc::pair_8_str opcode_list[]
-{
+const std::array<gsc::pair_8C, 153> opcode_list
+{{
     { std::uint8_t(opcode::OP_End),"END" },
     { std::uint8_t(opcode::OP_Return),"RETN" },
     { std::uint8_t(opcode::OP_GetByte),"GET_BYTE" },
@@ -333,10 +327,10 @@ const gsc::pair_8_str opcode_list[]
     { std::uint8_t(opcode::OP_CastBool),"CAST_BOOL" },
     { std::uint8_t(opcode::OP_BoolNot),"BOOL_NOT" },
     { std::uint8_t(opcode::OP_BoolComplement),"BOOL_COMPLEMENT" },
-};
+}};
 
-const gsc::pair_16_str function_list[]
-{
+const std::array<gsc::pair_16C, 455> function_list
+{{
     { 0x001, "precacheturret" },
     { 0x002, "getweaponarray" },
     { 0x003, "createprintchannel" },
@@ -792,10 +786,10 @@ const gsc::pair_16_str function_list[]
     { 0x1C5, "precachefxontag" },
     { 0x1C6, "precachetag" },
     { 0x1C7, "precachesound" },
-};
+}};
 
-const gsc::pair_16_str method_list[]
-{
+const std::array<gsc::pair_16C, 780> method_list
+{{
     { 0x8000, "thermaldrawdisable" },
     { 0x8001, "setturretdismountorg" },
     { 0x8002, "setdamagestate" },
@@ -1577,10 +1571,10 @@ const gsc::pair_16_str method_list[]
     { 0x830A, "setscriptmoverkillcam" },
     { 0x830B, "setmapnamestring" },
     { 0x830C, "setgametypestring" },
-};
+}};
 
-const gsc::pair_16_str file_list[]
-{
+const std::array<gsc::pair_16C, 512> file_list
+{{
 
 // "character\\character_mp_ally_juggernaut"
 // "xmodelalias\\alias_us_army_heads"
@@ -2528,10 +2522,10 @@ const gsc::pair_16_str file_list[]
     { 18771, "maps\\createart\\mp_alpha_art" },
     { 18772, "maps\\createfx\\mp_alpha_fx" },
     { 18773, "maps\\createart\\mp_alpha_fog" },
-};
+}};
 
-const gsc::pair_16_str token_list[]
-{
+const std::array<gsc::pair_16C, 1789> token_list
+{{
     { 56, "onDisconnect" },
     { 371, "getNextGun" },
     { 372, "addAttachments" },
@@ -4328,7 +4322,7 @@ const gsc::pair_16_str token_list[]
     { 15107, "meleeingPlayer" },
     { 17433, "attachmentMap" },
     { 17434, "checkRoundWin" },
-};
+}};
 
 struct __init__
 {
@@ -4337,34 +4331,34 @@ struct __init__
         static bool init = false;
         if(init) return;
         init = true;
-
-        for(auto i = 0; i < CODE_LIST_SIZE; i++)
+        
+        for(const auto& entry : opcode_list)
         {
-            opcode_map.insert({ opcode_list[i].key, opcode_list[i].value });
+            opcode_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < FUNC_LIST_SIZE; i++)
+        for(const auto& entry : function_list)
         {
-            function_map.insert({ function_list[i].key, function_list[i].value });
+            function_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < METH_LIST_SIZE; i++)
+        for(const auto& entry : method_list)
         {
-            method_map.insert({ method_list[i].key, method_list[i].value });
+            method_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < FILE_LIST_SIZE; i++)
+        for(const auto& entry : file_list)
         {
-            file_map.insert({ file_list[i].key, file_list[i].value });
+            file_map.insert({ entry.key, entry.value });
         }
 
-        for(auto i = 0; i < TOKN_LIST_SIZE; i++)
+        for(const auto& entry : token_list)
         {
-            token_map.insert({ token_list[i].key,  token_list[i].value });
+            token_map.insert({ entry.key, entry.value });
         }
     }
 };
 
-static __init__ _;
+__init__ _;
 
 } // namespace IW5

@@ -9,19 +9,19 @@
 namespace gsc
 {
 
-struct pair_8_str
+struct pair_8C
 {
     std::uint8_t key;
     const char* value;
 };
 
-struct pair_16_str
+struct pair_16C
 {
     std::uint16_t key;
     const char* value;
 };
 
-struct pair_32_str
+struct pair_32C
 {
     std::uint32_t key;
     const char* value;

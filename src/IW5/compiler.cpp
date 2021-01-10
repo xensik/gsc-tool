@@ -390,21 +390,9 @@ void compiler::emit_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_pt
 
 void compiler::emit_stmt_foreach(const gsc::context_ptr& ctx, const gsc::stmt_foreach_ptr& stmt)
 {
-    GSC_COMP_ERROR("FOREACH STATEMENT NOT SUPPORTED!");
-
-    // TODO:
-
     auto begin_loc = create_label();
     auto break_loc = create_label();
     auto continue_loc = create_label();
-
-    // TODO: insert first array key
-
-    // TODO: create local variables
-
-    insert_label(begin_loc);
-    
-    // TODO: insert isDefined, assign
 
     auto foreach_ctx = ctx->transfer();
 
@@ -412,17 +400,51 @@ void compiler::emit_stmt_foreach(const gsc::context_ptr& ctx, const gsc::stmt_fo
     foreach_ctx->loc_break = break_loc;
     foreach_ctx->loc_continue = continue_loc;
 
+    // TODO: insert first array key
+    emit_expr(ctx, stmt->expr2);
+    // create temp array variable (SET_NEW_LOCAL_VARIABLE_FIELD_CACHED0)
+    // eval array (EVAL_LOCAL_VARIABLE_CACHED0)
+    // CALL_BUILTIN_FUNC_1 getfirstarraykey
+
+    // CREATE_LOCAL_VARIABLE (expr1 variable)
+    calc_local_vars_block(foreach_ctx, stmt->block);
+    emit_create_local_vars(foreach_ctx);
+
+    // create temp key variable (SET_NEW_LOCAL_VARIABLE_FIELD_CACHED0)
+
+    insert_label(begin_loc);
+    
+    // TODO: insert isDefined, assign
+    // eval key (EVAL_LOCAL_VARIABLE_CACHED0)
+    // CALL_BUILTIN_FUNC_1 isdefined
+	// JMP_FALSE break_loc;
+    // eval key (EVAL_LOCAL_VARIABLE_CACHED0)
+	// eval array	(EVAL_LOCAL_ARRAY_CACHED 3)
+	// set expr1	SET_LOCAL_VARIABLE_FIELD_CACHED 2
+
+    /*auto foreach_ctx = ctx->transfer();
+
+    foreach_ctx->is_loop = true;
+    foreach_ctx->loc_break = break_loc;
+    foreach_ctx->loc_continue = continue_loc;*/
+
     emit_block(foreach_ctx, stmt->block, false);
 
     insert_label(continue_loc);
     // TODO: insert next array key
+
+    // eval key (EVAL_LOCAL_VARIABLE_CACHED0)
+	// eval array	(EVAL_LOCAL_VARIABLE_CACHED3)
+	//	CALL_BUILTIN_FUNC_2 getnextarraykey
+	// set key	SET_LOCAL_VARIABLE_FIELD_CACHED0
+
     emit_opcode(ctx, opcode::OP_jumpback, begin_loc);
-    
+
     insert_label(break_loc);
-    
-    // TODO: clear key and array vars
-        //OP_ClearLocalVariableFieldCached0 = 0x30,
-        //OP_ClearLocalVariableFieldCached = 0x31,
+
+    // TODO: clear key and array vars (sometimes only clear array)
+    // clear array (CLEAR_LOCAL_VARIABLE_FIELD_CACHED 3)
+	// clear key	(CLEAR_LOCAL_VARIABLE_FIELD_CACHED0)
 }
 
 void compiler::emit_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_switch_ptr& stmt)
