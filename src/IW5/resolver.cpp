@@ -1573,7 +1573,7 @@ const std::array<gsc::pair_16C, 780> method_list
     { 0x830C, "setgametypestring" },
 }};
 
-const std::array<gsc::pair_16C, 512> file_list
+const std::array<gsc::pair_16C, 587> file_list
 {{
 
 // "character\\character_mp_ally_juggernaut"
@@ -2073,6 +2073,8 @@ const std::array<gsc::pair_16C, 512> file_list
     { 501, "character\\character_hero_europe_soap_injured" },
     { 512, "common_scripts\\_createfx" },
 // ...
+    { 528, "maps\\so_survival_mp_paris_precache" },
+// ...
     { 532, "character\\mp_character_sas_urban_lmg" },
     { 533, "character\\mp_character_sas_urban_shotgun" },
     { 534, "character\\mp_character_sas_urban_smg" },
@@ -2102,6 +2104,9 @@ const std::array<gsc::pair_16C, 512> file_list
     { 598, "xmodelalias\\alias_russian_military_arctic_heads" },
     { 599, "character\\mp_character_opforce_snow_assault" },
     { 600, "character\\mp_character_opforce_snow_lmg" },
+// ...
+    { 610, "maps\\so_survival_mp_plaza2_precache" },
+    { 611, "maps\\so_survival_mp_hardhat_precache" },
 // ...
     { 621, "character\\mp_character_opforce_snow_shotgun" },
     { 622, "character\\mp_character_opforce_snow_smg" },
@@ -2167,6 +2172,17 @@ const std::array<gsc::pair_16C, 512> file_list
     { 734, "mptype\\mptype_gign_paris_lmg" },
     { 735, "mptype\\mptype_gign_paris_shotgun" },
     { 736, "mptype\\mptype_gign_paris_smg" },
+    { 737, "maps\\so_survival_mp_alpha_precache" },
+    { 738, "maps\\so_survival_mp_carbon_precache" },
+    { 739, "maps\\so_survival_mp_village_precache" },
+    { 740, "maps\\so_survival_mp_seatown_precache" },
+    { 741, "maps\\so_survival_mp_lambeth_precache" },
+    { 742, "maps\\so_survival_mp_bootleg_precache" },
+    { 743, "maps\\so_survival_mp_exchange_precache" },
+    { 744, "maps\\so_survival_mp_mogadishu_precache" },
+// ...
+    { 750, "maps\\so_survival_mp_underground_precache" },
+    { 751, "maps\\so_survival_mp_interchange_precache" },
 // ...
     { 767, "mptype\\mptype_gign_paris_sniper" },
     { 768, "mptype\\mptype_gign_paris_riot" },
@@ -2199,6 +2215,9 @@ const std::array<gsc::pair_16C, 512> file_list
     { 795, "mptype\\mptype_opforce_woodland_lmg" },
     { 796, "mptype\\mptype_opforce_woodland_shotgun" },
 // ...
+    { 816, "maps\\so_survival_mp_dome_precache" },
+    { 817, "maps\\so_survival_mp_radar_precache" },
+    { 818, "maps\\so_survival_mp_bravo_precache" },
     { 819, "mptype\\mptype_opforce_woodland_smg" },
     { 820, "mptype\\mptype_opforce_woodland_sniper" },
     { 821, "mptype\\mptype_opforce_woodland_riot" },
@@ -2393,9 +2412,44 @@ const std::array<gsc::pair_16C, 512> file_list
 //  { 1647, "vehicle_scripts\\_stryker50cal" },
 // ------- files chunck end ---------
 //  { 1721,
+// ...
+    { 6358, "maps\\createart\\so_survival_mp_plaza2_art" },
+    { 6359, "maps\\createart\\so_survival_mp_seatown_fog" },
+    { 6360, "maps\\createart\\so_survival_mp_seatown_art" },
+    { 6361, "maps\\createart\\so_survival_mp_underground_fog" },
+    { 6362, "maps\\createart\\so_survival_mp_underground_art" },
+    { 6363, "maps\\createart\\so_survival_mp_village_fog" },
+    { 6364, "maps\\createart\\so_survival_mp_village_art" },
+// ...
 //  { 8217,
 //  { 8218,
 //  { 8219,
+// ...
+    { 8224, "maps\\createart\\so_survival_mp_hardhat_fog" },
+    { 8225, "maps\\createart\\so_survival_mp_hardhat_art" },
+    { 8226, "maps\\createart\\so_survival_mp_alpha_fog" },
+    { 8227, "maps\\createart\\so_survival_mp_alpha_art" },
+    { 8228, "maps\\createart\\so_survival_mp_bootleg_fog" },
+    { 8229, "maps\\createart\\so_survival_mp_bootleg_art" },
+    { 8230, "maps\\createart\\so_survival_mp_bravo_fog" },
+    { 8231, "maps\\createart\\so_survival_mp_bravo_art" },
+    { 8232, "maps\\createart\\so_survival_mp_carbon_fog" },
+    { 8233, "maps\\createart\\so_survival_mp_carbon_art" },
+    { 8234, "maps\\createart\\so_survival_mp_exchange_fog" },
+    { 8235, "maps\\createart\\so_survival_mp_exchange_art" },
+    { 8236, "maps\\createart\\so_survival_mp_interchange_fog" },
+    { 8237, "maps\\createart\\so_survival_mp_interchange_art" },
+    { 8238, "maps\\createart\\so_survival_mp_lambeth_fog" },
+    { 8239, "maps\\createart\\so_survival_mp_lambeth_art" },
+    { 8240, "maps\\createart\\so_survival_mp_mogadishu_fog" },
+    { 8241, "maps\\createart\\so_survival_mp_mogadishu_art" },
+    { 8242, "maps\\createart\\so_survival_mp_paris_fog" },
+    { 8243, "maps\\createart\\so_survival_mp_paris_art" },
+    { 8244, "maps\\createart\\so_survival_mp_plaza2_fog" },
+// ...
+    { 18378, "maps\\createart\\so_survival_mp_dome_fog" },
+    { 18379, "maps\\createart\\so_survival_mp_dome_art" },
+    { 18380, "character\\character_so_juggernaut_lite" },
 // ...
     { 18649, "common_scripts\\_destructible_types_anim_generator" },
     { 18650, "common_scripts\\_destructible_types_anim_lockers" },
@@ -2407,8 +2461,8 @@ const std::array<gsc::pair_16C, 512> file_list
     { 18656, "maps\\createart\\mp_radar_art" },
     { 18657, "maps\\createfx\\mp_radar_fx" },
     { 18658, "maps\\createart\\mp_radar_fog" },
-//  { 18659, "" },
-//  { 18660, "" },
+    { 18659, "maps\\createart\\so_survival_mp_radar_fog" },
+    { 18660, "maps\\createart\\so_survival_mp_radar_art" },
     { 18661, "common_scripts\\_destructible_types_anim_chicken" },
     { 18662, "maps\\animated_models\\hanging_sheet_wind_medium" },
     { 18663, "maps\\createart\\mp_village_art" },
@@ -2522,9 +2576,36 @@ const std::array<gsc::pair_16C, 512> file_list
     { 18771, "maps\\createart\\mp_alpha_art" },
     { 18772, "maps\\createfx\\mp_alpha_fx" },
     { 18773, "maps\\createart\\mp_alpha_fog" },
+// ...
+    { 33361, "maps\\mp\\mp_italy_precache" },
+    { 33362, "maps\\createart\\mp_italy_art" },
+    { 33363, "maps\\mp\\mp_italy_fx" },
+    { 33364, "maps\\createfx\\mp_italy_fx" },
+    { 33365, "maps\\createart\\mp_italy_fog" },
+    { 33366, "maps\\mp\\mp_park_precache" },
+    { 33367, "maps\\createart\\mp_park_art" },
+    { 33368, "maps\\mp\\mp_park_fx" },
+    { 33369, "maps\\createfx\\mp_park_fx" },
+    { 33370, "maps\\createart\\mp_park_fog" },
+    { 33371, "maps\\mp\\mp_overwatch_precache" },
+    { 33372, "maps\\createart\\mp_overwatch_art" },
+    { 33373, "maps\\mp\\mp_overwatch_fx" },
+    { 33374, "maps\\createfx\\mp_overwatch_fx" },
+    { 33375, "maps\\createart\\mp_overwatch_fog" },
+    { 33376, "maps\\mp\\mp_morningwood_precache" },
+    { 33377, "maps\\createart\\mp_morningwood_art" },
+    { 33378, "maps\\mp\\mp_morningwood_fx" },
+    { 33379, "maps\\createfx\\mp_morningwood_fx" },
+    { 33380, "maps\\createart\\mp_morningwood_fog" },
+    { 33381, "maps\\createart\\so_survival_mp_italy_fog" },
+    { 33382, "maps\\createart\\so_survival_mp_italy_art" },
+    { 33383, "maps\\so_survival_mp_italy_precache" },
+    { 33384, "maps\\createart\\so_survival_mp_park_fog" },
+    { 33385, "maps\\createart\\so_survival_mp_park_art" },
+    { 33386, "maps\\so_survival_mp_park_precache" },
 }};
 
-const std::array<gsc::pair_16C, 1789> token_list
+const std::array<gsc::pair_16C, 1800> token_list
 {{
     { 56, "onDisconnect" },
     { 371, "getNextGun" },
@@ -3307,6 +3388,7 @@ const std::array<gsc::pair_16C, 1789> token_list
     { 2577, "players" },
     { 2623, "isPrimaryWeapon" },
     { 2711, "A" },
+    { 2738, "voice" },
     { 2944, "isTeamSpeaking" },
     { 3226, "primaryWeapon" },
     { 3297, "isSniper" },
@@ -3378,6 +3460,15 @@ const std::array<gsc::pair_16C, 1789> token_list
     { 6875, "limit" },
     { 6876, "updateFogFromScript" },
     { 6877, "artfxprintlnFog" },
+    { 6890, "startdist" },
+    { 6891, "halfwaydist" },
+    { 6892, "red" },
+    { 6893, "green" },
+    { 6894, "blue" },
+    { 6895, "maxopacity" },
+    { 6930, "create_vision_set_fog" },
+    { 6931, "transitionTime" },
+    { 6973, "vision_set_fog_changes" },
     { 7163, "watchGrenadeUsage" },
     { 7177, "beginGrenadeTracking" },
     { 7178, "grenade_earthQuake" },
@@ -4318,6 +4409,7 @@ const std::array<gsc::pair_16C, 1789> token_list
     { 14985, "activateNuke" },
     { 14986, "setUseBarScore" },
     { 14987, "updateHudElems" },
+    { 15006, "tweakfile" },
     { 15008, "audio_settings" },
     { 15107, "meleeingPlayer" },
     { 17433, "attachmentMap" },
