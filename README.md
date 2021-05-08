@@ -8,7 +8,7 @@ A utility to compile & decompile IW engine game scripts.
 - **IW5** *(Call of Duty: Modern Warfare 3)*
 - **IW6** *(Call of Duty: Ghosts)*
 - **IW7** *(Call of Duty: Infinite Warfare)*
-- **IW8** *(Call of Duty: Modern Warfare (2019))* ***\*WIP\****
+- **IW8** *(Call of Duty: Modern Warfare (2019))*
 - **S1** *(Call of Duty: Advanced Warfare)*
 - **S2** *(Call of Duty: WWII)*
 - **H1** *(Call of Duty: Modern Warfare Remastered)*
@@ -16,7 +16,7 @@ A utility to compile & decompile IW engine game scripts.
 ## Usage
 ``./gsc-tool.exe <game> <mode> <file>``
 
-**game**: `-iw5`, `-iw6`, `-iw7`, `-s1`, `-s2`, `-h1`, `-h2`
+**game**: `-iw5`, `-iw6`, `-iw7`, `-iw8`, `-s1`, `-s2`, `-h1`, `-h2`
 | Mode     |Description                | Output      |
 |:---------|:--------------------------|:------------|
 |`-asm`    |assemble a `file.gscasm`   |`file.gscbin`|

@@ -52,6 +52,7 @@ project "xsk-gsc-tool"
     dependson "xsk-gsc-iw5"
     dependson "xsk-gsc-iw6"
     dependson "xsk-gsc-iw7"
+    dependson "xsk-gsc-iw8"
     dependson "xsk-gsc-s1"
     dependson "xsk-gsc-s2"
     dependson "xsk-gsc-h1"
@@ -71,6 +72,7 @@ project "xsk-gsc-tool"
         "xsk-gsc-iw5",
         "xsk-gsc-iw6",
         "xsk-gsc-iw7",
+        "xsk-gsc-iw8",
         "xsk-gsc-s1",
         "xsk-gsc-s2",
         "xsk-gsc-h1",
@@ -155,6 +157,24 @@ project "xsk-gsc-iw7"
 
     includedirs {
         "./src/iw7",
+        "./src"
+    }
+
+project "xsk-gsc-iw8"
+    kind "StaticLib"
+    language "C++"
+
+    pchheader "stdafx.hpp"
+    pchsource "src/iw8/stdafx.cpp"
+
+    files {
+        "./src/iw8/**.h",
+        "./src/iw8/**.hpp",
+        "./src/iw8/**.cpp"
+    }
+
+    includedirs {
+        "./src/iw8",
         "./src"
     }
 
