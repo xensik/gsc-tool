@@ -1954,7 +1954,7 @@ struct node_stmt_for : public node
         }
         else
         {
-            data += "for ( " + pre_expr.as_node->print() + "; " + expr.as_node->print() + "; " + post_expr.as_node->print() + " )";
+            data += "for ( " + pre_expr.as_node->print() + " " + expr.as_node->print() + "; " + post_expr.as_node->print() + " )";
             data += "\n";
         }
 
