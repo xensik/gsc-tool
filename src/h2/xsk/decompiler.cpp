@@ -546,7 +546,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
         break;
         case opcode::OP_ScriptLocalMethodChildThreadCall:
         {
-            // TODO: child things...
             auto obj = gsc::expr_ptr(std::move(stack_.top()));
             stack_.pop();
             loc = obj.as_node->loc;
@@ -1395,7 +1394,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
                 stack_.pop();
                 args->loc = node->loc;
                 args->list.push_back(std::move(node));
-                
             }
             loc = args->loc;
 
@@ -1425,9 +1423,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
         }
         break;
         case opcode::OP_checkclearparams:
-        {
-            // no needed
-        }
         break;
         case opcode::OP_notify:
         {
@@ -1736,9 +1731,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
         break;
         case opcode::OP_CastFieldObject:
         case opcode::OP_CastBool:
-        {
-            //continue;
-        }
         break;
         case opcode::OP_BoolNot:
         {
@@ -1780,7 +1772,6 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
         {
             auto expr = std::make_unique<gsc::node_asm_jump>(loc, inst->data[0]);
             func_->block->stmts.push_back(gsc::stmt_ptr(std::move(expr)));
-
         }
         break;
         case opcode::OP_jumpback:
@@ -1871,20 +1862,6 @@ void decompiler::decompile_block(const gsc::stmt_list_ptr& block)
     this->decompile_search_switch(block);
     this->decompile_search_ifelse(block);
     this->decompile_break_continue(block);
-    this->decompile_nulls(block);
-}
-
-void decompiler::decompile_nulls(const gsc::stmt_list_ptr& block)
-{
-    auto index = 0;
-    while(index < block->stmts.size())
-    {
-        if(block->stmts.at(index).as_node->type == gsc::node_t::null)
-        {
-            block->stmts.erase(block->stmts.begin() + index);
-        }
-        else index++;
-    }
 }
 
 void decompiler::decompile_search_infinite(const gsc::stmt_list_ptr& block)
@@ -2991,7 +2968,7 @@ void decompiler::process_expr(const gsc::context_ptr& ctx, gsc::expr_ptr& expr)
     }
 }
 
-void decompiler::process_expr_assign(const gsc::context_ptr& ctx, const gsc::expr_assign_ptr& expr)
+void decompiler::process_expr_assign(const gsc::context_ptr& ctx, gsc::expr_assign_ptr& expr)
 {
     if(expr->type == gsc::node_t::expr_increment)
     {
@@ -3005,6 +2982,55 @@ void decompiler::process_expr_assign(const gsc::context_ptr& ctx, const gsc::exp
     {
         process_expr(ctx, expr->rvalue);
         process_expr(ctx, expr->lvalue);
+
+        if(expr->type == gsc::node_t::expr_assign_equal)
+        {
+            switch(expr->rvalue.as_node->type)
+            {
+                case gsc::node_t::expr_bitwise_or:
+                    if(expr->lvalue == expr->rvalue.as_bitwise_or->lvalue)
+                        expr = std::make_unique<gsc::node_expr_assign_bitwise_or>(std::move(expr->lvalue), std::move(expr->rvalue.as_mod->rvalue));
+                    break;
+                case gsc::node_t::expr_bitwise_and:
+                    if(expr->lvalue == expr->rvalue.as_bitwise_and->lvalue)
+                        expr = std::make_unique<gsc::node_expr_assign_bitwise_and>(std::move(expr->lvalue), std::move(expr->rvalue.as_mod->rvalue));
+                    break;
+                case gsc::node_t::expr_bitwise_exor:
+                    if(expr->lvalue == expr->rvalue.as_bitwise_exor->lvalue)
+                        expr = std::make_unique<gsc::node_expr_assign_bitwise_exor>(std::move(expr->lvalue), std::move(expr->rvalue.as_mod->rvalue));
+                    break;
+                case gsc::node_t::expr_shift_left:
+                    if(expr->lvalue == expr->rvalue.as_shift_left->lvalue)
+                        expr = std::make_unique<gsc::node_expr_assign_shift_left>(std::move(expr->lvalue), std::move(expr->rvalue.as_mod->rvalue));
+                    break;
+                case gsc::node_t::expr_shift_right:
+                    if(expr->lvalue == expr->rvalue.as_shift_right->lvalue)
+                        expr = std::make_unique<gsc::node_expr_assign_shift_right>(std::move(expr->lvalue), std::move(expr->rvalue.as_mod->rvalue));
+                    break;
+                case gsc::node_t::expr_add:
+                    if(expr->lvalue == expr->rvalue.as_add->lvalue)
+                        expr = std::make_unique<gsc::node_expr_assign_add>(std::move(expr->lvalue), std::move(expr->rvalue.as_mod->rvalue));
+                    break;
+                case gsc::node_t::expr_sub:
+                    if(expr->lvalue == expr->rvalue.as_sub->lvalue)
+                        expr = std::make_unique<gsc::node_expr_assign_sub>(std::move(expr->lvalue), std::move(expr->rvalue.as_mod->rvalue));
+                    break;
+                case gsc::node_t::expr_mult:
+                    if(expr->lvalue == expr->rvalue.as_mult->lvalue)
+                        expr = std::make_unique<gsc::node_expr_assign_mult>(std::move(expr->lvalue), std::move(expr->rvalue.as_mod->rvalue));
+                    break;
+                case gsc::node_t::expr_div:
+                    if(expr->lvalue == expr->rvalue.as_div->lvalue)
+                        expr = std::make_unique<gsc::node_expr_assign_div>(std::move(expr->lvalue), std::move(expr->rvalue.as_mod->rvalue));
+                    break;
+                case gsc::node_t::expr_mod:
+                    if(expr->lvalue == expr->rvalue.as_mod->lvalue)
+                        expr = std::make_unique<gsc::node_expr_assign_mod>(std::move(expr->lvalue), std::move(expr->rvalue.as_mod->rvalue));
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
 

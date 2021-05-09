@@ -29,6 +29,7 @@ enum class node_t
     data_undefined,
     data_empty_array,
     data_thisthread,
+    expr_paren,
     expr_size,
     expr_field,
     expr_array,
@@ -134,6 +135,7 @@ struct node_game;
 struct node_undefined;
 struct node_empty_array;
 struct node_thisthread;
+struct node_expr_paren;
 struct node_expr_size;
 struct node_expr_field;
 struct node_expr_array;
@@ -237,6 +239,7 @@ using game_ptr = std::unique_ptr<node_game>;
 using undefined_ptr = std::unique_ptr<node_undefined>;
 using empty_array_ptr = std::unique_ptr<node_empty_array>;
 using thisthread_ptr = std::unique_ptr<node_thisthread>;
+using expr_paren_ptr = std::unique_ptr<node_expr_paren>;
 using expr_size_ptr = std::unique_ptr<node_expr_size>;
 using expr_field_ptr = std::unique_ptr<node_expr_field>;
 using expr_array_ptr = std::unique_ptr<node_expr_array>;
@@ -354,6 +357,7 @@ union expr_ptr
     undefined_ptr as_undefined;
     empty_array_ptr as_empty_array;
     thisthread_ptr as_thisthread;
+    expr_paren_ptr as_paren;
     expr_size_ptr as_size;
     expr_field_ptr as_field;
     expr_array_ptr as_array;
@@ -408,12 +412,15 @@ union expr_ptr
         new(&as_node) node_ptr(std::move(val.as_node));
     }
 
+    ~expr_ptr(){}
+
     expr_ptr& operator=(expr_ptr && val)
     {
         new(&as_node) node_ptr(std::move(val.as_node));
         return *(expr_ptr*)&as_node;
     }
-    ~expr_ptr(){}
+
+    bool operator==(const expr_ptr& rhs) const;
 };
 
 union stmt_ptr
@@ -542,6 +549,11 @@ struct node_true : public node
     {
         return "true";
     }
+
+    friend bool operator==(const node_true& lhs, const node_true& rhs)
+    {
+        return true;
+    }
 };
 
 struct node_false : public node
@@ -552,6 +564,11 @@ struct node_false : public node
     auto print() -> std::string override
     {
         return "false";
+    }
+
+    friend bool operator==(const node_false& lhs, const node_false& rhs)
+    {
+        return true;
     }
 };
 
@@ -569,6 +586,11 @@ struct node_integer : public node
     {
         return value;
     }
+
+    friend bool operator==(const node_integer& lhs, const node_integer& rhs)
+    {
+        return lhs.value == rhs.value;
+    }
 };
 
 struct node_float : public node
@@ -584,6 +606,11 @@ struct node_float : public node
     auto print() -> std::string override
     {
         return value;
+    }
+
+    friend bool operator==(const node_float& lhs, const node_float& rhs)
+    {
+        return lhs.value == rhs.value;
     }
 };
 
@@ -603,6 +630,11 @@ struct node_vector : public node
     {
         return "( "s + x.as_node->print() + ", " + y.as_node->print() + ", "+ z.as_node->print() + " )";
     }
+
+    friend bool operator==(const node_vector& lhs, const node_vector& rhs)
+    {
+        return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+    }
 };
 
 struct node_string : public node
@@ -619,6 +651,11 @@ struct node_string : public node
     {
         return value;
     }
+
+    friend bool operator==(const node_string& lhs, const node_string& rhs)
+    {
+        return lhs.value == rhs.value;
+    }
 };
 
 struct node_istring : public node
@@ -634,6 +671,11 @@ struct node_istring : public node
     auto print() -> std::string override
     {
         return "&"s += value;
+    }
+
+    friend bool operator==(const node_istring& lhs, const node_istring& rhs)
+    {
+        return lhs.value == rhs.value;
     }
 };
 
@@ -656,6 +698,11 @@ struct node_file : public node
     {
         return value;
     }
+
+    friend bool operator==(const node_file& lhs, const node_file& rhs)
+    {
+        return lhs.value == rhs.value;
+    }
 };
 
 struct node_name : public node
@@ -672,6 +719,11 @@ struct node_name : public node
     {
         return value;
     }
+
+    friend bool operator==(const node_name& lhs, const node_name& rhs)
+    {
+        return lhs.value == rhs.value;
+    }
 };
 
 struct node_animtree : public node
@@ -683,6 +735,11 @@ struct node_animtree : public node
     auto print() -> std::string override
     {
         return "#animtree";
+    }
+
+    friend bool operator==(const node_animtree& lhs, const node_animtree& rhs)
+    {
+        return true;
     }
 };
 
@@ -700,6 +757,11 @@ struct node_animation : public node
     {
         return "%"s += value;
     }
+
+    friend bool operator==(const node_animation& lhs, const node_animation& rhs)
+    {
+        return lhs.value == rhs.value;
+    }
 };
 
 struct node_level : public node
@@ -711,6 +773,11 @@ struct node_level : public node
     auto print() -> std::string override
     {
         return "level";
+    }
+
+    friend bool operator==(const node_level& lhs, const node_level& rhs)
+    {
+        return true;
     }
 };
 
@@ -724,6 +791,11 @@ struct node_anim : public node
     {
         return "anim";
     }
+
+    friend bool operator==(const node_anim& lhs, const node_anim& rhs)
+    {
+        return true;
+    }
 };
 
 struct node_self : public node
@@ -735,6 +807,11 @@ struct node_self : public node
     auto print() -> std::string override
     {
         return "self";
+    }
+
+    friend bool operator==(const node_self& lhs, const node_self& rhs)
+    {
+        return true;
     }
 };
 
@@ -748,6 +825,11 @@ struct node_game : public node
     {
         return "game";
     }
+
+    friend bool operator==(const node_game& lhs, const node_game& rhs)
+    {
+        return true;
+    }
 };
 
 struct node_undefined : public node
@@ -759,6 +841,11 @@ struct node_undefined : public node
     auto print() -> std::string override
     {
         return "undefined";
+    }
+
+    friend bool operator==(const node_undefined& lhs, const node_undefined& rhs)
+    {
+        return true;
     }
 };
 
@@ -772,6 +859,11 @@ struct node_empty_array : public node
     {
         return "[]";
     }
+
+    friend bool operator==(const node_empty_array& lhs, const node_empty_array& rhs)
+    {
+        return true;
+    }
 };
 
 struct node_thisthread : public node
@@ -783,6 +875,32 @@ struct node_thisthread : public node
     auto print() -> std::string override
     {
         return "thisthread";
+    }
+
+    friend bool operator==(const node_thisthread& lhs, const node_thisthread& rhs)
+    {
+        return true;
+    }
+};
+
+struct node_expr_paren : public node
+{
+    expr_ptr expr;
+
+    node_expr_paren(expr_ptr expr)
+        : node(node_t::expr_paren), expr(std::move(expr)) {}
+
+    node_expr_paren(const location& loc, expr_ptr expr)
+        : node(node_t::expr_paren, loc), expr(std::move(expr)) {}
+
+    auto print() -> std::string override
+    {
+        return "(" + expr.as_node->print() + ")";
+    }
+
+    friend bool operator==(const node_expr_paren& lhs, const node_expr_paren& rhs)
+    {
+        return lhs.expr == rhs.expr;
     }
 };
 
@@ -799,6 +917,11 @@ struct node_expr_size : public node
     auto print() -> std::string override
     {
         return obj.as_node->print() + ".size";
+    }
+
+    friend bool operator==(const node_expr_size& lhs, const node_expr_size& rhs)
+    {
+        return lhs.obj == rhs.obj;
     }
 };
 
@@ -817,6 +940,11 @@ struct node_expr_field : public node
     {
         return obj.as_node->print() + "." + field->print();
     }
+
+    friend bool operator==(const node_expr_field& lhs, const node_expr_field& rhs)
+    {
+        return lhs.obj == rhs.obj && lhs.field == rhs.field;
+    }
 };
 
 struct node_expr_array : public node
@@ -833,6 +961,11 @@ struct node_expr_array : public node
     auto print() -> std::string override
     {
         return obj.as_node->print() + "[" + key.as_node->print() + "]";
+    }
+
+    friend bool operator==(const node_expr_array& lhs, const node_expr_array& rhs)
+    {
+        return lhs.obj == rhs.obj && lhs.key == rhs.key;
     }
 };
 

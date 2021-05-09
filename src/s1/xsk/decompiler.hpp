@@ -68,7 +68,7 @@ private:
     void process_stmt_break(const gsc::context_ptr& ctx, const gsc::stmt_break_ptr& stmt);
     void process_stmt_return(const gsc::context_ptr& ctx, const gsc::stmt_return_ptr& stmt);
     void process_expr(const gsc::context_ptr& ctx, gsc::expr_ptr& expr);
-    void process_expr_assign(const gsc::context_ptr& ctx, const gsc::expr_assign_ptr& expr);
+    void process_expr_assign(const gsc::context_ptr& ctx, gsc::expr_assign_ptr& expr);
     void process_expr_binary(const gsc::context_ptr& ctx, const gsc::expr_binary_ptr& expr);
     void process_expr_and(const gsc::context_ptr& ctx, const gsc::expr_and_ptr& expr);
     void process_expr_or(const gsc::context_ptr& ctx, const gsc::expr_or_ptr& expr);
