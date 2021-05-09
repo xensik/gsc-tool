@@ -411,6 +411,12 @@ void compiler::emit_stmt_while(const gsc::context_ptr& ctx, const gsc::stmt_whil
     
     ctx->local_vars_create_count = stmt->ctx->local_vars_create_count;
 
+    for(auto i = 0; i < ctx->local_vars_create_count; i++)
+    {
+        if(!ctx->local_vars.at(i).init)
+            ctx->local_vars.at(i).init = true;
+    }
+
     auto begin_loc = insert_label();
 
     bool const_cond = is_constant_condition(stmt->expr);
@@ -460,6 +466,13 @@ void compiler::emit_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_pt
     emit_create_local_vars(stmt->ctx);
 
     ctx->local_vars_create_count = stmt->ctx->local_vars_create_count;
+
+    for(auto i = 0; i < ctx->local_vars_create_count; i++)
+    {
+        if(!ctx->local_vars.at(i).init)
+            ctx->local_vars.at(i).init = true;
+    }
+
     ctx->transfer(stmt->ctx_post);
 
     auto begin_loc = insert_label();
@@ -528,6 +541,12 @@ void compiler::emit_stmt_foreach(const gsc::context_ptr& ctx, const gsc::stmt_fo
     emit_create_local_vars(stmt->ctx);
 
     ctx->local_vars_create_count = stmt->ctx->local_vars_create_count;
+
+    for(auto i = 0; i < ctx->local_vars_create_count; i++)
+    {
+        if(!ctx->local_vars.at(i).init)
+            ctx->local_vars.at(i).init = true;
+    }
 
     ctx->transfer(stmt->ctx_post);
 
@@ -1475,7 +1494,6 @@ void compiler::emit_remove_local_vars(const gsc::context_ptr& ctx)
 
 void compiler::emit_object(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
 {
-    // need revision used for clear variable
     switch(expr.as_node->type)
     {
         case gsc::node_t::data_level:
@@ -1494,8 +1512,14 @@ void compiler::emit_object(const gsc::context_ptr& ctx, const gsc::expr_ptr& exp
             emit_expr_call(ctx, expr.as_call);
             emit_opcode(ctx, opcode::OP_CastFieldObject);
             break;
-        // array ?
-        // field ?
+        case gsc::node_t::expr_array:
+            emit_array_variable(ctx, expr.as_array);
+            emit_opcode(ctx, opcode::OP_CastFieldObject);
+            break;
+        case gsc::node_t::expr_field:
+            emit_field_variable(ctx, expr.as_field);
+            emit_opcode(ctx, opcode::OP_CastFieldObject);
+            break;
         default:
             throw gsc::comp_error(expr.as_node->loc, "unknown object type");
             break;
