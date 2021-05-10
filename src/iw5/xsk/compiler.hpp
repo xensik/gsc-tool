@@ -130,6 +130,7 @@ private:
     auto variable_create_index(const gsc::context_ptr& ctx, const gsc::name_ptr& name) -> std::string;
     auto variable_access_index(const gsc::context_ptr& ctx, const gsc::name_ptr& name) -> std::string;
     auto variable_initialized(const gsc::context_ptr& ctx, const gsc::name_ptr& name) -> bool;
+    auto is_include_call(const std::string& name, std::string& file) -> bool;
     auto is_local_call(const std::string& name) -> bool;
     auto is_builtin_call(const std::string& name) -> bool;
     auto is_builtin_func(const std::string& name) -> bool;
@@ -142,6 +143,7 @@ private:
     static gsc::include_t include_maps_mp_utility_;
     static gsc::include_t include_common_scripts_utility_;
     static gsc::include_t include_common_scripts_createfx_;
+    static gsc::include_t include_maps_mp_gametypes_hud_util_;
     auto map_known_includes(const std::string& include) -> bool;
 
     // debug

@@ -384,19 +384,19 @@ void assembler::assemble_builtin_call(const gsc::instruction_ptr& inst, bool met
 
     if (arg_num)
     {
-        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
 
         if (method)
-            id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::method_id(inst->data[1]);
+            id = inst->data[1].substr(0, 3) == "_ID" ? std::stoi(inst->data[1].substr(3)) : resolver::method_id(inst->data[1]);
         else
-            id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::function_id(inst->data[1]);
+            id = inst->data[1].substr(0, 3) == "_ID" ? std::stoi(inst->data[1].substr(3)) : resolver::function_id(inst->data[1]);
     }
     else
     {
         if (method)
-            id = inst->data[0].substr(0, 3) == "_ID" ? std::stol(inst->data[0].substr(3)) : resolver::method_id(inst->data[0]);
+            id = inst->data[0].substr(0, 3) == "_ID" ? std::stoi(inst->data[0].substr(3)) : resolver::method_id(inst->data[0]);
         else
-            id = inst->data[0].substr(0, 3) == "_ID" ? std::stol(inst->data[0].substr(3)) : resolver::function_id(inst->data[0]);
+            id = inst->data[0].substr(0, 3) == "_ID" ? std::stoi(inst->data[0].substr(3)) : resolver::function_id(inst->data[0]);
     }
 
     script_->write<std::uint16_t>(id);
@@ -414,7 +414,7 @@ void assembler::assemble_local_call(const gsc::instruction_ptr& inst, bool threa
 
     if (thread)
     {
-        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[1])));
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[1])));
     }
 }
 
@@ -429,15 +429,15 @@ void assembler::assemble_far_call(const gsc::instruction_ptr& inst, bool thread)
 
     if (thread)
     {
-        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stol(inst->data[0])));
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
 
-        file_id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::file_id(inst->data[1]);
-        func_id = inst->data[2].substr(0, 3) == "_ID" ? std::stol(inst->data[2].substr(3)) : resolver::token_id(inst->data[2]);
+        file_id = inst->data[1].substr(0, 3) == "_ID" ? std::stoi(inst->data[1].substr(3)) : resolver::file_id(inst->data[1]);
+        func_id = inst->data[2].substr(0, 3) == "_ID" ? std::stoi(inst->data[2].substr(3)) : resolver::token_id(inst->data[2]);
     }
     else
     {
-        file_id = inst->data[0].substr(0, 3) == "_ID" ? std::stol(inst->data[0].substr(3)) : resolver::file_id(inst->data[0]);
-        func_id = inst->data[1].substr(0, 3) == "_ID" ? std::stol(inst->data[1].substr(3)) : resolver::token_id(inst->data[1]);
+        file_id = inst->data[0].substr(0, 3) == "_ID" ? std::stoi(inst->data[0].substr(3)) : resolver::file_id(inst->data[0]);
+        func_id = inst->data[1].substr(0, 3) == "_ID" ? std::stoi(inst->data[1].substr(3)) : resolver::token_id(inst->data[1]);
     }
 
     stack_->write<std::uint16_t>(file_id);
@@ -463,7 +463,7 @@ void assembler::assemble_end_switch(const gsc::instruction_ptr& inst)
 
     if (utils::string::is_number(inst->data[0]))
     {
-        casenum = std::stol(inst->data[0]);
+        casenum = std::stoi(inst->data[0]);
     }
     else
     {
@@ -480,7 +480,7 @@ void assembler::assemble_end_switch(const gsc::instruction_ptr& inst)
         {
             if (utils::string::is_number(inst->data[1 + (3 * i) + 1]))
             {
-                script_->write<uint32_t>((std::stol(inst->data[1 + (3 * i) + 1]) & 0xFFFFFF) + 0x800000);
+                script_->write<uint32_t>((std::stoi(inst->data[1 + (3 * i) + 1]) & 0xFFFFFF) + 0x800000);
             }
             else
             {
@@ -519,7 +519,7 @@ void assembler::assemble_field_variable(const gsc::instruction_ptr& inst)
 
     if (inst->data[0].substr(0, 3) == "_ID")
     {
-        field_id = (std::uint16_t)std::stol(inst->data[0].substr(3));
+        field_id = (std::uint16_t)std::stoi(inst->data[0].substr(3));
     }
     else
     {

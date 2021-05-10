@@ -1134,6 +1134,10 @@ void compiler::emit_expr_function(const gsc::context_ptr& ctx, const gsc::expr_f
     {
         far = true;
     }
+    else if(is_include_call(name, file))
+    {
+        far = true;
+    }
     else if(is_builtin_method(name))
     {
         builtin = true;
@@ -1146,6 +1150,10 @@ void compiler::emit_expr_function(const gsc::context_ptr& ctx, const gsc::expr_f
     else if(is_local_call(name))
     {
         local = true;
+    }
+    else
+    {
+        throw gsc::comp_error(expr->loc, "couldn't determine function reference type");
     }
 
     if(local)
@@ -1628,7 +1636,7 @@ void compiler::emit_integer(const gsc::context_ptr& ctx, const gsc::integer_ptr&
     {
         emit_opcode(ctx, opcode::OP_GetNegByte, num->value.substr(1));
     }
-    else if(value < 65536)
+    else if(value > 0 && value < 65536)
     {
         emit_opcode(ctx, opcode::OP_GetUnsignedShort, num->value);
     }
@@ -2195,6 +2203,23 @@ auto compiler::variable_initialized(const gsc::context_ptr& ctx, const gsc::name
     }
 
     throw gsc::comp_error(name->loc, "local variable '" + name->value + "' not found.");
+}
+
+auto compiler::is_include_call(const std::string& name, std::string& file) -> bool
+{
+    for(const auto& inc : includes_)
+    {
+        for(const auto& fun : inc.funcs)
+        {
+            if(name == fun)
+            {
+                file = inc.name;
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 auto compiler::is_local_call(const std::string& name) -> bool
@@ -2812,6 +2837,61 @@ gsc::include_t compiler::include_common_scripts_utility_ =
     }
 };
 
+gsc::include_t compiler::include_maps_mp_gametypes_hud_util_ = 
+{
+    "maps/mp/gametypes/_hud_util", 
+    {
+        "setparent",
+        "getparent",
+        "addchild",
+        "removechild",
+        "setpoint",
+        "setpointbar",
+        "updatebar",
+        "updatebarscale",
+        "createfontstring",
+        "createserverfontstring",
+        "createservertimer",
+        "createtimer",
+        "createicon",
+        "createservericon",
+        "createserverbar",
+        "createbar",
+        "getcurrentfraction",
+        "createprimaryprogressbar",
+        "createprimaryprogressbartext",
+        "createteamprogressbar",
+        "createteamprogressbartext",
+        "setflashfrac",
+        "hideelem",
+        "showelem",
+        "flashthread",
+        "destroyelem",
+        "seticonshader",
+        "geticonshader",
+        "seticonsize",
+        "setwidth",
+        "setheight",
+        "setsize",
+        "updatechildren",
+        "transitionreset",
+        "transitionzoomin",
+        "transitionpulsefxin",
+        "transitionslidein",
+        "transitionslideout",
+        "transitionzoomout",
+        "transitionfadein",
+        "transitionfadeout",
+        "getweeklyref",
+        "getdailyref",
+        "ch_getprogress",
+        "ch_getstate",
+        "ch_setprogress",
+        "ch_setstate",
+        "ch_gettarget",
+    }
+};
+
 auto compiler::map_known_includes(const std::string& include) -> bool
 {
     if(include == "maps/mp/_utility")
@@ -2827,6 +2907,11 @@ auto compiler::map_known_includes(const std::string& include) -> bool
     else if(include == "common_scripts/_createfx")
     {
         includes_.push_back(include_common_scripts_createfx_);
+        return true;
+    }
+    else if(include == "maps/mp/gametypes/_hud_util")
+    {
+        includes_.push_back(include_maps_mp_gametypes_hud_util_);
         return true;
     }
 
