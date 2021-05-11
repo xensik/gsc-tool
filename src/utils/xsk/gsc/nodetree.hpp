@@ -538,6 +538,32 @@ public:
                 return false;
         }
     }
+
+    auto precedence() -> std::uint8_t
+    {
+        switch(type)
+        {
+            case gsc::node_t::expr_or:           return 1;
+            case gsc::node_t::expr_and:          return 2;
+            case gsc::node_t::expr_bitwise_or:   return 3;
+            case gsc::node_t::expr_bitwise_exor: return 4;
+            case gsc::node_t::expr_bitwise_and:  return 5;
+            case gsc::node_t::expr_equality:     return 6;
+            case gsc::node_t::expr_inequality:   return 6;
+            case gsc::node_t::expr_less:         return 7;
+            case gsc::node_t::expr_greater:      return 7;
+            case gsc::node_t::expr_less_equal:   return 7;
+            case gsc::node_t::expr_greater_equal:return 7;
+            case gsc::node_t::expr_shift_left:   return 8;
+            case gsc::node_t::expr_shift_right:  return 8;
+            case gsc::node_t::expr_add:          return 9;
+            case gsc::node_t::expr_sub:          return 9;
+            case gsc::node_t::expr_mult:         return 10;
+            case gsc::node_t::expr_div:          return 10;
+            case gsc::node_t::expr_mod:          return 10;
+            default: return 0;
+        }
+    }
 };
 
 struct node_true : public node

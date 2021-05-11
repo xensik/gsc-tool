@@ -3038,12 +3038,40 @@ void decompiler::process_expr_binary(const gsc::context_ptr& ctx, const gsc::exp
 {
     process_expr(ctx, expr->lvalue);
     process_expr(ctx, expr->rvalue);
+
+    auto prec = expr->lvalue.as_node->precedence();
+
+    if(prec && prec < expr->precedence())
+    {
+        expr->lvalue = expr_ptr(std::make_unique<gsc::node_expr_paren>(std::move(expr->lvalue)));
+    }
+
+    prec = expr->rvalue.as_node->precedence();
+
+    if(prec && prec < expr->precedence())
+    {
+        expr->rvalue = expr_ptr(std::make_unique<gsc::node_expr_paren>(std::move(expr->rvalue)));
+    }
 }
 
 void decompiler::process_expr_and(const gsc::context_ptr& ctx, const gsc::expr_and_ptr& expr)
 {
     process_expr(ctx, expr->lvalue);
     process_expr(ctx, expr->rvalue);
+
+    auto prec = expr->lvalue.as_node->precedence();
+
+    if(prec && prec < expr->precedence())
+    {
+        expr->lvalue = expr_ptr(std::make_unique<gsc::node_expr_paren>(std::move(expr->lvalue)));
+    }
+
+    prec = expr->rvalue.as_node->precedence();
+
+    if(prec && prec < expr->precedence())
+    {
+        expr->rvalue = expr_ptr(std::make_unique<gsc::node_expr_paren>(std::move(expr->rvalue)));
+    }
 }
 
 void decompiler::process_expr_or(const gsc::context_ptr& ctx, const gsc::expr_or_ptr& expr)
