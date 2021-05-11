@@ -746,63 +746,63 @@ const std::array<gsc::pair_16C, 735> function_list
     { 0x1A4, "playsoundatpos" },
     { 0x1A5, "newhudelem" },
     { 0x1A6, "newclienthudelem" },
-    { 0x1A7, "_func_1A7" }, // MP 0x1402F05F0
-    { 0x1A8, "_func_1A8" }, // SP 0x14031CC90, MP 0x1403F93E0
-    { 0x1A9, "_func_1A9" }, // SP 0x140259DA0, MP 0x14032F850
-    { 0x1AA, "_func_1AA" }, // MP 0x14032FAB0
-    { 0x1AB, "_func_1AB" }, // SP 0x140243820, MP 0x14030C740
-    { 0x1AC, "_func_1AC" }, // SP 0x140246030, MP 0x14030D4F0
-    { 0x1AD, "_func_1AD" }, // SP 0x140242E20, MP 0x140321930
-    { 0x1AE, "_func_1AE" }, // SP 0x140243EE0, MP 0x14030B270
-    { 0x1AF, "_func_1AF" }, // SP 0x1402440F0, MP 0x14030B4B0
-    { 0x1B0, "_func_1B0" }, // SP 0x140244650, MP 0x14030BC50
-    { 0x1B1, "_func_1B1" }, // SP 0x140245010, MP 0x14030BFC0
-    { 0x1B2, "_func_1B2" }, // SP 0x140244310, MP 0x14030B900
-    { 0x1B3, "_func_1B3" }, // SP 0x1402451C0, MP 0x14030C220
-    { 0x1B4, "_func_1B4" }, // SP 0x1402454B0, MP 0x14030C3F0
-    { 0x1B5, "getnextarraykey" }, // SP 0x14024BD70, MP 0x1403148C0
-    { 0x1B6, "_func_1B6" }, // SP 0x14024C730, MP 0x1403152C0
+    { 0x1A7, "newteamhudelem" },
+    { 0x1A8, "resettimeout" },
+    { 0x1A9, "isplayer" },
+    { 0x1AA, "isplayernumber" },
+    { 0x1AB, "getpartname" },
+    { 0x1AC, "weaponfiretime" },
+    { 0x1AD, "weaponclipsize" },
+    { 0x1AE, "weaponisauto" },
+    { 0x1AF, "weaponissemiauto" },
+    { 0x1B0, "weaponisboltaction" },
+    { 0x1B1, "weaponinheritsperks" },
+    { 0x1B2, "weaponburstcount" },
+    { 0x1B3, "weapontype" },
+    { 0x1B4, "weaponclass" },
+    { 0x1B5, "getnextarraykey" },
+    { 0x1B6, "sortbydistance" },
     { 0x1B7, "tablelookup" },
-    { 0x1B8, "_func_1B8" }, // SP 0x140246A50, MP 0x14030FCE0
-    { 0x1B9, "_func_1B9" }, // SP 0x140245E10, MP 0x14030F130
-    { 0x1BA, "_func_1BA" }, // SP 0x140246C10, MP 0x14030FFB0
-    { 0x1BB, "_func_1BB" }, // SP 0x140246130, MP 0x14030F490
-    { 0x1BC, "_func_1BC" }, // SP 0x140246470, MP 0x14030F880
-    { 0x1BD, "_func_1BD" }, // SP 0x1402444D0, MP 0x14030D5F0
-    { 0x1BE, "_func_1BE" }, // SP 0x140254140, MP 0x14031F4A0
-    { 0x1BF, "_func_1BF" }, // SP 0x14023EDB0, MP 0x1403207F0
-    { 0x1C0, "_func_1C0" }, // SP 0x140243000, MP 0x14030D480
-    { 0x1C1, "_func_1C1" }, // SP 0x140243130, MP 0x14030D6F0
-    { 0x1C2, "_func_1C2" }, // SP 0x1404183C0, MP 0x14052CB00
-    { 0x1C3, "_func_1C3" }, // SP 0x1402426B0, MP 0x1403212E0
-    { 0x1C4, "_func_1C4" }, // SP 0x140242710, MP 0x140321420
-    { 0x1C5, "_func_1C5" }, // SP 0x140242880, MP 0x140321480
-    { 0x1C6, "_func_1C6" }, // SP 0x140250F70, MP 0x14031A340
-    { 0x1C7, "_func_1C7" }, // MP 0x140313C30
-    { 0x1C8, "_func_1C8" }, // MP 0x140313C40
-    { 0x1C9, "_func_1C9" }, // MP 0x140313D00
-    { 0x1CA, "_func_1CA" }, // MP 0x140313D10
-    { 0x1CB, "_func_1CB" }, // MP 0x140313E50
-    { 0x1CC, "_func_1CC" }, // MP 0x1403141A0
-    { 0x1CD, "_func_1CD" }, // SP 0x14024AEF0, MP 0x1403141B0
-    { 0x1CE, "_func_1CE" }, // SP 0x14024B370, MP 0x1403145A0
-    { 0x1CF, "getarraykeys" }, // SP 0x14024BA30, MP 0x1403147E0
-    { 0x1D0, "getfirstarraykey" }, // SP 0x14024BC20, MP 0x140314810
-    { 0x1D1, "_func_1D1" }, // SP 0x140243340, MP 0x14030D890
-    { 0x1D2, "_func_1D2" }, // SP 0x1402435C0, MP 0x14030DB50
-    { 0x1D3, "_func_1D3" }, // SP 0x1402437D0, MP 0x14030E3B0
-    { 0x1D4, "_func_1D4" }, // SP 0x1402439F0, MP 0x14030E6B0
-    { 0x1D5, "_func_1D5" }, // SP 0x140243CA0, MP 0x14030E860
-    { 0x1D6, "_func_1D6" }, // SP 0x1402440B0, MP 0x14030EB60
-    { 0x1D7, "_func_1D7" }, // SP 0x140244EE0, MP 0x14030F410
-    { 0x1D8, "_func_1D8" }, // SP 0x140244F60, MP 0x14030F440
-    { 0x1D9, "_func_1D9" }, // SP 0x140268850, MP 0x140337220
-    { 0x1DA, "_func_1DA" }, // SP 0x140268CD0, MP 0x140337350
-    { 0x1DB, "_func_1DB" }, // SP 0x140268FA0, MP 0x1403373C0
-    { 0x1DC, "_func_1DC" }, // SP 0x140268FE0, MP 0x140337460
-    { 0x1DD, "_func_1DD" }, // SP 0x1402690C0, MP 0x1403374A0
-    { 0x1DE, "_func_1DE" }, // SP 0x140269150, MP 0x140337600
-    { 0x1DF, "_func_1DF" }, // SP 0x140245580, MP 0x14030C5F0
+    { 0x1B8, "tablelookupbyrow" },
+    { 0x1B9, "tablelookupistring" },
+    { 0x1BA, "tablelookupistringbyrow" },
+    { 0x1BB, "tablelookuprownum" },
+    { 0x1BC, "tableexists" },
+    { 0x1BD, "getmissileowner" },
+    { 0x1BE, "magicbullet" },
+    { 0x1BF, "getweaponflashtagname" },
+    { 0x1C0, "averagepoint" },
+    { 0x1C1, "averagenormal" },
+    { 0x1C2, "vehicle_getspawnerarray" },
+    { 0x1C3, "playrumbleonposition" },
+    { 0x1C4, "playrumblelooponposition" },
+    { 0x1C5, "stopallrumbles" },
+    { 0x1C6, "soundexists" },
+    { 0x1C7, "openfile" },
+    { 0x1C8, "closefile" },
+    { 0x1C9, "fprintln" },
+    { 0x1CA, "fprintfields" },
+    { 0x1CB, "freadln" },
+    { 0x1CC, "fgetarg" },
+    { 0x1CD, "setminimap" },
+    { 0x1CE, "setthermalbodymaterial" },
+    { 0x1CF, "getarraykeys" },
+    { 0x1D0, "getfirstarraykey" },
+    { 0x1D1, "getglass" },
+    { 0x1D2, "getglassarray" },
+    { 0x1D3, "getglassorigin" },
+    { 0x1D4, "isglassdestroyed" },
+    { 0x1D5, "destroyglass" },
+    { 0x1D6, "deleteglass" },
+    { 0x1D7, "getentchannelscount" },
+    { 0x1D8, "getentchannelname" },
+    { 0x1D9, "objective_add" },
+    { 0x1DA, "objective_delete" },
+    { 0x1DB, "objective_state" },
+    { 0x1DC, "objective_icon" },
+    { 0x1DD, "objective_position" },
+    { 0x1DE, "objective_current" },
+    { 0x1DF, "_func_1DF" }, // SP 0x140245580, MP 0x14030C5F0 // weap
     { 0x1E0, "_func_1E0" }, // SP 0x140245870, MP 0x14030C960
     { 0x1E1, "_func_1E1" }, // SP 0x140245A90, MP 0x14030CAD0
     { 0x1E2, "_func_1E2" }, // SP 0x140245D00, MP 0x14030D110
@@ -810,26 +810,26 @@ const std::array<gsc::pair_16C, 735> function_list
     { 0x1E4, "_func_1E4" }, // SP 0x1402464C0, MP 0x14030DFC0
     { 0x1E5, "_func_1E5" }, // SP 0x1402468A0, MP 0x14030E400
     { 0x1E6, "_func_1E6" }, // SP 0x140246E40, MP 0x14030E970
-    { 0x1E7, "_func_1E7" }, // SP 0x14040ED30, MP 0x140523650
-    { 0x1E8, "_func_1E8" }, // SP 0x14040EE20, MP 0x140523740
-    { 0x1E9, "_func_1E9" }, // SP 0x14040ECD0, MP 0x1405235F0
-    { 0x1EA, "_func_1EA" }, // SP 0x140418130, MP 0x14052C870
-    { 0x1EB, "_func_1EB" }, // SP 0x140418440, MP 0x14052CBE0
-    { 0x1EC, "_func_1EC" }, // SP 0x1404184A0, MP 0x14052CC40
-    { 0x1ED, "_func_1ED" }, // SP 0x140418170, MP 0x14052C8B0
+    { 0x1E7, "getvehiclenode" },
+    { 0x1E8, "getvehiclenodearray" },
+    { 0x1E9, "getallvehiclenodes" },
+    { 0x1EA, "getnumvehicles" },
+    { 0x1EB, "precachevehicle" },
+    { 0x1EC, "spawnvehicle" },
+    { 0x1ED, "vehicle_getarray" },
     { 0x1EE, "pow" },
-    { 0x1EF, "angleclamp360" }, // SP 0x14024CB70, MP 0x140314390
-    { 0x1F0, "_func_1F0" }, // MP 0x140432F70
-    { 0x1F1, "_func_1F1" }, // MP 0x140432CB0
-    { 0x1F2, "_func_1F2" }, // MP 0x1404335B0
-    { 0x1F3, "_func_1F3" }, // MP 0x140433880
-    { 0x1F4, "_func_1F4" }, // MP 0x1404336E0
-    { 0x1F5, "_func_1F5" }, // MP 0x1404332A0
-    { 0x1F6, "_func_1F6" }, // MP 0x140432CE0
-    { 0x1F7, "_func_1F7" }, // MP 0x140433680
-    { 0x1F8, "_func_1F8" }, // MP 0x1404332F0
+    { 0x1EF, "angleclamp360" },
+    { 0x1F0, "botgetmemoryevents" },
+    { 0x1F1, "botautoconnectenabled" },
+    { 0x1F2, "botzonegetcount" },
+    { 0x1F3, "botzonesetteam" },
+    { 0x1F4, "botzonenearestcount" },
+    { 0x1F5, "botmemoryflags" },
+    { 0x1F6, "botflagmemoryevents" },
+    { 0x1F7, "botzonegetindoorpercent" },
+    { 0x1F8, "botsentientswap" },
     { 0x1F9, "isbot" },
-    { 0x1FA, "_func_1FA" }, // MP 0x14032BE60
+    { 0x1FA, "isagent" },
     { 0x1FB, "_func_1FB" }, // MP 0x140406E40
     { 0x1FC, "_func_1FC" }, // MP 0x140432CD0
     { 0x1FD, "_func_1FD" }, // MP 0x140432EE0
@@ -849,11 +849,11 @@ const std::array<gsc::pair_16C, 735> function_list
     { 0x20B, "_func_20B" }, // empty
     { 0x20C, "_func_20C" }, // MP 0x1402D3310
     { 0x20D, "_func_20D" }, // MP 0x1402D1E20
-    { 0x20E, "badplace_global" }, // MP 0x14031D9E0
-    { 0x20F, "_func_20F" }, // MP 0x14032E640
-    { 0x210, "_func_210" }, // SP 0x14027E220, MP 0x1402D2060
-    { 0x211, "_func_211" }, // SP 0x140250D30, MP 0x14031B3C0
-    { 0x212, "_func_212" }, // SP 0x140251190, MP 0x14031B850
+    { 0x20E, "badplace_global" },
+    { 0x20F, "getpathdist" },
+    { 0x210, "getlinkednodes" },
+    { 0x211, "disconnectnodepair" },
+    { 0x212, "connectnodepair" },
     { 0x213, "_func_213" }, // SP 0x140259F80
     { 0x214, "_func_214" }, // empty
     { 0x215, "_func_215" }, // empty
