@@ -322,7 +322,7 @@ const std::array<gsc::pair_8C, 154> opcode_list
     { std::uint8_t(opcode::OP_waitFrame), "WAITFRAME" },
 }};
 
-const std::array<gsc::pair_16C, 770> function_list
+const std::array<gsc::pair_16C, 778> function_list
 {{
     { 0x001, "_func_001" },
     { 0x002, "_func_002" },
@@ -370,7 +370,7 @@ const std::array<gsc::pair_16C, 770> function_list
     { 0x02C, "_func_02C" },
     { 0x02D, "_func_02D" },
     { 0x02E, "_func_02E" },
-    { 0x02F, "_func_02F" },
+    { 0x02F, "isdefined" },
     { 0x030, "_func_030" },
     { 0x031, "_func_031" },
     { 0x032, "_func_032" },
@@ -764,7 +764,7 @@ const std::array<gsc::pair_16C, 770> function_list
     { 0x1B6, "_func_1B6" },
     { 0x1B7, "_func_1B7" },
     { 0x1B8, "_func_1B8" },
-    { 0x1B9, "_func_1B9" },
+    { 0x1B9, "getnextarraykey" },
     { 0x1BA, "_func_1BA" },
     { 0x1BB, "_func_1BB" },
     { 0x1BC, "_func_1BC" },
@@ -791,7 +791,7 @@ const std::array<gsc::pair_16C, 770> function_list
     { 0x1D1, "_func_1D1" },
     { 0x1D2, "_func_1D2" },
     { 0x1D3, "_func_1D3" },
-    { 0x1D4, "_func_1D4" },
+    { 0x1D4, "getfirstarraykey" },
     { 0x1D5, "_func_1D5" },
     { 0x1D6, "_func_1D6" },
     { 0x1D7, "_func_1D7" },
@@ -1094,9 +1094,17 @@ const std::array<gsc::pair_16C, 770> function_list
     { 0x300, "_func_300" },
     { 0x301, "_func_301" },
     { 0x302, "_func_302" },
+    { 0x303, "_func_303" },
+    { 0x304, "_func_304" },
+    { 0x305, "_func_305" },
+    { 0x306, "_func_306" },
+    { 0x307, "_func_307" },
+    { 0x308, "_func_308" },
+    { 0x309, "_func_309" },
+    { 0x30A, "_func_30A" },
 }};
 
-const std::array<gsc::pair_16C, 1408> method_list
+const std::array<gsc::pair_16C, 1415> method_list
 {{
     { 0x8000, "_meth_8000" },
     { 0x8001, "_meth_8001" },
@@ -2506,6 +2514,13 @@ const std::array<gsc::pair_16C, 1408> method_list
     { 0x857D, "_meth_857D" },
     { 0x857E, "_meth_857E" },
     { 0x857F, "_meth_857F" },
+    { 0x8580, "_meth_8580" },
+    { 0x8581, "_meth_8581" },
+    { 0x8582, "_meth_8582" },
+    { 0x8583, "_meth_8583" },
+    { 0x8584, "_meth_8584" },
+    { 0x8585, "_meth_8585" },
+    { 0x8586, "_meth_8586" },
 }};
 
 const std::array<gsc::pair_16C, 1> file_list

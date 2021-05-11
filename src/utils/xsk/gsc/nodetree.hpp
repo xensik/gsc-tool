@@ -1605,7 +1605,12 @@ struct node_stmt_list : public node
     {
         if(is_expr)
         {
-            if(stmts.size() > 0) return stmts[0].as_node->print();
+            if(stmts.size() > 0)
+            {
+                auto s = stmts[0].as_node->print();
+                s.pop_back();
+                return s;
+            }
             else return "";
         }
 
@@ -1654,7 +1659,7 @@ struct node_stmt_call : public node
     node_stmt_call(const location& loc, expr_call_ptr expr)
         : node(node_t::stmt_call, loc), expr(std::move(expr)) {}
 
-    auto print()->std::string override
+    auto print() -> std::string override
     {
         return expr->print() + ";";
     };
@@ -1670,7 +1675,7 @@ struct node_stmt_assign : public node
     node_stmt_assign(const location& loc, expr_assign_ptr expr)
         : node(node_t::stmt_assign, loc), expr(std::move(expr)) {}
     
-    auto print()->std::string override
+    auto print() -> std::string override
     {
         return expr->print() + ";";
     };
@@ -1954,7 +1959,7 @@ struct node_stmt_for : public node
         }
         else
         {
-            data += "for ( " + pre_expr.as_node->print() + " " + expr.as_node->print() + "; " + post_expr.as_assign->expr->print() + " )";
+            data += "for ( " + pre_expr.as_node->print() + "; " + expr.as_node->print() + "; " + post_expr.as_node->print() + " )";
             data += "\n";
         }
 

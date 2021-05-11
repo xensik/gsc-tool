@@ -94,7 +94,7 @@ void assembler::assemble(const std::string& file, std::vector<std::uint8_t>& dat
 
                 if (opcode(inst->opcode) == opcode::OP_endswitch)
                 {
-                    switchnum = static_cast<std::uint16_t>(std::stoul(inst->data[0]));
+                    switchnum = static_cast<std::uint16_t>(std::stoi(inst->data[0]));
                     inst->size += 7 * switchnum;
                 }
 
@@ -129,7 +129,7 @@ void assembler::assemble_function(const gsc::function_ptr& func)
 
     stack_->write<std::uint32_t>(func->size);
 
-    func->id = func->name.substr(0, 3) == "_ID" ? std::stoul(func->name.substr(3)) : resolver::token_id(func->name);
+    func->id = func->name.substr(0, 3) == "_ID" ? std::stoi(func->name.substr(3)) : resolver::token_id(func->name);
     stack_->write<std::uint16_t>(func->id);
         
     if (func->id == 0)

@@ -28,7 +28,6 @@ private:
     void decompile_statements(const gsc::function_ptr& func);
     void decompile_expr();
     void decompile_block(const gsc::stmt_list_ptr& block);
-    void decompile_nulls(const gsc::stmt_list_ptr& block);
     void decompile_search_infinite(const gsc::stmt_list_ptr& block);
     void decompile_search_loop(const gsc::stmt_list_ptr& block);
     void decompile_search_switch(const gsc::stmt_list_ptr& block);
