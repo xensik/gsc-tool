@@ -261,7 +261,7 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
         break;
     case opcode::OP_waittillmatch:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-        script_->write<std::uint16_t>(static_cast<std::uint16_t>(std::stoi(inst->data[0])));
+        script_->write<std::uint16_t>(0);
         break;
     case opcode::OP_CreateLocalVariable:
     case opcode::OP_RemoveLocalVariables:

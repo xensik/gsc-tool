@@ -287,8 +287,6 @@ void compiler::emit_stmt_waittill(const gsc::context_ptr& ctx, const gsc::stmt_w
     emit_expr(ctx, stmt->obj);
     emit_opcode(ctx, opcode::OP_waittill);
 
-    std::reverse(stmt->args->list.begin(), stmt->args->list.end());
-
     for(const auto& arg : stmt->args->list)
     {
         create_variable(ctx, arg.as_name);
@@ -1754,14 +1752,10 @@ void compiler::process_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& ex
 
 void compiler::process_stmt_waittill(const gsc::context_ptr& ctx, const gsc::stmt_waittill_ptr& stmt)
 {
-    std::reverse(stmt->args->list.begin(), stmt->args->list.end());
-
     for(const auto& arg : stmt->args->list)
     {
         register_variable(ctx, arg.as_name->value);
     }
-
-    std::reverse(stmt->args->list.begin(), stmt->args->list.end());
 }
 
 void compiler::process_stmt_if(const gsc::context_ptr& ctx, const gsc::stmt_if_ptr& stmt)
