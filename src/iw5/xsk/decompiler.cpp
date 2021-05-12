@@ -79,6 +79,7 @@ void decompiler::decompile_function(const gsc::function_ptr& func)
 void decompiler::decompile_statements(const gsc::function_ptr& func)
 {
     std::uint32_t last_null_loc = 0;
+    bool in_waittill = false;
 
     for (auto& inst : func->instructions)
     {
@@ -264,8 +265,16 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
         break;
         case opcode::OP_CreateLocalVariable:
         {
-            auto stmt = std::make_unique<gsc::node_asm_create>(loc, inst->data[0]);
-            func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
+            if(in_waittill)
+            {
+                auto expr = std::make_unique<gsc::node_asm_create>(loc, inst->data[0]);
+                stack_.push(std::move(expr));
+            }
+            else
+            {
+                auto stmt = std::make_unique<gsc::node_asm_create>(loc, inst->data[0]);
+                func_->block->stmts.push_back(gsc::stmt_ptr(std::move(stmt)));
+            }
         }
         break;
         case opcode::OP_RemoveLocalVariables:
@@ -1369,6 +1378,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             auto args = std::make_unique<gsc::node_expr_arguments>(loc);
             auto stmt = std::make_unique<gsc::node_stmt_waittill>(loc, std::move(obj) , std::move(nstr), std::move(args));
             stack_.push(std::move(stmt));
+            in_waittill = true;
         }
         break;
         case opcode::OP_waittillmatch:
@@ -1410,7 +1420,9 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 
             if(var->type == gsc::node_t::stmt_waittill)
             {
+                std::reverse(args->list.begin(), args->list.end());
                 (*(gsc::stmt_waittill_ptr*)&var)->args = std::move(args);
+                in_waittill = false;
             }
 
             func_->block->stmts.push_back(gsc::stmt_ptr(std::move(var)));
@@ -1569,8 +1581,11 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
         break;
         case opcode::OP_SafeSetWaittillVariableFieldCached:
         {
-            auto node = std::make_unique<gsc::node_asm_access>(loc, inst->data[0]);
-            stack_.push(std::move(node));
+            if(stack_.top()->type != gsc::node_t::asm_create)
+            {
+                auto node = std::make_unique<gsc::node_asm_access>(loc, inst->data[0]);
+                stack_.push(std::move(node));
+            }
         }
         break;
         case opcode::OP_EvalLocalVariableRefCached0:
@@ -2720,7 +2735,11 @@ void decompiler::process_stmt_waittill(const gsc::context_ptr& ctx, const gsc::s
 {
     process_expr(ctx, stmt->expr);
     process_expr(ctx, stmt->obj);
-    process_expr_arguments(ctx, stmt->args);
+
+    for(auto& arg : stmt->args->list)
+    {
+        process_expr(ctx, arg);
+    }
 }
 
 void decompiler::process_stmt_waittillmatch(const gsc::context_ptr& ctx, const gsc::stmt_waittillmatch_ptr& stmt)
