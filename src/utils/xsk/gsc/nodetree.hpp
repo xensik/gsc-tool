@@ -949,7 +949,7 @@ struct node_expr_paren : public node
 
     auto print() -> std::string override
     {
-        return "(" + expr.as_node->print() + ")";
+        return "( " + expr.as_node->print() + " )";
     }
 
     friend bool operator==(const node_expr_paren& lhs, const node_expr_paren& rhs)

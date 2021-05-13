@@ -3061,7 +3061,7 @@ void decompiler::process_expr_binary(const gsc::context_ptr& ctx, const gsc::exp
 
     prec = expr->rvalue.as_node->precedence();
 
-    if(prec && prec < expr->precedence())
+    if(prec && prec < expr->precedence() || (prec == expr->precedence() && expr->type == expr->rvalue.as_node->type))
     {
         expr->rvalue = expr_ptr(std::make_unique<gsc::node_expr_paren>(std::move(expr->rvalue)));
     }
@@ -3081,7 +3081,7 @@ void decompiler::process_expr_and(const gsc::context_ptr& ctx, const gsc::expr_a
 
     prec = expr->rvalue.as_node->precedence();
 
-    if(prec && prec < expr->precedence())
+    if(prec && prec < expr->precedence() || (prec == expr->precedence() && expr->type == expr->rvalue.as_node->type))
     {
         expr->rvalue = expr_ptr(std::make_unique<gsc::node_expr_paren>(std::move(expr->rvalue)));
     }
