@@ -165,7 +165,10 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
         inst->data.push_back(utils::string::va("%i", script_->read<std::int32_t>()));
         break;
     case opcode::OP_GetFloat:
-        inst->data.push_back(utils::string::va("%g", script_->read<float>()));
+    {
+        auto val = script_->read<float>();
+        inst->data.push_back(utils::string::va("%g%s", val, val == int(val) ? ".0" : ""));
+    }
         break;
     case opcode::OP_GetVector:
         inst->data.push_back(utils::string::va("%g", script_->read<float>()));
