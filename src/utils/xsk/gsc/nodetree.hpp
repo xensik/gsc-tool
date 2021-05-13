@@ -539,6 +539,34 @@ public:
         }
     }
 
+    auto is_binary() -> bool
+    {
+        switch(type)
+        {
+            case gsc::node_t::expr_or:
+            case gsc::node_t::expr_and:
+            case gsc::node_t::expr_bitwise_or:
+            case gsc::node_t::expr_bitwise_exor:
+            case gsc::node_t::expr_bitwise_and:
+            case gsc::node_t::expr_equality:
+            case gsc::node_t::expr_inequality:
+            case gsc::node_t::expr_less:
+            case gsc::node_t::expr_greater:
+            case gsc::node_t::expr_less_equal:
+            case gsc::node_t::expr_greater_equal:
+            case gsc::node_t::expr_shift_left:
+            case gsc::node_t::expr_shift_right:
+            case gsc::node_t::expr_add:
+            case gsc::node_t::expr_sub:
+            case gsc::node_t::expr_mult:
+            case gsc::node_t::expr_div:
+            case gsc::node_t::expr_mod:
+                return true;
+            default: 
+                return false;
+        }
+    }
+
     auto precedence() -> std::uint8_t
     {
         switch(type)

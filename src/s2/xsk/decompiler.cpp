@@ -3111,11 +3111,21 @@ void decompiler::process_expr_or(const gsc::context_ptr& ctx, const gsc::expr_or
 void decompiler::process_expr_complement(const gsc::context_ptr& ctx, const gsc::expr_complement_ptr& expr)
 {
     process_expr(ctx, expr->rvalue);
+
+    if(expr->rvalue.as_node->is_binary())
+    {
+        expr->rvalue = expr_ptr(std::make_unique<gsc::node_expr_paren>(std::move(expr->rvalue)));
+    }
 }
 
 void decompiler::process_expr_not(const gsc::context_ptr& ctx, const gsc::expr_not_ptr& expr)
 {
     process_expr(ctx, expr->rvalue);
+
+    if(expr->rvalue.as_node->is_binary())
+    {
+        expr->rvalue = expr_ptr(std::make_unique<gsc::node_expr_paren>(std::move(expr->rvalue)));
+    }
 }
 
 void decompiler::process_expr_call(const gsc::context_ptr& ctx, const gsc::expr_call_ptr& expr)
