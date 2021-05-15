@@ -658,6 +658,28 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             stack_.push(std::move(expr));
         }
         break;
+        case opcode::OP_ScriptFarChildThreadCall:
+        {
+            auto args = std::make_unique<gsc::node_expr_arguments>(loc);
+            auto name = std::make_unique<gsc::node_name>(loc, inst->data[2]);
+            auto file = std::make_unique<gsc::node_file>(loc, utils::string::backslash(inst->data[1]));
+
+           auto argnum = std::stoul(inst->data[0]);
+
+            for (size_t i = argnum; i > 0; i--)
+            {
+                auto var = std::move(stack_.top());
+                stack_.pop();
+                loc = var->loc;
+                args->list.push_back(std::move(var));
+            }
+
+            auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(loc, std::move(file), std::move(name), std::move(args)));
+            auto obj = gsc::expr_ptr(std::make_unique<gsc::node>());
+            auto expr = std::make_unique<gsc::node_expr_call>(loc, false, true, std::move(obj) ,std::move(func));
+            stack_.push(std::move(expr));
+        }
+        break;
         case opcode::OP_ScriptFarMethodThreadCall:
         {
             auto obj = gsc::expr_ptr(std::move(stack_.top()));
@@ -679,6 +701,30 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
 
             auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(loc, std::move(file), std::move(name), std::move(args)));
             auto expr = std::make_unique<gsc::node_expr_call>(loc, true, false, std::move(obj) ,std::move(func));
+            stack_.push(std::move(expr));
+        }
+        break;
+        case opcode::OP_ScriptFarMethodChildThreadCall:
+        {
+            auto obj = gsc::expr_ptr(std::move(stack_.top()));
+            stack_.pop();
+            loc = obj.as_node->loc;
+            auto args = std::make_unique<gsc::node_expr_arguments>(loc);
+            auto name = std::make_unique<gsc::node_name>(loc, inst->data[2]);
+            auto file = std::make_unique<gsc::node_file>(loc, utils::string::backslash(inst->data[1]));
+
+            auto argnum = std::stoul(inst->data[0]);
+
+            for (size_t i = argnum; i > 0; i--)
+            {
+                auto var = std::move(stack_.top());
+                stack_.pop();
+                loc = var->loc;
+                args->list.push_back(std::move(var));
+            }
+
+            auto func = gsc::expr_call_type_ptr(std::make_unique<gsc::node_expr_call_function>(loc, std::move(file), std::move(name), std::move(args)));
+            auto expr = std::make_unique<gsc::node_expr_call>(loc, false, true, std::move(obj) ,std::move(func));
             stack_.push(std::move(expr));
         }
         break;
