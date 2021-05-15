@@ -2519,6 +2519,8 @@ void decompiler::decompile_switch(const gsc::stmt_list_ptr& block, std::uint32_t
             auto list = std::make_unique<gsc::node_stmt_list>(loc);
             list->is_case = true;
             auto stmt = gsc::stmt_ptr(std::make_unique<gsc::node_stmt_default>(loc_pos, std::move(list)));
+            while(block->stmts.at(loc_idx).as_node->type == gsc::node_t::stmt_case)
+                loc_idx++;
             block->stmts.insert(block->stmts.begin() + loc_idx, std::move(stmt));
             idx += 2;
         }

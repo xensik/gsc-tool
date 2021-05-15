@@ -615,6 +615,11 @@ void compiler::emit_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_swi
 
         if(entry.as_node->type == gsc::node_t::stmt_case)
         {
+            if(has_default)
+            {
+                gsc::comp_error(stmt->loc, "default must be last case");
+            }
+
             auto& case_ = entry.as_case;
             if(case_->value.as_node->type == gsc::node_t::data_integer)
             {
