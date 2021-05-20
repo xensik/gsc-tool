@@ -164,6 +164,33 @@ auto resolver::find_method(const std::string& name) -> bool
     return false;
 }
 
+void resolver::add_function(const std::string& name, std::uint16_t id)
+{
+    const auto itr = function_map_rev.find(name);
+
+    if (itr != function_map_rev.end())
+    {
+        throw gsc::error("builtin function '" + name + "' already defined.");
+    }
+
+    function_map.insert({ id, name });
+    function_map_rev.insert({ name, id });
+
+}
+
+void resolver::add_method(const std::string& name, std::uint16_t id)
+{
+    const auto itr = method_map_rev.find(name);
+
+    if (itr != method_map_rev.end())
+    {
+        throw gsc::error("builtin method '" + name + "' already defined.");
+    }
+
+    method_map.insert({ id, name });
+    method_map_rev.insert({ name, id });
+}
+
 const std::array<gsc::pair_8C, 153> opcode_list
 {{
     { std::uint8_t(opcode::OP_End),"END" },

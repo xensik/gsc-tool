@@ -28,6 +28,9 @@ public:
 
     static auto find_function(const std::string& name) -> bool;
     static auto find_method(const std::string& name) -> bool;
+
+    static void add_function(const std::string& name, std::uint16_t id);
+    static void add_method(const std::string& name, std::uint16_t id);
 };
 
 } // namespace xsk::gsc::iw5
