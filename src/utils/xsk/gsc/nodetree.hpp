@@ -93,6 +93,9 @@ enum class node_t
     stmt_break,
     stmt_continue,
     stmt_return,
+    stmt_breakpoint,
+    stmt_prof_begin,
+    stmt_prof_end,
     parameters,
     thread,
     constant,
@@ -201,6 +204,9 @@ struct node_stmt_default;
 struct node_stmt_break;
 struct node_stmt_continue;
 struct node_stmt_return;
+struct node_stmt_breakpoint;
+struct node_stmt_prof_begin;
+struct node_stmt_prof_end;
 struct node_parameters;
 struct node_thread;
 struct node_constant;
@@ -305,6 +311,9 @@ using stmt_default_ptr = std::unique_ptr<node_stmt_default>;
 using stmt_break_ptr = std::unique_ptr<node_stmt_break>;
 using stmt_continue_ptr = std::unique_ptr<node_stmt_continue>;
 using stmt_return_ptr = std::unique_ptr<node_stmt_return>;
+using stmt_breakpoint_ptr = std::unique_ptr<node_stmt_breakpoint>;
+using stmt_prof_begin_ptr = std::unique_ptr<node_stmt_prof_begin>;
+using stmt_prof_end_ptr = std::unique_ptr<node_stmt_prof_end>;
 using parameters_ptr = std::unique_ptr<node_parameters>;
 using thread_ptr = std::unique_ptr<node_thread>;
 using constant_ptr = std::unique_ptr<node_constant>;
@@ -447,6 +456,9 @@ union stmt_ptr
     stmt_break_ptr as_break;
     stmt_continue_ptr as_continue;
     stmt_return_ptr as_return;
+    stmt_breakpoint_ptr as_breakpoint;
+    stmt_prof_begin_ptr as_prof_begin;
+    stmt_prof_end_ptr as_prof_end;
     asm_loc_ptr as_loc;
     asm_jump_cond_ptr as_cond;
     asm_jump_ptr as_jump;
@@ -2205,6 +2217,52 @@ struct node_stmt_return : public node
         if(expr.as_node->type == node_t::null) return "return;";
 
         return "return " + expr.as_node->print() + ";";
+    };
+};
+
+struct node_stmt_breakpoint : public node
+{
+    node_stmt_breakpoint()
+        : node(node_t::stmt_breakpoint) {}
+
+    node_stmt_breakpoint(const location& loc)
+        : node(node_t::stmt_breakpoint, loc) {}
+
+    auto print() -> std::string override
+    {
+        return "breakpoint;";
+    };
+};
+
+struct node_stmt_prof_begin : public node
+{
+    expr_arguments_ptr args;
+
+    node_stmt_prof_begin(expr_arguments_ptr args)
+        : node(node_t::stmt_prof_begin), args(std::move(args)) {}
+
+    node_stmt_prof_begin(const location& loc, expr_arguments_ptr args)
+        : node(node_t::stmt_prof_begin, loc), args(std::move(args)) {}
+
+    auto print() -> std::string override
+    {
+        return "prof_begin(" + args->print() + ");";
+    };
+};
+
+struct node_stmt_prof_end : public node
+{
+    expr_arguments_ptr args;
+
+    node_stmt_prof_end(expr_arguments_ptr args)
+        : node(node_t::stmt_prof_end), args(std::move(args)) {}
+
+    node_stmt_prof_end(const location& loc, expr_arguments_ptr args)
+        : node(node_t::stmt_prof_end, loc), args(std::move(args)) {}
+
+    auto print() -> std::string override
+    {
+        return "prof_end(" + args->print() + ");";
     };
 };
 

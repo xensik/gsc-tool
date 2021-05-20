@@ -55,6 +55,9 @@ RGX_DEFAULT     (.|\n)
 <DEVELOPER_BLOCK_STATE>\n   { loc.lines(yyleng); loc.step(); }
 <DEVELOPER_BLOCK_STATE>"#/" { BEGIN(INITIAL); }    
 
+"breakpoint"        { return h2::parser::make_BREAKPOINT(loc); }
+"prof_begin"        { return h2::parser::make_PROFBEGIN(loc); }
+"prof_end"          { return h2::parser::make_PROFEND(loc); }
 "#include"          { return h2::parser::make_INCLUDE(loc); }
 "#using_animtree"   { return h2::parser::make_USINGTREE(loc); }
 "#animtree"         { return h2::parser::make_ANIMTREE(loc); }
@@ -84,7 +87,7 @@ RGX_DEFAULT     (.|\n)
 "true"              { return h2::parser::make_TRUE(loc); }
 "false"             { return h2::parser::make_FALSE(loc); }
 "undefined"         { return h2::parser::make_UNDEFINED(loc); }
-"size"              { return h2::parser::make_SIZE(loc); }
+".size"             { return h2::parser::make_SIZE(loc); }
 "game"              { return h2::parser::make_GAME(loc); }
 "self"              { return h2::parser::make_SELF(loc); }
 "anim"              { return h2::parser::make_ANIM(loc); }

@@ -45,6 +45,9 @@ using namespace xsk::gsc;
 xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location& loc);
 }
 
+%token BREAKPOINT "breakpoint"
+%token PROFBEGIN "prof_begin"
+%token PROFEND "prof_end"
 %token INCLUDE "#include"
 %token USINGTREE "#using_animtree"
 %token ANIMTREE "#animtree"
@@ -73,7 +76,7 @@ xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location
 %token TRUE "true"
 %token FALSE "false"
 %token UNDEFINED "undefined"
-%token SIZE "size"
+%token SIZE ".size"
 %token GAME "game"
 %token SELF "self"
 %token ANIM "anim"
@@ -158,6 +161,9 @@ xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location
 %type <stmt_break_ptr>             stmt_break
 %type <stmt_continue_ptr>          stmt_continue
 %type <stmt_return_ptr>            stmt_return
+%type <stmt_breakpoint_ptr>        stmt_breakpoint
+%type <stmt_prof_begin_ptr>        stmt_prof_begin
+%type <stmt_prof_end_ptr>          stmt_prof_end
 %type <stmt_ptr>                   for_stmt
 %type <expr_ptr>                   for_expr
 %type <expr_assign_ptr>            expr_assign
@@ -209,8 +215,8 @@ xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location
 %left OR
 %left AND
 %left BITWISE_OR
-%left BITWISE_AND
 %left BITWISE_EXOR
+%left BITWISE_AND
 %left EQUALITY INEQUALITY
 %left LESS GREATER LESS_EQUAL GREATER_EQUAL
 %left LSHIFT RSHIFT
@@ -299,6 +305,9 @@ stmt
     | stmt_break             { $$.as_break = std::move($1); }
     | stmt_continue          { $$.as_continue = std::move($1); }
     | stmt_return            { $$.as_return = std::move($1); }
+    | stmt_breakpoint        { $$.as_breakpoint = std::move($1); }
+    | stmt_prof_begin        { $$.as_prof_begin = std::move($1); }
+    | stmt_prof_end          { $$.as_prof_end = std::move($1); }
     ;
 
 stmt_block
@@ -422,6 +431,21 @@ stmt_return
         { $$ = std::make_unique<node_stmt_return>(@$, std::move($2)); }
     | RETURN SEMICOLON
         { $$ = std::make_unique<node_stmt_return>(@$, std::make_unique<node>(@$)); }
+    ;
+
+stmt_breakpoint
+    : BREAKPOINT SEMICOLON
+        { $$ = std::make_unique<node_stmt_breakpoint>(@$); }
+    ;
+
+stmt_prof_begin
+    : PROFBEGIN LPAREN expr_arguments RPAREN SEMICOLON
+        { $$ = std::make_unique<node_stmt_prof_begin>(@$, std::move($3)); }
+    ;
+
+stmt_prof_end
+    : PROFEND LPAREN expr_arguments RPAREN SEMICOLON
+        { $$ = std::make_unique<node_stmt_prof_end>(@$, std::move($3)); }
     ;
 
 for_stmt
@@ -590,7 +614,7 @@ expr_field
     ;
 
 expr_size
-    : object DOT SIZE
+    : object SIZE
         { $$ = std::make_unique<node_expr_size>(@$, std::move($1)); }
     ;
 

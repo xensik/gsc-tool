@@ -55,6 +55,9 @@ RGX_DEFAULT     (.|\n)
 <DEVELOPER_BLOCK_STATE>\n   { loc.lines(yyleng); loc.step(); }
 <DEVELOPER_BLOCK_STATE>"#/" { BEGIN(INITIAL); }    
 
+"breakpoint"        { return iw5::parser::make_BREAKPOINT(loc); }
+"prof_begin"        { return iw5::parser::make_PROFBEGIN(loc); }
+"prof_end"          { return iw5::parser::make_PROFEND(loc); }
 "#include"          { return iw5::parser::make_INCLUDE(loc); }
 "#using_animtree"   { return iw5::parser::make_USINGTREE(loc); }
 "#animtree"         { return iw5::parser::make_ANIMTREE(loc); }
@@ -83,7 +86,7 @@ RGX_DEFAULT     (.|\n)
 "true"              { return iw5::parser::make_TRUE(loc); }
 "false"             { return iw5::parser::make_FALSE(loc); }
 "undefined"         { return iw5::parser::make_UNDEFINED(loc); }
-"size"              { return iw5::parser::make_SIZE(loc); }
+".size"             { return iw5::parser::make_SIZE(loc); }
 "game"              { return iw5::parser::make_GAME(loc); }
 "self"              { return iw5::parser::make_SELF(loc); }
 "anim"              { return iw5::parser::make_ANIM(loc); }
