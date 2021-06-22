@@ -78,11 +78,11 @@ auto byte_buffer::read_c_string() -> std::string
 
 auto byte_buffer::print_bytes(std::size_t pos, std::size_t count) -> std::string
 {
-    std::string shit;
+    std::string shit = "";
     
     for (auto i = pos; i < pos + count; i++)
     {
-        shit += utils::string::va("%s %02X", shit.data(), (*reinterpret_cast<std::uint8_t*>(data_.data() + i)));
+        shit = utils::string::va("%s %02X", shit.data(), (*reinterpret_cast<std::uint8_t*>(data_.data() + i)));
     }
 
     return shit;
@@ -91,6 +91,23 @@ auto byte_buffer::print_bytes(std::size_t pos, std::size_t count) -> std::string
 auto byte_buffer::pos() -> std::size_t
 {
     return pos_;
+}
+
+void byte_buffer::pos(std::size_t pos)
+{
+    if(pos >= 0 && pos <= size_)
+    {
+        pos_ = pos;
+    }
+}
+
+auto byte_buffer::align(std::size_t size) -> std::size_t
+{
+    auto pos = pos_;
+
+    pos_ = (pos_ + (size - 1)) & ~(size - 1);
+
+    return pos_ - pos;
 }
 
 auto byte_buffer::buffer() -> std::vector<std::uint8_t>&

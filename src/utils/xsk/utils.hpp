@@ -25,3 +25,14 @@
 #include "gsc/interfaces/disassembler.hpp"
 #include "gsc/interfaces/compiler.hpp"
 #include "gsc/interfaces/decompiler.hpp"
+
+// Treyarch GSC Types
+#include "arc/arc_asset.hpp"
+#include "arc/arc_assembly.hpp"
+
+// Treyarch GSC Interfaces
+#include "arc/interfaces/arc_exception.hpp"
+#include "arc/interfaces/arc_assembler.hpp"
+#include "arc/interfaces/arc_disassembler.hpp"
+#include "arc/interfaces/arc_compiler.hpp"
+#include "arc/interfaces/arc_decompiler.hpp"

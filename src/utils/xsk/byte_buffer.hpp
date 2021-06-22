@@ -73,6 +73,8 @@ public:
     auto read_c_string() -> std::string;
     auto print_bytes(std::size_t pos, std::size_t count) -> std::string;
     auto pos() -> std::size_t;
+    void pos(std::size_t pos);
+    auto align(std::size_t size) -> std::size_t;
     auto buffer() -> std::vector<std::uint8_t>&;
 };
 
