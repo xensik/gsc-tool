@@ -2937,6 +2937,7 @@ void decompiler::process_stmt_switch(const gsc::context_ptr& ctx, const gsc::stm
 void decompiler::process_stmt_cases(const gsc::context_ptr& ctx, const gsc::stmt_list_ptr& stmt)
 {
     std::vector<gsc::context*> childs;
+    bool has_default = false;
 
     for(auto& entry : stmt->stmts)
     {
@@ -2954,6 +2955,7 @@ void decompiler::process_stmt_cases(const gsc::context_ptr& ctx, const gsc::stmt
         }
         else if(entry.as_node->type == gsc::node_t::stmt_default)
         {
+            has_default = true;
             entry.as_default->ctx = std::make_unique<gsc::context>();
             ctx->transfer_decompiler(entry.as_default->ctx);
 
@@ -2966,7 +2968,10 @@ void decompiler::process_stmt_cases(const gsc::context_ptr& ctx, const gsc::stmt
         }
     }
 
-    ctx->append(childs);
+    if(has_default)
+    {
+        ctx->append(childs);
+    }
 }
 
 void decompiler::process_stmt_break(const gsc::context_ptr& ctx, const gsc::stmt_break_ptr& stmt)
