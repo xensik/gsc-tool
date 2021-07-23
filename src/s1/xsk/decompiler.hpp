@@ -16,6 +16,7 @@ class decompiler : public gsc::decompiler
     gsc::thread_ptr func_;
     std::unordered_map<std::uint32_t, std::string> labels_;
     std::vector<std::string> expr_labels_;
+    std::vector<std::string> tern_labels_;
     std::stack<gsc::node_ptr> stack_;
     std::vector<gsc::context> blocks_;
 
@@ -27,6 +28,7 @@ private:
     void decompile_function(const gsc::function_ptr& func);
     void decompile_statements(const gsc::function_ptr& func);
     void decompile_expr();
+    void decompile_ternary();
     void decompile_block(const gsc::stmt_list_ptr& block);
     void decompile_search_infinite(const gsc::stmt_list_ptr& block);
     void decompile_search_loop(const gsc::stmt_list_ptr& block);
@@ -68,6 +70,7 @@ private:
     void process_stmt_return(const gsc::context_ptr& ctx, const gsc::stmt_return_ptr& stmt);
     void process_expr(const gsc::context_ptr& ctx, gsc::expr_ptr& expr);
     void process_expr_assign(const gsc::context_ptr& ctx, gsc::expr_assign_ptr& expr);
+    void process_expr_ternary(const gsc::context_ptr& ctx, const gsc::expr_ternary_ptr& expr);
     void process_expr_binary(const gsc::context_ptr& ctx, const gsc::expr_binary_ptr& expr);
     void process_expr_and(const gsc::context_ptr& ctx, const gsc::expr_and_ptr& expr);
     void process_expr_or(const gsc::context_ptr& ctx, const gsc::expr_or_ptr& expr);

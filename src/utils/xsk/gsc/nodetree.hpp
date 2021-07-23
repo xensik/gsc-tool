@@ -59,6 +59,7 @@ enum class node_t
     expr_greater,
     expr_or,
     expr_and,
+    expr_ternary,
     expr_assign_equal,
     expr_assign_add,
     expr_assign_sub,
@@ -169,6 +170,7 @@ struct node_expr_less;
 struct node_expr_greater;
 struct node_expr_or;
 struct node_expr_and;
+struct node_expr_ternary;
 struct node_expr_assign;
 struct node_expr_assign_equal;
 struct node_expr_assign_add;
@@ -276,6 +278,7 @@ using expr_less_ptr = std::unique_ptr<node_expr_less>;
 using expr_greater_ptr = std::unique_ptr<node_expr_greater>;
 using expr_or_ptr = std::unique_ptr<node_expr_or>;
 using expr_and_ptr = std::unique_ptr<node_expr_and>;
+using expr_ternary_ptr = std::unique_ptr<node_expr_ternary>;
 using expr_assign_ptr = std::unique_ptr<node_expr_assign>;
 using expr_assign_equal_ptr = std::unique_ptr<node_expr_assign_equal>;
 using expr_assign_add_ptr = std::unique_ptr<node_expr_assign_add>;
@@ -396,6 +399,7 @@ union expr_ptr
     expr_greater_ptr as_greater;
     expr_or_ptr as_or;
     expr_and_ptr as_and;
+    expr_ternary_ptr as_ternary;
     expr_binary_ptr as_binary;
     expr_assign_ptr as_assign;
     expr_assign_equal_ptr as_assign_equal;
@@ -1456,6 +1460,24 @@ struct node_expr_and : public node_expr_binary
     auto print() -> std::string override
     {
         return lvalue.as_node->print() + " && " + rvalue.as_node->print();
+    }
+};
+
+struct node_expr_ternary : public node
+{
+    expr_ptr cond;
+    expr_ptr lvalue;
+    expr_ptr rvalue;
+
+    node_expr_ternary(expr_ptr cond, expr_ptr lvalue, expr_ptr rvalue)
+        : node(node_t::expr_ternary), cond(std::move(cond)), lvalue(std::move(lvalue)), rvalue(std::move(rvalue)) {}
+
+    node_expr_ternary(const location& loc, expr_ptr cond, expr_ptr lvalue, expr_ptr rvalue)
+        : node(node_t::expr_ternary, loc), cond(std::move(cond)), lvalue(std::move(lvalue)), rvalue(std::move(rvalue)) {}
+
+    auto print() -> std::string override
+    {
+        return cond.as_node->print() + " ? " + lvalue.as_node->print() + " : " + rvalue.as_node->print();
     }
 };
 

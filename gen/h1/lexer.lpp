@@ -103,6 +103,7 @@ RGX_DEFAULT     (.|\n)
 \:\:                { return h1::parser::make_DOUBLECOLON(loc); }
 \:                  { return h1::parser::make_COLON(loc); }
 \;                  { return h1::parser::make_SEMICOLON(loc); }
+\?                  { return h1::parser::make_QMARK(loc); }
 \+\+                { return h1::parser::make_INCREMENT(loc); }
 \-\-                { return h1::parser::make_DECREMENT(loc); }
 \<\<\=              { return h1::parser::make_ASSIGN_LSHIFT(loc); }

@@ -115,7 +115,6 @@ void assembler::assemble(const std::string& file, std::vector<gsc::function_ptr>
     functions_ = std::move(functions);
 
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(opcode::OP_End));
-    stack_->write<std::uint32_t>(0x69773630);
 
     for (const auto& func : functions_)
     {

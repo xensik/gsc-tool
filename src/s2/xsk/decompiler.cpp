@@ -96,6 +96,14 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
                     decompile_expr();
                 }
             }
+
+            for(auto& entry : tern_labels_)
+            {
+                if(entry == itr->second)
+                {
+                    decompile_ternary();
+                }
+            }
         }
 
         switch (opcode(inst->opcode))
@@ -1833,6 +1841,7 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
         {
             auto expr = std::make_unique<gsc::node_asm_jump>(loc, inst->data[0]);
             func_->block->stmts.push_back(gsc::stmt_ptr(std::move(expr)));
+            if(stack_.size() != 0) tern_labels_.push_back(inst->data[0]);
         }
         break;
         case opcode::OP_jumpback:
@@ -1922,6 +1931,29 @@ void decompiler::decompile_expr()
     else
     {
         throw gsc::decomp_error("TRIED TO DECOMPILE INVALID JUMP EXPR!");
+    }
+}
+
+void decompiler::decompile_ternary()
+{
+    auto rvalue = std::move(stack_.top());
+    stack_.pop();
+    auto lvalue = std::move(stack_.top());
+    stack_.pop();
+
+    func_->block->stmts.pop_back();
+    auto stmt = std::move(func_->block->stmts.back());
+    func_->block->stmts.pop_back();
+
+    if(stmt.as_node->type == node_t::asm_jump_cond)
+    {
+        auto loc = stmt.as_cond->loc;
+        auto e = std::make_unique<gsc::node_expr_ternary>(loc, std::move(stmt.as_cond->expr), std::move(lvalue), std::move(rvalue));
+        stack_.push(std::move(e));
+    }
+    else
+    {
+        throw gsc::decomp_error("TRIED TO DECOMPILE INVALID TERNARY EXPR!");
     }
 }
 
@@ -3015,6 +3047,7 @@ void decompiler::process_expr(const gsc::context_ptr& ctx, gsc::expr_ptr& expr)
         case gsc::node_t::expr_assign_bitwise_or:   process_expr_assign(ctx, expr.as_assign); break;
         case gsc::node_t::expr_assign_bitwise_and:  process_expr_assign(ctx, expr.as_assign); break;
         case gsc::node_t::expr_assign_bitwise_exor: process_expr_assign(ctx, expr.as_assign); break;
+        case gsc::node_t::expr_ternary:          process_expr_ternary(ctx, expr.as_ternary); break;
         case gsc::node_t::expr_and:              process_expr_and(ctx, expr.as_and); break;
         case gsc::node_t::expr_or:               process_expr_or(ctx, expr.as_or); break;
         case gsc::node_t::expr_equality:         process_expr_binary(ctx, expr.as_binary); break;
@@ -3113,6 +3146,13 @@ void decompiler::process_expr_assign(const gsc::context_ptr& ctx, gsc::expr_assi
             }
         }
     }
+}
+
+void decompiler::process_expr_ternary(const gsc::context_ptr& ctx, const gsc::expr_ternary_ptr& expr)
+{
+    process_expr(ctx, expr->cond);
+    process_expr(ctx, expr->lvalue);
+    process_expr(ctx, expr->rvalue);
 }
 
 void decompiler::process_expr_binary(const gsc::context_ptr& ctx, const gsc::expr_binary_ptr& expr)

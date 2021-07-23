@@ -409,7 +409,7 @@ void compiler::emit_stmt_while(const gsc::context_ptr& ctx, const gsc::stmt_whil
     
     ctx->local_vars_create_count = stmt->ctx->local_vars_create_count;
 
-    for(auto i = 0; i < ctx->local_vars_create_count; i++)
+    for(auto i = 0u; i < ctx->local_vars_create_count; i++)
     {
         if(!ctx->local_vars.at(i).init)
             ctx->local_vars.at(i).init = true;
@@ -465,7 +465,7 @@ void compiler::emit_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_pt
 
     ctx->local_vars_create_count = stmt->ctx->local_vars_create_count;
 
-    for(auto i = 0; i < ctx->local_vars_create_count; i++)
+    for(auto i = 0u; i < ctx->local_vars_create_count; i++)
     {
         if(!ctx->local_vars.at(i).init)
             ctx->local_vars.at(i).init = true;
@@ -540,7 +540,7 @@ void compiler::emit_stmt_foreach(const gsc::context_ptr& ctx, const gsc::stmt_fo
 
     ctx->local_vars_create_count = stmt->ctx->local_vars_create_count;
 
-    for(auto i = 0; i < ctx->local_vars_create_count; i++)
+    for(auto i = 0u; i < ctx->local_vars_create_count; i++)
     {
         if(!ctx->local_vars.at(i).init)
             ctx->local_vars.at(i).init = true;
@@ -752,6 +752,7 @@ void compiler::emit_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
 {
     switch(expr.as_node->type)
     {
+        case gsc::node_t::expr_ternary:          emit_expr_ternary(ctx, expr.as_ternary); break;
         case gsc::node_t::expr_and:              emit_expr_and(ctx, expr.as_and); break;
         case gsc::node_t::expr_or:               emit_expr_or(ctx, expr.as_or); break;
         case gsc::node_t::expr_equality:         emit_expr_binary(ctx, expr.as_binary); break;
@@ -847,6 +848,30 @@ void compiler::emit_expr_assign(const gsc::context_ptr& ctx, const gsc::expr_ass
 
         emit_variable_ref(ctx, expr->lvalue, true);
     }  
+}
+
+void compiler::emit_expr_ternary(const gsc::context_ptr& ctx, const gsc::expr_ternary_ptr& expr)
+{
+    auto else_loc = create_label();
+    auto end_loc = create_label();
+
+    if(expr->cond.as_node->type == gsc::node_t::expr_not)
+    {
+        emit_expr(ctx, expr->cond.as_not->rvalue);
+        emit_opcode(ctx, opcode::OP_JumpOnTrue, else_loc);
+    }
+    else
+    {
+        emit_expr(ctx, expr->cond);
+        emit_opcode(ctx, opcode::OP_JumpOnFalse, else_loc);
+    }
+
+    emit_expr(ctx, expr->lvalue);
+    emit_opcode(ctx, opcode::OP_jump, end_loc);
+
+    insert_label(else_loc);
+    emit_expr(ctx, expr->rvalue);
+    insert_label(end_loc);
 }
 
 void compiler::emit_expr_binary(const gsc::context_ptr& ctx, const gsc::expr_binary_ptr& expr)

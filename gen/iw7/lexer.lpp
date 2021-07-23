@@ -102,6 +102,7 @@ RGX_DEFAULT     (.|\n)
 \:\:                { return iw7::parser::make_DOUBLECOLON(loc); }
 \:                  { return iw7::parser::make_COLON(loc); }
 \;                  { return iw7::parser::make_SEMICOLON(loc); }
+\?                  { return iw7::parser::make_QMARK(loc); }
 \+\+                { return iw7::parser::make_INCREMENT(loc); }
 \-\-                { return iw7::parser::make_DECREMENT(loc); }
 \<\<\=              { return iw7::parser::make_ASSIGN_LSHIFT(loc); }

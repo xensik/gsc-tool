@@ -93,6 +93,7 @@ xsk::gsc::s1::parser::symbol_type S1lex(yyscan_t yyscanner, xsk::gsc::location& 
 %token DOUBLECOLON "::"
 %token COLON ":"
 %token SEMICOLON ";"
+%token QMARK "?"
 %token INCREMENT "++"
 %token DECREMENT "--"
 %token LSHIFT "<<"
@@ -171,6 +172,7 @@ xsk::gsc::s1::parser::symbol_type S1lex(yyscan_t yyscanner, xsk::gsc::location& 
 %type <expr_assign_ptr>            expr_assign
 %type <expr_ptr>                   expr
 %type <expr_ptr>                   expr_compare
+%type <expr_ptr>                   expr_ternary
 %type <expr_ptr>                   expr_binary
 %type <expr_ptr>                   expr_primitive
 %type <expr_call_ptr>              expr_call
@@ -214,6 +216,8 @@ xsk::gsc::s1::parser::symbol_type S1lex(yyscan_t yyscanner, xsk::gsc::location& 
 %nonassoc ELSE
 %nonassoc INCREMENT DECREMENT
 
+%precedence TERN
+%right QMARK
 %left OR
 %left AND
 %left BITWISE_OR
@@ -470,6 +474,7 @@ for_expr
 
 expr
     : expr_compare                      { $$ = std::move($1); }
+    | expr_ternary                      { $$ = std::move($1); }
     | expr_binary                       { $$ = std::move($1); }
     | expr_primitive                    { $$ = std::move($1); }
     ;
@@ -501,6 +506,10 @@ expr_compare
     | expr GREATER_EQUAL expr           { $$.as_node = std::make_unique<node_expr_greater_equal>(@$, std::move($1), std::move($3)); }
     | expr LESS expr                    { $$.as_node = std::make_unique<node_expr_less>(@$, std::move($1), std::move($3)); }
     | expr GREATER expr                 { $$.as_node = std::make_unique<node_expr_greater>(@$, std::move($1), std::move($3)); }
+    ;
+
+expr_ternary
+    : expr QMARK expr COLON expr %prec TERN   { $$.as_node = std::make_unique<node_expr_ternary>(@$, std::move($1), std::move($3), std::move($5)); }
     ;
 
 expr_binary

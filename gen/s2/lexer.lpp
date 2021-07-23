@@ -103,6 +103,7 @@ RGX_DEFAULT     (.|\n)
 \:\:                { return s2::parser::make_DOUBLECOLON(loc); }
 \:                  { return s2::parser::make_COLON(loc); }
 \;                  { return s2::parser::make_SEMICOLON(loc); }
+\?                  { return s2::parser::make_QMARK(loc); }
 \+\+                { return s2::parser::make_INCREMENT(loc); }
 \-\-                { return s2::parser::make_DECREMENT(loc); }
 \<\<\=              { return s2::parser::make_ASSIGN_LSHIFT(loc); }
