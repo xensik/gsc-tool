@@ -1954,7 +1954,7 @@ void compiler::process_stmt_foreach(const gsc::context_ptr& ctx, const gsc::stmt
 void compiler::process_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_switch_ptr& stmt)
 {
     auto stmt_list = std::make_unique<gsc::node_stmt_list>(stmt->stmt->loc);
-    auto current_case = gsc::stmt_ptr(std::make_unique<gsc::node>());
+    auto current_case = gsc::stmt_ptr(nullptr);
 
     auto num = stmt->stmt->stmts.size();
 
@@ -1964,7 +1964,7 @@ void compiler::process_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_
 
         if(entry.as_node->type == gsc::node_t::stmt_case || entry.as_node->type == gsc::node_t::stmt_default)
         {
-            if(current_case.as_node->type != gsc::node_t::null)
+            if(current_case.as_node != nullptr)
             {
                 stmt_list->stmts.push_back(std::move(current_case));
             }
@@ -1974,7 +1974,7 @@ void compiler::process_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_
         }
         else
         {
-            if(current_case.as_node->type != gsc::node_t::null)
+            if(current_case.as_node != nullptr)
             {
                 if(current_case.as_node->type == gsc::node_t::stmt_case)
                 {
@@ -1989,12 +1989,12 @@ void compiler::process_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_
             }
             else
             {
-                gsc::comp_error(entry.as_node->loc, "missing case statement");
+                throw gsc::comp_error(entry.as_node->loc, "missing case statement");
             }
         }
     }
 
-    if(current_case.as_node->type != gsc::node_t::null)
+    if(current_case.as_node != nullptr)
     {
         stmt_list->stmts.push_back(std::move(current_case));
     }

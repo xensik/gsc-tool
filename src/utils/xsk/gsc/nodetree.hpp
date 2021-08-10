@@ -342,10 +342,12 @@ union expr_call_type_ptr
     expr_call_pointer_ptr as_pointer;
     expr_call_function_ptr as_func;
 
-    expr_call_type_ptr() {}
+    expr_call_type_ptr() : as_node(nullptr) {}
     expr_call_type_ptr(node_ptr val): as_node(std::move(val)) {}
-    expr_call_type_ptr(expr_call_type_ptr && val) { new(&as_node) node_ptr(std::move(val.as_node)); }
-    ~expr_call_type_ptr(){}
+    expr_call_type_ptr(const expr_call_type_ptr &) = delete;
+    expr_call_type_ptr& operator=(const expr_call_type_ptr&) = delete;
+    expr_call_type_ptr(expr_call_type_ptr&& val) { new(&as_node) node_ptr(std::move(val.as_node)); }
+    ~expr_call_type_ptr();
 };
 
 union expr_ptr
@@ -418,21 +420,13 @@ union expr_ptr
     asm_create_ptr as_asm_create;
     asm_access_ptr as_asm_access;
 
-    expr_ptr() {}
+    expr_ptr() : as_node(nullptr) {}
     expr_ptr(node_ptr val): as_node(std::move(val)) {}
-    expr_ptr (expr_ptr && val)
-    {
-        new(&as_node) node_ptr(std::move(val.as_node));
-    }
-
-    ~expr_ptr(){}
-
-    expr_ptr& operator=(expr_ptr && val)
-    {
-        new(&as_node) node_ptr(std::move(val.as_node));
-        return *(expr_ptr*)&as_node;
-    }
-
+    expr_ptr(const expr_ptr&) = delete;
+    expr_ptr& operator=(const expr_ptr&) = delete;
+    expr_ptr(expr_ptr && val) { new(&as_node) node_ptr(std::move(val.as_node)); }
+    expr_ptr& operator=(expr_ptr&& val) { new(&as_node) node_ptr(std::move(val.as_node)); return *(expr_ptr*)&as_node; }
+    ~expr_ptr();
     bool operator==(const expr_ptr& rhs) const;
 };
 
@@ -474,18 +468,13 @@ union stmt_ptr
     asm_remove_ptr as_asm_remove;
     asm_clear_ptr as_asm_clear;
 
-    stmt_ptr() {}
+    stmt_ptr() : as_node(nullptr) {}
     stmt_ptr(node_ptr val): as_node(std::move(val)) {}
     stmt_ptr(const stmt_ptr &) = delete;
-    stmt_ptr & operator=(const stmt_ptr &) = delete;
-
-    stmt_ptr (stmt_ptr && val) { new(&as_node) node_ptr(std::move(val.as_node)); }
-    stmt_ptr& operator=(stmt_ptr &&val )
-    {
-        new(&as_node) node_ptr(std::move(val.as_node));
-        return *(stmt_ptr*)&as_node;
-    }
-    ~stmt_ptr(){}
+    stmt_ptr& operator=(const stmt_ptr&) = delete;
+    stmt_ptr(stmt_ptr&& val) { new(&as_node) node_ptr(std::move(val.as_node)); }
+    stmt_ptr& operator=(stmt_ptr&& val ) { new(&as_node) node_ptr(std::move(val.as_node)); return *(stmt_ptr*)&as_node; }
+    ~stmt_ptr();
 };
 
 union define_ptr
@@ -495,10 +484,13 @@ union define_ptr
     constant_ptr as_constant;
     thread_ptr as_thread;
 
-    define_ptr() {}
-    define_ptr(node_ptr val): as_node(std::move(val)) {}
-    define_ptr(define_ptr && val) { new(&as_node) node_ptr(std::move(val.as_node)); }
-    ~define_ptr(){}
+    define_ptr() : as_node(nullptr) {}
+    define_ptr(node_ptr val) : as_node(std::move(val)) {}
+    define_ptr(const define_ptr &) = delete;
+    define_ptr& operator=(const define_ptr&) = delete;
+    define_ptr(define_ptr&& val) { new(&as_node) node_ptr(std::move(val.as_node)); }
+    define_ptr& operator=(define_ptr&& val ) { new(&as_node) node_ptr(std::move(val.as_node)); return *(define_ptr*)&as_node; }
+    ~define_ptr();
 };
 
 struct node
@@ -1899,10 +1891,10 @@ struct node_stmt_if : public node
     context_ptr ctx;
 
     node_stmt_if(expr_ptr expr, stmt_ptr stmt)
-        : node(node_t::stmt_if), expr(std::move(expr)), stmt(std::move(stmt)) {}
+        : node(node_t::stmt_if), expr(std::move(expr)), stmt(std::move(stmt)), ctx(nullptr) {}
 
     node_stmt_if(const location& loc, expr_ptr expr, stmt_ptr stmt)
-        : node(node_t::stmt_if, loc), expr(std::move(expr)), stmt(std::move(stmt)) {}
+        : node(node_t::stmt_if, loc), expr(std::move(expr)), stmt(std::move(stmt)), ctx(nullptr) {}
 
     auto print() -> std::string override
     {
@@ -1932,10 +1924,10 @@ struct node_stmt_ifelse : public node
     context_ptr ctx_else;
 
     node_stmt_ifelse(expr_ptr expr, stmt_ptr stmt_if, stmt_ptr stmt_else)
-        : node(node_t::stmt_ifelse), expr(std::move(expr)), stmt_if(std::move(stmt_if)), stmt_else(std::move(stmt_else)) {}
+        : node(node_t::stmt_ifelse), expr(std::move(expr)), stmt_if(std::move(stmt_if)), stmt_else(std::move(stmt_else)), ctx_if(nullptr), ctx_else(nullptr) {}
 
     node_stmt_ifelse(const location& loc, expr_ptr expr, stmt_ptr stmt_if, stmt_ptr stmt_else)
-        : node(node_t::stmt_ifelse, loc), expr(std::move(expr)), stmt_if(std::move(stmt_if)), stmt_else(std::move(stmt_else)) {}
+        : node(node_t::stmt_ifelse, loc), expr(std::move(expr)), stmt_if(std::move(stmt_if)), stmt_else(std::move(stmt_else)), ctx_if(nullptr), ctx_else(nullptr) {}
 
     auto print() -> std::string override
     {
@@ -1984,10 +1976,10 @@ struct node_stmt_while : public node
     context_ptr ctx;
 
     node_stmt_while(expr_ptr expr, stmt_ptr stmt)
-        : node(node_t::stmt_while), expr(std::move(expr)), stmt(std::move(stmt)) {}
+        : node(node_t::stmt_while), expr(std::move(expr)), stmt(std::move(stmt)), ctx(nullptr) {}
 
     node_stmt_while(const location& loc, expr_ptr expr, stmt_ptr stmt)
-        : node(node_t::stmt_while, loc), expr(std::move(expr)), stmt(std::move(stmt)) {}
+        : node(node_t::stmt_while, loc), expr(std::move(expr)), stmt(std::move(stmt)), ctx(nullptr) {}
 
     auto print() -> std::string override
     {
@@ -2031,11 +2023,11 @@ struct node_stmt_for : public node
 
     node_stmt_for(stmt_ptr pre_expr, expr_ptr expr, stmt_ptr post_expr, stmt_ptr stmt)
         : node(node_t::stmt_for), pre_expr(std::move(pre_expr)), expr(std::move(expr)),
-            post_expr(std::move(post_expr)), stmt(std::move(stmt)) {}
+            post_expr(std::move(post_expr)), stmt(std::move(stmt)), ctx(nullptr), ctx_post(nullptr) {}
 
     node_stmt_for(const location& loc, stmt_ptr pre_expr, expr_ptr expr, stmt_ptr post_expr, stmt_ptr stmt)
         : node(node_t::stmt_for, loc), pre_expr(std::move(pre_expr)), expr(std::move(expr)),
-            post_expr(std::move(post_expr)), stmt(std::move(stmt)) {}
+            post_expr(std::move(post_expr)), stmt(std::move(stmt)), ctx(nullptr), ctx_post(nullptr) {}
 
     auto print() -> std::string override
     {
@@ -2083,23 +2075,29 @@ struct node_stmt_foreach : public node
     std::vector<std::string> vars;
 
     node_stmt_foreach(const location& loc, stmt_ptr stmt, bool use_key)
-        : node(node_t::stmt_foreach, loc), stmt(std::move(stmt)), use_key(use_key) {}
+        : node(node_t::stmt_foreach, loc), stmt(std::move(stmt)), use_key(use_key),
+            array_expr(nullptr), value_expr(nullptr), key_expr(nullptr), array(nullptr),
+            pre_expr(nullptr), cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), ctx(nullptr), ctx_post(nullptr) {}
 
     node_stmt_foreach(expr_ptr element, expr_ptr container, stmt_ptr stmt)
         : node(node_t::stmt_foreach), value_expr(std::move(element)), array_expr(std::move(container)),
-            stmt(std::move(stmt)), use_key(false) {}
+            stmt(std::move(stmt)), use_key(false), key_expr(nullptr), array(nullptr), pre_expr(nullptr),
+            cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), ctx(nullptr), ctx_post(nullptr) {}
 
     node_stmt_foreach(expr_ptr key, expr_ptr element, expr_ptr container, stmt_ptr stmt)
         : node(node_t::stmt_foreach), key_expr(std::move(key)), value_expr(std::move(element)), array_expr(std::move(container)),
-            stmt(std::move(stmt)), use_key(true) {}
+            stmt(std::move(stmt)), use_key(true), array(nullptr), pre_expr(nullptr), cond_expr(nullptr),
+            post_expr(nullptr), stmt0(nullptr), ctx(nullptr), ctx_post(nullptr) {}
 
     node_stmt_foreach(const location& loc, expr_ptr element, expr_ptr container, stmt_ptr stmt)
         : node(node_t::stmt_foreach, loc), value_expr(std::move(element)), array_expr(std::move(container)),
-            stmt(std::move(stmt)), use_key(false) {}
+            stmt(std::move(stmt)), use_key(false), key_expr(nullptr), array(nullptr), pre_expr(nullptr),
+            cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), ctx(nullptr), ctx_post(nullptr) {}
 
     node_stmt_foreach(const location& loc, expr_ptr key, expr_ptr element, expr_ptr container, stmt_ptr stmt)
         : node(node_t::stmt_foreach, loc), key_expr(std::move(key)), value_expr(std::move(element)), array_expr(std::move(container)),
-            stmt(std::move(stmt)), use_key(true) {}
+            stmt(std::move(stmt)), use_key(true), array(nullptr), pre_expr(nullptr), cond_expr(nullptr),
+            post_expr(nullptr), stmt0(nullptr), ctx(nullptr), ctx_post(nullptr) {}
 
     auto print() -> std::string override
     {
@@ -2133,10 +2131,10 @@ struct node_stmt_switch : public node
     context_ptr ctx;
 
     node_stmt_switch(expr_ptr expr, stmt_list_ptr stmt)
-        : node(node_t::stmt_switch), expr(std::move(expr)), stmt(std::move(stmt)) {}
+        : node(node_t::stmt_switch), expr(std::move(expr)), stmt(std::move(stmt)), ctx(nullptr) {}
 
     node_stmt_switch(const location& loc, expr_ptr expr, stmt_list_ptr stmt)
-        : node(node_t::stmt_switch, loc), expr(std::move(expr)), stmt(std::move(stmt)) {}
+        : node(node_t::stmt_switch, loc), expr(std::move(expr)), stmt(std::move(stmt)), ctx(nullptr) {}
 
     auto print() -> std::string override
     {
@@ -2156,17 +2154,17 @@ struct node_stmt_case : public node
     context_ptr ctx;
 
     node_stmt_case(expr_ptr value)
-        : node(node_t::stmt_case), value(std::move(value)) {}
+        : node(node_t::stmt_case), value(std::move(value)), stmt(nullptr), ctx(nullptr) {}
 
     node_stmt_case(const location& loc, expr_ptr value)
-        : node(node_t::stmt_case, loc), value(std::move(value)) {}
+        : node(node_t::stmt_case, loc), value(std::move(value)), stmt(nullptr), ctx(nullptr) {}
 
     node_stmt_case(const location& loc, expr_ptr value, stmt_list_ptr stmt)
-        : node(node_t::stmt_case, loc), value(std::move(value)), stmt(std::move(stmt)) {}
+        : node(node_t::stmt_case, loc), value(std::move(value)), stmt(std::move(stmt)), ctx(nullptr) {}
 
     auto print() -> std::string override
     {
-        if(stmt->stmts.size() == 0)
+        if(stmt != nullptr && stmt->stmts.size() == 0)
             return "case " + value.as_node->print() + ":";
         else
             return "case " + value.as_node->print() + ":\n" + stmt->print();
@@ -2179,17 +2177,17 @@ struct node_stmt_default : public node
     context_ptr ctx;
 
     node_stmt_default()
-        : node(node_t::stmt_default) {}
+        : node(node_t::stmt_default), stmt(nullptr), ctx(nullptr) {}
 
     node_stmt_default(const location& loc)
-        : node(node_t::stmt_default, loc) {}
+        : node(node_t::stmt_default, loc), stmt(nullptr), ctx(nullptr) {}
 
     node_stmt_default(const location& loc, stmt_list_ptr stmt)
-        : node(node_t::stmt_default, loc), stmt(std::move(stmt)) {}
+        : node(node_t::stmt_default, loc), stmt(std::move(stmt)), ctx(nullptr) {}
 
     auto print() -> std::string override
     {
-        if(stmt->stmts.size() == 0)
+        if(stmt != nullptr && stmt->stmts.size() == 0)
             return "default:";
         else
             return "default:\n" + stmt->print();
