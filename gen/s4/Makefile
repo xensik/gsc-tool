@@ -1,4 +1,4 @@
-generate: IW8
+generate: S4
 
 clean:
 	rm -rf ./parser.hpp
@@ -6,6 +6,6 @@ clean:
 	rm -rf ./lexer.hpp
 	rm -rf ./lexer.cpp
 
-IW8: lexer.lpp parser.ypp
+S4: lexer.lpp parser.ypp
 	flex lexer.lpp
 	bison parser.ypp -Wcounterexamples

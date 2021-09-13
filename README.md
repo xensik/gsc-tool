@@ -11,12 +11,13 @@ A utility to compile & decompile IW engine game scripts.
 - **IW8** *(Call of Duty: Modern Warfare (2019))*
 - **S1** *(Call of Duty: Advanced Warfare)*
 - **S2** *(Call of Duty: WWII)*
+- **S4** *(Call of Duty: Vanguard)*
 - **H1** *(Call of Duty: Modern Warfare Remastered)*
 - **H2** *(Call of Duty: Modern Warfare 2 Campaign Remastered)*
 ## Usage
 ``./gsc-tool.exe <game> <mode> <file>``
 
-**game**: `-iw5`, `-iw6`, `-iw7`, `-iw8`, `-s1`, `-s2`, `-h1`, `-h2`
+**game**: `-iw5`, `-iw6`, `-iw7`, `-iw8`, `-s1`, `-s2`, `-s4`, `-h1`, `-h2`
 | Mode     |Description                | Output      |
 |:---------|:--------------------------|:------------|
 |`-asm`    |assemble a `file.gscasm`   |`file.gscbin`|

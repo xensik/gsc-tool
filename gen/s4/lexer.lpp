@@ -1,0 +1,154 @@
+/* Copyright 2021 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
+*/
+
+%option outfile="lexer.cpp"
+%option header-file="lexer.hpp"
+%option prefix="s4_"
+%option reentrant
+%option noyywrap batch nounput noinput
+%option never-interactive
+%option nounistd
+
+%top{
+#include "stdafx.hpp"
+#include "s4.hpp"
+#include "parser.hpp"
+using namespace xsk::gsc;
+}
+
+%{
+#define YY_USER_ACTION  loc.columns(yyleng);
+%}
+
+RGX_FILE        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
+RGX_NAME        [_A-Za-z][_A-Za-z0-9]*
+RGX_STRING      \"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\'
+RGX_COLOR       #([0-9a-fA-F]{6}|[0-9a-fA-F]{3})
+RGX_FLT_DEC     [0-9]+\.(?:[0-9]*)?f?|\.[0-9]+f?
+RGX_INT_OCT     0[1-7][0-7]*
+RGX_INT_BIN     0[bB][01]+
+RGX_INT_HEX     0[xX][0-9a-fA-F]+
+RGX_INT_DEC     [0-9]+
+RGX_DEFAULT     (.|\n)
+
+%x COMMENT_BLOCK_STATE
+%x DEVELOPER_BLOCK_STATE
+
+%%
+
+%{
+    loc.step();
+%}
+
+[ \t\r]                     { loc.step(); }
+
+\n                          { loc.lines(yyleng); loc.step(); }
+
+"//".*
+
+"/*"                        { BEGIN(COMMENT_BLOCK_STATE); }
+<COMMENT_BLOCK_STATE>.
+<COMMENT_BLOCK_STATE>\n     { loc.lines(yyleng); loc.step(); }
+<COMMENT_BLOCK_STATE>"*/"   { BEGIN(INITIAL); }
+
+"/#"                        { BEGIN(DEVELOPER_BLOCK_STATE); }
+<DEVELOPER_BLOCK_STATE>.
+<DEVELOPER_BLOCK_STATE>\n   { loc.lines(yyleng); loc.step(); }
+<DEVELOPER_BLOCK_STATE>"#/" { BEGIN(INITIAL); }    
+
+"#include"          { return s4::parser::make_INCLUDE(loc); }
+"#using_animtree"   { return s4::parser::make_USINGTREE(loc); }
+"#animtree"         { return s4::parser::make_ANIMTREE(loc); }
+"endon"             { return s4::parser::make_ENDON(loc); }
+"notify"            { return s4::parser::make_NOTIFY(loc); }
+"wait"              { return s4::parser::make_WAIT(loc); }
+"waittill"          { return s4::parser::make_WAITTILL(loc); }
+"waittillmatch"     { return s4::parser::make_WAITTILLMATCH(loc); }
+"waittillframeend"  { return s4::parser::make_WAITTILLFRAMEEND(loc); }
+"waitframe"         { return s4::parser::make_WAITFRAME(loc); }
+"if"                { return s4::parser::make_IF(loc); }
+"else"              { return s4::parser::make_ELSE(loc); }
+"while"             { return s4::parser::make_WHILE(loc); }
+"for"               { return s4::parser::make_FOR(loc); }
+"foreach"           { return s4::parser::make_FOREACH(loc); }
+"in"                { return s4::parser::make_IN(loc); }
+"switch"            { return s4::parser::make_SWITCH(loc); }
+"case"              { return s4::parser::make_CASE(loc); }
+"default"           { return s4::parser::make_DEFAULT(loc); }
+"break"             { return s4::parser::make_BREAK(loc); }
+"continue"          { return s4::parser::make_CONTINUE(loc); }
+"return"            { return s4::parser::make_RETURN(loc); }
+"thread"            { return s4::parser::make_THREAD(loc); }
+"childthread"       { return s4::parser::make_CHILDTHREAD(loc); }
+"thisthread"        { return s4::parser::make_THISTHREAD(loc); }
+"call"              { return s4::parser::make_CALL(loc); }
+"true"              { return s4::parser::make_TRUE(loc); }
+"false"             { return s4::parser::make_FALSE(loc); }
+"undefined"         { return s4::parser::make_UNDEFINED(loc); }
+"size"              { return s4::parser::make_SIZE(loc); }
+"game"              { return s4::parser::make_GAME(loc); }
+"self"              { return s4::parser::make_SELF(loc); }
+"anim"              { return s4::parser::make_ANIM(loc); }
+"level"             { return s4::parser::make_LEVEL(loc); }
+\(                  { return s4::parser::make_LPAREN(loc); }
+\)                  { return s4::parser::make_RPAREN(loc); }
+\{                  { return s4::parser::make_LBRACE(loc); }
+\}                  { return s4::parser::make_RBRACE(loc); }
+\[                  { return s4::parser::make_LBRACKET(loc); }
+\]                  { return s4::parser::make_RBRACKET(loc); }
+\,                  { return s4::parser::make_COMMA(loc); }
+\.                  { return s4::parser::make_DOT(loc); }
+\:\:                { return s4::parser::make_DOUBLECOLON(loc); }
+\:                  { return s4::parser::make_COLON(loc); }
+\;                  { return s4::parser::make_SEMICOLON(loc); }
+\?                  { return s4::parser::make_QMARK(loc); }
+\+\+                { return s4::parser::make_INCREMENT(loc); }
+\-\-                { return s4::parser::make_DECREMENT(loc); }
+\<\<\=              { return s4::parser::make_ASSIGN_LSHIFT(loc); }
+\>\>\=              { return s4::parser::make_ASSIGN_RSHIFT(loc); }
+\<\<                { return s4::parser::make_LSHIFT(loc); }
+\>\>                { return s4::parser::make_RSHIFT(loc); }
+\|\|                { return s4::parser::make_OR(loc); }
+\&\&                { return s4::parser::make_AND(loc); }
+\=\=                { return s4::parser::make_EQUALITY(loc); }
+\!\=                { return s4::parser::make_INEQUALITY(loc); }
+\<\=                { return s4::parser::make_LESS_EQUAL(loc); }
+\>\=                { return s4::parser::make_GREATER_EQUAL(loc); }
+\<                  { return s4::parser::make_LESS(loc); }
+\>                  { return s4::parser::make_GREATER(loc); }
+\+\=                { return s4::parser::make_ASSIGN_ADD(loc); }
+\-\=                { return s4::parser::make_ASSIGN_SUB(loc); }
+\*\=                { return s4::parser::make_ASSIGN_MULT(loc); }
+\/\=                { return s4::parser::make_ASSIGN_DIV(loc); }
+\%\=                { return s4::parser::make_ASSIGN_MOD(loc); }
+\|\=                { return s4::parser::make_ASSIGN_BITWISE_OR(loc); }
+\&\=                { return s4::parser::make_ASSIGN_BITWISE_AND(loc); }
+\^\=                { return s4::parser::make_ASSIGN_BITWISE_EXOR(loc); }
+\=                  { return s4::parser::make_ASSIGN(loc); }
+\+                  { return s4::parser::make_ADD(loc); }
+\-                  { return s4::parser::make_SUB(loc); }
+\*                  { return s4::parser::make_MULT(loc); }
+\/                  { return s4::parser::make_DIV(loc); }
+\%                  { return s4::parser::make_MOD(loc); }
+\!                  { return s4::parser::make_NOT(loc); }
+\~                  { return s4::parser::make_COMPLEMENT(loc); }
+\|                  { return s4::parser::make_BITWISE_OR(loc); }
+\&                  { return s4::parser::make_BITWISE_AND(loc); }
+\^                  { return s4::parser::make_BITWISE_EXOR(loc); }
+{RGX_FILE}          { return s4::parser::make_FILE(utils::string::fordslash(yytext), loc); }
+{RGX_NAME}          { return s4::parser::make_NAME((std::string(yytext, 3) == "_ID") ? std::string(yytext) : utils::string::to_lower(yytext), loc); }
+\&{RGX_STRING}      { return s4::parser::make_ISTRING(std::string(yytext).substr(1), loc); }
+{RGX_STRING}        { return s4::parser::make_STRING(std::string(yytext), loc); }
+{RGX_COLOR}         { return s4::parser::make_COLOR(std::string(yytext).substr(1), loc); }
+{RGX_FLT_DEC}       { return s4::parser::make_FLOAT(std::string(yytext), loc); }
+{RGX_INT_OCT}       { return s4::parser::make_INT_OCT(utils::string::oct_to_dec(yytext), loc); }
+{RGX_INT_BIN}       { return s4::parser::make_INT_BIN(utils::string::bin_to_dec(yytext), loc); }
+{RGX_INT_HEX}       { return s4::parser::make_INT_HEX(utils::string::hex_to_dec(yytext), loc); }
+{RGX_INT_DEC}       { return s4::parser::make_INT_DEC(std::string(yytext), loc); }
+<<EOF>>             { return s4::parser::make_S4EOF(loc); }
+<*>{RGX_DEFAULT}    { throw s4::parser::syntax_error(loc, "bad token: \'" + std::string(yytext) + "\'"); }
+
+%%

@@ -11,6 +11,7 @@
 #include "iw8/xsk/iw8.hpp"
 #include "s1/xsk/s1.hpp"
 #include "s2/xsk/s2.hpp"
+#include "s4/xsk/s4.hpp"
 #include "h1/xsk/h1.hpp"
 #include "h2/xsk/h2.hpp"
 
@@ -18,7 +19,7 @@ namespace xsk::gsc
 {
 
 enum class mode { __, ASM, DISASM, COMP, DECOMP };
-enum class game { __, IW5, IW6, IW7, IW8, S1, S2, H1, H2 };
+enum class game { __, IW5, IW6, IW7, IW8, S1, S2, S4, H1, H2 };
 
 std::map<std::string, mode> modes = 
 { 
@@ -36,6 +37,7 @@ std::map<std::string, game> games =
     { "-iw8", game::IW8 },
     { "-s1", game::S1 },
     { "-s2", game::S2 },
+    { "-s4", game::S4 },
     { "-h1", game::H1 },
     { "-h2", game::H2 },
 };
@@ -76,6 +78,7 @@ auto choose_resolver_file_name(uint32_t id, game& game) -> std::string
         case game::IW8: return iw8::resolver::file_name(id);
         case game::S1: return s1::resolver::file_name(static_cast<std::uint16_t>(id));
         case game::S2: return s2::resolver::file_name(static_cast<std::uint16_t>(id));
+        case game::S4: return s4::resolver::file_name(id);
         case game::H1: return h1::resolver::file_name(static_cast<std::uint16_t>(id));
         case game::H2: return h2::resolver::file_name(static_cast<std::uint16_t>(id));
         default: return "";
@@ -386,7 +389,7 @@ int parse_flags(int argc, char** argv, game& game, mode& mode, bool& zonetool)
 void print_usage()
 {
     std::cout << "usage: gsc-tool.exe <game> <mode> <file>\n";
-    std::cout << "	* games: -iw5, -iw6, -iw7, -s1, -s2, -h1, -h2\n";
+    std::cout << "	* games: -iw5, -iw6, -iw7, -iw8, -s1, -s2, -s4, -h1, -h2\n";
     std::cout << "	* modes: -asm, -disasm, -comp, -decomp\n";
 }
 
@@ -435,6 +438,11 @@ std::uint32_t main(std::uint32_t argc, char** argv)
             s2::assembler assembler;
             assemble_file(assembler, file, zonetool);
         }
+        else if (game == game::S4)
+        {
+            s4::assembler assembler;
+            assemble_file(assembler, file, zonetool);
+        }
         else if (game == game::H1)
         {
             h1::assembler assembler;
@@ -476,6 +484,11 @@ std::uint32_t main(std::uint32_t argc, char** argv)
         else if (game == game::S2)
         {
             s2::disassembler disassembler;
+            disassemble_file(disassembler, file, game, zonetool);
+        }
+        else if (game == game::S4)
+        {
+            s4::disassembler disassembler;
             disassemble_file(disassembler, file, game, zonetool);
         }
         else if (game == game::H1)
@@ -527,6 +540,12 @@ std::uint32_t main(std::uint32_t argc, char** argv)
             s2::compiler compiler;
             compile_file(assembler, compiler, file ,zonetool);
         }
+        else if (game == game::S4)
+        {
+            s4::assembler assembler;
+            s4::compiler compiler;
+            compile_file(assembler, compiler, file ,zonetool);
+        }
         else if (game == game::H1)
         {
             h1::assembler assembler;
@@ -576,6 +595,12 @@ std::uint32_t main(std::uint32_t argc, char** argv)
         {
             s2::disassembler disassembler;
             s2::decompiler decompiler;
+            decompile_file(disassembler, decompiler, file, game, zonetool);
+        }
+        else if (game == game::S4)
+        {
+            s4::disassembler disassembler;
+            s4::decompiler decompiler;
             decompile_file(disassembler, decompiler, file, game, zonetool);
         }
         else if (game == game::H1)
