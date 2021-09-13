@@ -35,6 +35,7 @@ expr_ptr::~expr_ptr()
         case node_t::data_integer: as_integer.~integer_ptr(); break;
         case node_t::data_float: as_float.~float_ptr(); break;
         case node_t::data_vector: as_vector.~vector_ptr(); break;
+        case node_t::data_color: as_color.~color_ptr(); break;
         case node_t::data_string: as_string.~string_ptr(); break;
         case node_t::data_istring: as_istring.~istring_ptr(); break;
         case node_t::data_file: as_file.~file_ptr(); break;
@@ -156,6 +157,7 @@ bool expr_ptr::operator==(const expr_ptr& rhs) const
         case node_t::data_integer: return *as_integer == *rhs.as_integer;
         case node_t::data_float: return *as_float == *rhs.as_float;
         case node_t::data_vector: return *as_vector == *rhs.as_vector;
+        case node_t::data_color: return *as_color == *rhs.as_color;
         case node_t::data_string: return *as_string == *rhs.as_string;
         case node_t::data_istring: return *as_istring == *rhs.as_istring;
         case node_t::data_file: return *as_file == *rhs.as_file;

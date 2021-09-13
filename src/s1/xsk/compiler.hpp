@@ -102,6 +102,7 @@ private:
     void emit_animation(const gsc::context_ptr& ctx, const gsc::animation_ptr& animation);
     void emit_istring(const gsc::context_ptr& ctx, const gsc::istring_ptr& str);
     void emit_string(const gsc::context_ptr& ctx, const gsc::string_ptr& str);
+    void emit_color(const gsc::context_ptr& ctx, const gsc::color_ptr& color);
     void emit_vector(const gsc::context_ptr& ctx, const gsc::vector_ptr& vec);
     void emit_float(const gsc::context_ptr& ctx, const gsc::float_ptr& num);
     void emit_integer(const gsc::context_ptr& ctx, const gsc::integer_ptr& num);

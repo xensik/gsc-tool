@@ -26,8 +26,12 @@ using namespace xsk::gsc;
 RGX_FILE        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
 RGX_NAME        [_A-Za-z][_A-Za-z0-9]*
 RGX_STRING      \"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\'
-RGX_FLOAT       [0-9]+\.(?:[0-9]*)?f?|\.[0-9]+f?
-RGX_INTEGER     [0-9]+
+RGX_COLOR       #([0-9a-fA-F]{6}|[0-9a-fA-F]{3})
+RGX_FLT_DEC     [0-9]+\.(?:[0-9]*)?f?|\.[0-9]+f?
+RGX_INT_OCT     0[1-7][0-7]*
+RGX_INT_BIN     0[bB][01]+
+RGX_INT_HEX     0[xX][0-9a-fA-F]+
+RGX_INT_DEC     [0-9]+
 RGX_DEFAULT     (.|\n)
 
 %x COMMENT_BLOCK_STATE
@@ -140,8 +144,12 @@ RGX_DEFAULT     (.|\n)
 {RGX_NAME}          { return iw7::parser::make_NAME((std::string(yytext, 3) == "_ID") ? std::string(yytext) : utils::string::to_lower(yytext), loc); }
 \&{RGX_STRING}      { return iw7::parser::make_ISTRING(std::string(yytext).substr(1), loc); }
 {RGX_STRING}        { return iw7::parser::make_STRING(std::string(yytext), loc); }
-{RGX_FLOAT}         { return iw7::parser::make_FLOAT(std::string(yytext), loc); }
-{RGX_INTEGER}       { return iw7::parser::make_INTEGER(std::string(yytext), loc); }
+{RGX_COLOR}         { return iw7::parser::make_COLOR(std::string(yytext).substr(1), loc); }
+{RGX_FLT_DEC}       { return iw7::parser::make_FLOAT(std::string(yytext), loc); }
+{RGX_INT_OCT}       { return iw7::parser::make_INT_OCT(utils::string::oct_to_dec(yytext), loc); }
+{RGX_INT_BIN}       { return iw7::parser::make_INT_BIN(utils::string::bin_to_dec(yytext), loc); }
+{RGX_INT_HEX}       { return iw7::parser::make_INT_HEX(utils::string::hex_to_dec(yytext), loc); }
+{RGX_INT_DEC}       { return iw7::parser::make_INT_DEC(std::string(yytext), loc); }
 <<EOF>>             { return iw7::parser::make_IW7EOF(loc); }
 <*>{RGX_DEFAULT}    { throw iw7::parser::syntax_error(loc, "bad token: \'" + std::string(yytext) + "\'"); }
 

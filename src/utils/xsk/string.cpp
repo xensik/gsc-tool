@@ -8,6 +8,21 @@
 namespace xsk::gsc::utils
 {
 
+auto string::oct_to_dec(const char* str) -> std::string
+{
+    return std::to_string(std::stoi(str, nullptr, 8));
+}
+
+auto string::bin_to_dec(const char* str) -> std::string
+{
+    return std::to_string(std::stoi(&str[2], nullptr, 2)); // str must prefix 0[bB]
+}
+
+auto string::hex_to_dec(const char* str) -> std::string
+{
+    return std::to_string(std::stoi(&str[2], nullptr, 16)); // str must prefix 0[xX]
+}
+
 auto string::iequals(const std::string& a, const std::string& b) -> bool
 {
     return (a.size() == b.size()) && std::equal(a.begin(), a.end(), b.begin(), b.end(),

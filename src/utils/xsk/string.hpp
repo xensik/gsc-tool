@@ -21,6 +21,9 @@ public:
         return std::string(buf.data(), buf.data() + size - 1);
     }
 
+    static auto oct_to_dec(const char* str) -> std::string;
+    static auto bin_to_dec(const char* str) -> std::string;
+    static auto hex_to_dec(const char* str) -> std::string;
     static auto iequals(const std::string& a, const std::string& b) -> bool;
     static auto is_number(const std::string& s) -> bool;
     static auto is_hex_number(const std::string& s) -> bool;

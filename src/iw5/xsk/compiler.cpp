@@ -785,6 +785,7 @@ void compiler::emit_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
         case gsc::node_t::data_name:             emit_local_variable(ctx, expr.as_name); break;
         case gsc::node_t::data_istring:          emit_istring(ctx, expr.as_istring); break;
         case gsc::node_t::data_string:           emit_string(ctx, expr.as_string); break;
+        case gsc::node_t::data_color:            emit_color(ctx, expr.as_color); break;
         case gsc::node_t::data_vector:           emit_vector(ctx, expr.as_vector); break;
         case gsc::node_t::data_float:            emit_float(ctx, expr.as_float); break;
         case gsc::node_t::data_integer:          emit_integer(ctx, expr.as_integer); break;
@@ -1604,6 +1605,30 @@ void compiler::emit_istring(const gsc::context_ptr& ctx, const gsc::istring_ptr&
 void compiler::emit_string(const gsc::context_ptr& ctx, const gsc::string_ptr& str)
 {
     emit_opcode(ctx, opcode::OP_GetString, str->value);
+}
+
+void compiler::emit_color(const gsc::context_ptr& ctx, const gsc::color_ptr& color)
+{
+    std::vector<std::string> data;
+    std::string x, y, z;
+
+    if(color->value.size() == 3)
+    {
+        x = "0x" + color->value.substr(0, 1) + color->value.substr(0, 1);
+        y = "0x" + color->value.substr(1, 1) + color->value.substr(1, 1);
+        z = "0x" + color->value.substr(2, 1) + color->value.substr(2, 1);
+    }
+    else
+    {
+        x = "0x" + color->value.substr(0, 2);
+        y = "0x" + color->value.substr(2, 2);
+        z = "0x" + color->value.substr(4, 2);
+    }
+
+    data.push_back(gsc::utils::string::hex_to_dec(x.data()));
+    data.push_back(gsc::utils::string::hex_to_dec(y.data()));
+    data.push_back(gsc::utils::string::hex_to_dec(z.data()));
+    emit_opcode(ctx, opcode::OP_GetVector, data);
 }
 
 void compiler::emit_vector(const gsc::context_ptr& ctx, const gsc::vector_ptr& vec)

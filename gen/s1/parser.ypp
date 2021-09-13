@@ -131,8 +131,12 @@ xsk::gsc::s1::parser::symbol_type S1lex(yyscan_t yyscanner, xsk::gsc::location& 
 %token <std::string> NAME "identifier"
 %token <std::string> STRING "string literal"
 %token <std::string> ISTRING "localized string"
+%token <std::string> COLOR "color"
 %token <std::string> FLOAT "float"
-%token <std::string> INTEGER "int"
+%token <std::string> INT_DEC "int"
+%token <std::string> INT_OCT "octal int"
+%token <std::string> INT_BIN "binary int"
+%token <std::string> INT_HEX "hexadecimal int"
 
 %type <program_ptr>                program
 %type <include_ptr>                include
@@ -202,9 +206,8 @@ xsk::gsc::s1::parser::symbol_type S1lex(yyscan_t yyscanner, xsk::gsc::location& 
 %type <file_ptr>                   file
 %type <istring_ptr>                istring
 %type <string_ptr>                 string
+%type <color_ptr>                  color
 %type <vector_ptr>                 vector
-%type <float_ptr>                  neg_float
-%type <integer_ptr>                neg_integer
 %type <float_ptr>                  float
 %type <integer_ptr>                integer
 %type <false_ptr>                  false
@@ -419,8 +422,6 @@ stmt_switch
 stmt_case
     : CASE integer COLON
         { $$ = std::make_unique<node_stmt_case>(@$, expr_ptr(std::move($2)), std::make_unique<gsc::node_stmt_list>(@$)); }
-    | CASE neg_integer COLON
-        { $$ = std::make_unique<node_stmt_case>(@$, expr_ptr(std::move($2)), std::make_unique<gsc::node_stmt_list>(@$)); }
     | CASE string COLON
         { $$ = std::make_unique<node_stmt_case>(@$, expr_ptr(std::move($2)), std::make_unique<gsc::node_stmt_list>(@$)); }
     ;
@@ -549,9 +550,8 @@ expr_primitive
     | name                              { $$.as_node = std::move($1); }
     | istring                           { $$.as_node = std::move($1); }
     | string                            { $$.as_node = std::move($1); }
+    | color                             { $$.as_node = std::move($1); }
     | vector                            { $$.as_node = std::move($1); }
-    | neg_float                         { $$.as_node = std::move($1); }
-    | neg_integer                       { $$.as_node = std::move($1); }
     | float                             { $$.as_node = std::move($1); }
     | integer                           { $$.as_node = std::move($1); }
     | false                             { $$.as_node = std::move($1); }
@@ -648,6 +648,19 @@ object
     | name                                             { $$ = std::move($1); }
     ;
 
+float
+    : SUB FLOAT   %prec NEG                            { $$ = std::make_unique<node_float>(@$, "-" + $2); };
+    | FLOAT                                            { $$ = std::make_unique<node_float>(@$, $1); };
+    ;
+
+integer
+    : SUB INT_DEC %prec NEG                            { $$ = std::make_unique<node_integer>(@$, "-" + $2); };
+    | INT_DEC                                          { $$ = std::make_unique<node_integer>(@$, $1); };
+    | INT_OCT                                          { $$ = std::make_unique<node_integer>(@$, $1); };
+    | INT_BIN                                          { $$ = std::make_unique<node_integer>(@$, $1); };
+    | INT_HEX                                          { $$ = std::make_unique<node_integer>(@$, $1); };
+    ;
+
 thisthread  : THISTHREAD                               { $$ = std::make_unique<node_thisthread>(@$); };
 empty_array : LBRACKET RBRACKET                        { $$ = std::make_unique<node_empty_array>(@$); };
 undefined   : UNDEFINED                                { $$ = std::make_unique<node_undefined>(@$); };
@@ -661,11 +674,8 @@ name        : NAME                                     { $$ = std::make_unique<n
 file        : FILE                                     { $$ = std::make_unique<node_file>(@$, $1); };
 istring     : ISTRING                                  { $$ = std::make_unique<node_istring>(@$, $1); };
 string      : STRING                                   { $$ = std::make_unique<node_string>(@$, $1); };
+color       : COLOR                                    { $$ = std::make_unique<node_color>(@$, $1); };
 vector      : LPAREN expr COMMA expr COMMA expr RPAREN { $$ = std::make_unique<node_vector>(@$, std::move($2), std::move($4), std::move($6)); };
-neg_float   : SUB FLOAT   %prec NEG                    { $$ = std::make_unique<node_float>(@$, "-" + $2); };
-neg_integer : SUB INTEGER %prec NEG                    { $$ = std::make_unique<node_integer>(@$, "-" + $2); };
-float       : FLOAT                                    { $$ = std::make_unique<node_float>(@$, $1); };
-integer     : INTEGER                                  { $$ = std::make_unique<node_integer>(@$, $1); };
 false       : FALSE                                    { $$ = std::make_unique<node_false>(@$); };
 true        : TRUE                                     { $$ = std::make_unique<node_true>(@$); };
 

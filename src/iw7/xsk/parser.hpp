@@ -417,31 +417,34 @@ namespace xsk { namespace gsc { namespace iw7 {
       // animtree
       char dummy3[sizeof (animtree_ptr)];
 
+      // color
+      char dummy4[sizeof (color_ptr)];
+
       // constant
-      char dummy4[sizeof (constant_ptr)];
+      char dummy5[sizeof (constant_ptr)];
 
       // define
-      char dummy5[sizeof (define_ptr)];
+      char dummy6[sizeof (define_ptr)];
 
       // empty_array
-      char dummy6[sizeof (empty_array_ptr)];
+      char dummy7[sizeof (empty_array_ptr)];
 
       // expr_arguments
       // expr_arguments_filled
       // expr_arguments_empty
-      char dummy7[sizeof (expr_arguments_ptr)];
+      char dummy8[sizeof (expr_arguments_ptr)];
 
       // expr_assign
-      char dummy8[sizeof (expr_assign_ptr)];
+      char dummy9[sizeof (expr_assign_ptr)];
 
       // expr_call
       // expr_call_thread
       // expr_call_childthread
-      char dummy9[sizeof (expr_call_ptr)];
+      char dummy10[sizeof (expr_call_ptr)];
 
       // expr_call_function
       // expr_call_pointer
-      char dummy10[sizeof (expr_call_type_ptr)];
+      char dummy11[sizeof (expr_call_type_ptr)];
 
       // for_expr
       // expr
@@ -449,36 +452,34 @@ namespace xsk { namespace gsc { namespace iw7 {
       // expr_ternary
       // expr_binary
       // expr_primitive
-      char dummy11[sizeof (expr_ptr)];
+      char dummy12[sizeof (expr_ptr)];
 
       // false
-      char dummy12[sizeof (false_ptr)];
+      char dummy13[sizeof (false_ptr)];
 
       // file
-      char dummy13[sizeof (file_ptr)];
+      char dummy14[sizeof (file_ptr)];
 
-      // neg_float
       // float
-      char dummy14[sizeof (float_ptr)];
+      char dummy15[sizeof (float_ptr)];
 
       // game
-      char dummy15[sizeof (game_ptr)];
+      char dummy16[sizeof (game_ptr)];
 
       // include
-      char dummy16[sizeof (include_ptr)];
+      char dummy17[sizeof (include_ptr)];
 
-      // neg_integer
       // integer
-      char dummy17[sizeof (integer_ptr)];
+      char dummy18[sizeof (integer_ptr)];
 
       // istring
-      char dummy18[sizeof (istring_ptr)];
+      char dummy19[sizeof (istring_ptr)];
 
       // level
-      char dummy19[sizeof (level_ptr)];
+      char dummy20[sizeof (level_ptr)];
 
       // name
-      char dummy20[sizeof (name_ptr)];
+      char dummy21[sizeof (name_ptr)];
 
       // expr_function
       // expr_add_array
@@ -486,119 +487,123 @@ namespace xsk { namespace gsc { namespace iw7 {
       // expr_field
       // expr_size
       // object
-      char dummy21[sizeof (node_ptr)];
+      char dummy22[sizeof (node_ptr)];
 
       // parameters
-      char dummy22[sizeof (parameters_ptr)];
+      char dummy23[sizeof (parameters_ptr)];
 
       // program
-      char dummy23[sizeof (program_ptr)];
+      char dummy24[sizeof (program_ptr)];
 
       // self
-      char dummy24[sizeof (self_ptr)];
+      char dummy25[sizeof (self_ptr)];
 
       // "file path"
       // "identifier"
       // "string literal"
       // "localized string"
+      // "color"
       // "float"
       // "int"
-      char dummy25[sizeof (std::string)];
+      // "octal int"
+      // "binary int"
+      // "hexadecimal int"
+      char dummy26[sizeof (std::string)];
 
       // stmt_assign
-      char dummy26[sizeof (stmt_assign_ptr)];
+      char dummy27[sizeof (stmt_assign_ptr)];
 
       // stmt_break
-      char dummy27[sizeof (stmt_break_ptr)];
+      char dummy28[sizeof (stmt_break_ptr)];
 
       // stmt_breakpoint
-      char dummy28[sizeof (stmt_breakpoint_ptr)];
+      char dummy29[sizeof (stmt_breakpoint_ptr)];
 
       // stmt_call
-      char dummy29[sizeof (stmt_call_ptr)];
+      char dummy30[sizeof (stmt_call_ptr)];
 
       // stmt_case
-      char dummy30[sizeof (stmt_case_ptr)];
+      char dummy31[sizeof (stmt_case_ptr)];
 
       // stmt_continue
-      char dummy31[sizeof (stmt_continue_ptr)];
+      char dummy32[sizeof (stmt_continue_ptr)];
 
       // stmt_default
-      char dummy32[sizeof (stmt_default_ptr)];
+      char dummy33[sizeof (stmt_default_ptr)];
 
       // stmt_endon
-      char dummy33[sizeof (stmt_endon_ptr)];
+      char dummy34[sizeof (stmt_endon_ptr)];
 
       // stmt_for
-      char dummy34[sizeof (stmt_for_ptr)];
+      char dummy35[sizeof (stmt_for_ptr)];
 
       // stmt_foreach
-      char dummy35[sizeof (stmt_foreach_ptr)];
+      char dummy36[sizeof (stmt_foreach_ptr)];
 
       // stmt_if
-      char dummy36[sizeof (stmt_if_ptr)];
+      char dummy37[sizeof (stmt_if_ptr)];
 
       // stmt_ifelse
-      char dummy37[sizeof (stmt_ifelse_ptr)];
+      char dummy38[sizeof (stmt_ifelse_ptr)];
 
       // stmt_block
       // stmt_list
-      char dummy38[sizeof (stmt_list_ptr)];
+      char dummy39[sizeof (stmt_list_ptr)];
 
       // stmt_notify
-      char dummy39[sizeof (stmt_notify_ptr)];
+      char dummy40[sizeof (stmt_notify_ptr)];
 
       // stmt_prof_begin
-      char dummy40[sizeof (stmt_prof_begin_ptr)];
+      char dummy41[sizeof (stmt_prof_begin_ptr)];
 
       // stmt_prof_end
-      char dummy41[sizeof (stmt_prof_end_ptr)];
+      char dummy42[sizeof (stmt_prof_end_ptr)];
 
       // stmt
       // for_stmt
-      char dummy42[sizeof (stmt_ptr)];
+      char dummy43[sizeof (stmt_ptr)];
 
       // stmt_return
-      char dummy43[sizeof (stmt_return_ptr)];
+      char dummy44[sizeof (stmt_return_ptr)];
 
       // stmt_switch
-      char dummy44[sizeof (stmt_switch_ptr)];
+      char dummy45[sizeof (stmt_switch_ptr)];
 
       // stmt_wait
-      char dummy45[sizeof (stmt_wait_ptr)];
+      char dummy46[sizeof (stmt_wait_ptr)];
 
       // stmt_waittill
-      char dummy46[sizeof (stmt_waittill_ptr)];
+      char dummy47[sizeof (stmt_waittill_ptr)];
 
       // stmt_waittillframeend
-      char dummy47[sizeof (stmt_waittillframeend_ptr)];
+      char dummy48[sizeof (stmt_waittillframeend_ptr)];
 
       // stmt_waittillmatch
-      char dummy48[sizeof (stmt_waittillmatch_ptr)];
+      char dummy49[sizeof (stmt_waittillmatch_ptr)];
 
       // stmt_while
-      char dummy49[sizeof (stmt_while_ptr)];
+      char dummy50[sizeof (stmt_while_ptr)];
 
       // string
-      char dummy50[sizeof (string_ptr)];
+      char dummy51[sizeof (string_ptr)];
 
       // thisthread
-      char dummy51[sizeof (thisthread_ptr)];
+      char dummy52[sizeof (thisthread_ptr)];
 
       // thread
-      char dummy52[sizeof (thread_ptr)];
+      char dummy53[sizeof (thread_ptr)];
 
       // true
-      char dummy53[sizeof (true_ptr)];
+      char dummy54[sizeof (true_ptr)];
 
       // undefined
-      char dummy54[sizeof (undefined_ptr)];
+      char dummy55[sizeof (undefined_ptr)];
 
       // usingtree
-      char dummy55[sizeof (usingtree_ptr)];
+      char dummy56[sizeof (usingtree_ptr)];
 
       // vector
-      char dummy56[sizeof (vector_ptr)];
+      char dummy57[sizeof (vector_ptr)];
     };
 
     /// The size of the largest semantic type.
@@ -735,17 +740,21 @@ namespace xsk { namespace gsc { namespace iw7 {
     NAME = 85,                     // "identifier"
     STRING = 86,                   // "string literal"
     ISTRING = 87,                  // "localized string"
-    FLOAT = 88,                    // "float"
-    INTEGER = 89,                  // "int"
-    ADD_ARRAY = 90,                // ADD_ARRAY
-    THEN = 91,                     // THEN
-    TERN = 92,                     // TERN
-    NEG = 93,                      // NEG
-    ANIMREF = 94,                  // ANIMREF
-    PREINC = 95,                   // PREINC
-    PREDEC = 96,                   // PREDEC
-    POSTINC = 97,                  // POSTINC
-    POSTDEC = 98                   // POSTDEC
+    COLOR = 88,                    // "color"
+    FLOAT = 89,                    // "float"
+    INT_DEC = 90,                  // "int"
+    INT_OCT = 91,                  // "octal int"
+    INT_BIN = 92,                  // "binary int"
+    INT_HEX = 93,                  // "hexadecimal int"
+    ADD_ARRAY = 94,                // ADD_ARRAY
+    THEN = 95,                     // THEN
+    TERN = 96,                     // TERN
+    NEG = 97,                      // NEG
+    ANIMREF = 98,                  // ANIMREF
+    PREINC = 99,                   // PREINC
+    PREDEC = 100,                  // PREDEC
+    POSTINC = 101,                 // POSTINC
+    POSTDEC = 102                  // POSTDEC
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -762,7 +771,7 @@ namespace xsk { namespace gsc { namespace iw7 {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 99, ///< Number of tokens.
+        YYNTOKENS = 103, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -852,93 +861,96 @@ namespace xsk { namespace gsc { namespace iw7 {
         S_NAME = 85,                             // "identifier"
         S_STRING = 86,                           // "string literal"
         S_ISTRING = 87,                          // "localized string"
-        S_FLOAT = 88,                            // "float"
-        S_INTEGER = 89,                          // "int"
-        S_ADD_ARRAY = 90,                        // ADD_ARRAY
-        S_THEN = 91,                             // THEN
-        S_TERN = 92,                             // TERN
-        S_NEG = 93,                              // NEG
-        S_ANIMREF = 94,                          // ANIMREF
-        S_PREINC = 95,                           // PREINC
-        S_PREDEC = 96,                           // PREDEC
-        S_POSTINC = 97,                          // POSTINC
-        S_POSTDEC = 98,                          // POSTDEC
-        S_YYACCEPT = 99,                         // $accept
-        S_root = 100,                            // root
-        S_program = 101,                         // program
-        S_include = 102,                         // include
-        S_define = 103,                          // define
-        S_usingtree = 104,                       // usingtree
-        S_constant = 105,                        // constant
-        S_thread = 106,                          // thread
-        S_parameters = 107,                      // parameters
-        S_stmt = 108,                            // stmt
-        S_stmt_block = 109,                      // stmt_block
-        S_stmt_list = 110,                       // stmt_list
-        S_stmt_call = 111,                       // stmt_call
-        S_stmt_assign = 112,                     // stmt_assign
-        S_stmt_endon = 113,                      // stmt_endon
-        S_stmt_notify = 114,                     // stmt_notify
-        S_stmt_wait = 115,                       // stmt_wait
-        S_stmt_waittill = 116,                   // stmt_waittill
-        S_stmt_waittillmatch = 117,              // stmt_waittillmatch
-        S_stmt_waittillframeend = 118,           // stmt_waittillframeend
-        S_stmt_if = 119,                         // stmt_if
-        S_stmt_ifelse = 120,                     // stmt_ifelse
-        S_stmt_while = 121,                      // stmt_while
-        S_stmt_for = 122,                        // stmt_for
-        S_stmt_foreach = 123,                    // stmt_foreach
-        S_stmt_switch = 124,                     // stmt_switch
-        S_stmt_case = 125,                       // stmt_case
-        S_stmt_default = 126,                    // stmt_default
-        S_stmt_break = 127,                      // stmt_break
-        S_stmt_continue = 128,                   // stmt_continue
-        S_stmt_return = 129,                     // stmt_return
-        S_stmt_breakpoint = 130,                 // stmt_breakpoint
-        S_stmt_prof_begin = 131,                 // stmt_prof_begin
-        S_stmt_prof_end = 132,                   // stmt_prof_end
-        S_for_stmt = 133,                        // for_stmt
-        S_for_expr = 134,                        // for_expr
-        S_expr = 135,                            // expr
-        S_expr_assign = 136,                     // expr_assign
-        S_expr_compare = 137,                    // expr_compare
-        S_expr_ternary = 138,                    // expr_ternary
-        S_expr_binary = 139,                     // expr_binary
-        S_expr_primitive = 140,                  // expr_primitive
-        S_expr_call = 141,                       // expr_call
-        S_expr_call_thread = 142,                // expr_call_thread
-        S_expr_call_childthread = 143,           // expr_call_childthread
-        S_expr_call_function = 144,              // expr_call_function
-        S_expr_call_pointer = 145,               // expr_call_pointer
-        S_expr_arguments = 146,                  // expr_arguments
-        S_expr_arguments_filled = 147,           // expr_arguments_filled
-        S_expr_arguments_empty = 148,            // expr_arguments_empty
-        S_expr_function = 149,                   // expr_function
-        S_expr_add_array = 150,                  // expr_add_array
-        S_expr_array = 151,                      // expr_array
-        S_expr_field = 152,                      // expr_field
-        S_expr_size = 153,                       // expr_size
-        S_object = 154,                          // object
-        S_thisthread = 155,                      // thisthread
-        S_empty_array = 156,                     // empty_array
-        S_undefined = 157,                       // undefined
-        S_game = 158,                            // game
-        S_self = 159,                            // self
-        S_anim = 160,                            // anim
-        S_level = 161,                           // level
-        S_animation = 162,                       // animation
-        S_animtree = 163,                        // animtree
-        S_name = 164,                            // name
-        S_file = 165,                            // file
-        S_istring = 166,                         // istring
-        S_string = 167,                          // string
-        S_vector = 168,                          // vector
-        S_neg_float = 169,                       // neg_float
-        S_neg_integer = 170,                     // neg_integer
-        S_float = 171,                           // float
-        S_integer = 172,                         // integer
-        S_false = 173,                           // false
-        S_true = 174                             // true
+        S_COLOR = 88,                            // "color"
+        S_FLOAT = 89,                            // "float"
+        S_INT_DEC = 90,                          // "int"
+        S_INT_OCT = 91,                          // "octal int"
+        S_INT_BIN = 92,                          // "binary int"
+        S_INT_HEX = 93,                          // "hexadecimal int"
+        S_ADD_ARRAY = 94,                        // ADD_ARRAY
+        S_THEN = 95,                             // THEN
+        S_TERN = 96,                             // TERN
+        S_NEG = 97,                              // NEG
+        S_ANIMREF = 98,                          // ANIMREF
+        S_PREINC = 99,                           // PREINC
+        S_PREDEC = 100,                          // PREDEC
+        S_POSTINC = 101,                         // POSTINC
+        S_POSTDEC = 102,                         // POSTDEC
+        S_YYACCEPT = 103,                        // $accept
+        S_root = 104,                            // root
+        S_program = 105,                         // program
+        S_include = 106,                         // include
+        S_define = 107,                          // define
+        S_usingtree = 108,                       // usingtree
+        S_constant = 109,                        // constant
+        S_thread = 110,                          // thread
+        S_parameters = 111,                      // parameters
+        S_stmt = 112,                            // stmt
+        S_stmt_block = 113,                      // stmt_block
+        S_stmt_list = 114,                       // stmt_list
+        S_stmt_call = 115,                       // stmt_call
+        S_stmt_assign = 116,                     // stmt_assign
+        S_stmt_endon = 117,                      // stmt_endon
+        S_stmt_notify = 118,                     // stmt_notify
+        S_stmt_wait = 119,                       // stmt_wait
+        S_stmt_waittill = 120,                   // stmt_waittill
+        S_stmt_waittillmatch = 121,              // stmt_waittillmatch
+        S_stmt_waittillframeend = 122,           // stmt_waittillframeend
+        S_stmt_if = 123,                         // stmt_if
+        S_stmt_ifelse = 124,                     // stmt_ifelse
+        S_stmt_while = 125,                      // stmt_while
+        S_stmt_for = 126,                        // stmt_for
+        S_stmt_foreach = 127,                    // stmt_foreach
+        S_stmt_switch = 128,                     // stmt_switch
+        S_stmt_case = 129,                       // stmt_case
+        S_stmt_default = 130,                    // stmt_default
+        S_stmt_break = 131,                      // stmt_break
+        S_stmt_continue = 132,                   // stmt_continue
+        S_stmt_return = 133,                     // stmt_return
+        S_stmt_breakpoint = 134,                 // stmt_breakpoint
+        S_stmt_prof_begin = 135,                 // stmt_prof_begin
+        S_stmt_prof_end = 136,                   // stmt_prof_end
+        S_for_stmt = 137,                        // for_stmt
+        S_for_expr = 138,                        // for_expr
+        S_expr = 139,                            // expr
+        S_expr_assign = 140,                     // expr_assign
+        S_expr_compare = 141,                    // expr_compare
+        S_expr_ternary = 142,                    // expr_ternary
+        S_expr_binary = 143,                     // expr_binary
+        S_expr_primitive = 144,                  // expr_primitive
+        S_expr_call = 145,                       // expr_call
+        S_expr_call_thread = 146,                // expr_call_thread
+        S_expr_call_childthread = 147,           // expr_call_childthread
+        S_expr_call_function = 148,              // expr_call_function
+        S_expr_call_pointer = 149,               // expr_call_pointer
+        S_expr_arguments = 150,                  // expr_arguments
+        S_expr_arguments_filled = 151,           // expr_arguments_filled
+        S_expr_arguments_empty = 152,            // expr_arguments_empty
+        S_expr_function = 153,                   // expr_function
+        S_expr_add_array = 154,                  // expr_add_array
+        S_expr_array = 155,                      // expr_array
+        S_expr_field = 156,                      // expr_field
+        S_expr_size = 157,                       // expr_size
+        S_object = 158,                          // object
+        S_float = 159,                           // float
+        S_integer = 160,                         // integer
+        S_thisthread = 161,                      // thisthread
+        S_empty_array = 162,                     // empty_array
+        S_undefined = 163,                       // undefined
+        S_game = 164,                            // game
+        S_self = 165,                            // self
+        S_anim = 166,                            // anim
+        S_level = 167,                           // level
+        S_animation = 168,                       // animation
+        S_animtree = 169,                        // animtree
+        S_name = 170,                            // name
+        S_file = 171,                            // file
+        S_istring = 172,                         // istring
+        S_string = 173,                          // string
+        S_color = 174,                           // color
+        S_vector = 175,                          // vector
+        S_false = 176,                           // false
+        S_true = 177                             // true
       };
     };
 
@@ -985,6 +997,10 @@ namespace xsk { namespace gsc { namespace iw7 {
 
       case symbol_kind::S_animtree: // animtree
         value.move< animtree_ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_color: // color
+        value.move< color_ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_constant: // constant
@@ -1037,7 +1053,6 @@ namespace xsk { namespace gsc { namespace iw7 {
         value.move< file_ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_neg_float: // neg_float
       case symbol_kind::S_float: // float
         value.move< float_ptr > (std::move (that.value));
         break;
@@ -1050,7 +1065,6 @@ namespace xsk { namespace gsc { namespace iw7 {
         value.move< include_ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_neg_integer: // neg_integer
       case symbol_kind::S_integer: // integer
         value.move< integer_ptr > (std::move (that.value));
         break;
@@ -1092,8 +1106,12 @@ namespace xsk { namespace gsc { namespace iw7 {
       case symbol_kind::S_NAME: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
       case symbol_kind::S_ISTRING: // "localized string"
+      case symbol_kind::S_COLOR: // "color"
       case symbol_kind::S_FLOAT: // "float"
-      case symbol_kind::S_INTEGER: // "int"
+      case symbol_kind::S_INT_DEC: // "int"
+      case symbol_kind::S_INT_OCT: // "octal int"
+      case symbol_kind::S_INT_BIN: // "binary int"
+      case symbol_kind::S_INT_HEX: // "hexadecimal int"
         value.move< std::string > (std::move (that.value));
         break;
 
@@ -1282,6 +1300,20 @@ namespace xsk { namespace gsc { namespace iw7 {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const animtree_ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, color_ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const color_ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -2064,6 +2096,10 @@ switch (yykind)
         value.template destroy< animtree_ptr > ();
         break;
 
+      case symbol_kind::S_color: // color
+        value.template destroy< color_ptr > ();
+        break;
+
       case symbol_kind::S_constant: // constant
         value.template destroy< constant_ptr > ();
         break;
@@ -2114,7 +2150,6 @@ switch (yykind)
         value.template destroy< file_ptr > ();
         break;
 
-      case symbol_kind::S_neg_float: // neg_float
       case symbol_kind::S_float: // float
         value.template destroy< float_ptr > ();
         break;
@@ -2127,7 +2162,6 @@ switch (yykind)
         value.template destroy< include_ptr > ();
         break;
 
-      case symbol_kind::S_neg_integer: // neg_integer
       case symbol_kind::S_integer: // integer
         value.template destroy< integer_ptr > ();
         break;
@@ -2169,8 +2203,12 @@ switch (yykind)
       case symbol_kind::S_NAME: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
       case symbol_kind::S_ISTRING: // "localized string"
+      case symbol_kind::S_COLOR: // "color"
       case symbol_kind::S_FLOAT: // "float"
-      case symbol_kind::S_INTEGER: // "int"
+      case symbol_kind::S_INT_DEC: // "int"
+      case symbol_kind::S_INT_OCT: // "octal int"
+      case symbol_kind::S_INT_BIN: // "binary int"
+      case symbol_kind::S_INT_HEX: // "hexadecimal int"
         value.template destroy< std::string > ();
         break;
 
@@ -2406,7 +2444,7 @@ switch (yykind)
         : super_type(token_type (tok), v, l)
 #endif
       {
-        IW7_ASSERT ((token::FILE <= tok && tok <= token::INTEGER));
+        IW7_ASSERT ((token::FILE <= tok && tok <= token::INT_HEX));
       }
     };
 
@@ -3779,6 +3817,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_COLOR (std::string v, location_type l)
+      {
+        return symbol_type (token::COLOR, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_COLOR (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::COLOR, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_FLOAT (std::string v, location_type l)
       {
         return symbol_type (token::FLOAT, std::move (v), std::move (l));
@@ -3794,16 +3847,61 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_INTEGER (std::string v, location_type l)
+      make_INT_DEC (std::string v, location_type l)
       {
-        return symbol_type (token::INTEGER, std::move (v), std::move (l));
+        return symbol_type (token::INT_DEC, std::move (v), std::move (l));
       }
 #else
       static
       symbol_type
-      make_INTEGER (const std::string& v, const location_type& l)
+      make_INT_DEC (const std::string& v, const location_type& l)
       {
-        return symbol_type (token::INTEGER, v, l);
+        return symbol_type (token::INT_DEC, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_INT_OCT (std::string v, location_type l)
+      {
+        return symbol_type (token::INT_OCT, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_INT_OCT (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::INT_OCT, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_INT_BIN (std::string v, location_type l)
+      {
+        return symbol_type (token::INT_BIN, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_INT_BIN (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::INT_BIN, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_INT_HEX (std::string v, location_type l)
+      {
+        return symbol_type (token::INT_HEX, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_INT_HEX (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::INT_HEX, v, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -4285,8 +4383,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 1836,     ///< Last index in yytable_.
-      yynnts_ = 76,  ///< Number of nonterminal symbols.
+      yylast_ = 1811,     ///< Last index in yytable_.
+      yynnts_ = 75,  ///< Number of nonterminal symbols.
       yyfinal_ = 15 ///< Termination state number.
     };
 
@@ -4324,6 +4422,10 @@ switch (yykind)
 
       case symbol_kind::S_animtree: // animtree
         value.copy< animtree_ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_color: // color
+        value.copy< color_ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_constant: // constant
@@ -4376,7 +4478,6 @@ switch (yykind)
         value.copy< file_ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_neg_float: // neg_float
       case symbol_kind::S_float: // float
         value.copy< float_ptr > (YY_MOVE (that.value));
         break;
@@ -4389,7 +4490,6 @@ switch (yykind)
         value.copy< include_ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_neg_integer: // neg_integer
       case symbol_kind::S_integer: // integer
         value.copy< integer_ptr > (YY_MOVE (that.value));
         break;
@@ -4431,8 +4531,12 @@ switch (yykind)
       case symbol_kind::S_NAME: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
       case symbol_kind::S_ISTRING: // "localized string"
+      case symbol_kind::S_COLOR: // "color"
       case symbol_kind::S_FLOAT: // "float"
-      case symbol_kind::S_INTEGER: // "int"
+      case symbol_kind::S_INT_DEC: // "int"
+      case symbol_kind::S_INT_OCT: // "octal int"
+      case symbol_kind::S_INT_BIN: // "binary int"
+      case symbol_kind::S_INT_HEX: // "hexadecimal int"
         value.copy< std::string > (YY_MOVE (that.value));
         break;
 
@@ -4603,6 +4707,10 @@ switch (yykind)
         value.move< animtree_ptr > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_color: // color
+        value.move< color_ptr > (YY_MOVE (s.value));
+        break;
+
       case symbol_kind::S_constant: // constant
         value.move< constant_ptr > (YY_MOVE (s.value));
         break;
@@ -4653,7 +4761,6 @@ switch (yykind)
         value.move< file_ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_neg_float: // neg_float
       case symbol_kind::S_float: // float
         value.move< float_ptr > (YY_MOVE (s.value));
         break;
@@ -4666,7 +4773,6 @@ switch (yykind)
         value.move< include_ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_neg_integer: // neg_integer
       case symbol_kind::S_integer: // integer
         value.move< integer_ptr > (YY_MOVE (s.value));
         break;
@@ -4708,8 +4814,12 @@ switch (yykind)
       case symbol_kind::S_NAME: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
       case symbol_kind::S_ISTRING: // "localized string"
+      case symbol_kind::S_COLOR: // "color"
       case symbol_kind::S_FLOAT: // "float"
-      case symbol_kind::S_INTEGER: // "int"
+      case symbol_kind::S_INT_DEC: // "int"
+      case symbol_kind::S_INT_OCT: // "octal int"
+      case symbol_kind::S_INT_BIN: // "binary int"
+      case symbol_kind::S_INT_HEX: // "hexadecimal int"
         value.move< std::string > (YY_MOVE (s.value));
         break;
 
@@ -4902,7 +5012,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::gsc::iw7
-#line 4906 "parser.hpp"
+#line 5016 "parser.hpp"
 
 
 

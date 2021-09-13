@@ -16,6 +16,7 @@ enum class node_t
     data_integer,
     data_float,
     data_vector,
+    data_color,
     data_string,
     data_istring,
     data_file,
@@ -126,6 +127,7 @@ struct node_false;
 struct node_integer;
 struct node_float;
 struct node_vector;
+struct node_color;
 struct node_string;
 struct node_istring;
 struct node_file;
@@ -234,6 +236,7 @@ using false_ptr = std::unique_ptr<node_false>;
 using integer_ptr = std::unique_ptr<node_integer>;
 using float_ptr = std::unique_ptr<node_float>;
 using vector_ptr = std::unique_ptr<node_vector>;
+using color_ptr = std::unique_ptr<node_color>;
 using string_ptr = std::unique_ptr<node_string>;
 using istring_ptr = std::unique_ptr<node_istring>;
 using file_ptr = std::unique_ptr<node_file>;
@@ -358,6 +361,7 @@ union expr_ptr
     integer_ptr as_integer;
     float_ptr as_float;
     vector_ptr as_vector;
+    color_ptr as_color;
     string_ptr as_string;
     istring_ptr as_istring;
     file_ptr as_file;
@@ -696,6 +700,27 @@ struct node_vector : public node
     friend bool operator==(const node_vector& lhs, const node_vector& rhs)
     {
         return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+    }
+};
+
+struct node_color : public node
+{
+    std::string value;
+
+    node_color(const std::string& value)
+        : node(node_t::data_color), value(value) {}
+
+    node_color(const location& loc, const std::string& value)
+        : node(node_t::data_color, loc), value(value) {}
+
+    auto print() -> std::string override
+    {
+        return "#"s += value;
+    }
+
+    friend bool operator==(const node_color& lhs, const node_color& rhs)
+    {
+        return lhs.value == rhs.value;
     }
 };
 
