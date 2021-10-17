@@ -31,6 +31,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <stdio.h>
+#include <cassert>
 
 // Ext
 using namespace std::literals;

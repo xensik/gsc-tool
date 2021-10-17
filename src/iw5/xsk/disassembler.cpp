@@ -71,6 +71,7 @@ void disassembler::dissasemble_function(const gsc::function_ptr& func)
         func->instructions.push_back(std::make_unique<gsc::instruction>());
         auto& inst = func->instructions.back();
         inst->index = static_cast<std::uint32_t>(script_->pos());
+        assert(script_->is_avail());
         inst->opcode = script_->read<std::uint8_t>();
         inst->size = opcode_size(inst->opcode);
 
