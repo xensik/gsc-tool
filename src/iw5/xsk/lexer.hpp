@@ -2,13 +2,13 @@
 #define iw5_HEADER_H 1
 #define iw5_IN_HEADER 1
 
-#line 5 "lexer.hpp"
+#line 6 "lexer.hpp"
 #include "stdafx.hpp"
 #include "iw5.hpp"
 #include "parser.hpp"
 using namespace xsk::gsc;
 
-#line 11 "lexer.hpp"
+#line 12 "lexer.hpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -438,7 +438,8 @@ void yyfree ( void * , yyscan_t yyscanner );
 #ifdef YY_HEADER_EXPORT_START_CONDITIONS
 #define INITIAL 0
 #define COMMENT_BLOCK_STATE 1
-#define DEVELOPER_BLOCK_STATE 2
+#define DEVBLOCK_ON_STATE 2
+#define DEVBLOCK_OFF_STATE 3
 
 #endif
 
@@ -700,9 +701,9 @@ extern int yylex (yyscan_t yyscanner);
 #undef yyTABLES_NAME
 #endif
 
-#line 157 "lexer.lpp"
+#line 168 "lexer.lpp"
 
 
-#line 706 "lexer.hpp"
+#line 708 "lexer.hpp"
 #undef iw5_IN_HEADER
 #endif /* iw5_HEADER_H */

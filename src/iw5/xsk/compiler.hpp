@@ -30,6 +30,8 @@ class compiler : public gsc::compiler
     bool can_continue_;
 
 public:
+    compiler(gsc::dev_blocks devblocks);
+
     auto output() -> std::vector<gsc::function_ptr>;
     void compile(const std::string& file, std::vector<std::uint8_t>& data);
     void set_readf_callback(std::function<std::vector<std::uint8_t>(const std::string&)> func);
@@ -154,6 +156,8 @@ private:
     void print_function(const gsc::function_ptr& func);
     void print_instruction(const gsc::instruction_ptr& inst);
     void print_label(const std::string& label);
+
+    gsc::dev_blocks m_devblocks;
 };
 
 } // namespace xsk::gsc::iw5
