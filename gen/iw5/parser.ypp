@@ -24,16 +24,18 @@
 
 %lex-param   { yyscan_t yyscanner }
 %lex-param   { xsk::gsc::location& loc }
+%lex-param   { xsk::gsc::dev_blocks devblock_mode }
 
 %parse-param { yyscan_t yyscanner }
 %parse-param { xsk::gsc::location& loc }
 %parse-param { xsk::gsc::program_ptr& ast }
+%parse-param { xsk::gsc::dev_blocks devblock_mode }
 
 %code requires
 {
 #include "iw5.hpp"
 typedef void *yyscan_t;
-#define YY_DECL xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location& loc)
+#define YY_DECL xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location& loc, xsk::gsc::dev_blocks devblock_mode)
 }
 
 %code top
@@ -42,7 +44,7 @@ typedef void *yyscan_t;
 #include "parser.hpp"
 #include "lexer.hpp"
 using namespace xsk::gsc;
-xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location& loc);
+xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location& loc, xsk::gsc::dev_blocks devblock_mode);
 }
 
 %token BREAKPOINT "breakpoint"

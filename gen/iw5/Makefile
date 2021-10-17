@@ -9,3 +9,4 @@ clean:
 IW5: lexer.lpp parser.ypp
 	flex lexer.lpp
 	bison parser.ypp -Wcounterexamples
+	mv lexer.hpp lexer.cpp parser.hpp parser.cpp ../../src/iw5/xsk/

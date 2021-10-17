@@ -507,7 +507,7 @@ std::uint32_t main(std::uint32_t argc, char** argv)
         if (game == game::IW5)
         {
             gsc::iw5::assembler assembler;
-            gsc::iw5::compiler compiler;
+            gsc::iw5::compiler compiler(gsc::dev_blocks::off);
             compile_file(assembler, compiler, file ,zonetool);
         }
         else if (game == game::IW6)

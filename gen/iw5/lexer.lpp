@@ -35,7 +35,12 @@ RGX_INT_DEC     [0-9]+
 RGX_DEFAULT     (.|\n)
 
 %x COMMENT_BLOCK_STATE
-%x DEVELOPER_BLOCK_STATE
+/*
+    this is an inclusive start condition, so rules not explicitly specifying "DEVBLOCK_ON_STATE" will also match
+    http://dinosaur.compilertools.net/flex/flex_11.html
+*/
+%s DEVBLOCK_ON_STATE
+%x DEVBLOCK_OFF_STATE
 
 %%
 
@@ -54,10 +59,16 @@ RGX_DEFAULT     (.|\n)
 <COMMENT_BLOCK_STATE>\n     { loc.lines(yyleng); loc.step(); }
 <COMMENT_BLOCK_STATE>"*/"   { BEGIN(INITIAL); }
 
-"/#"                        { BEGIN(DEVELOPER_BLOCK_STATE); }
-<DEVELOPER_BLOCK_STATE>.
-<DEVELOPER_BLOCK_STATE>\n   { loc.lines(yyleng); loc.step(); }
-<DEVELOPER_BLOCK_STATE>"#/" { BEGIN(INITIAL); }    
+"/#"                        { BEGIN(devblock_mode == xsk::gsc::dev_blocks::on ? DEVBLOCK_ON_STATE : DEVBLOCK_OFF_STATE); }
+ /* ignore everything if we're in devblock-off state */
+<DEVBLOCK_OFF_STATE>.
+<DEVBLOCK_OFF_STATE>\n      { loc.lines(yyleng); loc.step(); }
+ /* always exit devblock state when seeing #/ */
+<DEVBLOCK_OFF_STATE,DEVBLOCK_ON_STATE>"#/" { BEGIN(INITIAL); }
+
+ /* for better errors */
+<INITIAL>"*/"               { throw iw5::parser::syntax_error(loc, "unmatched multiline comment end ('*/')"); }
+<INITIAL>"#/"               { throw iw5::parser::syntax_error(loc, "unmatched devblock end ('#/')"); }
 
 "breakpoint"        { return iw5::parser::make_BREAKPOINT(loc); }
 "prof_begin"        { return iw5::parser::make_PROFBEGIN(loc); }

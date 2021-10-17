@@ -46,7 +46,7 @@ auto compiler::parse_buffer(const std::string& file, std::vector<std::uint8_t>& 
 
     YY_BUFFER_STATE yybuffer = iw5__scan_buffer(reinterpret_cast<char*>(data.data()), data.size(), scanner);
 
-    parser parser(scanner, loc, result);
+    parser parser(scanner, loc, result, m_devblocks);
     
     if(parser.parse() || result == nullptr)
     {
