@@ -49,7 +49,7 @@
 
 #include "iw5.hpp"
 typedef void *yyscan_t;
-#define YY_DECL xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location& loc, xsk::gsc::dev_blocks devblock_mode)
+#define YY_DECL xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location& loc, xsk::gsc::compilation_mode comp_mode)
 
 #line 55 "parser.hpp"
 
@@ -2469,7 +2469,7 @@ switch (yykind)
     };
 
     /// Build a parser object.
-    parser (yyscan_t yyscanner_yyarg, xsk::gsc::location& loc_yyarg, xsk::gsc::program_ptr& ast_yyarg, xsk::gsc::dev_blocks devblock_mode_yyarg);
+    parser (yyscan_t yyscanner_yyarg, xsk::gsc::location& loc_yyarg, xsk::gsc::program_ptr& ast_yyarg, xsk::gsc::compilation_mode comp_mode_yyarg);
     virtual ~parser ();
 
 #if 201103L <= YY_CPLUSPLUS
@@ -4413,7 +4413,7 @@ switch (yykind)
     yyscan_t yyscanner;
     xsk::gsc::location& loc;
     xsk::gsc::program_ptr& ast;
-    xsk::gsc::dev_blocks devblock_mode;
+    xsk::gsc::compilation_mode comp_mode;
 
   };
 

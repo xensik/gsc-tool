@@ -46,7 +46,7 @@ auto compiler::parse_buffer(const std::string& file, std::vector<std::uint8_t>& 
 
     YY_BUFFER_STATE yybuffer = iw5__scan_buffer(reinterpret_cast<char*>(data.data()), data.size(), scanner);
 
-    parser parser(scanner, loc, result, m_devblocks);
+    parser parser(scanner, loc, result, m_mode);
     
     if(parser.parse() || result == nullptr)
     {
@@ -240,7 +240,11 @@ void compiler::emit_stmt_call(const gsc::context_ptr& ctx, const gsc::stmt_call_
     {
         const auto& name = stmt->expr->func.as_func->name->value;
 
-        if(name == "assert" || name == "assertex" || name == "assertmsg") return;
+        const bool is_dev_func = name == "assert" || name == "assertex" || name == "assertmsg";
+        if (is_dev_func && m_mode != compilation_mode::dev)
+        {
+            return;
+        }
     }
 
     emit_expr_call(ctx, stmt->expr);

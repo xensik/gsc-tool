@@ -1287,7 +1287,7 @@ YY_RULE_SETUP
 case 8:
 YY_RULE_SETUP
 #line 63 "lexer.lpp"
-{ BEGIN(devblock_mode == xsk::gsc::dev_blocks::on ? DEVBLOCK_ON_STATE : DEVBLOCK_OFF_STATE); }
+{ BEGIN(comp_mode == xsk::gsc::compilation_mode::dev ? DEVBLOCK_ON_STATE : DEVBLOCK_OFF_STATE); }
 	YY_BREAK
 /* ignore everything if we're in devblock-off state */
 case 9:

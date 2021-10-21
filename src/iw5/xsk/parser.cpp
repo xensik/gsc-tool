@@ -41,7 +41,7 @@
 #include "parser.hpp"
 #include "lexer.hpp"
 using namespace xsk::gsc;
-xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location& loc, xsk::gsc::dev_blocks devblock_mode);
+xsk::gsc::iw5::parser::symbol_type IW5lex(yyscan_t yyscanner, xsk::gsc::location& loc, xsk::gsc::compilation_mode comp_mode);
 
 #line 47 "parser.cpp"
 
@@ -148,7 +148,7 @@ namespace xsk { namespace gsc { namespace iw5 {
 #line 149 "parser.cpp"
 
   /// Build a parser object.
-  parser::parser (yyscan_t yyscanner_yyarg, xsk::gsc::location& loc_yyarg, xsk::gsc::program_ptr& ast_yyarg, xsk::gsc::dev_blocks devblock_mode_yyarg)
+  parser::parser (yyscan_t yyscanner_yyarg, xsk::gsc::location& loc_yyarg, xsk::gsc::program_ptr& ast_yyarg, xsk::gsc::compilation_mode comp_mode_yyarg)
 #if IW5DEBUG
     : yydebug_ (false),
       yycdebug_ (&std::cerr),
@@ -159,7 +159,7 @@ namespace xsk { namespace gsc { namespace iw5 {
       yyscanner (yyscanner_yyarg),
       loc (loc_yyarg),
       ast (ast_yyarg),
-      devblock_mode (devblock_mode_yyarg)
+      comp_mode (comp_mode_yyarg)
   {}
 
   parser::~parser ()
@@ -1466,7 +1466,7 @@ namespace xsk { namespace gsc { namespace iw5 {
         try
 #endif // YY_EXCEPTIONS
           {
-            symbol_type yylookahead (yylex (yyscanner, loc, devblock_mode));
+            symbol_type yylookahead (yylex (yyscanner, loc, comp_mode));
             yyla.move (yylookahead);
           }
 #if YY_EXCEPTIONS
