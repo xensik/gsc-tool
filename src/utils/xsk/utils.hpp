@@ -12,7 +12,7 @@
 #include "compression.hpp"
 
 // GSC Types
-#include "gsc/devblocks.hpp"
+#include "gsc/compilation_mode.hpp"
 #include "gsc/pair.hpp"
 #include "gsc/asset.hpp"
 #include "gsc/assembly.hpp"

@@ -2,9 +2,9 @@
 
 namespace xsk::gsc
 {
-	enum class dev_blocks
+	enum class compilation_mode
 	{
-		on,
-		off
+		dev,
+		release,
 	};
 }

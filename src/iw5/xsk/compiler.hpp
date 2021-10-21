@@ -30,7 +30,7 @@ class compiler : public gsc::compiler
     bool can_continue_;
 
 public:
-    compiler(gsc::dev_blocks devblocks);
+    compiler(gsc::compilation_mode mode) : m_mode(mode) {}
 
     auto output() -> std::vector<gsc::function_ptr>;
     void compile(const std::string& file, std::vector<std::uint8_t>& data);
@@ -157,7 +157,7 @@ private:
     void print_instruction(const gsc::instruction_ptr& inst);
     void print_label(const std::string& label);
 
-    gsc::dev_blocks m_devblocks;
+    gsc::compilation_mode m_mode;
 };
 
 } // namespace xsk::gsc::iw5

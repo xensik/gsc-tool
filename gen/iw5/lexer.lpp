@@ -59,7 +59,7 @@ RGX_DEFAULT     (.|\n)
 <COMMENT_BLOCK_STATE>\n     { loc.lines(yyleng); loc.step(); }
 <COMMENT_BLOCK_STATE>"*/"   { BEGIN(INITIAL); }
 
-"/#"                        { BEGIN(devblock_mode == xsk::gsc::dev_blocks::on ? DEVBLOCK_ON_STATE : DEVBLOCK_OFF_STATE); }
+"/#"                        { BEGIN(comp_mode == xsk::gsc::compilation_mode::dev ? DEVBLOCK_ON_STATE : DEVBLOCK_OFF_STATE); }
  /* ignore everything if we're in devblock-off state */
 <DEVBLOCK_OFF_STATE>.
 <DEVBLOCK_OFF_STATE>\n      { loc.lines(yyleng); loc.step(); }
