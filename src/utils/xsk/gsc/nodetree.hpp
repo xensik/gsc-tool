@@ -616,7 +616,7 @@ struct node_true : public node
         return "true";
     }
 
-    friend bool operator==(const node_true& lhs, const node_true& rhs)
+    friend bool operator==(const node_true&, const node_true&)
     {
         return true;
     }
@@ -632,7 +632,7 @@ struct node_false : public node
         return "false";
     }
 
-    friend bool operator==(const node_false& lhs, const node_false& rhs)
+    friend bool operator==(const node_false&, const node_false&)
     {
         return true;
     }
@@ -824,7 +824,7 @@ struct node_animtree : public node
         return "#animtree";
     }
 
-    friend bool operator==(const node_animtree& lhs, const node_animtree& rhs)
+    friend bool operator==(const node_animtree&, const node_animtree&)
     {
         return true;
     }
@@ -862,7 +862,7 @@ struct node_level : public node
         return "level";
     }
 
-    friend bool operator==(const node_level& lhs, const node_level& rhs)
+    friend bool operator==(const node_level&, const node_level&)
     {
         return true;
     }
@@ -879,7 +879,7 @@ struct node_anim : public node
         return "anim";
     }
 
-    friend bool operator==(const node_anim& lhs, const node_anim& rhs)
+    friend bool operator==(const node_anim&, const node_anim&)
     {
         return true;
     }
@@ -896,7 +896,7 @@ struct node_self : public node
         return "self";
     }
 
-    friend bool operator==(const node_self& lhs, const node_self& rhs)
+    friend bool operator==(const node_self&, const node_self&)
     {
         return true;
     }
@@ -913,7 +913,7 @@ struct node_game : public node
         return "game";
     }
 
-    friend bool operator==(const node_game& lhs, const node_game& rhs)
+    friend bool operator==(const node_game&, const node_game&)
     {
         return true;
     }
@@ -930,7 +930,7 @@ struct node_undefined : public node
         return "undefined";
     }
 
-    friend bool operator==(const node_undefined& lhs, const node_undefined& rhs)
+    friend bool operator==(const node_undefined&, const node_undefined&)
     {
         return true;
     }
@@ -947,7 +947,7 @@ struct node_empty_array : public node
         return "[]";
     }
 
-    friend bool operator==(const node_empty_array& lhs, const node_empty_array& rhs)
+    friend bool operator==(const node_empty_array&, const node_empty_array&)
     {
         return true;
     }
@@ -964,7 +964,7 @@ struct node_thisthread : public node
         return "thisthread";
     }
 
-    friend bool operator==(const node_thisthread& lhs, const node_thisthread& rhs)
+    friend bool operator==(const node_thisthread&, const node_thisthread&)
     {
         return true;
     }
