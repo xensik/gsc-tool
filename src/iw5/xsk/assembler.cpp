@@ -185,7 +185,6 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_less:
     case opcode::OP_greater:
     case opcode::OP_less_equal:
-    case opcode::OP_waittillmatch2:
     case opcode::OP_waittill:
     case opcode::OP_notify:
     case opcode::OP_endon:
@@ -261,7 +260,8 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
         break;
     case opcode::OP_waittillmatch:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-        script_->write<std::uint16_t>(0);
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(opcode::OP_waittillmatch2));
         break;
     case opcode::OP_CreateLocalVariable:
     case opcode::OP_RemoveLocalVariables:

@@ -49,7 +49,6 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
     case opcode::OP_EvalLocalVariableCached5:
     case opcode::OP_ScriptMethodCallPointer:
     case opcode::OP_checkclearparams:
-    case opcode::OP_waittillmatch2:
     case opcode::OP_minus:
     case opcode::OP_greater_equal:
     case opcode::OP_vector:

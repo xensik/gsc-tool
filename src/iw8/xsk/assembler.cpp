@@ -182,7 +182,6 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_EvalLocalVariableCached5:
     case opcode::OP_ScriptMethodCallPointer:
     case opcode::OP_checkclearparams:
-    case opcode::OP_waittillmatch2:
     case opcode::OP_minus:
     case opcode::OP_greater_equal:
     case opcode::OP_vector:
@@ -281,7 +280,8 @@ void assembler::assemble_instruction(const gsc::instruction_ptr& inst)
         break;
     case opcode::OP_waittillmatch:
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-        script_->write<std::uint16_t>(0);
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(opcode::OP_waittillmatch2));
         break;
     case opcode::OP_SetNewLocalVariableFieldCached0:
     case opcode::OP_EvalNewLocalArrayRefCached0:

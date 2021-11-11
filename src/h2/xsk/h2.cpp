@@ -81,7 +81,6 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
     case opcode::OP_vector:
     case opcode::OP_bit_or:
     case opcode::OP_AddArray:
-    case opcode::OP_waittillmatch2:
     case opcode::OP_shift_right:
         return 1;
     case opcode::OP_SetNewLocalVariableFieldCached0:

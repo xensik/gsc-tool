@@ -1446,7 +1446,9 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             gsc::expr_arguments_ptr args = std::make_unique<gsc::node_expr_arguments>();
             args->loc = loc;
 
-            while(stack_.size() > 0)
+            auto argnum = std::stoul(inst->data[0]);
+
+            for (auto i = 0u; i < argnum; i++)
             {
                 auto node = std::move(stack_.top());
                 stack_.pop();

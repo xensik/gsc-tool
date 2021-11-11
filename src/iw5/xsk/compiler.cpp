@@ -305,7 +305,7 @@ void compiler::emit_stmt_waittillmatch(const gsc::context_ptr& ctx, const gsc::s
     emit_expr_arguments(ctx, stmt->args);
     emit_expr(ctx, stmt->expr);
     emit_expr(ctx, stmt->obj);
-    emit_opcode(ctx, opcode::OP_waittillmatch);
+    emit_opcode(ctx, opcode::OP_waittillmatch, utils::string::va("%d", stmt->args->list.size()));
     emit_opcode(ctx, opcode::OP_clearparams);
 }
 

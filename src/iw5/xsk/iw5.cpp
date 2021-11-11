@@ -51,7 +51,6 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
     case opcode::OP_less:
     case opcode::OP_greater:
     case opcode::OP_less_equal:
-    case opcode::OP_waittillmatch2:
     case opcode::OP_waittill:
     case opcode::OP_notify:
     case opcode::OP_endon:

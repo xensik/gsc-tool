@@ -122,7 +122,6 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
     case opcode::OP_less:
     case opcode::OP_greater:
     case opcode::OP_less_equal:
-    case opcode::OP_waittillmatch2:
     case opcode::OP_waittill:
     case opcode::OP_notify:
     case opcode::OP_endon:
@@ -191,7 +190,8 @@ void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
         inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
         break;
     case opcode::OP_waittillmatch:
-        inst->data.push_back(utils::string::va("%i", script_->read<std::uint16_t>()));
+        inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
+        script_->seek(1);
         break;
     case opcode::OP_CreateLocalVariable:
     case opcode::OP_RemoveLocalVariables:
