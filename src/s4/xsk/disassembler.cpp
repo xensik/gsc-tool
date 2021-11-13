@@ -438,7 +438,7 @@ void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
     std::uint32_t field_id = script_->read<std::uint32_t>();
     std::string field_name;
 
-    if(field_id > 0x1C000)
+    if(field_id > 0x110F3)
     {   
         auto temp = stack_->read<std::uint32_t>();
         field_name = temp == 0 ? stack_->read_c_string() : std::to_string(temp);
