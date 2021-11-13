@@ -546,7 +546,7 @@ void assembler::assemble_field_variable(const gsc::instruction_ptr& inst)
 
         if (field_id == 0)
         {
-            field_id = 0xFFFF;
+            field_id = 0xFFFFFFFF;
         }
     }
 
