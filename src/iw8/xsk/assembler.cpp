@@ -552,7 +552,7 @@ void assembler::assemble_field_variable(const gsc::instruction_ptr& inst)
 
     script_->write<std::uint32_t>(field_id);
 
-    if (field_id > 0x13160) // 0xE2C0 or 0x13160
+    if (field_id > 0x13738)
     {
         stack_->write<std::uint32_t>(0);
         stack_->write_c_string(inst->data[0]);
