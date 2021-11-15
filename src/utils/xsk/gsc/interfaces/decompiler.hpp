@@ -11,6 +11,7 @@ namespace xsk::gsc
 class decompiler
 {
 public:
+    virtual ~decompiler() = default;
     virtual auto output() -> std::vector<std::uint8_t> = 0;
     virtual void decompile(const std::string& file, std::vector<gsc::function_ptr>& functions) = 0;
 };

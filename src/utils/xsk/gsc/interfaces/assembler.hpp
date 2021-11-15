@@ -11,6 +11,7 @@ namespace xsk::gsc
 class assembler
 {
 public:
+    virtual ~assembler() = default;
     virtual auto output_script() -> std::vector<std::uint8_t> = 0;
     virtual auto output_stack() -> std::vector<std::uint8_t> = 0;
     virtual void assemble(const std::string& file, std::vector<std::uint8_t>& data) = 0;

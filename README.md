@@ -15,17 +15,23 @@ A utility to compile & decompile IW engine game scripts.
 - **H1** *(Call of Duty: Modern Warfare Remastered)*
 - **H2** *(Call of Duty: Modern Warfare 2 Campaign Remastered)*
 ## Usage
-``./gsc-tool.exe <game> <mode> <file>``
+``./gsc-tool.exe <mode> <game> <path>``
 
-**game**: `-iw5`, `-iw6`, `-iw7`, `-iw8`, `-s1`, `-s2`, `-s4`, `-h1`, `-h2`
+**modes**: `asm`, `disasm`, `comp`, `decomp` 
+
+**games**: `iw5`, `iw6`, `iw7`, `iw8`, `s1`, `s2`, `s4`, `h1`, `h2` 
+
+**paths**: `file`, `directory` (recursive process all files with mode extension) 
+
+for zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zdecomp`
+
 | Mode     |Description                | Output      |
 |:---------|:--------------------------|:------------|
-|`-asm`    |assemble a `file.gscasm`   |`file.gscbin`|
-|`-disasm` |dissasemble a `file.gscbin`|`file.gscasm`|
-|`-comp`   |compile a `file.gsc`       |`file.gscbin`|
-|`-decomp` |decompile a `file.gscbin`  |`file.gsc`   |
+|`asm`     |assemble a `file.gscasm`   |`file.gscbin`|
+|`disasm`  |dissasemble a `file.gscbin`|`file.gscasm`|
+|`comp`    |compile a `file.gsc`       |`file.gscbin`|
+|`decomp`  |decompile a `file.gscbin`  |`file.gsc`   |
 
-for zonetool files (*.cgsc*, *.cgsc.stack*) use: `-zasm`, `-zdisasm`, `-zcomp`, `-zdecomp`
 ## Format
 - gsc-tool ``.gscbin`` format is a serialized ScriptFile struct: ***name***: null-term string, ***compressedLen***: 4 byte uint, ***len***: 4 byte uint, ***bytecodeLen***: 4 byte uint, ***buffer***: byte array[compressedLen], ***bytecode***: byte array[bytecodeLen].
 
