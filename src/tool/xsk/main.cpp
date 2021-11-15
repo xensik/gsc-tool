@@ -304,7 +304,6 @@ void decompile_file(game game, std::string file)
     try
     {
         const auto& disassembler = disassemblers[game];
-        const auto& decompiler = decompilers[game];
 
         if(zonetool)
         {
@@ -335,7 +334,7 @@ void decompile_file(game game, std::string file)
 
             const auto ext = std::string(".gscbin");
             const auto extpos = file.find(ext);
-            
+
             if (extpos != std::string::npos)
             {
                 file.replace(extpos, ext.length(), "");
@@ -351,6 +350,8 @@ void decompile_file(game game, std::string file)
 
             disassembler->disassemble(file, script.bytecode, stack);
         }
+
+        const auto& decompiler = decompilers[game];
 
         auto output = disassembler->output();
 
