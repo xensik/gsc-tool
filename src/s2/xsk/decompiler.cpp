@@ -2385,6 +2385,8 @@ void decompiler::decompile_loop(const gsc::stmt_list_ptr& block, std::uint32_t s
             {
                 if(start - index > 0)
                     index++;
+                else
+                    break;
             }
 
             if(block->stmts.at(start - index).as_node->type == gsc::node_t::stmt_assign)
