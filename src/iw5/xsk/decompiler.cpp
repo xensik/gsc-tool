@@ -2877,6 +2877,7 @@ void decompiler::process_stmt(const gsc::context_ptr& ctx, const gsc::stmt_ptr& 
         case gsc::node_t::stmt_foreach:          process_stmt_foreach(ctx, stmt.as_foreach); break;
         case gsc::node_t::stmt_switch:           process_stmt_switch(ctx, stmt.as_switch); break;
         case gsc::node_t::stmt_break:            process_stmt_break(ctx, stmt.as_break); break;
+        case gsc::node_t::stmt_continue:         process_stmt_continue(ctx, stmt.as_continue); break;
         case gsc::node_t::stmt_return:           process_stmt_return(ctx, stmt.as_return); break;
         case gsc::node_t::asm_remove:            process_var_remove(ctx, stmt.as_asm_remove); break;
         case gsc::node_t::asm_create:
@@ -2971,6 +2972,9 @@ void decompiler::process_stmt_if(const gsc::context_ptr& ctx, const gsc::stmt_if
 
 void decompiler::process_stmt_ifelse(const gsc::context_ptr& ctx, const gsc::stmt_ifelse_ptr& stmt)
 {
+    std::vector<gsc::context*> childs;
+    auto abort = gsc::abort_t::abort_return;
+
     process_expr(ctx, stmt->expr);
 
     stmt->ctx_if = std::make_unique<gsc::context>();
@@ -2978,12 +2982,30 @@ void decompiler::process_stmt_ifelse(const gsc::context_ptr& ctx, const gsc::stm
 
     process_stmt(stmt->ctx_if, stmt->stmt_if);
 
+    if(stmt->ctx_if->abort <= gsc::abort_t::abort_return)
+    {
+        abort = stmt->ctx_if->abort;
+
+        if(abort == gsc::abort_t::abort_none)
+            childs.push_back(stmt->ctx_if.get());
+    }
+
     stmt->ctx_else = std::make_unique<gsc::context>();
     ctx->transfer_decompiler(stmt->ctx_else);
 
     process_stmt(stmt->ctx_else, stmt->stmt_else);
 
-    std::vector<gsc::context*> childs({stmt->ctx_if.get(), stmt->ctx_else.get()});
+    if(stmt->ctx_else->abort <= abort)
+    {
+        abort = stmt->ctx_else->abort;
+
+        if (abort == gsc::abort_t::abort_none)
+            childs.push_back(stmt->ctx_else.get());
+    }
+
+    if(ctx->abort == gsc::abort_t::abort_none)
+        ctx->abort = abort;
+
     ctx->append(childs);
 
     if(stmt->stmt_if.as_list->stmts.size() == 1 && !gsc::node::is_special_stmt(stmt->stmt_if.as_list->stmts.at(0)))
@@ -3127,11 +3149,27 @@ void decompiler::process_stmt_cases(const gsc::context_ptr& ctx, const gsc::stmt
 
 void decompiler::process_stmt_break(const gsc::context_ptr& ctx, const gsc::stmt_break_ptr& stmt)
 {
-    ctx->abort = gsc::abort_t::abort_break;
+    if(ctx->abort == gsc::abort_t::abort_none)
+    {
+        ctx->abort = gsc::abort_t::abort_break;
+    }
+}
+
+void decompiler::process_stmt_continue(const gsc::context_ptr& ctx, const gsc::stmt_continue_ptr& stmt)
+{
+    if(ctx->abort == gsc::abort_t::abort_none)
+    {
+        ctx->abort = gsc::abort_t::abort_continue;
+    }
 }
 
 void decompiler::process_stmt_return(const gsc::context_ptr& ctx, const gsc::stmt_return_ptr& stmt)
 {
+    if(ctx->abort == gsc::abort_t::abort_none)
+    {
+        ctx->abort = gsc::abort_t::abort_return;
+    }
+
     if(stmt->expr.as_node->type == gsc::node_t::null)
     {
         return; 
