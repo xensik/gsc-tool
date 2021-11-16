@@ -1650,6 +1650,16 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             }
         }
         break;
+        case opcode::OP_SafeSetVariableFieldCached0:
+        {
+            func_->params->list.push_back(std::make_unique<gsc::node_name>(loc, "var_0"));
+        }
+        break;
+        case opcode::OP_SafeSetVariableFieldCached:
+        {
+            func_->params->list.push_back(std::make_unique<gsc::node_name>(loc, "var_" + inst->data[0]));
+        }
+        break;
         case opcode::OP_EvalLocalVariableRefCached0:
         {
             auto node = std::make_unique<gsc::node_asm_access>(loc, "0");

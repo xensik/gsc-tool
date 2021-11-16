@@ -1644,6 +1644,16 @@ void decompiler::decompile_statements(const gsc::function_ptr& func)
             }
         }
         break;
+        case opcode::OP_SafeSetVariableFieldCached0:
+        {
+            func_->params->list.push_back(std::make_unique<gsc::node_name>(loc, "var_0"));
+        }
+        break;
+        case opcode::OP_SafeSetVariableFieldCached:
+        {
+            func_->params->list.push_back(std::make_unique<gsc::node_name>(loc, "var_" + inst->data[0]));
+        }
+        break;
         case opcode::OP_EvalLocalVariableRefCached0:
         {
             auto node = std::make_unique<gsc::node_asm_access>(loc, "0");
@@ -2038,6 +2048,8 @@ void decompiler::decompile_search_ifelse(const gsc::stmt_list_ptr& block)
         if(stmt.as_node->type == gsc::node_t::asm_jump_cond)
         {
             std::uint32_t end;
+            auto last_loc = blocks_.back().loc_end;
+
             if(stmt.as_cond->value == blocks_.back().loc_end)
             {
                 end = block->stmts.size() - 1;
@@ -2046,8 +2058,119 @@ void decompiler::decompile_search_ifelse(const gsc::stmt_list_ptr& block)
             {
                 end = find_location_index(block, stmt.as_cond->value) - 1;
             }
-            
-            auto last_loc = blocks_.back().loc_end;
+/*
+            // normal block
+            if(blocks_.back().loc_break == "" && blocks_.back().loc_continue == "")
+            {
+                if(block->stmts.at(end).as_node->type == gsc::node_t::asm_jump)
+                {
+normal_block:       if(block->stmts.at(end).as_jump->value == stmt.as_cond->value)
+                    {
+                        // check if inside there is another if that jumps to cond->value
+                        bool checked = false;
+                        for(auto j = index + 1; j < end; j++)
+                        {
+                            auto& stmt2 = block->stmts.at(j);
+                            if(stmt2.as_node->type == gsc::node_t::asm_jump_cond)
+                            {
+                                auto value = stmt2.as_cond->value;
+                                if(std::stoi(value.substr(4), 0, 16) > block->stmts.at(end).as_jump->loc.begin.line)
+                                {
+                                    checked = true;
+                                }
+                            }
+                        }
+
+                        if(checked)
+                        {
+                            // if with if/else inside with empty else
+                            decompile_if(block, index, end);
+                        }
+                        else
+                        {
+                            // if/else with empty else
+                            decompile_ifelse(block, index, end);
+                        }
+                    }
+                    else
+                    {
+                        // normal if/else not empty
+                        decompile_ifelse(block, index, end);
+                    }
+                }
+                else if(block->stmts.at(end).as_node->type == gsc::node_t::stmt_return
+                && block->stmts.at(end).as_return->expr.as_node->type == gsc::node_t::null)
+                {
+                    if(end - index == 1)
+                    {
+                        decompile_if(block, index, end); // only one explicit return
+                    }
+                    else if(block->stmts.back().as_node->type != gsc::node_t::stmt_return)
+                    {
+                        decompile_if(block, index, end); // block end is not a last return
+                    }
+                    else if(blocks_.back().is_last && block->stmts.back().as_node->type != gsc::node_t::stmt_return)
+                    {
+                        decompile_if(block, index, end); // inside a last block but is not and inner last
+                    }
+                    else if(find_location_reference(block, end, block->stmts.size(), last_loc))
+                    {
+                        decompile_if(block, index, end); // reference to func end after the if
+                    }
+                    else if(blocks_.size() > 1 && !blocks_.back().is_last)
+                    {
+                        decompile_if(block, index, end); // fake last ifelse
+                    }
+                    else
+                    {
+                        decompile_last_ifelse(block, index, end); // special case
+                    }
+                }
+                else
+                {
+                    decompile_if(block, index, end);
+                }
+            }
+            else // loop block
+            {
+                if(block->stmts.at(end).as_node->type == gsc::node_t::asm_jump)
+                {
+                    // if block is a loop check break, continue
+                    if(block->stmts.at(end).as_jump->value == blocks_.back().loc_continue)
+                    {
+                        if(end - index == 1)
+                        {
+                            decompile_if(block, index, end);
+                        }
+                        else
+                        {
+                            decompile_ifelse(block, index, end);
+                        }
+                    }
+                    else if(block->stmts.at(end).as_jump->value == blocks_.back().loc_break)
+                    {
+                        decompile_if(block, index, end);
+                    }
+                    else if(block->stmts.at(end).as_jump->value == blocks_.back().loc_end)
+                    {
+                        decompile_ifelse(block, index, end);
+                    }
+                    else 
+                    {
+                        goto normal_block;
+                    }
+                }
+                else if(block->stmts.at(end).as_node->type == gsc::node_t::stmt_return
+                && block->stmts.at(end).as_return->expr.as_node->type == gsc::node_t::null)
+                {
+                    decompile_if(block, index, end);
+                }
+                else
+                {
+                    decompile_if(block, index, end);
+                }
+            }
+*/
 
             if(block->stmts.at(end).as_node->type == gsc::node_t::asm_jump)
             {
