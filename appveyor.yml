@@ -9,7 +9,7 @@ before_build:
 build:
   project: build/gsc-tool.sln
   verbosity: minimal
-test: off
+test: false
 artifacts:
 - path: build/bin/release/gsc-tool.exe
 deploy:

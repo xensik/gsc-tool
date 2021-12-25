@@ -29,7 +29,7 @@ auto resolver::opcode_id(const std::string& name) -> std::uint8_t
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve opcode id for name '%s'!", name.data()));
+    throw error(utils::string::va("Couldn't resolve opcode id for name '%s'!", name.data()));
 }
 
 auto resolver::opcode_name(std::uint8_t id) -> std::string
@@ -41,7 +41,7 @@ auto resolver::opcode_name(std::uint8_t id) -> std::string
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve opcode name for id '0x%hhX'!", id));
+    throw error(utils::string::va("Couldn't resolve opcode name for id '0x%hhX'!", id));
 }
 
 auto resolver::function_id(const std::string& name) -> std::uint16_t
@@ -53,7 +53,7 @@ auto resolver::function_id(const std::string& name) -> std::uint16_t
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve builtin function id for name '%s'!", name.data()));
+    throw error(utils::string::va("Couldn't resolve builtin function id for name '%s'!", name.data()));
 }
 
 auto resolver::function_name(std::uint16_t id) -> std::string
@@ -65,7 +65,7 @@ auto resolver::function_name(std::uint16_t id) -> std::string
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve builtin function name for id '%i'!", id));
+    throw error(utils::string::va("Couldn't resolve builtin function name for id '%i'!", id));
 }
 
 auto resolver::method_id(const std::string& name) -> std::uint16_t
@@ -77,7 +77,7 @@ auto resolver::method_id(const std::string& name) -> std::uint16_t
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve builtin method id for name '%s'!", name.data()));
+    throw error(utils::string::va("Couldn't resolve builtin method id for name '%s'!", name.data()));
 }
 
 auto resolver::method_name(std::uint16_t id) -> std::string
@@ -89,7 +89,7 @@ auto resolver::method_name(std::uint16_t id) -> std::string
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve builtin method name for id '%i'!", id));
+    throw error(utils::string::va("Couldn't resolve builtin method name for id '%i'!", id));
 }
 
 auto resolver::file_id(const std::string& name) -> std::uint32_t
@@ -164,7 +164,7 @@ auto resolver::find_method(const std::string& name) -> bool
     return false;
 }
 
-const std::array<gsc::pair_8C, 153> opcode_list
+const std::array<pair_8C, 153> opcode_list
 {{
     { std::uint8_t(opcode::OP_End),"END" },
     { std::uint8_t(opcode::OP_Return),"RETN" },
@@ -321,7 +321,7 @@ const std::array<gsc::pair_8C, 153> opcode_list
     { std::uint8_t(opcode::OP_BoolComplement),"BOOL_COMPLEMENT" },
 }};
 
-const std::array<gsc::pair_16C, 807> function_list
+const std::array<pair_16C, 807> function_list
 {{
     { 0x001, "_func_001" },
     { 0x002, "_func_002" },
@@ -1132,7 +1132,7 @@ const std::array<gsc::pair_16C, 807> function_list
     { 0x327, "_func_327" },
 }};
 
-const std::array<gsc::pair_16C, 1500> method_list
+const std::array<pair_16C, 1500> method_list
 {{
     { 0x8000, "_meth_8000" },
     { 0x8001, "_meth_8001" },
@@ -2636,12 +2636,12 @@ const std::array<gsc::pair_16C, 1500> method_list
     { 0x85DB, "_meth_85DB" },
 }};
 
-const std::array<gsc::pair_32C, 1> file_list
+const std::array<pair_32C, 1> file_list
 {{
     { 0, "DUMMY" },
 }};
 
-const std::array<gsc::pair_32C, 1> token_list
+const std::array<pair_32C, 1> token_list
 {{
     { 0, "DUMMY" },
 }};
@@ -2674,19 +2674,19 @@ struct __init__
         for(const auto& entry : function_list)
         {
             function_map.insert({ entry.key, entry.value });
-            function_map_rev.insert({ entry.value, entry.key });
+            function_map_rev.insert({ utils::string::to_lower(entry.value), entry.key });
         }
 
         for(const auto& entry : method_list)
         {
             method_map.insert({ entry.key, entry.value });
-            method_map_rev.insert({ entry.value, entry.key });
+            method_map_rev.insert({ utils::string::to_lower(entry.value), entry.key });
         }
 
         for(const auto& entry : file_list)
         {
             file_map.insert({ entry.key, entry.value });
-            file_map_rev.insert({ entry.value, entry.key });
+            file_map_rev.insert({ utils::string::to_lower(entry.value), entry.key });
         }
 
         for(const auto& entry : token_list)

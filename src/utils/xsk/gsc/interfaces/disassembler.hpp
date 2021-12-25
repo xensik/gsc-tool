@@ -11,8 +11,10 @@ namespace xsk::gsc
 class disassembler
 {
 public:
+    using ptr = std::unique_ptr<disassembler>;
+
     virtual ~disassembler() = default;
-    virtual auto output() -> std::vector<gsc::function_ptr> = 0;
+    virtual auto output() -> std::vector<gsc::function::ptr> = 0;
     virtual auto output_data() -> std::vector<std::uint8_t> = 0;
     virtual void disassemble(const std::string& file, std::vector<std::uint8_t>& script, std::vector<std::uint8_t>& stack) = 0;
 };

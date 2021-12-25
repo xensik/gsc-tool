@@ -29,7 +29,7 @@ auto resolver::opcode_id(const std::string& name) -> std::uint8_t
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve opcode id for name '%s'!", name.data()));
+    throw error(utils::string::va("Couldn't resolve opcode id for name '%s'!", name.data()));
 }
 
 auto resolver::opcode_name(std::uint8_t id) -> std::string
@@ -41,7 +41,7 @@ auto resolver::opcode_name(std::uint8_t id) -> std::string
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve opcode name for id '0x%hhX'!", id));
+    throw error(utils::string::va("Couldn't resolve opcode name for id '0x%hhX'!", id));
 }
 
 auto resolver::function_id(const std::string& name) -> std::uint16_t
@@ -53,7 +53,7 @@ auto resolver::function_id(const std::string& name) -> std::uint16_t
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve builtin function id for name '%s'!", name.data()));
+    throw error(utils::string::va("Couldn't resolve builtin function id for name '%s'!", name.data()));
 }
 
 auto resolver::function_name(std::uint16_t id) -> std::string
@@ -65,7 +65,7 @@ auto resolver::function_name(std::uint16_t id) -> std::string
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve builtin function name for id '%i'!", id));
+    throw error(utils::string::va("Couldn't resolve builtin function name for id '%i'!", id));
 }
 
 auto resolver::method_id(const std::string& name) -> std::uint16_t
@@ -77,7 +77,7 @@ auto resolver::method_id(const std::string& name) -> std::uint16_t
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve builtin method id for name '%s'!", name.data()));
+    throw error(utils::string::va("Couldn't resolve builtin method id for name '%s'!", name.data()));
 }
 
 auto resolver::method_name(std::uint16_t id) -> std::string
@@ -89,7 +89,7 @@ auto resolver::method_name(std::uint16_t id) -> std::string
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve builtin method name for id '%i'!", id));
+    throw error(utils::string::va("Couldn't resolve builtin method name for id '%i'!", id));
 }
 
 auto resolver::file_id(const std::string& name) -> std::uint16_t
@@ -170,7 +170,7 @@ void resolver::add_function(const std::string& name, std::uint16_t id)
 
     if (itr != function_map_rev.end())
     {
-        throw gsc::error("builtin function '" + name + "' already defined.");
+        throw error("builtin function '" + name + "' already defined.");
     }
 
     function_map.insert({ id, name });
@@ -184,14 +184,14 @@ void resolver::add_method(const std::string& name, std::uint16_t id)
 
     if (itr != method_map_rev.end())
     {
-        throw gsc::error("builtin method '" + name + "' already defined.");
+        throw error("builtin method '" + name + "' already defined.");
     }
 
     method_map.insert({ id, name });
     method_map_rev.insert({ name, id });
 }
 
-const std::array<gsc::pair_8C, 153> opcode_list
+const std::array<pair_8C, 153> opcode_list
 {{
     { std::uint8_t(opcode::OP_End),"END" },
     { std::uint8_t(opcode::OP_Return),"RETN" },
@@ -348,7 +348,7 @@ const std::array<gsc::pair_8C, 153> opcode_list
     { std::uint8_t(opcode::OP_BoolComplement),"BOOL_COMPLEMENT" },
 }};
 
-const std::array<gsc::pair_16C, 455> function_list
+const std::array<pair_16C, 455> function_list
 {{
     { 0x001, "precacheturret" },
     { 0x002, "getweaponarray" },
@@ -807,7 +807,7 @@ const std::array<gsc::pair_16C, 455> function_list
     { 0x1C7, "precachesound" },
 }};
 
-const std::array<gsc::pair_16C, 780> method_list
+const std::array<pair_16C, 780> method_list
 {{
     { 0x8000, "thermaldrawdisable" },
     { 0x8001, "setturretdismountorg" },
@@ -1592,7 +1592,7 @@ const std::array<gsc::pair_16C, 780> method_list
     { 0x830C, "setgametypestring" },
 }};
 
-const std::array<gsc::pair_16C, 592> file_list
+const std::array<pair_16C, 592> file_list
 {{
     { 29, "maps/mp/gametypes/_tweakables" },
     { 30, "common_scripts/utility" },
@@ -2250,7 +2250,7 @@ const std::array<gsc::pair_16C, 592> file_list
     { 33386, "maps/so_survival_mp_park_precache" },
 }};
 
-const std::array<gsc::pair_16C, 5534> token_list
+const std::array<pair_16C, 5534> token_list
 {{
     { 1, "pl#" },
     { 17, "teamHasRemoteUAV" }, // was introduced in an IW patch, made up name
@@ -7854,19 +7854,19 @@ struct __init__
         for(const auto& entry : function_list)
         {
             function_map.insert({ entry.key, entry.value });
-            function_map_rev.insert({ entry.value, entry.key });
+            function_map_rev.insert({ utils::string::to_lower(entry.value), entry.key });
         }
 
         for(const auto& entry : method_list)
         {
             method_map.insert({ entry.key, entry.value });
-            method_map_rev.insert({ entry.value, entry.key });
+            method_map_rev.insert({ utils::string::to_lower(entry.value), entry.key });
         }
 
         for(const auto& entry : file_list)
         {
             file_map.insert({ entry.key, entry.value });
-            file_map_rev.insert({ entry.value, entry.key });
+            file_map_rev.insert({ utils::string::to_lower(entry.value), entry.key });
         }
 
         for(const auto& entry : token_list)

@@ -6,18 +6,16 @@
 #pragma once
 
 // Utility
-#include "file.hpp"
-#include "string.hpp"
-#include "byte_buffer.hpp"
-#include "compression.hpp"
+#include "utils/file.hpp"
+#include "utils/string.hpp"
+#include "utils/byte_buffer.hpp"
+#include "utils/compression.hpp"
 
 // GSC Types
-#include "gsc/compilation_mode.hpp"
-#include "gsc/pair.hpp"
-#include "gsc/asset.hpp"
-#include "gsc/assembly.hpp"
-#include "gsc/context.hpp"
 #include "gsc/location.hpp"
+#include "gsc/types.hpp"
+#include "gsc/asset.hpp"
+#include "gsc/block.hpp"
 #include "gsc/nodetree.hpp"
 
 // GSC Interfaces

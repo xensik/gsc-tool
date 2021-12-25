@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace xsk::gsc::utils
+namespace xsk::utils
 {
 
 class string

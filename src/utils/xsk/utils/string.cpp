@@ -5,7 +5,7 @@
 
 #include "stdafx.hpp"
 
-namespace xsk::gsc::utils
+namespace xsk::utils
 {
 
 auto string::oct_to_dec(const char* str) -> std::string
@@ -64,16 +64,19 @@ auto string::to_code(const std::string& input) -> std::string
         data.erase(data.begin() + pos);
         data = data.replace(pos, 1, "\n");
     }
+
     while ((pos = data.find("\\t")) != std::string::npos)
     {
         data.erase(data.begin() + pos);
         data = data.replace(pos, 1, "\t");
     }
+
     while ((pos = data.find("\\r")) != std::string::npos)
     {
         data.erase(data.begin() + pos);
         data = data.replace(pos, 1, "\r");
     }
+
     while ((pos = data.find("\\\"")) != std::string::npos)
     {
         data.erase(data.begin() + pos);
@@ -92,19 +95,22 @@ auto string::to_literal(const std::string& input) -> std::string
         data = data.replace(pos, 1, "n");
         data.insert(data.begin() + pos, '\\');
     }
+
     while ((pos = data.find('\t')) != std::string::npos)
     {
         data = data.replace(pos, 1, "t");
         data.insert(data.begin() + pos, '\\');
     }
+
     while ((pos = data.find('\r')) != std::string::npos)
     {
         data = data.replace(pos, 1, "r");
         data.insert(data.begin() + pos, '\\');
     }
-    for(pos = 0; pos < data.size(); pos++)
+
+    for (pos = 0; pos < data.size(); pos++)
     {
-        if(data.at(pos) == '\"')
+        if (data.at(pos) == '\"')
         {
             data.insert(data.begin() + pos, '\\');
             pos++;
@@ -123,7 +129,7 @@ auto string::fordslash(const std::string& s) -> std::string
 
     for (std::size_t i = 0; i < data.size(); i++)
     {
-        if(data[i] == '\\') data[i] = '/';
+        if (data[i] == '\\') data[i] = '/';
     }
 
     return data;
@@ -135,7 +141,7 @@ auto string::backslash(const std::string& s) -> std::string
 
     for (std::size_t i = 0; i < data.size(); i++)
     {
-        if(data[i] ==  '/') data[i] = '\\';
+        if (data[i] ==  '/') data[i] = '\\';
     }
 
     return data;
@@ -145,7 +151,7 @@ auto string::quote(const std::string& s, bool single) -> std::string
 {
     std::string data(s.begin(), s.end());
 
-    if(single)
+    if (single)
     {
         data.insert(data.begin(), '\'');
         data.insert(data.end(), '\'');
@@ -161,9 +167,9 @@ auto string::quote(const std::string& s, bool single) -> std::string
 
 auto string::unquote(const std::string& s) -> std::string
 {
-    if(s.at(0) == '\'' || s.at(0) == '\"')
+    if (s.at(0) == '\'' || s.at(0) == '\"')
         return s.substr(1, s.size() - 2);
-    
+
     return s;
 }
 
@@ -190,6 +196,7 @@ auto string::clean_buffer_lines(std::vector<std::uint8_t>& buffer) -> std::vecto
     {
         data = data.replace(pos, 1, "");
     }
+
     while ((pos = data.find("\r")) != std::string::npos)
     {
         data = data.replace(pos, 1, "");
@@ -212,7 +219,7 @@ auto string::parse_code(std::string& line) -> std::vector<std::string>
     std::vector<std::string> data;
     std::regex exp(R"(([_A-Za-z0-9\-]+|\"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\')(?:\s+|$))");
 
-    for(auto i = std::sregex_iterator(line.begin(), line.end(), exp); i != std::sregex_iterator(); ++i)
+    for (auto i = std::sregex_iterator(line.begin(), line.end(), exp); i != std::sregex_iterator(); ++i)
     {
         data.push_back(i->format("$1"));
     }

@@ -151,6 +151,17 @@ public:
     /** \} */
 
 public:
+    auto print() const -> std::string
+    {
+        return *begin.filename + ":" + std::to_string(begin.line) + ":" + std::to_string(begin.column);
+    }
+
+    auto label() const -> std::string
+    {
+        return utils::string::va("loc_%X", begin.line);
+    }
+
+public:
     /// Beginning of the located region.
     position begin;
     /// End of the located region.

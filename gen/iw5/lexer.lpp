@@ -17,14 +17,16 @@
 #include "iw5.hpp"
 #include "parser.hpp"
 using namespace xsk::gsc;
+void iw5_push_header(xsk::gsc::context* ctx, const std::string& file);
+void iw5_pop_header(xsk::gsc::context* ctx);
 }
 
 %{
-#define YY_USER_ACTION  loc.columns(yyleng);
+#define YY_USER_ACTION  ctx->loc.columns(yyleng);
 %}
 
-RGX_FILE        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
-RGX_NAME        [_A-Za-z][_A-Za-z0-9]*
+RGX_PATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
+RGX_IDENTIFIER  [_A-Za-z][_A-Za-z0-9]*
 RGX_STRING      \"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\'
 RGX_COLOR       #([0-9a-fA-F]{6}|[0-9a-fA-F]{3})
 RGX_FLT_DEC     [0-9]+\.(?:[0-9]*)?f?|\.[0-9]+f?
@@ -35,133 +37,197 @@ RGX_INT_DEC     [0-9]+
 RGX_DEFAULT     (.|\n)
 
 %x COMMENT_BLOCK_STATE
-/*
-    this is an inclusive start condition, so rules not explicitly specifying "DEVBLOCK_ON_STATE" will also match
-    http://dinosaur.compilertools.net/flex/flex_11.html
-*/
 %s DEVBLOCK_ON_STATE
 %x DEVBLOCK_OFF_STATE
 
 %%
 
 %{
-    loc.step();
+    ctx->loc.step();
 %}
 
-[ \t\r]                     { loc.step(); }
+[ \t\r]                     { ctx->loc.step(); }
 
-\n                          { loc.lines(yyleng); loc.step(); }
+\n                          { ctx->loc.lines(yyleng); ctx->loc.step(); }
 
 "//".*
 
 "/*"                        { BEGIN(COMMENT_BLOCK_STATE); }
 <COMMENT_BLOCK_STATE>.
-<COMMENT_BLOCK_STATE>\n     { loc.lines(yyleng); loc.step(); }
+<COMMENT_BLOCK_STATE>\n     { ctx->loc.lines(yyleng); ctx->loc.step(); }
 <COMMENT_BLOCK_STATE>"*/"   { BEGIN(INITIAL); }
 
-"/#"                        { BEGIN(comp_mode == xsk::gsc::compilation_mode::dev ? DEVBLOCK_ON_STATE : DEVBLOCK_OFF_STATE); }
- /* ignore everything if we're in devblock-off state */
+"/#"                        { BEGIN(ctx->mode == xsk::gsc::build::dev ? DEVBLOCK_ON_STATE : DEVBLOCK_OFF_STATE); }
 <DEVBLOCK_OFF_STATE>.
-<DEVBLOCK_OFF_STATE>\n      { loc.lines(yyleng); loc.step(); }
- /* always exit devblock state when seeing #/ */
+<DEVBLOCK_OFF_STATE>\n      { ctx->loc.lines(yyleng); ctx->loc.step(); }
 <DEVBLOCK_OFF_STATE,DEVBLOCK_ON_STATE>"#/" { BEGIN(INITIAL); }
 
- /* for better errors */
-<INITIAL>"*/"               { throw iw5::parser::syntax_error(loc, "unmatched multiline comment end ('*/')"); }
-<INITIAL>"#/"               { throw iw5::parser::syntax_error(loc, "unmatched devblock end ('#/')"); }
+<INITIAL>"*/"               { throw iw5::parser::syntax_error(ctx->loc, "unmatched multiline comment end ('*/')"); }
+<INITIAL>"#/"               { throw iw5::parser::syntax_error(ctx->loc, "unmatched devblock end ('#/')"); }
 
-"breakpoint"        { return iw5::parser::make_BREAKPOINT(loc); }
-"prof_begin"        { return iw5::parser::make_PROFBEGIN(loc); }
-"prof_end"          { return iw5::parser::make_PROFEND(loc); }
-"#include"          { return iw5::parser::make_INCLUDE(loc); }
-"#using_animtree"   { return iw5::parser::make_USINGTREE(loc); }
-"#animtree"         { return iw5::parser::make_ANIMTREE(loc); }
-"endon"             { return iw5::parser::make_ENDON(loc); }
-"notify"            { return iw5::parser::make_NOTIFY(loc); }
-"wait"              { return iw5::parser::make_WAIT(loc); }
-"waittill"          { return iw5::parser::make_WAITTILL(loc); }
-"waittillmatch"     { return iw5::parser::make_WAITTILLMATCH(loc); }
-"waittillframeend"  { return iw5::parser::make_WAITTILLFRAMEEND(loc); }
-"if"                { return iw5::parser::make_IF(loc); }
-"else"              { return iw5::parser::make_ELSE(loc); }
-"while"             { return iw5::parser::make_WHILE(loc); }
-"for"               { return iw5::parser::make_FOR(loc); }
-"foreach"           { return iw5::parser::make_FOREACH(loc); }
-"in"                { return iw5::parser::make_IN(loc); }
-"switch"            { return iw5::parser::make_SWITCH(loc); }
-"case"              { return iw5::parser::make_CASE(loc); }
-"default"           { return iw5::parser::make_DEFAULT(loc); }
-"break"             { return iw5::parser::make_BREAK(loc); }
-"continue"          { return iw5::parser::make_CONTINUE(loc); }
-"return"            { return iw5::parser::make_RETURN(loc); }
-"thread"            { return iw5::parser::make_THREAD(loc); }
-"childthread"       { return iw5::parser::make_CHILDTHREAD(loc); }
-"thisthread"        { return iw5::parser::make_THISTHREAD(loc); }
-"call"              { return iw5::parser::make_CALL(loc); }
-"true"              { return iw5::parser::make_TRUE(loc); }
-"false"             { return iw5::parser::make_FALSE(loc); }
-"undefined"         { return iw5::parser::make_UNDEFINED(loc); }
-".size"             { return iw5::parser::make_SIZE(loc); }
-"game"              { return iw5::parser::make_GAME(loc); }
-"self"              { return iw5::parser::make_SELF(loc); }
-"anim"              { return iw5::parser::make_ANIM(loc); }
-"level"             { return iw5::parser::make_LEVEL(loc); }
-\(                  { return iw5::parser::make_LPAREN(loc); }
-\)                  { return iw5::parser::make_RPAREN(loc); }
-\{                  { return iw5::parser::make_LBRACE(loc); }
-\}                  { return iw5::parser::make_RBRACE(loc); }
-\[                  { return iw5::parser::make_LBRACKET(loc); }
-\]                  { return iw5::parser::make_RBRACKET(loc); }
-\,                  { return iw5::parser::make_COMMA(loc); }
-\.                  { return iw5::parser::make_DOT(loc); }
-\:\:                { return iw5::parser::make_DOUBLECOLON(loc); }
-\:                  { return iw5::parser::make_COLON(loc); }
-\;                  { return iw5::parser::make_SEMICOLON(loc); }
-\?                  { return iw5::parser::make_QMARK(loc); }
-\+\+                { return iw5::parser::make_INCREMENT(loc); }
-\-\-                { return iw5::parser::make_DECREMENT(loc); }
-\<\<\=              { return iw5::parser::make_ASSIGN_LSHIFT(loc); }
-\>\>\=              { return iw5::parser::make_ASSIGN_RSHIFT(loc); }
-\<\<                { return iw5::parser::make_LSHIFT(loc); }
-\>\>                { return iw5::parser::make_RSHIFT(loc); }
-\|\|                { return iw5::parser::make_OR(loc); }
-\&\&                { return iw5::parser::make_AND(loc); }
-\=\=                { return iw5::parser::make_EQUALITY(loc); }
-\!\=                { return iw5::parser::make_INEQUALITY(loc); }
-\<\=                { return iw5::parser::make_LESS_EQUAL(loc); }
-\>\=                { return iw5::parser::make_GREATER_EQUAL(loc); }
-\<                  { return iw5::parser::make_LESS(loc); }
-\>                  { return iw5::parser::make_GREATER(loc); }
-\+\=                { return iw5::parser::make_ASSIGN_ADD(loc); }
-\-\=                { return iw5::parser::make_ASSIGN_SUB(loc); }
-\*\=                { return iw5::parser::make_ASSIGN_MULT(loc); }
-\/\=                { return iw5::parser::make_ASSIGN_DIV(loc); }
-\%\=                { return iw5::parser::make_ASSIGN_MOD(loc); }
-\|\=                { return iw5::parser::make_ASSIGN_BITWISE_OR(loc); }
-\&\=                { return iw5::parser::make_ASSIGN_BITWISE_AND(loc); }
-\^\=                { return iw5::parser::make_ASSIGN_BITWISE_EXOR(loc); }
-\=                  { return iw5::parser::make_ASSIGN(loc); }
-\+                  { return iw5::parser::make_ADD(loc); }
-\-                  { return iw5::parser::make_SUB(loc); }
-\*                  { return iw5::parser::make_MULT(loc); }
-\/                  { return iw5::parser::make_DIV(loc); }
-\%                  { return iw5::parser::make_MOD(loc); }
-\!                  { return iw5::parser::make_NOT(loc); }
-\~                  { return iw5::parser::make_COMPLEMENT(loc); }
-\|                  { return iw5::parser::make_BITWISE_OR(loc); }
-\&                  { return iw5::parser::make_BITWISE_AND(loc); }
-\^                  { return iw5::parser::make_BITWISE_EXOR(loc); }
-{RGX_FILE}          { return iw5::parser::make_FILE(utils::string::fordslash(yytext), loc); }
-{RGX_NAME}          { return iw5::parser::make_NAME((std::string(yytext, 3) == "_ID") ? std::string(yytext) : utils::string::to_lower(yytext), loc); }
-\&{RGX_STRING}      { return iw5::parser::make_ISTRING(std::string(yytext).substr(1), loc); }
-{RGX_STRING}        { return iw5::parser::make_STRING(std::string(yytext), loc); }
-{RGX_COLOR}         { return iw5::parser::make_COLOR(std::string(yytext).substr(1), loc); }
-{RGX_FLT_DEC}       { return iw5::parser::make_FLOAT(std::string(yytext), loc); }
-{RGX_INT_OCT}       { return iw5::parser::make_INT_OCT(utils::string::oct_to_dec(yytext), loc); }
-{RGX_INT_BIN}       { return iw5::parser::make_INT_BIN(utils::string::bin_to_dec(yytext), loc); }
-{RGX_INT_HEX}       { return iw5::parser::make_INT_HEX(utils::string::hex_to_dec(yytext), loc); }
-{RGX_INT_DEC}       { return iw5::parser::make_INT_DEC(std::string(yytext), loc); }
-<<EOF>>             { return iw5::parser::make_IW5EOF(loc); }
-<*>{RGX_DEFAULT}    { throw iw5::parser::syntax_error(loc, "bad token: '" + std::string(yytext) + "'"); }
+"#inline"           { return iw5::parser::make_INLINE(ctx->loc); }
+"#include"          { return iw5::parser::make_INCLUDE(ctx->loc); }
+"#using_animtree"   { return iw5::parser::make_USINGTREE(ctx->loc); }
+"#animtree"         { return iw5::parser::make_ANIMTREE(ctx->loc); }
+"endon"             { return iw5::parser::make_ENDON(ctx->loc); }
+"notify"            { return iw5::parser::make_NOTIFY(ctx->loc); }
+"wait"              { return iw5::parser::make_WAIT(ctx->loc); }
+"waittill"          { return iw5::parser::make_WAITTILL(ctx->loc); }
+"waittillmatch"     { return iw5::parser::make_WAITTILLMATCH(ctx->loc); }
+"waittillframeend"  { return iw5::parser::make_WAITTILLFRAMEEND(ctx->loc); }
+"if"                { return iw5::parser::make_IF(ctx->loc); }
+"else"              { return iw5::parser::make_ELSE(ctx->loc); }
+"do"                { return iw5::parser::make_DO(ctx->loc); }
+"while"             { return iw5::parser::make_WHILE(ctx->loc); }
+"for"               { return iw5::parser::make_FOR(ctx->loc); }
+"foreach"           { return iw5::parser::make_FOREACH(ctx->loc); }
+"in"                { return iw5::parser::make_IN(ctx->loc); }
+"switch"            { return iw5::parser::make_SWITCH(ctx->loc); }
+"case"              { return iw5::parser::make_CASE(ctx->loc); }
+"default"           { return iw5::parser::make_DEFAULT(ctx->loc); }
+"break"             { return iw5::parser::make_BREAK(ctx->loc); }
+"continue"          { return iw5::parser::make_CONTINUE(ctx->loc); }
+"return"            { return iw5::parser::make_RETURN(ctx->loc); }
+"breakpoint"        { return iw5::parser::make_BREAKPOINT(ctx->loc); }
+"prof_begin"        { return iw5::parser::make_PROFBEGIN(ctx->loc); }
+"prof_end"          { return iw5::parser::make_PROFEND(ctx->loc); }
+"thread"            { return iw5::parser::make_THREAD(ctx->loc); }
+"childthread"       { return iw5::parser::make_CHILDTHREAD(ctx->loc); }
+"thisthread"        { return iw5::parser::make_THISTHREAD(ctx->loc); }
+"call"              { return iw5::parser::make_CALL(ctx->loc); }
+"true"              { return iw5::parser::make_TRUE(ctx->loc); }
+"false"             { return iw5::parser::make_FALSE(ctx->loc); }
+"undefined"         { return iw5::parser::make_UNDEFINED(ctx->loc); }
+".size"             { return iw5::parser::make_SIZE(ctx->loc); }
+"game"              { return iw5::parser::make_GAME(ctx->loc); }
+"self"              { return iw5::parser::make_SELF(ctx->loc); }
+"anim"              { return iw5::parser::make_ANIM(ctx->loc); }
+"level"             { return iw5::parser::make_LEVEL(ctx->loc); }
+\(                  { return iw5::parser::make_LPAREN(ctx->loc); }
+\)                  { return iw5::parser::make_RPAREN(ctx->loc); }
+\{                  { return iw5::parser::make_LBRACE(ctx->loc); }
+\}                  { return iw5::parser::make_RBRACE(ctx->loc); }
+\[                  { return iw5::parser::make_LBRACKET(ctx->loc); }
+\]                  { return iw5::parser::make_RBRACKET(ctx->loc); }
+\,                  { return iw5::parser::make_COMMA(ctx->loc); }
+\.                  { return iw5::parser::make_DOT(ctx->loc); }
+\:\:                { return iw5::parser::make_DOUBLECOLON(ctx->loc); }
+\:                  { return iw5::parser::make_COLON(ctx->loc); }
+\;                  { return iw5::parser::make_SEMICOLON(ctx->loc); }
+\?                  { return iw5::parser::make_QMARK(ctx->loc); }
+\+\+                { return iw5::parser::make_INCREMENT(ctx->loc); }
+\-\-                { return iw5::parser::make_DECREMENT(ctx->loc); }
+\<\<\=              { return iw5::parser::make_ASSIGN_LSHIFT(ctx->loc); }
+\>\>\=              { return iw5::parser::make_ASSIGN_RSHIFT(ctx->loc); }
+\<\<                { return iw5::parser::make_LSHIFT(ctx->loc); }
+\>\>                { return iw5::parser::make_RSHIFT(ctx->loc); }
+\|\|                { return iw5::parser::make_OR(ctx->loc); }
+\&\&                { return iw5::parser::make_AND(ctx->loc); }
+\=\=                { return iw5::parser::make_EQUALITY(ctx->loc); }
+\!\=                { return iw5::parser::make_INEQUALITY(ctx->loc); }
+\<\=                { return iw5::parser::make_LESS_EQUAL(ctx->loc); }
+\>\=                { return iw5::parser::make_GREATER_EQUAL(ctx->loc); }
+\<                  { return iw5::parser::make_LESS(ctx->loc); }
+\>                  { return iw5::parser::make_GREATER(ctx->loc); }
+\+\=                { return iw5::parser::make_ASSIGN_ADD(ctx->loc); }
+\-\=                { return iw5::parser::make_ASSIGN_SUB(ctx->loc); }
+\*\=                { return iw5::parser::make_ASSIGN_MUL(ctx->loc); }
+\/\=                { return iw5::parser::make_ASSIGN_DIV(ctx->loc); }
+\%\=                { return iw5::parser::make_ASSIGN_MOD(ctx->loc); }
+\|\=                { return iw5::parser::make_ASSIGN_BW_OR(ctx->loc); }
+\&\=                { return iw5::parser::make_ASSIGN_BW_AND(ctx->loc); }
+\^\=                { return iw5::parser::make_ASSIGN_BW_EXOR(ctx->loc); }
+\=                  { return iw5::parser::make_ASSIGN(ctx->loc); }
+\+                  { return iw5::parser::make_ADD(ctx->loc); }
+\-                  { return iw5::parser::make_SUB(ctx->loc); }
+\*                  { return iw5::parser::make_MUL(ctx->loc); }
+\/                  { return iw5::parser::make_DIV(ctx->loc); }
+\%                  { return iw5::parser::make_MOD(ctx->loc); }
+\!                  { return iw5::parser::make_NOT(ctx->loc); }
+\~                  { return iw5::parser::make_COMPLEMENT(ctx->loc); }
+\|                  { return iw5::parser::make_BITWISE_OR(ctx->loc); }
+\&                  { return iw5::parser::make_BITWISE_AND(ctx->loc); }
+\^                  { return iw5::parser::make_BITWISE_EXOR(ctx->loc); }
+{RGX_PATH}          { return iw5::parser::make_PATH(xsk::utils::string::fordslash(yytext), ctx->loc); }
+{RGX_IDENTIFIER}    { return iw5::parser::make_IDENTIFIER((std::string(yytext, 3) == "_ID") ? std::string(yytext) : xsk::utils::string::to_lower(yytext), ctx->loc); }
+\&{RGX_STRING}      { return iw5::parser::make_ISTRING(std::string(yytext).substr(1), ctx->loc); }
+{RGX_STRING}        { return iw5::parser::make_STRING(std::string(yytext), ctx->loc); }
+{RGX_COLOR}         { return iw5::parser::make_COLOR(std::string(yytext).substr(1), ctx->loc); }
+{RGX_FLT_DEC}       { return iw5::parser::make_FLOAT(std::string(yytext), ctx->loc); }
+{RGX_INT_OCT}       { return iw5::parser::make_INT_OCT(xsk::utils::string::oct_to_dec(yytext), ctx->loc); }
+{RGX_INT_BIN}       { return iw5::parser::make_INT_BIN(xsk::utils::string::bin_to_dec(yytext), ctx->loc); }
+{RGX_INT_HEX}       { return iw5::parser::make_INT_HEX(xsk::utils::string::hex_to_dec(yytext), ctx->loc); }
+{RGX_INT_DEC}       { return iw5::parser::make_INT_DEC(std::string(yytext), ctx->loc); }
+<<EOF>>             { if(ctx->header_top > 0) iw5_pop_header(ctx); else return iw5::parser::make_IW5EOF(ctx->loc); }
+<*>{RGX_DEFAULT}    { throw iw5::parser::syntax_error(ctx->loc, "bad token: \'" + std::string(yytext) + "\'"); }
 
 %%
+
+void iw5_push_header(xsk::gsc::context* ctx, const std::string& file)
+{
+	try
+    {
+		if (ctx->header_top >= 4)
+		{
+			throw xsk::gsc::error("maximum gsh depth exceeded '4'");
+		}
+
+		ctx->header_top++;
+
+		char* buf_data = 0;
+		size_t buf_size = 0;
+
+		for (auto& src : *ctx->sources)
+		{
+			if (src.name == file)
+			{
+				buf_data = reinterpret_cast<char*>(src.buf.data());
+				buf_size = src.buf.size();
+
+				ctx->locs.push(ctx->loc);
+				ctx->loc.initialize(&src.name);
+			}
+		}
+
+		if (buf_data == 0)
+		{
+			ctx->sources->push_back(xsk::gsc::source());
+			auto& source = ctx->sources->back();
+			source.name = file;
+			source.buf = ctx->read_callback(file + ".gsh");
+			source.buf.push_back(0);
+			source.buf.push_back(0);
+
+			buf_data = reinterpret_cast<char*>(source.buf.data());
+			buf_size = source.buf.size();
+
+			ctx->locs.push(ctx->loc);
+			ctx->loc.initialize(&source.name);
+		}
+
+		auto state = new yy_buffer_state();
+		state->yy_buf_size = buf_size - 2;
+		state->yy_buf_pos = state->yy_ch_buf = buf_data;
+		state->yy_is_our_buffer = 0;
+		state->yy_input_file = NULL;
+		state->yy_n_chars = state->yy_buf_size;
+		state->yy_is_interactive = 0;
+		state->yy_at_bol = 1;
+		state->yy_fill_buffer = 0;
+		state->yy_buffer_status = 0;
+
+		yypush_buffer_state(state, ctx->scanner);
+	}
+	catch (const std::exception& e)
+    {
+        throw xsk::gsc::error("parsing header file '" + file + "': " + e.what());
+    }
+}
+
+void iw5_pop_header(xsk::gsc::context* ctx)
+{
+	ctx->header_top--;
+	ctx->loc = ctx->locs.top();
+	ctx->locs.pop();
+	yypop_buffer_state(ctx->scanner);
+}

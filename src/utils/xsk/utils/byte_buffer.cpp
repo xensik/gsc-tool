@@ -5,7 +5,7 @@
 
 #include "stdafx.hpp"
 
-namespace xsk::gsc::utils
+namespace xsk::utils
 {
 
 byte_buffer::byte_buffer()

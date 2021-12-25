@@ -23,17 +23,17 @@
 %locations
 
 %lex-param   { yyscan_t yyscanner }
-%lex-param   { xsk::gsc::location& loc }
+%lex-param   { xsk::gsc::context* ctx }
 
 %parse-param { yyscan_t yyscanner }
-%parse-param { xsk::gsc::location& loc }
-%parse-param { xsk::gsc::program_ptr& ast }
+%parse-param { xsk::gsc::context* ctx }
+%parse-param { xsk::gsc::ast::program::ptr& ast }
 
 %code requires
 {
 #include "iw7.hpp"
 typedef void *yyscan_t;
-#define YY_DECL xsk::gsc::iw7::parser::symbol_type IW7lex(yyscan_t yyscanner, xsk::gsc::location& loc)
+#define YY_DECL xsk::gsc::iw7::parser::symbol_type IW7lex(yyscan_t yyscanner, xsk::gsc::context* ctx)
 }
 
 %code top
@@ -42,174 +42,179 @@ typedef void *yyscan_t;
 #include "parser.hpp"
 #include "lexer.hpp"
 using namespace xsk::gsc;
-xsk::gsc::iw7::parser::symbol_type IW7lex(yyscan_t yyscanner, xsk::gsc::location& loc);
+xsk::gsc::iw7::parser::symbol_type IW7lex(yyscan_t yyscanner, xsk::gsc::context* ctx);
 }
 
-%token BREAKPOINT "breakpoint"
-%token PROFBEGIN "prof_begin"
-%token PROFEND "prof_end"
-%token INCLUDE "#include"
-%token USINGTREE "#using_animtree"
-%token ANIMTREE "#animtree"
-%token ENDON "endon"
-%token NOTIFY "notify"
-%token WAIT "wait"
-%token WAITTILL "waittill"
-%token WAITTILLMATCH "waittillmatch"
+%token INLINE           "#inline"
+%token INCLUDE          "#include"
+%token USINGTREE        "#using_animtree"
+%token ANIMTREE         "#animtree"
+%token ENDON            "endon"
+%token NOTIFY           "notify"
+%token WAIT             "wait"
+%token WAITTILL         "waittill"
+%token WAITTILLMATCH    "waittillmatch"
 %token WAITTILLFRAMEEND "waittillframeend"
-%token IF "if"
-%token ELSE "else"
-%token WHILE "while"
-%token FOR "for"
-%token FOREACH "foreach"
-%token IN "in"
-%token SWITCH "switch"
-%token CASE "case"
-%token DEFAULT "default"
-%token BREAK "break"
-%token CONTINUE "continue"
-%token RETURN "return"
-%token THREAD "thread"
-%token CHILDTHREAD "childthread"
-%token THISTHREAD "thisthread"
-%token CALL "call"
-%token TRUE "true"
-%token FALSE "false"
-%token UNDEFINED "undefined"
-%token SIZE ".size"
-%token GAME "game"
-%token SELF "self"
-%token ANIM "anim"
-%token LEVEL "level"
-%token LPAREN "("
-%token RPAREN ")"
-%token LBRACE "{"
-%token RBRACE "}"
-%token LBRACKET "["
-%token RBRACKET "]"
-%token COMMA ","
-%token DOT "."
-%token DOUBLECOLON "::"
-%token COLON ":"
-%token SEMICOLON ";"
-%token QMARK "?"
-%token INCREMENT "++"
-%token DECREMENT "--"
-%token LSHIFT "<<"
-%token RSHIFT ">>"
-%token OR "||"
-%token AND "&&"
-%token EQUALITY "=="
-%token INEQUALITY "!="
-%token LESS_EQUAL "<="
-%token GREATER_EQUAL ">="
-%token LESS "<"
-%token GREATER ">"
-%token NOT "!"
-%token COMPLEMENT "~"
-%token ASSIGN "="
-%token ASSIGN_ADD "+="
-%token ASSIGN_SUB "-="
-%token ASSIGN_MULT "*="
-%token ASSIGN_DIV "/="
-%token ASSIGN_MOD "%="
-%token ASSIGN_BITWISE_OR "|="
-%token ASSIGN_BITWISE_AND "&="
-%token ASSIGN_BITWISE_EXOR "^="
-%token ASSIGN_RSHIFT ">>="
-%token ASSIGN_LSHIFT "<<="
-%token BITWISE_OR "|"
-%token BITWISE_AND "&"
-%token BITWISE_EXOR "^"
-%token ADD "+"
-%token SUB "-"
-%token MULT "*"
-%token DIV "/"
-%token MOD "%"
-%token <std::string> FILE "file path"
-%token <std::string> NAME "identifier"
-%token <std::string> STRING "string literal"
-%token <std::string> ISTRING "localized string"
-%token <std::string> COLOR "color"
-%token <std::string> FLOAT "float"
-%token <std::string> INT_DEC "int"
-%token <std::string> INT_OCT "octal int"
-%token <std::string> INT_BIN "binary int"
-%token <std::string> INT_HEX "hexadecimal int"
+%token IF               "if"
+%token ELSE             "else"
+%token DO               "do"
+%token WHILE            "while"
+%token FOR              "for"
+%token FOREACH          "foreach"
+%token IN               "in"
+%token SWITCH           "switch"
+%token CASE             "case"
+%token DEFAULT          "default"
+%token BREAK            "break"
+%token CONTINUE         "continue"
+%token RETURN           "return"
+%token BREAKPOINT       "breakpoint"
+%token PROFBEGIN        "prof_begin"
+%token PROFEND          "prof_end"
+%token THREAD           "thread"
+%token CHILDTHREAD      "childthread"
+%token THISTHREAD       "thisthread"
+%token CALL             "call"
+%token TRUE             "true"
+%token FALSE            "false"
+%token UNDEFINED        "undefined"
+%token SIZE             ".size"
+%token GAME             "game"
+%token SELF             "self"
+%token ANIM             "anim"
+%token LEVEL            "level"
+%token LPAREN           "("
+%token RPAREN           ")"
+%token LBRACE           "{"
+%token RBRACE           "}"
+%token LBRACKET         "["
+%token RBRACKET         "]"
+%token COMMA            ","
+%token DOT              "."
+%token DOUBLECOLON      "::"
+%token COLON            ":"
+%token SEMICOLON        ";"
+%token QMARK            "?"
+%token INCREMENT        "++"
+%token DECREMENT        "--"
+%token LSHIFT           "<<"
+%token RSHIFT           ">>"
+%token OR               "||"
+%token AND              "&&"
+%token EQUALITY         "=="
+%token INEQUALITY       "!="
+%token LESS_EQUAL       "<="
+%token GREATER_EQUAL    ">="
+%token LESS             "<"
+%token GREATER          ">"
+%token NOT              "!"
+%token COMPLEMENT       "~"
+%token ASSIGN           "="
+%token ASSIGN_ADD       "+="
+%token ASSIGN_SUB       "-="
+%token ASSIGN_MUL       "*="
+%token ASSIGN_DIV       "/="
+%token ASSIGN_MOD       "%="
+%token ASSIGN_BW_OR     "|="
+%token ASSIGN_BW_AND    "&="
+%token ASSIGN_BW_EXOR   "^="
+%token ASSIGN_RSHIFT    ">>="
+%token ASSIGN_LSHIFT    "<<="
+%token BITWISE_OR       "|"
+%token BITWISE_AND      "&"
+%token BITWISE_EXOR     "^"
+%token ADD              "+"
+%token SUB              "-"
+%token MUL              "*"
+%token DIV              "/"
+%token MOD              "%"
+%token <std::string> PATH       "path"
+%token <std::string> IDENTIFIER "identifier"
+%token <std::string> STRING     "string literal"
+%token <std::string> ISTRING    "localized string"
+%token <std::string> COLOR      "color"
+%token <std::string> FLOAT      "float"
+%token <std::string> INT_DEC    "int"
+%token <std::string> INT_OCT    "octal int"
+%token <std::string> INT_BIN    "binary int"
+%token <std::string> INT_HEX    "hexadecimal int"
 
-%type <program_ptr>                program
-%type <include_ptr>                include
-%type <define_ptr>                 define
-%type <usingtree_ptr>              usingtree
-%type <constant_ptr>               constant
-%type <thread_ptr>                 thread
-%type <parameters_ptr>             parameters
-%type <stmt_ptr>                   stmt
-%type <stmt_list_ptr>              stmt_block
-%type <stmt_list_ptr>              stmt_list
-%type <stmt_call_ptr>              stmt_call
-%type <stmt_assign_ptr>            stmt_assign
-%type <stmt_endon_ptr>             stmt_endon
-%type <stmt_notify_ptr>            stmt_notify
-%type <stmt_wait_ptr>              stmt_wait
-%type <stmt_waittill_ptr>          stmt_waittill
-%type <stmt_waittillmatch_ptr>     stmt_waittillmatch
-%type <stmt_waittillframeend_ptr>  stmt_waittillframeend
-%type <stmt_if_ptr>                stmt_if
-%type <stmt_ifelse_ptr>            stmt_ifelse
-%type <stmt_while_ptr>             stmt_while
-%type <stmt_for_ptr>               stmt_for
-%type <stmt_foreach_ptr>           stmt_foreach
-%type <stmt_switch_ptr>            stmt_switch
-%type <stmt_case_ptr>              stmt_case
-%type <stmt_default_ptr>           stmt_default
-%type <stmt_break_ptr>             stmt_break
-%type <stmt_continue_ptr>          stmt_continue
-%type <stmt_return_ptr>            stmt_return
-%type <stmt_breakpoint_ptr>        stmt_breakpoint
-%type <stmt_prof_begin_ptr>        stmt_prof_begin
-%type <stmt_prof_end_ptr>          stmt_prof_end
-%type <stmt_ptr>                   for_stmt
-%type <expr_ptr>                   for_expr
-%type <expr_assign_ptr>            expr_assign
-%type <expr_ptr>                   expr
-%type <expr_ptr>                   expr_compare
-%type <expr_ptr>                   expr_ternary
-%type <expr_ptr>                   expr_binary
-%type <expr_ptr>                   expr_primitive
-%type <expr_call_ptr>              expr_call
-%type <expr_call_ptr>              expr_call_thread
-%type <expr_call_ptr>              expr_call_childthread
-%type <expr_call_type_ptr>         expr_call_function
-%type <expr_call_type_ptr>         expr_call_pointer
-%type <expr_arguments_ptr>         expr_arguments
-%type <expr_arguments_ptr>         expr_arguments_filled
-%type <expr_arguments_ptr>         expr_arguments_empty
-%type <node_ptr>                   expr_function
-%type <node_ptr>                   expr_add_array
-%type <node_ptr>                   expr_array
-%type <node_ptr>                   expr_field
-%type <node_ptr>                   expr_size
-%type <node_ptr>                   object
-%type <thisthread_ptr>             thisthread
-%type <empty_array_ptr>            empty_array
-%type <undefined_ptr>              undefined
-%type <game_ptr>                   game
-%type <self_ptr>                   self
-%type <anim_ptr>                   anim
-%type <level_ptr>                  level
-%type <animation_ptr>              animation
-%type <animtree_ptr>               animtree
-%type <name_ptr>                   name
-%type <file_ptr>                   file
-%type <istring_ptr>                istring
-%type <string_ptr>                 string
-%type <color_ptr>                  color
-%type <vector_ptr>                 vector
-%type <float_ptr>                  float
-%type <integer_ptr>                integer
-%type <false_ptr>                  false
-%type <true_ptr>                   true
+%type <ast::program::ptr>               program
+%type <ast::include::ptr>               include
+%type <ast::decl>                       declaration
+%type <ast::decl_usingtree::ptr>        decl_usingtree
+%type <ast::decl_constant::ptr>         decl_constant
+%type <ast::decl_thread::ptr>           decl_thread
+%type <ast::stmt>                       stmt
+%type <ast::stmt_list::ptr>             stmt_block
+%type <ast::stmt_list::ptr>             stmt_list
+%type <ast::stmt_expr::ptr>             stmt_expr
+%type <ast::stmt_call::ptr>             stmt_call
+%type <ast::stmt_assign::ptr>           stmt_assign
+%type <ast::stmt_endon::ptr>            stmt_endon
+%type <ast::stmt_notify::ptr>           stmt_notify
+%type <ast::stmt_wait::ptr>             stmt_wait
+%type <ast::stmt_waittill::ptr>         stmt_waittill
+%type <ast::stmt_waittillmatch::ptr>    stmt_waittillmatch
+%type <ast::stmt_waittillframeend::ptr> stmt_waittillframeend
+%type <ast::stmt_if::ptr>               stmt_if
+%type <ast::stmt_ifelse::ptr>           stmt_ifelse
+%type <ast::stmt_while::ptr>            stmt_while
+%type <ast::stmt_dowhile::ptr>          stmt_dowhile
+%type <ast::stmt_for::ptr>              stmt_for
+%type <ast::stmt_foreach::ptr>          stmt_foreach
+%type <ast::stmt_switch::ptr>           stmt_switch
+%type <ast::stmt_case::ptr>             stmt_case
+%type <ast::stmt_default::ptr>          stmt_default
+%type <ast::stmt_break::ptr>            stmt_break
+%type <ast::stmt_continue::ptr>         stmt_continue
+%type <ast::stmt_return::ptr>           stmt_return
+%type <ast::stmt_breakpoint::ptr>       stmt_breakpoint
+%type <ast::stmt_prof_begin::ptr>       stmt_prof_begin
+%type <ast::stmt_prof_end::ptr>         stmt_prof_end
+%type <ast::expr>                       expr
+%type <ast::expr>                       expr_or_empty
+%type <ast::expr>                       expr_assign
+%type <ast::expr>                       expr_increment
+%type <ast::expr>                       expr_decrement
+%type <ast::expr>                       expr_ternary
+%type <ast::expr>                       expr_binary
+%type <ast::expr>                       expr_primitive
+%type <ast::expr_complement::ptr>       expr_complement
+%type <ast::expr_not::ptr>              expr_not
+%type <ast::expr_call::ptr>             expr_call
+%type <ast::expr_method::ptr>           expr_method
+%type <ast::call>                       expr_function
+%type <ast::call>                       expr_pointer
+%type <ast::expr_add_array::ptr>        expr_add_array
+%type <ast::expr_parameters::ptr>       expr_parameters
+%type <ast::expr_arguments::ptr>        expr_arguments
+%type <ast::expr_arguments::ptr>        expr_arguments_no_empty
+%type <ast::expr_reference::ptr>        expr_reference
+%type <ast::expr_array::ptr>            expr_array
+%type <ast::expr_field::ptr>            expr_field
+%type <ast::expr_size::ptr>             expr_size
+%type <ast::expr_paren::ptr>            expr_paren
+%type <ast::expr>                       expr_object
+%type <ast::expr_thisthread::ptr>       expr_thisthread
+%type <ast::expr_empty_array::ptr>      expr_empty_array
+%type <ast::expr_undefined::ptr>        expr_undefined
+%type <ast::expr_game::ptr>             expr_game
+%type <ast::expr_self::ptr>             expr_self
+%type <ast::expr_anim::ptr>             expr_anim
+%type <ast::expr_level::ptr>            expr_level
+%type <ast::expr_animation::ptr>        expr_animation
+%type <ast::expr_animtree::ptr>         expr_animtree
+%type <ast::expr_identifier::ptr>       expr_identifier
+%type <ast::expr_path::ptr>             expr_path
+%type <ast::expr_istring::ptr>          expr_istring
+%type <ast::expr_string::ptr>           expr_string
+%type <ast::expr_color::ptr>            expr_color
+%type <ast::expr_vector::ptr>           expr_vector
+%type <ast::expr_float::ptr>            expr_float
+%type <ast::expr_integer::ptr>          expr_integer
+%type <ast::expr_false::ptr>            expr_false
+%type <ast::expr_true::ptr>             expr_true
 
 %nonassoc ADD_ARRAY
 %nonassoc RBRACKET
@@ -228,7 +233,7 @@ xsk::gsc::iw7::parser::symbol_type IW7lex(yyscan_t yyscanner, xsk::gsc::location
 %left LESS GREATER LESS_EQUAL GREATER_EQUAL
 %left LSHIFT RSHIFT
 %left ADD SUB
-%left MULT DIV MOD
+%left MUL DIV MOD
 %right NOT COMPLEMENT
 
 %precedence NEG
@@ -242,53 +247,52 @@ xsk::gsc::iw7::parser::symbol_type IW7lex(yyscan_t yyscanner, xsk::gsc::location
 
 root
     : program { ast = std::move($1); }
-    |         { ast = std::make_unique<node_program>(@$); }
+    |         { ast = std::make_unique<ast::program>(@$); }
     ;
 
 program
-    : program include
+    : program inline
+        { $$ = std::move($1); }
+    | program include
         { $$ = std::move($1); $$->includes.push_back(std::move($2)); }
-    | program define
-        { $$ = std::move($1); $$->definitions.push_back(std::move($2)); }
+    | program declaration
+        { $$ = std::move($1); $$->declarations.push_back(std::move($2)); }
+    | inline
+        { $$ = std::make_unique<ast::program>(@$); }
     | include
-        { $$ = std::make_unique<node_program>(@$); $$->includes.push_back(std::move($1)); }
-    | define
-        { $$ = std::make_unique<node_program>(@$); $$->definitions.push_back(std::move($1)); }
+        { $$ = std::make_unique<ast::program>(@$); $$->includes.push_back(std::move($1)); }
+    | declaration
+        { $$ = std::make_unique<ast::program>(@$); $$->declarations.push_back(std::move($1)); }
+    ;
+
+inline
+    : INLINE expr_path SEMICOLON { iw7_push_header(ctx, $2->value); }
     ;
 
 include
-    : INCLUDE file SEMICOLON
-        { $$ = std::make_unique<node_include>(@$, std::move($2)); }
+    : INCLUDE expr_path SEMICOLON
+        { $$ = std::make_unique<ast::include>(@$, std::move($2)); }
     ;
 
-define
-    : usingtree    { $$.as_usingtree = std::move($1); }
-    | constant     { $$.as_constant = std::move($1); }
-    | thread       { $$.as_thread = std::move($1); }
+declaration
+    : decl_usingtree    { $$.as_usingtree = std::move($1); }
+    | decl_constant     { $$.as_constant = std::move($1); }
+    | decl_thread       { $$.as_thread = std::move($1); }
     ;
 
-usingtree
-    : USINGTREE LPAREN string RPAREN SEMICOLON
-        { $$ = std::make_unique<node_usingtree>(@$, std::move($3)); }
+decl_usingtree
+    : USINGTREE LPAREN expr_string RPAREN SEMICOLON
+        { ctx->restrict_header(@$); $$ = std::make_unique<ast::decl_usingtree>(@$, std::move($3)); }
     ;
 
-constant
-    : name ASSIGN expr SEMICOLON
-        { $$ = std::make_unique<node_constant>(@$, std::move($1), std::move($3)); }
+decl_constant
+    : expr_identifier ASSIGN expr SEMICOLON
+        { $$ = std::make_unique<ast::decl_constant>(@$, std::move($1), std::move($3)); }
     ;
 
-thread
-    : name LPAREN parameters RPAREN stmt_block
-        { $$ = std::make_unique<node_thread>(@$, std::move($1), std::move($3), std::move($5)); }
-    ;
-
-parameters
-    : parameters COMMA name
-        { $$ = std::move($1); $$->list.push_back(std::move($3)); }
-    | name
-        { $$ = std::make_unique<node_parameters>(@$); $$->list.push_back(std::move($1)); }
-    |
-        { $$ = std::make_unique<node_parameters>(@$); }
+decl_thread
+    : expr_identifier LPAREN expr_parameters RPAREN stmt_block
+        { ctx->restrict_header(@$); $$ = std::make_unique<ast::decl_thread>(@$, std::move($1), std::move($3), std::move($5)); }
     ;
 
 stmt
@@ -304,6 +308,7 @@ stmt
     | stmt_if                { $$.as_if = std::move($1); }
     | stmt_ifelse            { $$.as_ifelse = std::move($1); }
     | stmt_while             { $$.as_while = std::move($1); }
+    | stmt_dowhile           { $$.as_dowhile = std::move($1); }
     | stmt_for               { $$.as_for = std::move($1); }
     | stmt_foreach           { $$.as_foreach = std::move($1); }
     | stmt_switch            { $$.as_switch = std::move($1); }
@@ -319,355 +324,503 @@ stmt
 
 stmt_block
     : LBRACE stmt_list RBRACE { $$ = std::move($2); }
-    | LBRACE RBRACE { $$ = std::make_unique<node_stmt_list>(@$); }
+    | LBRACE RBRACE { $$ = std::make_unique<ast::stmt_list>(@$); }
     ;
 
 stmt_list
     : stmt_list stmt
-        { $$ = std::move($1); $$->stmts.push_back(std::move($2)); }
+        { $$ = std::move($1); $$->list.push_back(std::move($2)); }
     | stmt
-        { $$ = std::make_unique<node_stmt_list>(@$); $$->stmts.push_back(std::move($1)); }
+        { $$ = std::make_unique<ast::stmt_list>(@$); $$->list.push_back(std::move($1)); }
+    ;
+
+stmt_expr
+    : expr_assign
+        { $$ = std::make_unique<ast::stmt_expr>(@$, std::move($1)); }
+    | expr_increment
+        { $$ = std::make_unique<ast::stmt_expr>(@$, std::move($1)); }
+    | expr_decrement
+        { $$ = std::make_unique<ast::stmt_expr>(@$, std::move($1)); }
+    |
+        { $$ = std::make_unique<ast::stmt_expr>(@$, std::make_unique<ast::node>(@$)); }
     ;
 
 stmt_call
     : expr_call SEMICOLON
-        { $$ = std::make_unique<node_stmt_call>(@$, std::move($1)); }
-    | expr_call_thread SEMICOLON
-        { $$ = std::make_unique<node_stmt_call>(@$, std::move($1)); }
+        { $$ = std::make_unique<ast::stmt_call>(@$, ast::expr(std::move($1))); }
+    | expr_method SEMICOLON
+        { $$ = std::make_unique<ast::stmt_call>(@$, ast::expr(std::move($1))); }
     ;
 
 stmt_assign
     : expr_assign SEMICOLON
-        { $$ = std::make_unique<node_stmt_assign>(@$, std::move($1)); }
+        { $$ = std::make_unique<ast::stmt_assign>(@$, std::move($1)); }
+    | expr_increment SEMICOLON
+        { $$ = std::make_unique<ast::stmt_assign>(@$, std::move($1)); }
+    | expr_decrement SEMICOLON
+        { $$ = std::make_unique<ast::stmt_assign>(@$, std::move($1)); }
     ;
 
 stmt_endon
-    : object ENDON LPAREN expr RPAREN SEMICOLON
-        { $$ = std::make_unique<node_stmt_endon>(@$, std::move($1), std::move($4)); }
+    : expr_object ENDON LPAREN expr RPAREN SEMICOLON
+        { $$ = std::make_unique<ast::stmt_endon>(@$, std::move($1), std::move($4)); }
     ;
 
 stmt_notify
-    : object NOTIFY LPAREN expr COMMA expr_arguments RPAREN SEMICOLON
-        { $$ = std::make_unique<node_stmt_notify>(@$, std::move($1), std::move($4), std::move($6)); }
-    | object NOTIFY LPAREN expr RPAREN SEMICOLON
-        { $$ = std::make_unique<node_stmt_notify>(@$, std::move($1), std::move($4), std::make_unique<node_expr_arguments>(@$)); }
+    : expr_object NOTIFY LPAREN expr COMMA expr_arguments_no_empty RPAREN SEMICOLON
+        { $$ = std::make_unique<ast::stmt_notify>(@$, std::move($1), std::move($4), std::move($6)); }
+    | expr_object NOTIFY LPAREN expr RPAREN SEMICOLON
+        { $$ = std::make_unique<ast::stmt_notify>(@$, std::move($1), std::move($4), std::make_unique<ast::expr_arguments>(@$)); }
     ;
 
 stmt_wait
     : WAIT expr SEMICOLON
-        { $$ = std::make_unique<node_stmt_wait>(@$, std::move($2)); }
+        { $$ = std::make_unique<ast::stmt_wait>(@$, std::move($2)); }
     ;
 
 stmt_waittill
-    : object WAITTILL LPAREN expr COMMA expr_arguments RPAREN SEMICOLON
-        { $$ = std::make_unique<node_stmt_waittill>(@$, std::move($1), std::move($4), std::move($6)); }
-    | object WAITTILL LPAREN expr RPAREN SEMICOLON
-        { $$ = std::make_unique<node_stmt_waittill>(@$, std::move($1), std::move($4), std::make_unique<node_expr_arguments>(@$)); }
+    : expr_object WAITTILL LPAREN expr COMMA expr_arguments_no_empty RPAREN SEMICOLON
+        { $$ = std::make_unique<ast::stmt_waittill>(@$, std::move($1), std::move($4), std::move($6)); }
+    | expr_object WAITTILL LPAREN expr RPAREN SEMICOLON
+        { $$ = std::make_unique<ast::stmt_waittill>(@$, std::move($1), std::move($4), std::make_unique<ast::expr_arguments>(@$)); }
     ;
 
 stmt_waittillmatch
-    : object WAITTILLMATCH LPAREN expr COMMA expr_arguments RPAREN SEMICOLON
-        { $$ = std::make_unique<node_stmt_waittillmatch>(@$, std::move($1), std::move($4), std::move($6)); }
-    | object WAITTILLMATCH LPAREN expr RPAREN SEMICOLON
-        { $$ = std::make_unique<node_stmt_waittillmatch>(@$, std::move($1), std::move($4), std::make_unique<node_expr_arguments>(@$)); }
+    : expr_object WAITTILLMATCH LPAREN expr COMMA expr_arguments_no_empty RPAREN SEMICOLON
+        { $$ = std::make_unique<ast::stmt_waittillmatch>(@$, std::move($1), std::move($4), std::move($6)); }
+    | expr_object WAITTILLMATCH LPAREN expr RPAREN SEMICOLON
+        { $$ = std::make_unique<ast::stmt_waittillmatch>(@$, std::move($1), std::move($4), std::make_unique<ast::expr_arguments>(@$)); }
     ;
 
 stmt_waittillframeend
     : WAITTILLFRAMEEND SEMICOLON
-        { $$ = std::make_unique<node_stmt_waittillframeend>(@$); }
+        { $$ = std::make_unique<ast::stmt_waittillframeend>(@$); }
     ;
 
 stmt_if
     : IF LPAREN expr RPAREN stmt %prec THEN
-        { $$ = std::make_unique<node_stmt_if>(@$, std::move($3), std::move($5)); }
+        { $$ = std::make_unique<ast::stmt_if>(@$, std::move($3), std::move($5)); }
     ;
 
 stmt_ifelse
     : IF LPAREN expr RPAREN stmt ELSE stmt
-        { $$ = std::make_unique<node_stmt_ifelse>(@$, std::move($3), std::move($5), std::move($7)); }
+        { $$ = std::make_unique<ast::stmt_ifelse>(@$, std::move($3), std::move($5), std::move($7)); }
     ;
 
 stmt_while
     : WHILE LPAREN expr RPAREN stmt
-        { $$ = std::make_unique<node_stmt_while>(@$, std::move($3), std::move($5)); }
+        { $$ = std::make_unique<ast::stmt_while>(@$, std::move($3), std::move($5)); }
+    ;
+
+stmt_dowhile
+    : DO stmt WHILE LPAREN expr RPAREN SEMICOLON
+        { $$ = std::make_unique<ast::stmt_dowhile>(@$, std::move($5), std::move($2)); }
     ;
 
 stmt_for
-    : FOR LPAREN for_stmt SEMICOLON for_expr SEMICOLON for_stmt RPAREN stmt
-        { $$ = std::make_unique<node_stmt_for>(@$, std::move($3), std::move($5), std::move($7), std::move($9)); }
+    : FOR LPAREN stmt_expr SEMICOLON expr_or_empty SEMICOLON stmt_expr RPAREN stmt
+        { $$ = std::make_unique<ast::stmt_for>(@$, ast::stmt(std::move($3)), std::move($5), ast::stmt(std::move($7)), std::move($9)); }
     ;
 
 stmt_foreach
-    : FOREACH LPAREN name IN expr RPAREN stmt
-        { $$ = std::make_unique<node_stmt_foreach>(@$, expr_ptr(std::move($3)), std::move($5), std::move($7)); }
-    | FOREACH LPAREN name COMMA name IN expr RPAREN stmt
-        { $$ = std::make_unique<node_stmt_foreach>(@$, expr_ptr(std::move($3)), expr_ptr(std::move($5)), std::move($7), std::move($9)); }
+    : FOREACH LPAREN expr_identifier IN expr RPAREN stmt
+        { $$ = std::make_unique<ast::stmt_foreach>(@$, ast::expr(std::move($3)), std::move($5), std::move($7)); }
+    | FOREACH LPAREN expr_identifier COMMA expr_identifier IN expr RPAREN stmt
+        { $$ = std::make_unique<ast::stmt_foreach>(@$, ast::expr(std::move($3)), ast::expr(std::move($5)), std::move($7), std::move($9)); }
     ;
 
 stmt_switch
     : SWITCH LPAREN expr RPAREN stmt_block
-        { $$ = std::make_unique<node_stmt_switch>(@$, std::move($3), std::move($5)); }
+        { $$ = std::make_unique<ast::stmt_switch>(@$, std::move($3), std::move($5)); }
     ;
 
 stmt_case
-    : CASE integer COLON
-        { $$ = std::make_unique<node_stmt_case>(@$, expr_ptr(std::move($2)), std::make_unique<gsc::node_stmt_list>(@$)); }
-    | CASE string COLON
-        { $$ = std::make_unique<node_stmt_case>(@$, expr_ptr(std::move($2)), std::make_unique<gsc::node_stmt_list>(@$)); }
+    : CASE expr_integer COLON
+        { $$ = std::make_unique<ast::stmt_case>(@$, ast::expr(std::move($2)), std::make_unique<ast::stmt_list>(@$)); }
+    | CASE expr_string COLON
+        { $$ = std::make_unique<ast::stmt_case>(@$, ast::expr(std::move($2)), std::make_unique<ast::stmt_list>(@$)); }
     ;
 
 stmt_default
     : DEFAULT COLON
-        { $$ = std::make_unique<node_stmt_default>(@$, std::make_unique<gsc::node_stmt_list>(@$)); }
+        { $$ = std::make_unique<ast::stmt_default>(@$, std::make_unique<ast::stmt_list>(@$)); }
     ;
 
 stmt_break
     : BREAK SEMICOLON 
-        { $$ = std::make_unique<node_stmt_break>(@$); }
+        { $$ = std::make_unique<ast::stmt_break>(@$); }
     ;
 
 stmt_continue
     : CONTINUE SEMICOLON
-        { $$ = std::make_unique<node_stmt_continue>(@$); }
+        { $$ = std::make_unique<ast::stmt_continue>(@$); }
     ;
 
 stmt_return
     : RETURN expr SEMICOLON
-        { $$ = std::make_unique<node_stmt_return>(@$, std::move($2)); }
+        { $$ = std::make_unique<ast::stmt_return>(@$, std::move($2)); }
     | RETURN SEMICOLON
-        { $$ = std::make_unique<node_stmt_return>(@$, std::make_unique<node>(@$)); }
+        { $$ = std::make_unique<ast::stmt_return>(@$, std::make_unique<ast::node>(@$)); }
     ;
 
 stmt_breakpoint
     : BREAKPOINT SEMICOLON
-        { $$ = std::make_unique<node_stmt_breakpoint>(@$); }
+        { $$ = std::make_unique<ast::stmt_breakpoint>(@$); }
     ;
 
 stmt_prof_begin
     : PROFBEGIN LPAREN expr_arguments RPAREN SEMICOLON
-        { $$ = std::make_unique<node_stmt_prof_begin>(@$, std::move($3)); }
+        { $$ = std::make_unique<ast::stmt_prof_begin>(@$, std::move($3)); }
     ;
 
 stmt_prof_end
     : PROFEND LPAREN expr_arguments RPAREN SEMICOLON
-        { $$ = std::make_unique<node_stmt_prof_end>(@$, std::move($3)); }
-    ;
-
-for_stmt
-    : expr_assign                       { $$.as_list = std::make_unique<node_stmt_list>(@$); $$.as_list->stmts.push_back(stmt_ptr(std::make_unique<node_stmt_assign>(@$, std::move($1)))); }
-    |                                   { $$.as_node = std::make_unique<node>(@$); }
-    ;
-
-for_expr
-    : expr                              { $$ = std::move($1); }
-    |                                   { $$.as_node = std::make_unique<node>(@$); }
+        { $$ = std::make_unique<ast::stmt_prof_end>(@$, std::move($3)); }
     ;
 
 expr
-    : expr_compare                      { $$ = std::move($1); }
-    | expr_ternary                      { $$ = std::move($1); }
-    | expr_binary                       { $$ = std::move($1); }
-    | expr_primitive                    { $$ = std::move($1); }
+    : expr_ternary   { $$ = std::move($1); }
+    | expr_binary    { $$ = std::move($1); }
+    | expr_primitive { $$ = std::move($1); }
+    ;
+
+expr_or_empty
+    : expr           { $$ = std::move($1); }
+    |                { $$.as_node = std::make_unique<ast::node>(@$); }
     ;
 
 expr_assign
-    : INCREMENT object %prec PREINC     { $$ = std::make_unique<node_expr_increment>(@$, std::move($2)); }
-    | DECREMENT object %prec PREDEC     { $$ = std::make_unique<node_expr_decrement>(@$, std::move($2)); }
-    | object INCREMENT %prec POSTINC    { $$ = std::make_unique<node_expr_increment>(@$, std::move($1)); }
-    | object DECREMENT %prec POSTDEC    { $$ = std::make_unique<node_expr_decrement>(@$, std::move($1)); }
-    | object ASSIGN expr                { $$ = std::make_unique<node_expr_assign_equal>(@$, std::move($1), std::move($3)); }
-    | object ASSIGN_BITWISE_OR expr     { $$ = std::make_unique<node_expr_assign_bitwise_or>(@$, std::move($1), std::move($3)); }
-    | object ASSIGN_BITWISE_AND expr    { $$ = std::make_unique<node_expr_assign_bitwise_and>(@$, std::move($1), std::move($3)); }
-    | object ASSIGN_BITWISE_EXOR expr   { $$ = std::make_unique<node_expr_assign_bitwise_exor>(@$, std::move($1), std::move($3)); }
-    | object ASSIGN_LSHIFT expr         { $$ = std::make_unique<node_expr_assign_shift_left>(@$, std::move($1),std::move( $3)); }
-    | object ASSIGN_RSHIFT expr         { $$ = std::make_unique<node_expr_assign_shift_right>(@$, std::move($1), std::move($3)); }
-    | object ASSIGN_ADD expr            { $$ = std::make_unique<node_expr_assign_add>(@$, std::move($1), std::move($3)); }
-    | object ASSIGN_SUB expr            { $$ = std::make_unique<node_expr_assign_sub>(@$, std::move($1), std::move($3)); }
-    | object ASSIGN_MULT expr           { $$ = std::make_unique<node_expr_assign_mult>(@$, std::move($1), std::move($3)); }
-    | object ASSIGN_DIV expr            { $$ = std::make_unique<node_expr_assign_div>(@$, std::move($1), std::move($3)); }
-    | object ASSIGN_MOD expr            { $$ = std::make_unique<node_expr_assign_mod>(@$, std::move($1), std::move($3)); }
+    : expr_object ASSIGN expr
+        { $$.as_node = std::make_unique<ast::expr_assign_equal>(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_BW_OR expr
+        { $$.as_node = std::make_unique<ast::expr_assign_bitwise_or>(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_BW_AND expr
+        { $$.as_node = std::make_unique<ast::expr_assign_bitwise_and>(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_BW_EXOR expr
+        { $$.as_node = std::make_unique<ast::expr_assign_bitwise_exor>(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_LSHIFT expr
+        { $$.as_node = std::make_unique<ast::expr_assign_shift_left>(@$, std::move($1),std::move( $3)); }
+    | expr_object ASSIGN_RSHIFT expr
+        { $$.as_node = std::make_unique<ast::expr_assign_shift_right>(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_ADD expr
+        { $$.as_node = std::make_unique<ast::expr_assign_add>(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_SUB expr
+        { $$.as_node = std::make_unique<ast::expr_assign_sub>(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_MUL expr
+        { $$.as_node = std::make_unique<ast::expr_assign_mul>(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_DIV expr
+        { $$.as_node = std::make_unique<ast::expr_assign_div>(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_MOD expr
+        { $$.as_node = std::make_unique<ast::expr_assign_mod>(@$, std::move($1), std::move($3)); }
     ;
 
-expr_compare
-    : expr OR expr                      { $$.as_node = std::make_unique<node_expr_or>(@$, std::move($1), std::move($3)); }
-    | expr AND expr                     { $$.as_node = std::make_unique<node_expr_and>(@$, std::move($1), std::move($3)); }
-    | expr EQUALITY expr                { $$.as_node = std::make_unique<node_expr_equality>(@$, std::move($1), std::move($3)); }
-    | expr INEQUALITY expr              { $$.as_node = std::make_unique<node_expr_inequality>(@$, std::move($1), std::move($3)); }
-    | expr LESS_EQUAL expr              { $$.as_node = std::make_unique<node_expr_less_equal>(@$, std::move($1), std::move($3)); }
-    | expr GREATER_EQUAL expr           { $$.as_node = std::make_unique<node_expr_greater_equal>(@$, std::move($1), std::move($3)); }
-    | expr LESS expr                    { $$.as_node = std::make_unique<node_expr_less>(@$, std::move($1), std::move($3)); }
-    | expr GREATER expr                 { $$.as_node = std::make_unique<node_expr_greater>(@$, std::move($1), std::move($3)); }
+expr_increment
+    : INCREMENT expr_object %prec PREINC
+        { $$.as_node = std::make_unique<ast::expr_increment>(@$, std::move($2), true); }
+    | expr_object INCREMENT %prec POSTINC
+        { $$.as_node = std::make_unique<ast::expr_increment>(@$, std::move($1), false); }
+    ;
+
+expr_decrement
+    : DECREMENT expr_object %prec PREDEC
+        { $$.as_node = std::make_unique<ast::expr_decrement>(@$, std::move($2), true); }
+    | expr_object DECREMENT %prec POSTDEC
+        { $$.as_node = std::make_unique<ast::expr_decrement>(@$, std::move($1), false); }
     ;
 
 expr_ternary
-    : expr QMARK expr COLON expr %prec TERN   { $$.as_node = std::make_unique<node_expr_ternary>(@$, std::move($1), std::move($3), std::move($5)); }
+    : expr QMARK expr COLON expr %prec TERN
+        { $$.as_node = std::make_unique<ast::expr_ternary>(@$, std::move($1), std::move($3), std::move($5)); }
     ;
 
 expr_binary
-    : expr BITWISE_OR expr              { $$.as_node = std::make_unique<node_expr_bitwise_or>(@$, std::move($1), std::move($3)); }
-    | expr BITWISE_AND expr             { $$.as_node = std::make_unique<node_expr_bitwise_and>(@$, std::move($1), std::move($3)); }
-    | expr BITWISE_EXOR expr            { $$.as_node = std::make_unique<node_expr_bitwise_exor>(@$, std::move($1), std::move($3)); }
-    | expr LSHIFT expr                  { $$.as_node = std::make_unique<node_expr_shift_left>(@$, std::move($1), std::move($3)); }
-    | expr RSHIFT expr                  { $$.as_node = std::make_unique<node_expr_shift_right>(@$, std::move($1), std::move($3)); }
-    | expr ADD expr                     { $$.as_node = std::make_unique<node_expr_add>(@$, std::move($1), std::move($3)); }
-    | expr SUB expr                     { $$.as_node = std::make_unique<node_expr_sub>(@$, std::move($1), std::move($3)); }
-    | expr MULT expr                    { $$.as_node = std::make_unique<node_expr_mult>(@$, std::move($1), std::move($3)); }
-    | expr DIV expr                     { $$.as_node = std::make_unique<node_expr_div>(@$, std::move($1), std::move($3)); }
-    | expr MOD expr                     { $$.as_node = std::make_unique<node_expr_mod>(@$, std::move($1), std::move($3)); }
+    : expr OR expr
+        { $$.as_node = std::make_unique<ast::expr_or>(@$, std::move($1), std::move($3)); }
+    | expr AND expr
+        { $$.as_node = std::make_unique<ast::expr_and>(@$, std::move($1), std::move($3)); }
+    | expr EQUALITY expr
+        { $$.as_node = std::make_unique<ast::expr_equality>(@$, std::move($1), std::move($3)); }
+    | expr INEQUALITY expr
+        { $$.as_node = std::make_unique<ast::expr_inequality>(@$, std::move($1), std::move($3)); }
+    | expr LESS_EQUAL expr
+        { $$.as_node = std::make_unique<ast::expr_less_equal>(@$, std::move($1), std::move($3)); }
+    | expr GREATER_EQUAL expr
+        { $$.as_node = std::make_unique<ast::expr_greater_equal>(@$, std::move($1), std::move($3)); }
+    | expr LESS expr
+        { $$.as_node = std::make_unique<ast::expr_less>(@$, std::move($1), std::move($3)); }
+    | expr GREATER expr
+        { $$.as_node = std::make_unique<ast::expr_greater>(@$, std::move($1), std::move($3)); }
+    | expr BITWISE_OR expr
+        { $$.as_node = std::make_unique<ast::expr_bitwise_or>(@$, std::move($1), std::move($3)); }
+    | expr BITWISE_AND expr
+        { $$.as_node = std::make_unique<ast::expr_bitwise_and>(@$, std::move($1), std::move($3)); }
+    | expr BITWISE_EXOR expr
+        { $$.as_node = std::make_unique<ast::expr_bitwise_exor>(@$, std::move($1), std::move($3)); }
+    | expr LSHIFT expr
+        { $$.as_node = std::make_unique<ast::expr_shift_left>(@$, std::move($1), std::move($3)); }
+    | expr RSHIFT expr
+        { $$.as_node = std::make_unique<ast::expr_shift_right>(@$, std::move($1), std::move($3)); }
+    | expr ADD expr
+        { $$.as_node = std::make_unique<ast::expr_add>(@$, std::move($1), std::move($3)); }
+    | expr SUB expr
+        { $$.as_node = std::make_unique<ast::expr_sub>(@$, std::move($1), std::move($3)); }
+    | expr MUL expr
+        { $$.as_node = std::make_unique<ast::expr_mul>(@$, std::move($1), std::move($3)); }
+    | expr DIV expr
+        { $$.as_node = std::make_unique<ast::expr_div>(@$, std::move($1), std::move($3)); }
+    | expr MOD expr
+        { $$.as_node = std::make_unique<ast::expr_mod>(@$, std::move($1), std::move($3)); }
     ;
 
 expr_primitive
-    : LPAREN expr RPAREN                { $$ = std::move($2); }
-    | COMPLEMENT expr                   { $$.as_node = std::make_unique<node_expr_complement>(@$, std::move($2)); }
-    | NOT expr                          { $$.as_node = std::make_unique<node_expr_not>(@$, std::move($2)); }
-    | expr_call                         { $$.as_node = std::move($1); }
-    | expr_call_thread                  { $$.as_node = std::move($1); }
-    | expr_call_childthread             { $$.as_node = std::move($1); }
-    | expr_function                     { $$.as_node = std::move($1); }
-    | expr_add_array                    { $$.as_node = std::move($1); }
-    | expr_array                        { $$.as_node = std::move($1); }
-    | expr_field                        { $$.as_node = std::move($1); }
-    | expr_size                         { $$.as_node = std::move($1); }
-    | thisthread                        { $$.as_node = std::move($1); }
-    | empty_array                       { $$.as_node = std::move($1); }
-    | undefined                         { $$.as_node = std::move($1); }
-    | game                              { $$.as_node = std::move($1); }
-    | self                              { $$.as_node = std::move($1); }
-    | anim                              { $$.as_node = std::move($1); }
-    | level                             { $$.as_node = std::move($1); }
-    | animation                         { $$.as_node = std::move($1); }
-    | animtree                          { $$.as_node = std::move($1); }
-    | name                              { $$.as_node = std::move($1); }
-    | istring                           { $$.as_node = std::move($1); }
-    | string                            { $$.as_node = std::move($1); }
-    | color                             { $$.as_node = std::move($1); }
-    | vector                            { $$.as_node = std::move($1); }
-    | float                             { $$.as_node = std::move($1); }
-    | integer                           { $$.as_node = std::move($1); }
-    | false                             { $$.as_node = std::move($1); }
-    | true                              { $$.as_node = std::move($1); }
+    : expr_complement       { $$.as_node = std::move($1); }
+    | expr_not              { $$.as_node = std::move($1); }
+    | expr_call             { $$.as_node = std::move($1); }
+    | expr_method           { $$.as_node = std::move($1); }
+    | expr_add_array        { $$.as_node = std::move($1); }
+    | expr_reference        { $$.as_node = std::move($1); }
+    | expr_array            { $$.as_node = std::move($1); }
+    | expr_field            { $$.as_node = std::move($1); }
+    | expr_size             { $$.as_node = std::move($1); }
+    | expr_paren            { $$.as_node = std::move($1); }
+    | expr_thisthread       { $$.as_node = std::move($1); }
+    | expr_empty_array      { $$.as_node = std::move($1); }
+    | expr_undefined        { $$.as_node = std::move($1); }
+    | expr_game             { $$.as_node = std::move($1); }
+    | expr_self             { $$.as_node = std::move($1); }
+    | expr_anim             { $$.as_node = std::move($1); }
+    | expr_level            { $$.as_node = std::move($1); }
+    | expr_animation        { $$.as_node = std::move($1); }
+    | expr_animtree         { $$.as_node = std::move($1); }
+    | expr_identifier       { $$.as_node = std::move($1); }
+    | expr_istring          { $$.as_node = std::move($1); }
+    | expr_string           { $$.as_node = std::move($1); }
+    | expr_color            { $$.as_node = std::move($1); }
+    | expr_vector           { $$.as_node = std::move($1); }
+    | expr_float            { $$.as_node = std::move($1); }
+    | expr_integer          { $$.as_node = std::move($1); }
+    | expr_false            { $$.as_node = std::move($1); }
+    | expr_true             { $$.as_node = std::move($1); }
+    ;
+
+expr_complement
+    : COMPLEMENT expr
+        { $$ = std::make_unique<ast::expr_complement>(@$, std::move($2)); }
+    ;
+
+expr_not
+    : NOT expr
+        { $$ = std::make_unique<ast::expr_not>(@$, std::move($2)); }
     ;
 
 expr_call
-    : expr_call_function                { $$ = std::make_unique<node_expr_call>(@$, false, false, std::make_unique<node>(@$), std::move($1)); }
-    | expr_call_pointer                 { $$ = std::make_unique<node_expr_call>(@$, false, false, std::make_unique<node>(@$), std::move($1)); }
-    | object expr_call_function         { $$ = std::make_unique<node_expr_call>(@$, false, false, std::move($1), std::move($2)); }
-    | object expr_call_pointer          { $$ = std::make_unique<node_expr_call>(@$, false, false, std::move($1), std::move($2)); }
+    : expr_function                { $$ = std::make_unique<ast::expr_call>(@$, std::move($1)); }
+    | expr_pointer                 { $$ = std::make_unique<ast::expr_call>(@$, std::move($1)); }
     ;
-
-expr_call_thread
-    : THREAD expr_call_function         { $$ = std::make_unique<node_expr_call>(@$, true, false, std::make_unique<node>(@$), std::move($2)); }
-    | THREAD expr_call_pointer          { $$ = std::make_unique<node_expr_call>(@$, true, false, std::make_unique<node>(@$), std::move($2)); }
-    | object THREAD expr_call_function  { $$ = std::make_unique<node_expr_call>(@$, true, false, std::move($1), std::move($3)); }
-    | object THREAD expr_call_pointer   { $$ = std::make_unique<node_expr_call>(@$, true, false, std::move($1), std::move($3)); }
-    ;
-
-expr_call_childthread
-    : CHILDTHREAD expr_call_function        { $$ = std::make_unique<node_expr_call>(@$, false, true, std::make_unique<node>(@$), std::move($2)); }
-    | CHILDTHREAD expr_call_pointer         { $$ = std::make_unique<node_expr_call>(@$, false, true, std::make_unique<node>(@$), std::move($2)); }
-    | object CHILDTHREAD expr_call_function { $$ = std::make_unique<node_expr_call>(@$, false, true, std::move($1), std::move($3)); }
-    | object CHILDTHREAD expr_call_pointer  { $$ = std::make_unique<node_expr_call>(@$, false, true, std::move($1), std::move($3)); }
-    ;
-
-expr_call_function
-    : name LPAREN expr_arguments RPAREN
-        {$$.as_func = std::make_unique<node_expr_call_function>(@$, std::make_unique<node_file>(), std::move($1), std::move($3)); }
-    | file DOUBLECOLON name LPAREN expr_arguments RPAREN
-        { $$.as_func = std::make_unique<node_expr_call_function>(@$, std::move($1), std::move($3), std::move($5)); }
-    ;
-
-expr_call_pointer
-    : LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
-        { $$.as_pointer = std::make_unique<node_expr_call_pointer>(@$, false, std::move($3), std::move($7)); }
-    | CALL LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
-        { $$.as_pointer = std::make_unique<node_expr_call_pointer>(@$, true, std::move($4), std::move($8)); }
-    ;
-
-expr_arguments
-    : expr_arguments_filled { $$ = std::move($1); }
-    | expr_arguments_empty  { $$ = std::move($1); }
-    ;
-
-expr_arguments_filled
-    : expr_arguments COMMA expr
-        { $$ = std::move($1); $$->list.push_back(std::move($3)); }
-    | expr %prec ADD_ARRAY
-        { $$ = std::make_unique<node_expr_arguments>(@$); $$->list.push_back(std::move($1)); }
-    ;
-
-expr_arguments_empty
-    :
-        { $$ = std::make_unique<node_expr_arguments>(@$); }
+expr_method
+    : expr_object expr_function    { $$ = std::make_unique<ast::expr_method>(@$, std::move($1), std::move($2)); }
+    | expr_object expr_pointer     { $$ = std::make_unique<ast::expr_method>(@$, std::move($1), std::move($2)); }
     ;
 
 expr_function
-    : DOUBLECOLON name
-        { $$ = std::make_unique<node_expr_function>(@$, std::make_unique<node_file>(@$), std::move($2)); }
-    | file DOUBLECOLON name
-        { $$ = std::make_unique<node_expr_function>(@$, std::move($1), std::move($3)); }
+    : expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = std::make_unique<ast::expr_function>(@$, std::make_unique<ast::expr_path>(@$), std::move($1), std::move($3), ast::call::mode::normal); }
+    | expr_path DOUBLECOLON expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = std::make_unique<ast::expr_function>(@$, std::move($1), std::move($3), std::move($5), ast::call::mode::normal); }
+    | THREAD expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = std::make_unique<ast::expr_function>(@$, std::make_unique<ast::expr_path>(@$), std::move($2), std::move($4), ast::call::mode::thread); }
+    | THREAD expr_path DOUBLECOLON expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = std::make_unique<ast::expr_function>(@$, std::move($2), std::move($4), std::move($6), ast::call::mode::thread); }
+    | CHILDTHREAD expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = std::make_unique<ast::expr_function>(@$, std::make_unique<ast::expr_path>(@$), std::move($2), std::move($4), ast::call::mode::childthread); }
+    | CHILDTHREAD expr_path DOUBLECOLON expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = std::make_unique<ast::expr_function>(@$, std::move($2), std::move($4), std::move($6), ast::call::mode::childthread); }
+    ;
+
+expr_pointer
+    : LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
+        { $$.as_pointer = std::make_unique<ast::expr_pointer>(@$, std::move($3), std::move($7), ast::call::mode::normal); }
+    | THREAD LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
+        { $$.as_pointer = std::make_unique<ast::expr_pointer>(@$, std::move($4), std::move($8), ast::call::mode::thread); }
+    | CHILDTHREAD LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
+        { $$.as_pointer = std::make_unique<ast::expr_pointer>(@$, std::move($4), std::move($8), ast::call::mode::childthread); }
+    | CALL LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
+        { $$.as_pointer = std::make_unique<ast::expr_pointer>(@$, std::move($4), std::move($8), ast::call::mode::builtin); }
     ;
 
 expr_add_array
-    : LBRACKET expr_arguments_filled RBRACKET
-        { $$ = std::make_unique<node_expr_add_array>(@$, std::move($2)); }
+    : LBRACKET expr_arguments_no_empty RBRACKET
+        { $$ = std::make_unique<ast::expr_add_array>(@$, std::move($2)); }
+    ;
+
+expr_parameters
+    : expr_parameters COMMA expr_identifier
+        { $$ = std::move($1); $$->list.push_back(std::move($3)); }
+    | expr_identifier
+        { $$ = std::make_unique<ast::expr_parameters>(@$); $$->list.push_back(std::move($1)); }
+    |
+        { $$ = std::make_unique<ast::expr_parameters>(@$); }
+    ;
+
+expr_arguments
+    : expr_arguments_no_empty
+        { $$ = std::move($1); }
+    |
+        { $$ = std::make_unique<ast::expr_arguments>(@$); }
+    ;
+
+expr_arguments_no_empty
+    : expr_arguments COMMA expr
+        { $$ = std::move($1); $$->list.push_back(std::move($3)); }
+    | expr %prec ADD_ARRAY
+        { $$ = std::make_unique<ast::expr_arguments>(@$); $$->list.push_back(std::move($1)); }
+    ;
+
+expr_reference
+    : DOUBLECOLON expr_identifier
+        { $$ = std::make_unique<ast::expr_reference>(@$, std::make_unique<ast::expr_path>(@$), std::move($2)); }
+    | expr_path DOUBLECOLON expr_identifier
+        { $$ = std::make_unique<ast::expr_reference>(@$, std::move($1), std::move($3)); }
     ;
 
 expr_array
-    : object LBRACKET expr RBRACKET
-        { $$ = std::make_unique<node_expr_array>(@$, std::move($1), std::move($3)); }
+    : expr_object LBRACKET expr RBRACKET
+        { $$ = std::make_unique<ast::expr_array>(@$, std::move($1), std::move($3)); }
     ;
 
 expr_field
-    : object DOT name
-        { $$ = std::make_unique<node_expr_field>(@$, std::move($1), std::move($3)); }
+    : expr_object DOT expr_identifier
+        { $$ = std::make_unique<ast::expr_field>(@$, std::move($1), std::move($3)); }
     ;
 
 expr_size
-    : object SIZE
-        { $$ = std::make_unique<node_expr_size>(@$, std::move($1)); }
+    : expr_object SIZE
+        { $$ = std::make_unique<ast::expr_size>(@$, std::move($1)); }
     ;
 
-object
-    : expr_call                                        { $$ = std::move($1); }
-    | expr_array                                       { $$ = std::move($1); }
-    | expr_field                                       { $$ = std::move($1); }
-    | game                                             { $$ = std::move($1); }
-    | self                                             { $$ = std::move($1); }
-    | anim                                             { $$ = std::move($1); }
-    | level                                            { $$ = std::move($1); }
-    | name                                             { $$ = std::move($1); }
+expr_paren
+    : LPAREN expr RPAREN
+        { $$ = std::make_unique<ast::expr_paren>(@$, std::move($2)); }
     ;
 
-float
-    : SUB FLOAT   %prec NEG                            { $$ = std::make_unique<node_float>(@$, "-" + $2); };
-    | FLOAT                                            { $$ = std::make_unique<node_float>(@$, $1); };
+expr_object
+    : expr_call       { $$.as_node = std::move($1); }
+    | expr_method     { $$.as_node = std::move($1); }
+    | expr_array      { $$.as_node = std::move($1); }
+    | expr_field      { $$.as_node = std::move($1); }
+    | expr_game       { $$.as_node = std::move($1); }
+    | expr_self       { $$.as_node = std::move($1); }
+    | expr_anim       { $$.as_node = std::move($1); }
+    | expr_level      { $$.as_node = std::move($1); }
+    | expr_identifier { $$.as_node = std::move($1); }
     ;
 
-integer
-    : SUB INT_DEC %prec NEG                            { $$ = std::make_unique<node_integer>(@$, "-" + $2); };
-    | INT_DEC                                          { $$ = std::make_unique<node_integer>(@$, $1); };
-    | INT_OCT                                          { $$ = std::make_unique<node_integer>(@$, $1); };
-    | INT_BIN                                          { $$ = std::make_unique<node_integer>(@$, $1); };
-    | INT_HEX                                          { $$ = std::make_unique<node_integer>(@$, $1); };
+expr_thisthread
+    : THISTHREAD
+        { $$ = std::make_unique<ast::expr_thisthread>(@$); };
     ;
 
-thisthread  : THISTHREAD                               { $$ = std::make_unique<node_thisthread>(@$); };
-empty_array : LBRACKET RBRACKET                        { $$ = std::make_unique<node_empty_array>(@$); };
-undefined   : UNDEFINED                                { $$ = std::make_unique<node_undefined>(@$); };
-game        : GAME                                     { $$ = std::make_unique<node_game>(@$); };
-self        : SELF                                     { $$ = std::make_unique<node_self>(@$); };
-anim        : ANIM                                     { $$ = std::make_unique<node_anim>(@$); };
-level       : LEVEL                                    { $$ = std::make_unique<node_level>(@$); };
-animation   : MOD NAME %prec ANIMREF                   { $$ = std::make_unique<node_animation>(@$, $2); };
-animtree    : ANIMTREE                                 { $$ = std::make_unique<node_animtree>(@$); };
-name        : NAME                                     { $$ = std::make_unique<node_name>(@$, $1); };
-file        : FILE                                     { $$ = std::make_unique<node_file>(@$, $1); };
-istring     : ISTRING                                  { $$ = std::make_unique<node_istring>(@$, $1); };
-string      : STRING                                   { $$ = std::make_unique<node_string>(@$, $1); };
-color       : COLOR                                    { $$ = std::make_unique<node_color>(@$, $1); };
-vector      : LPAREN expr COMMA expr COMMA expr RPAREN { $$ = std::make_unique<node_vector>(@$, std::move($2), std::move($4), std::move($6)); };
-false       : FALSE                                    { $$ = std::make_unique<node_false>(@$); };
-true        : TRUE                                     { $$ = std::make_unique<node_true>(@$); };
+expr_empty_array
+    : LBRACKET RBRACKET
+        { $$ = std::make_unique<ast::expr_empty_array>(@$); };
+    ;
+
+expr_undefined
+    : UNDEFINED
+        { $$ = std::make_unique<ast::expr_undefined>(@$); };
+    ;
+
+expr_game
+    : GAME
+        { $$ = std::make_unique<ast::expr_game>(@$); };
+    ;
+
+expr_self
+    : SELF
+        { $$ = std::make_unique<ast::expr_self>(@$); };
+    ;
+
+expr_anim
+    : ANIM
+        { $$ = std::make_unique<ast::expr_anim>(@$); };
+    ;
+
+expr_level
+    : LEVEL
+        { $$ = std::make_unique<ast::expr_level>(@$); };
+    ;
+
+expr_animation
+    : MOD IDENTIFIER %prec ANIMREF
+        { $$ = std::make_unique<ast::expr_animation>(@$, $2); };
+    ;
+
+expr_animtree
+    : ANIMTREE
+        { $$ = std::make_unique<ast::expr_animtree>(@$); };
+    ;
+
+expr_identifier
+    : IDENTIFIER
+        { $$ = std::make_unique<ast::expr_identifier>(@$, $1); };
+    ;
+
+expr_path
+    : PATH
+        { $$ = std::make_unique<ast::expr_path>(@$, $1); };
+    | expr_identifier
+        { $$ = std::make_unique<ast::expr_path>(@$, $1->value); };
+    ;
+
+expr_istring
+    : ISTRING
+        { $$ = std::make_unique<ast::expr_istring>(@$, $1); };
+    ;
+
+expr_string
+    : STRING
+        { $$ = std::make_unique<ast::expr_string>(@$, $1); };
+    ;
+
+expr_color
+    : COLOR
+        { $$ = std::make_unique<ast::expr_color>(@$, $1); };
+    ;
+
+expr_vector
+    : LPAREN expr COMMA expr COMMA expr RPAREN
+        { $$ = std::make_unique<ast::expr_vector>(@$, std::move($2), std::move($4), std::move($6)); };
+    ;
+
+expr_float
+    : SUB FLOAT %prec NEG
+        { $$ = std::make_unique<ast::expr_float>(@$, "-" + $2); };
+    | FLOAT
+        { $$ = std::make_unique<ast::expr_float>(@$, $1); };
+    ;
+
+expr_integer
+    : SUB INT_DEC %prec NEG
+        { $$ = std::make_unique<ast::expr_integer>(@$, "-" + $2); };
+    | INT_DEC
+        { $$ = std::make_unique<ast::expr_integer>(@$, $1); };
+    | INT_OCT
+        { $$ = std::make_unique<ast::expr_integer>(@$, $1); };
+    | INT_BIN
+        { $$ = std::make_unique<ast::expr_integer>(@$, $1); };
+    | INT_HEX
+        { $$ = std::make_unique<ast::expr_integer>(@$, $1); };
+    ;
+
+expr_false
+    : FALSE
+        { $$ = std::make_unique<ast::expr_false>(@$); };
+    ;
+
+expr_true
+    : TRUE
+        { $$ = std::make_unique<ast::expr_true>(@$); };
+    ;
 
 %%
 

@@ -11,35 +11,36 @@ namespace xsk::gsc
 class error : public std::runtime_error
 {
 public:
-    error(const std::string& what) : std::runtime_error("[ERROR]: "s + what) { }
+    error(const std::string& what)
+        : std::runtime_error("[ERROR]: "s + what) {}
 };
 
 class asm_error : public std::runtime_error
 {
 public:
-    asm_error(const std::string& what) : std::runtime_error("[ERROR]:assembler: "s + what) { }
+    asm_error(const std::string& what)
+        : std::runtime_error("[ERROR]:assembler: "s + what) {}
 };
 
 class disasm_error : public std::runtime_error
 {
 public:
-    disasm_error(const std::string& what) : std::runtime_error("[ERROR]:disassembler: "s + what) { }
+    disasm_error(const std::string& what)
+        : std::runtime_error("[ERROR]:disassembler: "s + what) {}
 };
 
 class comp_error : public std::runtime_error
 {
 public:
-    comp_error(gsc::location loc, const std::string& what)
-        : std::runtime_error("[ERROR]:compiler:" + 
-            *loc.begin.filename + ":" + 
-            std::to_string(loc.begin.line) + ":" + 
-            std::to_string(loc.begin.column) + ": " + what) { }
+    comp_error(const gsc::location& loc, const std::string& what)
+        : std::runtime_error("[ERROR]:compiler:" + loc.print() + ": " + what) {}
 };
 
 class decomp_error : public std::runtime_error
 {
 public:
-    decomp_error(const std::string& what) : std::runtime_error("[ERROR]:decompiler: "s + what) { }
+    decomp_error(const std::string& what)
+        : std::runtime_error("[ERROR]:decompiler: "s + what) {}
 };
 
 } // namespace xsk::gsc

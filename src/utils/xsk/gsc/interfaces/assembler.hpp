@@ -11,11 +11,13 @@ namespace xsk::gsc
 class assembler
 {
 public:
+    using ptr = std::unique_ptr<assembler>;
+
     virtual ~assembler() = default;
     virtual auto output_script() -> std::vector<std::uint8_t> = 0;
     virtual auto output_stack() -> std::vector<std::uint8_t> = 0;
     virtual void assemble(const std::string& file, std::vector<std::uint8_t>& data) = 0;
-    virtual void assemble(const std::string& file, std::vector<gsc::function_ptr>& functions) = 0;
+    virtual void assemble(const std::string& file, std::vector<gsc::function::ptr>& funcs) = 0;
 };
 
 } // namespace xsk::gsc

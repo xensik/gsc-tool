@@ -9,7 +9,7 @@
 namespace xsk::gsc::iw5
 {
 
-auto disassembler::output() -> std::vector<gsc::function_ptr>
+auto disassembler::output() -> std::vector<function::ptr>
 {
     return std::move(functions_);
 }
@@ -18,18 +18,18 @@ auto disassembler::output_data() -> std::vector<std::uint8_t>
 {
     output_ = std::make_unique<utils::byte_buffer>(0x100000);
 
-    output_->write_string("// IW5 PC GSCASM\n");
+    output_->write_string("// IW5 GSC ASSEMBLY\n");
     output_->write_string("// Disassembled by https://github.com/xensik/gsc-tool\n");
 
     for (auto& func : functions_)
     {
-        this->print_function(func);
+        print_function(func);
     }
 
     std::vector<std::uint8_t> output;
 
     output.resize(output_->pos());
-    memcpy(output.data(), output_->buffer().data(), output.size());
+    std::memcpy(output.data(), output_->buffer().data(), output.size());
 
     return output;
 }
@@ -45,7 +45,7 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
 
     while (stack_->is_avail() && script_->is_avail())
     {
-        functions_.push_back(std::make_unique<gsc::function>());
+        functions_.push_back(std::make_unique<function>());
         auto& func = functions_.back();
 
         func->index = static_cast<std::uint32_t>(script_->pos());
@@ -53,258 +53,259 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
         func->id = stack_->read<std::uint16_t>();
         func->name = "sub_"s + (func->id == 0 ? stack_->read_c_string() : resolver::token_name(func->id));
 
-        this->dissasemble_function(func);
+        dissasemble_function(func);
 
         func->labels = labels_;
         labels_.clear();
     }
 
-    this->resolve_local_functions();
+    resolve_local_functions();
 }
 
-void disassembler::dissasemble_function(const gsc::function_ptr& func)
+void disassembler::dissasemble_function(const function::ptr& func)
 {
     auto size = func->size;
 
     while (size > 0)
     {
-        func->instructions.push_back(std::make_unique<gsc::instruction>());
+        func->instructions.push_back(std::make_unique<instruction>());
+
         auto& inst = func->instructions.back();
         inst->index = static_cast<std::uint32_t>(script_->pos());
-        assert(script_->is_avail());
         inst->opcode = script_->read<std::uint8_t>();
         inst->size = opcode_size(inst->opcode);
 
-        this->dissasemble_instruction(inst);
+        dissasemble_instruction(inst);
+
         size -= inst->size;
     }
 }
 
-void disassembler::dissasemble_instruction(const gsc::instruction_ptr& inst)
+void disassembler::dissasemble_instruction(const instruction::ptr& inst)
 {
     switch (opcode(inst->opcode))
     {
-    case opcode::OP_End:
-    case opcode::OP_Return:
-    case opcode::OP_GetUndefined:
-    case opcode::OP_GetZero:
-    case opcode::OP_waittillFrameEnd:
-    case opcode::OP_EvalLocalVariableCached0:
-    case opcode::OP_EvalLocalVariableCached1:
-    case opcode::OP_EvalLocalVariableCached2:
-    case opcode::OP_EvalLocalVariableCached3:
-    case opcode::OP_EvalLocalVariableCached4:
-    case opcode::OP_EvalLocalVariableCached5:
-    case opcode::OP_EvalArray:
-    case opcode::OP_EvalArrayRef:
-    case opcode::OP_EvalLocalArrayRefCached0:
-    case opcode::OP_ClearArray:
-    case opcode::OP_EmptyArray:
-    case opcode::OP_AddArray:
-    case opcode::OP_PreScriptCall:
-    case opcode::OP_ScriptFunctionCallPointer:
-    case opcode::OP_ScriptMethodCallPointer:
-    case opcode::OP_GetLevelObject:
-    case opcode::OP_GetAnimObject:
-    case opcode::OP_GetSelf:
-    case opcode::OP_GetThisthread:
-    case opcode::OP_GetLevel:
-    case opcode::OP_GetGame:
-    case opcode::OP_GetAnim:
-    case opcode::OP_GetGameRef:
-    case opcode::OP_inc:
-    case opcode::OP_dec:
-    case opcode::OP_bit_or:
-    case opcode::OP_bit_ex_or:
-    case opcode::OP_bit_and:
-    case opcode::OP_equality:
-    case opcode::OP_inequality:
-    case opcode::OP_less:
-    case opcode::OP_greater:
-    case opcode::OP_less_equal:
-    case opcode::OP_waittill:
-    case opcode::OP_notify:
-    case opcode::OP_endon:
-    case opcode::OP_voidCodepos:
-    case opcode::OP_vector:
-    case opcode::OP_greater_equal:
-    case opcode::OP_shift_left:
-    case opcode::OP_shift_right:
-    case opcode::OP_plus:
-    case opcode::OP_minus:
-    case opcode::OP_multiply:
-    case opcode::OP_divide:
-    case opcode::OP_mod:
-    case opcode::OP_size:
-    case opcode::OP_GetSelfObject:
-    case opcode::OP_SafeSetVariableFieldCached0:
-    case opcode::OP_clearparams:
-    case opcode::OP_checkclearparams:
-    case opcode::OP_EvalLocalVariableRefCached0:
-    case opcode::OP_EvalNewLocalVariableRefCached0:
-    case opcode::OP_SetVariableField:
-    case opcode::OP_ClearVariableField:
-    case opcode::OP_SetLocalVariableFieldCached0:
-    case opcode::OP_ClearLocalVariableFieldCached0:
-    case opcode::OP_wait:
-    case opcode::OP_DecTop:
-    case opcode::OP_CastFieldObject:
-    case opcode::OP_CastBool:
-    case opcode::OP_BoolNot:
-    case opcode::OP_BoolComplement:
-        break;
-    case opcode::OP_GetByte:
-    case opcode::OP_GetNegByte:
-        inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
-        break;
-    case opcode::OP_GetUnsignedShort:
-    case opcode::OP_GetNegUnsignedShort:
-        inst->data.push_back(utils::string::va("%i", script_->read<std::uint16_t>()));
-        break;
-    case opcode::OP_GetInteger:
-        inst->data.push_back(utils::string::va("%i", script_->read<std::int32_t>()));
-        break;
-    case opcode::OP_GetFloat:
-    {
-        auto val = script_->read<float>();
-        inst->data.push_back(utils::string::va("%g%s", val, val == int(val) ? ".0" : ""));
-    }
-        break;
-    case opcode::OP_GetVector:
-        inst->data.push_back(utils::string::va("%g", script_->read<float>()));
-        inst->data.push_back(utils::string::va("%g", script_->read<float>()));
-        inst->data.push_back(utils::string::va("%g", script_->read<float>()));
-        break;
-    case opcode::OP_GetString:
-    case opcode::OP_GetIString:
-        script_->seek(2);
-        inst->data.push_back(utils::string::to_literal(stack_->read_c_string()));
-        break;
-    case opcode::OP_GetAnimation:
-        script_->seek(4);
-        inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
-        inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
-        break;
-    case opcode::OP_GetAnimTree:
-        script_->seek(1);
-        inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
-        break;
-    case opcode::OP_waittillmatch:
-        inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
-        script_->seek(1);
-        break;
-    case opcode::OP_CreateLocalVariable:
-    case opcode::OP_RemoveLocalVariables:
-    case opcode::OP_EvalLocalVariableCached:
-    case opcode::OP_EvalLocalArrayCached:
-    case opcode::OP_EvalNewLocalArrayRefCached0:
-    case opcode::OP_EvalLocalArrayRefCached:
-    case opcode::OP_SafeCreateVariableFieldCached:
-    case opcode::OP_SafeSetVariableFieldCached:
-    case opcode::OP_SafeSetWaittillVariableFieldCached:
-    case opcode::OP_EvalLocalVariableRefCached:
-    case opcode::OP_SetNewLocalVariableFieldCached0:
-    case opcode::OP_SetLocalVariableFieldCached:
-    case opcode::OP_ClearLocalVariableFieldCached:
-    case opcode::OP_EvalLocalVariableObjectCached:
-        inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
-        break;
-    case opcode::OP_EvalLevelFieldVariable:
-    case opcode::OP_EvalAnimFieldVariable:
-    case opcode::OP_EvalSelfFieldVariable:
-    case opcode::OP_EvalFieldVariable:
-    case opcode::OP_EvalLevelFieldVariableRef:
-    case opcode::OP_EvalAnimFieldVariableRef:
-    case opcode::OP_EvalSelfFieldVariableRef:
-    case opcode::OP_EvalFieldVariableRef:
-    case opcode::OP_ClearFieldVariable:
-    case opcode::OP_SetLevelFieldVariableField:
-    case opcode::OP_SetAnimFieldVariableField:
-    case opcode::OP_SetSelfFieldVariableField:
-        this->disassemble_field_variable(inst);
-        break;
-    case opcode::OP_ScriptThreadCallPointer:
-    case opcode::OP_ScriptChildThreadCallPointer:
-    case opcode::OP_ScriptMethodThreadCallPointer:
-    case opcode::OP_ScriptMethodChildThreadCallPointer:
-    case opcode::OP_CallBuiltinPointer:
-    case opcode::OP_CallBuiltinMethodPointer:
-        inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
-        break;
-    case opcode::OP_GetLocalFunction:
-    case opcode::OP_ScriptLocalFunctionCall2:
-    case opcode::OP_ScriptLocalFunctionCall:
-    case opcode::OP_ScriptLocalMethodCall:
-        this->disassemble_local_call(inst, false);
-        break;
-    case opcode::OP_ScriptLocalThreadCall:
-    case opcode::OP_ScriptLocalChildThreadCall:
-    case opcode::OP_ScriptLocalMethodThreadCall:
-    case opcode::OP_ScriptLocalMethodChildThreadCall:
-        this->disassemble_local_call(inst, true);
-        break;
-    case opcode::OP_GetFarFunction:
-    case opcode::OP_ScriptFarFunctionCall2:
-    case opcode::OP_ScriptFarFunctionCall:
-    case opcode::OP_ScriptFarMethodCall:
-        this->disassemble_far_call(inst, false);
-        break;
-    case opcode::OP_ScriptFarThreadCall:
-    case opcode::OP_ScriptFarChildThreadCall:
-    case opcode::OP_ScriptFarMethodThreadCall:
-    case opcode::OP_ScriptFarMethodChildThreadCall:
-        this->disassemble_far_call(inst, true);
-        break;
-    case opcode::OP_CallBuiltin:
-        this->disassemble_builtin_call(inst, false, true);
-        break;
-    case opcode::OP_CallBuiltinMethod:
-        this->disassemble_builtin_call(inst, true, true);
-        break;
-    case opcode::OP_GetBuiltinFunction:
-    case opcode::OP_CallBuiltin0:
-    case opcode::OP_CallBuiltin1:
-    case opcode::OP_CallBuiltin2:
-    case opcode::OP_CallBuiltin3:
-    case opcode::OP_CallBuiltin4:
-    case opcode::OP_CallBuiltin5:
-        this->disassemble_builtin_call(inst, false, false);
-        break;
-    case opcode::OP_GetBuiltinMethod:
-    case opcode::OP_CallBuiltinMethod0:
-    case opcode::OP_CallBuiltinMethod1:
-    case opcode::OP_CallBuiltinMethod2:
-    case opcode::OP_CallBuiltinMethod3:
-    case opcode::OP_CallBuiltinMethod4:
-    case opcode::OP_CallBuiltinMethod5:
-        this->disassemble_builtin_call(inst, true, false);
-        break;
-    case opcode::OP_jump:
-        this->disassemble_jump(inst, false, false);
-        break;
-    case opcode::OP_jumpback:
-        this->disassemble_jump(inst, false, true);
-        break;
-    case opcode::OP_JumpOnFalse:
-    case opcode::OP_JumpOnTrue:
-    case opcode::OP_JumpOnFalseExpr:
-    case opcode::OP_JumpOnTrueExpr:
-        this->disassemble_jump(inst, true, false);
-        break;
-    case opcode::OP_switch:
-        this->disassemble_switch(inst);
-        break;
-    case opcode::OP_endswitch:
-        this->disassemble_end_switch(inst);
-        break;
-    default:
-        throw disasm_error(utils::string::va("Unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
+        case opcode::OP_End:
+        case opcode::OP_Return:
+        case opcode::OP_GetUndefined:
+        case opcode::OP_GetZero:
+        case opcode::OP_waittillFrameEnd:
+        case opcode::OP_EvalLocalVariableCached0:
+        case opcode::OP_EvalLocalVariableCached1:
+        case opcode::OP_EvalLocalVariableCached2:
+        case opcode::OP_EvalLocalVariableCached3:
+        case opcode::OP_EvalLocalVariableCached4:
+        case opcode::OP_EvalLocalVariableCached5:
+        case opcode::OP_EvalArray:
+        case opcode::OP_EvalArrayRef:
+        case opcode::OP_EvalLocalArrayRefCached0:
+        case opcode::OP_ClearArray:
+        case opcode::OP_EmptyArray:
+        case opcode::OP_AddArray:
+        case opcode::OP_PreScriptCall:
+        case opcode::OP_ScriptFunctionCallPointer:
+        case opcode::OP_ScriptMethodCallPointer:
+        case opcode::OP_GetLevelObject:
+        case opcode::OP_GetAnimObject:
+        case opcode::OP_GetSelf:
+        case opcode::OP_GetThisthread:
+        case opcode::OP_GetLevel:
+        case opcode::OP_GetGame:
+        case opcode::OP_GetAnim:
+        case opcode::OP_GetGameRef:
+        case opcode::OP_inc:
+        case opcode::OP_dec:
+        case opcode::OP_bit_or:
+        case opcode::OP_bit_ex_or:
+        case opcode::OP_bit_and:
+        case opcode::OP_equality:
+        case opcode::OP_inequality:
+        case opcode::OP_less:
+        case opcode::OP_greater:
+        case opcode::OP_less_equal:
+        case opcode::OP_waittillmatch2:
+        case opcode::OP_waittill:
+        case opcode::OP_notify:
+        case opcode::OP_endon:
+        case opcode::OP_voidCodepos:
+        case opcode::OP_vector:
+        case opcode::OP_greater_equal:
+        case opcode::OP_shift_left:
+        case opcode::OP_shift_right:
+        case opcode::OP_plus:
+        case opcode::OP_minus:
+        case opcode::OP_multiply:
+        case opcode::OP_divide:
+        case opcode::OP_mod:
+        case opcode::OP_size:
+        case opcode::OP_GetSelfObject:
+        case opcode::OP_SafeSetVariableFieldCached0:
+        case opcode::OP_clearparams:
+        case opcode::OP_checkclearparams:
+        case opcode::OP_EvalLocalVariableRefCached0:
+        case opcode::OP_EvalNewLocalVariableRefCached0:
+        case opcode::OP_SetVariableField:
+        case opcode::OP_ClearVariableField:
+        case opcode::OP_SetLocalVariableFieldCached0:
+        case opcode::OP_ClearLocalVariableFieldCached0:
+        case opcode::OP_wait:
+        case opcode::OP_DecTop:
+        case opcode::OP_CastFieldObject:
+        case opcode::OP_CastBool:
+        case opcode::OP_BoolNot:
+        case opcode::OP_BoolComplement:
+            break;
+        case opcode::OP_GetByte:
+        case opcode::OP_GetNegByte:
+            inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
+            break;
+        case opcode::OP_GetUnsignedShort:
+        case opcode::OP_GetNegUnsignedShort:
+            inst->data.push_back(utils::string::va("%i", script_->read<std::uint16_t>()));
+            break;
+        case opcode::OP_GetInteger:
+            inst->data.push_back(utils::string::va("%i", script_->read<std::int32_t>()));
+            break;
+        case opcode::OP_GetFloat:
+        {
+            auto val = script_->read<float>();
+            inst->data.push_back(utils::string::va("%g%s", val, val == int(val) ? ".0" : ""));
+        }
+            break;
+        case opcode::OP_GetVector:
+            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
+            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
+            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
+            break;
+        case opcode::OP_GetString:
+        case opcode::OP_GetIString:
+            script_->seek(2);
+            inst->data.push_back(utils::string::to_literal(stack_->read_c_string()));
+            break;
+        case opcode::OP_GetAnimation:
+            script_->seek(4);
+            inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
+            inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
+            break;
+        case opcode::OP_GetAnimTree:
+            script_->seek(1);
+            inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
+            break;
+        case opcode::OP_waittillmatch:
+            inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
+            break;
+        case opcode::OP_CreateLocalVariable:
+        case opcode::OP_RemoveLocalVariables:
+        case opcode::OP_EvalLocalVariableCached:
+        case opcode::OP_EvalLocalArrayCached:
+        case opcode::OP_EvalNewLocalArrayRefCached0:
+        case opcode::OP_EvalLocalArrayRefCached:
+        case opcode::OP_SafeCreateVariableFieldCached:
+        case opcode::OP_SafeSetVariableFieldCached:
+        case opcode::OP_SafeSetWaittillVariableFieldCached:
+        case opcode::OP_EvalLocalVariableRefCached:
+        case opcode::OP_SetNewLocalVariableFieldCached0:
+        case opcode::OP_SetLocalVariableFieldCached:
+        case opcode::OP_ClearLocalVariableFieldCached:
+        case opcode::OP_EvalLocalVariableObjectCached:
+            inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
+            break;
+        case opcode::OP_EvalLevelFieldVariable:
+        case opcode::OP_EvalAnimFieldVariable:
+        case opcode::OP_EvalSelfFieldVariable:
+        case opcode::OP_EvalFieldVariable:
+        case opcode::OP_EvalLevelFieldVariableRef:
+        case opcode::OP_EvalAnimFieldVariableRef:
+        case opcode::OP_EvalSelfFieldVariableRef:
+        case opcode::OP_EvalFieldVariableRef:
+        case opcode::OP_ClearFieldVariable:
+        case opcode::OP_SetLevelFieldVariableField:
+        case opcode::OP_SetAnimFieldVariableField:
+        case opcode::OP_SetSelfFieldVariableField:
+            disassemble_field_variable(inst);
+            break;
+        case opcode::OP_ScriptThreadCallPointer:
+        case opcode::OP_ScriptChildThreadCallPointer:
+        case opcode::OP_ScriptMethodThreadCallPointer:
+        case opcode::OP_ScriptMethodChildThreadCallPointer:
+        case opcode::OP_CallBuiltinPointer:
+        case opcode::OP_CallBuiltinMethodPointer:
+            inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
+            break;
+        case opcode::OP_GetLocalFunction:
+        case opcode::OP_ScriptLocalFunctionCall2:
+        case opcode::OP_ScriptLocalFunctionCall:
+        case opcode::OP_ScriptLocalMethodCall:
+            disassemble_local_call(inst, false);
+            break;
+        case opcode::OP_ScriptLocalThreadCall:
+        case opcode::OP_ScriptLocalChildThreadCall:
+        case opcode::OP_ScriptLocalMethodThreadCall:
+        case opcode::OP_ScriptLocalMethodChildThreadCall:
+            disassemble_local_call(inst, true);
+            break;
+        case opcode::OP_GetFarFunction:
+        case opcode::OP_ScriptFarFunctionCall2:
+        case opcode::OP_ScriptFarFunctionCall:
+        case opcode::OP_ScriptFarMethodCall:
+            disassemble_far_call(inst, false);
+            break;
+        case opcode::OP_ScriptFarThreadCall:
+        case opcode::OP_ScriptFarChildThreadCall:
+        case opcode::OP_ScriptFarMethodThreadCall:
+        case opcode::OP_ScriptFarMethodChildThreadCall:
+            disassemble_far_call(inst, true);
+            break;
+        case opcode::OP_CallBuiltin:
+            disassemble_builtin_call(inst, false, true);
+            break;
+        case opcode::OP_CallBuiltinMethod:
+            disassemble_builtin_call(inst, true, true);
+            break;
+        case opcode::OP_GetBuiltinFunction:
+        case opcode::OP_CallBuiltin0:
+        case opcode::OP_CallBuiltin1:
+        case opcode::OP_CallBuiltin2:
+        case opcode::OP_CallBuiltin3:
+        case opcode::OP_CallBuiltin4:
+        case opcode::OP_CallBuiltin5:
+            disassemble_builtin_call(inst, false, false);
+            break;
+        case opcode::OP_GetBuiltinMethod:
+        case opcode::OP_CallBuiltinMethod0:
+        case opcode::OP_CallBuiltinMethod1:
+        case opcode::OP_CallBuiltinMethod2:
+        case opcode::OP_CallBuiltinMethod3:
+        case opcode::OP_CallBuiltinMethod4:
+        case opcode::OP_CallBuiltinMethod5:
+            disassemble_builtin_call(inst, true, false);
+            break;
+        case opcode::OP_jump:
+            disassemble_jump(inst, false, false);
+            break;
+        case opcode::OP_jumpback:
+            disassemble_jump(inst, false, true);
+            break;
+        case opcode::OP_JumpOnFalse:
+        case opcode::OP_JumpOnTrue:
+        case opcode::OP_JumpOnFalseExpr:
+        case opcode::OP_JumpOnTrueExpr:
+            disassemble_jump(inst, true, false);
+            break;
+        case opcode::OP_switch:
+            disassemble_switch(inst);
+            break;
+        case opcode::OP_endswitch:
+            disassemble_end_switch(inst);
+            break;
+        default:
+            throw disasm_error(utils::string::va("Unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
     }
 }
 
-void disassembler::disassemble_builtin_call(const gsc::instruction_ptr& inst, bool method, bool arg_num)
+void disassembler::disassemble_builtin_call(const instruction::ptr& inst, bool method, bool args)
 {
-    if (arg_num)
+    if (args)
     {
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
     }
@@ -319,9 +320,9 @@ void disassembler::disassemble_builtin_call(const gsc::instruction_ptr& inst, bo
     }
 }
 
-void disassembler::disassemble_local_call(const gsc::instruction_ptr& inst, bool thread)
+void disassembler::disassemble_local_call(const instruction::ptr& inst, bool thread)
 {
-    std::int32_t offset = this->disassemble_offset();
+    std::int32_t offset = disassemble_offset();
 
     inst->data.push_back(utils::string::va("%X", offset + inst->index + 1));
 
@@ -331,7 +332,7 @@ void disassembler::disassemble_local_call(const gsc::instruction_ptr& inst, bool
     }
 }
 
-void disassembler::disassemble_far_call(const gsc::instruction_ptr& inst, bool thread)
+void disassembler::disassemble_far_call(const instruction::ptr& inst, bool thread)
 {
     script_->seek(3);
 
@@ -349,7 +350,7 @@ void disassembler::disassemble_far_call(const gsc::instruction_ptr& inst, bool t
     inst->data.push_back(func_name != "" ? func_name : utils::string::va("_ID%i", func_id));
 }
 
-void disassembler::disassemble_jump(const gsc::instruction_ptr& inst, bool expr, bool back)
+void disassembler::disassemble_jump(const instruction::ptr& inst, bool expr, bool back)
 {
     std::int32_t addr;
     std::string label;
@@ -376,12 +377,12 @@ void disassembler::disassemble_jump(const gsc::instruction_ptr& inst, bool expr,
     labels_.insert({addr, label});
 }
 
-void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
+void disassembler::disassemble_field_variable(const instruction::ptr& inst)
 {
     std::uint16_t field_id = script_->read<std::uint16_t>();
     std::string field_name;
 
-    if(field_id > 0x826A)
+    if (field_id > 0x826A)
     {   
         auto temp = stack_->read<std::uint16_t>();
         field_name = temp == 0 ? stack_->read_c_string() : std::to_string(temp);
@@ -394,7 +395,7 @@ void disassembler::disassemble_field_variable(const gsc::instruction_ptr& inst)
     inst->data.push_back(field_name != "" ? field_name : utils::string::va("_ID%i", field_id));
 }
 
-void disassembler::disassemble_switch(const gsc::instruction_ptr& inst)
+void disassembler::disassemble_switch(const instruction::ptr& inst)
 {
     std::int32_t addr = inst->index + 4 + script_->read<std::int32_t>();
     std::string label = utils::string::va("loc_%X", addr);
@@ -403,7 +404,7 @@ void disassembler::disassemble_switch(const gsc::instruction_ptr& inst)
     labels_.insert({addr, label});
 }
 
-void disassembler::disassemble_end_switch(const gsc::instruction_ptr& inst)
+void disassembler::disassemble_end_switch(const instruction::ptr& inst)
 {
     std::uint16_t case_num = script_->read<std::uint16_t>();
     inst->data.push_back(utils::string::va("%i", case_num));
@@ -435,7 +436,7 @@ void disassembler::disassemble_end_switch(const gsc::instruction_ptr& inst)
             inst->size += 4;
             internal_index += 4;
 
-            auto addr = this->disassemble_offset() + internal_index;
+            auto addr = disassemble_offset() + internal_index;
             std::string label = utils::string::va("loc_%X", addr);
             inst->data.push_back(label);
 
@@ -479,7 +480,7 @@ void disassembler::resolve_local_functions()
             case opcode::OP_ScriptLocalChildThreadCall:
             case opcode::OP_ScriptLocalMethodThreadCall:
             case opcode::OP_ScriptLocalMethodChildThreadCall:
-                inst->data.at(0) = this->resolve_function(inst->data[0]);
+                inst->data.at(0) = resolve_function(inst->data[0]);
                 break;
             default:
                 break;
@@ -508,7 +509,7 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
     throw disasm_error(utils::string::va("\"%s\" is not valid function address!", index.data()));
 }
 
-void disassembler::print_function(const gsc::function_ptr& func)
+void disassembler::print_function(const function::ptr& func)
 {
     output_->write_string("\n");
     output_->write_string(utils::string::va("%s\n", func->name.data()));
@@ -522,13 +523,13 @@ void disassembler::print_function(const gsc::function_ptr& func)
             output_->write_string(utils::string::va("\t%s\n", itr->second.data()));
         }
 
-        this->print_instruction(inst);
+        print_instruction(inst);
     }
 
     output_->write_string(utils::string::va("end_%s\n", func->name.substr(4).data()));
 }
 
-void disassembler::print_instruction(const gsc::instruction_ptr& inst)
+void disassembler::print_instruction(const instruction::ptr& inst)
 {
     switch (opcode(inst->opcode))
     {

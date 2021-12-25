@@ -5,11 +5,15 @@
 
 #pragma once
 
-namespace xsk::gsc::utils
+namespace xsk::utils
 {
 
 class byte_buffer
 {
+public:
+    using ptr = std::unique_ptr<byte_buffer>;
+
+private:
     std::vector<std::uint8_t> data_;
     std::size_t size_;
     std::size_t pos_;
@@ -41,7 +45,7 @@ public:
     {
         std::array<std::uint8_t, sizeof(T)> mem;
 
-        for(auto i = 0; i < sizeof(T); i++)
+        for (auto i = 0; i < sizeof(T); i++)
         {
             mem[i] = reinterpret_cast<std::uint8_t*>(data_.data() + pos_)[sizeof(T) - 1 - i];
         }
@@ -56,7 +60,7 @@ public:
     {
         auto* mem = data_.data() + pos_;
 
-        for(auto i = 0; i < sizeof(T); i++)
+        for (auto i = 0; i < sizeof(T); i++)
         {
             mem[i] = reinterpret_cast<std::uint8_t*>(&data)[sizeof(T) - 1 - i];
         }
@@ -75,7 +79,5 @@ public:
     auto pos() -> std::size_t;
     auto buffer() -> std::vector<std::uint8_t>&;
 };
-
-using byte_buffer_ptr = std::unique_ptr<utils::byte_buffer>;
 
 } // namespace xsk::utils

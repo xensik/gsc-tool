@@ -5,7 +5,7 @@
 
 #include "stdafx.hpp"
 
-namespace xsk::gsc::utils
+namespace xsk::utils
 {
 
 auto file::read(const std::string& file) -> std::vector<std::uint8_t>
@@ -13,7 +13,7 @@ auto file::read(const std::string& file) -> std::vector<std::uint8_t>
     std::vector<std::uint8_t> data;
 
     std::ifstream stream(file, std::ios::binary);
-    
+
     if (!stream.good() && !stream.is_open())
     {
         throw std::runtime_error("Couldn't open file " + file);

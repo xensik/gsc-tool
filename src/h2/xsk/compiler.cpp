@@ -11,7 +11,7 @@
 namespace xsk::gsc::h2
 {
 
-auto compiler::output() -> std::vector<gsc::function_ptr>
+auto compiler::output() -> std::vector<function::ptr>
 {
     return std::move(assembly_);
 }
@@ -19,38 +19,48 @@ auto compiler::output() -> std::vector<gsc::function_ptr>
 void compiler::compile(const std::string& file, std::vector<std::uint8_t>& data)
 {
     filename_ = file;
+    sources_.empty();
 
-    auto result = parse_buffer(filename_, data);
+    auto prog = parse_buffer(filename_, data);
 
-    compile_program(result);
+    compile_program(prog);
 }
 
-void compiler::set_readf_callback(std::function<std::vector<std::uint8_t>(const std::string&)> func)
+void compiler::read_callback(std::function<std::vector<std::uint8_t>(const std::string&)> func)
 {
-    callback_readf_ = func;
+    read_callback_ = func;
 }
 
-auto compiler::parse_buffer(const std::string& file, std::vector<std::uint8_t>& data) -> gsc::program_ptr
+auto compiler::parse_buffer(const std::string& file, std::vector<std::uint8_t>& data) -> ast::program::ptr
 {
     yyscan_t scanner;
-    gsc::location loc;
-    gsc::program_ptr result(nullptr);
-    
-    loc.initialize(&file);
+    context ctx;
+    ast::program::ptr result(nullptr);
+
+    ctx.header_top = 0;
+    ctx.mode = mode_;
+    ctx.read_callback = read_callback_;
+    ctx.sources = &sources_;
+    ctx.loc.initialize(&file);
+
     // Add the two NULL terminators, required by flex.
     data.push_back(0);
     data.push_back(0);
 
     if (h2_lex_init(&scanner))
-        exit(1);
+    {
+        throw comp_error(ctx.loc, "An unknown error ocurred while starting lexer context.");
+    }
+
+    ctx.scanner = scanner;
 
     YY_BUFFER_STATE yybuffer = h2__scan_buffer(reinterpret_cast<char*>(data.data()), data.size(), scanner);
 
-    parser parser(scanner, loc, result);
+    parser parser(scanner, &ctx, result);
     
-    if(parser.parse() || result == nullptr)
+    if (parser.parse() || result == nullptr)
     {
-        throw gsc::comp_error(loc, "An unknown error ocurred while parsing gsc file.");
+        throw comp_error(ctx.loc, "An unknown error ocurred while parsing gsc file.");
     }
 
     h2__delete_buffer(yybuffer, scanner);
@@ -59,15 +69,15 @@ auto compiler::parse_buffer(const std::string& file, std::vector<std::uint8_t>& 
     return result;
 }
 
-auto compiler::parse_file(const std::string& file) -> gsc::program_ptr
+auto compiler::parse_file(const std::string& file) -> ast::program::ptr
 {
-    auto buffer = callback_readf_(file);
+    auto buffer = read_callback_(file);
     auto result = parse_buffer(file, buffer);
 
     return result;
 }
 
-void compiler::compile_program(const gsc::program_ptr& program)
+void compiler::compile_program(const ast::program::ptr& program)
 {
     assembly_.clear();
     includes_.clear();
@@ -76,38 +86,38 @@ void compiler::compile_program(const gsc::program_ptr& program)
     local_functions_.clear();
     index_ = 1;
 
-    for(const auto& def : program->definitions)
+    for (const auto& entry : program->declarations)
     {
-        if(def.as_node->type == gsc::node_t::thread)
+        if (entry == ast::kind::decl_thread)
         {
-            local_functions_.push_back(def.as_thread->name->value);
+            local_functions_.push_back(entry.as_thread->name->value);
         }
     }
 
-    for(const auto& include : program->includes)
+    for (const auto& include : program->includes)
     {
         emit_include(include);
     }
 
-    for(const auto& def : program->definitions)
+    for (const auto& declaration : program->declarations)
     {
-        emit_define(def);  
+        emit_declaration(declaration);  
     }
 }
 
-void compiler::emit_include(const gsc::include_ptr& include)
+void compiler::emit_include(const ast::include::ptr& include)
 {
-    const auto& path = include->file->value;
+    const auto& path = include->path->value;
 
-    for(const auto& inc : includes_)
+    for (const auto& inc : includes_)
     {
-        if(inc.name == path)
+        if (inc.name == path)
         {
-            throw gsc::comp_error(include->loc, "error duplicated include file '" + path + "'.");
+            throw comp_error(include->loc(), "error duplicated include file '" + path + "'.");
         }
     }
 
-    if(map_known_includes(path)) return;
+    if (map_known_includes(path)) return;
 
     try
     {
@@ -115,1348 +125,1689 @@ void compiler::emit_include(const gsc::include_ptr& include)
 
         std::vector<std::string> funcs;
 
-        for(const auto& def : program->definitions)
+        for (const auto& decl : program->declarations)
         {
-            if(def.as_node->type == gsc::node_t::thread)
+            if (decl == ast::kind::decl_thread)
             {
-                funcs.push_back(def.as_thread->name->value);
+                funcs.push_back(decl.as_thread->name->value);
             }
         }
 
-        if(funcs.size() == 0)
+        if (funcs.size() == 0)
         {
-            throw gsc::comp_error(include->loc, "error empty include file '" + path + "'.");
+            throw comp_error(include->loc(), "error empty include file '" + path + "'.");
         }
 
         includes_.push_back(include_t(path, funcs));
     }
-    catch(const std::exception& e)
+    catch (const std::exception& e)
     {
-        throw gsc::comp_error(include->loc, "error parsing include file '" + path + "': " + e.what());
+        throw comp_error(include->loc(), "error parsing include file '" + path + "': " + e.what());
     }
 }
 
-void compiler::emit_define(const gsc::define_ptr& define)
+void compiler::emit_declaration(const ast::decl& decl)
 {
-    switch(define.as_node->type)
+    switch (decl.as_node->kind())
     {
-        case gsc::node_t::usingtree: emit_usingtree(define.as_usingtree); break;
-        case gsc::node_t::constant:  emit_constant(define.as_constant); break;
-        case gsc::node_t::thread:    emit_thread(define.as_thread); break;
-        default: break;
+        case ast::kind::decl_usingtree:
+            emit_decl_usingtree(decl.as_usingtree);
+            break;
+        case ast::kind::decl_constant:
+            emit_decl_constant(decl.as_constant);
+            break;
+        case ast::kind::decl_thread:
+            emit_decl_thread(decl.as_thread);
+            break;
+        default:
+            throw comp_error(decl.as_node->loc(), "unknown declaration");
     }
 }
 
-void compiler::emit_usingtree(const gsc::usingtree_ptr& animtree)
+void compiler::emit_decl_usingtree(const ast::decl_usingtree::ptr& animtree)
 {
-    animtrees_.push_back({ animtree->animtree->value, false });
+    animtrees_.push_back({ animtree->name->value, false });
 }
 
-void compiler::emit_constant(const gsc::constant_ptr& constant)
+void compiler::emit_decl_constant(const ast::decl_constant::ptr& constant)
 {
     constants_.insert({ constant->name->value, std::move(constant->value) });
 }
 
-void compiler::emit_thread(const gsc::thread_ptr& thread)
+void compiler::emit_decl_thread(const ast::decl_thread::ptr& thread)
 {
-    function_ = std::make_unique<gsc::function>();
+    function_ = std::make_unique<function>();
     function_->index = index_;
     function_->name = thread->name->value;
 
-    auto ctx = std::make_unique<gsc::context>();
+    auto blk = std::make_unique<block>();
     stack_idx_ = 0;
     label_idx_ = 0;
     can_break_ = false;
     can_continue_ = false;
     local_stack_.clear();
-    break_ctxs_.clear();
-    continue_ctxs_.clear();
+    break_blks_.clear();
+    continue_blks_.clear();
 
-    process_thread(ctx, thread);
+    process_thread(thread, blk);
 
-    emit_parameters(ctx, thread->params);
-    emit_stmt_list(ctx, thread->block, true);
-    emit_opcode(ctx, opcode::OP_End);
+    emit_expr_parameters(thread->params, blk);
+    emit_stmt_list(thread->stmt, blk, true);
+    emit_opcode(opcode::OP_End);
 
     function_->size = index_ - function_->index;
     assembly_.push_back(std::move(function_));
 }
 
-void compiler::emit_parameters(const gsc::context_ptr& ctx, const gsc::parameters_ptr& params)
+void compiler::emit_stmt(const ast::stmt& stmt, const block::ptr& blk, bool last)
 {
-    for(const auto& param : params->list)
+    switch (stmt.as_node->kind())
     {
-        initialize_variable(ctx, param);
-        emit_opcode(ctx, opcode::OP_SafeCreateVariableFieldCached, variable_create_index(ctx, param));     
+        case ast::kind::stmt_list:
+            emit_stmt_list(stmt.as_list, blk, last);
+            break;
+        case ast::kind::stmt_expr:
+            emit_stmt_expr(stmt.as_expr, blk);
+            break;
+        case ast::kind::stmt_call:
+            emit_stmt_call(stmt.as_call, blk);
+            break;
+        case ast::kind::stmt_assign:
+            emit_stmt_assign(stmt.as_assign, blk);
+            break;
+        case ast::kind::stmt_endon:
+            emit_stmt_endon(stmt.as_endon, blk);
+            break;
+        case ast::kind::stmt_notify:
+            emit_stmt_notify(stmt.as_notify, blk);
+            break;
+        case ast::kind::stmt_wait:
+            emit_stmt_wait(stmt.as_wait, blk);
+            break;
+        case ast::kind::stmt_waittill:
+            emit_stmt_waittill(stmt.as_waittill, blk);
+            break;
+        case ast::kind::stmt_waittillmatch:
+            emit_stmt_waittillmatch(stmt.as_waittillmatch, blk);
+            break;
+        case ast::kind::stmt_waittillframeend:
+            emit_stmt_waittillframeend(stmt.as_waittillframeend, blk);
+            break;
+        case ast::kind::stmt_waitframe:
+            emit_stmt_waitframe(stmt.as_waitframe, blk);
+            break;
+        case ast::kind::stmt_if:
+            emit_stmt_if(stmt.as_if, blk, last);
+            break;
+        case ast::kind::stmt_ifelse:
+            emit_stmt_ifelse(stmt.as_ifelse, blk, last);
+            break;
+        case ast::kind::stmt_while:
+            emit_stmt_while(stmt.as_while, blk);
+            break;
+        case ast::kind::stmt_dowhile:
+            emit_stmt_dowhile(stmt.as_dowhile, blk);
+            break;
+        case ast::kind::stmt_for:
+            emit_stmt_for(stmt.as_for, blk);
+            break;
+        case ast::kind::stmt_foreach:
+            emit_stmt_foreach(stmt.as_foreach, blk);
+            break;
+        case ast::kind::stmt_switch:
+            emit_stmt_switch(stmt.as_switch, blk);
+            break;
+        case ast::kind::stmt_case:
+            emit_stmt_case(stmt.as_case, blk);
+            break;
+        case ast::kind::stmt_default:
+            emit_stmt_default(stmt.as_default, blk);
+            break;
+        case ast::kind::stmt_break:
+            emit_stmt_break(stmt.as_break, blk);
+            break;
+        case ast::kind::stmt_continue:
+            emit_stmt_continue(stmt.as_continue, blk);
+            break;
+        case ast::kind::stmt_return:
+            emit_stmt_return(stmt.as_return, blk);
+            break;
+        case ast::kind::stmt_breakpoint:
+            emit_stmt_breakpoint(stmt.as_breakpoint, blk);
+            break;
+        case ast::kind::stmt_prof_begin:
+            emit_stmt_prof_begin(stmt.as_prof_begin, blk);
+            break;
+        case ast::kind::stmt_prof_end:
+            emit_stmt_prof_end(stmt.as_prof_end, blk);
+            break;
+        default:
+            throw comp_error(stmt.as_node->loc(), "unknown statement");
     }
-
-    emit_opcode(ctx, opcode::OP_checkclearparams);
 }
 
-void compiler::emit_stmt(const gsc::context_ptr& ctx, const gsc::stmt_ptr& stmt, bool last)
+void compiler::emit_stmt_list(const ast::stmt_list::ptr& stmt, const block::ptr& blk, bool last)
 {
-    switch(stmt.as_node->type)
+    for (const auto& entry : stmt->list)
     {
-        case gsc::node_t::stmt_list:             emit_stmt_list(ctx, stmt.as_list, last); break;
-        case gsc::node_t::stmt_call:             emit_stmt_call(ctx, stmt.as_call); break;
-        case gsc::node_t::stmt_assign:           emit_stmt_assign(ctx, stmt.as_assign); break;
-        case gsc::node_t::stmt_endon:            emit_stmt_endon(ctx, stmt.as_endon); break;
-        case gsc::node_t::stmt_notify:           emit_stmt_notify(ctx, stmt.as_notify); break;
-        case gsc::node_t::stmt_wait:             emit_stmt_wait(ctx, stmt.as_wait); break;
-        case gsc::node_t::stmt_waittill:         emit_stmt_waittill(ctx, stmt.as_waittill); break;
-        case gsc::node_t::stmt_waittillmatch:    emit_stmt_waittillmatch(ctx, stmt.as_waittillmatch); break;
-        case gsc::node_t::stmt_waittillframeend: emit_stmt_waittillframeend(ctx, stmt.as_waittillframeend); break;
-        case gsc::node_t::stmt_waitframe:        emit_stmt_waitframe(ctx, stmt.as_waitframe); break;
-        case gsc::node_t::stmt_if:               emit_stmt_if(ctx, stmt.as_if, last); break;
-        case gsc::node_t::stmt_ifelse:           emit_stmt_ifelse(ctx, stmt.as_ifelse, last); break;
-        case gsc::node_t::stmt_while:            emit_stmt_while(ctx, stmt.as_while); break;
-        case gsc::node_t::stmt_for:              emit_stmt_for(ctx, stmt.as_for); break;
-        case gsc::node_t::stmt_foreach:          emit_stmt_foreach(ctx, stmt.as_foreach); break;
-        case gsc::node_t::stmt_switch:           emit_stmt_switch(ctx, stmt.as_switch); break;
-        case gsc::node_t::stmt_case:             emit_stmt_case(ctx, stmt.as_case); break;
-        case gsc::node_t::stmt_default:          emit_stmt_default(ctx, stmt.as_default); break;
-        case gsc::node_t::stmt_break:            emit_stmt_break(ctx, stmt.as_break); break;
-        case gsc::node_t::stmt_continue:         emit_stmt_continue(ctx, stmt.as_continue); break;
-        case gsc::node_t::stmt_return:           emit_stmt_return(ctx, stmt.as_return); break;
-        default: break;
+        bool last_ = (&entry == &stmt->list.back() && last) ? true : false;
+        emit_stmt(entry, blk, last_);
     }
 }
 
-void compiler::emit_stmt_list(const gsc::context_ptr& ctx, const gsc::stmt_list_ptr& stmt, bool last)
+void compiler::emit_stmt_expr(const ast::stmt_expr::ptr& stmt, const block::ptr& blk)
 {
-    for (const auto& entry : stmt->stmts)
+    switch (stmt->expr.kind())
     {
-        bool last_ = (&entry == &stmt->stmts.back() && last) ? true : false;
-        emit_stmt(ctx, entry, last_);
+        case ast::kind::expr_increment:
+            emit_expr_increment(stmt->expr.as_increment, blk, true);
+            break;
+        case ast::kind::expr_decrement:
+            emit_expr_decrement(stmt->expr.as_decrement, blk, true);
+            break;
+        case ast::kind::expr_assign_equal:
+        case ast::kind::expr_assign_add:
+        case ast::kind::expr_assign_sub:
+        case ast::kind::expr_assign_mul:
+        case ast::kind::expr_assign_div:
+        case ast::kind::expr_assign_mod:
+        case ast::kind::expr_assign_shift_left:
+        case ast::kind::expr_assign_shift_right:
+        case ast::kind::expr_assign_bitwise_or:
+        case ast::kind::expr_assign_bitwise_and:
+        case ast::kind::expr_assign_bitwise_exor:
+            emit_expr_assign(stmt->expr.as_assign, blk);
+            break;
+        case ast::kind::null:
+            break;
+        default:
+            throw comp_error(stmt->loc(), "unknown expr statement expression");
     }
 }
 
-void compiler::emit_stmt_call(const gsc::context_ptr& ctx, const gsc::stmt_call_ptr& stmt)
+void compiler::emit_stmt_call(const ast::stmt_call::ptr& stmt, const block::ptr& blk)
 {
-    if(stmt->expr->func.as_node->type == gsc::node_t::expr_call_function)
+    if (stmt->expr == ast::kind::expr_call)
     {
-        const auto& name = stmt->expr->func.as_func->name->value;
+        if (mode_ != gsc::build::dev && stmt->expr.as_call->call == ast::kind::expr_function)
+        {
+            const auto& name = stmt->expr.as_call->call.as_function->name->value;
+            if (name == "assert" || name == "assertex" || name == "assertmsg") return;
+        }
 
-        if(name == "assert" || name == "assertex" || name == "assertmsg") return;
+        emit_expr_call(stmt->expr.as_call, blk);
     }
+    else if (stmt->expr == ast::kind::expr_method)
+        emit_expr_method(stmt->expr.as_method, blk);
+    else
+        throw comp_error(stmt->loc(), "unknown call statement expression");
 
-    emit_expr_call(ctx, stmt->expr);
-    emit_opcode(ctx, opcode::OP_DecTop);
+    emit_opcode(opcode::OP_DecTop);
 }
 
-void compiler::emit_stmt_assign(const gsc::context_ptr& ctx, const gsc::stmt_assign_ptr& stmt)
+void compiler::emit_stmt_assign(const ast::stmt_assign::ptr& stmt, const block::ptr& blk)
 {
-    emit_expr_assign(ctx, stmt->expr);
+    switch (stmt->expr.kind())
+    {
+        case ast::kind::expr_increment:
+            emit_expr_increment(stmt->expr.as_increment, blk, true);
+            break;
+        case ast::kind::expr_decrement:
+            emit_expr_decrement(stmt->expr.as_decrement, blk, true);
+            break;
+        case ast::kind::expr_assign_equal:
+        case ast::kind::expr_assign_add:
+        case ast::kind::expr_assign_sub:
+        case ast::kind::expr_assign_mul:
+        case ast::kind::expr_assign_div:
+        case ast::kind::expr_assign_mod:
+        case ast::kind::expr_assign_shift_left:
+        case ast::kind::expr_assign_shift_right:
+        case ast::kind::expr_assign_bitwise_or:
+        case ast::kind::expr_assign_bitwise_and:
+        case ast::kind::expr_assign_bitwise_exor:
+            emit_expr_assign(stmt->expr.as_assign, blk);
+            break;
+        default:
+            throw comp_error(stmt->loc(), "unknown assign statement expression");
+    }
 }
 
-void compiler::emit_stmt_endon(const gsc::context_ptr& ctx, const gsc::stmt_endon_ptr& stmt)
+void compiler::emit_stmt_endon(const ast::stmt_endon::ptr& stmt, const block::ptr& blk)
 {
-    emit_expr(ctx, stmt->expr);
-    emit_expr(ctx, stmt->obj);
-    emit_opcode(ctx, opcode::OP_endon);
+    emit_expr(stmt->event, blk);
+    emit_expr(stmt->obj, blk);
+    emit_opcode(opcode::OP_endon);
 }
 
-void compiler::emit_stmt_notify(const gsc::context_ptr& ctx, const gsc::stmt_notify_ptr& stmt)
+void compiler::emit_stmt_notify(const ast::stmt_notify::ptr& stmt, const block::ptr& blk)
 {
-    emit_opcode(ctx, opcode::OP_voidCodepos);
+    emit_opcode(opcode::OP_voidCodepos);
     
     std::reverse(stmt->args->list.begin(), stmt->args->list.end());
     
-    for(const auto& arg : stmt->args->list)
+    for (const auto& arg : stmt->args->list)
     {
-        emit_expr(ctx, arg);
+        emit_expr(arg, blk);
     }
 
-    emit_expr(ctx, stmt->expr);
-    emit_expr(ctx, stmt->obj);
-    emit_opcode(ctx, opcode::OP_notify);
+    emit_expr(stmt->event, blk);
+    emit_expr(stmt->obj, blk);
+    emit_opcode(opcode::OP_notify);
 }
 
-void compiler::emit_stmt_wait(const gsc::context_ptr& ctx, const gsc::stmt_wait_ptr& stmt)
+void compiler::emit_stmt_wait(const ast::stmt_wait::ptr& stmt, const block::ptr& blk)
 {
-    emit_expr(ctx, stmt->expr);
-    emit_opcode(ctx, opcode::OP_wait);
+    emit_expr(stmt->time, blk);
+    emit_opcode(opcode::OP_wait);
 }
 
-void compiler::emit_stmt_waittill(const gsc::context_ptr& ctx, const gsc::stmt_waittill_ptr& stmt)
+void compiler::emit_stmt_waittill(const ast::stmt_waittill::ptr& stmt, const block::ptr& blk)
 {
-    emit_expr(ctx, stmt->expr);
-    emit_expr(ctx, stmt->obj);
-    emit_opcode(ctx, opcode::OP_waittill);
+    emit_expr(stmt->event, blk);
+    emit_expr(stmt->obj, blk);
+    emit_opcode(opcode::OP_waittill);
 
-    for(const auto& arg : stmt->args->list)
+    for (const auto& entry : stmt->args->list)
     {
-        create_variable(ctx, arg.as_name);
-        emit_opcode(ctx, opcode::OP_SafeSetWaittillVariableFieldCached, variable_access_index(ctx, arg.as_name));
+        create_variable(entry.as_identifier, blk);
+        emit_opcode(opcode::OP_SafeSetWaittillVariableFieldCached, variable_access_index(entry.as_identifier, blk));
     }
 
-    emit_opcode(ctx, opcode::OP_clearparams);
+    emit_opcode(opcode::OP_clearparams);
 }
 
-void compiler::emit_stmt_waittillmatch(const gsc::context_ptr& ctx, const gsc::stmt_waittillmatch_ptr& stmt)
+void compiler::emit_stmt_waittillmatch(const ast::stmt_waittillmatch::ptr& stmt, const block::ptr& blk)
 {
-    emit_expr_arguments(ctx, stmt->args);
-    emit_expr(ctx, stmt->expr);
-    emit_expr(ctx, stmt->obj);
-    emit_opcode(ctx, opcode::OP_waittillmatch, utils::string::va("%d", stmt->args->list.size()));
-    emit_opcode(ctx, opcode::OP_clearparams);
+    emit_expr_arguments(stmt->args, blk);
+    emit_expr(stmt->event, blk);
+    emit_expr(stmt->obj, blk);
+    emit_opcode(opcode::OP_waittillmatch, utils::string::va("%d", stmt->args->list.size()));
+    emit_opcode(opcode::OP_waittillmatch2);
+    emit_opcode(opcode::OP_clearparams);
 }
 
-void compiler::emit_stmt_waittillframeend(const gsc::context_ptr& ctx, const gsc::stmt_waittillframeend_ptr& stmt)
+void compiler::emit_stmt_waittillframeend(const ast::stmt_waittillframeend::ptr&, const block::ptr&)
 {
-    emit_opcode(ctx, opcode::OP_waittillFrameEnd);
+    emit_opcode(opcode::OP_waittillFrameEnd);
 }
 
-void compiler::emit_stmt_waitframe(const gsc::context_ptr& ctx, const gsc::stmt_waitframe_ptr& stmt)
+void compiler::emit_stmt_waitframe(const ast::stmt_waitframe::ptr&, const block::ptr&)
 {
-    emit_opcode(ctx, opcode::OP_waitFrame);
+    emit_opcode(opcode::OP_waitFrame);
 }
 
-void compiler::emit_stmt_if(const gsc::context_ptr& ctx, const gsc::stmt_if_ptr& stmt, bool last)
+void compiler::emit_stmt_if(const ast::stmt_if::ptr& stmt, const block::ptr& blk, bool last)
 {
     auto end_loc = create_label();
 
-    if(stmt->expr.as_node->type == gsc::node_t::expr_not)
+    if (stmt->test == ast::kind::expr_not)
     {
-        emit_expr(ctx, stmt->expr.as_not->rvalue);
-        emit_opcode(ctx, opcode::OP_JumpOnTrue, end_loc);
+        emit_expr(stmt->test.as_not->rvalue, blk);
+        emit_opcode(opcode::OP_JumpOnTrue, end_loc);
     }
     else
     {
-        emit_expr(ctx, stmt->expr);
-        emit_opcode(ctx, opcode::OP_JumpOnFalse, end_loc);
+        emit_expr(stmt->test, blk);
+        emit_opcode(opcode::OP_JumpOnFalse, end_loc);
     }
 
-    ctx->transfer(stmt->ctx);
-    stmt->ctx->is_last = last;
+    blk->transfer(stmt->blk);
 
-    emit_stmt(stmt->ctx, stmt->stmt, last);
+    emit_stmt(stmt->stmt, stmt->blk, last);
 
-    last ? emit_opcode(ctx, opcode::OP_End) : emit_remove_local_vars(stmt->ctx);
+    last ? emit_opcode(opcode::OP_End) : emit_remove_local_vars(stmt->blk);
 
     insert_label(end_loc);
 }
 
-void compiler::emit_stmt_ifelse(const gsc::context_ptr& ctx, const gsc::stmt_ifelse_ptr& stmt, bool last)
+void compiler::emit_stmt_ifelse(const ast::stmt_ifelse::ptr& stmt, const block::ptr& blk, bool last)
 {
-    std::vector<gsc::context*> childs;
+    std::vector<block*> childs;
     auto else_loc = create_label();
     auto end_loc = create_label();
 
-    if(stmt->expr.as_node->type == gsc::node_t::expr_not)
+    if (stmt->test == ast::kind::expr_not)
     {
-        emit_expr(ctx, stmt->expr.as_not->rvalue);
-        emit_opcode(ctx, opcode::OP_JumpOnTrue, else_loc);
+        emit_expr(stmt->test.as_not->rvalue, blk);
+        emit_opcode(opcode::OP_JumpOnTrue, else_loc);
     }
     else
     {
-        emit_expr(ctx, stmt->expr);
-        emit_opcode(ctx, opcode::OP_JumpOnFalse, else_loc);
+        emit_expr(stmt->test, blk);
+        emit_opcode(opcode::OP_JumpOnFalse, else_loc);
     }
 
-    ctx->transfer(stmt->ctx_if);
-    stmt->ctx_if->is_last = last;
+    blk->transfer(stmt->blk_if);
 
-    emit_stmt(stmt->ctx_if, stmt->stmt_if, last);
+    emit_stmt(stmt->stmt_if, stmt->blk_if, last);
 
-    emit_remove_local_vars(stmt->ctx_if);
+    emit_remove_local_vars(stmt->blk_if);
 
-    if(stmt->ctx_if->abort == abort_t::abort_none)
-        childs.push_back(stmt->ctx_if.get());
+    if (stmt->blk_if->abort == abort_t::abort_none)
+        childs.push_back(stmt->blk_if.get());
 
-    last ? emit_opcode(ctx, opcode::OP_End) : emit_opcode(ctx, opcode::OP_jump, end_loc);
+    last ? emit_opcode(opcode::OP_End) : emit_opcode(opcode::OP_jump, end_loc);
 
     insert_label(else_loc);
 
-    ctx->transfer(stmt->ctx_else);
-    stmt->ctx_else->is_last = last;
+    blk->transfer(stmt->blk_else);
 
-    emit_stmt(stmt->ctx_else, stmt->stmt_else, last);
+    emit_stmt(stmt->stmt_else, stmt->blk_else, last);
 
-    last ? emit_opcode(ctx, opcode::OP_End) : emit_remove_local_vars(stmt->ctx_else);
+    last ? emit_opcode(opcode::OP_End) : emit_remove_local_vars(stmt->blk_else);
 
-    if(stmt->ctx_else->abort == abort_t::abort_none)
-        childs.push_back(stmt->ctx_else.get());
+    if (stmt->blk_else->abort == abort_t::abort_none)
+        childs.push_back(stmt->blk_else.get());
 
     insert_label(end_loc);
 
-    ctx->init_from_child(childs);
+    blk->init_from_child(childs);
 }
 
-void compiler::emit_stmt_while(const gsc::context_ptr& ctx, const gsc::stmt_while_ptr& stmt)
+void compiler::emit_stmt_while(const ast::stmt_while::ptr& stmt, const block::ptr& blk)
 {
-    auto old_breaks = break_ctxs_;
-    auto old_continues = continue_ctxs_;
+    auto old_breaks = break_blks_;
+    auto old_continues = continue_blks_;
     auto old_break = can_break_;
     auto old_continue = can_continue_;
-    break_ctxs_.clear();
-    continue_ctxs_.clear();
+    break_blks_.clear();
+    continue_blks_.clear();
     can_break_ = true;
     can_continue_ = true;
 
     auto break_loc = create_label();
     auto continue_loc = create_label();
 
-    ctx->transfer(stmt->ctx);
-    stmt->ctx->loc_break = break_loc;
-    stmt->ctx->loc_continue = continue_loc;
+    blk->transfer(stmt->blk);
+    stmt->blk->loc_break = break_loc;
+    stmt->blk->loc_continue = continue_loc;
 
-    emit_create_local_vars(stmt->ctx);
+    emit_create_local_vars(stmt->blk);
     
-    ctx->local_vars_create_count = stmt->ctx->local_vars_create_count;
+    blk->local_vars_create_count = stmt->blk->local_vars_create_count;
 
-    for(auto i = 0u; i < ctx->local_vars_create_count; i++)
+    for (auto i = 0u; i < blk->local_vars_create_count; i++)
     {
-        if(!ctx->local_vars.at(i).init)
-            ctx->local_vars.at(i).init = true;
+        if (!blk->local_vars.at(i).init)
+            blk->local_vars.at(i).init = true;
     }
 
     auto begin_loc = insert_label();
 
-    bool const_cond = is_constant_condition(stmt->expr);
+    bool const_cond = is_constant_condition(stmt->test);
 
-    if(!const_cond)
+    if (!const_cond)
     {
-        emit_expr(ctx, stmt->expr);
-        emit_opcode(ctx, opcode::OP_JumpOnFalse, break_loc);
+        emit_expr(stmt->test, blk);
+        emit_opcode(opcode::OP_JumpOnFalse, break_loc);
     }
 
-    emit_stmt(stmt->ctx, stmt->stmt, false);
+    emit_stmt(stmt->stmt, stmt->blk, false);
 
     insert_label(continue_loc);
-    emit_opcode(ctx, opcode::OP_jumpback, begin_loc);
+    emit_opcode(opcode::OP_jumpback, begin_loc);
 
     insert_label(break_loc);
 
-    if(const_cond)
-        ctx->init_from_child(break_ctxs_);
+    if (const_cond)
+        blk->init_from_child(break_blks_);
 
     can_break_ = old_break;
     can_continue_ = old_continue;
-    break_ctxs_ = old_breaks;
-    continue_ctxs_ = old_continues;
+    break_blks_ = old_breaks;
+    continue_blks_ = old_continues;
 }
 
-void compiler::emit_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_ptr& stmt)
+void compiler::emit_stmt_dowhile(const ast::stmt_dowhile::ptr& stmt, const block::ptr& blk)
 {
-    auto old_breaks = break_ctxs_;
-    auto old_continues = continue_ctxs_;
+    auto old_breaks = break_blks_;
+    auto old_continues = continue_blks_;
     auto old_break = can_break_;
     auto old_continue = can_continue_;
-    break_ctxs_.clear();
-    continue_ctxs_.clear();
+    break_blks_.clear();
+    continue_blks_.clear();
+    can_break_ = true;
+    can_continue_ = true;
+
+    auto break_loc = create_label();
+    auto continue_loc = create_label();
+
+    blk->transfer(stmt->blk);
+    stmt->blk->loc_break = break_loc;
+    stmt->blk->loc_continue = continue_loc;
+
+    emit_create_local_vars(stmt->blk);
+    
+    blk->local_vars_create_count = stmt->blk->local_vars_create_count;
+
+    for (auto i = 0u; i < blk->local_vars_create_count; i++)
+    {
+        if (!blk->local_vars.at(i).init)
+            blk->local_vars.at(i).init = true;
+    }
+
+    auto begin_loc = insert_label();
+
+    emit_stmt(stmt->stmt, stmt->blk, false);
+
+    bool const_cond = is_constant_condition(stmt->test);
+
+    if (!const_cond)
+    {
+        emit_expr(stmt->test, blk);
+        emit_opcode(opcode::OP_JumpOnFalse, break_loc);
+    }
+
+    insert_label(continue_loc);
+    emit_opcode(opcode::OP_jumpback, begin_loc);
+
+    insert_label(break_loc);
+
+    if (const_cond)
+        blk->init_from_child(break_blks_);
+
+    can_break_ = old_break;
+    can_continue_ = old_continue;
+    break_blks_ = old_breaks;
+    continue_blks_ = old_continues;
+}
+
+void compiler::emit_stmt_for(const ast::stmt_for::ptr& stmt, const block::ptr& blk)
+{
+    auto old_breaks = break_blks_;
+    auto old_continues = continue_blks_;
+    auto old_break = can_break_;
+    auto old_continue = can_continue_;
+    break_blks_.clear();
+    continue_blks_.clear();
     can_break_ = false;
     can_continue_ = false;
 
     auto break_loc = create_label();
     auto continue_loc = create_label();
 
-    emit_stmt(ctx, stmt->pre_expr, false);
+    emit_stmt(stmt->init, blk, false);
 
-    ctx->transfer(stmt->ctx);
-    stmt->ctx->loc_break = break_loc;
-    stmt->ctx->loc_continue = continue_loc;
+    blk->transfer(stmt->blk);
+    stmt->blk->loc_break = break_loc;
+    stmt->blk->loc_continue = continue_loc;
 
-    emit_create_local_vars(stmt->ctx);
+    emit_create_local_vars(stmt->blk);
 
-    ctx->local_vars_create_count = stmt->ctx->local_vars_create_count;
+    blk->local_vars_create_count = stmt->blk->local_vars_create_count;
 
-    for(auto i = 0u; i < ctx->local_vars_create_count; i++)
+    for (auto i = 0u; i < blk->local_vars_create_count; i++)
     {
-        if(!ctx->local_vars.at(i).init)
-            ctx->local_vars.at(i).init = true;
+        if (!blk->local_vars.at(i).init)
+            blk->local_vars.at(i).init = true;
     }
 
-    ctx->transfer(stmt->ctx_post);
+    blk->transfer(stmt->blk_iter);
 
     auto begin_loc = insert_label();
 
-    bool const_cond = is_constant_condition(stmt->expr);
+    bool const_cond = is_constant_condition(stmt->test);
 
-    if(!const_cond)
+    if (!const_cond)
     {
-        emit_expr(ctx, stmt->expr);
-        emit_opcode(ctx, opcode::OP_JumpOnFalse, break_loc);
+        emit_expr(stmt->test, blk);
+        emit_opcode(opcode::OP_JumpOnFalse, break_loc);
     }
 
     can_break_ = true;
     can_continue_ = true;
 
-    emit_stmt(stmt->ctx, stmt->stmt, false);
+    emit_stmt(stmt->stmt, stmt->blk, false);
 
-    if(stmt->ctx->abort == abort_t::abort_none)
-        continue_ctxs_.push_back(stmt->ctx.get());
+    if (stmt->blk->abort == abort_t::abort_none)
+        continue_blks_.push_back(stmt->blk.get());
 
     can_break_ = false;
     can_continue_ = false;
 
     insert_label(continue_loc);
 
-    stmt->ctx_post->init_from_child(continue_ctxs_);
+    stmt->blk_iter->init_from_child(continue_blks_);
 
-    emit_stmt(stmt->ctx_post, stmt->post_expr, false);
-    emit_opcode(ctx, opcode::OP_jumpback, begin_loc);
+    emit_stmt(stmt->iter, stmt->blk_iter, false);
+    emit_opcode(opcode::OP_jumpback, begin_loc);
 
     insert_label(break_loc);
 
-    if(const_cond)
-        ctx->init_from_child(break_ctxs_);
+    if (const_cond)
+        blk->init_from_child(break_blks_);
 
     can_break_ = old_break;
     can_continue_ = old_continue;
-    break_ctxs_ = old_breaks;
-    continue_ctxs_ = old_continues;
+    break_blks_ = old_breaks;
+    continue_blks_ = old_continues;
 }
 
-void compiler::emit_stmt_foreach(const gsc::context_ptr& ctx, const gsc::stmt_foreach_ptr& stmt)
+void compiler::emit_stmt_foreach(const ast::stmt_foreach::ptr& stmt, const block::ptr& blk)
 {
-    auto old_breaks = break_ctxs_;
-    auto old_continues = continue_ctxs_;
+    auto old_breaks = break_blks_;
+    auto old_continues = continue_blks_;
     auto old_break = can_break_;
     auto old_continue = can_continue_;
-    break_ctxs_.clear();
-    continue_ctxs_.clear();
+    break_blks_.clear();
+    continue_blks_.clear();
     can_break_ = false;
     can_continue_ = false;
 
     auto break_loc = create_label();
     auto continue_loc = create_label();
 
-    emit_expr(ctx, stmt->array_expr);
-    emit_variable_ref(ctx, stmt->array, true);
-    emit_variable(ctx, stmt->array);
-    emit_opcode(ctx, opcode::OP_CallBuiltin1, "getfirstarraykey");
-    emit_variable_ref(ctx, stmt->key_expr, true);
+    emit_expr(stmt->array_expr, blk);
+    emit_expr_variable_ref(stmt->array, blk, true);
+    emit_expr_variable(stmt->array, blk);
+    emit_opcode(opcode::OP_CallBuiltin1, "getfirstarraykey");
+    emit_expr_variable_ref(stmt->key_expr, blk, true);
 
-    ctx->transfer(stmt->ctx);
+    blk->transfer(stmt->ctx);
     stmt->ctx->loc_break = break_loc;
     stmt->ctx->loc_continue = continue_loc;
 
     emit_create_local_vars(stmt->ctx);
 
-    ctx->local_vars_create_count = stmt->ctx->local_vars_create_count;
+    blk->local_vars_create_count = stmt->ctx->local_vars_create_count;
 
-    for(auto i = 0u; i < ctx->local_vars_create_count; i++)
+    for (auto i = 0u; i < blk->local_vars_create_count; i++)
     {
-        if(!ctx->local_vars.at(i).init)
-            ctx->local_vars.at(i).init = true;
+        if (!blk->local_vars.at(i).init)
+            blk->local_vars.at(i).init = true;
     }
 
-    ctx->transfer(stmt->ctx_post);
+    blk->transfer(stmt->ctx_post);
 
     auto begin_loc = insert_label();
 
-    emit_variable(ctx, stmt->key_expr);
-    emit_opcode(ctx, opcode::OP_CallBuiltin1, "isdefined");
-	emit_opcode(ctx, opcode::OP_JumpOnFalse, break_loc);
+    emit_expr_variable(stmt->key_expr, blk);
+    emit_opcode(opcode::OP_CallBuiltin1, "isdefined");
+	emit_opcode(opcode::OP_JumpOnFalse, break_loc);
 
     can_break_ = true;
     can_continue_ = true;
 
-    emit_variable(stmt->ctx, stmt->key_expr);
-    emit_opcode(stmt->ctx, opcode::OP_EvalLocalArrayCached, variable_access_index(stmt->ctx, stmt->array.as_name));
-    emit_variable_ref(stmt->ctx, stmt->value_expr, true);
-    emit_stmt(stmt->ctx, stmt->stmt, false);
+    emit_expr_variable(stmt->key_expr, stmt->ctx);
+    emit_opcode(opcode::OP_EvalLocalArrayCached, variable_access_index(stmt->array.as_identifier, stmt->ctx));
+    emit_expr_variable_ref(stmt->value_expr, stmt->ctx, true);
+    emit_stmt(stmt->stmt, stmt->ctx, false);
 
-    if(stmt->ctx->abort == abort_t::abort_none)
-        continue_ctxs_.push_back(stmt->ctx.get());
+    if (stmt->ctx->abort == abort_t::abort_none)
+        continue_blks_.push_back(stmt->ctx.get());
 
     can_break_ = false;
     can_continue_ = false;
 
     insert_label(continue_loc);
 
-    stmt->ctx_post->init_from_child(continue_ctxs_);
+    stmt->ctx_post->init_from_child(continue_blks_);
 
-    emit_variable(stmt->ctx_post, stmt->key_expr);
-	emit_variable(stmt->ctx_post, stmt->array);
-	emit_opcode(stmt->ctx_post, opcode::OP_CallBuiltin2, "getnextarraykey");
-	emit_variable_ref(stmt->ctx_post, stmt->key_expr, true);
-    emit_opcode(ctx, opcode::OP_jumpback, begin_loc);
+    emit_expr_variable(stmt->key_expr, stmt->ctx_post);
+	emit_expr_variable(stmt->array, stmt->ctx_post);
+	emit_opcode(opcode::OP_CallBuiltin2, "getnextarraykey");
+	emit_expr_variable_ref(stmt->key_expr, stmt->ctx_post, true);
+    emit_opcode(opcode::OP_jumpback, begin_loc);
 
     insert_label(break_loc);
-    emit_clear_local_variable(ctx, stmt->array.as_name);
-    if(!stmt->use_key) emit_clear_local_variable(ctx, stmt->key_expr.as_name);
+    emit_expr_clear_local(stmt->array.as_identifier, blk);
+    if (!stmt->use_key) emit_expr_clear_local(stmt->key_expr.as_identifier, blk);
 
     can_break_ = old_break;
     can_continue_ = old_continue;
-    break_ctxs_ = old_breaks;
-    continue_ctxs_ = old_continues;
+    break_blks_ = old_breaks;
+    continue_blks_ = old_continues;
 }
 
-void compiler::emit_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_switch_ptr& stmt)
+void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt, const block::ptr& blk)
 {
-    auto old_breaks = break_ctxs_;
+    auto old_breaks = break_blks_;
     auto old_break = can_break_;
-    break_ctxs_.clear();
+    break_blks_.clear();
     can_break_ = false;
 
     auto jmptable_loc = create_label();
     auto break_loc = create_label();
 
-    emit_expr(ctx, stmt->expr);
-    emit_opcode(ctx, opcode::OP_switch, jmptable_loc);
+    emit_expr(stmt->test, blk);
+    emit_opcode(opcode::OP_switch, jmptable_loc);
 
     can_break_ = true;
 
     std::vector<std::string> data;
-    data.push_back(utils::string::va("%d", stmt->stmt->stmts.size()));
+    data.push_back(utils::string::va("%d", stmt->stmt->list.size()));
 
     bool has_default = false;
-    gsc::context* default_ctx = nullptr;
+    block* default_ctx = nullptr;
 
-    for(auto i = 0; i < stmt->stmt->stmts.size(); i++)
+    for (auto i = 0; i < stmt->stmt->list.size(); i++)
     {
-        auto& entry = stmt->stmt->stmts[i];
+        auto& entry = stmt->stmt->list[i];
 
-        if(entry.as_node->type == gsc::node_t::stmt_case)
+        if (entry == ast::kind::stmt_case)
         {
-            if(has_default)
+            if (has_default)
             {
-                gsc::comp_error(stmt->loc, "default must be last case");
+                comp_error(stmt->loc(), "default must be last case");
             }
 
             auto& case_ = entry.as_case;
-            if(case_->value.as_node->type == gsc::node_t::data_integer)
+            if (case_->label == ast::kind::expr_integer)
             {
                 auto loc = insert_label();
                 data.push_back("case");
-                data.push_back(case_->value.as_integer->value);
+                data.push_back(case_->label.as_integer->value);
                 data.push_back(loc);
             }
-            else if(case_->value.as_node->type == gsc::node_t::data_string)
+            else if (case_->label == ast::kind::expr_string)
             {
                 auto loc = insert_label();
                 data.push_back("case");
-                data.push_back(case_->value.as_string->value);
+                data.push_back(case_->label.as_string->value);
                 data.push_back(loc);
             }
             else
             {
-                throw gsc::comp_error(stmt->loc, "case type must be int or string");
+                throw comp_error(stmt->loc(), "case type must be int or string");
             }
 
-            ctx->transfer(case_->ctx);
-            case_->ctx->loc_break = break_loc;
-            emit_stmt_list(case_->ctx, case_->stmt, false);
-            if(case_->stmt->stmts.size() > 0)
-                emit_remove_local_vars(case_->ctx);
+            blk->transfer(case_->blk);
+            case_->blk->loc_break = break_loc;
+            emit_stmt_list(case_->stmt, case_->blk, false);
+            if (case_->stmt->list.size() > 0)
+                emit_remove_local_vars(case_->blk);
         }
-        else if(entry.as_node->type == gsc::node_t::stmt_default)
+        else if (entry == ast::kind::stmt_default)
         {
             auto loc = insert_label();
             data.push_back("default");
             data.push_back(loc);
 
             has_default = true;
-            default_ctx = entry.as_default->ctx.get();
+            default_ctx = entry.as_default->blk.get();
 
-            ctx->transfer(entry.as_default->ctx);
-            entry.as_default->ctx->loc_break = break_loc;
-            emit_stmt_list(entry.as_default->ctx, entry.as_default->stmt, false);
-            if(entry.as_default->stmt->stmts.size() > 0)
-                emit_remove_local_vars(entry.as_default->ctx);
+            blk->transfer(entry.as_default->blk);
+            entry.as_default->blk->loc_break = break_loc;
+            emit_stmt_list(entry.as_default->stmt, entry.as_default->blk, false);
+            if (entry.as_default->stmt->list.size() > 0)
+                emit_remove_local_vars(entry.as_default->blk);
         }
         else
         {
-            throw gsc::comp_error(entry.as_node->loc, "missing case statement");
+            throw comp_error(entry.as_node->loc(), "missing case statement");
         }
     }    
 
-    if(has_default)
+    if (has_default)
     {
-        if(default_ctx->abort == abort_t::abort_none)
+        if (default_ctx->abort == abort_t::abort_none)
         {
-            break_ctxs_.push_back(default_ctx);
+            break_blks_.push_back(default_ctx);
         }
-        ctx->init_from_child(break_ctxs_);
+        blk->init_from_child(break_blks_);
     }
 
     insert_label(jmptable_loc);
 
-    emit_opcode(ctx, opcode::OP_endswitch, data);
+    emit_opcode(opcode::OP_endswitch, data);
 
-    auto offset =  7 * stmt->stmt->stmts.size();
+    auto offset =  7 * stmt->stmt->list.size();
     function_->instructions.back()->size += offset;
     index_ += offset;
 
     insert_label(break_loc);
 
     can_break_ = old_break;
-    break_ctxs_ = old_breaks;
+    break_blks_ = old_breaks;
 }
 
-void compiler::emit_stmt_case(const gsc::context_ptr& ctx, const gsc::stmt_case_ptr& stmt)
+void compiler::emit_stmt_case(const ast::stmt_case::ptr& stmt, const block::ptr& blk)
 {
-    throw gsc::comp_error(stmt->loc, "illegal case statement");
+    throw comp_error(stmt->loc(), "illegal case statement");
 }
 
-void compiler::emit_stmt_default(const gsc::context_ptr& ctx, const gsc::stmt_default_ptr& stmt)
+void compiler::emit_stmt_default(const ast::stmt_default::ptr& stmt, const block::ptr& blk)
 {
-    throw gsc::comp_error(stmt->loc, "illegal default statement");
+    throw comp_error(stmt->loc(), "illegal default statement");
 }
 
-void compiler::emit_stmt_break(const gsc::context_ptr& ctx, const gsc::stmt_break_ptr& stmt)
+void compiler::emit_stmt_break(const ast::stmt_break::ptr& stmt, const block::ptr& blk)
 {
-    if(can_break_ && ctx->abort == abort_t::abort_none && ctx->loc_break != "")
+    if (!can_break_ || blk->abort != abort_t::abort_none || blk->loc_break == "")
+        throw comp_error(stmt->loc(), "illegal break statement");
+
+    break_blks_.push_back(blk.get());
+    emit_remove_local_vars(blk);
+    blk->abort = abort_t::abort_break;
+    emit_opcode(opcode::OP_jump, blk->loc_break);
+}
+
+void compiler::emit_stmt_continue(const ast::stmt_continue::ptr& stmt, const block::ptr& blk)
+{
+    if (!can_continue_ || blk->abort != abort_t::abort_none || blk->loc_continue == "")
+        throw comp_error(stmt->loc(), "illegal continue statement");
+    
+    continue_blks_.push_back(blk.get());
+    emit_remove_local_vars(blk);
+    blk->abort = abort_t::abort_continue;
+    emit_opcode(opcode::OP_jump, blk->loc_continue);
+}
+
+void compiler::emit_stmt_return(const ast::stmt_return::ptr& stmt, const block::ptr& blk)
+{
+    if (blk->abort == abort_t::abort_none)
+        blk->abort = abort_t::abort_return;
+
+    if (stmt->expr != ast::kind::null)
     {
-        break_ctxs_.push_back(ctx.get());
-        emit_remove_local_vars(ctx);
-        ctx->abort = abort_t::abort_break;
-        emit_opcode(ctx, opcode::OP_jump, ctx->loc_break);
+        emit_expr(stmt->expr, blk);
+        emit_opcode(opcode::OP_Return);
     }
     else
+        emit_opcode(opcode::OP_End);
+}
+
+void compiler::emit_stmt_breakpoint(const ast::stmt_breakpoint::ptr& stmt, const block::ptr& blk)
+{
+    // TODO:
+}
+
+void compiler::emit_stmt_prof_begin(const ast::stmt_prof_begin::ptr& stmt, const block::ptr& blk)
+{
+    // TODO:
+}
+
+void compiler::emit_stmt_prof_end(const ast::stmt_prof_end::ptr& stmt, const block::ptr& blk)
+{
+    // TODO:
+}
+
+void compiler::emit_expr(const ast::expr& expr, const block::ptr& blk)
+{
+    switch (expr.kind())
     {
-        throw gsc::comp_error(stmt->loc, "illegal break statement");
+        case ast::kind::expr_paren:
+            emit_expr(expr.as_paren->child, blk);
+            break;
+        case ast::kind::expr_ternary:
+            emit_expr_ternary(expr.as_ternary, blk);
+            break;
+        case ast::kind::expr_and:
+            emit_expr_and(expr.as_and, blk);
+            break;
+        case ast::kind::expr_or:
+            emit_expr_or(expr.as_or, blk);
+            break;
+        case ast::kind::expr_equality:
+        case ast::kind::expr_inequality:
+        case ast::kind::expr_less:
+        case ast::kind::expr_greater:
+        case ast::kind::expr_less_equal:
+        case ast::kind::expr_greater_equal:
+        case ast::kind::expr_bitwise_or:
+        case ast::kind::expr_bitwise_and:
+        case ast::kind::expr_bitwise_exor:
+        case ast::kind::expr_shift_left:
+        case ast::kind::expr_shift_right:
+        case ast::kind::expr_add:
+        case ast::kind::expr_sub:
+        case ast::kind::expr_mul:
+        case ast::kind::expr_div:
+        case ast::kind::expr_mod:
+            emit_expr_binary(expr.as_binary, blk);
+            break;
+        case ast::kind::expr_complement:
+            emit_expr_complement(expr.as_complement, blk);
+            break;
+        case ast::kind::expr_not:
+            emit_expr_not(expr.as_not, blk);
+            break;
+        case ast::kind::expr_call:
+            emit_expr_call(expr.as_call, blk);
+            break;
+        case ast::kind::expr_method:
+            emit_expr_method(expr.as_method, blk);
+            break;
+        case ast::kind::expr_reference:
+            emit_expr_reference(expr.as_reference, blk);
+            break;
+        case ast::kind::expr_add_array:
+            emit_expr_add_array(expr.as_add_array, blk);
+            break;
+        case ast::kind::expr_array:
+            emit_expr_array(expr.as_array, blk);
+            break;
+        case ast::kind::expr_field:
+            emit_expr_field(expr.as_field, blk);
+            break;
+        case ast::kind::expr_size:
+            emit_expr_size(expr.as_size, blk);
+            break;
+        case ast::kind::expr_thisthread:
+            emit_opcode(opcode::OP_GetThisthread);
+            break;
+        case ast::kind::expr_empty_array:
+            emit_opcode(opcode::OP_EmptyArray);
+            break;
+        case ast::kind::expr_undefined:
+            emit_opcode(opcode::OP_GetUndefined);
+            break;
+        case ast::kind::expr_game:
+            emit_opcode(opcode::OP_GetGame);
+            break;
+        case ast::kind::expr_self:
+            emit_opcode(opcode::OP_GetSelf);
+            break;
+        case ast::kind::expr_anim:
+            emit_opcode(opcode::OP_GetAnim);
+            break;
+        case ast::kind::expr_level:
+            emit_opcode(opcode::OP_GetLevel);
+            break;
+        case ast::kind::expr_animation:
+            emit_expr_animation(expr.as_animation);
+            break;
+        case ast::kind::expr_animtree:
+            emit_expr_animtree(expr.as_animtree);
+            break;
+        case ast::kind::expr_identifier:
+            emit_expr_local(expr.as_identifier, blk);
+            break;
+        case ast::kind::expr_istring:
+            emit_expr_istring(expr.as_istring);
+            break;
+        case ast::kind::expr_string:
+            emit_expr_string(expr.as_string);
+            break;
+        case ast::kind::expr_color:
+            emit_expr_color(expr.as_color);
+            break;
+        case ast::kind::expr_vector:
+            emit_expr_vector(expr.as_vector, blk);
+            break;
+        case ast::kind::expr_float:
+            emit_expr_float(expr.as_float);
+            break;
+        case ast::kind::expr_integer:
+            emit_expr_integer(expr.as_integer);
+            break;
+        case ast::kind::expr_false:
+            emit_expr_false(expr.as_false);
+            break;
+        case ast::kind::expr_true:
+            emit_expr_true(expr.as_true);
+            break;
+        case ast::kind::null:
+            break;
+        default:
+            throw comp_error(expr.as_node->loc(), "unknown expression");
     }
 }
 
-void compiler::emit_stmt_continue(const gsc::context_ptr& ctx, const gsc::stmt_continue_ptr& stmt)
+void compiler::emit_expr_assign(const ast::expr_assign::ptr& expr, const block::ptr& blk)	
 {
-    if(can_break_ && ctx->abort == abort_t::abort_none && ctx->loc_continue != "")
+    if (expr->kind() == ast::kind::expr_assign_equal)
     {
-        continue_ctxs_.push_back(ctx.get());
-        emit_remove_local_vars(ctx);
-        ctx->abort = abort_t::abort_continue;
-        emit_opcode(ctx, opcode::OP_jump, ctx->loc_continue);
-    }
-    else
-    {
-        throw gsc::comp_error(stmt->loc, "illegal continue statement");
-    }
-}
-
-void compiler::emit_stmt_return(const gsc::context_ptr& ctx, const gsc::stmt_return_ptr& stmt)
-{
-    if(ctx->abort == abort_t::abort_none)
-    {
-        ctx->abort = abort_t::abort_return;
-    }
-
-    if(stmt->expr.as_node->type == gsc::node_t::null)
-    {
-        emit_opcode(ctx, opcode::OP_End);
-    }
-    else
-    {
-        emit_expr(ctx, stmt->expr);
-        emit_opcode(ctx, opcode::OP_Return);
-    }
-}
-
-void compiler::emit_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
-{
-    switch(expr.as_node->type)
-    {
-        case gsc::node_t::expr_ternary:          emit_expr_ternary(ctx, expr.as_ternary); break;
-        case gsc::node_t::expr_and:              emit_expr_and(ctx, expr.as_and); break;
-        case gsc::node_t::expr_or:               emit_expr_or(ctx, expr.as_or); break;
-        case gsc::node_t::expr_equality:         emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_inequality:       emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_less:             emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_greater:          emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_less_equal:       emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_greater_equal:    emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_bitwise_or:       emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_bitwise_and:      emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_bitwise_exor:     emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_shift_left:       emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_shift_right:      emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_add:              emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_sub:              emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_mult:             emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_div:              emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_mod:              emit_expr_binary(ctx, expr.as_binary); break;
-        case gsc::node_t::expr_complement:       emit_expr_complement(ctx, expr.as_complement); break;
-        case gsc::node_t::expr_not:              emit_expr_not(ctx, expr.as_not); break;
-        case gsc::node_t::expr_call:             emit_expr_call(ctx, expr.as_call); break;
-        case gsc::node_t::expr_function:         emit_expr_function(ctx, expr.as_function); break;
-        case gsc::node_t::expr_add_array:        emit_expr_add_array(ctx, expr.as_add_array); break;
-        case gsc::node_t::expr_array:            emit_array_variable(ctx, expr.as_array); break;
-        case gsc::node_t::expr_field:            emit_field_variable(ctx, expr.as_field); break;
-        case gsc::node_t::expr_size:             emit_expr_size(ctx, expr.as_size); break;
-        case gsc::node_t::data_thisthread:       emit_opcode(ctx, opcode::OP_GetThisthread); break;
-        case gsc::node_t::data_empty_array:      emit_opcode(ctx, opcode::OP_EmptyArray); break;
-        case gsc::node_t::data_undefined:        emit_opcode(ctx, opcode::OP_GetUndefined); break;
-        case gsc::node_t::data_game:             emit_opcode(ctx, opcode::OP_GetGame); break;
-        case gsc::node_t::data_self:             emit_opcode(ctx, opcode::OP_GetSelf); break;
-        case gsc::node_t::data_anim:             emit_opcode(ctx, opcode::OP_GetAnim); break;
-        case gsc::node_t::data_level:            emit_opcode(ctx, opcode::OP_GetLevel); break;
-        case gsc::node_t::data_animation:        emit_animation(ctx, expr.as_animation); break;
-        case gsc::node_t::data_animtree:         emit_animtree(ctx, expr.as_animtree); break;
-        case gsc::node_t::data_name:             emit_local_variable(ctx, expr.as_name); break;
-        case gsc::node_t::data_istring:          emit_istring(ctx, expr.as_istring); break;
-        case gsc::node_t::data_string:           emit_string(ctx, expr.as_string); break;
-        case gsc::node_t::data_color:            emit_color(ctx, expr.as_color); break;
-        case gsc::node_t::data_vector:           emit_vector(ctx, expr.as_vector); break;
-        case gsc::node_t::data_float:            emit_float(ctx, expr.as_float); break;
-        case gsc::node_t::data_integer:          emit_integer(ctx, expr.as_integer); break;
-        case gsc::node_t::data_false:            emit_false(ctx, expr.as_false); break;
-        case gsc::node_t::data_true:             emit_true(ctx, expr.as_true); break;
-        default: throw gsc::comp_error(expr.as_node->loc, "unknown expression"); break;
-    }
-}
-
-void compiler::emit_expr_assign(const gsc::context_ptr& ctx, const gsc::expr_assign_ptr& expr)	
-{
-    if(expr->type == gsc::node_t::expr_increment)
-    {
-        emit_variable_ref(ctx, expr->lvalue, false);
-        emit_opcode(ctx, opcode::OP_inc);
-        emit_opcode(ctx, opcode::OP_SetVariableField);
-    }
-    else if(expr->type == gsc::node_t::expr_decrement)
-    {
-        emit_variable_ref(ctx, expr->lvalue, false);
-        emit_opcode(ctx, opcode::OP_dec);
-        emit_opcode(ctx, opcode::OP_SetVariableField);
-    }
-    else if(expr->type == gsc::node_t::expr_assign_equal)
-    {
-        if(expr->rvalue.as_node->type == gsc::node_t::data_undefined)
+        if (expr->rvalue == ast::kind::expr_undefined)
         {
-            emit_expr_clear_variable(ctx, expr->lvalue);
+            emit_expr_clear(expr->lvalue, blk);
+            return;
         }
-        else
-        {
-            emit_expr(ctx, expr->rvalue);
-            emit_variable_ref(ctx, expr->lvalue, true);
-        }
+
+        emit_expr(expr->rvalue, blk);
+        emit_expr_variable_ref(expr->lvalue, blk, true);
+        return;
+    }
+
+    emit_expr(expr->lvalue, blk);
+    emit_expr(expr->rvalue, blk);
+
+    switch (expr->kind())
+    {
+        case ast::kind::expr_assign_add:
+            emit_opcode(opcode::OP_plus);
+            break;
+        case ast::kind::expr_assign_sub:
+            emit_opcode(opcode::OP_minus);
+            break;
+        case ast::kind::expr_assign_mul:
+            emit_opcode(opcode::OP_multiply);
+            break;
+        case ast::kind::expr_assign_div:
+            emit_opcode(opcode::OP_divide);
+            break;
+        case ast::kind::expr_assign_mod:
+            emit_opcode(opcode::OP_mod);
+            break;
+        case ast::kind::expr_assign_shift_left:
+            emit_opcode(opcode::OP_shift_left);
+            break;
+        case ast::kind::expr_assign_shift_right:
+            emit_opcode(opcode::OP_shift_right);
+            break;
+        case ast::kind::expr_assign_bitwise_or:
+            emit_opcode(opcode::OP_bit_or);
+            break;
+        case ast::kind::expr_assign_bitwise_and:
+            emit_opcode(opcode::OP_bit_and);
+            break;
+        case ast::kind::expr_assign_bitwise_exor:
+            emit_opcode(opcode::OP_bit_ex_or);
+            break;
+        default:
+            throw comp_error(expr->loc(), "unknown assign operation");
+    }
+
+    emit_expr_variable_ref(expr->lvalue, blk, true); 
+}
+
+void compiler::emit_expr_clear(const ast::expr& expr, const block::ptr& blk)
+{
+    switch (expr.kind())
+    {
+        case ast::kind::expr_array:
+            emit_expr(expr.as_array->key, blk);
+            expr.as_array->obj == ast::kind::expr_game ? emit_opcode(opcode::OP_GetGameRef) : emit_expr_variable_ref(expr.as_array->obj, blk, false);
+            emit_opcode(opcode::OP_ClearArray);
+            break;
+        case ast::kind::expr_field:
+            emit_expr_object(expr.as_field->obj, blk);
+            emit_opcode(opcode::OP_ClearFieldVariable, expr.as_field->field->value);
+            break;
+        case ast::kind::expr_identifier:
+            emit_opcode(opcode::OP_GetUndefined);
+            emit_expr_local_ref(expr.as_identifier, blk, true);
+            break;
+        default:
+            throw comp_error(expr.as_node->loc(), "unknown clear variable lvalue");
+    }
+}
+
+void compiler::emit_expr_clear_local(const ast::expr_identifier::ptr& expr, const block::ptr& blk)
+{
+    auto index = variable_stack_index(expr, blk);
+
+    if (index == 0)
+        emit_opcode(opcode::OP_ClearLocalVariableFieldCached0);
+    else
+        emit_opcode(opcode::OP_ClearLocalVariableFieldCached, variable_access_index(expr, blk));
+}
+
+void compiler::emit_expr_increment(const ast::expr_increment::ptr& expr, const block::ptr& blk, bool fromstmt)
+{
+    if (fromstmt)
+    {
+        emit_expr_variable_ref(expr->lvalue, blk, false);
+        emit_opcode(opcode::OP_inc);
+        emit_opcode(opcode::OP_SetVariableField);
     }
     else
     {
-        emit_expr(ctx, expr->lvalue);
-        emit_expr(ctx, expr->rvalue);
-
-        switch(expr->type)
-        {
-            case gsc::node_t::expr_assign_add:           emit_opcode(ctx, opcode::OP_plus); break;
-            case gsc::node_t::expr_assign_sub:           emit_opcode(ctx, opcode::OP_minus); break;
-            case gsc::node_t::expr_assign_mult:          emit_opcode(ctx, opcode::OP_multiply); break;
-            case gsc::node_t::expr_assign_div:           emit_opcode(ctx, opcode::OP_divide); break;
-            case gsc::node_t::expr_assign_mod:           emit_opcode(ctx, opcode::OP_mod); break;
-            case gsc::node_t::expr_assign_shift_left:    emit_opcode(ctx, opcode::OP_shift_left); break;
-            case gsc::node_t::expr_assign_shift_right:   emit_opcode(ctx, opcode::OP_shift_right); break;
-            case gsc::node_t::expr_assign_bitwise_or:    emit_opcode(ctx, opcode::OP_bit_or); break;
-            case gsc::node_t::expr_assign_bitwise_and:   emit_opcode(ctx, opcode::OP_bit_and); break;
-            case gsc::node_t::expr_assign_bitwise_exor:  emit_opcode(ctx, opcode::OP_bit_ex_or); break;
-            default: throw gsc::comp_error(expr->loc, "unknown assign operation"); break;
-        }
-
-        emit_variable_ref(ctx, expr->lvalue, true);
-    }  
+        // TODO:
+    }
 }
 
-void compiler::emit_expr_ternary(const gsc::context_ptr& ctx, const gsc::expr_ternary_ptr& expr)
+void compiler::emit_expr_decrement(const ast::expr_decrement::ptr& expr, const block::ptr& blk, bool fromstmt)
+{
+    if (fromstmt)
+    {
+        emit_expr_variable_ref(expr->lvalue, blk, false);
+        emit_opcode(opcode::OP_dec);
+        emit_opcode(opcode::OP_SetVariableField);
+    }
+    else
+    {
+        // TODO:
+    }
+}
+
+void compiler::emit_expr_ternary(const ast::expr_ternary::ptr& expr, const block::ptr& blk)
 {
     auto else_loc = create_label();
     auto end_loc = create_label();
 
-    if(expr->cond.as_node->type == gsc::node_t::expr_not)
+    if (expr->test == ast::kind::expr_not)
     {
-        emit_expr(ctx, expr->cond.as_not->rvalue);
-        emit_opcode(ctx, opcode::OP_JumpOnTrue, else_loc);
+        emit_expr(expr->test.as_not->rvalue, blk);
+        emit_opcode(opcode::OP_JumpOnTrue, else_loc);
     }
     else
     {
-        emit_expr(ctx, expr->cond);
-        emit_opcode(ctx, opcode::OP_JumpOnFalse, else_loc);
+        emit_expr(expr->test, blk);
+        emit_opcode(opcode::OP_JumpOnFalse, else_loc);
     }
 
-    emit_expr(ctx, expr->lvalue);
-    emit_opcode(ctx, opcode::OP_jump, end_loc);
+    emit_expr(expr->true_expr, blk);
+    emit_opcode(opcode::OP_jump, end_loc);
 
     insert_label(else_loc);
-    emit_expr(ctx, expr->rvalue);
+    emit_expr(expr->false_expr, blk);
     insert_label(end_loc);
 }
 
-void compiler::emit_expr_binary(const gsc::context_ptr& ctx, const gsc::expr_binary_ptr& expr)
+void compiler::emit_expr_binary(const ast::expr_binary::ptr& expr, const block::ptr& blk)
 {
-    emit_expr(ctx, expr->lvalue);
-    emit_expr(ctx, expr->rvalue);
+    emit_expr(expr->lvalue, blk);
+    emit_expr(expr->rvalue, blk);
 
-    switch(expr->type)
+    switch (expr->kind())
     {
-        case gsc::node_t::expr_equality:         emit_opcode(ctx, opcode::OP_equality); break;
-        case gsc::node_t::expr_inequality:       emit_opcode(ctx, opcode::OP_inequality); break;
-        case gsc::node_t::expr_less:             emit_opcode(ctx, opcode::OP_less); break;
-        case gsc::node_t::expr_greater:          emit_opcode(ctx, opcode::OP_greater); break;
-        case gsc::node_t::expr_less_equal:       emit_opcode(ctx, opcode::OP_less_equal); break;
-        case gsc::node_t::expr_greater_equal:    emit_opcode(ctx, opcode::OP_greater_equal); break;
-        case gsc::node_t::expr_bitwise_or:       emit_opcode(ctx, opcode::OP_bit_or); break;
-        case gsc::node_t::expr_bitwise_and:      emit_opcode(ctx, opcode::OP_bit_and); break;
-        case gsc::node_t::expr_bitwise_exor:     emit_opcode(ctx, opcode::OP_bit_ex_or); break;
-        case gsc::node_t::expr_shift_left:       emit_opcode(ctx, opcode::OP_shift_left); break;
-        case gsc::node_t::expr_shift_right:      emit_opcode(ctx, opcode::OP_shift_right); break;
-        case gsc::node_t::expr_add:              emit_opcode(ctx, opcode::OP_plus); break;
-        case gsc::node_t::expr_sub:              emit_opcode(ctx, opcode::OP_minus); break;
-        case gsc::node_t::expr_mult:             emit_opcode(ctx, opcode::OP_multiply); break;
-        case gsc::node_t::expr_div:              emit_opcode(ctx, opcode::OP_divide); break;
-        case gsc::node_t::expr_mod:              emit_opcode(ctx, opcode::OP_mod); break;
-        default: throw gsc::comp_error(expr->loc, "unknown binary expression"); break;
+        case ast::kind::expr_equality:
+            emit_opcode(opcode::OP_equality);
+            break;
+        case ast::kind::expr_inequality:
+            emit_opcode(opcode::OP_inequality);
+            break;
+        case ast::kind::expr_less:
+            emit_opcode(opcode::OP_less);
+            break;
+        case ast::kind::expr_greater:
+            emit_opcode(opcode::OP_greater);
+            break;
+        case ast::kind::expr_less_equal:
+            emit_opcode(opcode::OP_less_equal);
+            break;
+        case ast::kind::expr_greater_equal:
+            emit_opcode(opcode::OP_greater_equal);
+            break;
+        case ast::kind::expr_bitwise_or:
+            emit_opcode(opcode::OP_bit_or);
+            break;
+        case ast::kind::expr_bitwise_and:
+            emit_opcode(opcode::OP_bit_and);
+            break;
+        case ast::kind::expr_bitwise_exor:
+            emit_opcode(opcode::OP_bit_ex_or);
+            break;
+        case ast::kind::expr_shift_left:
+            emit_opcode(opcode::OP_shift_left);
+            break;
+        case ast::kind::expr_shift_right:
+            emit_opcode(opcode::OP_shift_right);
+            break;
+        case ast::kind::expr_add:
+            emit_opcode(opcode::OP_plus);
+            break;
+        case ast::kind::expr_sub:
+            emit_opcode(opcode::OP_minus);
+            break;
+        case ast::kind::expr_mul:
+            emit_opcode(opcode::OP_multiply);
+            break;
+        case ast::kind::expr_div:
+            emit_opcode(opcode::OP_divide);
+            break;
+        case ast::kind::expr_mod:
+            emit_opcode(opcode::OP_mod);
+            break;
+        default:
+            throw comp_error(expr->loc(), "unknown binary expression");
     }
 }
 
-void compiler::emit_expr_and(const gsc::context_ptr& ctx, const gsc::expr_and_ptr& expr)
+void compiler::emit_expr_and(const ast::expr_and::ptr& expr, const block::ptr& blk)
 {
     auto label = create_label();
 
-    emit_expr(ctx, expr->lvalue);
-    emit_opcode(ctx, opcode::OP_JumpOnFalseExpr, label);
-    emit_expr(ctx, expr->rvalue);
-    emit_opcode(ctx, opcode::OP_CastBool);
+    emit_expr(expr->lvalue, blk);
+    emit_opcode(opcode::OP_JumpOnFalseExpr, label);
+    emit_expr(expr->rvalue, blk);
+    emit_opcode(opcode::OP_CastBool);
 
     insert_label(label);
 }
 
-void compiler::emit_expr_or(const gsc::context_ptr& ctx, const gsc::expr_or_ptr& expr)
+void compiler::emit_expr_or(const ast::expr_or::ptr& expr, const block::ptr& blk)
 {
     auto label = create_label();
 
-    emit_expr(ctx, expr->lvalue);
-    emit_opcode(ctx, opcode::OP_JumpOnTrueExpr, label);
-    emit_expr(ctx, expr->rvalue);
-    emit_opcode(ctx, opcode::OP_CastBool);
+    emit_expr(expr->lvalue, blk);
+    emit_opcode(opcode::OP_JumpOnTrueExpr, label);
+    emit_expr(expr->rvalue, blk);
+    emit_opcode(opcode::OP_CastBool);
 
     insert_label(label);
 }
 
-void compiler::emit_expr_complement(const gsc::context_ptr& ctx, const gsc::expr_complement_ptr& expr)
+void compiler::emit_expr_complement(const ast::expr_complement::ptr& expr, const block::ptr& blk)
 {
-    emit_expr(ctx, expr->rvalue);
-    emit_opcode(ctx, opcode::OP_BoolComplement);
+    emit_expr(expr->rvalue, blk);
+    emit_opcode(opcode::OP_BoolComplement);
 }
 
-void compiler::emit_expr_not(const gsc::context_ptr& ctx, const gsc::expr_not_ptr& expr)
+void compiler::emit_expr_not(const ast::expr_not::ptr& expr, const block::ptr& blk)
 {
-    emit_expr(ctx, expr->rvalue);
-    emit_opcode(ctx, opcode::OP_BoolNot);
+    emit_expr(expr->rvalue, blk);
+    emit_opcode(opcode::OP_BoolNot);
 }
 
-void compiler::emit_expr_call(const gsc::context_ptr& ctx, const gsc::expr_call_ptr& expr)
+void compiler::emit_expr_call(const ast::expr_call::ptr& expr, const block::ptr& blk)
 {
-    if(expr->func.as_node->type == gsc::node_t::expr_call_pointer)
-    {
-        emit_expr_call_pointer(ctx, expr);
-    }
+    if (expr->call == ast::kind::expr_pointer)
+        emit_expr_call_pointer(expr->call.as_pointer, blk);
+    else if (expr->call == ast::kind::expr_function)
+        emit_expr_call_function(expr->call.as_function, blk);
     else
+        throw comp_error(expr->loc(), "unknown function call expression");
+}
+
+void compiler::emit_expr_call_pointer(const ast::expr_pointer::ptr& expr, const block::ptr& blk)
+{
+    if (expr->mode == ast::call::mode::normal)
+        emit_opcode(opcode::OP_PreScriptCall);
+
+    emit_expr_arguments(expr->args, blk);
+    emit_expr(expr->func, blk);
+
+    auto argcount = utils::string::va("%d", expr->args->list.size());
+
+    switch (expr->mode)
     {
-        emit_expr_call_function(ctx, expr);
+        case ast::call::mode::normal:
+            emit_opcode(opcode::OP_ScriptFunctionCallPointer);
+            break;
+        case ast::call::mode::thread:
+            emit_opcode(opcode::OP_ScriptThreadCallPointer, argcount);
+            break;
+        case ast::call::mode::childthread:
+            emit_opcode(opcode::OP_ScriptChildThreadCallPointer, argcount);
+            break;
+        case ast::call::mode::builtin:
+            emit_opcode(opcode::OP_CallBuiltinPointer, argcount);
+            break;
     }
 }
 
-void compiler::emit_expr_call_pointer(const gsc::context_ptr& ctx, const gsc::expr_call_ptr& expr)
+void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr, const block::ptr& blk)
 {
-    bool thread = expr->thread;
-    bool child = expr->child;
-    bool method = expr->obj.as_node->type != gsc::node_t::null ? true : false;
-    bool builtin = builtin = expr->func.as_pointer->builtin;
-    std::uint32_t args = expr->func.as_pointer->args->list.size();
+    auto type = resolve_function_type(expr);
 
-    if(thread && child || thread && builtin || child && builtin)
-        throw gsc::comp_error(expr->loc, "function call have more than 1 type (thread, childthread, builtin)");
+    if (type != ast::call::type::builtin && expr->mode == ast::call::mode::normal && expr->args->list.size() > 0)
+        emit_opcode(opcode::OP_PreScriptCall);
 
-    if(!thread && !child && !builtin) emit_opcode(ctx, opcode::OP_PreScriptCall);
+    emit_expr_arguments(expr->args, blk);
 
-    emit_expr_arguments(ctx, expr->func.as_pointer->args);
+    auto argcount = utils::string::va("%d", expr->args->list.size());
 
-    if(method) emit_expr(ctx, expr->obj);
-
-    emit_expr(ctx, expr->func.as_pointer->expr);
-    emit_expr_call_pointer_type(ctx, args, builtin, method, thread, child);
-}
-
-void compiler::emit_expr_call_pointer_type(const gsc::context_ptr& ctx, int args, bool builtin, bool method, bool thread, bool child)
-{
-    if(builtin && !method)
+    if (type == ast::call::type::local)
     {
-        emit_opcode(ctx, opcode::OP_CallBuiltinPointer, utils::string::va("%d", args));
-    }
-    else if(builtin && method)
-    {
-        emit_opcode(ctx, opcode::OP_CallBuiltinMethodPointer, utils::string::va("%d", args));
-    }
-    else if(thread && !method && !child)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptThreadCallPointer, utils::string::va("%d", args));
-    } 
-    else if(thread && method && !child)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptMethodThreadCallPointer, utils::string::va("%d", args));
-    }
-    else if (child && !method && !thread)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptChildThreadCallPointer, utils::string::va("%d", args));
-    }
-    else if(child && method && !thread)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptMethodChildThreadCallPointer, utils::string::va("%d", args));
-    }
-    else
-    {
-        method ? emit_opcode(ctx, opcode::OP_ScriptMethodCallPointer) : emit_opcode(ctx, opcode::OP_ScriptFunctionCallPointer);
-    }
-}
-
-void compiler::emit_expr_call_function(const gsc::context_ptr& ctx, const gsc::expr_call_ptr& expr)
-{
-    bool thread = expr->thread;
-    bool child = expr->child;
-    bool method = expr->obj.as_node->type != gsc::node_t::null ? true : false;
-    std::uint32_t args = expr->func.as_func->args->list.size();
-    auto name = expr->func.as_func->name->value;
-    auto file = expr->func.as_func->file->value;
-
-    bool builtin = false, far = false, local = false;
-
-    if(file != "") far = true;
-    else
-    {
-        if(is_local_call(name)) local = true;
-        else if(method && is_builtin_method(name)) builtin = true;
-        else if(!method && is_builtin_func(name)) builtin = true;
-        else
+        switch (expr->mode)
         {
-            for(const auto& inc : includes_)
+            case ast::call::mode::normal:
+                if (expr->args->list.size() > 0)
+                    emit_opcode(opcode::OP_ScriptLocalFunctionCall, expr->name->value);
+                else
+                    emit_opcode(opcode::OP_ScriptLocalFunctionCall2, expr->name->value);
+                break;
+            case ast::call::mode::thread:
+                emit_opcode(opcode::OP_ScriptLocalThreadCall, { expr->name->value, argcount });
+                break;
+            case ast::call::mode::childthread:
+                emit_opcode(opcode::OP_ScriptLocalChildThreadCall, { expr->name->value, argcount });
+                break;
+            case ast::call::mode::builtin:
+                // no local builtins
+                break;
+        }
+    }
+    else if (type == ast::call::type::far)
+    {
+        switch (expr->mode)
+        {
+            case ast::call::mode::normal:
+                if (expr->args->list.size() > 0)
+                    emit_opcode(opcode::OP_ScriptFarFunctionCall, { expr->path->value, expr->name->value });
+                else
+                    emit_opcode(opcode::OP_ScriptFarFunctionCall2, { expr->path->value, expr->name->value });
+                break;
+            case ast::call::mode::thread:
+                emit_opcode(opcode::OP_ScriptFarThreadCall, { argcount, expr->path->value, expr->name->value });
+                break;
+            case ast::call::mode::childthread:
+                emit_opcode(opcode::OP_ScriptFarChildThreadCall, { argcount, expr->path->value, expr->name->value });
+                break;
+            case ast::call::mode::builtin:
+                // no far builtins
+                break;
+        }
+    }
+    else if (type == ast::call::type::builtin)
+    {
+        if (expr->mode != ast::call::mode::normal)
+            throw comp_error(expr->loc(), "builtin calls can't be threaded");
+
+        switch (expr->args->list.size())
+        {
+            case 0:
+                emit_opcode(opcode::OP_CallBuiltin0, expr->name->value);
+                break;
+            case 1: 
+                emit_opcode(opcode::OP_CallBuiltin1, expr->name->value);
+                break;
+            case 2:
+                emit_opcode(opcode::OP_CallBuiltin2, expr->name->value);
+                break;
+            case 3:
+                emit_opcode(opcode::OP_CallBuiltin3, expr->name->value);
+                break;
+            case 4:
+                emit_opcode(opcode::OP_CallBuiltin4, expr->name->value);
+                break;
+            case 5:
+                emit_opcode(opcode::OP_CallBuiltin5, expr->name->value);
+                break;
+            default:
+                emit_opcode(opcode::OP_CallBuiltin, { argcount, expr->name->value });
+                break;
+        }
+    }
+}
+
+void compiler::emit_expr_method(const ast::expr_method::ptr& expr, const block::ptr& blk)
+{
+    if (expr->call == ast::kind::expr_pointer)
+        emit_expr_method_pointer(expr->call.as_pointer, expr->obj, blk);
+    else if (expr->call == ast::kind::expr_function)
+        emit_expr_method_function(expr->call.as_function, expr->obj, blk);
+    else
+        throw comp_error(expr->loc(), "unknown method call expression");
+}
+
+void compiler::emit_expr_method_pointer(const ast::expr_pointer::ptr& expr, const ast::expr& obj, const block::ptr& blk)
+{
+    if (expr->mode == ast::call::mode::normal)
+        emit_opcode(opcode::OP_PreScriptCall);
+
+    emit_expr_arguments(expr->args, blk);
+    emit_expr(obj, blk);
+    emit_expr(expr->func, blk);
+
+    auto argcount = utils::string::va("%d", expr->args->list.size());
+
+    switch (expr->mode)
+    {
+        case ast::call::mode::normal:
+            emit_opcode(opcode::OP_ScriptMethodCallPointer);
+            break;
+        case ast::call::mode::thread:
+            emit_opcode(opcode::OP_ScriptMethodThreadCallPointer, argcount);
+            break;
+        case ast::call::mode::childthread:
+            emit_opcode(opcode::OP_ScriptMethodChildThreadCallPointer, argcount);
+            break;
+        case ast::call::mode::builtin:
+            emit_opcode(opcode::OP_CallBuiltinMethodPointer, argcount);
+            break;
+    }
+}
+
+void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, const ast::expr& obj, const block::ptr& blk)
+{
+    auto type = resolve_function_type(expr);
+
+    if (type != ast::call::type::builtin && expr->mode == ast::call::mode::normal)
+        emit_opcode(opcode::OP_PreScriptCall);
+
+    emit_expr_arguments(expr->args, blk);
+    emit_expr(obj, blk);
+
+    auto argcount = utils::string::va("%d", expr->args->list.size());
+
+    if (type == ast::call::type::local)
+    {
+        switch (expr->mode)
+        {
+            case ast::call::mode::normal:
+                emit_opcode(opcode::OP_ScriptLocalMethodCall, expr->name->value);
+                break;
+            case ast::call::mode::thread:
+                emit_opcode(opcode::OP_ScriptLocalMethodThreadCall, { expr->name->value, argcount });
+                break;
+            case ast::call::mode::childthread:
+                emit_opcode(opcode::OP_ScriptLocalMethodChildThreadCall, { expr->name->value, argcount });
+                break;
+            case ast::call::mode::builtin:
+                // no local builtins
+                break;
+        }
+    }
+    else if (type == ast::call::type::far)
+    {
+        switch (expr->mode)
+        {
+            case ast::call::mode::normal:
+                emit_opcode(opcode::OP_ScriptFarMethodCall, { expr->path->value, expr->name->value });
+                break;
+            case ast::call::mode::thread:
+                emit_opcode(opcode::OP_ScriptFarMethodThreadCall, { argcount, expr->path->value, expr->name->value });
+                break;
+            case ast::call::mode::childthread:
+                emit_opcode(opcode::OP_ScriptFarMethodChildThreadCall, { argcount, expr->path->value, expr->name->value });
+                break;
+            case ast::call::mode::builtin:
+                // no far builtins
+                break;
+        }
+    }
+    else if (type == ast::call::type::builtin)
+    {
+        if (expr->mode != ast::call::mode::normal)
+            throw comp_error(expr->loc(), "builtin calls can't be threaded");
+
+        switch (expr->args->list.size())
+        {
+            case 0:
+                emit_opcode(opcode::OP_CallBuiltinMethod0, expr->name->value);
+                break;
+            case 1: 
+                emit_opcode(opcode::OP_CallBuiltinMethod1, expr->name->value);
+                break;
+            case 2:
+                emit_opcode(opcode::OP_CallBuiltinMethod2, expr->name->value);
+                break;
+            case 3:
+                emit_opcode(opcode::OP_CallBuiltinMethod3, expr->name->value);
+                break;
+            case 4:
+                emit_opcode(opcode::OP_CallBuiltinMethod4, expr->name->value);
+                break;
+            case 5:
+                emit_opcode(opcode::OP_CallBuiltinMethod5, expr->name->value);
+                break;
+            default:
+                emit_opcode(opcode::OP_CallBuiltinMethod, { argcount, expr->name->value });
+                break;
+        }
+    }
+}
+
+void compiler::emit_expr_add_array(const ast::expr_add_array::ptr& expr, const block::ptr& blk)
+{
+    emit_opcode(opcode::OP_EmptyArray);
+
+    for (const auto& arg : expr->args->list)
+    {
+        emit_expr(arg, blk);
+        emit_opcode(opcode::OP_AddArray);
+    }
+}
+
+void compiler::emit_expr_parameters(const ast::expr_parameters::ptr& expr, const block::ptr& blk)
+{
+    for (const auto& entry : expr->list)
+    {
+        initialize_variable(entry, blk);
+        emit_opcode(opcode::OP_SafeCreateVariableFieldCached, variable_create_index(entry, blk));     
+    }
+
+    emit_opcode(opcode::OP_checkclearparams);
+}
+
+void compiler::emit_expr_arguments(const ast::expr_arguments::ptr& expr, const block::ptr& blk)
+{
+    std::reverse(expr->list.begin(), expr->list.end());
+
+    for (auto& entry : expr->list)
+    {
+        emit_expr(entry, blk);
+    }
+}
+
+void compiler::emit_expr_reference(const ast::expr_reference::ptr& expr, const block::ptr& blk)
+{
+    bool method = false;
+    auto type = resolve_reference_type(expr, method);
+
+    switch (type)
+    {
+        case ast::call::type::local:
+            emit_opcode(opcode::OP_GetLocalFunction, expr->name->value);
+            break;
+        case ast::call::type::far:
+            emit_opcode(opcode::OP_GetFarFunction, { expr->path->value, expr->name->value });
+            break;
+        case ast::call::type::builtin:
+            if (method)
+                emit_opcode(opcode::OP_GetBuiltinMethod, expr->name->value);
+            else
+                emit_opcode(opcode::OP_GetBuiltinFunction, expr->name->value);
+            break;
+    }
+}
+
+void compiler::emit_expr_size(const ast::expr_size::ptr& expr, const block::ptr& blk)
+{
+    emit_expr_variable(expr->obj, blk);
+    emit_opcode(opcode::OP_size);
+}
+
+void compiler::emit_expr_variable_ref(const ast::expr& expr, const block::ptr& blk, bool set)
+{
+    switch (expr.kind())
+    {
+        case ast::kind::expr_array:
+            emit_expr_array_ref(expr.as_array, blk, set);
+            break;
+        case ast::kind::expr_field:
+            emit_expr_field_ref(expr.as_field, blk, set);
+            break;
+        case ast::kind::expr_identifier:
+            emit_expr_local_ref(expr.as_identifier, blk, set);
+            break;
+        default:
+            throw comp_error(expr.as_node->loc(), "invalid lvalue");
+    }
+}
+
+void compiler::emit_expr_array_ref(const ast::expr_array::ptr& expr, const block::ptr& blk, bool set)
+{
+    emit_expr(expr->key, blk);
+
+    switch (expr->obj.kind())
+    {
+        case ast::kind::expr_game:
+            emit_opcode(opcode::OP_GetGameRef);
+            emit_opcode(opcode::OP_EvalArrayRef);
+            if (set) emit_opcode(opcode::OP_SetVariableField);
+            break;
+        case ast::kind::expr_array:
+        case ast::kind::expr_field:
+            emit_expr_variable_ref(expr->obj, blk, false);
+            emit_opcode(opcode::OP_EvalArrayRef);      
+            if (set) emit_opcode(opcode::OP_SetVariableField);
+            break;
+        case ast::kind::expr_identifier:
+        {
+            if (!variable_initialized(expr->obj.as_identifier, blk))
             {
-                for(const auto& fun : inc.funcs)
-                {
-                    if(name == fun)
-                    {
-                        far = true;
-                        file = inc.name;
-                        break;
-                    }
-                }
+                initialize_variable(expr->obj.as_identifier, blk);
+                emit_opcode(opcode::OP_EvalNewLocalArrayRefCached0, variable_create_index(expr->obj.as_identifier, blk));
+
+                if (!set) throw comp_error(expr->loc(), "INTERNAL: VAR CREATED BUT NOT SET!");
+            }
+            else if (variable_stack_index(expr->obj.as_identifier, blk) == 0)
+            {
+                emit_opcode(opcode::OP_EvalLocalArrayRefCached0);
+            }
+            else
+            {
+                emit_opcode(opcode::OP_EvalLocalArrayRefCached, variable_access_index(expr->obj.as_identifier, blk));
             }
 
-            if(!builtin && !far && !local)
-                throw gsc::comp_error(expr->loc, "unknown function call " + name);
+            if (set) emit_opcode(opcode::OP_SetVariableField);
         }
-    }
-
-    if(thread && child || thread && builtin || child && builtin)
-        throw gsc::comp_error(expr->loc, "function call have more than 1 type (thread, childthread, builtin)");
-
-    if(!thread && !child && !builtin && !(!method && args == 0)) 
-        emit_opcode(ctx, opcode::OP_PreScriptCall);
-
-    emit_expr_arguments(ctx, expr->func.as_func->args);
-
-    if(method) emit_expr(ctx, expr->obj);
-
-    if(builtin) emit_expr_call_function_builtin(ctx, name, args, method);
-    else if(local) emit_expr_call_function_local(ctx, name, args, method, thread, child);
-    else if(far) emit_expr_call_function_far(ctx, file, name, args, method, thread, child);
-}
-
-void compiler::emit_expr_call_function_builtin(const gsc::context_ptr& ctx, const std::string& func, int args, bool method)
-{
-    if(method)
-    {
-        switch(args)
-        {
-            case 0: emit_opcode(ctx, opcode::OP_CallBuiltinMethod0, func); break;
-            case 1: emit_opcode(ctx, opcode::OP_CallBuiltinMethod1, func); break;
-            case 2: emit_opcode(ctx, opcode::OP_CallBuiltinMethod2, func); break;
-            case 3: emit_opcode(ctx, opcode::OP_CallBuiltinMethod3, func); break;
-            case 4: emit_opcode(ctx, opcode::OP_CallBuiltinMethod4, func); break;
-            case 5: emit_opcode(ctx, opcode::OP_CallBuiltinMethod5, func); break;
-            default: emit_opcode(ctx, opcode::OP_CallBuiltinMethod, { utils::string::va("%d", args), func }); break;
-        }
-    }
-    else
-    {
-        switch(args)
-        {
-            case 0: emit_opcode(ctx, opcode::OP_CallBuiltin0, func); break;
-            case 1: emit_opcode(ctx, opcode::OP_CallBuiltin1, func); break;
-            case 2: emit_opcode(ctx, opcode::OP_CallBuiltin2, func); break;
-            case 3: emit_opcode(ctx, opcode::OP_CallBuiltin3, func); break;
-            case 4: emit_opcode(ctx, opcode::OP_CallBuiltin4, func); break;
-            case 5: emit_opcode(ctx, opcode::OP_CallBuiltin5, func); break;
-            default: emit_opcode(ctx, opcode::OP_CallBuiltin, { utils::string::va("%d", args), func }); break;
-        }
+            break;
+        case ast::kind::expr_call:
+        case ast::kind::expr_method:
+        default:
+            throw comp_error(expr->loc(), "invalid array lvalue");
     }
 }
 
-void compiler::emit_expr_call_function_local(const gsc::context_ptr& ctx, const std::string& func, int args, bool method, bool thread, bool child)
-{
-    if(thread && !method && !child)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptLocalThreadCall, { func, utils::string::va("%d", args) });
-    }
-    else if(thread && method && !child)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptLocalMethodThreadCall, { func, utils::string::va("%d", args) });
-    }
-    else if(child && !method && !thread)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptLocalChildThreadCall, { func, utils::string::va("%d", args) });
-    }
-    else if(child && method && !thread)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptLocalMethodChildThreadCall, { func, utils::string::va("%d", args) });
-    }
-    else if(method && !thread && !child)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptLocalMethodCall, func);
-    }
-    else if(!thread && !child && !method && args == 0)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptLocalFunctionCall2, func);
-    }
-    else if(!thread && !child && !method && args != 0)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptLocalFunctionCall, func);
-    }
-}
-
-void compiler::emit_expr_call_function_far(const gsc::context_ptr& ctx, const std::string& file, const std::string& func, int args, bool method, bool thread, bool child)
-{
-    if(thread && !method && !child)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptFarThreadCall, { utils::string::va("%d", args), file, func });
-    }
-    else if(thread && method && !child)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptFarMethodThreadCall, { utils::string::va("%d", args), file, func });
-    }
-    else if(child && !method && !thread)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptFarChildThreadCall, { utils::string::va("%d", args), file, func });
-    }
-    else if(child && method && !thread)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptFarMethodChildThreadCall, { utils::string::va("%d", args), file, func });
-    }
-    else if(!thread && !child && method)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptFarMethodCall, { file, func });
-    }
-    else if(!thread && !child && !method && args == 0)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptFarFunctionCall2, { file, func });
-    }
-    else if(!thread && !child && !method && args != 0)
-    {
-        emit_opcode(ctx, opcode::OP_ScriptFarFunctionCall, { file, func });
-    }
-}
-
-void compiler::emit_expr_arguments(const gsc::context_ptr& ctx, const gsc::expr_arguments_ptr& args)
-{
-    std::reverse(args->list.begin(), args->list.end());
-
-    for(auto& arg : args->list)
-    {
-        emit_expr(ctx, arg);
-    }
-}
-
-void compiler::emit_expr_function(const gsc::context_ptr& ctx, const gsc::expr_function_ptr& expr)
-{
-    bool far = false, local = false, builtin = false, method = false;
-    auto name = expr->name->value;
-    auto file = expr->file->value;
-
-    if(file != "")
-    {
-        far = true;
-    }
-    else if(is_include_call(name, file))
-    {
-        far = true;
-    }
-    else if(is_builtin_method(name))
-    {
-        builtin = true;
-        method = true;
-    }
-    else if(is_builtin_func(name))
-    {
-        builtin = true;
-    }
-    else if(is_local_call(name))
-    {
-        local = true;
-    }
-    else
-    {
-        throw gsc::comp_error(expr->loc, "couldn't determine function reference type");
-    }
-
-    if(local)
-    {
-        emit_opcode(ctx, opcode::OP_GetLocalFunction, name);
-    }
-    else if(far)
-    {
-        emit_opcode(ctx, opcode::OP_GetFarFunction, { file, name } );
-    }
-    else if(builtin && method)
-    {
-        emit_opcode(ctx, opcode::OP_GetBuiltinMethod, name);
-    }
-    else if(builtin && !method)
-    {
-        emit_opcode(ctx, opcode::OP_GetBuiltinFunction, name);
-    }
-}
-
-void compiler::emit_expr_clear_variable(const gsc::context_ptr& ctx, const gsc::expr_ptr& lvalue)
-{
-    switch(lvalue.as_node->type)
-    {
-    case gsc::node_t::expr_array:
-        emit_expr(ctx, lvalue.as_array->key);
-        lvalue.as_array->obj.as_node->type == gsc::node_t::data_game ? emit_opcode(ctx, opcode::OP_GetGameRef) : emit_variable_ref(ctx, lvalue.as_array->obj, false);
-        emit_opcode(ctx, opcode::OP_ClearArray);
-        break;
-    case gsc::node_t::expr_field:
-        emit_object(ctx, lvalue.as_field->obj);
-        emit_opcode(ctx, opcode::OP_ClearFieldVariable,lvalue.as_field->field->value);
-        break;
-    case gsc::node_t::data_name:
-        emit_opcode(ctx, opcode::OP_GetUndefined);
-        emit_local_variable_ref(ctx, lvalue.as_name, true);
-        break;
-    default:
-        throw gsc::comp_error(lvalue.as_node->loc, "unknown clear variable lvalue");
-        break;
-    }
-}
-
-void compiler::emit_expr_add_array(const gsc::context_ptr& ctx, const gsc::expr_add_array_ptr& expr)
-{
-    if(expr->args->list.size() <= 0)
-    {
-        throw gsc::comp_error(expr->loc, "invalid empty add array. did u mean '[]' ?");
-    }
-
-    emit_opcode(ctx, opcode::OP_EmptyArray);
-
-    for(const auto& arg : expr->args->list)
-    {
-        emit_expr(ctx, arg);
-        emit_opcode(ctx, opcode::OP_AddArray);
-    }
-}
-
-void compiler::emit_expr_size(const gsc::context_ptr& ctx, const gsc::expr_size_ptr& expr)
-{
-    emit_variable(ctx, expr->obj);
-    emit_opcode(ctx, opcode::OP_size);
-}
-
-void compiler::emit_variable_ref(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr, bool set)
-{
-    switch(expr.as_node->type)
-    {
-        case gsc::node_t::expr_array: emit_array_variable_ref(ctx, expr.as_array, set); break;
-        case gsc::node_t::expr_field: emit_field_variable_ref(ctx, expr.as_field, set); break;
-        case gsc::node_t::data_name: emit_local_variable_ref(ctx, expr.as_name, set); break;
-        default: throw gsc::comp_error(expr.as_node->loc, "invalid variable reference type."); break;
-    }
-}
-
-void compiler::emit_array_variable_ref(const gsc::context_ptr& ctx, const gsc::expr_array_ptr& expr, bool set)
-{
-    emit_expr(ctx, expr->key);
-
-    switch(expr->obj.as_node->type)
-    {
-    case gsc::node_t::data_game:
-        emit_opcode(ctx, opcode::OP_GetGameRef);
-        emit_opcode(ctx, opcode::OP_EvalArrayRef);
-        if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
-        break;
-    case gsc::node_t::expr_array:
-    case gsc::node_t::expr_field:
-        emit_variable_ref(ctx, expr->obj, false);
-        emit_opcode(ctx, opcode::OP_EvalArrayRef);      
-        if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
-        break;
-    case gsc::node_t::data_name:
-    {
-        if(!variable_initialized(ctx, expr->obj.as_name))
-        {
-            initialize_variable(ctx, expr->obj.as_name);
-            emit_opcode(ctx, opcode::OP_EvalNewLocalArrayRefCached0, variable_create_index(ctx, expr->obj.as_name));
-
-            if(!set)
-            {
-                throw gsc::comp_error(expr->loc, "INTERNAL: VAR CREATED BUT NOT SET!");
-            }
-        }
-        else if(variable_stack_index(ctx, expr->obj.as_name) == 0)
-        {
-            emit_opcode(ctx, opcode::OP_EvalLocalArrayRefCached0);
-        }
-        else
-        {
-            emit_opcode(ctx, opcode::OP_EvalLocalArrayRefCached, variable_access_index(ctx, expr->obj.as_name));
-        }
-
-        if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
-    }
-        break;
-    case gsc::node_t::expr_call:
-        throw gsc::comp_error(expr->loc, "call result can't be referenced.");
-        break;
-    default:
-        throw gsc::comp_error(expr->loc, "unknown array object type");
-        break;
-    }
-}
-
-void compiler::emit_field_variable_ref(const gsc::context_ptr& ctx, const gsc::expr_field_ptr&  expr, bool set)
+void compiler::emit_expr_field_ref(const ast::expr_field::ptr& expr, const block::ptr& blk, bool set)
 {
     const auto& field = expr->field->value;
 
-    switch(expr->obj.as_node->type)
+    switch (expr->obj.kind())
     {
-    case gsc::node_t::data_level:
-        set ? emit_opcode(ctx, opcode::OP_SetLevelFieldVariableField, field) : emit_opcode(ctx, opcode::OP_EvalLevelFieldVariableRef, field);
-        break;
-    case gsc::node_t::data_anim:
-        set ? emit_opcode(ctx, opcode::OP_SetAnimFieldVariableField, field) : emit_opcode(ctx, opcode::OP_EvalAnimFieldVariableRef, field);
-        break;
-    case gsc::node_t::data_self:
-        set ? emit_opcode(ctx, opcode::OP_SetSelfFieldVariableField, field) : emit_opcode(ctx, opcode::OP_EvalSelfFieldVariableRef, field);
-        break;
-    case gsc::node_t::expr_array:
-        emit_array_variable(ctx, expr->obj.as_array);
-        emit_opcode(ctx, opcode::OP_CastFieldObject);
-        emit_opcode(ctx, opcode::OP_EvalFieldVariableRef, field);
-        if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
-        break;
-    case gsc::node_t::expr_field:
-        emit_field_variable(ctx, expr->obj.as_field);
-        emit_opcode(ctx, opcode::OP_CastFieldObject);
-        emit_opcode(ctx, opcode::OP_EvalFieldVariableRef, field);
-        if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
-        break;
-    case gsc::node_t::data_name:
-        emit_opcode(ctx, opcode::OP_EvalLocalVariableObjectCached, variable_access_index(ctx, expr->obj.as_name));
-        emit_opcode(ctx, opcode::OP_EvalFieldVariableRef, field);
-        if(set) emit_opcode(ctx, opcode::OP_SetVariableField);
-        break;
-    case gsc::node_t::expr_call:
-        throw gsc::comp_error(expr->loc, "function call result can't be referenced");
-        break;
-    default:
-        throw gsc::comp_error(expr->loc, "unknown field variable object type");
-        break;
+        case ast::kind::expr_level:
+            set ? emit_opcode(opcode::OP_SetLevelFieldVariableField, field) : emit_opcode(opcode::OP_EvalLevelFieldVariableRef, field);
+            break;
+        case ast::kind::expr_anim:
+            set ? emit_opcode(opcode::OP_SetAnimFieldVariableField, field) : emit_opcode(opcode::OP_EvalAnimFieldVariableRef, field);
+            break;
+        case ast::kind::expr_self:
+            set ? emit_opcode(opcode::OP_SetSelfFieldVariableField, field) : emit_opcode(opcode::OP_EvalSelfFieldVariableRef, field);
+            break;
+        case ast::kind::expr_array:
+            emit_expr_array(expr->obj.as_array, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            emit_opcode(opcode::OP_EvalFieldVariableRef, field);
+            if (set) emit_opcode(opcode::OP_SetVariableField);
+            break;
+        case ast::kind::expr_field:
+            emit_expr_field(expr->obj.as_field, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            emit_opcode(opcode::OP_EvalFieldVariableRef, field);
+            if (set) emit_opcode(opcode::OP_SetVariableField);
+            break;
+        case ast::kind::expr_identifier:
+            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, variable_access_index(expr->obj.as_identifier, blk));
+            emit_opcode(opcode::OP_EvalFieldVariableRef, field);
+            if (set) emit_opcode(opcode::OP_SetVariableField);
+            break;
+        case ast::kind::expr_call:
+            emit_expr_call(expr->obj.as_call, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            emit_opcode(opcode::OP_EvalFieldVariableRef, field);
+            if (set) emit_opcode(opcode::OP_SetVariableField);
+            break;
+        case ast::kind::expr_method:
+            emit_expr_method(expr->obj.as_method, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            emit_opcode(opcode::OP_EvalFieldVariableRef, field);
+            if (set) emit_opcode(opcode::OP_SetVariableField);
+            break;
+        default:
+            throw comp_error(expr->obj.loc(), "not an object");
     }
 }
 
-void compiler::emit_local_variable_ref(const gsc::context_ptr& ctx, const gsc::name_ptr& expr, bool set)
+void compiler::emit_expr_local_ref(const ast::expr_identifier::ptr& expr, const block::ptr& blk, bool set)
 {
     const auto itr = constants_.find(expr->value);
 
     if (itr != constants_.end())
     {
-        throw gsc::comp_error(expr->loc, "variable name already defined as constant " + expr->value);
+        throw comp_error(expr->loc(), "variable name already defined as constant '" + expr->value + "'");
     }
 
-    if(set)
+    if (set)
     {
-        if(!variable_initialized(ctx, expr))
+        if (!variable_initialized(expr, blk))
         {
-            initialize_variable(ctx, expr);
-            emit_opcode(ctx, opcode::OP_SetNewLocalVariableFieldCached0, variable_create_index(ctx, expr));
+            initialize_variable(expr, blk);
+            emit_opcode(opcode::OP_SetNewLocalVariableFieldCached0, variable_create_index(expr, blk));
         }
-        else if(variable_stack_index(ctx, expr) == 0)
+        else if (variable_stack_index(expr, blk) == 0)
         {
-            emit_opcode(ctx, opcode::OP_SetLocalVariableFieldCached0);
+            emit_opcode(opcode::OP_SetLocalVariableFieldCached0);
         }
         else
         {
-            emit_opcode(ctx, opcode::OP_SetLocalVariableFieldCached, variable_access_index(ctx, expr));
+            emit_opcode(opcode::OP_SetLocalVariableFieldCached, variable_access_index(expr, blk));
         }
     }
     else
     {
-        auto index = variable_stack_index(ctx, expr);
+        auto index = variable_stack_index(expr, blk);
 
-        if(index == 0)
-            emit_opcode(ctx, opcode::OP_EvalLocalVariableRefCached0);
+        if (index == 0)
+            emit_opcode(opcode::OP_EvalLocalVariableRefCached0);
         else
-            emit_opcode(ctx, opcode::OP_EvalLocalVariableRefCached, variable_access_index(ctx, expr));
+            emit_opcode(opcode::OP_EvalLocalVariableRefCached, variable_access_index(expr, blk));
     }
 }
 
-void compiler::emit_variable(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
+void compiler::emit_expr_variable(const ast::expr& expr, const block::ptr& blk)
 {
-    // for obj.size
-    switch(expr.as_node->type)
+    switch (expr.kind())
     {
-        case gsc::node_t::expr_array: emit_array_variable(ctx, expr.as_array); break;
-        case gsc::node_t::expr_field: emit_field_variable(ctx, expr.as_field); break;
-        case gsc::node_t::data_name: emit_local_variable(ctx, expr.as_name); break;
-        case gsc::node_t::expr_call:  emit_expr_call(ctx, expr.as_call); break;
-        default: throw gsc::comp_error(expr.as_node->loc, "invalid variable type."); break;
+        case ast::kind::expr_array:
+            emit_expr_array(expr.as_array, blk);
+            break;
+        case ast::kind::expr_field:
+            emit_expr_field(expr.as_field, blk);
+            break;
+        case ast::kind::expr_identifier:
+            emit_expr_local(expr.as_identifier, blk);
+            break;
+        default:
+            throw comp_error(expr.as_node->loc(), "invalid variable type.");
     }
 }
 
-void compiler::emit_array_variable(const gsc::context_ptr& ctx, const gsc::expr_array_ptr& expr)
+void compiler::emit_expr_array(const ast::expr_array::ptr& expr, const block::ptr& blk)
 {
-    emit_expr(ctx, expr->key);
+    emit_expr(expr->key, blk);
 
-    if(expr->obj.as_node->type == gsc::node_t::data_name)
+    if (expr->obj == ast::kind::expr_identifier)
     {
-        emit_opcode(ctx, opcode::OP_EvalLocalArrayCached, variable_access_index(ctx, expr->obj.as_name));
+        emit_opcode(opcode::OP_EvalLocalArrayCached, variable_access_index(expr->obj.as_identifier, blk));
     }
     else
     {
-        emit_expr(ctx, expr->obj);
-        emit_opcode(ctx, opcode::OP_EvalArray);
+        emit_expr(expr->obj, blk);
+        emit_opcode(opcode::OP_EvalArray);
     }
 }
 
-void compiler::emit_field_variable(const gsc::context_ptr& ctx, const gsc::expr_field_ptr& expr)
+void compiler::emit_expr_field(const ast::expr_field::ptr& expr, const block::ptr& blk)
 {
     const auto& field = expr->field->value;
 
-    switch(expr->obj.as_node->type)
+    switch (expr->obj.kind())
     {
-    case gsc::node_t::data_level:
-        emit_opcode(ctx, opcode::OP_EvalLevelFieldVariable, field);
-        break;
-    case gsc::node_t::data_anim:
-        emit_opcode(ctx, opcode::OP_EvalAnimFieldVariable, field);
-        break;
-    case gsc::node_t::data_self:
-        emit_opcode(ctx, opcode::OP_EvalSelfFieldVariable, field);
-        break;
-    case gsc::node_t::expr_array:
-        emit_array_variable(ctx, expr->obj.as_array);
-        emit_opcode(ctx, opcode::OP_CastFieldObject);
-        emit_opcode(ctx, opcode::OP_EvalFieldVariable, field);  
-        break;
-    case gsc::node_t::expr_field:
-        emit_field_variable(ctx, expr->obj.as_field);
-        emit_opcode(ctx, opcode::OP_CastFieldObject);
-        emit_opcode(ctx, opcode::OP_EvalFieldVariable, field);
-        break;
-    case gsc::node_t::expr_call:
-        emit_expr_call(ctx, expr->obj.as_call);
-        emit_opcode(ctx, opcode::OP_CastFieldObject);
-        emit_opcode(ctx, opcode::OP_EvalFieldVariable, field);
-        break;
-    case gsc::node_t::data_name:
-        emit_opcode(ctx, opcode::OP_EvalLocalVariableObjectCached, variable_access_index(ctx, expr->obj.as_name));
-        emit_opcode(ctx, opcode::OP_EvalFieldVariable, field);
-        break;
-    default:
-       throw gsc::comp_error(expr->loc, "unknown field variable object type");
-        break;
+        case ast::kind::expr_level:
+            emit_opcode(opcode::OP_EvalLevelFieldVariable, field);
+            break;
+        case ast::kind::expr_anim:
+            emit_opcode(opcode::OP_EvalAnimFieldVariable, field);
+            break;
+        case ast::kind::expr_self:
+            emit_opcode(opcode::OP_EvalSelfFieldVariable, field);
+            break;
+        case ast::kind::expr_array:
+            emit_expr_array(expr->obj.as_array, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            emit_opcode(opcode::OP_EvalFieldVariable, field);  
+            break;
+        case ast::kind::expr_field:
+            emit_expr_field(expr->obj.as_field, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            emit_opcode(opcode::OP_EvalFieldVariable, field);
+            break;
+        case ast::kind::expr_call:
+            emit_expr_call(expr->obj.as_call, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            emit_opcode(opcode::OP_EvalFieldVariable, field);
+            break;
+        case ast::kind::expr_method:
+            emit_expr_method(expr->obj.as_method, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            emit_opcode(opcode::OP_EvalFieldVariable, field);
+            break;
+        case ast::kind::expr_identifier:
+            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, variable_access_index(expr->obj.as_identifier, blk));
+            emit_opcode(opcode::OP_EvalFieldVariable, field);
+            break;
+        default:
+        throw comp_error(expr->loc(), "unknown field variable object type");
     }
 }
 
-void compiler::emit_local_variable(const gsc::context_ptr& ctx, const gsc::name_ptr& expr)
+void compiler::emit_expr_local(const ast::expr_identifier::ptr& expr, const block::ptr& blk)
 {
     // is constant ( should only allow: string, loc string, number, vector)
     const auto itr = constants_.find(expr->value);
@@ -1464,260 +1815,263 @@ void compiler::emit_local_variable(const gsc::context_ptr& ctx, const gsc::name_
     if (itr != constants_.end())
     {
         const auto& value = itr->second;
-        emit_expr(ctx, value);
+        emit_expr(value, blk);
         return;
     }
 
     // is local var
-    auto index = variable_stack_index(ctx, expr);
+    auto index = variable_stack_index(expr, blk);
 
-    switch(index)
+    switch (index)
     {
-        case 0: emit_opcode(ctx, opcode::OP_EvalLocalVariableCached0); break;
-        case 1: emit_opcode(ctx, opcode::OP_EvalLocalVariableCached1); break;
-        case 2: emit_opcode(ctx, opcode::OP_EvalLocalVariableCached2); break;
-        case 3: emit_opcode(ctx, opcode::OP_EvalLocalVariableCached3); break;
-        case 4: emit_opcode(ctx, opcode::OP_EvalLocalVariableCached4); break;
-        case 5: emit_opcode(ctx, opcode::OP_EvalLocalVariableCached5); break;
-        default: emit_opcode(ctx, opcode::OP_EvalLocalVariableCached, variable_access_index(ctx, expr)); break;
-    }
-}
-
-void compiler::emit_clear_local_variable(const gsc::context_ptr& ctx, const gsc::name_ptr& expr)
-{
-    auto index = variable_stack_index(ctx, expr);
-
-    if(index == 0)
-    {
-        emit_opcode(ctx, opcode::OP_ClearLocalVariableFieldCached0);
-    }
-    else
-    {
-        emit_opcode(ctx, opcode::OP_ClearLocalVariableFieldCached, variable_access_index(ctx, expr));
-    }
-}
-
-void compiler::emit_create_local_vars(const gsc::context_ptr& ctx)
-{
-    if ( ctx->local_vars_create_count != ctx->local_vars_public_count )
-    {
-        for(auto i = ctx->local_vars_create_count; i < ctx->local_vars_public_count; i++)
-        {
-            auto data = utils::string::va("%d", ctx->local_vars.at(i).create);
-            emit_opcode(ctx, opcode::OP_CreateLocalVariable, data);
-            ctx->local_vars.at(i).init = true;
-        }
-        ctx->local_vars_create_count = ctx->local_vars_public_count;
-    }
-}
-
-void compiler::emit_remove_local_vars(const gsc::context_ptr& ctx)
-{
-    if(ctx->abort == abort_t::abort_none)
-    {
-        auto count = ctx->local_vars_create_count - ctx->local_vars_public_count;
-
-        if(count > 0)
-        {
-            auto data = utils::string::va("%d", count);
-            emit_opcode(ctx, opcode::OP_RemoveLocalVariables, data);
-        }
-    }
-}
-
-void compiler::emit_object(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
-{
-    switch(expr.as_node->type)
-    {
-        case gsc::node_t::data_level:
-            emit_opcode(ctx, opcode::OP_GetLevelObject);
+        case 0:
+            emit_opcode(opcode::OP_EvalLocalVariableCached0);
             break;
-        case gsc::node_t::data_anim:
-            emit_opcode(ctx, opcode::OP_GetAnimObject);
+        case 1:
+            emit_opcode(opcode::OP_EvalLocalVariableCached1);
             break;
-        case gsc::node_t::data_self:
-            emit_opcode(ctx, opcode::OP_GetSelfObject);
+        case 2:
+            emit_opcode(opcode::OP_EvalLocalVariableCached2);
             break;
-        case gsc::node_t::data_name:
-            emit_opcode(ctx, opcode::OP_EvalLocalVariableObjectCached, variable_access_index(ctx, expr.as_name));
+        case 3:
+            emit_opcode(opcode::OP_EvalLocalVariableCached3);
             break;
-        case gsc::node_t::expr_call:
-            emit_expr_call(ctx, expr.as_call);
-            emit_opcode(ctx, opcode::OP_CastFieldObject);
+        case 4:
+            emit_opcode(opcode::OP_EvalLocalVariableCached4);
             break;
-        case gsc::node_t::expr_array:
-            emit_array_variable(ctx, expr.as_array);
-            emit_opcode(ctx, opcode::OP_CastFieldObject);
-            break;
-        case gsc::node_t::expr_field:
-            emit_field_variable(ctx, expr.as_field);
-            emit_opcode(ctx, opcode::OP_CastFieldObject);
+        case 5:
+            emit_opcode(opcode::OP_EvalLocalVariableCached5);
             break;
         default:
-            throw gsc::comp_error(expr.as_node->loc, "unknown object type");
+            emit_opcode(opcode::OP_EvalLocalVariableCached, variable_access_index(expr, blk));
             break;
     }
 }
 
-void compiler::emit_animtree(const gsc::context_ptr& ctx, const gsc::animtree_ptr& animtree)
+void compiler::emit_expr_object(const ast::expr& expr, const block::ptr& blk)
 {
-    if(animtrees_.size() == 0)
+    switch (expr.kind())
     {
-        throw gsc::comp_error( animtree->loc, "trying to use animtree without specified using animtree");
+        case ast::kind::expr_level:
+            emit_opcode(opcode::OP_GetLevelObject);
+            break;
+        case ast::kind::expr_anim:
+            emit_opcode(opcode::OP_GetAnimObject);
+            break;
+        case ast::kind::expr_self:
+            emit_opcode(opcode::OP_GetSelfObject);
+            break;
+        case ast::kind::expr_array:
+            emit_expr_array(expr.as_array, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            break;
+        case ast::kind::expr_field:
+            emit_expr_field(expr.as_field, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            break;
+        case ast::kind::expr_call:
+            emit_expr_call(expr.as_call, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            break;
+        case ast::kind::expr_method:
+            emit_expr_method(expr.as_method, blk);
+            emit_opcode(opcode::OP_CastFieldObject);
+            break;
+        case ast::kind::expr_identifier:
+            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, variable_access_index(expr.as_identifier, blk));
+            break;
+        default:
+            throw comp_error(expr.as_node->loc(), "not an object");
+    }
+}
+
+void compiler::emit_expr_vector(const ast::expr_vector::ptr& expr, const block::ptr& blk)
+{
+    std::vector<std::string> data;
+
+    bool isexpr = false;
+
+    if (expr->x == ast::kind::expr_integer)
+        data.push_back(expr->x.as_integer->value);
+    else if (expr->x == ast::kind::expr_float)
+        data.push_back(expr->x.as_float->value);
+    else isexpr = true;
+
+    if (expr->y == ast::kind::expr_integer)
+        data.push_back(expr->y.as_integer->value);
+    else if (expr->y == ast::kind::expr_float)
+        data.push_back(expr->y.as_float->value);
+    else isexpr = true;
+
+    if (expr->z == ast::kind::expr_integer)
+        data.push_back(expr->z.as_integer->value);
+    else if (expr->z == ast::kind::expr_float)
+        data.push_back(expr->z.as_float->value);
+    else isexpr = true;
+
+    if (!isexpr)
+    {
+        emit_opcode(opcode::OP_GetVector, data);
+    }
+    else
+    {
+        emit_expr(expr->z, blk);
+        emit_expr(expr->y, blk);
+        emit_expr(expr->x, blk);
+        emit_opcode(opcode::OP_vector);
+    }
+}
+
+void compiler::emit_expr_animation(const ast::expr_animation::ptr& expr)
+{
+    if (animtrees_.size() == 0)
+    {
+        throw comp_error(expr->loc(), "trying to use animation without specified using animtree");
     }
 
     auto& tree = animtrees_.back();
 
-    if(tree.loaded)
+    if (tree.loaded)
     {
-        emit_opcode(ctx, opcode::OP_GetAnimTree, "''");
+        emit_opcode(opcode::OP_GetAnimation, { "''", expr->value });
     }
     else
     {
-        emit_opcode(ctx, opcode::OP_GetAnimTree, tree.name);
+        emit_opcode(opcode::OP_GetAnimation, { tree.name, expr->value });
         tree.loaded = true;
     }
 }
 
-void compiler::emit_animation(const gsc::context_ptr& ctx, const gsc::animation_ptr& animation)
+void compiler::emit_expr_animtree(const ast::expr_animtree::ptr& expr)
 {
-    if(animtrees_.size() == 0)
+    if (animtrees_.size() == 0)
     {
-        throw gsc::comp_error(animation->loc, "trying to use animation without specified using animtree");
+        throw comp_error( expr->loc(), "trying to use animtree without specified using animtree");
     }
 
     auto& tree = animtrees_.back();
 
-    if(tree.loaded)
+    if (tree.loaded)
     {
-        emit_opcode(ctx, opcode::OP_GetAnimation, { "''", animation->value });
+        emit_opcode(opcode::OP_GetAnimTree, "''");
     }
     else
     {
-        emit_opcode(ctx, opcode::OP_GetAnimation, { tree.name, animation->value });
+        emit_opcode(opcode::OP_GetAnimTree, tree.name);
         tree.loaded = true;
     }
 }
 
-void compiler::emit_istring(const gsc::context_ptr& ctx, const gsc::istring_ptr& str)
+void compiler::emit_expr_istring(const ast::expr_istring::ptr& expr)
 {
-    emit_opcode(ctx, opcode::OP_GetIString, str->value);
+    emit_opcode(opcode::OP_GetIString, expr->value);
 }
 
-void compiler::emit_string(const gsc::context_ptr& ctx, const gsc::string_ptr& str)
+void compiler::emit_expr_string(const ast::expr_string::ptr& expr)
 {
-    emit_opcode(ctx, opcode::OP_GetString, str->value);
+    emit_opcode(opcode::OP_GetString, expr->value);
 }
 
-void compiler::emit_color(const gsc::context_ptr& ctx, const gsc::color_ptr& color)
+void compiler::emit_expr_color(const ast::expr_color::ptr& expr)
 {
     std::vector<std::string> data;
     std::string x, y, z;
 
-    if(color->value.size() == 3)
+    if (expr->value.size() == 3)
     {
-        x = "0x" + color->value.substr(0, 1) + color->value.substr(0, 1);
-        y = "0x" + color->value.substr(1, 1) + color->value.substr(1, 1);
-        z = "0x" + color->value.substr(2, 1) + color->value.substr(2, 1);
+        x = "0x" + expr->value.substr(0, 1) + expr->value.substr(0, 1);
+        y = "0x" + expr->value.substr(1, 1) + expr->value.substr(1, 1);
+        z = "0x" + expr->value.substr(2, 1) + expr->value.substr(2, 1);
     }
     else
     {
-        x = "0x" + color->value.substr(0, 2);
-        y = "0x" + color->value.substr(2, 2);
-        z = "0x" + color->value.substr(4, 2);
+        x = "0x" + expr->value.substr(0, 2);
+        y = "0x" + expr->value.substr(2, 2);
+        z = "0x" + expr->value.substr(4, 2);
     }
 
-    data.push_back(gsc::utils::string::hex_to_dec(x.data()));
-    data.push_back(gsc::utils::string::hex_to_dec(y.data()));
-    data.push_back(gsc::utils::string::hex_to_dec(z.data()));
-    emit_opcode(ctx, opcode::OP_GetVector, data);
+    data.push_back(utils::string::hex_to_dec(x.data()));
+    data.push_back(utils::string::hex_to_dec(y.data()));
+    data.push_back(utils::string::hex_to_dec(z.data()));
+    emit_opcode(opcode::OP_GetVector, data);
 }
 
-void compiler::emit_vector(const gsc::context_ptr& ctx, const gsc::vector_ptr& vec)
+void compiler::emit_expr_float(const ast::expr_float::ptr& expr)
 {
-    std::vector<std::string> data;
+    emit_opcode(opcode::OP_GetFloat, expr->value);
+}
 
-    bool expr = false;
+void compiler::emit_expr_integer(const ast::expr_integer::ptr& expr)
+{
+    auto value = std::atoi(expr->value.data());
 
-    if(vec->x.as_node->type == gsc::node_t::data_integer)
-        data.push_back(vec->x.as_integer->value);
-    else if(vec->x.as_node->type == gsc::node_t::data_float)
-        data.push_back(vec->x.as_float->value);
-    else expr = true;
-
-    if(vec->y.as_node->type == gsc::node_t::data_integer)
-        data.push_back(vec->y.as_integer->value);
-    else if(vec->y.as_node->type == gsc::node_t::data_float)
-        data.push_back(vec->y.as_float->value);
-    else expr = true;
-
-    if(vec->z.as_node->type == gsc::node_t::data_integer)
-        data.push_back(vec->z.as_integer->value);
-    else if(vec->z.as_node->type == gsc::node_t::data_float)
-        data.push_back(vec->z.as_float->value);
-    else expr = true;
-
-    if(!expr)
+    if (value == 0)
     {
-        emit_opcode(ctx, opcode::OP_GetVector, data);
+        emit_opcode(opcode::OP_GetZero);
+    }
+    else if (value > 0 && value < 256)
+    {
+        emit_opcode(opcode::OP_GetByte, expr->value);
+    }
+    else if (value < 0 && value > -256)
+    {
+        emit_opcode(opcode::OP_GetNegByte, expr->value.substr(1));
+    }
+    else if (value > 0 && value < 65536)
+    {
+        emit_opcode(opcode::OP_GetUnsignedShort, expr->value);
+    }
+    else if (value < 0 && value > -65536)
+    {
+        emit_opcode(opcode::OP_GetNegUnsignedShort, expr->value.substr(1));
     }
     else
     {
-        emit_expr(ctx, vec->z);
-        emit_expr(ctx, vec->y);
-        emit_expr(ctx, vec->x);
-        emit_opcode(ctx, opcode::OP_vector);
+        emit_opcode(opcode::OP_GetInteger, expr->value);
     }
 }
 
-void compiler::emit_float(const gsc::context_ptr& ctx, const gsc::float_ptr& num)
+void compiler::emit_expr_false(const ast::expr_false::ptr&)
 {
-    emit_opcode(ctx, opcode::OP_GetFloat, num->value);
+    emit_opcode(opcode::OP_GetZero);
 }
 
-void compiler::emit_integer(const gsc::context_ptr& ctx, const gsc::integer_ptr& num)
+void compiler::emit_expr_true(const ast::expr_true::ptr&)
 {
-    auto value = std::atoi(num->value.data());
-
-    if(value == 0)
-    {
-        emit_opcode(ctx, opcode::OP_GetZero);
-    }
-    else if(value > 0 && value < 256)
-    {
-        emit_opcode(ctx, opcode::OP_GetByte, num->value);
-    }
-    else if(value < 0 && value > -256)
-    {
-        emit_opcode(ctx, opcode::OP_GetNegByte, num->value.substr(1));
-    }
-    else if(value > 0 && value < 65536)
-    {
-        emit_opcode(ctx, opcode::OP_GetUnsignedShort, num->value);
-    }
-    else if(value < 0 && value > -65536)
-    {
-        emit_opcode(ctx, opcode::OP_GetNegUnsignedShort, num->value.substr(1));
-    }
-    else
-    {
-        emit_opcode(ctx, opcode::OP_GetInteger, num->value);
-    } 
+    emit_opcode(opcode::OP_GetByte, "1");
 }
 
-void compiler::emit_false(const gsc::context_ptr& ctx, const gsc::false_ptr& expr)
+void compiler::emit_create_local_vars(const block::ptr& blk)
 {
-    emit_opcode(ctx, opcode::OP_GetZero);
+    if (blk->local_vars_create_count != blk->local_vars_public_count)
+    {
+        for (auto i = blk->local_vars_create_count; i < blk->local_vars_public_count; i++)
+        {
+            auto data = utils::string::va("%d", blk->local_vars.at(i).create);
+            emit_opcode(opcode::OP_CreateLocalVariable, data);
+            blk->local_vars.at(i).init = true;
+        }
+        blk->local_vars_create_count = blk->local_vars_public_count;
+    }
 }
 
-void compiler::emit_true(const gsc::context_ptr& ctx, const gsc::true_ptr& expr)
+void compiler::emit_remove_local_vars(const block::ptr& blk)
 {
-    emit_opcode(ctx, opcode::OP_GetByte, "1");
+    if (blk->abort == abort_t::abort_none)
+    {
+        auto count = blk->local_vars_create_count - blk->local_vars_public_count;
+
+        if (count > 0)
+        {
+            auto data = utils::string::va("%d", count);
+            emit_opcode(opcode::OP_RemoveLocalVariables, data);
+        }
+    }
 }
 
-void compiler::emit_opcode(const gsc::context_ptr& ctx, opcode op)
+void compiler::emit_opcode(opcode op)
 {
-    function_->instructions.push_back(std::make_unique<gsc::instruction>());
+    function_->instructions.push_back(std::make_unique<instruction>());
     
     auto& inst = function_->instructions.back();
     inst->opcode = static_cast<std::uint8_t>(op);
@@ -1727,9 +2081,9 @@ void compiler::emit_opcode(const gsc::context_ptr& ctx, opcode op)
     index_ += inst->size;
 }
 
-void compiler::emit_opcode(const gsc::context_ptr& ctx, opcode op, const std::string& data)
+void compiler::emit_opcode(opcode op, const std::string& data)
 {
-    function_->instructions.push_back(std::make_unique<gsc::instruction>());
+    function_->instructions.push_back(std::make_unique<instruction>());
     
     auto& inst = function_->instructions.back();
     inst->opcode = static_cast<std::uint8_t>(op);
@@ -1740,9 +2094,9 @@ void compiler::emit_opcode(const gsc::context_ptr& ctx, opcode op, const std::st
     index_ += inst->size;
 }
 
-void compiler::emit_opcode(const gsc::context_ptr& ctx, opcode op, const std::vector<std::string>& data)
+void compiler::emit_opcode(opcode op, const std::vector<std::string>& data)
 {
-    function_->instructions.push_back(std::make_unique<gsc::instruction>());
+    function_->instructions.push_back(std::make_unique<instruction>());
     
     auto& inst = function_->instructions.back();
     inst->opcode = static_cast<std::uint8_t>(op);
@@ -1753,325 +2107,439 @@ void compiler::emit_opcode(const gsc::context_ptr& ctx, opcode op, const std::ve
     index_ += inst->size;
 }
 
-void compiler::process_thread(const gsc::context_ptr& ctx, const gsc::thread_ptr& thread)
+void compiler::process_thread(const ast::decl_thread::ptr& decl, const block::ptr& blk)
 {
-    process_parameters(ctx, thread->params);
-    process_stmt_list(ctx, thread->block);
+    process_expr_parameters(decl->params, blk);
+    process_stmt_list(decl->stmt, blk);
 }
 
-void compiler::process_parameters(const gsc::context_ptr& ctx, const gsc::parameters_ptr& params)
+void compiler::process_stmt(const ast::stmt& stmt, const block::ptr& blk)
 {
-    for(const auto& param : params->list)
+    switch (stmt.kind())
     {
-        register_variable(ctx, param->value);
+        case ast::kind::stmt_list:
+            process_stmt_list(stmt.as_list, blk);
+            break;
+        case ast::kind::stmt_expr:
+            process_stmt_expr(stmt.as_expr, blk);
+            break;
+        case ast::kind::stmt_assign:
+            process_stmt_assign(stmt.as_assign, blk);
+            break;
+        case ast::kind::stmt_waittill:
+            process_stmt_waittill(stmt.as_waittill, blk);
+            break;
+        case ast::kind::stmt_if:
+            process_stmt_if(stmt.as_if, blk);
+            break;
+        case ast::kind::stmt_ifelse:
+            process_stmt_ifelse(stmt.as_ifelse, blk);
+            break;
+        case ast::kind::stmt_while:
+            process_stmt_while(stmt.as_while, blk);
+            break;
+        case ast::kind::stmt_dowhile:
+            process_stmt_dowhile(stmt.as_dowhile, blk);
+            break;
+        case ast::kind::stmt_for:
+            process_stmt_for(stmt.as_for, blk);
+            break;
+        case ast::kind::stmt_foreach:
+            process_stmt_foreach(stmt.as_foreach, blk);
+            break;
+        case ast::kind::stmt_switch:
+            process_stmt_switch(stmt.as_switch, blk);
+            break;
+        case ast::kind::stmt_break:
+            process_stmt_break(stmt.as_break, blk);
+            break;
+        case ast::kind::stmt_continue:
+            process_stmt_continue(stmt.as_continue, blk);
+            break;
+        case ast::kind::stmt_return:
+            process_stmt_return(stmt.as_return, blk);
+            break;
+        case ast::kind::stmt_call:
+        case ast::kind::stmt_endon:
+        case ast::kind::stmt_notify:
+        case ast::kind::stmt_wait:
+        case ast::kind::stmt_waittillmatch:
+        case ast::kind::stmt_waittillframeend:
+        case ast::kind::stmt_waitframe:
+        case ast::kind::stmt_case:
+        case ast::kind::stmt_default:
+        case ast::kind::stmt_breakpoint:
+        case ast::kind::stmt_prof_begin:
+        case ast::kind::stmt_prof_end:
+            break;
+        default:
+            throw comp_error(stmt.as_node->loc(), "unknown statement");
     }
 }
 
-void compiler::process_stmt(const gsc::context_ptr& ctx, const gsc::stmt_ptr& stmt)
+void compiler::process_stmt_list(const ast::stmt_list::ptr& stmt, const block::ptr& blk)
 {
-    switch (stmt.as_node->type)
+    for (const auto& entry : stmt->list)
     {
-        case gsc::node_t::stmt_list:     process_stmt_list(ctx, stmt.as_list); break;
-        case gsc::node_t::stmt_assign:   process_expr(ctx, stmt.as_assign->expr->lvalue); break;
-        case gsc::node_t::stmt_waittill: process_stmt_waittill(ctx, stmt.as_waittill); break;
-        case gsc::node_t::stmt_if:       process_stmt_if(ctx, stmt.as_if); break;
-        case gsc::node_t::stmt_ifelse:   process_stmt_ifelse(ctx, stmt.as_ifelse); break;
-        case gsc::node_t::stmt_while:    process_stmt_while(ctx, stmt.as_while); break;
-        case gsc::node_t::stmt_for:      process_stmt_for(ctx, stmt.as_for); break;
-        case gsc::node_t::stmt_foreach:  process_stmt_foreach(ctx, stmt.as_foreach); break;
-        case gsc::node_t::stmt_switch:   process_stmt_switch(ctx, stmt.as_switch); break;
-        case gsc::node_t::stmt_break:    process_stmt_break(ctx, stmt.as_break); break;
-        case gsc::node_t::stmt_continue: process_stmt_continue(ctx, stmt.as_continue); break;
-        case gsc::node_t::stmt_return:   process_stmt_return(ctx, stmt.as_return); break;
-        default: break;
+        process_stmt(entry, blk);
     }
 }
 
-void compiler::process_stmt_list(const gsc::context_ptr& ctx, const gsc::stmt_list_ptr& stmt)
+void compiler::process_stmt_expr(const ast::stmt_expr::ptr& stmt, const block::ptr& blk)
 {
-    for (const auto& entry : stmt->stmts)
+    switch (stmt->expr.kind())
     {
-        process_stmt(ctx, entry);
+        case ast::kind::expr_increment:
+            process_expr(stmt->expr.as_increment->lvalue, blk);
+            break;
+        case ast::kind::expr_decrement:
+            process_expr(stmt->expr.as_decrement->lvalue, blk);
+            break;
+        case ast::kind::expr_assign_equal:
+        case ast::kind::expr_assign_add:
+        case ast::kind::expr_assign_sub:
+        case ast::kind::expr_assign_mul:
+        case ast::kind::expr_assign_div:
+        case ast::kind::expr_assign_mod:
+        case ast::kind::expr_assign_shift_left:
+        case ast::kind::expr_assign_shift_right:
+        case ast::kind::expr_assign_bitwise_or:
+        case ast::kind::expr_assign_bitwise_and:
+        case ast::kind::expr_assign_bitwise_exor:
+            process_expr(stmt->expr.as_assign->lvalue, blk);
+            break;
+        case ast::kind::null:
+            break;
+        default:
+            throw comp_error(stmt->loc(), "unknown expr statement expression");
+    }
+}
+    
+void compiler::process_stmt_assign(const ast::stmt_assign::ptr& stmt, const block::ptr& blk)
+{
+    switch (stmt->expr.kind())
+    {
+        case ast::kind::expr_increment:
+            process_expr(stmt->expr.as_increment->lvalue, blk);
+            break;
+        case ast::kind::expr_decrement:
+            process_expr(stmt->expr.as_decrement->lvalue, blk);
+            break;
+        case ast::kind::expr_assign_equal:
+        case ast::kind::expr_assign_add:
+        case ast::kind::expr_assign_sub:
+        case ast::kind::expr_assign_mul:
+        case ast::kind::expr_assign_div:
+        case ast::kind::expr_assign_mod:
+        case ast::kind::expr_assign_shift_left:
+        case ast::kind::expr_assign_shift_right:
+        case ast::kind::expr_assign_bitwise_or:
+        case ast::kind::expr_assign_bitwise_and:
+        case ast::kind::expr_assign_bitwise_exor:
+            process_expr(stmt->expr.as_assign->lvalue, blk);
+            break;
+        default:
+            throw comp_error(stmt->loc(), "unknown assign statement expression");
     }
 }
 
-void compiler::process_expr(const gsc::context_ptr& ctx, const gsc::expr_ptr& expr)
+void compiler::process_stmt_waittill(const ast::stmt_waittill::ptr& stmt, const block::ptr& blk)
 {
-    if(expr.as_node->type == gsc::node_t::data_name)
+    for (const auto& entry : stmt->args->list)
     {
-        register_variable(ctx, expr.as_name->value);
-    }
-    else if(expr.as_node->type == gsc::node_t::expr_array)
-    {
-        process_expr(ctx, expr.as_array->obj);
-    }
-}
-
-void compiler::process_stmt_waittill(const gsc::context_ptr& ctx, const gsc::stmt_waittill_ptr& stmt)
-{
-    for(const auto& arg : stmt->args->list)
-    {
-        register_variable(ctx, arg.as_name->value);
+        if (entry != ast::kind::expr_identifier)
+        {
+            throw comp_error(entry.as_node->loc(), "illegal waittill param, must be a local variable");
+        }
+    
+        register_variable(entry.as_identifier->value, blk);
     }
 }
 
-void compiler::process_stmt_if(const gsc::context_ptr& ctx, const gsc::stmt_if_ptr& stmt)
+void compiler::process_stmt_if(const ast::stmt_if::ptr& stmt, const block::ptr& blk)
 {
-    stmt->ctx = std::make_unique<gsc::context>();
+    stmt->blk = std::make_unique<block>();
 
-    ctx->copy(stmt->ctx);
-    process_stmt(stmt->ctx, stmt->stmt);
+    blk->copy(stmt->blk);
+    process_stmt(stmt->stmt, stmt->blk);
 
-    std::vector<gsc::context*> childs({ stmt->ctx.get() });
-    ctx->merge(childs);
+    std::vector<block*> childs({ stmt->blk.get() });
+    blk->merge(childs);
 }
 
-void compiler::process_stmt_ifelse(const gsc::context_ptr& ctx, const gsc::stmt_ifelse_ptr& stmt)
+void compiler::process_stmt_ifelse(const ast::stmt_ifelse::ptr& stmt, const block::ptr& blk)
 {
-    std::vector<gsc::context*> childs;
+    std::vector<block*> childs;
     auto abort = abort_t::abort_return;
 
-    stmt->ctx_if = std::make_unique<gsc::context>();
-    stmt->ctx_else = std::make_unique<gsc::context>();
+    stmt->blk_if = std::make_unique<block>();
+    stmt->blk_else = std::make_unique<block>();
 
-    ctx->copy(stmt->ctx_if);
-    process_stmt(stmt->ctx_if, stmt->stmt_if);
+    blk->copy(stmt->blk_if);
+    process_stmt(stmt->stmt_if, stmt->blk_if);
 
-    if(stmt->ctx_if->abort <= abort_t::abort_return)
+    if (stmt->blk_if->abort <= abort_t::abort_return)
     {
-        abort = stmt->ctx_if->abort;
-        if(abort == abort_t::abort_none)
-            childs.push_back(stmt->ctx_if.get());
+        abort = stmt->blk_if->abort;
+        if (abort == abort_t::abort_none)
+            childs.push_back(stmt->blk_if.get());
     }
 
-    ctx->copy(stmt->ctx_else);
-    process_stmt(stmt->ctx_else, stmt->stmt_else);
+    blk->copy(stmt->blk_else);
+    process_stmt(stmt->stmt_else, stmt->blk_else);
 
-    if(stmt->ctx_else->abort <= abort)
+    if (stmt->blk_else->abort <= abort)
     {
-        abort = stmt->ctx_else->abort;
-        if(abort == abort_t::abort_none)
-            childs.push_back(stmt->ctx_else.get());
+        abort = stmt->blk_else->abort;
+        if (abort == abort_t::abort_none)
+            childs.push_back(stmt->blk_else.get());
     }
     
-    if(ctx->abort == abort_t::abort_none)
-        ctx->abort = abort;
+    if (blk->abort == abort_t::abort_none)
+        blk->abort = abort;
 
-    ctx->append(childs);
-    ctx->merge(childs);
+    blk->append(childs);
+    blk->merge(childs);
 }
 
-void compiler::process_stmt_while(const gsc::context_ptr& ctx, const gsc::stmt_while_ptr& stmt)
+void compiler::process_stmt_while(const ast::stmt_while::ptr& stmt, const block::ptr& blk)
 {
-    bool const_cond = is_constant_condition(stmt->expr);
+    bool const_cond = is_constant_condition(stmt->test);
 
-    auto old_breaks = break_ctxs_;
-    auto old_continues = continue_ctxs_;
-    break_ctxs_.clear();
-    continue_ctxs_.clear();
+    auto old_breaks = break_blks_;
+    auto old_continues = continue_blks_;
+    break_blks_.clear();
+    continue_blks_.clear();
 
-    stmt->ctx = std::make_unique<gsc::context>();
+    stmt->blk = std::make_unique<block>();
 
-    ctx->copy(stmt->ctx);
-    process_stmt(stmt->ctx, stmt->stmt);
+    blk->copy(stmt->blk);
+    process_stmt(stmt->stmt, stmt->blk);
 
-    continue_ctxs_.push_back(stmt->ctx.get());
+    continue_blks_.push_back(stmt->blk.get());
 
-    for(auto i = 0; i < continue_ctxs_.size(); i++)
-        ctx->append({continue_ctxs_.at(i)});
+    for (auto i = 0; i < continue_blks_.size(); i++)
+        blk->append({continue_blks_.at(i)});
 
-    if(const_cond) ctx->append(break_ctxs_);
+    if (const_cond) blk->append(break_blks_);
 
-    ctx->merge({stmt->ctx.get()});
+    blk->merge({stmt->blk.get()});
 
-    break_ctxs_ = old_breaks;
-    continue_ctxs_ = old_continues;
+    break_blks_ = old_breaks;
+    continue_blks_ = old_continues;
 }
 
-void compiler::process_stmt_for(const gsc::context_ptr& ctx, const gsc::stmt_for_ptr& stmt)
+void compiler::process_stmt_dowhile(const ast::stmt_dowhile::ptr& stmt, const block::ptr& blk)
 {
-    bool const_cond = is_constant_condition(stmt->expr);
+    bool const_cond = is_constant_condition(stmt->test);
 
-    stmt->ctx = std::make_unique<gsc::context>();
-    stmt->ctx_post = std::make_unique<gsc::context>();
+    auto old_breaks = break_blks_;
+    auto old_continues = continue_blks_;
+    break_blks_.clear();
+    continue_blks_.clear();
 
-    process_stmt(ctx, stmt->pre_expr);
+    stmt->blk = std::make_unique<block>();
 
-    auto old_breaks = break_ctxs_;
-    auto old_continues = continue_ctxs_;
-    break_ctxs_.clear();
-    continue_ctxs_.clear();
+    blk->copy(stmt->blk);
+    process_stmt(stmt->stmt, stmt->blk);
 
-    ctx->copy(stmt->ctx);
-    ctx->copy(stmt->ctx_post);
+    continue_blks_.push_back(stmt->blk.get());
 
-    process_stmt(stmt->ctx, stmt->stmt);
+    for (auto i = 0; i < continue_blks_.size(); i++)
+        blk->append({continue_blks_.at(i)});
 
-    continue_ctxs_.push_back(stmt->ctx.get());
+    if (const_cond) blk->append(break_blks_);
 
-    for(auto i = 0; i < continue_ctxs_.size(); i++)
-        ctx->append({continue_ctxs_.at(i)});
+    blk->merge({stmt->blk.get()});
 
-    process_stmt(stmt->ctx_post, stmt->post_expr);
-
-    ctx->append({ stmt->ctx_post.get() });
-    ctx->merge({ stmt->ctx_post.get() });
-
-    if(const_cond) ctx->append(break_ctxs_);
-
-    ctx->merge({stmt->ctx.get()});
-
-    break_ctxs_ = old_breaks;
-    continue_ctxs_ = old_continues;
+    break_blks_ = old_breaks;
+    continue_blks_ = old_continues;
 }
 
-void compiler::process_stmt_foreach(const gsc::context_ptr& ctx, const gsc::stmt_foreach_ptr& stmt)
+void compiler::process_stmt_for(const ast::stmt_for::ptr& stmt, const block::ptr& blk)
+{
+    bool const_cond = is_constant_condition(stmt->test);
+
+    stmt->blk = std::make_unique<block>();
+    stmt->blk_iter = std::make_unique<block>();
+
+    process_stmt(stmt->init, blk);
+
+    auto old_breaks = break_blks_;
+    auto old_continues = continue_blks_;
+    break_blks_.clear();
+    continue_blks_.clear();
+
+    blk->copy(stmt->blk);
+    blk->copy(stmt->blk_iter);
+
+    process_stmt(stmt->stmt, stmt->blk);
+
+    continue_blks_.push_back(stmt->blk.get());
+
+    for (auto i = 0; i < continue_blks_.size(); i++)
+        blk->append({continue_blks_.at(i)});
+
+    process_stmt(stmt->iter, stmt->blk_iter);
+
+    blk->append({ stmt->blk_iter.get() });
+    blk->merge({ stmt->blk_iter.get() });
+
+    if (const_cond) blk->append(break_blks_);
+
+    blk->merge({stmt->blk.get()});
+
+    break_blks_ = old_breaks;
+    continue_blks_ = old_continues;
+}
+
+void compiler::process_stmt_foreach(const ast::stmt_foreach::ptr& stmt, const block::ptr& blk)
 {
     auto array_name = utils::string::va("temp_%d", ++label_idx_);
     auto key_name = utils::string::va("temp_%d", ++label_idx_);
 
-    stmt->array = expr_ptr(std::make_unique<node_name>(stmt->loc, array_name));
+    stmt->array = ast::expr(std::make_unique<ast::expr_identifier>(stmt->loc(), array_name));
 
-    if(!stmt->use_key)
-        stmt->key_expr = expr_ptr(std::make_unique<node_name>(stmt->loc, key_name));
+    if (!stmt->use_key)
+        stmt->key_expr = ast::expr(std::make_unique<ast::expr_identifier>(stmt->loc(), key_name));
 
-    key_name = stmt->key_expr.as_name->value;
+    key_name = stmt->key_expr.as_identifier->value;
 
     // calculate variables
 
-    stmt->ctx = std::make_unique<gsc::context>();
-    stmt->ctx_post = std::make_unique<gsc::context>();
+    stmt->ctx = std::make_unique<block>();
+    stmt->ctx_post = std::make_unique<block>();
 
     // calculate pre_expr variables
-    process_expr(ctx, stmt->array);
+    process_expr(stmt->array, blk);
 
-    auto old_breaks = break_ctxs_;
-    auto old_continues = continue_ctxs_;
-    break_ctxs_.clear();
-    continue_ctxs_.clear();
+    auto old_breaks = break_blks_;
+    auto old_continues = continue_blks_;
+    break_blks_.clear();
+    continue_blks_.clear();
 
-    ctx->copy(stmt->ctx);
-    ctx->copy(stmt->ctx_post);
+    blk->copy(stmt->ctx);
+    blk->copy(stmt->ctx_post);
 
     // calculate stmt variables & add missing array access as first stmt
-    process_expr(stmt->ctx, stmt->value_expr);
-    process_stmt(stmt->ctx, stmt->stmt);
+    process_expr(stmt->value_expr, stmt->ctx);
+    process_stmt(stmt->stmt, stmt->ctx);
     
-    continue_ctxs_.push_back(stmt->ctx.get());
+    continue_blks_.push_back(stmt->ctx.get());
 
-    for(auto i = 0; i < continue_ctxs_.size(); i++)
-        ctx->append({continue_ctxs_.at(i)});
+    for (auto i = 0; i < continue_blks_.size(); i++)
+        blk->append({continue_blks_.at(i)});
 
-    process_expr(stmt->ctx_post, stmt->key_expr);
+    process_expr(stmt->key_expr, stmt->ctx_post);
 
-    ctx->append({ stmt->ctx_post.get() });
-    ctx->merge({ stmt->ctx_post.get() });
-    ctx->merge({stmt->ctx.get()});
+    blk->append({ stmt->ctx_post.get() });
+    blk->merge({ stmt->ctx_post.get() });
+    blk->merge({stmt->ctx.get()});
 
-    break_ctxs_ = old_breaks;
-    continue_ctxs_ = old_continues;
+    break_blks_ = old_breaks;
+    continue_blks_ = old_continues;
 }
 
-void compiler::process_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_switch_ptr& stmt)
+void compiler::process_stmt_switch(const ast::stmt_switch::ptr& stmt, const block::ptr& blk)
 {
-    auto stmt_list = std::make_unique<gsc::node_stmt_list>(stmt->stmt->loc);
-    auto current_case = gsc::stmt_ptr(nullptr);
+    auto stmt_list = std::make_unique<ast::stmt_list>(stmt->stmt->loc());
+    auto current_case = ast::stmt(nullptr);
 
-    auto num = stmt->stmt->stmts.size();
+    auto num = stmt->stmt->list.size();
 
-    for(auto i = 0; i < num; i++)
+    for (auto i = 0; i < num; i++)
     {
-        auto& entry = stmt->stmt->stmts[0];
+        auto& entry = stmt->stmt->list[0];
 
-        if(entry.as_node->type == gsc::node_t::stmt_case || entry.as_node->type == gsc::node_t::stmt_default)
+        if (entry == ast::kind::stmt_case || entry == ast::kind::stmt_default)
         {
-            if(current_case.as_node != nullptr)
+            if (current_case.as_node != nullptr)
             {
-                stmt_list->stmts.push_back(std::move(current_case));
+                stmt_list->list.push_back(std::move(current_case));
             }
 
-            current_case = std::move(stmt->stmt->stmts[0]);
-            stmt->stmt->stmts.erase(stmt->stmt->stmts.begin());
+            current_case = std::move(stmt->stmt->list[0]);
+            stmt->stmt->list.erase(stmt->stmt->list.begin());
         }
         else
         {
-            if(current_case.as_node != nullptr)
+            if (current_case.as_node != nullptr)
             {
-                if(current_case.as_node->type == gsc::node_t::stmt_case)
+                if (current_case == ast::kind::stmt_case)
                 {
-                    current_case.as_case->stmt->stmts.push_back(std::move(entry));
-                    stmt->stmt->stmts.erase(stmt->stmt->stmts.begin());
+                    current_case.as_case->stmt->list.push_back(std::move(entry));
+                    stmt->stmt->list.erase(stmt->stmt->list.begin());
                 }
                 else
                 {
-                    current_case.as_default->stmt->stmts.push_back(std::move(entry));
-                    stmt->stmt->stmts.erase(stmt->stmt->stmts.begin());
+                    current_case.as_default->stmt->list.push_back(std::move(entry));
+                    stmt->stmt->list.erase(stmt->stmt->list.begin());
                 }
             }
             else
             {
-                throw gsc::comp_error(entry.as_node->loc, "missing case statement");
+                throw comp_error(entry.as_node->loc(), "missing case statement");
             }
         }
     }
 
-    if(current_case.as_node != nullptr)
+    if (current_case.as_node != nullptr)
     {
-        stmt_list->stmts.push_back(std::move(current_case));
+        stmt_list->list.push_back(std::move(current_case));
     }
 
     // calculate variables
-    stmt->ctx = std::make_unique<gsc::context>();
-    std::vector<gsc::context*> childs;
+    stmt->ctx = std::make_unique<block>();
+    std::vector<block*> childs;
     auto abort = abort_t::abort_return;
     bool has_default = false;
-    gsc::context* default_ctx = nullptr;
-    auto old_breaks = break_ctxs_;
-    break_ctxs_.clear();
+    block* default_ctx = nullptr;
+    auto old_breaks = break_blks_;
+    break_blks_.clear();
 
-    for(auto i = 0; i < stmt_list->stmts.size(); i++)
+    for (auto i = 0; i < stmt_list->list.size(); i++)
     {
-        auto& entry = stmt_list->stmts[i];
+        auto& entry = stmt_list->list[i];
 
-        if(entry.as_node->type == gsc::node_t::stmt_case)
+        if (entry == ast::kind::stmt_case)
         {
-            entry.as_case->ctx = std::make_unique<gsc::context>();
-            ctx->copy(entry.as_case->ctx);
-            process_stmt_list(entry.as_case->ctx, entry.as_case->stmt);
+            entry.as_case->blk = std::make_unique<block>();
+            blk->copy(entry.as_case->blk);
+            process_stmt_list(entry.as_case->stmt, entry.as_case->blk);
 
-            if (entry.as_case->ctx->abort != abort_t::abort_none)
+            if (entry.as_case->blk->abort != abort_t::abort_none)
             {
-                if (entry.as_case->ctx->abort == abort_t::abort_break )
+                if (entry.as_case->blk->abort == abort_t::abort_break )
                 {
-                    entry.as_case->ctx->abort = abort_t::abort_none;
+                    entry.as_case->blk->abort = abort_t::abort_none;
                     abort = abort_t::abort_none;
-                    childs.push_back(entry.as_case->ctx.get());
+                    childs.push_back(entry.as_case->blk.get());
                 }
-                else if (entry.as_case->ctx->abort <= abort )
+                else if (entry.as_case->blk->abort <= abort )
                 {
-                    abort = entry.as_case->ctx->abort;
+                    abort = entry.as_case->blk->abort;
                 }
             }
         }
-        else if(entry.as_node->type == gsc::node_t::stmt_default)
+        else if (entry == ast::kind::stmt_default)
         {
-            entry.as_default->ctx = std::make_unique<gsc::context>();
-            ctx->copy(entry.as_default->ctx);
-            process_stmt_list(entry.as_default->ctx, entry.as_default->stmt);
+            entry.as_default->blk = std::make_unique<block>();
+            blk->copy(entry.as_default->blk);
+            process_stmt_list(entry.as_default->stmt, entry.as_default->blk);
             has_default = true;
-            default_ctx = entry.as_default->ctx.get();
+            default_ctx = entry.as_default->blk.get();
 
-            if (entry.as_default->ctx->abort != abort_t::abort_none)
+            if (entry.as_default->blk->abort != abort_t::abort_none)
             {
-                if (entry.as_default->ctx->abort == abort_t::abort_break )
+                if (entry.as_default->blk->abort == abort_t::abort_break )
                 {
-                    entry.as_default->ctx->abort = abort_t::abort_none;
+                    entry.as_default->blk->abort = abort_t::abort_none;
                     abort = abort_t::abort_none;
-                    childs.push_back(entry.as_default->ctx.get());
+                    childs.push_back(entry.as_default->blk.get());
                 }
-                else if (entry.as_default->ctx->abort <= abort )
+                else if (entry.as_default->blk->abort <= abort )
                 {
-                    abort = entry.as_default->ctx->abort;
+                    abort = entry.as_default->blk->abort;
                 }
             }
         }
@@ -2079,244 +2547,290 @@ void compiler::process_stmt_switch(const gsc::context_ptr& ctx, const gsc::stmt_
 
     stmt->stmt =std::move(stmt_list);
 
-    if(has_default)
+    if (has_default)
     {
-        if(default_ctx->abort == abort_t::abort_none)
+        if (default_ctx->abort == abort_t::abort_none)
         {
-            break_ctxs_.push_back(default_ctx);
+            break_blks_.push_back(default_ctx);
 
-            if(ctx->abort == abort_t::abort_none)
-                ctx->abort = abort;
+            if (blk->abort == abort_t::abort_none)
+                blk->abort = abort;
         }
 
-        ctx->append(break_ctxs_);
-        ctx->merge(childs);
+        blk->append(break_blks_);
+        blk->merge(childs);
     }
 
-    break_ctxs_ = old_breaks;
+    break_blks_ = old_breaks;
 }
 
-void compiler::process_stmt_break(const gsc::context_ptr& ctx, const gsc::stmt_break_ptr& stmt)
+void compiler::process_stmt_break(const ast::stmt_break::ptr& stmt, const block::ptr& blk)
 {
-    if(ctx->abort == abort_t::abort_none)
+    if (blk->abort == abort_t::abort_none)
     {
-        break_ctxs_.push_back(ctx.get());
-        ctx->abort = abort_t::abort_break;
+        break_blks_.push_back(blk.get());
+        blk->abort = abort_t::abort_break;
     }
 }
 
-void compiler::process_stmt_continue(const gsc::context_ptr& ctx, const gsc::stmt_continue_ptr& stmt)
+void compiler::process_stmt_continue(const ast::stmt_continue::ptr& stmt, const block::ptr& blk)
 {
-    if(ctx->abort == abort_t::abort_none)
+    if (blk->abort == abort_t::abort_none)
     {
-        continue_ctxs_.push_back(ctx.get());
-        ctx->abort = abort_t::abort_continue;
+        continue_blks_.push_back(blk.get());
+        blk->abort = abort_t::abort_continue;
     }
 }
 
-void compiler::process_stmt_return(const gsc::context_ptr& ctx, const gsc::stmt_return_ptr& stmt)
+void compiler::process_stmt_return(const ast::stmt_return::ptr& stmt, const block::ptr& blk)
 {
-    if(ctx->abort == abort_t::abort_none)
+    if (blk->abort == abort_t::abort_none)
     {
-        ctx->abort = abort_t::abort_return;
+        blk->abort = abort_t::abort_return;
     }
 }
 
-void compiler::register_variable(const gsc::context_ptr& ctx, const std::string& name)
+void compiler::process_expr(const ast::expr& expr, const block::ptr& blk)
 {
-    auto it = std::find_if(ctx->local_vars.begin(), ctx->local_vars.end(),
+    if (expr == ast::kind::expr_identifier)
+    {
+        register_variable(expr.as_identifier->value, blk);
+    }
+    else if (expr == ast::kind::expr_array)
+    {
+        process_expr(expr.as_array->obj, blk);
+    }
+}
+
+void compiler::process_expr_parameters(const ast::expr_parameters::ptr& decl, const block::ptr& blk)
+{
+    for (const auto& entry : decl->list)
+    {
+        register_variable(entry->value, blk);
+    }
+}
+
+void compiler::register_variable(const std::string& name, const block::ptr& blk)
+{
+    auto it = std::find_if (blk->local_vars.begin(), blk->local_vars.end(),
             [&](const gsc::local_var& v) { return v.name == name; });
 
-    if(it == ctx->local_vars.end())
+    if (it == blk->local_vars.end())
     {
         auto found = false;
-        for(std::size_t i = 0; i < local_stack_.size(); i++)
+        for (std::size_t i = 0; i < local_stack_.size(); i++)
         {
-            if(local_stack_[i] == name)
+            if (local_stack_[i] == name)
             {
-                ctx->local_vars.push_back({ name, static_cast<uint8_t>(i), false });
+                blk->local_vars.push_back({ name, static_cast<uint8_t>(i), false });
                 found = true;
                 break;
             }
         }
 
-        if(!found)
+        if (!found)
         {
-            ctx->local_vars.push_back({ name, stack_idx_, false });
+            blk->local_vars.push_back({ name, stack_idx_, false });
             local_stack_.push_back(name);
             stack_idx_++;
         }
     }
 }
 
-void compiler::initialize_variable(const gsc::context_ptr& ctx, const gsc::name_ptr& name)
+void compiler::initialize_variable(const ast::expr_identifier::ptr& name, const block::ptr& blk)
 {
-    for(std::uint32_t i = 0; i < ctx->local_vars.size(); i++)
+    for (std::uint32_t i = 0; i < blk->local_vars.size(); i++)
     {
-        if(ctx->local_vars[i].name == name->value)
+        if (blk->local_vars[i].name == name->value)
         {
-            if(!ctx->local_vars[i].init)
+            if (!blk->local_vars[i].init)
             {
-                for(std::uint32_t j = 0; j < i; j++)
+                for (std::uint32_t j = 0; j < i; j++)
                 {
-                    if(!ctx->local_vars[j].init)
+                    if (!blk->local_vars[j].init)
                     {
-                        emit_opcode(ctx, opcode::OP_CreateLocalVariable, utils::string::va("%d", ctx->local_vars[j].create));
-                        ctx->local_vars[j].init = true;
+                        emit_opcode(opcode::OP_CreateLocalVariable, utils::string::va("%d", blk->local_vars[j].create));
+                        blk->local_vars[j].init = true;
                         //ctx->local_vars_create_count++;
                     }
                 }
-                ctx->local_vars[i].init = true;
-                ctx->local_vars_create_count = i + 1;
+                blk->local_vars[i].init = true;
+                blk->local_vars_create_count = i + 1;
                 return;
             }
         }
     }
 
-    throw gsc::comp_error(name->loc, "local variable '" + name->value + "' not found.");
+    throw comp_error(name->loc(), "local variable '" + name->value + "' not found.");
 }
 
-void compiler::create_variable(const gsc::context_ptr& ctx, const gsc::name_ptr& name)
+void compiler::create_variable(const ast::expr_identifier::ptr& name, const block::ptr& blk)
 {
-    for(std::size_t i = 0; i < ctx->local_vars.size(); i++)
+    for (std::size_t i = 0; i < blk->local_vars.size(); i++)
     {
-        auto& var = ctx->local_vars.at(i);
-        if(var.name == name->value)
+        auto& var = blk->local_vars.at(i);
+        if (var.name == name->value)
         {
-            if(!var.init)
+            if (!var.init)
             {
-                emit_opcode(ctx, opcode::OP_CreateLocalVariable, utils::string::va("%d", var.create));
+                emit_opcode(opcode::OP_CreateLocalVariable, utils::string::va("%d", var.create));
                 var.init = true;
-                ctx->local_vars_create_count++;
+                blk->local_vars_create_count++;
             }
             return;
         }
     }
 
-    throw gsc::comp_error(name->loc, "local variable '" + name->value + "' not found.");
+    throw comp_error(name->loc(), "local variable '" + name->value + "' not found.");
 }
 
-auto compiler::variable_stack_index(const gsc::context_ptr& ctx, const gsc::name_ptr& name) -> std::uint8_t
+auto compiler::variable_stack_index(const ast::expr_identifier::ptr& name, const block::ptr& blk) -> std::uint8_t
 {
-    for(std::size_t i = 0; i < ctx->local_vars.size(); i++)
+    for (std::size_t i = 0; i < blk->local_vars.size(); i++)
     {
-        if(ctx->local_vars[i].name == name->value)
+        if (blk->local_vars[i].name == name->value)
         {
-            if(ctx->local_vars.at(i).init)
+            if (blk->local_vars.at(i).init)
             {
-                return ctx->local_vars_create_count - 1 - i;
+                return blk->local_vars_create_count - 1 - i;
             }
 
-            throw gsc::comp_error(name->loc, "local variable '" + name->value + "' not initialized.");
+            throw comp_error(name->loc(), "local variable '" + name->value + "' not initialized.");
         }   
     }
 
-    throw gsc::comp_error(name->loc, "local variable '" + name->value + "' not found.");
+    throw comp_error(name->loc(), "local variable '" + name->value + "' not found.");
 }
 
-auto compiler::variable_create_index(const gsc::context_ptr& ctx, const gsc::name_ptr& name) -> std::string
+auto compiler::variable_create_index(const ast::expr_identifier::ptr& name, const block::ptr& blk) -> std::string
 {
-    for(std::size_t i = 0; i < ctx->local_vars.size(); i++)
+    for (std::size_t i = 0; i < blk->local_vars.size(); i++)
     {
-        if(ctx->local_vars[i].name == name->value)
-            return utils::string::va("%d", ctx->local_vars[i].create);
+        if (blk->local_vars[i].name == name->value)
+            return utils::string::va("%d", blk->local_vars[i].create);
     }
 
-    throw gsc::comp_error(name->loc, "local variable '" + name->value + "' not found.");
+    throw comp_error(name->loc(), "local variable '" + name->value + "' not found.");
 }
 
-auto compiler::variable_access_index(const gsc::context_ptr& ctx, const gsc::name_ptr& name) -> std::string
+auto compiler::variable_access_index(const ast::expr_identifier::ptr& name, const block::ptr& blk) -> std::string
 {
-    for(std::size_t i = 0; i < ctx->local_vars.size(); i++)
+    for (std::size_t i = 0; i < blk->local_vars.size(); i++)
     {
-        if(ctx->local_vars[i].name == name->value)
+        if (blk->local_vars[i].name == name->value)
         {
-            if(ctx->local_vars.at(i).init)
+            if (blk->local_vars.at(i).init)
             {
-                return utils::string::va("%d", ctx->local_vars_create_count - 1 - i);
+                return utils::string::va("%d", blk->local_vars_create_count - 1 - i);
             }
 
-            throw gsc::comp_error(name->loc, "local variable '" + name->value + "' not initialized.");
+            throw comp_error(name->loc(), "local variable '" + name->value + "' not initialized.");
         }   
     }
 
-    throw gsc::comp_error(name->loc, "local variable '" + name->value + "' not found.");
+    throw comp_error(name->loc(), "local variable '" + name->value + "' not found.");
 }
 
-auto compiler::variable_initialized(const gsc::context_ptr& ctx, const gsc::name_ptr& name) -> bool
+auto compiler::variable_initialized(const ast::expr_identifier::ptr& name, const block::ptr& blk) -> bool
 {
-    for(std::size_t i = 0; i < ctx->local_vars.size(); i++)
+    for (std::size_t i = 0; i < blk->local_vars.size(); i++)
     {
-        if(ctx->local_vars[i].name == name->value)
+        if (blk->local_vars[i].name == name->value)
         {
-            return ctx->local_vars.at(i).init;
+            return blk->local_vars.at(i).init;
         }
     }
 
-    throw gsc::comp_error(name->loc, "local variable '" + name->value + "' not found.");
+    throw comp_error(name->loc(), "local variable '" + name->value + "' not found.");
 }
 
-auto compiler::is_include_call(const std::string& name, std::string& file) -> bool
+auto compiler::resolve_function_type(const ast::expr_function::ptr& expr) -> ast::call::type
 {
-    for(const auto& inc : includes_)
+    if (expr->path->value != "")
+        return ast::call::type::far;
+
+    auto& name = expr->name->value;
+
+    if (resolver::find_function(name) || resolver::find_method(name))
+        return ast::call::type::builtin;
+
+    for (const auto& entry : local_functions_)
     {
-        for(const auto& fun : inc.funcs)
+        if (entry == name)
+            return ast::call::type::local;
+    }
+
+    for (const auto& inc : includes_)
+    {
+        for (const auto& fun : inc.funcs)
         {
-            if(name == fun)
+            if (name == fun)
             {
-                file = inc.name;
-                return true;
+                expr->path->value = inc.name;
+                return ast::call::type::far;
             }
         }
     }
 
-    return false;
+    throw comp_error(expr->loc(), "couldn't determine function type");
 }
 
-auto compiler::is_local_call(const std::string& name) -> bool
+auto compiler::resolve_reference_type(const ast::expr_reference::ptr& expr, bool& method) -> ast::call::type
 {
-    for(const auto& f : local_functions_)
+    if (expr->path->value != "")
+        return ast::call::type::far;
+
+    auto& name = expr->name->value;
+
+    if (resolver::find_function(name))
     {
-        if(f == name) return true;
+        method = false;
+        return ast::call::type::builtin;
     }
 
-    return false;
-}
-
-auto compiler::is_builtin_call(const std::string& name) -> bool
-{
-    if(is_builtin_func(name)) return true;
-    
-    if(is_builtin_method(name)) return true;
-
-    return false;
-}
-
-auto compiler::is_builtin_func(const std::string& name) -> bool
-{
-    return resolver::find_function(name);
-}
-auto compiler::is_builtin_method(const std::string& name) -> bool
-{
-    return resolver::find_method(name);
-}
-
-auto compiler::is_constant_condition(const gsc::expr_ptr& expr) -> bool
-{
-    switch(expr.as_node->type)
+    if (resolver::find_method(name))
     {
-        case gsc::node_t::null:
-        case gsc::node_t::data_true:
+        method = true;
+        return ast::call::type::builtin;
+    }
+
+    for (const auto& entry : local_functions_)
+    {
+        if (entry == name)
+            return ast::call::type::local;
+    }
+
+    for (const auto& inc : includes_)
+    {
+        for (const auto& fun : inc.funcs)
+        {
+            if (name == fun)
+            {
+                expr->path->value = inc.name;
+                return ast::call::type::far;
+            }
+        }
+    }
+
+    throw comp_error(expr->loc(), "couldn't determine function reference type");
+}
+
+auto compiler::is_constant_condition(const ast::expr& expr) -> bool
+{
+    switch (expr.kind())
+    {
+        case ast::kind::null:
+        case ast::kind::expr_true:
             return true;
-        case gsc::node_t::data_false:
-            throw gsc::comp_error(expr.as_node->loc, "condition can't be always false!");
-        case gsc::node_t::data_integer:
+        case ast::kind::expr_false:
+            throw comp_error(expr.as_node->loc(), "condition can't be always false!");
+        case ast::kind::expr_integer:
         {
             auto num = std::stoi(expr.as_integer->value);
-            if(num != 0)
+            if (num != 0)
                 return true;
             else
-                throw gsc::comp_error(expr.as_node->loc, "condition can't be always false!");
+                throw comp_error(expr.as_node->loc(), "condition can't be always false!");
         }
         default:
             break;
@@ -2355,23 +2869,23 @@ void compiler::insert_label(const std::string& name)
 
     if (itr != function_->labels.end())
     {
-       for(auto& inst : function_->instructions)
+       for (auto& inst : function_->instructions)
        {
            switch (opcode(inst->opcode))
            {
-            case opcode::OP_JumpOnFalse:
-            case opcode::OP_JumpOnTrue:
-            case opcode::OP_JumpOnFalseExpr:
-            case opcode::OP_JumpOnTrueExpr:
-            case opcode::OP_jump:
-            case opcode::OP_jumpback:
-            case opcode::OP_switch:
-                if(inst->data[0] == name)
-                    inst->data[0] = itr->second;
-                break;
-            case opcode::OP_endswitch:
-            default:
-                break;
+                case opcode::OP_JumpOnFalse:
+                case opcode::OP_JumpOnTrue:
+                case opcode::OP_JumpOnFalseExpr:
+                case opcode::OP_JumpOnTrueExpr:
+                case opcode::OP_jump:
+                case opcode::OP_jumpback:
+                case opcode::OP_switch:
+                    if (inst->data[0] == name)
+                        inst->data[0] = itr->second;
+                    break;
+                case opcode::OP_endswitch:
+                default:
+                    break;
            }
        }
     }

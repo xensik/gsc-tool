@@ -11,32 +11,32 @@ namespace xsk::gsc::s2
 class disassembler : public gsc::disassembler
 {
     std::string filename_;
-    utils::byte_buffer_ptr script_;
-    utils::byte_buffer_ptr stack_;
-    utils::byte_buffer_ptr output_;
-    std::vector<gsc::function_ptr> functions_;
+    utils::byte_buffer::ptr script_;
+    utils::byte_buffer::ptr stack_;
+    utils::byte_buffer::ptr output_;
+    std::vector<function::ptr> functions_;
     std::unordered_map<std::uint32_t, std::string> labels_;
 
 public:
-    auto output() -> std::vector<gsc::function_ptr>;
+    auto output() -> std::vector<function::ptr>;
     auto output_data() -> std::vector<std::uint8_t>;
     void disassemble(const std::string& file, std::vector<std::uint8_t>& script, std::vector<std::uint8_t>& stack);
 
 private:
-    void dissasemble_function(const gsc::function_ptr& func);
-    void dissasemble_instruction(const gsc::instruction_ptr& inst);
-    void disassemble_builtin_call(const gsc::instruction_ptr& inst, bool method, bool arg_num);
-    void disassemble_local_call(const gsc::instruction_ptr& inst, bool thread);
-    void disassemble_far_call(const gsc::instruction_ptr& inst, bool thread);
-    void disassemble_jump(const gsc::instruction_ptr& inst, bool expr, bool back);
-    void disassemble_field_variable(const gsc::instruction_ptr& inst);
-    void disassemble_switch(const gsc::instruction_ptr& inst);
-    void disassemble_end_switch(const gsc::instruction_ptr& inst);
+    void dissasemble_function(const function::ptr& func);
+    void dissasemble_instruction(const instruction::ptr& inst);
+    void disassemble_builtin_call(const instruction::ptr& inst, bool method, bool args);
+    void disassemble_local_call(const instruction::ptr& inst, bool thread);
+    void disassemble_far_call(const instruction::ptr& inst, bool thread);
+    void disassemble_jump(const instruction::ptr& inst, bool expr, bool back);
+    void disassemble_field_variable(const instruction::ptr& inst);
+    void disassemble_switch(const instruction::ptr& inst);
+    void disassemble_end_switch(const instruction::ptr& inst);
     auto disassemble_offset() -> std::int32_t;
     void resolve_local_functions();
     auto resolve_function(const std::string& index) -> std::string;
-    void print_function(const gsc::function_ptr& func);
-    void print_instruction(const gsc::instruction_ptr& inst);
+    void print_function(const function::ptr& func);
+    void print_instruction(const instruction::ptr& inst);
 };
 
 } // namespace xsk::gsc::s2

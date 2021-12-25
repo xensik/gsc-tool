@@ -49,7 +49,7 @@
 
 #include "h1.hpp"
 typedef void *yyscan_t;
-#define YY_DECL xsk::gsc::h1::parser::symbol_type H1lex(yyscan_t yyscanner, xsk::gsc::location& loc)
+#define YY_DECL xsk::gsc::h1::parser::symbol_type H1lex(yyscan_t yyscanner, xsk::gsc::context* ctx)
 
 #line 55 "parser.hpp"
 
@@ -408,97 +408,216 @@ namespace xsk { namespace gsc { namespace h1 {
     /// An auxiliary type to compute the largest semantic type.
     union union_type
     {
-      // anim
-      char dummy1[sizeof (anim_ptr)];
+      // expr_function
+      // expr_pointer
+      char dummy1[sizeof (ast::call)];
 
-      // animation
-      char dummy2[sizeof (animation_ptr)];
+      // declaration
+      char dummy2[sizeof (ast::decl)];
 
-      // animtree
-      char dummy3[sizeof (animtree_ptr)];
+      // decl_constant
+      char dummy3[sizeof (ast::decl_constant::ptr)];
 
-      // color
-      char dummy4[sizeof (color_ptr)];
+      // decl_thread
+      char dummy4[sizeof (ast::decl_thread::ptr)];
 
-      // constant
-      char dummy5[sizeof (constant_ptr)];
+      // decl_usingtree
+      char dummy5[sizeof (ast::decl_usingtree::ptr)];
 
-      // define
-      char dummy6[sizeof (define_ptr)];
-
-      // empty_array
-      char dummy7[sizeof (empty_array_ptr)];
-
-      // expr_arguments
-      // expr_arguments_filled
-      // expr_arguments_empty
-      char dummy8[sizeof (expr_arguments_ptr)];
-
-      // expr_assign
-      char dummy9[sizeof (expr_assign_ptr)];
-
-      // expr_call
-      // expr_call_thread
-      // expr_call_childthread
-      char dummy10[sizeof (expr_call_ptr)];
-
-      // expr_call_function
-      // expr_call_pointer
-      char dummy11[sizeof (expr_call_type_ptr)];
-
-      // for_expr
       // expr
-      // expr_compare
+      // expr_or_empty
+      // expr_assign
+      // expr_increment
+      // expr_decrement
       // expr_ternary
       // expr_binary
       // expr_primitive
-      char dummy12[sizeof (expr_ptr)];
+      // expr_object
+      char dummy6[sizeof (ast::expr)];
 
-      // false
-      char dummy13[sizeof (false_ptr)];
+      // expr_add_array
+      char dummy7[sizeof (ast::expr_add_array::ptr)];
 
-      // file
-      char dummy14[sizeof (file_ptr)];
+      // expr_anim
+      char dummy8[sizeof (ast::expr_anim::ptr)];
 
-      // float
-      char dummy15[sizeof (float_ptr)];
+      // expr_animation
+      char dummy9[sizeof (ast::expr_animation::ptr)];
 
-      // game
-      char dummy16[sizeof (game_ptr)];
+      // expr_animtree
+      char dummy10[sizeof (ast::expr_animtree::ptr)];
+
+      // expr_arguments
+      // expr_arguments_no_empty
+      char dummy11[sizeof (ast::expr_arguments::ptr)];
+
+      // expr_array
+      char dummy12[sizeof (ast::expr_array::ptr)];
+
+      // expr_call
+      char dummy13[sizeof (ast::expr_call::ptr)];
+
+      // expr_color
+      char dummy14[sizeof (ast::expr_color::ptr)];
+
+      // expr_complement
+      char dummy15[sizeof (ast::expr_complement::ptr)];
+
+      // expr_empty_array
+      char dummy16[sizeof (ast::expr_empty_array::ptr)];
+
+      // expr_false
+      char dummy17[sizeof (ast::expr_false::ptr)];
+
+      // expr_field
+      char dummy18[sizeof (ast::expr_field::ptr)];
+
+      // expr_float
+      char dummy19[sizeof (ast::expr_float::ptr)];
+
+      // expr_game
+      char dummy20[sizeof (ast::expr_game::ptr)];
+
+      // expr_identifier
+      char dummy21[sizeof (ast::expr_identifier::ptr)];
+
+      // expr_integer
+      char dummy22[sizeof (ast::expr_integer::ptr)];
+
+      // expr_istring
+      char dummy23[sizeof (ast::expr_istring::ptr)];
+
+      // expr_level
+      char dummy24[sizeof (ast::expr_level::ptr)];
+
+      // expr_method
+      char dummy25[sizeof (ast::expr_method::ptr)];
+
+      // expr_not
+      char dummy26[sizeof (ast::expr_not::ptr)];
+
+      // expr_parameters
+      char dummy27[sizeof (ast::expr_parameters::ptr)];
+
+      // expr_paren
+      char dummy28[sizeof (ast::expr_paren::ptr)];
+
+      // expr_path
+      char dummy29[sizeof (ast::expr_path::ptr)];
+
+      // expr_reference
+      char dummy30[sizeof (ast::expr_reference::ptr)];
+
+      // expr_self
+      char dummy31[sizeof (ast::expr_self::ptr)];
+
+      // expr_size
+      char dummy32[sizeof (ast::expr_size::ptr)];
+
+      // expr_string
+      char dummy33[sizeof (ast::expr_string::ptr)];
+
+      // expr_thisthread
+      char dummy34[sizeof (ast::expr_thisthread::ptr)];
+
+      // expr_true
+      char dummy35[sizeof (ast::expr_true::ptr)];
+
+      // expr_undefined
+      char dummy36[sizeof (ast::expr_undefined::ptr)];
+
+      // expr_vector
+      char dummy37[sizeof (ast::expr_vector::ptr)];
 
       // include
-      char dummy17[sizeof (include_ptr)];
-
-      // integer
-      char dummy18[sizeof (integer_ptr)];
-
-      // istring
-      char dummy19[sizeof (istring_ptr)];
-
-      // level
-      char dummy20[sizeof (level_ptr)];
-
-      // name
-      char dummy21[sizeof (name_ptr)];
-
-      // expr_function
-      // expr_add_array
-      // expr_array
-      // expr_field
-      // expr_size
-      // object
-      char dummy22[sizeof (node_ptr)];
-
-      // parameters
-      char dummy23[sizeof (parameters_ptr)];
+      char dummy38[sizeof (ast::include::ptr)];
 
       // program
-      char dummy24[sizeof (program_ptr)];
+      char dummy39[sizeof (ast::program::ptr)];
 
-      // self
-      char dummy25[sizeof (self_ptr)];
+      // stmt
+      char dummy40[sizeof (ast::stmt)];
 
-      // "file path"
+      // stmt_assign
+      char dummy41[sizeof (ast::stmt_assign::ptr)];
+
+      // stmt_break
+      char dummy42[sizeof (ast::stmt_break::ptr)];
+
+      // stmt_breakpoint
+      char dummy43[sizeof (ast::stmt_breakpoint::ptr)];
+
+      // stmt_call
+      char dummy44[sizeof (ast::stmt_call::ptr)];
+
+      // stmt_case
+      char dummy45[sizeof (ast::stmt_case::ptr)];
+
+      // stmt_continue
+      char dummy46[sizeof (ast::stmt_continue::ptr)];
+
+      // stmt_default
+      char dummy47[sizeof (ast::stmt_default::ptr)];
+
+      // stmt_dowhile
+      char dummy48[sizeof (ast::stmt_dowhile::ptr)];
+
+      // stmt_endon
+      char dummy49[sizeof (ast::stmt_endon::ptr)];
+
+      // stmt_expr
+      char dummy50[sizeof (ast::stmt_expr::ptr)];
+
+      // stmt_for
+      char dummy51[sizeof (ast::stmt_for::ptr)];
+
+      // stmt_foreach
+      char dummy52[sizeof (ast::stmt_foreach::ptr)];
+
+      // stmt_if
+      char dummy53[sizeof (ast::stmt_if::ptr)];
+
+      // stmt_ifelse
+      char dummy54[sizeof (ast::stmt_ifelse::ptr)];
+
+      // stmt_block
+      // stmt_list
+      char dummy55[sizeof (ast::stmt_list::ptr)];
+
+      // stmt_notify
+      char dummy56[sizeof (ast::stmt_notify::ptr)];
+
+      // stmt_prof_begin
+      char dummy57[sizeof (ast::stmt_prof_begin::ptr)];
+
+      // stmt_prof_end
+      char dummy58[sizeof (ast::stmt_prof_end::ptr)];
+
+      // stmt_return
+      char dummy59[sizeof (ast::stmt_return::ptr)];
+
+      // stmt_switch
+      char dummy60[sizeof (ast::stmt_switch::ptr)];
+
+      // stmt_wait
+      char dummy61[sizeof (ast::stmt_wait::ptr)];
+
+      // stmt_waitframe
+      char dummy62[sizeof (ast::stmt_waitframe::ptr)];
+
+      // stmt_waittill
+      char dummy63[sizeof (ast::stmt_waittill::ptr)];
+
+      // stmt_waittillframeend
+      char dummy64[sizeof (ast::stmt_waittillframeend::ptr)];
+
+      // stmt_waittillmatch
+      char dummy65[sizeof (ast::stmt_waittillmatch::ptr)];
+
+      // stmt_while
+      char dummy66[sizeof (ast::stmt_while::ptr)];
+
+      // "path"
       // "identifier"
       // "string literal"
       // "localized string"
@@ -508,105 +627,7 @@ namespace xsk { namespace gsc { namespace h1 {
       // "octal int"
       // "binary int"
       // "hexadecimal int"
-      char dummy26[sizeof (std::string)];
-
-      // stmt_assign
-      char dummy27[sizeof (stmt_assign_ptr)];
-
-      // stmt_break
-      char dummy28[sizeof (stmt_break_ptr)];
-
-      // stmt_breakpoint
-      char dummy29[sizeof (stmt_breakpoint_ptr)];
-
-      // stmt_call
-      char dummy30[sizeof (stmt_call_ptr)];
-
-      // stmt_case
-      char dummy31[sizeof (stmt_case_ptr)];
-
-      // stmt_continue
-      char dummy32[sizeof (stmt_continue_ptr)];
-
-      // stmt_default
-      char dummy33[sizeof (stmt_default_ptr)];
-
-      // stmt_endon
-      char dummy34[sizeof (stmt_endon_ptr)];
-
-      // stmt_for
-      char dummy35[sizeof (stmt_for_ptr)];
-
-      // stmt_foreach
-      char dummy36[sizeof (stmt_foreach_ptr)];
-
-      // stmt_if
-      char dummy37[sizeof (stmt_if_ptr)];
-
-      // stmt_ifelse
-      char dummy38[sizeof (stmt_ifelse_ptr)];
-
-      // stmt_block
-      // stmt_list
-      char dummy39[sizeof (stmt_list_ptr)];
-
-      // stmt_notify
-      char dummy40[sizeof (stmt_notify_ptr)];
-
-      // stmt_prof_begin
-      char dummy41[sizeof (stmt_prof_begin_ptr)];
-
-      // stmt_prof_end
-      char dummy42[sizeof (stmt_prof_end_ptr)];
-
-      // stmt
-      // for_stmt
-      char dummy43[sizeof (stmt_ptr)];
-
-      // stmt_return
-      char dummy44[sizeof (stmt_return_ptr)];
-
-      // stmt_switch
-      char dummy45[sizeof (stmt_switch_ptr)];
-
-      // stmt_wait
-      char dummy46[sizeof (stmt_wait_ptr)];
-
-      // stmt_waitframe
-      char dummy47[sizeof (stmt_waitframe_ptr)];
-
-      // stmt_waittill
-      char dummy48[sizeof (stmt_waittill_ptr)];
-
-      // stmt_waittillframeend
-      char dummy49[sizeof (stmt_waittillframeend_ptr)];
-
-      // stmt_waittillmatch
-      char dummy50[sizeof (stmt_waittillmatch_ptr)];
-
-      // stmt_while
-      char dummy51[sizeof (stmt_while_ptr)];
-
-      // string
-      char dummy52[sizeof (string_ptr)];
-
-      // thisthread
-      char dummy53[sizeof (thisthread_ptr)];
-
-      // thread
-      char dummy54[sizeof (thread_ptr)];
-
-      // true
-      char dummy55[sizeof (true_ptr)];
-
-      // undefined
-      char dummy56[sizeof (undefined_ptr)];
-
-      // usingtree
-      char dummy57[sizeof (usingtree_ptr)];
-
-      // vector
-      char dummy58[sizeof (vector_ptr)];
+      char dummy67[sizeof (std::string)];
     };
 
     /// The size of the largest semantic type.
@@ -658,107 +679,109 @@ namespace xsk { namespace gsc { namespace h1 {
     H1EOF = 0,                     // "end of file"
     H1error = 1,                   // error
     H1UNDEF = 2,                   // "invalid token"
-    BREAKPOINT = 3,                // "breakpoint"
-    PROFBEGIN = 4,                 // "prof_begin"
-    PROFEND = 5,                   // "prof_end"
-    INCLUDE = 6,                   // "#include"
-    USINGTREE = 7,                 // "#using_animtree"
-    ANIMTREE = 8,                  // "#animtree"
-    ENDON = 9,                     // "endon"
-    NOTIFY = 10,                   // "notify"
-    WAIT = 11,                     // "wait"
-    WAITTILL = 12,                 // "waittill"
-    WAITTILLMATCH = 13,            // "waittillmatch"
-    WAITTILLFRAMEEND = 14,         // "waittillframeend"
-    WAITFRAME = 15,                // "waitframe"
-    IF = 16,                       // "if"
-    ELSE = 17,                     // "else"
-    WHILE = 18,                    // "while"
-    FOR = 19,                      // "for"
-    FOREACH = 20,                  // "foreach"
-    IN = 21,                       // "in"
-    SWITCH = 22,                   // "switch"
-    CASE = 23,                     // "case"
-    DEFAULT = 24,                  // "default"
-    BREAK = 25,                    // "break"
-    CONTINUE = 26,                 // "continue"
-    RETURN = 27,                   // "return"
-    THREAD = 28,                   // "thread"
-    CHILDTHREAD = 29,              // "childthread"
-    THISTHREAD = 30,               // "thisthread"
-    CALL = 31,                     // "call"
-    TRUE = 32,                     // "true"
-    FALSE = 33,                    // "false"
-    UNDEFINED = 34,                // "undefined"
-    SIZE = 35,                     // ".size"
-    GAME = 36,                     // "game"
-    SELF = 37,                     // "self"
-    ANIM = 38,                     // "anim"
-    LEVEL = 39,                    // "level"
-    LPAREN = 40,                   // "("
-    RPAREN = 41,                   // ")"
-    LBRACE = 42,                   // "{"
-    RBRACE = 43,                   // "}"
-    LBRACKET = 44,                 // "["
-    RBRACKET = 45,                 // "]"
-    COMMA = 46,                    // ","
-    DOT = 47,                      // "."
-    DOUBLECOLON = 48,              // "::"
-    COLON = 49,                    // ":"
-    SEMICOLON = 50,                // ";"
-    QMARK = 51,                    // "?"
-    INCREMENT = 52,                // "++"
-    DECREMENT = 53,                // "--"
-    LSHIFT = 54,                   // "<<"
-    RSHIFT = 55,                   // ">>"
-    OR = 56,                       // "||"
-    AND = 57,                      // "&&"
-    EQUALITY = 58,                 // "=="
-    INEQUALITY = 59,               // "!="
-    LESS_EQUAL = 60,               // "<="
-    GREATER_EQUAL = 61,            // ">="
-    LESS = 62,                     // "<"
-    GREATER = 63,                  // ">"
-    NOT = 64,                      // "!"
-    COMPLEMENT = 65,               // "~"
-    ASSIGN = 66,                   // "="
-    ASSIGN_ADD = 67,               // "+="
-    ASSIGN_SUB = 68,               // "-="
-    ASSIGN_MULT = 69,              // "*="
-    ASSIGN_DIV = 70,               // "/="
-    ASSIGN_MOD = 71,               // "%="
-    ASSIGN_BITWISE_OR = 72,        // "|="
-    ASSIGN_BITWISE_AND = 73,       // "&="
-    ASSIGN_BITWISE_EXOR = 74,      // "^="
-    ASSIGN_RSHIFT = 75,            // ">>="
-    ASSIGN_LSHIFT = 76,            // "<<="
-    BITWISE_OR = 77,               // "|"
-    BITWISE_AND = 78,              // "&"
-    BITWISE_EXOR = 79,             // "^"
-    ADD = 80,                      // "+"
-    SUB = 81,                      // "-"
-    MULT = 82,                     // "*"
-    DIV = 83,                      // "/"
-    MOD = 84,                      // "%"
-    FILE = 85,                     // "file path"
-    NAME = 86,                     // "identifier"
-    STRING = 87,                   // "string literal"
-    ISTRING = 88,                  // "localized string"
-    COLOR = 89,                    // "color"
-    FLOAT = 90,                    // "float"
-    INT_DEC = 91,                  // "int"
-    INT_OCT = 92,                  // "octal int"
-    INT_BIN = 93,                  // "binary int"
-    INT_HEX = 94,                  // "hexadecimal int"
-    ADD_ARRAY = 95,                // ADD_ARRAY
-    THEN = 96,                     // THEN
-    TERN = 97,                     // TERN
-    NEG = 98,                      // NEG
-    ANIMREF = 99,                  // ANIMREF
-    PREINC = 100,                  // PREINC
-    PREDEC = 101,                  // PREDEC
-    POSTINC = 102,                 // POSTINC
-    POSTDEC = 103                  // POSTDEC
+    INLINE = 3,                    // "#inline"
+    INCLUDE = 4,                   // "#include"
+    USINGTREE = 5,                 // "#using_animtree"
+    ANIMTREE = 6,                  // "#animtree"
+    ENDON = 7,                     // "endon"
+    NOTIFY = 8,                    // "notify"
+    WAIT = 9,                      // "wait"
+    WAITTILL = 10,                 // "waittill"
+    WAITTILLMATCH = 11,            // "waittillmatch"
+    WAITTILLFRAMEEND = 12,         // "waittillframeend"
+    WAITFRAME = 13,                // "waitframe"
+    IF = 14,                       // "if"
+    ELSE = 15,                     // "else"
+    DO = 16,                       // "do"
+    WHILE = 17,                    // "while"
+    FOR = 18,                      // "for"
+    FOREACH = 19,                  // "foreach"
+    IN = 20,                       // "in"
+    SWITCH = 21,                   // "switch"
+    CASE = 22,                     // "case"
+    DEFAULT = 23,                  // "default"
+    BREAK = 24,                    // "break"
+    CONTINUE = 25,                 // "continue"
+    RETURN = 26,                   // "return"
+    BREAKPOINT = 27,               // "breakpoint"
+    PROFBEGIN = 28,                // "prof_begin"
+    PROFEND = 29,                  // "prof_end"
+    THREAD = 30,                   // "thread"
+    CHILDTHREAD = 31,              // "childthread"
+    THISTHREAD = 32,               // "thisthread"
+    CALL = 33,                     // "call"
+    TRUE = 34,                     // "true"
+    FALSE = 35,                    // "false"
+    UNDEFINED = 36,                // "undefined"
+    SIZE = 37,                     // ".size"
+    GAME = 38,                     // "game"
+    SELF = 39,                     // "self"
+    ANIM = 40,                     // "anim"
+    LEVEL = 41,                    // "level"
+    LPAREN = 42,                   // "("
+    RPAREN = 43,                   // ")"
+    LBRACE = 44,                   // "{"
+    RBRACE = 45,                   // "}"
+    LBRACKET = 46,                 // "["
+    RBRACKET = 47,                 // "]"
+    COMMA = 48,                    // ","
+    DOT = 49,                      // "."
+    DOUBLECOLON = 50,              // "::"
+    COLON = 51,                    // ":"
+    SEMICOLON = 52,                // ";"
+    QMARK = 53,                    // "?"
+    INCREMENT = 54,                // "++"
+    DECREMENT = 55,                // "--"
+    LSHIFT = 56,                   // "<<"
+    RSHIFT = 57,                   // ">>"
+    OR = 58,                       // "||"
+    AND = 59,                      // "&&"
+    EQUALITY = 60,                 // "=="
+    INEQUALITY = 61,               // "!="
+    LESS_EQUAL = 62,               // "<="
+    GREATER_EQUAL = 63,            // ">="
+    LESS = 64,                     // "<"
+    GREATER = 65,                  // ">"
+    NOT = 66,                      // "!"
+    COMPLEMENT = 67,               // "~"
+    ASSIGN = 68,                   // "="
+    ASSIGN_ADD = 69,               // "+="
+    ASSIGN_SUB = 70,               // "-="
+    ASSIGN_MUL = 71,               // "*="
+    ASSIGN_DIV = 72,               // "/="
+    ASSIGN_MOD = 73,               // "%="
+    ASSIGN_BW_OR = 74,             // "|="
+    ASSIGN_BW_AND = 75,            // "&="
+    ASSIGN_BW_EXOR = 76,           // "^="
+    ASSIGN_RSHIFT = 77,            // ">>="
+    ASSIGN_LSHIFT = 78,            // "<<="
+    BITWISE_OR = 79,               // "|"
+    BITWISE_AND = 80,              // "&"
+    BITWISE_EXOR = 81,             // "^"
+    ADD = 82,                      // "+"
+    SUB = 83,                      // "-"
+    MUL = 84,                      // "*"
+    DIV = 85,                      // "/"
+    MOD = 86,                      // "%"
+    PATH = 87,                     // "path"
+    IDENTIFIER = 88,               // "identifier"
+    STRING = 89,                   // "string literal"
+    ISTRING = 90,                  // "localized string"
+    COLOR = 91,                    // "color"
+    FLOAT = 92,                    // "float"
+    INT_DEC = 93,                  // "int"
+    INT_OCT = 94,                  // "octal int"
+    INT_BIN = 95,                  // "binary int"
+    INT_HEX = 96,                  // "hexadecimal int"
+    ADD_ARRAY = 97,                // ADD_ARRAY
+    THEN = 98,                     // THEN
+    TERN = 99,                     // TERN
+    NEG = 100,                     // NEG
+    ANIMREF = 101,                 // ANIMREF
+    PREINC = 102,                  // PREINC
+    PREDEC = 103,                  // PREDEC
+    POSTINC = 104,                 // POSTINC
+    POSTDEC = 105                  // POSTDEC
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -775,188 +798,194 @@ namespace xsk { namespace gsc { namespace h1 {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 104, ///< Number of tokens.
+        YYNTOKENS = 106, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
         S_YYUNDEF = 2,                           // "invalid token"
-        S_BREAKPOINT = 3,                        // "breakpoint"
-        S_PROFBEGIN = 4,                         // "prof_begin"
-        S_PROFEND = 5,                           // "prof_end"
-        S_INCLUDE = 6,                           // "#include"
-        S_USINGTREE = 7,                         // "#using_animtree"
-        S_ANIMTREE = 8,                          // "#animtree"
-        S_ENDON = 9,                             // "endon"
-        S_NOTIFY = 10,                           // "notify"
-        S_WAIT = 11,                             // "wait"
-        S_WAITTILL = 12,                         // "waittill"
-        S_WAITTILLMATCH = 13,                    // "waittillmatch"
-        S_WAITTILLFRAMEEND = 14,                 // "waittillframeend"
-        S_WAITFRAME = 15,                        // "waitframe"
-        S_IF = 16,                               // "if"
-        S_ELSE = 17,                             // "else"
-        S_WHILE = 18,                            // "while"
-        S_FOR = 19,                              // "for"
-        S_FOREACH = 20,                          // "foreach"
-        S_IN = 21,                               // "in"
-        S_SWITCH = 22,                           // "switch"
-        S_CASE = 23,                             // "case"
-        S_DEFAULT = 24,                          // "default"
-        S_BREAK = 25,                            // "break"
-        S_CONTINUE = 26,                         // "continue"
-        S_RETURN = 27,                           // "return"
-        S_THREAD = 28,                           // "thread"
-        S_CHILDTHREAD = 29,                      // "childthread"
-        S_THISTHREAD = 30,                       // "thisthread"
-        S_CALL = 31,                             // "call"
-        S_TRUE = 32,                             // "true"
-        S_FALSE = 33,                            // "false"
-        S_UNDEFINED = 34,                        // "undefined"
-        S_SIZE = 35,                             // ".size"
-        S_GAME = 36,                             // "game"
-        S_SELF = 37,                             // "self"
-        S_ANIM = 38,                             // "anim"
-        S_LEVEL = 39,                            // "level"
-        S_LPAREN = 40,                           // "("
-        S_RPAREN = 41,                           // ")"
-        S_LBRACE = 42,                           // "{"
-        S_RBRACE = 43,                           // "}"
-        S_LBRACKET = 44,                         // "["
-        S_RBRACKET = 45,                         // "]"
-        S_COMMA = 46,                            // ","
-        S_DOT = 47,                              // "."
-        S_DOUBLECOLON = 48,                      // "::"
-        S_COLON = 49,                            // ":"
-        S_SEMICOLON = 50,                        // ";"
-        S_QMARK = 51,                            // "?"
-        S_INCREMENT = 52,                        // "++"
-        S_DECREMENT = 53,                        // "--"
-        S_LSHIFT = 54,                           // "<<"
-        S_RSHIFT = 55,                           // ">>"
-        S_OR = 56,                               // "||"
-        S_AND = 57,                              // "&&"
-        S_EQUALITY = 58,                         // "=="
-        S_INEQUALITY = 59,                       // "!="
-        S_LESS_EQUAL = 60,                       // "<="
-        S_GREATER_EQUAL = 61,                    // ">="
-        S_LESS = 62,                             // "<"
-        S_GREATER = 63,                          // ">"
-        S_NOT = 64,                              // "!"
-        S_COMPLEMENT = 65,                       // "~"
-        S_ASSIGN = 66,                           // "="
-        S_ASSIGN_ADD = 67,                       // "+="
-        S_ASSIGN_SUB = 68,                       // "-="
-        S_ASSIGN_MULT = 69,                      // "*="
-        S_ASSIGN_DIV = 70,                       // "/="
-        S_ASSIGN_MOD = 71,                       // "%="
-        S_ASSIGN_BITWISE_OR = 72,                // "|="
-        S_ASSIGN_BITWISE_AND = 73,               // "&="
-        S_ASSIGN_BITWISE_EXOR = 74,              // "^="
-        S_ASSIGN_RSHIFT = 75,                    // ">>="
-        S_ASSIGN_LSHIFT = 76,                    // "<<="
-        S_BITWISE_OR = 77,                       // "|"
-        S_BITWISE_AND = 78,                      // "&"
-        S_BITWISE_EXOR = 79,                     // "^"
-        S_ADD = 80,                              // "+"
-        S_SUB = 81,                              // "-"
-        S_MULT = 82,                             // "*"
-        S_DIV = 83,                              // "/"
-        S_MOD = 84,                              // "%"
-        S_FILE = 85,                             // "file path"
-        S_NAME = 86,                             // "identifier"
-        S_STRING = 87,                           // "string literal"
-        S_ISTRING = 88,                          // "localized string"
-        S_COLOR = 89,                            // "color"
-        S_FLOAT = 90,                            // "float"
-        S_INT_DEC = 91,                          // "int"
-        S_INT_OCT = 92,                          // "octal int"
-        S_INT_BIN = 93,                          // "binary int"
-        S_INT_HEX = 94,                          // "hexadecimal int"
-        S_ADD_ARRAY = 95,                        // ADD_ARRAY
-        S_THEN = 96,                             // THEN
-        S_TERN = 97,                             // TERN
-        S_NEG = 98,                              // NEG
-        S_ANIMREF = 99,                          // ANIMREF
-        S_PREINC = 100,                          // PREINC
-        S_PREDEC = 101,                          // PREDEC
-        S_POSTINC = 102,                         // POSTINC
-        S_POSTDEC = 103,                         // POSTDEC
-        S_YYACCEPT = 104,                        // $accept
-        S_root = 105,                            // root
-        S_program = 106,                         // program
-        S_include = 107,                         // include
-        S_define = 108,                          // define
-        S_usingtree = 109,                       // usingtree
-        S_constant = 110,                        // constant
-        S_thread = 111,                          // thread
-        S_parameters = 112,                      // parameters
-        S_stmt = 113,                            // stmt
-        S_stmt_block = 114,                      // stmt_block
-        S_stmt_list = 115,                       // stmt_list
-        S_stmt_call = 116,                       // stmt_call
-        S_stmt_assign = 117,                     // stmt_assign
-        S_stmt_endon = 118,                      // stmt_endon
-        S_stmt_notify = 119,                     // stmt_notify
-        S_stmt_wait = 120,                       // stmt_wait
-        S_stmt_waittill = 121,                   // stmt_waittill
-        S_stmt_waittillmatch = 122,              // stmt_waittillmatch
-        S_stmt_waittillframeend = 123,           // stmt_waittillframeend
-        S_stmt_waitframe = 124,                  // stmt_waitframe
-        S_stmt_if = 125,                         // stmt_if
-        S_stmt_ifelse = 126,                     // stmt_ifelse
-        S_stmt_while = 127,                      // stmt_while
-        S_stmt_for = 128,                        // stmt_for
-        S_stmt_foreach = 129,                    // stmt_foreach
-        S_stmt_switch = 130,                     // stmt_switch
-        S_stmt_case = 131,                       // stmt_case
-        S_stmt_default = 132,                    // stmt_default
-        S_stmt_break = 133,                      // stmt_break
-        S_stmt_continue = 134,                   // stmt_continue
-        S_stmt_return = 135,                     // stmt_return
-        S_stmt_breakpoint = 136,                 // stmt_breakpoint
-        S_stmt_prof_begin = 137,                 // stmt_prof_begin
-        S_stmt_prof_end = 138,                   // stmt_prof_end
-        S_for_stmt = 139,                        // for_stmt
-        S_for_expr = 140,                        // for_expr
-        S_expr = 141,                            // expr
-        S_expr_assign = 142,                     // expr_assign
-        S_expr_compare = 143,                    // expr_compare
-        S_expr_ternary = 144,                    // expr_ternary
-        S_expr_binary = 145,                     // expr_binary
-        S_expr_primitive = 146,                  // expr_primitive
-        S_expr_call = 147,                       // expr_call
-        S_expr_call_thread = 148,                // expr_call_thread
-        S_expr_call_childthread = 149,           // expr_call_childthread
-        S_expr_call_function = 150,              // expr_call_function
-        S_expr_call_pointer = 151,               // expr_call_pointer
-        S_expr_arguments = 152,                  // expr_arguments
-        S_expr_arguments_filled = 153,           // expr_arguments_filled
-        S_expr_arguments_empty = 154,            // expr_arguments_empty
+        S_INLINE = 3,                            // "#inline"
+        S_INCLUDE = 4,                           // "#include"
+        S_USINGTREE = 5,                         // "#using_animtree"
+        S_ANIMTREE = 6,                          // "#animtree"
+        S_ENDON = 7,                             // "endon"
+        S_NOTIFY = 8,                            // "notify"
+        S_WAIT = 9,                              // "wait"
+        S_WAITTILL = 10,                         // "waittill"
+        S_WAITTILLMATCH = 11,                    // "waittillmatch"
+        S_WAITTILLFRAMEEND = 12,                 // "waittillframeend"
+        S_WAITFRAME = 13,                        // "waitframe"
+        S_IF = 14,                               // "if"
+        S_ELSE = 15,                             // "else"
+        S_DO = 16,                               // "do"
+        S_WHILE = 17,                            // "while"
+        S_FOR = 18,                              // "for"
+        S_FOREACH = 19,                          // "foreach"
+        S_IN = 20,                               // "in"
+        S_SWITCH = 21,                           // "switch"
+        S_CASE = 22,                             // "case"
+        S_DEFAULT = 23,                          // "default"
+        S_BREAK = 24,                            // "break"
+        S_CONTINUE = 25,                         // "continue"
+        S_RETURN = 26,                           // "return"
+        S_BREAKPOINT = 27,                       // "breakpoint"
+        S_PROFBEGIN = 28,                        // "prof_begin"
+        S_PROFEND = 29,                          // "prof_end"
+        S_THREAD = 30,                           // "thread"
+        S_CHILDTHREAD = 31,                      // "childthread"
+        S_THISTHREAD = 32,                       // "thisthread"
+        S_CALL = 33,                             // "call"
+        S_TRUE = 34,                             // "true"
+        S_FALSE = 35,                            // "false"
+        S_UNDEFINED = 36,                        // "undefined"
+        S_SIZE = 37,                             // ".size"
+        S_GAME = 38,                             // "game"
+        S_SELF = 39,                             // "self"
+        S_ANIM = 40,                             // "anim"
+        S_LEVEL = 41,                            // "level"
+        S_LPAREN = 42,                           // "("
+        S_RPAREN = 43,                           // ")"
+        S_LBRACE = 44,                           // "{"
+        S_RBRACE = 45,                           // "}"
+        S_LBRACKET = 46,                         // "["
+        S_RBRACKET = 47,                         // "]"
+        S_COMMA = 48,                            // ","
+        S_DOT = 49,                              // "."
+        S_DOUBLECOLON = 50,                      // "::"
+        S_COLON = 51,                            // ":"
+        S_SEMICOLON = 52,                        // ";"
+        S_QMARK = 53,                            // "?"
+        S_INCREMENT = 54,                        // "++"
+        S_DECREMENT = 55,                        // "--"
+        S_LSHIFT = 56,                           // "<<"
+        S_RSHIFT = 57,                           // ">>"
+        S_OR = 58,                               // "||"
+        S_AND = 59,                              // "&&"
+        S_EQUALITY = 60,                         // "=="
+        S_INEQUALITY = 61,                       // "!="
+        S_LESS_EQUAL = 62,                       // "<="
+        S_GREATER_EQUAL = 63,                    // ">="
+        S_LESS = 64,                             // "<"
+        S_GREATER = 65,                          // ">"
+        S_NOT = 66,                              // "!"
+        S_COMPLEMENT = 67,                       // "~"
+        S_ASSIGN = 68,                           // "="
+        S_ASSIGN_ADD = 69,                       // "+="
+        S_ASSIGN_SUB = 70,                       // "-="
+        S_ASSIGN_MUL = 71,                       // "*="
+        S_ASSIGN_DIV = 72,                       // "/="
+        S_ASSIGN_MOD = 73,                       // "%="
+        S_ASSIGN_BW_OR = 74,                     // "|="
+        S_ASSIGN_BW_AND = 75,                    // "&="
+        S_ASSIGN_BW_EXOR = 76,                   // "^="
+        S_ASSIGN_RSHIFT = 77,                    // ">>="
+        S_ASSIGN_LSHIFT = 78,                    // "<<="
+        S_BITWISE_OR = 79,                       // "|"
+        S_BITWISE_AND = 80,                      // "&"
+        S_BITWISE_EXOR = 81,                     // "^"
+        S_ADD = 82,                              // "+"
+        S_SUB = 83,                              // "-"
+        S_MUL = 84,                              // "*"
+        S_DIV = 85,                              // "/"
+        S_MOD = 86,                              // "%"
+        S_PATH = 87,                             // "path"
+        S_IDENTIFIER = 88,                       // "identifier"
+        S_STRING = 89,                           // "string literal"
+        S_ISTRING = 90,                          // "localized string"
+        S_COLOR = 91,                            // "color"
+        S_FLOAT = 92,                            // "float"
+        S_INT_DEC = 93,                          // "int"
+        S_INT_OCT = 94,                          // "octal int"
+        S_INT_BIN = 95,                          // "binary int"
+        S_INT_HEX = 96,                          // "hexadecimal int"
+        S_ADD_ARRAY = 97,                        // ADD_ARRAY
+        S_THEN = 98,                             // THEN
+        S_TERN = 99,                             // TERN
+        S_NEG = 100,                             // NEG
+        S_ANIMREF = 101,                         // ANIMREF
+        S_PREINC = 102,                          // PREINC
+        S_PREDEC = 103,                          // PREDEC
+        S_POSTINC = 104,                         // POSTINC
+        S_POSTDEC = 105,                         // POSTDEC
+        S_YYACCEPT = 106,                        // $accept
+        S_root = 107,                            // root
+        S_program = 108,                         // program
+        S_inline = 109,                          // inline
+        S_include = 110,                         // include
+        S_declaration = 111,                     // declaration
+        S_decl_usingtree = 112,                  // decl_usingtree
+        S_decl_constant = 113,                   // decl_constant
+        S_decl_thread = 114,                     // decl_thread
+        S_stmt = 115,                            // stmt
+        S_stmt_block = 116,                      // stmt_block
+        S_stmt_list = 117,                       // stmt_list
+        S_stmt_expr = 118,                       // stmt_expr
+        S_stmt_call = 119,                       // stmt_call
+        S_stmt_assign = 120,                     // stmt_assign
+        S_stmt_endon = 121,                      // stmt_endon
+        S_stmt_notify = 122,                     // stmt_notify
+        S_stmt_wait = 123,                       // stmt_wait
+        S_stmt_waittill = 124,                   // stmt_waittill
+        S_stmt_waittillmatch = 125,              // stmt_waittillmatch
+        S_stmt_waittillframeend = 126,           // stmt_waittillframeend
+        S_stmt_waitframe = 127,                  // stmt_waitframe
+        S_stmt_if = 128,                         // stmt_if
+        S_stmt_ifelse = 129,                     // stmt_ifelse
+        S_stmt_while = 130,                      // stmt_while
+        S_stmt_dowhile = 131,                    // stmt_dowhile
+        S_stmt_for = 132,                        // stmt_for
+        S_stmt_foreach = 133,                    // stmt_foreach
+        S_stmt_switch = 134,                     // stmt_switch
+        S_stmt_case = 135,                       // stmt_case
+        S_stmt_default = 136,                    // stmt_default
+        S_stmt_break = 137,                      // stmt_break
+        S_stmt_continue = 138,                   // stmt_continue
+        S_stmt_return = 139,                     // stmt_return
+        S_stmt_breakpoint = 140,                 // stmt_breakpoint
+        S_stmt_prof_begin = 141,                 // stmt_prof_begin
+        S_stmt_prof_end = 142,                   // stmt_prof_end
+        S_expr = 143,                            // expr
+        S_expr_or_empty = 144,                   // expr_or_empty
+        S_expr_assign = 145,                     // expr_assign
+        S_expr_increment = 146,                  // expr_increment
+        S_expr_decrement = 147,                  // expr_decrement
+        S_expr_ternary = 148,                    // expr_ternary
+        S_expr_binary = 149,                     // expr_binary
+        S_expr_primitive = 150,                  // expr_primitive
+        S_expr_complement = 151,                 // expr_complement
+        S_expr_not = 152,                        // expr_not
+        S_expr_call = 153,                       // expr_call
+        S_expr_method = 154,                     // expr_method
         S_expr_function = 155,                   // expr_function
-        S_expr_add_array = 156,                  // expr_add_array
-        S_expr_array = 157,                      // expr_array
-        S_expr_field = 158,                      // expr_field
-        S_expr_size = 159,                       // expr_size
-        S_object = 160,                          // object
-        S_float = 161,                           // float
-        S_integer = 162,                         // integer
-        S_thisthread = 163,                      // thisthread
-        S_empty_array = 164,                     // empty_array
-        S_undefined = 165,                       // undefined
-        S_game = 166,                            // game
-        S_self = 167,                            // self
-        S_anim = 168,                            // anim
-        S_level = 169,                           // level
-        S_animation = 170,                       // animation
-        S_animtree = 171,                        // animtree
-        S_name = 172,                            // name
-        S_file = 173,                            // file
-        S_istring = 174,                         // istring
-        S_string = 175,                          // string
-        S_color = 176,                           // color
-        S_vector = 177,                          // vector
-        S_false = 178,                           // false
-        S_true = 179                             // true
+        S_expr_pointer = 156,                    // expr_pointer
+        S_expr_add_array = 157,                  // expr_add_array
+        S_expr_parameters = 158,                 // expr_parameters
+        S_expr_arguments = 159,                  // expr_arguments
+        S_expr_arguments_no_empty = 160,         // expr_arguments_no_empty
+        S_expr_reference = 161,                  // expr_reference
+        S_expr_array = 162,                      // expr_array
+        S_expr_field = 163,                      // expr_field
+        S_expr_size = 164,                       // expr_size
+        S_expr_paren = 165,                      // expr_paren
+        S_expr_object = 166,                     // expr_object
+        S_expr_thisthread = 167,                 // expr_thisthread
+        S_expr_empty_array = 168,                // expr_empty_array
+        S_expr_undefined = 169,                  // expr_undefined
+        S_expr_game = 170,                       // expr_game
+        S_expr_self = 171,                       // expr_self
+        S_expr_anim = 172,                       // expr_anim
+        S_expr_level = 173,                      // expr_level
+        S_expr_animation = 174,                  // expr_animation
+        S_expr_animtree = 175,                   // expr_animtree
+        S_expr_identifier = 176,                 // expr_identifier
+        S_expr_path = 177,                       // expr_path
+        S_expr_istring = 178,                    // expr_istring
+        S_expr_string = 179,                     // expr_string
+        S_expr_color = 180,                      // expr_color
+        S_expr_vector = 181,                     // expr_vector
+        S_expr_float = 182,                      // expr_float
+        S_expr_integer = 183,                    // expr_integer
+        S_expr_false = 184,                      // expr_false
+        S_expr_true = 185                        // expr_true
       };
     };
 
@@ -993,123 +1022,283 @@ namespace xsk { namespace gsc { namespace h1 {
       {
         switch (this->kind ())
     {
-      case symbol_kind::S_anim: // anim
-        value.move< anim_ptr > (std::move (that.value));
+      case symbol_kind::S_expr_function: // expr_function
+      case symbol_kind::S_expr_pointer: // expr_pointer
+        value.move< ast::call > (std::move (that.value));
         break;
 
-      case symbol_kind::S_animation: // animation
-        value.move< animation_ptr > (std::move (that.value));
+      case symbol_kind::S_declaration: // declaration
+        value.move< ast::decl > (std::move (that.value));
         break;
 
-      case symbol_kind::S_animtree: // animtree
-        value.move< animtree_ptr > (std::move (that.value));
+      case symbol_kind::S_decl_constant: // decl_constant
+        value.move< ast::decl_constant::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_color: // color
-        value.move< color_ptr > (std::move (that.value));
+      case symbol_kind::S_decl_thread: // decl_thread
+        value.move< ast::decl_thread::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_constant: // constant
-        value.move< constant_ptr > (std::move (that.value));
+      case symbol_kind::S_decl_usingtree: // decl_usingtree
+        value.move< ast::decl_usingtree::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_define: // define
-        value.move< define_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_empty_array: // empty_array
-        value.move< empty_array_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_expr_arguments: // expr_arguments
-      case symbol_kind::S_expr_arguments_filled: // expr_arguments_filled
-      case symbol_kind::S_expr_arguments_empty: // expr_arguments_empty
-        value.move< expr_arguments_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_expr_assign: // expr_assign
-        value.move< expr_assign_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_expr_call: // expr_call
-      case symbol_kind::S_expr_call_thread: // expr_call_thread
-      case symbol_kind::S_expr_call_childthread: // expr_call_childthread
-        value.move< expr_call_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_expr_call_function: // expr_call_function
-      case symbol_kind::S_expr_call_pointer: // expr_call_pointer
-        value.move< expr_call_type_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_for_expr: // for_expr
       case symbol_kind::S_expr: // expr
-      case symbol_kind::S_expr_compare: // expr_compare
+      case symbol_kind::S_expr_or_empty: // expr_or_empty
+      case symbol_kind::S_expr_assign: // expr_assign
+      case symbol_kind::S_expr_increment: // expr_increment
+      case symbol_kind::S_expr_decrement: // expr_decrement
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
-        value.move< expr_ptr > (std::move (that.value));
+      case symbol_kind::S_expr_object: // expr_object
+        value.move< ast::expr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_false: // false
-        value.move< false_ptr > (std::move (that.value));
+      case symbol_kind::S_expr_add_array: // expr_add_array
+        value.move< ast::expr_add_array::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_file: // file
-        value.move< file_ptr > (std::move (that.value));
+      case symbol_kind::S_expr_anim: // expr_anim
+        value.move< ast::expr_anim::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_float: // float
-        value.move< float_ptr > (std::move (that.value));
+      case symbol_kind::S_expr_animation: // expr_animation
+        value.move< ast::expr_animation::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_game: // game
-        value.move< game_ptr > (std::move (that.value));
+      case symbol_kind::S_expr_animtree: // expr_animtree
+        value.move< ast::expr_animtree::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_arguments: // expr_arguments
+      case symbol_kind::S_expr_arguments_no_empty: // expr_arguments_no_empty
+        value.move< ast::expr_arguments::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_array: // expr_array
+        value.move< ast::expr_array::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_call: // expr_call
+        value.move< ast::expr_call::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_color: // expr_color
+        value.move< ast::expr_color::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_complement: // expr_complement
+        value.move< ast::expr_complement::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_empty_array: // expr_empty_array
+        value.move< ast::expr_empty_array::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_false: // expr_false
+        value.move< ast::expr_false::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_field: // expr_field
+        value.move< ast::expr_field::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_float: // expr_float
+        value.move< ast::expr_float::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_game: // expr_game
+        value.move< ast::expr_game::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_identifier: // expr_identifier
+        value.move< ast::expr_identifier::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_integer: // expr_integer
+        value.move< ast::expr_integer::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_istring: // expr_istring
+        value.move< ast::expr_istring::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_level: // expr_level
+        value.move< ast::expr_level::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_method: // expr_method
+        value.move< ast::expr_method::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_not: // expr_not
+        value.move< ast::expr_not::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_parameters: // expr_parameters
+        value.move< ast::expr_parameters::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_paren: // expr_paren
+        value.move< ast::expr_paren::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_path: // expr_path
+        value.move< ast::expr_path::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_reference: // expr_reference
+        value.move< ast::expr_reference::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_self: // expr_self
+        value.move< ast::expr_self::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_size: // expr_size
+        value.move< ast::expr_size::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_string: // expr_string
+        value.move< ast::expr_string::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_thisthread: // expr_thisthread
+        value.move< ast::expr_thisthread::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_true: // expr_true
+        value.move< ast::expr_true::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_undefined: // expr_undefined
+        value.move< ast::expr_undefined::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_vector: // expr_vector
+        value.move< ast::expr_vector::ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_include: // include
-        value.move< include_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_integer: // integer
-        value.move< integer_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_istring: // istring
-        value.move< istring_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_level: // level
-        value.move< level_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_name: // name
-        value.move< name_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_expr_function: // expr_function
-      case symbol_kind::S_expr_add_array: // expr_add_array
-      case symbol_kind::S_expr_array: // expr_array
-      case symbol_kind::S_expr_field: // expr_field
-      case symbol_kind::S_expr_size: // expr_size
-      case symbol_kind::S_object: // object
-        value.move< node_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_parameters: // parameters
-        value.move< parameters_ptr > (std::move (that.value));
+        value.move< ast::include::ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_program: // program
-        value.move< program_ptr > (std::move (that.value));
+        value.move< ast::program::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_self: // self
-        value.move< self_ptr > (std::move (that.value));
+      case symbol_kind::S_stmt: // stmt
+        value.move< ast::stmt > (std::move (that.value));
         break;
 
-      case symbol_kind::S_FILE: // "file path"
-      case symbol_kind::S_NAME: // "identifier"
+      case symbol_kind::S_stmt_assign: // stmt_assign
+        value.move< ast::stmt_assign::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_break: // stmt_break
+        value.move< ast::stmt_break::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
+        value.move< ast::stmt_breakpoint::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_call: // stmt_call
+        value.move< ast::stmt_call::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_case: // stmt_case
+        value.move< ast::stmt_case::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_continue: // stmt_continue
+        value.move< ast::stmt_continue::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_default: // stmt_default
+        value.move< ast::stmt_default::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_dowhile: // stmt_dowhile
+        value.move< ast::stmt_dowhile::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_endon: // stmt_endon
+        value.move< ast::stmt_endon::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_expr: // stmt_expr
+        value.move< ast::stmt_expr::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_for: // stmt_for
+        value.move< ast::stmt_for::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_foreach: // stmt_foreach
+        value.move< ast::stmt_foreach::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_if: // stmt_if
+        value.move< ast::stmt_if::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
+        value.move< ast::stmt_ifelse::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_block: // stmt_block
+      case symbol_kind::S_stmt_list: // stmt_list
+        value.move< ast::stmt_list::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_notify: // stmt_notify
+        value.move< ast::stmt_notify::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_prof_begin: // stmt_prof_begin
+        value.move< ast::stmt_prof_begin::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_prof_end: // stmt_prof_end
+        value.move< ast::stmt_prof_end::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_return: // stmt_return
+        value.move< ast::stmt_return::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_switch: // stmt_switch
+        value.move< ast::stmt_switch::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_wait: // stmt_wait
+        value.move< ast::stmt_wait::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waitframe: // stmt_waitframe
+        value.move< ast::stmt_waitframe::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittill: // stmt_waittill
+        value.move< ast::stmt_waittill::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
+        value.move< ast::stmt_waittillframeend::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
+        value.move< ast::stmt_waittillmatch::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_stmt_while: // stmt_while
+        value.move< ast::stmt_while::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_PATH: // "path"
+      case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
       case symbol_kind::S_ISTRING: // "localized string"
       case symbol_kind::S_COLOR: // "color"
@@ -1119,136 +1308,6 @@ namespace xsk { namespace gsc { namespace h1 {
       case symbol_kind::S_INT_BIN: // "binary int"
       case symbol_kind::S_INT_HEX: // "hexadecimal int"
         value.move< std::string > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.move< stmt_assign_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_break: // stmt_break
-        value.move< stmt_break_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
-        value.move< stmt_breakpoint_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.move< stmt_call_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_case: // stmt_case
-        value.move< stmt_case_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_continue: // stmt_continue
-        value.move< stmt_continue_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_default: // stmt_default
-        value.move< stmt_default_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_endon: // stmt_endon
-        value.move< stmt_endon_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_for: // stmt_for
-        value.move< stmt_for_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_foreach: // stmt_foreach
-        value.move< stmt_foreach_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_if: // stmt_if
-        value.move< stmt_if_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
-        value.move< stmt_ifelse_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_block: // stmt_block
-      case symbol_kind::S_stmt_list: // stmt_list
-        value.move< stmt_list_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_notify: // stmt_notify
-        value.move< stmt_notify_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_prof_begin: // stmt_prof_begin
-        value.move< stmt_prof_begin_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_prof_end: // stmt_prof_end
-        value.move< stmt_prof_end_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt: // stmt
-      case symbol_kind::S_for_stmt: // for_stmt
-        value.move< stmt_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_return: // stmt_return
-        value.move< stmt_return_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_switch: // stmt_switch
-        value.move< stmt_switch_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_wait: // stmt_wait
-        value.move< stmt_wait_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waitframe: // stmt_waitframe
-        value.move< stmt_waitframe_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittill: // stmt_waittill
-        value.move< stmt_waittill_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
-        value.move< stmt_waittillframeend_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
-        value.move< stmt_waittillmatch_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_while: // stmt_while
-        value.move< stmt_while_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_string: // string
-        value.move< string_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_thisthread: // thisthread
-        value.move< thisthread_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_thread: // thread
-        value.move< thread_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_true: // true
-        value.move< true_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_undefined: // undefined
-        value.move< undefined_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_usingtree: // usingtree
-        value.move< usingtree_ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_vector: // vector
-        value.move< vector_ptr > (std::move (that.value));
         break;
 
       default:
@@ -1275,13 +1334,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, anim_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::call&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const anim_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::call& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1289,13 +1348,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, animation_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::decl&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const animation_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::decl& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1303,13 +1362,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, animtree_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::decl_constant::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const animtree_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::decl_constant::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1317,13 +1376,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, color_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::decl_thread::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const color_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::decl_thread::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1331,13 +1390,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, constant_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::decl_usingtree::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const constant_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::decl_usingtree::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1345,13 +1404,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, define_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const define_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1359,13 +1418,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, empty_array_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_add_array::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const empty_array_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_add_array::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1373,13 +1432,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, expr_arguments_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_anim::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const expr_arguments_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_anim::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1387,13 +1446,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, expr_assign_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_animation::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const expr_assign_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_animation::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1401,13 +1460,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, expr_call_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_animtree::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const expr_call_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_animtree::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1415,13 +1474,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, expr_call_type_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_arguments::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const expr_call_type_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_arguments::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1429,13 +1488,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, expr_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_array::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const expr_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_array::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1443,13 +1502,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, false_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_call::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const false_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_call::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1457,13 +1516,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, file_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_color::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const file_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_color::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1471,13 +1530,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, float_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_complement::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const float_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_complement::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1485,13 +1544,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, game_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_empty_array::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const game_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_empty_array::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1499,13 +1558,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, include_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_false::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const include_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_false::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1513,13 +1572,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, integer_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_field::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const integer_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_field::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1527,13 +1586,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, istring_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_float::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const istring_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_float::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1541,13 +1600,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, level_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_game::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const level_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_game::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1555,13 +1614,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, name_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_identifier::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const name_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_identifier::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1569,13 +1628,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, node_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_integer::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const node_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_integer::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1583,13 +1642,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, parameters_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_istring::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const parameters_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_istring::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1597,13 +1656,13 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, program_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_level::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const program_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_level::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1611,13 +1670,587 @@ namespace xsk { namespace gsc { namespace h1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, self_ptr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::expr_method::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const self_ptr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::expr_method::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_not::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_not::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_parameters::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_parameters::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_paren::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_paren::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_path::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_path::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_reference::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_reference::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_self::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_self::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_size::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_size::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_string::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_string::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_thisthread::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_thisthread::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_true::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_true::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_undefined::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_undefined::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_vector::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_vector::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::include::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::include::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::program::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::program::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_assign::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_assign::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_break::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_break::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_breakpoint::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_breakpoint::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_call::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_call::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_case::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_case::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_continue::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_continue::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_default::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_default::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_dowhile::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_dowhile::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_endon::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_endon::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_expr::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_expr::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_for::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_for::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_foreach::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_foreach::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_if::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_if::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_ifelse::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_ifelse::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_list::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_list::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_notify::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_notify::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_prof_begin::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_prof_begin::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_prof_end::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_prof_end::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_return::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_return::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_switch::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_switch::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_wait::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_wait::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_waitframe::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_waitframe::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_waittill::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_waittill::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_waittillframeend::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_waittillframeend::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_waittillmatch::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_waittillmatch::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_while::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_while::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1632,454 +2265,6 @@ namespace xsk { namespace gsc { namespace h1 {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const std::string& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_assign_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_assign_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_break_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_break_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_breakpoint_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_breakpoint_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_call_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_call_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_case_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_case_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_continue_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_continue_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_default_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_default_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_endon_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_endon_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_for_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_for_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_foreach_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_foreach_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_if_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_if_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_ifelse_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_ifelse_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_list_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_list_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_notify_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_notify_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_prof_begin_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_prof_begin_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_prof_end_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_prof_end_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_return_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_return_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_switch_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_switch_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_wait_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_wait_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_waitframe_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_waitframe_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_waittill_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_waittill_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_waittillframeend_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_waittillframeend_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_waittillmatch_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_waittillmatch_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_while_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_while_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, string_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const string_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, thisthread_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const thisthread_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, thread_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const thread_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, true_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const true_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, undefined_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const undefined_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, usingtree_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const usingtree_ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, vector_ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const vector_ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -2108,123 +2293,283 @@ namespace xsk { namespace gsc { namespace h1 {
         // Value type destructor.
 switch (yykind)
     {
-      case symbol_kind::S_anim: // anim
-        value.template destroy< anim_ptr > ();
+      case symbol_kind::S_expr_function: // expr_function
+      case symbol_kind::S_expr_pointer: // expr_pointer
+        value.template destroy< ast::call > ();
         break;
 
-      case symbol_kind::S_animation: // animation
-        value.template destroy< animation_ptr > ();
+      case symbol_kind::S_declaration: // declaration
+        value.template destroy< ast::decl > ();
         break;
 
-      case symbol_kind::S_animtree: // animtree
-        value.template destroy< animtree_ptr > ();
+      case symbol_kind::S_decl_constant: // decl_constant
+        value.template destroy< ast::decl_constant::ptr > ();
         break;
 
-      case symbol_kind::S_color: // color
-        value.template destroy< color_ptr > ();
+      case symbol_kind::S_decl_thread: // decl_thread
+        value.template destroy< ast::decl_thread::ptr > ();
         break;
 
-      case symbol_kind::S_constant: // constant
-        value.template destroy< constant_ptr > ();
+      case symbol_kind::S_decl_usingtree: // decl_usingtree
+        value.template destroy< ast::decl_usingtree::ptr > ();
         break;
 
-      case symbol_kind::S_define: // define
-        value.template destroy< define_ptr > ();
-        break;
-
-      case symbol_kind::S_empty_array: // empty_array
-        value.template destroy< empty_array_ptr > ();
-        break;
-
-      case symbol_kind::S_expr_arguments: // expr_arguments
-      case symbol_kind::S_expr_arguments_filled: // expr_arguments_filled
-      case symbol_kind::S_expr_arguments_empty: // expr_arguments_empty
-        value.template destroy< expr_arguments_ptr > ();
-        break;
-
-      case symbol_kind::S_expr_assign: // expr_assign
-        value.template destroy< expr_assign_ptr > ();
-        break;
-
-      case symbol_kind::S_expr_call: // expr_call
-      case symbol_kind::S_expr_call_thread: // expr_call_thread
-      case symbol_kind::S_expr_call_childthread: // expr_call_childthread
-        value.template destroy< expr_call_ptr > ();
-        break;
-
-      case symbol_kind::S_expr_call_function: // expr_call_function
-      case symbol_kind::S_expr_call_pointer: // expr_call_pointer
-        value.template destroy< expr_call_type_ptr > ();
-        break;
-
-      case symbol_kind::S_for_expr: // for_expr
       case symbol_kind::S_expr: // expr
-      case symbol_kind::S_expr_compare: // expr_compare
+      case symbol_kind::S_expr_or_empty: // expr_or_empty
+      case symbol_kind::S_expr_assign: // expr_assign
+      case symbol_kind::S_expr_increment: // expr_increment
+      case symbol_kind::S_expr_decrement: // expr_decrement
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
-        value.template destroy< expr_ptr > ();
+      case symbol_kind::S_expr_object: // expr_object
+        value.template destroy< ast::expr > ();
         break;
 
-      case symbol_kind::S_false: // false
-        value.template destroy< false_ptr > ();
+      case symbol_kind::S_expr_add_array: // expr_add_array
+        value.template destroy< ast::expr_add_array::ptr > ();
         break;
 
-      case symbol_kind::S_file: // file
-        value.template destroy< file_ptr > ();
+      case symbol_kind::S_expr_anim: // expr_anim
+        value.template destroy< ast::expr_anim::ptr > ();
         break;
 
-      case symbol_kind::S_float: // float
-        value.template destroy< float_ptr > ();
+      case symbol_kind::S_expr_animation: // expr_animation
+        value.template destroy< ast::expr_animation::ptr > ();
         break;
 
-      case symbol_kind::S_game: // game
-        value.template destroy< game_ptr > ();
+      case symbol_kind::S_expr_animtree: // expr_animtree
+        value.template destroy< ast::expr_animtree::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_arguments: // expr_arguments
+      case symbol_kind::S_expr_arguments_no_empty: // expr_arguments_no_empty
+        value.template destroy< ast::expr_arguments::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_array: // expr_array
+        value.template destroy< ast::expr_array::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_call: // expr_call
+        value.template destroy< ast::expr_call::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_color: // expr_color
+        value.template destroy< ast::expr_color::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_complement: // expr_complement
+        value.template destroy< ast::expr_complement::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_empty_array: // expr_empty_array
+        value.template destroy< ast::expr_empty_array::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_false: // expr_false
+        value.template destroy< ast::expr_false::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_field: // expr_field
+        value.template destroy< ast::expr_field::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_float: // expr_float
+        value.template destroy< ast::expr_float::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_game: // expr_game
+        value.template destroy< ast::expr_game::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_identifier: // expr_identifier
+        value.template destroy< ast::expr_identifier::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_integer: // expr_integer
+        value.template destroy< ast::expr_integer::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_istring: // expr_istring
+        value.template destroy< ast::expr_istring::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_level: // expr_level
+        value.template destroy< ast::expr_level::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_method: // expr_method
+        value.template destroy< ast::expr_method::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_not: // expr_not
+        value.template destroy< ast::expr_not::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_parameters: // expr_parameters
+        value.template destroy< ast::expr_parameters::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_paren: // expr_paren
+        value.template destroy< ast::expr_paren::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_path: // expr_path
+        value.template destroy< ast::expr_path::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_reference: // expr_reference
+        value.template destroy< ast::expr_reference::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_self: // expr_self
+        value.template destroy< ast::expr_self::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_size: // expr_size
+        value.template destroy< ast::expr_size::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_string: // expr_string
+        value.template destroy< ast::expr_string::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_thisthread: // expr_thisthread
+        value.template destroy< ast::expr_thisthread::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_true: // expr_true
+        value.template destroy< ast::expr_true::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_undefined: // expr_undefined
+        value.template destroy< ast::expr_undefined::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_vector: // expr_vector
+        value.template destroy< ast::expr_vector::ptr > ();
         break;
 
       case symbol_kind::S_include: // include
-        value.template destroy< include_ptr > ();
-        break;
-
-      case symbol_kind::S_integer: // integer
-        value.template destroy< integer_ptr > ();
-        break;
-
-      case symbol_kind::S_istring: // istring
-        value.template destroy< istring_ptr > ();
-        break;
-
-      case symbol_kind::S_level: // level
-        value.template destroy< level_ptr > ();
-        break;
-
-      case symbol_kind::S_name: // name
-        value.template destroy< name_ptr > ();
-        break;
-
-      case symbol_kind::S_expr_function: // expr_function
-      case symbol_kind::S_expr_add_array: // expr_add_array
-      case symbol_kind::S_expr_array: // expr_array
-      case symbol_kind::S_expr_field: // expr_field
-      case symbol_kind::S_expr_size: // expr_size
-      case symbol_kind::S_object: // object
-        value.template destroy< node_ptr > ();
-        break;
-
-      case symbol_kind::S_parameters: // parameters
-        value.template destroy< parameters_ptr > ();
+        value.template destroy< ast::include::ptr > ();
         break;
 
       case symbol_kind::S_program: // program
-        value.template destroy< program_ptr > ();
+        value.template destroy< ast::program::ptr > ();
         break;
 
-      case symbol_kind::S_self: // self
-        value.template destroy< self_ptr > ();
+      case symbol_kind::S_stmt: // stmt
+        value.template destroy< ast::stmt > ();
         break;
 
-      case symbol_kind::S_FILE: // "file path"
-      case symbol_kind::S_NAME: // "identifier"
+      case symbol_kind::S_stmt_assign: // stmt_assign
+        value.template destroy< ast::stmt_assign::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_break: // stmt_break
+        value.template destroy< ast::stmt_break::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
+        value.template destroy< ast::stmt_breakpoint::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_call: // stmt_call
+        value.template destroy< ast::stmt_call::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_case: // stmt_case
+        value.template destroy< ast::stmt_case::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_continue: // stmt_continue
+        value.template destroy< ast::stmt_continue::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_default: // stmt_default
+        value.template destroy< ast::stmt_default::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_dowhile: // stmt_dowhile
+        value.template destroy< ast::stmt_dowhile::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_endon: // stmt_endon
+        value.template destroy< ast::stmt_endon::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_expr: // stmt_expr
+        value.template destroy< ast::stmt_expr::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_for: // stmt_for
+        value.template destroy< ast::stmt_for::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_foreach: // stmt_foreach
+        value.template destroy< ast::stmt_foreach::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_if: // stmt_if
+        value.template destroy< ast::stmt_if::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
+        value.template destroy< ast::stmt_ifelse::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_block: // stmt_block
+      case symbol_kind::S_stmt_list: // stmt_list
+        value.template destroy< ast::stmt_list::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_notify: // stmt_notify
+        value.template destroy< ast::stmt_notify::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_prof_begin: // stmt_prof_begin
+        value.template destroy< ast::stmt_prof_begin::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_prof_end: // stmt_prof_end
+        value.template destroy< ast::stmt_prof_end::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_return: // stmt_return
+        value.template destroy< ast::stmt_return::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_switch: // stmt_switch
+        value.template destroy< ast::stmt_switch::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_wait: // stmt_wait
+        value.template destroy< ast::stmt_wait::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_waitframe: // stmt_waitframe
+        value.template destroy< ast::stmt_waitframe::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_waittill: // stmt_waittill
+        value.template destroy< ast::stmt_waittill::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
+        value.template destroy< ast::stmt_waittillframeend::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
+        value.template destroy< ast::stmt_waittillmatch::ptr > ();
+        break;
+
+      case symbol_kind::S_stmt_while: // stmt_while
+        value.template destroy< ast::stmt_while::ptr > ();
+        break;
+
+      case symbol_kind::S_PATH: // "path"
+      case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
       case symbol_kind::S_ISTRING: // "localized string"
       case symbol_kind::S_COLOR: // "color"
@@ -2234,136 +2579,6 @@ switch (yykind)
       case symbol_kind::S_INT_BIN: // "binary int"
       case symbol_kind::S_INT_HEX: // "hexadecimal int"
         value.template destroy< std::string > ();
-        break;
-
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.template destroy< stmt_assign_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_break: // stmt_break
-        value.template destroy< stmt_break_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
-        value.template destroy< stmt_breakpoint_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.template destroy< stmt_call_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_case: // stmt_case
-        value.template destroy< stmt_case_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_continue: // stmt_continue
-        value.template destroy< stmt_continue_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_default: // stmt_default
-        value.template destroy< stmt_default_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_endon: // stmt_endon
-        value.template destroy< stmt_endon_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_for: // stmt_for
-        value.template destroy< stmt_for_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_foreach: // stmt_foreach
-        value.template destroy< stmt_foreach_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_if: // stmt_if
-        value.template destroy< stmt_if_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
-        value.template destroy< stmt_ifelse_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_block: // stmt_block
-      case symbol_kind::S_stmt_list: // stmt_list
-        value.template destroy< stmt_list_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_notify: // stmt_notify
-        value.template destroy< stmt_notify_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_prof_begin: // stmt_prof_begin
-        value.template destroy< stmt_prof_begin_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_prof_end: // stmt_prof_end
-        value.template destroy< stmt_prof_end_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt: // stmt
-      case symbol_kind::S_for_stmt: // for_stmt
-        value.template destroy< stmt_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_return: // stmt_return
-        value.template destroy< stmt_return_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_switch: // stmt_switch
-        value.template destroy< stmt_switch_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_wait: // stmt_wait
-        value.template destroy< stmt_wait_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_waitframe: // stmt_waitframe
-        value.template destroy< stmt_waitframe_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_waittill: // stmt_waittill
-        value.template destroy< stmt_waittill_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
-        value.template destroy< stmt_waittillframeend_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
-        value.template destroy< stmt_waittillmatch_ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_while: // stmt_while
-        value.template destroy< stmt_while_ptr > ();
-        break;
-
-      case symbol_kind::S_string: // string
-        value.template destroy< string_ptr > ();
-        break;
-
-      case symbol_kind::S_thisthread: // thisthread
-        value.template destroy< thisthread_ptr > ();
-        break;
-
-      case symbol_kind::S_thread: // thread
-        value.template destroy< thread_ptr > ();
-        break;
-
-      case symbol_kind::S_true: // true
-        value.template destroy< true_ptr > ();
-        break;
-
-      case symbol_kind::S_undefined: // undefined
-        value.template destroy< undefined_ptr > ();
-        break;
-
-      case symbol_kind::S_usingtree: // usingtree
-        value.template destroy< usingtree_ptr > ();
-        break;
-
-      case symbol_kind::S_vector: // vector
-        value.template destroy< vector_ptr > ();
         break;
 
       default:
@@ -2472,12 +2687,12 @@ switch (yykind)
         : super_type(token_type (tok), v, l)
 #endif
       {
-        H1_ASSERT ((token::FILE <= tok && tok <= token::INT_HEX));
+        H1_ASSERT ((token::PATH <= tok && tok <= token::INT_HEX));
       }
     };
 
     /// Build a parser object.
-    parser (yyscan_t yyscanner_yyarg, xsk::gsc::location& loc_yyarg, xsk::gsc::program_ptr& ast_yyarg);
+    parser (yyscan_t yyscanner_yyarg, xsk::gsc::context* ctx_yyarg, xsk::gsc::ast::program::ptr& ast_yyarg);
     virtual ~parser ();
 
 #if 201103L <= YY_CPLUSPLUS
@@ -2570,46 +2785,16 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_BREAKPOINT (location_type l)
+      make_INLINE (location_type l)
       {
-        return symbol_type (token::BREAKPOINT, std::move (l));
+        return symbol_type (token::INLINE, std::move (l));
       }
 #else
       static
       symbol_type
-      make_BREAKPOINT (const location_type& l)
+      make_INLINE (const location_type& l)
       {
-        return symbol_type (token::BREAKPOINT, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
-      make_PROFBEGIN (location_type l)
-      {
-        return symbol_type (token::PROFBEGIN, std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_PROFBEGIN (const location_type& l)
-      {
-        return symbol_type (token::PROFBEGIN, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
-      make_PROFEND (location_type l)
-      {
-        return symbol_type (token::PROFEND, std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_PROFEND (const location_type& l)
-      {
-        return symbol_type (token::PROFEND, l);
+        return symbol_type (token::INLINE, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -2795,6 +2980,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_DO (location_type l)
+      {
+        return symbol_type (token::DO, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_DO (const location_type& l)
+      {
+        return symbol_type (token::DO, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_WHILE (location_type l)
       {
         return symbol_type (token::WHILE, std::move (l));
@@ -2940,6 +3140,51 @@ switch (yykind)
       make_RETURN (const location_type& l)
       {
         return symbol_type (token::RETURN, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_BREAKPOINT (location_type l)
+      {
+        return symbol_type (token::BREAKPOINT, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_BREAKPOINT (const location_type& l)
+      {
+        return symbol_type (token::BREAKPOINT, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_PROFBEGIN (location_type l)
+      {
+        return symbol_type (token::PROFBEGIN, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_PROFBEGIN (const location_type& l)
+      {
+        return symbol_type (token::PROFBEGIN, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_PROFEND (location_type l)
+      {
+        return symbol_type (token::PROFEND, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_PROFEND (const location_type& l)
+      {
+        return symbol_type (token::PROFEND, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -3560,16 +3805,16 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_ASSIGN_MULT (location_type l)
+      make_ASSIGN_MUL (location_type l)
       {
-        return symbol_type (token::ASSIGN_MULT, std::move (l));
+        return symbol_type (token::ASSIGN_MUL, std::move (l));
       }
 #else
       static
       symbol_type
-      make_ASSIGN_MULT (const location_type& l)
+      make_ASSIGN_MUL (const location_type& l)
       {
-        return symbol_type (token::ASSIGN_MULT, l);
+        return symbol_type (token::ASSIGN_MUL, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -3605,46 +3850,46 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_ASSIGN_BITWISE_OR (location_type l)
+      make_ASSIGN_BW_OR (location_type l)
       {
-        return symbol_type (token::ASSIGN_BITWISE_OR, std::move (l));
+        return symbol_type (token::ASSIGN_BW_OR, std::move (l));
       }
 #else
       static
       symbol_type
-      make_ASSIGN_BITWISE_OR (const location_type& l)
+      make_ASSIGN_BW_OR (const location_type& l)
       {
-        return symbol_type (token::ASSIGN_BITWISE_OR, l);
+        return symbol_type (token::ASSIGN_BW_OR, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_ASSIGN_BITWISE_AND (location_type l)
+      make_ASSIGN_BW_AND (location_type l)
       {
-        return symbol_type (token::ASSIGN_BITWISE_AND, std::move (l));
+        return symbol_type (token::ASSIGN_BW_AND, std::move (l));
       }
 #else
       static
       symbol_type
-      make_ASSIGN_BITWISE_AND (const location_type& l)
+      make_ASSIGN_BW_AND (const location_type& l)
       {
-        return symbol_type (token::ASSIGN_BITWISE_AND, l);
+        return symbol_type (token::ASSIGN_BW_AND, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_ASSIGN_BITWISE_EXOR (location_type l)
+      make_ASSIGN_BW_EXOR (location_type l)
       {
-        return symbol_type (token::ASSIGN_BITWISE_EXOR, std::move (l));
+        return symbol_type (token::ASSIGN_BW_EXOR, std::move (l));
       }
 #else
       static
       symbol_type
-      make_ASSIGN_BITWISE_EXOR (const location_type& l)
+      make_ASSIGN_BW_EXOR (const location_type& l)
       {
-        return symbol_type (token::ASSIGN_BITWISE_EXOR, l);
+        return symbol_type (token::ASSIGN_BW_EXOR, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -3755,16 +4000,16 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_MULT (location_type l)
+      make_MUL (location_type l)
       {
-        return symbol_type (token::MULT, std::move (l));
+        return symbol_type (token::MUL, std::move (l));
       }
 #else
       static
       symbol_type
-      make_MULT (const location_type& l)
+      make_MUL (const location_type& l)
       {
-        return symbol_type (token::MULT, l);
+        return symbol_type (token::MUL, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -3800,31 +4045,31 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_FILE (std::string v, location_type l)
+      make_PATH (std::string v, location_type l)
       {
-        return symbol_type (token::FILE, std::move (v), std::move (l));
+        return symbol_type (token::PATH, std::move (v), std::move (l));
       }
 #else
       static
       symbol_type
-      make_FILE (const std::string& v, const location_type& l)
+      make_PATH (const std::string& v, const location_type& l)
       {
-        return symbol_type (token::FILE, v, l);
+        return symbol_type (token::PATH, v, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_NAME (std::string v, location_type l)
+      make_IDENTIFIER (std::string v, location_type l)
       {
-        return symbol_type (token::NAME, std::move (v), std::move (l));
+        return symbol_type (token::IDENTIFIER, std::move (v), std::move (l));
       }
 #else
       static
       symbol_type
-      make_NAME (const std::string& v, const location_type& l)
+      make_IDENTIFIER (const std::string& v, const location_type& l)
       {
-        return symbol_type (token::NAME, v, l);
+        return symbol_type (token::IDENTIFIER, v, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -4426,16 +4671,16 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 1883,     ///< Last index in yytable_.
-      yynnts_ = 76,  ///< Number of nonterminal symbols.
-      yyfinal_ = 15 ///< Termination state number.
+      yylast_ = 2075,     ///< Last index in yytable_.
+      yynnts_ = 80,  ///< Number of nonterminal symbols.
+      yyfinal_ = 19 ///< Termination state number.
     };
 
 
     // User arguments.
     yyscan_t yyscanner;
-    xsk::gsc::location& loc;
-    xsk::gsc::program_ptr& ast;
+    xsk::gsc::context* ctx;
+    xsk::gsc::ast::program::ptr& ast;
 
   };
 
@@ -4455,123 +4700,283 @@ switch (yykind)
   {
     switch (this->kind ())
     {
-      case symbol_kind::S_anim: // anim
-        value.copy< anim_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_expr_function: // expr_function
+      case symbol_kind::S_expr_pointer: // expr_pointer
+        value.copy< ast::call > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_animation: // animation
-        value.copy< animation_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_declaration: // declaration
+        value.copy< ast::decl > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_animtree: // animtree
-        value.copy< animtree_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_decl_constant: // decl_constant
+        value.copy< ast::decl_constant::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_color: // color
-        value.copy< color_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_decl_thread: // decl_thread
+        value.copy< ast::decl_thread::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_constant: // constant
-        value.copy< constant_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_decl_usingtree: // decl_usingtree
+        value.copy< ast::decl_usingtree::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_define: // define
-        value.copy< define_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_empty_array: // empty_array
-        value.copy< empty_array_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_expr_arguments: // expr_arguments
-      case symbol_kind::S_expr_arguments_filled: // expr_arguments_filled
-      case symbol_kind::S_expr_arguments_empty: // expr_arguments_empty
-        value.copy< expr_arguments_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_expr_assign: // expr_assign
-        value.copy< expr_assign_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_expr_call: // expr_call
-      case symbol_kind::S_expr_call_thread: // expr_call_thread
-      case symbol_kind::S_expr_call_childthread: // expr_call_childthread
-        value.copy< expr_call_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_expr_call_function: // expr_call_function
-      case symbol_kind::S_expr_call_pointer: // expr_call_pointer
-        value.copy< expr_call_type_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_for_expr: // for_expr
       case symbol_kind::S_expr: // expr
-      case symbol_kind::S_expr_compare: // expr_compare
+      case symbol_kind::S_expr_or_empty: // expr_or_empty
+      case symbol_kind::S_expr_assign: // expr_assign
+      case symbol_kind::S_expr_increment: // expr_increment
+      case symbol_kind::S_expr_decrement: // expr_decrement
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
-        value.copy< expr_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_expr_object: // expr_object
+        value.copy< ast::expr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_false: // false
-        value.copy< false_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_expr_add_array: // expr_add_array
+        value.copy< ast::expr_add_array::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_file: // file
-        value.copy< file_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_expr_anim: // expr_anim
+        value.copy< ast::expr_anim::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_float: // float
-        value.copy< float_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_expr_animation: // expr_animation
+        value.copy< ast::expr_animation::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_game: // game
-        value.copy< game_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_expr_animtree: // expr_animtree
+        value.copy< ast::expr_animtree::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_arguments: // expr_arguments
+      case symbol_kind::S_expr_arguments_no_empty: // expr_arguments_no_empty
+        value.copy< ast::expr_arguments::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_array: // expr_array
+        value.copy< ast::expr_array::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_call: // expr_call
+        value.copy< ast::expr_call::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_color: // expr_color
+        value.copy< ast::expr_color::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_complement: // expr_complement
+        value.copy< ast::expr_complement::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_empty_array: // expr_empty_array
+        value.copy< ast::expr_empty_array::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_false: // expr_false
+        value.copy< ast::expr_false::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_field: // expr_field
+        value.copy< ast::expr_field::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_float: // expr_float
+        value.copy< ast::expr_float::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_game: // expr_game
+        value.copy< ast::expr_game::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_identifier: // expr_identifier
+        value.copy< ast::expr_identifier::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_integer: // expr_integer
+        value.copy< ast::expr_integer::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_istring: // expr_istring
+        value.copy< ast::expr_istring::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_level: // expr_level
+        value.copy< ast::expr_level::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_method: // expr_method
+        value.copy< ast::expr_method::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_not: // expr_not
+        value.copy< ast::expr_not::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_parameters: // expr_parameters
+        value.copy< ast::expr_parameters::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_paren: // expr_paren
+        value.copy< ast::expr_paren::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_path: // expr_path
+        value.copy< ast::expr_path::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_reference: // expr_reference
+        value.copy< ast::expr_reference::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_self: // expr_self
+        value.copy< ast::expr_self::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_size: // expr_size
+        value.copy< ast::expr_size::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_string: // expr_string
+        value.copy< ast::expr_string::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_thisthread: // expr_thisthread
+        value.copy< ast::expr_thisthread::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_true: // expr_true
+        value.copy< ast::expr_true::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_undefined: // expr_undefined
+        value.copy< ast::expr_undefined::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_vector: // expr_vector
+        value.copy< ast::expr_vector::ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_include: // include
-        value.copy< include_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_integer: // integer
-        value.copy< integer_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_istring: // istring
-        value.copy< istring_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_level: // level
-        value.copy< level_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_name: // name
-        value.copy< name_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_expr_function: // expr_function
-      case symbol_kind::S_expr_add_array: // expr_add_array
-      case symbol_kind::S_expr_array: // expr_array
-      case symbol_kind::S_expr_field: // expr_field
-      case symbol_kind::S_expr_size: // expr_size
-      case symbol_kind::S_object: // object
-        value.copy< node_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_parameters: // parameters
-        value.copy< parameters_ptr > (YY_MOVE (that.value));
+        value.copy< ast::include::ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_program: // program
-        value.copy< program_ptr > (YY_MOVE (that.value));
+        value.copy< ast::program::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_self: // self
-        value.copy< self_ptr > (YY_MOVE (that.value));
+      case symbol_kind::S_stmt: // stmt
+        value.copy< ast::stmt > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_FILE: // "file path"
-      case symbol_kind::S_NAME: // "identifier"
+      case symbol_kind::S_stmt_assign: // stmt_assign
+        value.copy< ast::stmt_assign::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_break: // stmt_break
+        value.copy< ast::stmt_break::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
+        value.copy< ast::stmt_breakpoint::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_call: // stmt_call
+        value.copy< ast::stmt_call::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_case: // stmt_case
+        value.copy< ast::stmt_case::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_continue: // stmt_continue
+        value.copy< ast::stmt_continue::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_default: // stmt_default
+        value.copy< ast::stmt_default::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_dowhile: // stmt_dowhile
+        value.copy< ast::stmt_dowhile::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_endon: // stmt_endon
+        value.copy< ast::stmt_endon::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_expr: // stmt_expr
+        value.copy< ast::stmt_expr::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_for: // stmt_for
+        value.copy< ast::stmt_for::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_foreach: // stmt_foreach
+        value.copy< ast::stmt_foreach::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_if: // stmt_if
+        value.copy< ast::stmt_if::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
+        value.copy< ast::stmt_ifelse::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_block: // stmt_block
+      case symbol_kind::S_stmt_list: // stmt_list
+        value.copy< ast::stmt_list::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_notify: // stmt_notify
+        value.copy< ast::stmt_notify::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_prof_begin: // stmt_prof_begin
+        value.copy< ast::stmt_prof_begin::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_prof_end: // stmt_prof_end
+        value.copy< ast::stmt_prof_end::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_return: // stmt_return
+        value.copy< ast::stmt_return::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_switch: // stmt_switch
+        value.copy< ast::stmt_switch::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_wait: // stmt_wait
+        value.copy< ast::stmt_wait::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waitframe: // stmt_waitframe
+        value.copy< ast::stmt_waitframe::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittill: // stmt_waittill
+        value.copy< ast::stmt_waittill::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
+        value.copy< ast::stmt_waittillframeend::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
+        value.copy< ast::stmt_waittillmatch::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_stmt_while: // stmt_while
+        value.copy< ast::stmt_while::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_PATH: // "path"
+      case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
       case symbol_kind::S_ISTRING: // "localized string"
       case symbol_kind::S_COLOR: // "color"
@@ -4581,136 +4986,6 @@ switch (yykind)
       case symbol_kind::S_INT_BIN: // "binary int"
       case symbol_kind::S_INT_HEX: // "hexadecimal int"
         value.copy< std::string > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.copy< stmt_assign_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_break: // stmt_break
-        value.copy< stmt_break_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
-        value.copy< stmt_breakpoint_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.copy< stmt_call_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_case: // stmt_case
-        value.copy< stmt_case_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_continue: // stmt_continue
-        value.copy< stmt_continue_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_default: // stmt_default
-        value.copy< stmt_default_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_endon: // stmt_endon
-        value.copy< stmt_endon_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_for: // stmt_for
-        value.copy< stmt_for_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_foreach: // stmt_foreach
-        value.copy< stmt_foreach_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_if: // stmt_if
-        value.copy< stmt_if_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
-        value.copy< stmt_ifelse_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_block: // stmt_block
-      case symbol_kind::S_stmt_list: // stmt_list
-        value.copy< stmt_list_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_notify: // stmt_notify
-        value.copy< stmt_notify_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_prof_begin: // stmt_prof_begin
-        value.copy< stmt_prof_begin_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_prof_end: // stmt_prof_end
-        value.copy< stmt_prof_end_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt: // stmt
-      case symbol_kind::S_for_stmt: // for_stmt
-        value.copy< stmt_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_return: // stmt_return
-        value.copy< stmt_return_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_switch: // stmt_switch
-        value.copy< stmt_switch_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_wait: // stmt_wait
-        value.copy< stmt_wait_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waitframe: // stmt_waitframe
-        value.copy< stmt_waitframe_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittill: // stmt_waittill
-        value.copy< stmt_waittill_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
-        value.copy< stmt_waittillframeend_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
-        value.copy< stmt_waittillmatch_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_while: // stmt_while
-        value.copy< stmt_while_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_string: // string
-        value.copy< string_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_thisthread: // thisthread
-        value.copy< thisthread_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_thread: // thread
-        value.copy< thread_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_true: // true
-        value.copy< true_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_undefined: // undefined
-        value.copy< undefined_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_usingtree: // usingtree
-        value.copy< usingtree_ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_vector: // vector
-        value.copy< vector_ptr > (YY_MOVE (that.value));
         break;
 
       default:
@@ -4742,123 +5017,283 @@ switch (yykind)
     super_type::move (s);
     switch (this->kind ())
     {
-      case symbol_kind::S_anim: // anim
-        value.move< anim_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_expr_function: // expr_function
+      case symbol_kind::S_expr_pointer: // expr_pointer
+        value.move< ast::call > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_animation: // animation
-        value.move< animation_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_declaration: // declaration
+        value.move< ast::decl > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_animtree: // animtree
-        value.move< animtree_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_decl_constant: // decl_constant
+        value.move< ast::decl_constant::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_color: // color
-        value.move< color_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_decl_thread: // decl_thread
+        value.move< ast::decl_thread::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_constant: // constant
-        value.move< constant_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_decl_usingtree: // decl_usingtree
+        value.move< ast::decl_usingtree::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_define: // define
-        value.move< define_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_empty_array: // empty_array
-        value.move< empty_array_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_expr_arguments: // expr_arguments
-      case symbol_kind::S_expr_arguments_filled: // expr_arguments_filled
-      case symbol_kind::S_expr_arguments_empty: // expr_arguments_empty
-        value.move< expr_arguments_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_expr_assign: // expr_assign
-        value.move< expr_assign_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_expr_call: // expr_call
-      case symbol_kind::S_expr_call_thread: // expr_call_thread
-      case symbol_kind::S_expr_call_childthread: // expr_call_childthread
-        value.move< expr_call_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_expr_call_function: // expr_call_function
-      case symbol_kind::S_expr_call_pointer: // expr_call_pointer
-        value.move< expr_call_type_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_for_expr: // for_expr
       case symbol_kind::S_expr: // expr
-      case symbol_kind::S_expr_compare: // expr_compare
+      case symbol_kind::S_expr_or_empty: // expr_or_empty
+      case symbol_kind::S_expr_assign: // expr_assign
+      case symbol_kind::S_expr_increment: // expr_increment
+      case symbol_kind::S_expr_decrement: // expr_decrement
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
-        value.move< expr_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_expr_object: // expr_object
+        value.move< ast::expr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_false: // false
-        value.move< false_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_expr_add_array: // expr_add_array
+        value.move< ast::expr_add_array::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_file: // file
-        value.move< file_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_expr_anim: // expr_anim
+        value.move< ast::expr_anim::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_float: // float
-        value.move< float_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_expr_animation: // expr_animation
+        value.move< ast::expr_animation::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_game: // game
-        value.move< game_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_expr_animtree: // expr_animtree
+        value.move< ast::expr_animtree::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_arguments: // expr_arguments
+      case symbol_kind::S_expr_arguments_no_empty: // expr_arguments_no_empty
+        value.move< ast::expr_arguments::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_array: // expr_array
+        value.move< ast::expr_array::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_call: // expr_call
+        value.move< ast::expr_call::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_color: // expr_color
+        value.move< ast::expr_color::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_complement: // expr_complement
+        value.move< ast::expr_complement::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_empty_array: // expr_empty_array
+        value.move< ast::expr_empty_array::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_false: // expr_false
+        value.move< ast::expr_false::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_field: // expr_field
+        value.move< ast::expr_field::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_float: // expr_float
+        value.move< ast::expr_float::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_game: // expr_game
+        value.move< ast::expr_game::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_identifier: // expr_identifier
+        value.move< ast::expr_identifier::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_integer: // expr_integer
+        value.move< ast::expr_integer::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_istring: // expr_istring
+        value.move< ast::expr_istring::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_level: // expr_level
+        value.move< ast::expr_level::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_method: // expr_method
+        value.move< ast::expr_method::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_not: // expr_not
+        value.move< ast::expr_not::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_parameters: // expr_parameters
+        value.move< ast::expr_parameters::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_paren: // expr_paren
+        value.move< ast::expr_paren::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_path: // expr_path
+        value.move< ast::expr_path::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_reference: // expr_reference
+        value.move< ast::expr_reference::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_self: // expr_self
+        value.move< ast::expr_self::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_size: // expr_size
+        value.move< ast::expr_size::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_string: // expr_string
+        value.move< ast::expr_string::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_thisthread: // expr_thisthread
+        value.move< ast::expr_thisthread::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_true: // expr_true
+        value.move< ast::expr_true::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_undefined: // expr_undefined
+        value.move< ast::expr_undefined::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_vector: // expr_vector
+        value.move< ast::expr_vector::ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_include: // include
-        value.move< include_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_integer: // integer
-        value.move< integer_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_istring: // istring
-        value.move< istring_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_level: // level
-        value.move< level_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_name: // name
-        value.move< name_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_expr_function: // expr_function
-      case symbol_kind::S_expr_add_array: // expr_add_array
-      case symbol_kind::S_expr_array: // expr_array
-      case symbol_kind::S_expr_field: // expr_field
-      case symbol_kind::S_expr_size: // expr_size
-      case symbol_kind::S_object: // object
-        value.move< node_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_parameters: // parameters
-        value.move< parameters_ptr > (YY_MOVE (s.value));
+        value.move< ast::include::ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_program: // program
-        value.move< program_ptr > (YY_MOVE (s.value));
+        value.move< ast::program::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_self: // self
-        value.move< self_ptr > (YY_MOVE (s.value));
+      case symbol_kind::S_stmt: // stmt
+        value.move< ast::stmt > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_FILE: // "file path"
-      case symbol_kind::S_NAME: // "identifier"
+      case symbol_kind::S_stmt_assign: // stmt_assign
+        value.move< ast::stmt_assign::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_break: // stmt_break
+        value.move< ast::stmt_break::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
+        value.move< ast::stmt_breakpoint::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_call: // stmt_call
+        value.move< ast::stmt_call::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_case: // stmt_case
+        value.move< ast::stmt_case::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_continue: // stmt_continue
+        value.move< ast::stmt_continue::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_default: // stmt_default
+        value.move< ast::stmt_default::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_dowhile: // stmt_dowhile
+        value.move< ast::stmt_dowhile::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_endon: // stmt_endon
+        value.move< ast::stmt_endon::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_expr: // stmt_expr
+        value.move< ast::stmt_expr::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_for: // stmt_for
+        value.move< ast::stmt_for::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_foreach: // stmt_foreach
+        value.move< ast::stmt_foreach::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_if: // stmt_if
+        value.move< ast::stmt_if::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
+        value.move< ast::stmt_ifelse::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_block: // stmt_block
+      case symbol_kind::S_stmt_list: // stmt_list
+        value.move< ast::stmt_list::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_notify: // stmt_notify
+        value.move< ast::stmt_notify::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_prof_begin: // stmt_prof_begin
+        value.move< ast::stmt_prof_begin::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_prof_end: // stmt_prof_end
+        value.move< ast::stmt_prof_end::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_return: // stmt_return
+        value.move< ast::stmt_return::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_switch: // stmt_switch
+        value.move< ast::stmt_switch::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_wait: // stmt_wait
+        value.move< ast::stmt_wait::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_waitframe: // stmt_waitframe
+        value.move< ast::stmt_waitframe::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_waittill: // stmt_waittill
+        value.move< ast::stmt_waittill::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
+        value.move< ast::stmt_waittillframeend::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
+        value.move< ast::stmt_waittillmatch::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_stmt_while: // stmt_while
+        value.move< ast::stmt_while::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_PATH: // "path"
+      case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
       case symbol_kind::S_ISTRING: // "localized string"
       case symbol_kind::S_COLOR: // "color"
@@ -4868,136 +5303,6 @@ switch (yykind)
       case symbol_kind::S_INT_BIN: // "binary int"
       case symbol_kind::S_INT_HEX: // "hexadecimal int"
         value.move< std::string > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.move< stmt_assign_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_break: // stmt_break
-        value.move< stmt_break_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
-        value.move< stmt_breakpoint_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.move< stmt_call_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_case: // stmt_case
-        value.move< stmt_case_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_continue: // stmt_continue
-        value.move< stmt_continue_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_default: // stmt_default
-        value.move< stmt_default_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_endon: // stmt_endon
-        value.move< stmt_endon_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_for: // stmt_for
-        value.move< stmt_for_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_foreach: // stmt_foreach
-        value.move< stmt_foreach_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_if: // stmt_if
-        value.move< stmt_if_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_ifelse: // stmt_ifelse
-        value.move< stmt_ifelse_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_block: // stmt_block
-      case symbol_kind::S_stmt_list: // stmt_list
-        value.move< stmt_list_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_notify: // stmt_notify
-        value.move< stmt_notify_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_prof_begin: // stmt_prof_begin
-        value.move< stmt_prof_begin_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_prof_end: // stmt_prof_end
-        value.move< stmt_prof_end_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt: // stmt
-      case symbol_kind::S_for_stmt: // for_stmt
-        value.move< stmt_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_return: // stmt_return
-        value.move< stmt_return_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_switch: // stmt_switch
-        value.move< stmt_switch_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_wait: // stmt_wait
-        value.move< stmt_wait_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_waitframe: // stmt_waitframe
-        value.move< stmt_waitframe_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_waittill: // stmt_waittill
-        value.move< stmt_waittill_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillframeend: // stmt_waittillframeend
-        value.move< stmt_waittillframeend_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_waittillmatch: // stmt_waittillmatch
-        value.move< stmt_waittillmatch_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_while: // stmt_while
-        value.move< stmt_while_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_string: // string
-        value.move< string_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_thisthread: // thisthread
-        value.move< thisthread_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_thread: // thread
-        value.move< thread_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_true: // true
-        value.move< true_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_undefined: // undefined
-        value.move< undefined_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_usingtree: // usingtree
-        value.move< usingtree_ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_vector: // vector
-        value.move< vector_ptr > (YY_MOVE (s.value));
         break;
 
       default:
@@ -5063,7 +5368,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::gsc::h1
-#line 5067 "parser.hpp"
+#line 5372 "parser.hpp"
 
 
 

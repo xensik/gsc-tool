@@ -25,21 +25,21 @@ workspace "gsc-tool"
     filter "action:vs*"
         buildoptions "/bigobj"
         buildoptions "/Zc:__cplusplus"
-    filter{}
+    filter {}
 
-    configurations { "debug", "release", }
+    configurations { "debug", "release" }
 
     symbols "On"
 
-    configuration "release"
+    filter "configurations:release"
         optimize "Full"
-        defines { "NDEBUG", "YY_NO_UNISTD_H"}
-    configuration{}
+        defines { "NDEBUG", "YY_NO_UNISTD_H" }
+    filter {}
 
-    configuration "debug"
+    filter "configurations:debug"
         optimize "Debug"
         defines { "DEBUG", "_DEBUG", "YY_NO_UNISTD_H" }
-    configuration {}
+    filter {}
 
     startproject "xsk-gsc-tool"
 
@@ -247,7 +247,7 @@ project "xsk-gsc-h1"
         "./src/h1/**.cpp"
     }
 
-    includedirs{
+    includedirs {
         "./src/h1",
         "./src"
     }

@@ -7,8 +7,10 @@
 #include "iw8.hpp"
 #include "parser.hpp"
 using namespace xsk::gsc;
+void iw8_push_header(xsk::gsc::context* ctx, const std::string& file);
+void iw8_pop_header(xsk::gsc::context* ctx);
 
-#line 11 "lexer.hpp"
+#line 13 "lexer.hpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -438,7 +440,8 @@ void yyfree ( void * , yyscan_t yyscanner );
 #ifdef YY_HEADER_EXPORT_START_CONDITIONS
 #define INITIAL 0
 #define COMMENT_BLOCK_STATE 1
-#define DEVELOPER_BLOCK_STATE 2
+#define DEVBLOCK_ON_STATE 2
+#define DEVBLOCK_OFF_STATE 3
 
 #endif
 
@@ -700,9 +703,9 @@ extern int yylex (yyscan_t yyscanner);
 #undef yyTABLES_NAME
 #endif
 
-#line 155 "lexer.lpp"
+#line 168 "lexer.lpp"
 
 
-#line 706 "lexer.hpp"
+#line 709 "lexer.hpp"
 #undef iw8_IN_HEADER
 #endif /* iw8_HEADER_H */

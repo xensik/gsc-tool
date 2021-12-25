@@ -6,7 +6,7 @@
 #include "stdafx.hpp"
 #include "zlib.h"
 
-namespace xsk::gsc::utils
+namespace xsk::utils
 {
 
 auto zlib::compress(const std::vector<std::uint8_t>& data) -> std::vector<std::uint8_t>
@@ -18,7 +18,7 @@ auto zlib::compress(const std::vector<std::uint8_t>& data) -> std::vector<std::u
 
     auto result = compress2(reinterpret_cast<Bytef*>(output.data()), &length, reinterpret_cast<const Bytef*>(data.data()), static_cast<uLong>(data.size()), Z_BEST_COMPRESSION);
     
-    if(result != Z_OK) return {};
+    if (result != Z_OK) return {};
 
     output.resize(length);
     
@@ -32,7 +32,7 @@ auto zlib::decompress(const std::vector<std::uint8_t>& data, std::uint32_t lengt
 
     auto result = uncompress(output.data(), (uLongf*)&length, (Bytef*)data.data(), data.size());
 
-    if(result != Z_OK) return {};
+    if (result != Z_OK) return {};
 
     return output;
 }

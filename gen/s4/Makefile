@@ -9,3 +9,4 @@ clean:
 S4: lexer.lpp parser.ypp
 	flex lexer.lpp
 	bison parser.ypp -Wcounterexamples
+	mv lexer.hpp lexer.cpp parser.hpp parser.cpp ../../src/s4/xsk/

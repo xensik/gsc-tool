@@ -2,13 +2,15 @@
 #define iw5_HEADER_H 1
 #define iw5_IN_HEADER 1
 
-#line 6 "lexer.hpp"
+#line 5 "lexer.hpp"
 #include "stdafx.hpp"
 #include "iw5.hpp"
 #include "parser.hpp"
 using namespace xsk::gsc;
+void iw5_push_header(xsk::gsc::context* ctx, const std::string& file);
+void iw5_pop_header(xsk::gsc::context* ctx);
 
-#line 12 "lexer.hpp"
+#line 13 "lexer.hpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -701,9 +703,9 @@ extern int yylex (yyscan_t yyscanner);
 #undef yyTABLES_NAME
 #endif
 
-#line 168 "lexer.lpp"
+#line 165 "lexer.lpp"
 
 
-#line 708 "lexer.hpp"
+#line 709 "lexer.hpp"
 #undef iw5_IN_HEADER
 #endif /* iw5_HEADER_H */

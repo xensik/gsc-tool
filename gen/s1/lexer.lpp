@@ -17,14 +17,16 @@
 #include "s1.hpp"
 #include "parser.hpp"
 using namespace xsk::gsc;
+void s1_push_header(xsk::gsc::context* ctx, const std::string& file);
+void s1_pop_header(xsk::gsc::context* ctx);
 }
 
 %{
-#define YY_USER_ACTION  loc.columns(yyleng);
+#define YY_USER_ACTION  ctx->loc.columns(yyleng);
 %}
 
-RGX_FILE        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
-RGX_NAME        [_A-Za-z][_A-Za-z0-9]*
+RGX_PATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
+RGX_IDENTIFIER  [_A-Za-z][_A-Za-z0-9]*
 RGX_STRING      \"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\'
 RGX_COLOR       #([0-9a-fA-F]{6}|[0-9a-fA-F]{3})
 RGX_FLT_DEC     [0-9]+\.(?:[0-9]*)?f?|\.[0-9]+f?
@@ -35,123 +37,198 @@ RGX_INT_DEC     [0-9]+
 RGX_DEFAULT     (.|\n)
 
 %x COMMENT_BLOCK_STATE
-%x DEVELOPER_BLOCK_STATE
+%s DEVBLOCK_ON_STATE
+%x DEVBLOCK_OFF_STATE
 
 %%
 
 %{
-    loc.step();
+    ctx->loc.step();
 %}
 
-[ \t\r]                     { loc.step(); }
+[ \t\r]                     { ctx->loc.step(); }
 
-\n                          { loc.lines(yyleng); loc.step(); }
+\n                          { ctx->loc.lines(yyleng); ctx->loc.step(); }
 
 "//".*
 
 "/*"                        { BEGIN(COMMENT_BLOCK_STATE); }
 <COMMENT_BLOCK_STATE>.
-<COMMENT_BLOCK_STATE>\n     { loc.lines(yyleng); loc.step(); }
+<COMMENT_BLOCK_STATE>\n     { ctx->loc.lines(yyleng); ctx->loc.step(); }
 <COMMENT_BLOCK_STATE>"*/"   { BEGIN(INITIAL); }
 
-"/#"                        { BEGIN(DEVELOPER_BLOCK_STATE); }
-<DEVELOPER_BLOCK_STATE>.
-<DEVELOPER_BLOCK_STATE>\n   { loc.lines(yyleng); loc.step(); }
-<DEVELOPER_BLOCK_STATE>"#/" { BEGIN(INITIAL); }    
+"/#"                        { BEGIN(ctx->mode == xsk::gsc::build::dev ? DEVBLOCK_ON_STATE : DEVBLOCK_OFF_STATE); }
+<DEVBLOCK_OFF_STATE>.
+<DEVBLOCK_OFF_STATE>\n      { ctx->loc.lines(yyleng); ctx->loc.step(); }
+<DEVBLOCK_OFF_STATE,DEVBLOCK_ON_STATE>"#/" { BEGIN(INITIAL); }
 
-"breakpoint"        { return s1::parser::make_BREAKPOINT(loc); }
-"prof_begin"        { return s1::parser::make_PROFBEGIN(loc); }
-"prof_end"          { return s1::parser::make_PROFEND(loc); }
-"#include"          { return s1::parser::make_INCLUDE(loc); }
-"#using_animtree"   { return s1::parser::make_USINGTREE(loc); }
-"#animtree"         { return s1::parser::make_ANIMTREE(loc); }
-"endon"             { return s1::parser::make_ENDON(loc); }
-"notify"            { return s1::parser::make_NOTIFY(loc); }
-"wait"              { return s1::parser::make_WAIT(loc); }
-"waittill"          { return s1::parser::make_WAITTILL(loc); }
-"waittillmatch"     { return s1::parser::make_WAITTILLMATCH(loc); }
-"waittillframeend"  { return s1::parser::make_WAITTILLFRAMEEND(loc); }
-"waitframe"         { return s1::parser::make_WAITFRAME(loc); }
-"if"                { return s1::parser::make_IF(loc); }
-"else"              { return s1::parser::make_ELSE(loc); }
-"while"             { return s1::parser::make_WHILE(loc); }
-"for"               { return s1::parser::make_FOR(loc); }
-"foreach"           { return s1::parser::make_FOREACH(loc); }
-"in"                { return s1::parser::make_IN(loc); }
-"switch"            { return s1::parser::make_SWITCH(loc); }
-"case"              { return s1::parser::make_CASE(loc); }
-"default"           { return s1::parser::make_DEFAULT(loc); }
-"break"             { return s1::parser::make_BREAK(loc); }
-"continue"          { return s1::parser::make_CONTINUE(loc); }
-"return"            { return s1::parser::make_RETURN(loc); }
-"thread"            { return s1::parser::make_THREAD(loc); }
-"childthread"       { return s1::parser::make_CHILDTHREAD(loc); }
-"thisthread"        { return s1::parser::make_THISTHREAD(loc); }
-"call"              { return s1::parser::make_CALL(loc); }
-"true"              { return s1::parser::make_TRUE(loc); }
-"false"             { return s1::parser::make_FALSE(loc); }
-"undefined"         { return s1::parser::make_UNDEFINED(loc); }
-".size"             { return s1::parser::make_SIZE(loc); }
-"game"              { return s1::parser::make_GAME(loc); }
-"self"              { return s1::parser::make_SELF(loc); }
-"anim"              { return s1::parser::make_ANIM(loc); }
-"level"             { return s1::parser::make_LEVEL(loc); }
-\(                  { return s1::parser::make_LPAREN(loc); }
-\)                  { return s1::parser::make_RPAREN(loc); }
-\{                  { return s1::parser::make_LBRACE(loc); }
-\}                  { return s1::parser::make_RBRACE(loc); }
-\[                  { return s1::parser::make_LBRACKET(loc); }
-\]                  { return s1::parser::make_RBRACKET(loc); }
-\,                  { return s1::parser::make_COMMA(loc); }
-\.                  { return s1::parser::make_DOT(loc); }
-\:\:                { return s1::parser::make_DOUBLECOLON(loc); }
-\:                  { return s1::parser::make_COLON(loc); }
-\;                  { return s1::parser::make_SEMICOLON(loc); }
-\?                  { return s1::parser::make_QMARK(loc); }
-\+\+                { return s1::parser::make_INCREMENT(loc); }
-\-\-                { return s1::parser::make_DECREMENT(loc); }
-\<\<\=              { return s1::parser::make_ASSIGN_LSHIFT(loc); }
-\>\>\=              { return s1::parser::make_ASSIGN_RSHIFT(loc); }
-\<\<                { return s1::parser::make_LSHIFT(loc); }
-\>\>                { return s1::parser::make_RSHIFT(loc); }
-\|\|                { return s1::parser::make_OR(loc); }
-\&\&                { return s1::parser::make_AND(loc); }
-\=\=                { return s1::parser::make_EQUALITY(loc); }
-\!\=                { return s1::parser::make_INEQUALITY(loc); }
-\<\=                { return s1::parser::make_LESS_EQUAL(loc); }
-\>\=                { return s1::parser::make_GREATER_EQUAL(loc); }
-\<                  { return s1::parser::make_LESS(loc); }
-\>                  { return s1::parser::make_GREATER(loc); }
-\+\=                { return s1::parser::make_ASSIGN_ADD(loc); }
-\-\=                { return s1::parser::make_ASSIGN_SUB(loc); }
-\*\=                { return s1::parser::make_ASSIGN_MULT(loc); }
-\/\=                { return s1::parser::make_ASSIGN_DIV(loc); }
-\%\=                { return s1::parser::make_ASSIGN_MOD(loc); }
-\|\=                { return s1::parser::make_ASSIGN_BITWISE_OR(loc); }
-\&\=                { return s1::parser::make_ASSIGN_BITWISE_AND(loc); }
-\^\=                { return s1::parser::make_ASSIGN_BITWISE_EXOR(loc); }
-\=                  { return s1::parser::make_ASSIGN(loc); }
-\+                  { return s1::parser::make_ADD(loc); }
-\-                  { return s1::parser::make_SUB(loc); }
-\*                  { return s1::parser::make_MULT(loc); }
-\/                  { return s1::parser::make_DIV(loc); }
-\%                  { return s1::parser::make_MOD(loc); }
-\!                  { return s1::parser::make_NOT(loc); }
-\~                  { return s1::parser::make_COMPLEMENT(loc); }
-\|                  { return s1::parser::make_BITWISE_OR(loc); }
-\&                  { return s1::parser::make_BITWISE_AND(loc); }
-\^                  { return s1::parser::make_BITWISE_EXOR(loc); }
-{RGX_FILE}          { return s1::parser::make_FILE(utils::string::fordslash(yytext), loc); }
-{RGX_NAME}          { return s1::parser::make_NAME((std::string(yytext, 3) == "_ID") ? std::string(yytext) : utils::string::to_lower(yytext), loc); }
-\&{RGX_STRING}      { return s1::parser::make_ISTRING(std::string(yytext).substr(1), loc); }
-{RGX_STRING}        { return s1::parser::make_STRING(std::string(yytext), loc); }
-{RGX_COLOR}         { return s1::parser::make_COLOR(std::string(yytext).substr(1), loc); }
-{RGX_FLT_DEC}       { return s1::parser::make_FLOAT(std::string(yytext), loc); }
-{RGX_INT_OCT}       { return s1::parser::make_INT_OCT(utils::string::oct_to_dec(yytext), loc); }
-{RGX_INT_BIN}       { return s1::parser::make_INT_BIN(utils::string::bin_to_dec(yytext), loc); }
-{RGX_INT_HEX}       { return s1::parser::make_INT_HEX(utils::string::hex_to_dec(yytext), loc); }
-{RGX_INT_DEC}       { return s1::parser::make_INT_DEC(std::string(yytext), loc); }
-<<EOF>>             { return s1::parser::make_S1EOF(loc); }
-<*>{RGX_DEFAULT}    { throw s1::parser::syntax_error(loc, "bad token: \'" + std::string(yytext) + "\'"); }
+<INITIAL>"*/"               { throw s1::parser::syntax_error(ctx->loc, "unmatched multiline comment end ('*/')"); }
+<INITIAL>"#/"               { throw s1::parser::syntax_error(ctx->loc, "unmatched devblock end ('#/')"); }
+
+"#inline"           { return s1::parser::make_INLINE(ctx->loc); }
+"#include"          { return s1::parser::make_INCLUDE(ctx->loc); }
+"#using_animtree"   { return s1::parser::make_USINGTREE(ctx->loc); }
+"#animtree"         { return s1::parser::make_ANIMTREE(ctx->loc); }
+"endon"             { return s1::parser::make_ENDON(ctx->loc); }
+"notify"            { return s1::parser::make_NOTIFY(ctx->loc); }
+"wait"              { return s1::parser::make_WAIT(ctx->loc); }
+"waittill"          { return s1::parser::make_WAITTILL(ctx->loc); }
+"waittillmatch"     { return s1::parser::make_WAITTILLMATCH(ctx->loc); }
+"waittillframeend"  { return s1::parser::make_WAITTILLFRAMEEND(ctx->loc); }
+"waitframe"         { return s1::parser::make_WAITFRAME(ctx->loc); }
+"if"                { return s1::parser::make_IF(ctx->loc); }
+"else"              { return s1::parser::make_ELSE(ctx->loc); }
+"do"                { return s1::parser::make_DO(ctx->loc); }
+"while"             { return s1::parser::make_WHILE(ctx->loc); }
+"for"               { return s1::parser::make_FOR(ctx->loc); }
+"foreach"           { return s1::parser::make_FOREACH(ctx->loc); }
+"in"                { return s1::parser::make_IN(ctx->loc); }
+"switch"            { return s1::parser::make_SWITCH(ctx->loc); }
+"case"              { return s1::parser::make_CASE(ctx->loc); }
+"default"           { return s1::parser::make_DEFAULT(ctx->loc); }
+"break"             { return s1::parser::make_BREAK(ctx->loc); }
+"continue"          { return s1::parser::make_CONTINUE(ctx->loc); }
+"return"            { return s1::parser::make_RETURN(ctx->loc); }
+"breakpoint"        { return s1::parser::make_BREAKPOINT(ctx->loc); }
+"prof_begin"        { return s1::parser::make_PROFBEGIN(ctx->loc); }
+"prof_end"          { return s1::parser::make_PROFEND(ctx->loc); }
+"thread"            { return s1::parser::make_THREAD(ctx->loc); }
+"childthread"       { return s1::parser::make_CHILDTHREAD(ctx->loc); }
+"thisthread"        { return s1::parser::make_THISTHREAD(ctx->loc); }
+"call"              { return s1::parser::make_CALL(ctx->loc); }
+"true"              { return s1::parser::make_TRUE(ctx->loc); }
+"false"             { return s1::parser::make_FALSE(ctx->loc); }
+"undefined"         { return s1::parser::make_UNDEFINED(ctx->loc); }
+".size"             { return s1::parser::make_SIZE(ctx->loc); }
+"game"              { return s1::parser::make_GAME(ctx->loc); }
+"self"              { return s1::parser::make_SELF(ctx->loc); }
+"anim"              { return s1::parser::make_ANIM(ctx->loc); }
+"level"             { return s1::parser::make_LEVEL(ctx->loc); }
+\(                  { return s1::parser::make_LPAREN(ctx->loc); }
+\)                  { return s1::parser::make_RPAREN(ctx->loc); }
+\{                  { return s1::parser::make_LBRACE(ctx->loc); }
+\}                  { return s1::parser::make_RBRACE(ctx->loc); }
+\[                  { return s1::parser::make_LBRACKET(ctx->loc); }
+\]                  { return s1::parser::make_RBRACKET(ctx->loc); }
+\,                  { return s1::parser::make_COMMA(ctx->loc); }
+\.                  { return s1::parser::make_DOT(ctx->loc); }
+\:\:                { return s1::parser::make_DOUBLECOLON(ctx->loc); }
+\:                  { return s1::parser::make_COLON(ctx->loc); }
+\;                  { return s1::parser::make_SEMICOLON(ctx->loc); }
+\?                  { return s1::parser::make_QMARK(ctx->loc); }
+\+\+                { return s1::parser::make_INCREMENT(ctx->loc); }
+\-\-                { return s1::parser::make_DECREMENT(ctx->loc); }
+\<\<\=              { return s1::parser::make_ASSIGN_LSHIFT(ctx->loc); }
+\>\>\=              { return s1::parser::make_ASSIGN_RSHIFT(ctx->loc); }
+\<\<                { return s1::parser::make_LSHIFT(ctx->loc); }
+\>\>                { return s1::parser::make_RSHIFT(ctx->loc); }
+\|\|                { return s1::parser::make_OR(ctx->loc); }
+\&\&                { return s1::parser::make_AND(ctx->loc); }
+\=\=                { return s1::parser::make_EQUALITY(ctx->loc); }
+\!\=                { return s1::parser::make_INEQUALITY(ctx->loc); }
+\<\=                { return s1::parser::make_LESS_EQUAL(ctx->loc); }
+\>\=                { return s1::parser::make_GREATER_EQUAL(ctx->loc); }
+\<                  { return s1::parser::make_LESS(ctx->loc); }
+\>                  { return s1::parser::make_GREATER(ctx->loc); }
+\+\=                { return s1::parser::make_ASSIGN_ADD(ctx->loc); }
+\-\=                { return s1::parser::make_ASSIGN_SUB(ctx->loc); }
+\*\=                { return s1::parser::make_ASSIGN_MUL(ctx->loc); }
+\/\=                { return s1::parser::make_ASSIGN_DIV(ctx->loc); }
+\%\=                { return s1::parser::make_ASSIGN_MOD(ctx->loc); }
+\|\=                { return s1::parser::make_ASSIGN_BW_OR(ctx->loc); }
+\&\=                { return s1::parser::make_ASSIGN_BW_AND(ctx->loc); }
+\^\=                { return s1::parser::make_ASSIGN_BW_EXOR(ctx->loc); }
+\=                  { return s1::parser::make_ASSIGN(ctx->loc); }
+\+                  { return s1::parser::make_ADD(ctx->loc); }
+\-                  { return s1::parser::make_SUB(ctx->loc); }
+\*                  { return s1::parser::make_MUL(ctx->loc); }
+\/                  { return s1::parser::make_DIV(ctx->loc); }
+\%                  { return s1::parser::make_MOD(ctx->loc); }
+\!                  { return s1::parser::make_NOT(ctx->loc); }
+\~                  { return s1::parser::make_COMPLEMENT(ctx->loc); }
+\|                  { return s1::parser::make_BITWISE_OR(ctx->loc); }
+\&                  { return s1::parser::make_BITWISE_AND(ctx->loc); }
+\^                  { return s1::parser::make_BITWISE_EXOR(ctx->loc); }
+{RGX_PATH}          { return s1::parser::make_PATH(xsk::utils::string::fordslash(yytext), ctx->loc); }
+{RGX_IDENTIFIER}    { return s1::parser::make_IDENTIFIER((std::string(yytext, 3) == "_ID") ? std::string(yytext) : xsk::utils::string::to_lower(yytext), ctx->loc); }
+\&{RGX_STRING}      { return s1::parser::make_ISTRING(std::string(yytext).substr(1), ctx->loc); }
+{RGX_STRING}        { return s1::parser::make_STRING(std::string(yytext), ctx->loc); }
+{RGX_COLOR}         { return s1::parser::make_COLOR(std::string(yytext).substr(1), ctx->loc); }
+{RGX_FLT_DEC}       { return s1::parser::make_FLOAT(std::string(yytext), ctx->loc); }
+{RGX_INT_OCT}       { return s1::parser::make_INT_OCT(xsk::utils::string::oct_to_dec(yytext), ctx->loc); }
+{RGX_INT_BIN}       { return s1::parser::make_INT_BIN(xsk::utils::string::bin_to_dec(yytext), ctx->loc); }
+{RGX_INT_HEX}       { return s1::parser::make_INT_HEX(xsk::utils::string::hex_to_dec(yytext), ctx->loc); }
+{RGX_INT_DEC}       { return s1::parser::make_INT_DEC(std::string(yytext), ctx->loc); }
+<<EOF>>             { if(ctx->header_top > 0) s1_pop_header(ctx); else return s1::parser::make_S1EOF(ctx->loc); }
+<*>{RGX_DEFAULT}    { throw s1::parser::syntax_error(ctx->loc, "bad token: \'" + std::string(yytext) + "\'"); }
 
 %%
+
+void s1_push_header(xsk::gsc::context* ctx, const std::string& file)
+{
+	try
+    {
+		if (ctx->header_top >= 4)
+		{
+			throw xsk::gsc::error("maximum gsh depth exceeded '4'");
+		}
+
+		ctx->header_top++;
+
+		char* buf_data = 0;
+		size_t buf_size = 0;
+
+		for (auto& src : *ctx->sources)
+		{
+			if (src.name == file)
+			{
+				buf_data = reinterpret_cast<char*>(src.buf.data());
+				buf_size = src.buf.size();
+
+				ctx->locs.push(ctx->loc);
+				ctx->loc.initialize(&src.name);
+			}
+		}
+
+		if (buf_data == 0)
+		{
+			ctx->sources->push_back(xsk::gsc::source());
+			auto& source = ctx->sources->back();
+			source.name = file;
+			source.buf = ctx->read_callback(file + ".gsh");
+			source.buf.push_back(0);
+			source.buf.push_back(0);
+
+			buf_data = reinterpret_cast<char*>(source.buf.data());
+			buf_size = source.buf.size();
+
+			ctx->locs.push(ctx->loc);
+			ctx->loc.initialize(&source.name);
+		}
+
+		auto state = new yy_buffer_state();
+		state->yy_buf_size = buf_size - 2;
+		state->yy_buf_pos = state->yy_ch_buf = buf_data;
+		state->yy_is_our_buffer = 0;
+		state->yy_input_file = NULL;
+		state->yy_n_chars = state->yy_buf_size;
+		state->yy_is_interactive = 0;
+		state->yy_at_bol = 1;
+		state->yy_fill_buffer = 0;
+		state->yy_buffer_status = 0;
+
+		yypush_buffer_state(state, ctx->scanner);
+	}
+	catch (const std::exception& e)
+    {
+        throw xsk::gsc::error("parsing header file '" + file + "': " + e.what());
+    }
+}
+
+void s1_pop_header(xsk::gsc::context* ctx)
+{
+	ctx->header_top--;
+	ctx->loc = ctx->locs.top();
+	ctx->locs.pop();
+	yypop_buffer_state(ctx->scanner);
+}
