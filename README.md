@@ -14,6 +14,9 @@ A utility to compile & decompile IW engine game scripts.
 - **S4** *(Call of Duty: Vanguard)*
 - **H1** *(Call of Duty: Modern Warfare Remastered)*
 - **H2** *(Call of Duty: Modern Warfare 2 Campaign Remastered)*
+- **T4** *(Call of Duty: World at War)* ***\*WIP\****
+- **T5** *(Call of Duty: Black Ops)* ***\*WIP\****
+- **T6** *(Call of Duty: Black Ops II)* ***\*WIP\****
 ## Usage
 ``./gsc-tool.exe <mode> <game> <path>``
 
