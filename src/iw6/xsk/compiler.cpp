@@ -19,7 +19,7 @@ auto compiler::output() -> std::vector<function::ptr>
 void compiler::compile(const std::string& file, std::vector<std::uint8_t>& data)
 {
     filename_ = file;
-    sources_.empty();
+    sources_.clear();
 
     auto prog = parse_buffer(filename_, data);
 
