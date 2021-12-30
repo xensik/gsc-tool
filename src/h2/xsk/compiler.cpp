@@ -148,7 +148,7 @@ void compiler::emit_include(const ast::include::ptr& include)
 
 void compiler::emit_declaration(const ast::decl& decl)
 {
-    switch (decl.as_node->kind())
+    switch (decl.kind())
     {
         case ast::kind::decl_usingtree:
             emit_decl_usingtree(decl.as_usingtree);
@@ -160,7 +160,7 @@ void compiler::emit_declaration(const ast::decl& decl)
             emit_decl_thread(decl.as_thread);
             break;
         default:
-            throw comp_error(decl.as_node->loc(), "unknown declaration");
+            throw comp_error(decl.loc(), "unknown declaration");
     }
 }
 
@@ -201,7 +201,7 @@ void compiler::emit_decl_thread(const ast::decl_thread::ptr& thread)
 
 void compiler::emit_stmt(const ast::stmt& stmt, const block::ptr& blk, bool last)
 {
-    switch (stmt.as_node->kind())
+    switch (stmt.kind())
     {
         case ast::kind::stmt_list:
             emit_stmt_list(stmt.as_list, blk, last);
@@ -282,7 +282,7 @@ void compiler::emit_stmt(const ast::stmt& stmt, const block::ptr& blk, bool last
             emit_stmt_prof_end(stmt.as_prof_end, blk);
             break;
         default:
-            throw comp_error(stmt.as_node->loc(), "unknown statement");
+            throw comp_error(stmt.loc(), "unknown statement");
     }
 }
 
@@ -835,7 +835,7 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt, const block::
         }
         else
         {
-            throw comp_error(entry.as_node->loc(), "missing case statement");
+            throw comp_error(entry.loc(), "missing case statement");
         }
     }    
 
@@ -1041,7 +1041,7 @@ void compiler::emit_expr(const ast::expr& expr, const block::ptr& blk)
         case ast::kind::null:
             break;
         default:
-            throw comp_error(expr.as_node->loc(), "unknown expression");
+            throw comp_error(expr.loc(), "unknown expression");
     }
 }
 
@@ -1120,7 +1120,7 @@ void compiler::emit_expr_clear(const ast::expr& expr, const block::ptr& blk)
             emit_expr_local_ref(expr.as_identifier, blk, true);
             break;
         default:
-            throw comp_error(expr.as_node->loc(), "unknown clear variable lvalue");
+            throw comp_error(expr.loc(), "unknown clear variable lvalue");
     }
 }
 
@@ -1578,7 +1578,7 @@ void compiler::emit_expr_reference(const ast::expr_reference::ptr& expr, const b
 
 void compiler::emit_expr_size(const ast::expr_size::ptr& expr, const block::ptr& blk)
 {
-    emit_expr_variable(expr->obj, blk);
+    emit_expr(expr->obj, blk);
     emit_opcode(opcode::OP_size);
 }
 
@@ -1596,7 +1596,7 @@ void compiler::emit_expr_variable_ref(const ast::expr& expr, const block::ptr& b
             emit_expr_local_ref(expr.as_identifier, blk, set);
             break;
         default:
-            throw comp_error(expr.as_node->loc(), "invalid lvalue");
+            throw comp_error(expr.loc(), "invalid lvalue");
     }
 }
 
@@ -1744,7 +1744,7 @@ void compiler::emit_expr_variable(const ast::expr& expr, const block::ptr& blk)
             emit_expr_local(expr.as_identifier, blk);
             break;
         default:
-            throw comp_error(expr.as_node->loc(), "invalid variable type.");
+            throw comp_error(expr.loc(), "invalid variable type.");
     }
 }
 
@@ -1881,7 +1881,7 @@ void compiler::emit_expr_object(const ast::expr& expr, const block::ptr& blk)
             emit_opcode(opcode::OP_EvalLocalVariableObjectCached, variable_access_index(expr.as_identifier, blk));
             break;
         default:
-            throw comp_error(expr.as_node->loc(), "not an object");
+            throw comp_error(expr.loc(), "not an object");
     }
 }
 
@@ -2173,7 +2173,7 @@ void compiler::process_stmt(const ast::stmt& stmt, const block::ptr& blk)
         case ast::kind::stmt_prof_end:
             break;
         default:
-            throw comp_error(stmt.as_node->loc(), "unknown statement");
+            throw comp_error(stmt.loc(), "unknown statement");
     }
 }
 
@@ -2249,7 +2249,7 @@ void compiler::process_stmt_waittill(const ast::stmt_waittill::ptr& stmt, const 
     {
         if (entry != ast::kind::expr_identifier)
         {
-            throw comp_error(entry.as_node->loc(), "illegal waittill param, must be a local variable");
+            throw comp_error(entry.loc(), "illegal waittill param, must be a local variable");
         }
     
         register_variable(entry.as_identifier->value, blk);
@@ -2478,7 +2478,7 @@ void compiler::process_stmt_switch(const ast::stmt_switch::ptr& stmt, const bloc
             }
             else
             {
-                throw comp_error(entry.as_node->loc(), "missing case statement");
+                throw comp_error(entry.loc(), "missing case statement");
             }
         }
     }
@@ -2823,14 +2823,14 @@ auto compiler::is_constant_condition(const ast::expr& expr) -> bool
         case ast::kind::expr_true:
             return true;
         case ast::kind::expr_false:
-            throw comp_error(expr.as_node->loc(), "condition can't be always false!");
+            throw comp_error(expr.loc(), "condition can't be always false!");
         case ast::kind::expr_integer:
         {
             auto num = std::stoi(expr.as_integer->value);
             if (num != 0)
                 return true;
             else
-                throw comp_error(expr.as_node->loc(), "condition can't be always false!");
+                throw comp_error(expr.loc(), "condition can't be always false!");
         }
         default:
             break;
