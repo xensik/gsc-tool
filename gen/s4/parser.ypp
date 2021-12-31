@@ -45,6 +45,8 @@ using namespace xsk::gsc;
 xsk::gsc::s4::parser::symbol_type S4lex(yyscan_t yyscanner, xsk::gsc::context* ctx);
 }
 
+%token DEVBEGIN         "/#"
+%token DEVEND           "#/"
 %token INLINE           "#inline"
 %token INCLUDE          "#include"
 %token USINGTREE        "#using_animtree"
@@ -149,6 +151,7 @@ xsk::gsc::s4::parser::symbol_type S4lex(yyscan_t yyscanner, xsk::gsc::context* c
 %type <ast::decl_constant::ptr>         decl_constant
 %type <ast::decl_thread::ptr>           decl_thread
 %type <ast::stmt>                       stmt
+%type <ast::stmt_list::ptr>             stmt_dev
 %type <ast::stmt_list::ptr>             stmt_block
 %type <ast::stmt_list::ptr>             stmt_list
 %type <ast::stmt_expr::ptr>             stmt_expr
@@ -281,7 +284,9 @@ include
     ;
 
 declaration
-    : decl_usingtree    { $$.as_usingtree = std::move($1); }
+    : DEVBEGIN          { $$.as_dev_begin = std::make_unique<ast::decl_dev_begin>(@$); }
+    | DEVEND            { $$.as_dev_end = std::make_unique<ast::decl_dev_end>(@$); }
+    | decl_usingtree    { $$.as_usingtree = std::move($1); }
     | decl_constant     { $$.as_constant = std::move($1); }
     | decl_thread       { $$.as_thread = std::move($1); }
     ;
@@ -302,7 +307,8 @@ decl_thread
     ;
 
 stmt
-    : stmt_block             { $$.as_list = std::move($1); }
+    : stmt_dev               { $$.as_list = std::move($1); }
+    | stmt_block             { $$.as_list = std::move($1); }
     | stmt_call              { $$.as_call = std::move($1); }
     | stmt_assign            { $$.as_assign = std::move($1); }
     | stmt_endon             { $$.as_endon = std::move($1); }
@@ -327,6 +333,11 @@ stmt
     | stmt_breakpoint        { $$.as_breakpoint = std::move($1); }
     | stmt_prof_begin        { $$.as_prof_begin = std::move($1); }
     | stmt_prof_end          { $$.as_prof_end = std::move($1); }
+    ;
+
+stmt_dev
+    : DEVBEGIN stmt_list DEVEND { $$ = std::move($2); }
+    | DEVBEGIN DEVEND { $$ = std::make_unique<ast::stmt_list>(@$); }
     ;
 
 stmt_block

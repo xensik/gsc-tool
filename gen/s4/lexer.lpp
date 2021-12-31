@@ -36,9 +36,9 @@ RGX_INT_HEX     0[xX][0-9a-fA-F]+
 RGX_INT_DEC     [0-9]+
 RGX_DEFAULT     (.|\n)
 
-%x COMMENT_BLOCK_STATE
-%s DEVBLOCK_ON_STATE
-%x DEVBLOCK_OFF_STATE
+%x COMMENT_STATE
+%x DEV_OFF_STATE
+%s DEV_ON_STATE
 
 %%
 
@@ -46,24 +46,28 @@ RGX_DEFAULT     (.|\n)
     ctx->loc.step();
 %}
 
-[ \t\r]                     { ctx->loc.step(); }
-
-\n                          { ctx->loc.lines(yyleng); ctx->loc.step(); }
+[ \t\r]                { ctx->loc.step(); }
+\n                     { ctx->loc.lines(yyleng); ctx->loc.step(); }
 
 "//".*
 
-"/*"                        { BEGIN(COMMENT_BLOCK_STATE); }
-<COMMENT_BLOCK_STATE>.
-<COMMENT_BLOCK_STATE>\n     { ctx->loc.lines(yyleng); ctx->loc.step(); }
-<COMMENT_BLOCK_STATE>"*/"   { BEGIN(INITIAL); }
+"/*"                   { BEGIN(COMMENT_STATE); }
+<COMMENT_STATE>.
+<COMMENT_STATE>\n      { ctx->loc.lines(yyleng); ctx->loc.step(); }
+<COMMENT_STATE>"*/"    { BEGIN(INITIAL); }
+<COMMENT_STATE><<EOF>> { throw s4::parser::syntax_error(ctx->loc, "unmatched multiline comment start ('/*')"); }
+<INITIAL>"*/"          { throw s4::parser::syntax_error(ctx->loc, "unmatched multiline comment end ('*/')"); }
 
-"/#"                        { BEGIN(ctx->mode == xsk::gsc::build::dev ? DEVBLOCK_ON_STATE : DEVBLOCK_OFF_STATE); }
-<DEVBLOCK_OFF_STATE>.
-<DEVBLOCK_OFF_STATE>\n      { ctx->loc.lines(yyleng); ctx->loc.step(); }
-<DEVBLOCK_OFF_STATE,DEVBLOCK_ON_STATE>"#/" { BEGIN(INITIAL); }
+<DEV_ON_STATE>"/#"     { throw s4::parser::syntax_error(ctx->loc, "cannot recurse devblock ('/#')"); }
+<DEV_ON_STATE>"#/"     { BEGIN(INITIAL); return s4::parser::make_DEVEND(ctx->loc); }
+<DEV_ON_STATE><<EOF>>  { throw s4::parser::syntax_error(ctx->loc, "unmatched devblock start ('/#')"); }
 
-<INITIAL>"*/"               { throw s4::parser::syntax_error(ctx->loc, "unmatched multiline comment end ('*/')"); }
-<INITIAL>"#/"               { throw s4::parser::syntax_error(ctx->loc, "unmatched devblock end ('#/')"); }
+"/#"                   { BEGIN(ctx->mode == xsk::gsc::build::dev ? DEV_ON_STATE : DEV_OFF_STATE); if(ctx->mode == xsk::gsc::build::dev) return s4::parser::make_DEVBEGIN(ctx->loc); }
+<DEV_OFF_STATE>.
+<DEV_OFF_STATE>\n      { ctx->loc.lines(yyleng); ctx->loc.step(); }
+<DEV_OFF_STATE>"#/"    { BEGIN(INITIAL); }
+<DEV_OFF_STATE><<EOF>> { throw s4::parser::syntax_error(ctx->loc, "unmatched devblock start ('/#')"); }
+<INITIAL>"#/"          { throw s4::parser::syntax_error(ctx->loc, "unmatched devblock end ('#/')"); }
 
 "#inline"           { return s4::parser::make_INLINE(ctx->loc); }
 "#include"          { return s4::parser::make_INCLUDE(ctx->loc); }

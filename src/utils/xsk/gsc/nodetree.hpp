@@ -107,6 +107,8 @@ enum class kind
     decl_thread,
     decl_constant,
     decl_usingtree,
+    decl_dev_begin,
+    decl_dev_end,
     include,
     program,
 // DECOMPILER
@@ -225,6 +227,8 @@ struct stmt_prof_end;
 struct decl_thread;
 struct decl_constant;
 struct decl_usingtree;
+struct decl_dev_begin;
+struct decl_dev_end;
 struct include;
 struct program;
 struct asm_loc;
@@ -407,6 +411,8 @@ union stmt
 union decl
 {
     std::unique_ptr<node> as_node;
+    std::unique_ptr<decl_dev_begin> as_dev_begin;
+    std::unique_ptr<decl_dev_end> as_dev_end;
     std::unique_ptr<decl_usingtree> as_usingtree;
     std::unique_ptr<decl_constant> as_constant;
     std::unique_ptr<decl_thread> as_thread;
@@ -1538,6 +1544,24 @@ struct decl_usingtree : public node
 
     decl_usingtree(expr_string::ptr name);
     decl_usingtree(const location& loc, expr_string::ptr name);
+    auto print() const -> std::string override;
+};
+
+struct decl_dev_begin : public node
+{
+    using ptr = std::unique_ptr<decl_dev_begin>;
+
+    decl_dev_begin();
+    decl_dev_begin(const location& loc);
+    auto print() const -> std::string override;
+};
+
+struct decl_dev_end : public node
+{
+    using ptr = std::unique_ptr<decl_dev_end>;
+
+    decl_dev_end();
+    decl_dev_end(const location& loc);
     auto print() const -> std::string override;
 };
 

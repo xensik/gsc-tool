@@ -85,6 +85,7 @@ void compiler::compile_program(const ast::program::ptr& program)
     constants_.clear();
     local_functions_.clear();
     index_ = 1;
+    developer_thread_ = false;
 
     for (const auto& entry : program->declarations)
     {
@@ -150,6 +151,12 @@ void compiler::emit_declaration(const ast::decl& decl)
 {
     switch (decl.kind())
     {
+        case ast::kind::decl_dev_begin:
+            developer_thread_ = true;
+            break;
+        case ast::kind::decl_dev_end:
+            developer_thread_ = false;
+            break;
         case ast::kind::decl_usingtree:
             emit_decl_usingtree(decl.as_usingtree);
             break;
@@ -166,6 +173,9 @@ void compiler::emit_declaration(const ast::decl& decl)
 
 void compiler::emit_decl_usingtree(const ast::decl_usingtree::ptr& animtree)
 {
+    if(developer_thread_)
+        throw comp_error(animtree->loc(), "cannot put #using_animtree inside /# ... #/ comment");
+
     animtrees_.push_back({ animtree->name->value, false });
 }
 

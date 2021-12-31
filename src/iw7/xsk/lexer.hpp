@@ -439,9 +439,9 @@ void yyfree ( void * , yyscan_t yyscanner );
 
 #ifdef YY_HEADER_EXPORT_START_CONDITIONS
 #define INITIAL 0
-#define COMMENT_BLOCK_STATE 1
-#define DEVBLOCK_ON_STATE 2
-#define DEVBLOCK_OFF_STATE 3
+#define COMMENT_STATE 1
+#define DEV_OFF_STATE 2
+#define DEV_ON_STATE 3
 
 #endif
 
@@ -703,7 +703,7 @@ extern int yylex (yyscan_t yyscanner);
 #undef yyTABLES_NAME
 #endif
 
-#line 165 "lexer.lpp"
+#line 169 "lexer.lpp"
 
 
 #line 709 "lexer.hpp"

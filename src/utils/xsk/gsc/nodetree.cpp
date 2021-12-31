@@ -407,6 +407,12 @@ decl_constant::decl_constant(const location& loc, expr_identifier::ptr name, exp
 decl_usingtree::decl_usingtree(expr_string::ptr name) : node(kind::decl_usingtree), name(std::move(name)) {}
 decl_usingtree::decl_usingtree(const location& loc, expr_string::ptr name) : node(kind::decl_usingtree, loc), name(std::move(name)) {}
 
+decl_dev_begin::decl_dev_begin() : node(kind::decl_dev_begin) {}
+decl_dev_begin::decl_dev_begin(const location& loc) : node(kind::decl_dev_begin, loc) {}
+
+decl_dev_end::decl_dev_end() : node(kind::decl_dev_end) {}
+decl_dev_end::decl_dev_end(const location& loc) : node(kind::decl_dev_end, loc) {}
+
 include::include(expr_path::ptr path) : node(kind::include), path(std::move(path)) {}
 include::include(const location& loc, expr_path::ptr path) : node(kind::include, loc), path(std::move(path)) {}
 
@@ -1178,6 +1184,16 @@ auto decl_usingtree::print() const -> std::string
     return "#using_animtree"s + "(" + name->print() + ");\n";
 }
 
+auto decl_dev_begin::print() const -> std::string
+{
+    return "/#";
+}
+
+auto decl_dev_end::print() const -> std::string
+{
+    return "#/";
+}
+
 auto include::print() const -> std::string
 {
     return "#include"s + " " + path->print() + ";\n";
@@ -1705,6 +1721,8 @@ decl::~decl()
     switch (as_node->kind())
     {
         case kind::null: as_node.~unique_ptr(); return;
+        case kind::decl_dev_begin: as_dev_begin.~unique_ptr(); return;
+        case kind::decl_dev_end: as_dev_end.~unique_ptr(); return;
         case kind::decl_thread: as_thread.~unique_ptr(); return;
         case kind::decl_constant: as_constant.~unique_ptr(); return;
         case kind::decl_usingtree: as_usingtree.~unique_ptr(); return;
