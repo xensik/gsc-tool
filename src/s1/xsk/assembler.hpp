@@ -33,8 +33,8 @@ private:
     void assemble_field_variable(const instruction::ptr& inst);
     void assemble_jump(const instruction::ptr& inst, bool expr, bool back);
     void assemble_offset(std::int32_t offset);
-    auto resolve_function(const std::string& name) -> std::uint32_t;
-    auto resolve_label(const std::string& name) -> std::uint32_t;
+    auto resolve_function(const std::string& name) -> std::int32_t;
+    auto resolve_label(const std::string& name) -> std::int32_t;
 };
 
 } // namespace xsk::gsc::s1

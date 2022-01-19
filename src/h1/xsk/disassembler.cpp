@@ -21,7 +21,7 @@ auto disassembler::output_data() -> std::vector<std::uint8_t>
     output_->write_string("// H1 GSC ASSEMBLY\n");
     output_->write_string("// Disassembled by https://github.com/xensik/gsc-tool\n");
 
-    for (auto& func : functions_)
+    for (const auto& func : functions_)
     {
         print_function(func);
     }
@@ -46,12 +46,12 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
     while (stack_->is_avail() && script_->is_avail())
     {
         functions_.push_back(std::make_unique<function>());
-        auto& func = functions_.back();
+        const auto& func = functions_.back();
 
         func->index = static_cast<std::uint32_t>(script_->pos());
         func->size = stack_->read<std::uint32_t>();
         func->id = stack_->read<std::uint16_t>();
-        func->name = "sub_"s + (func->id == 0 ? stack_->read_c_string() : resolver::token_name(func->id));
+        func->name = func->id == 0 ? stack_->read_c_string() : resolver::token_name(func->id);
 
         dissasemble_function(func);
 
@@ -69,8 +69,8 @@ void disassembler::dissasemble_function(const function::ptr& func)
     while (size > 0)
     {
         func->instructions.push_back(std::make_unique<instruction>());
-        
-        auto& inst = func->instructions.back();
+
+        const auto& inst = func->instructions.back();
         inst->index = static_cast<std::uint32_t>(script_->pos());
         inst->opcode = script_->read<std::uint8_t>();
         inst->size = opcode_size(inst->opcode);
@@ -169,7 +169,7 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
             break;
         case opcode::OP_GetFloat:
         {
-            auto val = script_->read<float>();
+            const auto val = script_->read<float>();
             inst->data.push_back(utils::string::va("%g%s", val, val == int(val) ? ".0" : ""));
         }
             break;
@@ -311,19 +311,14 @@ void disassembler::disassemble_builtin_call(const instruction::ptr& inst, bool m
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
     }
 
-    if (method)
-    {
-        inst->data.push_back(resolver::method_name(script_->read<std::uint16_t>()));
-    }
-    else
-    {
-        inst->data.push_back(resolver::function_name(script_->read<std::uint16_t>()));
-    }
+    const auto id = script_->read<std::uint16_t>();
+    const auto name = method ? resolver::method_name(id) : resolver::function_name(id);
+    inst->data.emplace(inst->data.begin(), name);
 }
 
 void disassembler::disassemble_local_call(const instruction::ptr& inst, bool thread)
 {
-    std::int32_t offset = disassemble_offset();
+    const auto offset = disassemble_offset();
 
     inst->data.push_back(utils::string::va("%X", offset + inst->index + 1));
 
@@ -342,88 +337,43 @@ void disassembler::disassemble_far_call(const instruction::ptr& inst, bool threa
         inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
     }
 
-    auto file_id = stack_->read<std::uint16_t>();
-    auto file_name = file_id == 0 ? stack_->read_c_string() : resolver::file_name(file_id);
-    auto func_id = stack_->read<std::uint16_t>();
-    auto func_name = func_id == 0 ? stack_->read_c_string() : resolver::token_name(func_id);
+    const auto file_id = stack_->read<std::uint16_t>();
+    const auto file_name = file_id == 0 ? stack_->read_c_string() : resolver::file_name(file_id);
+    const auto func_id = stack_->read<std::uint16_t>();
+    const auto func_name = func_id == 0 ? stack_->read_c_string() : resolver::token_name(func_id);
 
-    inst->data.push_back(file_name != "" ? file_name : utils::string::va("_ID%i", file_id));
-    inst->data.push_back(func_name != "" ? func_name : utils::string::va("_ID%i", func_id));
-}
-
-void disassembler::disassemble_jump(const instruction::ptr& inst, bool expr, bool back)
-{
-    std::int32_t addr;
-    std::string label;
-
-    if (expr)
-    {
-        addr = inst->index + 3 + script_->read<std::int16_t>();
-        label = utils::string::va("loc_%X", addr);
-        inst->data.push_back(label);
-    }
-    else if (back)
-    {
-        addr = inst->index + 3 - script_->read<std::uint16_t>();
-        label = utils::string::va("loc_%X", addr);
-        inst->data.push_back(label);
-    }
-    else
-    {
-        addr = inst->index + 5 + script_->read<std::int32_t>();
-        label = utils::string::va("loc_%X", addr);
-        inst->data.push_back(label);
-    }
-
-    labels_.insert({addr, label});
-}
-
-void disassembler::disassemble_field_variable(const instruction::ptr& inst)
-{
-    std::uint16_t field_id = script_->read<std::uint16_t>();
-    std::string field_name;
-
-    if (field_id > 0xA7ED)
-    {   
-        auto temp = stack_->read<std::uint16_t>();
-        field_name = temp == 0 ? stack_->read_c_string() : std::to_string(temp);
-    }
-    else
-    {
-        field_name = resolver::token_name(field_id);
-    }
-
-    inst->data.push_back(field_name != "" ? field_name : utils::string::va("_ID%i", field_id));
+    inst->data.emplace(inst->data.begin(), func_name);
+    inst->data.emplace(inst->data.begin(), file_name);
 }
 
 void disassembler::disassemble_switch(const instruction::ptr& inst)
 {
-    std::int32_t addr = inst->index + 4 + script_->read<std::int32_t>();
-    std::string label = utils::string::va("loc_%X", addr);
+    const auto addr = inst->index + 4 + script_->read<std::int32_t>();
+    const auto label = utils::string::va("loc_%X", addr);
 
     inst->data.push_back(label);
-    labels_.insert({addr, label});
+    labels_.insert({ addr, label });
 }
 
 void disassembler::disassemble_end_switch(const instruction::ptr& inst)
 {
-    std::uint16_t case_num = script_->read<std::uint16_t>();
-    inst->data.push_back(utils::string::va("%i", case_num));
+    const auto count = script_->read<std::uint16_t>();
+    inst->data.push_back(utils::string::va("%i", count));
 
-    std::uint32_t internal_index = inst->index + 3;
+    std::uint32_t index = inst->index + 3;
 
-    if (case_num)
+    if (count)
     {
-        for (auto i = case_num; i > 0; i--)
+        for (auto i = count; i > 0; i--)
         {
-            std::uint32_t case_label = script_->read<std::uint32_t>();
+            const auto value = script_->read<std::uint32_t>();
 
-            if (case_label < 0x40000 && case_label > 0)
+            if (value < 0x40000 && value > 0)
             {
                 inst->data.push_back("case");
                 inst->data.push_back(utils::string::quote(stack_->read_c_string(), false));
             }
-            else if (case_label == 0)
+            else if (value == 0)
             {
                 inst->data.push_back("default");
                 stack_->read<std::uint16_t>();
@@ -431,22 +381,62 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
             else
             {
                 inst->data.push_back("case");
-                inst->data.push_back(utils::string::va("%i", (case_label - 0x800000) & 0xFFFFFF));
+                inst->data.push_back(utils::string::va("%i", (value - 0x800000) & 0xFFFFFF));
             }
 
-            inst->size += 4;
-            internal_index += 4;
+            index += 4;
 
-            auto addr = disassemble_offset() + internal_index;
-            std::string label = utils::string::va("loc_%X", addr);
+            const auto addr = disassemble_offset() + index;
+            const auto label = utils::string::va("loc_%X", addr);
+
             inst->data.push_back(label);
+            labels_.insert({ addr, label });
 
-            labels_.insert({addr, label});
-
-            inst->size += 3;
-            internal_index += 3;
+            index += 3;
+            inst->size += 7;
         }
     }
+}
+
+void disassembler::disassemble_field_variable(const instruction::ptr& inst)
+{
+    const auto id = script_->read<std::uint16_t>();
+    std::string name;
+
+    if (id > max_string_id)
+    {
+        auto temp = stack_->read<std::uint16_t>();
+        name = temp == 0 ? stack_->read_c_string() : std::to_string(temp);
+    }
+    else
+    {
+        name = resolver::token_name(id);
+    }
+
+    inst->data.push_back(name);
+}
+
+void disassembler::disassemble_jump(const instruction::ptr& inst, bool expr, bool back)
+{
+    std::int32_t addr;
+
+    if (expr)
+    {
+        addr = inst->index + 3 + script_->read<std::int16_t>();
+    }
+    else if (back)
+    {
+        addr = inst->index + 3 - script_->read<std::uint16_t>();
+    }
+    else
+    {
+        addr = inst->index + 5 + script_->read<std::int32_t>();
+    }
+
+    const auto label = utils::string::va("loc_%X", addr);
+
+    inst->data.push_back(label);
+    labels_.insert({ addr, label });
 }
 
 auto disassembler::disassemble_offset() -> std::int32_t
@@ -458,7 +448,7 @@ auto disassembler::disassemble_offset() -> std::int32_t
         bytes[i] = script_->read<std::uint8_t>();
     }
 
-    std::int32_t offset = *reinterpret_cast<std::int32_t*>(bytes.data());
+    auto offset = *reinterpret_cast<std::int32_t*>(bytes.data());
 
     offset = (offset << 8) >> 10;
 
@@ -467,24 +457,24 @@ auto disassembler::disassemble_offset() -> std::int32_t
 
 void disassembler::resolve_local_functions()
 {
-    for (auto& func : functions_)
+    for (const auto& func : functions_)
     {
-        for (auto& inst : func->instructions)
+        for (const auto& inst : func->instructions)
         {
             switch (opcode(inst->opcode))
             {
-            case opcode::OP_GetLocalFunction:
-            case opcode::OP_ScriptLocalFunctionCall:
-            case opcode::OP_ScriptLocalFunctionCall2:
-            case opcode::OP_ScriptLocalMethodCall:
-            case opcode::OP_ScriptLocalThreadCall:
-            case opcode::OP_ScriptLocalChildThreadCall:
-            case opcode::OP_ScriptLocalMethodThreadCall:
-            case opcode::OP_ScriptLocalMethodChildThreadCall:
-                inst->data.at(0) = resolve_function(inst->data[0]);
-                break;
-            default:
-                break;
+                case opcode::OP_GetLocalFunction:
+                case opcode::OP_ScriptLocalFunctionCall:
+                case opcode::OP_ScriptLocalFunctionCall2:
+                case opcode::OP_ScriptLocalMethodCall:
+                case opcode::OP_ScriptLocalThreadCall:
+                case opcode::OP_ScriptLocalChildThreadCall:
+                case opcode::OP_ScriptLocalMethodThreadCall:
+                case opcode::OP_ScriptLocalMethodChildThreadCall:
+                    inst->data[0] = resolve_function(inst->data[0]);
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -513,9 +503,9 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
 void disassembler::print_function(const function::ptr& func)
 {
     output_->write_string("\n");
-    output_->write_string(utils::string::va("%s\n", func->name.data()));
+    output_->write_string(utils::string::va("sub_%s\n", func->name.data()));
 
-    for (auto& inst : func->instructions)
+    for (const auto& inst : func->instructions)
     {
         const auto itr = func->labels.find(inst->index);
 
@@ -533,40 +523,53 @@ void disassembler::print_function(const function::ptr& func)
 
 void disassembler::print_instruction(const instruction::ptr& inst)
 {
+    output_->write_string(utils::string::va("\t\t%s", resolver::opcode_name(inst->opcode).data()));
+
     switch (opcode(inst->opcode))
     {
-    case opcode::OP_endswitch:
-        output_->write_string(utils::string::va("\t\t%s", resolver::opcode_name(inst->opcode).data()));
-        output_->write_string(utils::string::va(" %s\n", inst->data[0].data()));
-        {
-            std::uint32_t totalcase = std::stoul(inst->data[0]);
-            auto index = 0;
-            for (auto casenum = 0u; casenum < totalcase; casenum++)
+        case opcode::OP_GetLocalFunction:
+        case opcode::OP_ScriptLocalFunctionCall:
+        case opcode::OP_ScriptLocalFunctionCall2:
+        case opcode::OP_ScriptLocalMethodCall:
+            output_->write_string(utils::string::va(" sub_%s", inst->data[0].data()));
+            break;
+        case opcode::OP_ScriptLocalThreadCall:
+        case opcode::OP_ScriptLocalChildThreadCall:
+        case opcode::OP_ScriptLocalMethodThreadCall:
+        case opcode::OP_ScriptLocalMethodChildThreadCall:
+            output_->write_string(utils::string::va(" sub_%s", inst->data[0].data()));
+            output_->write_string(utils::string::va(" %s", inst->data[1].data()));
+            break;
+        case opcode::OP_endswitch:
+            output_->write_string(utils::string::va(" %s\n", inst->data[0].data()));
             {
-                if (inst->data[1 + index] == "case")
+                std::uint32_t totalcase = std::stoul(inst->data[0]);
+                auto index = 0;
+                for (auto casenum = 0u; casenum < totalcase; casenum++)
                 {
-                    output_->write_string(utils::string::va("\t\t\t%s %s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
-                    index += 3;
-                }
-                else if (inst->data[1 + index] == "default")
-                {
-                    output_->write_string(utils::string::va("\t\t\t%s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data()));
-                    index += 2;
-                }
-                if (casenum != totalcase - 1)
-                {
-                    output_->write_string("\n");
+                    if (inst->data[1 + index] == "case")
+                    {
+                        output_->write_string(utils::string::va("\t\t\t%s %s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
+                        index += 3;
+                    }
+                    else if (inst->data[1 + index] == "default")
+                    {
+                        output_->write_string(utils::string::va("\t\t\t%s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data()));
+                        index += 2;
+                    }
+                    if (casenum != totalcase - 1)
+                    {
+                        output_->write_string("\n");
+                    }
                 }
             }
-        }
-        break;
-    default:
-        output_->write_string(utils::string::va("\t\t%s", resolver::opcode_name(inst->opcode).data()));
-        for (auto& d : inst->data)
-        {
-            output_->write_string(utils::string::va(" %s", d.data()));
-        }
-        break;
+            break;
+        default:
+            for (auto& d : inst->data)
+            {
+                output_->write_string(utils::string::va(" %s", d.data()));
+            }
+            break;
     }
 
     output_->write_string("\n");

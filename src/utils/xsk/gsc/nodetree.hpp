@@ -460,7 +460,7 @@ public:
 protected:
     static std::uint32_t indent_;
     static void reset_indentation();
-    static std::string indented(std::uint32_t indent); 
+    static std::string indented(std::uint32_t indent);
 };
 
 struct expr_true : public node

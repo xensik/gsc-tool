@@ -23,24 +23,24 @@ enum class encd { __, SOURCE, ASSEMBLY, BINARY };
 enum class mode { __, ASM, DISASM, COMP, DECOMP };
 enum class game { __, IW5, IW6, IW7, IW8, S1, S2, S4, H1, H2 };
 
-const std::map<std::string, encd> exts = 
-{ 
+const std::map<std::string, encd> exts =
+{
     { ".gsc", encd::SOURCE },
     { ".gscasm", encd::ASSEMBLY },
     { ".cgsc", encd::BINARY },
     { ".gscbin", encd::BINARY },
 };
 
-const std::map<std::string, mode> modes = 
-{ 
+const std::map<std::string, mode> modes =
+{
     { "asm", mode::ASM },
     { "disasm", mode::DISASM },
     { "comp", mode::COMP },
     { "decomp", mode::DECOMP },
 };
 
-const std::map<std::string, game> games = 
-{ 
+const std::map<std::string, game> games =
+{
     { "iw5", game::IW5 },
     { "iw6", game::IW6 },
     { "iw7", game::IW7 },
@@ -52,8 +52,8 @@ const std::map<std::string, game> games =
     { "h2", game::H2 },
 };
 
-const std::map<mode, encd> encds = 
-{ 
+const std::map<mode, encd> encds =
+{
     { mode::ASM , encd::ASSEMBLY },
     { mode::DISASM, encd::BINARY },
     { mode::COMP, encd::SOURCE },
@@ -128,7 +128,7 @@ void assemble_file(game game, std::string file)
         const auto& assembler = assemblers[game];
         const auto ext = std::string(".gscasm");
         const auto extpos = file.find(ext);
-        
+
         if (extpos != std::string::npos)
         {
             file.replace(extpos, ext.length(), "");
@@ -207,7 +207,7 @@ void disassemble_file(game game, std::string file)
 
             const auto ext = std::string(".gscbin");
             const auto extpos = file.find(ext);
-            
+
             if (extpos != std::string::npos)
             {
                 file.replace(extpos, ext.length(), "");
@@ -251,7 +251,7 @@ void disassemble_file(game game, std::string file)
     catch (const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-    } 
+    }
 }
 
 void compile_file(game game, std::string file)
@@ -262,7 +262,7 @@ void compile_file(game game, std::string file)
         const auto& compiler = compilers[game];
         const auto ext = std::string(".gsc");
         const auto extpos = file.find(ext);
-        
+
         if (extpos != std::string::npos)
         {
             file.replace(extpos, ext.length(), "");
@@ -414,7 +414,7 @@ void execute(mode mode, game game, const std::string& path)
                 {
                     funcs[mode](game, entry.path().string());
                 }
-            }  
+            }
         }
     }
     else if (std::filesystem::is_regular_file(path))
@@ -469,9 +469,9 @@ int parse_flags(int argc, char** argv, game& game, mode& mode, std::string& path
 void print_usage()
 {
     std::cout << "usage: gsc-tool.exe <mode> <game> <path>\n";
-    std::cout << "	* modes: asm, disasm, comp, decomp\n";
-    std::cout << "	* games: iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2\n";
-    std::cout << "	* paths: file or directory (recursive)\n";
+    std::cout << "\t* modes: asm, disasm, comp, decomp\n";
+    std::cout << "\t* games: iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2\n";
+    std::cout << "\t* paths: file or directory (recursive)\n";
 }
 
 std::uint32_t main(std::uint32_t argc, char** argv)

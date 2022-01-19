@@ -88,7 +88,7 @@ private:
     void emit_expr_not(const ast::expr_not::ptr& expr, const block::ptr& blk);
     void emit_expr_call(const ast::expr_call::ptr& expr, const block::ptr& blk);
     void emit_expr_call_pointer(const ast::expr_pointer::ptr& expr, const block::ptr& blk);
-    void emit_expr_call_function(const ast::expr_function::ptr& expr, const block::ptr& blk);   
+    void emit_expr_call_function(const ast::expr_function::ptr& expr, const block::ptr& blk);
     void emit_expr_method(const ast::expr_method::ptr& expr, const block::ptr& blk);
     void emit_expr_method_pointer(const ast::expr_pointer::ptr& expr, const ast::expr& obj, const block::ptr& blk);
     void emit_expr_method_function(const ast::expr_function::ptr& expr, const ast::expr& obj, const block::ptr& blk);

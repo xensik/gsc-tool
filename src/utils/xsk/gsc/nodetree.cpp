@@ -75,7 +75,7 @@ auto node::is_binary() -> bool
         case kind::expr_div:
         case kind::expr_mod:
             return true;
-        default: 
+        default:
             return false;
     }
 }
@@ -326,7 +326,7 @@ stmt_call::stmt_call(const location& loc, ast::expr expr) : node(kind::stmt_call
 
 stmt_assign::stmt_assign(ast::expr expr) : node(kind::stmt_assign), expr(std::move(expr)) {}
 stmt_assign::stmt_assign(const location& loc, ast::expr expr) : node(kind::stmt_assign, loc), expr(std::move(expr)) {}
-    
+
 stmt_endon::stmt_endon(expr obj, expr event) : node(kind::stmt_endon), obj(std::move(obj)), event(std::move(event)) {}
 stmt_endon::stmt_endon(const location& loc, expr obj, expr event) : node(kind::stmt_endon, loc), obj(std::move(obj)), event(std::move(event)) {}
 
@@ -503,7 +503,7 @@ auto expr_istring::print() const -> std::string
 
 auto expr_path::print() const -> std::string
 {
-    return value;
+    return utils::string::backslash(value);
 }
 
 auto expr_identifier::print() const -> std::string
@@ -630,7 +630,7 @@ auto expr_pointer::print() const -> std::string
         data += "call ";
     else if (mode == call::mode::thread)
         data += "thread ";
-    else if (mode == call::mode::childthread) 
+    else if (mode == call::mode::childthread)
         data += "childthread ";
 
     return data += "[[ "s + func.print() + " ]](" + args->print() + ")";
@@ -642,7 +642,7 @@ auto expr_function::print() const -> std::string
 
     if (mode == call::mode::thread)
         data += "thread ";
-    else if (mode == call::mode::childthread) 
+    else if (mode == call::mode::childthread)
         data += "childthread ";
 
     if (path->value != "")
@@ -903,7 +903,7 @@ auto stmt_endon::print() const -> std::string
 auto stmt_notify::print() const -> std::string
 {
     if (args->list.size() == 0)
-        return obj.print() + " notify( " + event.print() + " );"; 
+        return obj.print() + " notify( " + event.print() + " );";
     else
         return obj.print() + " notify( " + event.print() + ", " + args->print() + " );";
 };
@@ -956,7 +956,7 @@ auto stmt_if::print() const -> std::string
         data += indented(indent_) + stmt.print();
         indent_ -= 4;
     }
-    
+
     return data;
 };
 
@@ -995,7 +995,7 @@ auto stmt_ifelse::print() const -> std::string
             indent_ -= 4;
         }
     }
-    
+
     return data;
 };
 
@@ -1092,9 +1092,9 @@ auto stmt_foreach::print() const -> std::string
     std::string data;
 
     data += "foreach ( ";
-    
+
     if (use_key) data += key_expr.print() + ", ";
-    
+
     data += value_expr.print() + " in " + array_expr.print() + " )\n";
 
     if (stmt == kind::stmt_list)

@@ -92,10 +92,24 @@ void assembler::assemble(const std::string& file, std::vector<std::uint8_t>& dat
                 data.erase(data.begin());
                 inst->data = std::move(data);
 
-                if (opcode(inst->opcode) == opcode::OP_endswitch)
+                switch (opcode(inst->opcode))
                 {
-                    switchnum = static_cast<std::uint16_t>(std::stoi(inst->data[0]));
-                    inst->size += 7 * switchnum;
+                    case opcode::OP_GetLocalFunction:
+                    case opcode::OP_ScriptLocalFunctionCall:
+                    case opcode::OP_ScriptLocalFunctionCall2:
+                    case opcode::OP_ScriptLocalMethodCall:
+                    case opcode::OP_ScriptLocalThreadCall:
+                    case opcode::OP_ScriptLocalChildThreadCall:
+                    case opcode::OP_ScriptLocalMethodThreadCall:
+                    case opcode::OP_ScriptLocalMethodChildThreadCall:
+                        inst->data[0] = inst->data[0].substr(4);
+                        break;
+                    case opcode::OP_endswitch:
+                        switchnum = static_cast<std::uint16_t>(std::stoi(inst->data[0]));
+                        inst->size += 7 * switchnum;
+                        break;
+                    default:
+                        break;
                 }
 
                 index += inst->size;
@@ -126,9 +140,9 @@ void assembler::assemble_function(const function::ptr& func)
 {
     labels_ = func->labels;
 
-    stack_->write<std::uint32_t>(func->size);
+    func->id = resolver::token_id(func->name);
 
-    func->id = func->name.substr(0, 3) == "_ID" ? std::stoi(func->name.substr(3)) : resolver::token_id(func->name);
+    stack_->write<std::uint32_t>(func->size);
     stack_->write<std::uint32_t>(func->id);
 
     if (func->id == 0)
@@ -433,24 +447,12 @@ void assembler::assemble_builtin_call(const instruction::ptr& inst, bool method,
 {
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
-    std::uint16_t id = 0;
-
     if (args)
     {
-        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[1])));
+    }
 
-        if (method)
-            id = inst->data[1].substr(0, 3) == "_ID" ? std::stoi(inst->data[1].substr(3)) : resolver::method_id(inst->data[1]);
-        else
-            id = inst->data[1].substr(0, 3) == "_ID" ? std::stoi(inst->data[1].substr(3)) : resolver::function_id(inst->data[1]);
-    }
-    else
-    {
-        if (method)
-            id = inst->data[0].substr(0, 3) == "_ID" ? std::stoi(inst->data[0].substr(3)) : resolver::method_id(inst->data[0]);
-        else
-            id = inst->data[0].substr(0, 3) == "_ID" ? std::stoi(inst->data[0].substr(3)) : resolver::function_id(inst->data[0]);
-    }
+    const auto id = method ? resolver::method_id(inst->data[0]) : resolver::function_id(inst->data[0]);
 
     script_->write<std::uint16_t>(id);
 }
@@ -459,9 +461,8 @@ void assembler::assemble_local_call(const instruction::ptr& inst, bool thread)
 {
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
-    std::int32_t addr = resolve_function(inst->data[0]);
-
-    std::int32_t offset = addr - inst->index - 1;
+    const auto addr = resolve_function(inst->data[0]);
+    const auto offset = static_cast<std::int32_t>(addr - inst->index - 1);
 
     assemble_offset(offset);
 
@@ -477,96 +478,25 @@ void assembler::assemble_far_call(const instruction::ptr& inst, bool thread)
     script_->write<std::uint8_t>(0);
     script_->write<std::uint16_t>(0);
 
-    std::uint32_t file_id = 0;
-    std::uint32_t func_id = 0;
-
     if (thread)
     {
-        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[2])));
+    }
 
-        file_id = inst->data[1].substr(0, 3) == "_ID" ? std::stoi(inst->data[1].substr(3)) : resolver::file_id(inst->data[1]);
-        func_id = inst->data[2].substr(0, 3) == "_ID" ? std::stoi(inst->data[2].substr(3)) : resolver::token_id(inst->data[2]);
-    }
-    else
-    {
-        file_id = inst->data[0].substr(0, 3) == "_ID" ? std::stoi(inst->data[0].substr(3)) : resolver::file_id(inst->data[0]);
-        func_id = inst->data[1].substr(0, 3) == "_ID" ? std::stoi(inst->data[1].substr(3)) : resolver::token_id(inst->data[1]);
-    }
+    const auto file_id = resolver::file_id(inst->data[0]);
+    const auto func_id = resolver::token_id(inst->data[1]);
 
     stack_->write<std::uint32_t>(file_id);
-    if (file_id == 0) stack_->write_c_string(thread ? inst->data[1] : inst->data[0]);
+    if (file_id == 0) stack_->write_c_string(inst->data[0]);
     stack_->write<std::uint32_t>(func_id);
-    if (func_id == 0) stack_->write_c_string(thread ? inst->data[2] : inst->data[1]);
-}
-
-void assembler::assemble_jump(const instruction::ptr& inst, bool expr, bool back)
-{
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
-    std::int32_t addr = resolve_label(inst->data[0]);
-
-    if (expr)
-    {
-        script_->write<std::int16_t>(addr - inst->index - 3);
-    }
-    else if (back)
-    {
-        script_->write<std::int16_t>((inst->index + 3) - addr);
-    }
-    else
-    {
-        script_->write<std::int32_t>(addr - inst->index - 5);
-    }
-}
-
-void assembler::assemble_field_variable(const instruction::ptr& inst)
-{
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
-    std::uint32_t field_id = 0;
-
-    if (inst->data[0].substr(0, 3) == "_ID")
-    {
-        field_id = std::stoi(inst->data[0].substr(3));
-    }
-    else
-    {
-        field_id = resolver::token_id(inst->data[0]);
-
-        if (field_id == 0)
-        {
-            field_id = 0xFFFFFFFF;
-        }
-    }
-
-    script_->write<std::uint32_t>(field_id);
-
-    if (field_id > 0x13738)
-    {
-        stack_->write<std::uint32_t>(0);
-        stack_->write_c_string(inst->data[0]);
-    }
-}
-
-void assembler::assemble_formal_params(const instruction::ptr& inst)
-{
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
-    auto size = std::stoi(inst->data[0]);
-
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(size));
-
-    for (auto i = 1; i <= size; i++)
-    {
-        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[i])));
-    }
+    if (func_id == 0) stack_->write_c_string(inst->data[1]);
 }
 
 void assembler::assemble_switch(const instruction::ptr& inst)
 {
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
-    std::int32_t addr = resolve_label(inst->data[0]);
+    const auto addr = resolve_label(inst->data[0]);
 
     script_->write<std::int32_t>(addr - inst->index - 4);
 }
@@ -575,22 +505,13 @@ void assembler::assemble_end_switch(const instruction::ptr& inst)
 {
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
-    std::uint16_t casenum = 0;
+    const auto count = std::stoul(inst->data[0]);
 
-    if (utils::string::is_number(inst->data[0]))
-    {
-        casenum = std::stoi(inst->data[0]);
-    }
-    else
-    {
-        throw asm_error("invalid endswitch number!");
-    }
+    script_->write<std::uint16_t>(count);
 
-    script_->write<std::uint16_t>(casenum);
+    std::uint32_t index = inst->index + 3;
 
-    std::uint32_t internal_index = inst->index + 3;
-
-    for (std::uint16_t i = 0; i < casenum; i++)
+    for (auto i = 0u; i < count; i++)
     {
         if (inst->data[1 + (3 * i)] == "case")
         {
@@ -604,26 +525,78 @@ void assembler::assemble_end_switch(const instruction::ptr& inst)
                 stack_->write_c_string(utils::string::unquote(inst->data[1 + (3 * i) + 1]));
             }
 
-            internal_index += 4;
+            index += 4;
 
-            std::int32_t addr = resolve_label(inst->data[1 + (3 * i) + 2]);
+            const auto addr = resolve_label(inst->data[1 + (3 * i) + 2]);
 
-            assemble_offset(addr - internal_index);
+            assemble_offset(addr - index);
 
-            internal_index += 3;
+            index += 3;
         }
         else if (inst->data[1 + (3 * i)] == "default")
         {
             script_->write<uint32_t>(0);
             stack_->write_c_string("\x01");
 
-            internal_index += 4;
-            std::int32_t addr = resolve_label(inst->data[1 + (3 * i) + 1]);
+            index += 4;
 
-            assemble_offset(addr - internal_index);
+            const auto addr = resolve_label(inst->data[1 + (3 * i) + 1]);
 
-            internal_index += 3;
+            assemble_offset(addr - index);
+
+            index += 3;
         }
+    }
+}
+
+void assembler::assemble_field_variable(const instruction::ptr& inst)
+{
+    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
+
+    auto id = resolver::token_id(inst->data[0]);
+
+    if (id == 0) id = 0xFFFFFFFF;
+
+    script_->write<std::uint32_t>(id);
+
+    if (id > max_string_id)
+    {
+        stack_->write<std::uint32_t>(0);
+        stack_->write_c_string(inst->data[0]);
+    }
+}
+
+void assembler::assemble_formal_params(const instruction::ptr& inst)
+{
+    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
+
+    const auto count = std::stoi(inst->data[0]);
+
+    script_->write<std::uint8_t>(static_cast<std::uint8_t>(count));
+
+    for (auto i = 1; i <= count; i++)
+    {
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[i])));
+    }
+}
+
+void assembler::assemble_jump(const instruction::ptr& inst, bool expr, bool back)
+{
+    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
+
+    const auto addr = resolve_label(inst->data[0]);
+
+    if (expr)
+    {
+        script_->write<std::int16_t>(addr - inst->index - 3);
+    }
+    else if (back)
+    {
+        script_->write<std::int16_t>((inst->index + 3) - addr);
+    }
+    else
+    {
+        script_->write<std::int32_t>(addr - inst->index - 5);
     }
 }
 
@@ -640,24 +613,22 @@ void assembler::assemble_offset(std::int32_t offset)
     script_->write<std::uint8_t>(bytes[2]);
 }
 
-auto assembler::resolve_function(const std::string& name) -> std::uint32_t
+auto assembler::resolve_function(const std::string& name) -> std::int32_t
 {
-    auto temp = name.substr(0, 4) == "sub_" ? name.substr(4) : name;
-
     for (const auto& func : functions_)
     {
-        if (func->name == temp)
+        if (func->name == name)
         {
             return func->index;
         }
     }
 
-    throw asm_error("Couldn't resolve local function address of '" + temp + "'!");
+    throw asm_error("Couldn't resolve local function address of '" + name + "'!");
 }
 
-auto assembler::resolve_label(const std::string& name) -> std::uint32_t
+auto assembler::resolve_label(const std::string& name) -> std::int32_t
 {
-    for (auto& func : labels_)
+    for (const auto& func : labels_)
     {
         if (func.second == name)
         {

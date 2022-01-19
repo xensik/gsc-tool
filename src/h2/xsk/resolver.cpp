@@ -9,16 +9,16 @@
 namespace xsk::gsc::h2
 {
 
-std::unordered_map<std::uint8_t, std::string> opcode_map;
-std::unordered_map<std::uint16_t, std::string> function_map;
-std::unordered_map<std::uint16_t, std::string> method_map;
-std::unordered_map<std::uint16_t, std::string> file_map;
-std::unordered_map<std::uint16_t, std::string> token_map;
-std::unordered_map<std::string, std::uint8_t> opcode_map_rev;
-std::unordered_map<std::string, std::uint16_t> function_map_rev;
-std::unordered_map<std::string, std::uint16_t> method_map_rev;
-std::unordered_map<std::string, std::uint16_t> file_map_rev;
-std::unordered_map<std::string, std::uint16_t> token_map_rev;
+std::unordered_map<std::uint8_t, std::string_view> opcode_map;
+std::unordered_map<std::uint16_t, std::string_view> function_map;
+std::unordered_map<std::uint16_t, std::string_view> method_map;
+std::unordered_map<std::uint16_t, std::string_view> file_map;
+std::unordered_map<std::uint16_t, std::string_view> token_map;
+std::unordered_map<std::string_view, std::uint8_t> opcode_map_rev;
+std::unordered_map<std::string_view, std::uint16_t> function_map_rev;
+std::unordered_map<std::string_view, std::uint16_t> method_map_rev;
+std::unordered_map<std::string_view, std::uint16_t> file_map_rev;
+std::unordered_map<std::string_view, std::uint16_t> token_map_rev;
 
 auto resolver::opcode_id(const std::string& name) -> std::uint8_t
 {
@@ -38,7 +38,7 @@ auto resolver::opcode_name(std::uint8_t id) -> std::string
 
     if (itr != opcode_map.end())
     {
-        return itr->second;
+        return std::string(itr->second);
     }
 
     throw error(utils::string::va("Couldn't resolve opcode name for id '0x%hhX'!", id));
@@ -46,6 +46,11 @@ auto resolver::opcode_name(std::uint8_t id) -> std::string
 
 auto resolver::function_id(const std::string& name) -> std::uint16_t
 {
+        if(name.starts_with("_func_"))
+    {
+        return std::stoul(name.substr(6), nullptr, 16);
+    }
+
     const auto itr = function_map_rev.find(name);
 
     if (itr != function_map_rev.end())
@@ -62,14 +67,19 @@ auto resolver::function_name(std::uint16_t id) -> std::string
 
     if (itr != function_map.end())
     {
-        return itr->second;
+        return std::string(itr->second);
     }
 
-    throw error(utils::string::va("Couldn't resolve builtin function name for id '%i'!", id));
+    return utils::string::va("_func_%04X", id);
 }
 
 auto resolver::method_id(const std::string& name) -> std::uint16_t
 {
+    if(name.starts_with("_meth_"))
+    {
+        return std::stoul(name.substr(6), nullptr, 16);
+    }
+
     const auto itr = method_map_rev.find(name);
 
     if (itr != method_map_rev.end())
@@ -86,15 +96,19 @@ auto resolver::method_name(std::uint16_t id) -> std::string
 
     if (itr != method_map.end())
     {
-        return itr->second;
+        return std::string(itr->second);
     }
 
-    throw error(utils::string::va("Couldn't resolve builtin method name for id '%i'!", id));
-    return utils::string::va("_ID%i", id);
+    return utils::string::va("_meth_%04X", id);
 }
 
 auto resolver::file_id(const std::string& name) -> std::uint16_t
 {
+    if(name.starts_with("_id_"))
+    {
+        return std::stoul(name.substr(4), nullptr, 16);
+    }
+
     const auto itr = file_map_rev.find(name);
 
     if (itr != file_map_rev.end())
@@ -111,14 +125,19 @@ auto resolver::file_name(std::uint16_t id) -> std::string
 
     if (itr != file_map.end())
     {
-        return itr->second;
+        return std::string(itr->second);
     }
 
-    return utils::string::va("_ID%i", id);
+    return utils::string::va("_id_%04X", id);
 }
 
 auto resolver::token_id(const std::string& name) -> std::uint16_t
 {
+    if(name.starts_with("_id_"))
+    {
+        return std::stoul(name.substr(4), nullptr, 16);
+    }
+
     const auto itr = token_map_rev.find(name);
 
     if (itr != token_map_rev.end())
@@ -135,14 +154,16 @@ auto resolver::token_name(std::uint16_t id) -> std::string
 
     if (itr != token_map.end())
     {
-        return itr->second;
+        return std::string(itr->second);
     }
 
-    return utils::string::va("_ID%i", id);
+    return utils::string::va("_id_%04X", id);
 }
 
 auto resolver::find_function(const std::string& name) -> bool
 {
+    if(name.starts_with("_func_")) return true;
+
     const auto itr = function_map_rev.find(name);
 
     if (itr != function_map_rev.end())
@@ -155,6 +176,8 @@ auto resolver::find_function(const std::string& name) -> bool
 
 auto resolver::find_method(const std::string& name) -> bool
 {
+    if(name.starts_with("_meth_")) return true;
+
     const auto itr = method_map_rev.find(name);
 
     if (itr != method_map_rev.end())
@@ -165,165 +188,183 @@ auto resolver::find_method(const std::string& name) -> bool
     return false;
 }
 
-const std::array<pair_8C, 154> opcode_list
+auto resolver::make_token(std::string_view str) -> std::string
+{
+    if(str.starts_with("_id_") || str.starts_with("_func_") || str.starts_with("_meth_"))
+    {
+        return std::string(str);
+    }
+
+    auto data = std::string(str.begin(), str.end());
+
+    for (std::size_t i = 0; i < data.size(); i++)
+    {
+        data[i] = std::tolower(str[i]);
+        if (data[i] == '\\') data[i] = '/';
+    }
+
+    return data;
+}
+
+const std::array<std::pair<std::uint8_t, const char*>, 154> opcode_list
 {{
-    { std::uint8_t(opcode::OP_End),"END" },
-    { std::uint8_t(opcode::OP_Return),"RETN" },
-    { std::uint8_t(opcode::OP_GetByte),"GET_BYTE" },
-    { std::uint8_t(opcode::OP_GetNegByte),"GET_NBYTE" },
-    { std::uint8_t(opcode::OP_GetUnsignedShort),"GET_USHORT" },
-    { std::uint8_t(opcode::OP_GetNegUnsignedShort),"GET_NUSHORT" },
-    { std::uint8_t(opcode::OP_GetInteger),"GET_INT" },
-    { std::uint8_t(opcode::OP_GetBuiltinFunction),"GET_BUILTIN_FUNC" },
-    { std::uint8_t(opcode::OP_GetBuiltinMethod),"GET_BUILTIN_METHOD" },
-    { std::uint8_t(opcode::OP_GetFloat),"GET_FLOAT" },
-    { std::uint8_t(opcode::OP_GetString),"GET_STRING" },
-    { std::uint8_t(opcode::OP_GetUndefined),"GET_UNDEFINED" },
-    { std::uint8_t(opcode::OP_GetZero),"GET_ZERO" },
-    { std::uint8_t(opcode::OP_waittillFrameEnd),"WAITTILLFRAMEEND" },
-    { std::uint8_t(opcode::OP_CreateLocalVariable),"CREATE_LOCAL_VARIABLE" },
-    { std::uint8_t(opcode::OP_RemoveLocalVariables),"REMOVE_LOCAL_VARIABLES" },
-    { std::uint8_t(opcode::OP_EvalLocalVariableCached0),"EVAL_LOCAL_VARIABLE_CACHED0" },
-    { std::uint8_t(opcode::OP_EvalLocalVariableCached1),"EVAL_LOCAL_VARIABLE_CACHED1" },
-    { std::uint8_t(opcode::OP_EvalLocalVariableCached2),"EVAL_LOCAL_VARIABLE_CACHED2" },
-    { std::uint8_t(opcode::OP_EvalLocalVariableCached3),"EVAL_LOCAL_VARIABLE_CACHED3" },
-    { std::uint8_t(opcode::OP_EvalLocalVariableCached4),"EVAL_LOCAL_VARIABLE_CACHED4" },
-    { std::uint8_t(opcode::OP_EvalLocalVariableCached5),"EVAL_LOCAL_VARIABLE_CACHED5" },
-    { std::uint8_t(opcode::OP_EvalLocalVariableCached),"EVAL_LOCAL_VARIABLE_CACHED" },
-    { std::uint8_t(opcode::OP_EvalLocalArrayCached),"EVAL_LOCAL_ARRAY_CACHED" },
-    { std::uint8_t(opcode::OP_EvalArray),"EVAL_ARRAY" },
-    { std::uint8_t(opcode::OP_EvalNewLocalArrayRefCached0),"EVAL_NEW_LOCAL_ARRAY_REF_CACHED0" },
-    { std::uint8_t(opcode::OP_EvalLocalArrayRefCached0),"EVAL_LOCAL_ARRAY_REF_CACHED0" },
-    { std::uint8_t(opcode::OP_EvalLocalArrayRefCached),"EVAL_LOCAL_ARRAY_REF_CACHED" },
-    { std::uint8_t(opcode::OP_EvalArrayRef),"EVAL_ARRAY_REF" },
-    { std::uint8_t(opcode::OP_ClearArray),"CLEAR_ARRAY" },
-    { std::uint8_t(opcode::OP_EmptyArray),"EMPTY_ARRAY" },
-    { std::uint8_t(opcode::OP_AddArray),"ADD_ARRAY" },
-    { std::uint8_t(opcode::OP_PreScriptCall),"PRE_CALL" },
-    { std::uint8_t(opcode::OP_ScriptLocalFunctionCall2),"CALL_LOCAL_FUNC2" },
-    { std::uint8_t(opcode::OP_ScriptLocalFunctionCall),"CALL_LOCAL_FUNC" },
-    { std::uint8_t(opcode::OP_ScriptLocalMethodCall),"CALL_LOCAL_METHOD" },
-    { std::uint8_t(opcode::OP_ScriptLocalThreadCall),"CALL_LOCAL_FUNC_THREAD" },
-    { std::uint8_t(opcode::OP_ScriptLocalChildThreadCall),"CALL_LOCAL_FUNC_CHILD_THREAD" },
-    { std::uint8_t(opcode::OP_ScriptLocalMethodThreadCall),"CALL_LOCAL_METHOD_THREAD" },
-    { std::uint8_t(opcode::OP_ScriptLocalMethodChildThreadCall),"CALL_LOCAL_METHOD_CHILD_THREAD" },
-    { std::uint8_t(opcode::OP_ScriptFarFunctionCall2),"CALL_FAR_FUNC2" },
-    { std::uint8_t(opcode::OP_ScriptFarFunctionCall),"CALL_FAR_FUNC" },
-    { std::uint8_t(opcode::OP_ScriptFarMethodCall),"CALL_FAR_METHOD" },
-    { std::uint8_t(opcode::OP_ScriptFarThreadCall),"CALL_FAR_FUNC_THREAD" },
-    { std::uint8_t(opcode::OP_ScriptFarChildThreadCall),"CALL_FAR_FUNC_CHILD_THREAD"},
-    { std::uint8_t(opcode::OP_ScriptFarMethodThreadCall),"CALL_FAR_METHOD_THEAD" },
-    { std::uint8_t(opcode::OP_ScriptFarMethodChildThreadCall),"CALL_FAR_METHOD_CHILD_THEAD" },
-    { std::uint8_t(opcode::OP_ScriptFunctionCallPointer),"CALL_FUNC_POINTER" },
-    { std::uint8_t(opcode::OP_ScriptMethodCallPointer),"CALL_METHOD_POINTER" },
-    { std::uint8_t(opcode::OP_ScriptThreadCallPointer),"CALL_FUNC_THREAD_POINTER" },
-    { std::uint8_t(opcode::OP_ScriptChildThreadCallPointer),"CALL_FUNC_CHILD_THREAD_POINTER" },
-    { std::uint8_t(opcode::OP_ScriptMethodThreadCallPointer),"CALL_METHOD_THREAD_POINTER" },
-    { std::uint8_t(opcode::OP_ScriptMethodChildThreadCallPointer),"CALL_METHOD_CHILD_THREAD_POINTER" },
-    { std::uint8_t(opcode::OP_CallBuiltinPointer),"CALL_BUILTIN_FUNC_POINTER" },
-    { std::uint8_t(opcode::OP_CallBuiltinMethodPointer),"CALL_BUILTIN_METHOD_POINTER" },
-    { std::uint8_t(opcode::OP_GetIString),"GET_ISTRING" },
-    { std::uint8_t(opcode::OP_GetVector),"GET_VECTOR" },
-    { std::uint8_t(opcode::OP_GetLevelObject),"GET_LEVEL_OBJ" },
-    { std::uint8_t(opcode::OP_GetAnimObject),"GET_ANIM_OBJ" },
-    { std::uint8_t(opcode::OP_GetSelf),"GET_SELF" },
-    { std::uint8_t(opcode::OP_GetThisthread),"GET_THISTHREAD" },
-    { std::uint8_t(opcode::OP_GetLevel),"GET_LEVEL" },
-    { std::uint8_t(opcode::OP_GetGame),"GET_GAME" },
-    { std::uint8_t(opcode::OP_GetAnim),"GET_ANIM" },
-    { std::uint8_t(opcode::OP_GetAnimation),"GET_ANIMATION" },
-    { std::uint8_t(opcode::OP_GetGameRef),"GET_GAME_REF" },
-    { std::uint8_t(opcode::OP_inc),"INC" },
-    { std::uint8_t(opcode::OP_dec),"DEC" },
-    { std::uint8_t(opcode::OP_bit_or),"BIT_OR" },
-    { std::uint8_t(opcode::OP_JumpOnFalseExpr),"JMP_EXPR_FALSE" },
-    { std::uint8_t(opcode::OP_bit_ex_or),"BIT_EXOR" },
-    { std::uint8_t(opcode::OP_bit_and),"BIT_AND" },
-    { std::uint8_t(opcode::OP_equality),"EQUALITY" },
-    { std::uint8_t(opcode::OP_inequality),"INEQUALITY" },
-    { std::uint8_t(opcode::OP_less),"LESS" },
-    { std::uint8_t(opcode::OP_greater),"GREATER" },
-    { std::uint8_t(opcode::OP_JumpOnTrueExpr),"JMP_EXPR_TRUE" },
-    { std::uint8_t(opcode::OP_less_equal),"LESSEQUAL" },
-    { std::uint8_t(opcode::OP_jumpback),"JMP_BACK" },
-    { std::uint8_t(opcode::OP_waittillmatch2),"WAITTILLMATCH2" },
-    { std::uint8_t(opcode::OP_waittill),"WAITTILL" },
-    { std::uint8_t(opcode::OP_notify),"NOTIFY" },
-    { std::uint8_t(opcode::OP_endon),"ENDON" },
-    { std::uint8_t(opcode::OP_voidCodepos),"VOIDCODEPOS" },
-    { std::uint8_t(opcode::OP_switch),"SWITCH" },
-    { std::uint8_t(opcode::OP_endswitch),"ENDSWITCH" },
-    { std::uint8_t(opcode::OP_vector),"VECTOR" },
-    { std::uint8_t(opcode::OP_JumpOnFalse),"JMP_FALSE" },
-    { std::uint8_t(opcode::OP_greater_equal),"GREATEREQUAL" },
-    { std::uint8_t(opcode::OP_shift_left),"SHIFT_LEFT" },
-    { std::uint8_t(opcode::OP_shift_right),"SHIFT_RIGHT" },
-    { std::uint8_t(opcode::OP_plus),"PLUS" },
-    { std::uint8_t(opcode::OP_jump),"JMP" },
-    { std::uint8_t(opcode::OP_minus),"MINUS" },
-    { std::uint8_t(opcode::OP_multiply),"MULT" },
-    { std::uint8_t(opcode::OP_divide),"DIV" },
-    { std::uint8_t(opcode::OP_mod),"MOD" },
-    { std::uint8_t(opcode::OP_JumpOnTrue),"JMP_TRUE" },
-    { std::uint8_t(opcode::OP_size),"SIZE" },
-    { std::uint8_t(opcode::OP_waittillmatch),"WAITTILLMATCH" },
-    { std::uint8_t(opcode::OP_GetLocalFunction),"GET_LOCAL_FUNC" },
-    { std::uint8_t(opcode::OP_GetFarFunction),"GET_FAR_FUNC" },
-    { std::uint8_t(opcode::OP_GetSelfObject),"GET_SELF_OBJ" },
-    { std::uint8_t(opcode::OP_EvalLevelFieldVariable),"EVAL_LEVEL_FIELD_VARIABLE" },
-    { std::uint8_t(opcode::OP_EvalAnimFieldVariable),"EVAL_ANIM_FIELD_VARIABLE" },
-    { std::uint8_t(opcode::OP_EvalSelfFieldVariable),"EVAL_SELF_FIELD_VARIABLE" },
-    { std::uint8_t(opcode::OP_EvalFieldVariable),"EVAL_FIELD_VARIABLE" },
-    { std::uint8_t(opcode::OP_EvalLevelFieldVariableRef),"EVAL_LEVEL_FIELD_VARIABLE_REF" },
-    { std::uint8_t(opcode::OP_EvalAnimFieldVariableRef),"EVAL_ANIM_FIELD_VARIABLE_REF" },
-    { std::uint8_t(opcode::OP_EvalSelfFieldVariableRef),"EVAL_SELF_FIELD_VARIABLE_REF" },
-    { std::uint8_t(opcode::OP_EvalFieldVariableRef),"EVAL_FIELD_VARIABLE_REF" },
-    { std::uint8_t(opcode::OP_ClearFieldVariable),"CLEAR_FIELD_VARIABLE" },
-    { std::uint8_t(opcode::OP_SafeCreateVariableFieldCached),"SAFE_CREATE_VARIABLE_FIELD_CACHED" },
-    { std::uint8_t(opcode::OP_SafeSetVariableFieldCached0),"SAFE_SET_VARIABLE_FIELD_CACHED0" },
-    { std::uint8_t(opcode::OP_SafeSetVariableFieldCached),"SAFE_SET_VARIABLE_FIELD_CACHED" },
-    { std::uint8_t(opcode::OP_SafeSetWaittillVariableFieldCached),"SAFE_SET_WAITTILL_VARIABLE_FIELD_CACHED" },
-    { std::uint8_t(opcode::OP_GetAnimTree),"GET_ANIMTREE" },
-    { std::uint8_t(opcode::OP_clearparams),"CLEAR_PARAMS" },
-    { std::uint8_t(opcode::OP_checkclearparams),"CHECK_CLEAR_PARAMS" },
-    { std::uint8_t(opcode::OP_EvalLocalVariableRefCached0),"EVAL_LOCAL_VARIABLE_REF_CACHED0" },
-    { std::uint8_t(opcode::OP_EvalNewLocalVariableRefCached0),"EVAL_NEW_LOCAL_VARIABLE_REF_CACHED0" },
-    { std::uint8_t(opcode::OP_EvalLocalVariableRefCached),"EVAL_LOCAL_VARIABLE_REF_CACHED" },
-    { std::uint8_t(opcode::OP_SetLevelFieldVariableField),"SET_LEVEL_FIELD_VARIABLE_FIELD" },
-    { std::uint8_t(opcode::OP_SetVariableField),"SET_VARIABLE_FIELD" },
-    { std::uint8_t(opcode::OP_ClearVariableField),"CLEAR_VARIABLE_FIELD" },
-    { std::uint8_t(opcode::OP_SetAnimFieldVariableField),"SET_ANIM_FIELD_VARIABLE_FIELD" },
-    { std::uint8_t(opcode::OP_SetSelfFieldVariableField),"SET_SELF_FIELD_VARIABLE_FIELD" },
-    { std::uint8_t(opcode::OP_SetLocalVariableFieldCached0),"SET_LOCAL_VARIABLE_FIELD_CACHED0" },
-    { std::uint8_t(opcode::OP_SetNewLocalVariableFieldCached0),"SET_NEW_LOCAL_VARIABLE_FIELD_CACHED0" },
-    { std::uint8_t(opcode::OP_SetLocalVariableFieldCached),"SET_LOCAL_VARIABLE_FIELD_CACHED" },
-    { std::uint8_t(opcode::OP_ClearLocalVariableFieldCached),"CLEAR_LOCAL_VARIABLE_FIELD_CACHED" },
-    { std::uint8_t(opcode::OP_ClearLocalVariableFieldCached0),"CLEAR_LOCAL_VARIABLE_FIELD_CACHED0" },
-    { std::uint8_t(opcode::OP_CallBuiltin0),"CALL_BUILTIN_FUNC_0" },
-    { std::uint8_t(opcode::OP_CallBuiltin1),"CALL_BUILTIN_FUNC_1" },
-    { std::uint8_t(opcode::OP_CallBuiltin2),"CALL_BUILTIN_FUNC_2" },
-    { std::uint8_t(opcode::OP_CallBuiltin3),"CALL_BUILTIN_FUNC_3" },
-    { std::uint8_t(opcode::OP_CallBuiltin4),"CALL_BUILTIN_FUNC_4" },
-    { std::uint8_t(opcode::OP_CallBuiltin5),"CALL_BUILTIN_FUNC_5" },
-    { std::uint8_t(opcode::OP_CallBuiltin),"CALL_BUILTIN_FUNC" },
-    { std::uint8_t(opcode::OP_CallBuiltinMethod0),"CALL_BUILTIN_METHOD_0" },
-    { std::uint8_t(opcode::OP_CallBuiltinMethod1),"CALL_BUILTIN_METHOD_1" },
-    { std::uint8_t(opcode::OP_CallBuiltinMethod2),"CALL_BUILTIN_METHOD_2" },
-    { std::uint8_t(opcode::OP_CallBuiltinMethod3),"CALL_BUILTIN_METHOD_3" },
-    { std::uint8_t(opcode::OP_CallBuiltinMethod4),"CALL_BUILTIN_METHOD_4" },
-    { std::uint8_t(opcode::OP_CallBuiltinMethod5),"CALL_BUILTIN_METHOD_5" },
-    { std::uint8_t(opcode::OP_CallBuiltinMethod),"CALL_BUILTIN_METHOD" },
-    { std::uint8_t(opcode::OP_wait),"WAIT" },
-    { std::uint8_t(opcode::OP_DecTop),"DEC_TOP" },
-    { std::uint8_t(opcode::OP_CastFieldObject),"CAST_FIELD_OBJ" },
-    { std::uint8_t(opcode::OP_EvalLocalVariableObjectCached),"EVAL_LOCAL_VARIABLE_OBJECT_CACHED" },
-    { std::uint8_t(opcode::OP_CastBool),"CAST_BOOL" },
-    { std::uint8_t(opcode::OP_BoolNot),"BOOL_NOT" },
-    { std::uint8_t(opcode::OP_BoolComplement),"BOOL_COMPLEMENT" },
-    { std::uint8_t(opcode::OP_waitFrame), "WAITFRAME" },
+    { 0x17, "SET_NEW_LOCAL_VARIABLE_FIELD_CACHED0" },
+    { 0x18, "EVAL_SELF_FIELD_VARIABLE" },
+    { 0x19, "RETN" },
+    { 0x1A, "CALL_BUILTIN_FUNC_0" },
+    { 0x1B, "CALL_BUILTIN_FUNC_1" },
+    { 0x1C, "CALL_BUILTIN_FUNC_2" },
+    { 0x1D, "CALL_BUILTIN_FUNC_3" },
+    { 0x1E, "CALL_BUILTIN_FUNC_4" },
+    { 0x1F, "CALL_BUILTIN_FUNC_5" },
+    { 0x20, "CALL_BUILTIN_FUNC" },
+    { 0x21, "BOOL_NOT" },
+    { 0x22, "CALL_FAR_METHOD_THEAD" },
+    { 0x23, "JMP_EXPR_TRUE" },
+    { 0x24, "SET_LEVEL_FIELD_VARIABLE_FIELD" },
+    { 0x25, "CAST_BOOL" },
+    { 0x26, "EVAL_NEW_LOCAL_ARRAY_REF_CACHED0" },
+    { 0x27, "CALL_BUILTIN_FUNC_POINTER" },
+    { 0x28, "INEQUALITY" },
+    { 0x29, "GET_THISTHREAD" },
+    { 0x2A, "CLEAR_FIELD_VARIABLE" },
+    { 0x2B, "GET_FLOAT" },
+    { 0x2C, "SAFE_CREATE_VARIABLE_FIELD_CACHED" },
+    { 0x2D, "CALL_FAR_FUNC2" },
+    { 0x2E, "CALL_FAR_FUNC" },
+    { 0x2F, "CALL_FAR_FUNC_CHILD_THREAD" },
+    { 0x30, "CLEAR_LOCAL_VARIABLE_FIELD_CACHED0" },
+    { 0x31, "CLEAR_LOCAL_VARIABLE_FIELD_CACHED" },
+    { 0x32, "CHECK_CLEAR_PARAMS" },
+    { 0x33, "CAST_FIELD_OBJ" },
+    { 0x34, "END" },
+    { 0x35, "SIZE" },
+    { 0x36, "EMPTY_ARRAY" },
+    { 0x37, "BIT_AND" },
+    { 0x38, "LESSEQUAL" },
+    { 0x39, "VOIDCODEPOS" },
+    { 0x3A, "CALL_METHOD_THREAD_POINTER" },
+    { 0x3B, "ENDSWITCH" },
+    { 0x3C, "CLEAR_VARIABLE_FIELD" },
+    { 0x3D, "DIV" },
+    { 0x3E, "CALL_FAR_METHOD_CHILD_THEAD" },
+    { 0x3F, "GET_USHORT" },
+    { 0x40, "JMP_TRUE" },
+    { 0x41, "GET_SELF" },
+    { 0x42, "CALL_FAR_FUNC_THREAD" },
+    { 0x43, "CALL_LOCAL_FUNC_THREAD" },
+    { 0x44, "SET_LOCAL_VARIABLE_FIELD_CACHED0" },
+    { 0x45, "SET_LOCAL_VARIABLE_FIELD_CACHED" },
+    { 0x46, "PLUS" },
+    { 0x47, "BOOL_COMPLEMENT" },
+    { 0x48, "CALL_METHOD_POINTER" },
+    { 0x49, "INC" },
+    { 0x4A, "REMOVE_LOCAL_VARIABLES" },
+    { 0x4B, "JMP_EXPR_FALSE" },
+    { 0x4C, "SWITCH" },
+    { 0x4D, "CLEAR_PARAMS" },
+    { 0x4E, "EVAL_LOCAL_VARIABLE_REF_CACHED0" },
+    { 0x4F, "EVAL_LOCAL_VARIABLE_REF_CACHED" },
+    { 0x50, "CALL_LOCAL_METHOD" },
+    { 0x51, "EVAL_FIELD_VARIABLE" },
+    { 0x52, "EVAL_FIELD_VARIABLE_REF" },
+    { 0x53, "GET_STRING" },
+    { 0x54, "CALL_FUNC_POINTER" },
+    { 0x55, "EVAL_LEVEL_FIELD_VARIABLE" },
+    { 0x56, "GET_VECTOR" },
+    { 0x57, "ENDON" },
+    { 0x58, "GREATEREQUAL" },
+    { 0x59, "GET_SELF_OBJ" },
+    { 0x5A, "SET_ANIM_FIELD_VARIABLE_FIELD" },
+    { 0x5B, "SET_VARIABLE_FIELD" },
+    { 0x5C, "CALL_LOCAL_FUNC2" },
+    { 0x5D, "CALL_LOCAL_FUNC" },
+    { 0x5E, "EVAL_LOCAL_ARRAY_REF_CACHED0" },
+    { 0x5F, "EVAL_LOCAL_ARRAY_REF_CACHED" },
+    { 0x60, "GET_FAR_FUNC" },
+    { 0x61, "LESS" },
+    { 0x62, "GET_GAME_REF" },
+    { 0x63, "WAITFRAME" },
+    { 0x64, "WAITTILLFRAMEEND" },
+    { 0x65, "SAFE_SET_VARIABLE_FIELD_CACHED0" },
+    { 0x66, "SAFE_SET_VARIABLE_FIELD_CACHED" },
+    { 0x67, "CALL_METHOD_CHILD_THREAD_POINTER" },
+    { 0x68, "GET_LEVEL" },
+    { 0x69, "NOTIFY" },
+    { 0x6A, "DEC_TOP" },
+    { 0x6B, "SHIFT_LEFT" },
+    { 0x6C, "CALL_LOCAL_METHOD_THREAD" },
+    { 0x6D, "CALL_LOCAL_METHOD_CHILD_THREAD" },
+    { 0x6E, "GREATER" },
+    { 0x6F, "EVAL_LOCAL_VARIABLE_CACHED0" },
+    { 0x70, "EVAL_LOCAL_VARIABLE_CACHED1" },
+    { 0x71, "EVAL_LOCAL_VARIABLE_CACHED2" },
+    { 0x72, "EVAL_LOCAL_VARIABLE_CACHED3" },
+    { 0x73, "EVAL_LOCAL_VARIABLE_CACHED4" },
+    { 0x74, "EVAL_LOCAL_VARIABLE_CACHED5" },
+    { 0x75, "EVAL_LOCAL_VARIABLE_CACHED" },
+    { 0x76, "SAFE_SET_WAITTILL_VARIABLE_FIELD_CACHED" },
+    { 0x77, "JMP" },
+    { 0x78, "CALL_FUNC_THREAD_POINTER" },
+    { 0x79, "GET_ZERO" },
+    { 0x7A, "WAIT" },
+    { 0x7B, "MINUS" },
+    { 0x7C, "SET_SELF_FIELD_VARIABLE_FIELD" },
+    { 0x7D, "EVAL_NEW_LOCAL_VARIABLE_REF_CACHED0" },
+    { 0x7E, "MULT" },
+    { 0x7F, "CREATE_LOCAL_VARIABLE" },
+    { 0x80, "CALL_LOCAL_FUNC_CHILD_THREAD" },
+    { 0x81, "GET_INT" },
+    { 0x82, "MOD" },
+    { 0x83, "EVAL_ANIM_FIELD_VARIABLE_REF" },
+    { 0x84, "GET_BUILTIN_FUNC" },
+    { 0x85, "GET_GAME" },
+    { 0x86, "WAITTILL" },
+    { 0x87, "DEC" },
+    { 0x88, "EVAL_LOCAL_VARIABLE_OBJECT_CACHED" },
+    { 0x89, "PRE_CALL" },
+    { 0x8A, "GET_ANIM" },
+    { 0x8B, "GET_UNDEFINED" },
+    { 0x8C, "EVAL_LEVEL_FIELD_VARIABLE_REF" },
+    { 0x8D, "GET_ANIM_OBJ" },
+    { 0x8E, "GET_LEVEL_OBJ" },
+    { 0x8F, "BIT_EXOR" },
+    { 0x90, "EQUALITY" },
+    { 0x91, "CLEAR_ARRAY" },
+    { 0x92, "JMP_BACK" },
+    { 0x93, "GET_ANIMATION" },
+    { 0x94, "EVAL_ANIM_FIELD_VARIABLE" },
+    { 0x95, "GET_ANIMTREE" },
+    { 0x96, "GET_ISTRING" },
+    { 0x97, "EVAL_ARRAY_REF" },
+    { 0x98, "EVAL_SELF_FIELD_VARIABLE_REF" },
+    { 0x99, "GET_NBYTE" },
+    { 0x9A, "GET_BUILTIN_METHOD" },
+    { 0x9B, "CALL_BUILTIN_METHOD_POINTER" },
+    { 0x9C, "EVAL_ARRAY" },
+    { 0x9D, "VECTOR" },
+    { 0x9E, "CALL_FAR_METHOD" },
+    { 0x9F, "EVAL_LOCAL_ARRAY_CACHED" },
+    { 0xA0, "GET_BYTE" },
+    { 0xA1, "CALL_FUNC_CHILD_THREAD_POINTER" },
+    { 0xA2, "BIT_OR" },
+    { 0xA3, "ADD_ARRAY" },
+    { 0xA4, "WAITTILLMATCH2" },
+    { 0xA5, "WAITTILLMATCH" },
+    { 0xA6, "GET_LOCAL_FUNC" },
+    { 0xA7, "GET_NUSHORT" },
+    { 0xA8, "SHIFT_RIGHT" },
+    { 0xA9, "CALL_BUILTIN_METHOD_0" },
+    { 0xAA, "CALL_BUILTIN_METHOD_1" },
+    { 0xAB, "CALL_BUILTIN_METHOD_2" },
+    { 0xAC, "CALL_BUILTIN_METHOD_3" },
+    { 0xAD, "CALL_BUILTIN_METHOD_4" },
+    { 0xAE, "CALL_BUILTIN_METHOD_5" },
+    { 0xAF, "CALL_BUILTIN_METHOD" },
+    { 0xB0, "JMP_FALSE" },
 }};
 
-const std::array<pair_16C, 800> function_list
+const std::array<std::pair<std::uint16_t, const char*>, 800> function_list
 {{
     { 0x001, "_func_001" },
     { 0x002, "_func_002" },
@@ -1127,7 +1168,7 @@ const std::array<pair_16C, 800> function_list
     { 0x320, "_func_320" },
 }};
 
-const std::array<pair_16C, 1491> method_list
+const std::array<std::pair<std::uint16_t, const char*>, 1491> method_list
 {{
     { 0x8000, "_meth_8000" },
     { 0x8001, "_meth_8001" },
@@ -2622,14 +2663,18 @@ const std::array<pair_16C, 1491> method_list
     { 0x85D2, "_meth_85D2" },
 }};
 
-const std::array<pair_16C, 1> file_list
+const std::array<std::pair<std::uint16_t, const char*>, 1> file_list
 {{
-    { 0, "DUMMY" },
+    { 0, "null" },
 }};
 
-const std::array<pair_16C, 1> token_list
+const std::array<std::pair<std::uint16_t, const char*>, 5> token_list
 {{
-    { 0, "DUMMY" },
+    { 0x0000, "" },
+    { 0x0001, "pl#" },
+    { 0x0002, "-" },
+    { 0x0003, "radius`" },
+    { 0x0004, "note:" },
 }};
 
 struct __init__
@@ -2653,32 +2698,32 @@ struct __init__
 
         for(const auto& entry : opcode_list)
         {
-            opcode_map.insert({ entry.key, entry.value });
-            opcode_map_rev.insert({ entry.value, entry.key });
+            opcode_map.insert({ entry.first, entry.second });
+            opcode_map_rev.insert({ entry.second, entry.first });
         }
 
         for(const auto& entry : function_list)
         {
-            function_map.insert({ entry.key, entry.value });
-            function_map_rev.insert({ utils::string::to_lower(entry.value), entry.key });
+            function_map.insert({ entry.first, entry.second });
+            function_map_rev.insert({ entry.second, entry.first });
         }
 
         for(const auto& entry : method_list)
         {
-            method_map.insert({ entry.key, entry.value });
-            method_map_rev.insert({ utils::string::to_lower(entry.value), entry.key });
+            method_map.insert({ entry.first, entry.second });
+            method_map_rev.insert({ entry.second, entry.first });
         }
 
         for(const auto& entry : file_list)
         {
-            file_map.insert({ entry.key, entry.value });
-            file_map_rev.insert({ utils::string::to_lower(entry.value), entry.key });
+            file_map.insert({ entry.first, entry.second });
+            file_map_rev.insert({ entry.second, entry.first });
         }
 
         for(const auto& entry : token_list)
         {
-            token_map.insert({ entry.key, entry.value });
-            token_map_rev.insert({ utils::string::to_lower(entry.value), entry.key });
+            token_map.insert({ entry.first, entry.second });
+            token_map_rev.insert({ entry.second, entry.first });
         }
     }
 };

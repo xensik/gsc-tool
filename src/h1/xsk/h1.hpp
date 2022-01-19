@@ -16,6 +16,8 @@
 namespace xsk::gsc::h1
 {
 
+constexpr std::uint16_t max_string_id = 0xA7ED;
+
 enum class opcode : std::uint8_t
 {
     OP_SetNewLocalVariableFieldCached0 = 0x17,

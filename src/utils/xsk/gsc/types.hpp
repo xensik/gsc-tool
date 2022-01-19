@@ -10,8 +10,8 @@ namespace xsk::gsc
 
 enum class build
 {
-	dev,
-	prod,
+    dev,
+    prod,
 };
 
 enum class abort_t
@@ -81,24 +81,6 @@ struct function
     std::unordered_map<std::uint32_t, std::string> labels;
 
     function() : index(0), size(0), id(0) {}
-};
-
-struct pair_8C
-{
-    std::uint8_t key;
-    const char* value;
-};
-
-struct pair_16C
-{
-    std::uint16_t key;
-    const char* value;
-};
-
-struct pair_32C
-{
-    std::uint32_t key;
-    const char* value;
 };
 
 } // namespace xsk::gsc

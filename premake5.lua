@@ -19,7 +19,7 @@ workspace "gsc-tool"
     targetname "%{prj.name}"
 
     language "C++"
-    cppdialect "C++17"
+    cppdialect "C++20"
     architecture "x86_64"
 
     filter "action:vs*"

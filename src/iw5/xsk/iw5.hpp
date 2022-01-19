@@ -16,6 +16,8 @@
 namespace xsk::gsc::iw5
 {
 
+constexpr std::uint16_t max_string_id = 0x826A;
+
 enum class opcode : std::uint8_t
 {
     OP_End = 0x0,

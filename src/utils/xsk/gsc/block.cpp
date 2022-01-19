@@ -30,10 +30,10 @@ void block::transfer(const block::ptr& child)
             auto& v = child->local_vars;
             if (pos > std::int32_t(i))
                 std::rotate(v.rend() - pos - 1, v.rend() - pos, v.rend() - i);
-            else		
+            else
                 std::rotate(v.begin() + pos, v.begin() + pos + 1, v.begin() + i + 1);
             child->local_vars.at(i).init = this->local_vars.at(i).init;
-            
+
             if (child->local_vars_public_count <= i)
                 child->local_vars_public_count++;
         }
@@ -83,7 +83,7 @@ void block::merge(const std::vector<block*>& childs)
 {
     if (childs.size() == 0) return;
 
-    for (std::size_t childidx = 0; childidx < childs.size(); childidx++ )       
+    for (std::size_t childidx = 0; childidx < childs.size(); childidx++)
     {
         auto child = childs[childidx];
 
@@ -93,7 +93,7 @@ void block::merge(const std::vector<block*>& childs)
             auto& name = this->local_vars.at(i).name;
 
             auto pos = child->find_variable(i, name);
-            
+
             if (pos < 0)
             {
                 child->local_vars.insert(child->local_vars.begin() + i, this->local_vars.at(i));

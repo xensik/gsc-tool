@@ -28,6 +28,8 @@ public:
 
     static auto find_function(const std::string& name) -> bool;
     static auto find_method(const std::string& name) -> bool;
+
+    static auto make_token(std::string_view str) -> std::string;
 };
 
 } // namespace xsk::gsc::iw7

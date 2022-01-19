@@ -17,11 +17,11 @@ auto zlib::compress(const std::vector<std::uint8_t>& data) -> std::vector<std::u
     output.resize(length);
 
     auto result = compress2(reinterpret_cast<Bytef*>(output.data()), &length, reinterpret_cast<const Bytef*>(data.data()), static_cast<uLong>(data.size()), Z_BEST_COMPRESSION);
-    
+
     if (result != Z_OK) return {};
 
     output.resize(length);
-    
+
     return output;
 }
 

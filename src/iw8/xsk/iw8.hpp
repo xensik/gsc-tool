@@ -16,6 +16,8 @@
 namespace xsk::gsc::iw8
 {
 
+constexpr std::uint32_t max_string_id = 0x13738;
+
 enum class opcode : std::uint8_t
 {
     OP_CastFieldObject = 0x0,

@@ -4,7 +4,7 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/releases)
 # GSC Tool
 A utility to compile & decompile IW engine game scripts.
-## Supported Games 
+## Supported Games
 - **IW5** *(Call of Duty: Modern Warfare 3)*
 - **IW6** *(Call of Duty: Ghosts)*
 - **IW7** *(Call of Duty: Infinite Warfare)*
@@ -20,11 +20,11 @@ A utility to compile & decompile IW engine game scripts.
 ## Usage
 ``./gsc-tool.exe <mode> <game> <path>``
 
-**modes**: `asm`, `disasm`, `comp`, `decomp` 
+**modes**: `asm`, `disasm`, `comp`, `decomp`
 
-**games**: `iw5`, `iw6`, `iw7`, `iw8`, `s1`, `s2`, `s4`, `h1`, `h2` 
+**games**: `iw5`, `iw6`, `iw7`, `iw8`, `s1`, `s2`, `s4`, `h1`, `h2`
 
-**paths**: `file`, `directory` (recursive process all files with mode extension) 
+**paths**: `file`, `directory` (recursive process all files with mode extension)
 
 for zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zdecomp`
 

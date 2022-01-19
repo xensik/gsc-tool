@@ -57,7 +57,7 @@ auto compiler::parse_buffer(const std::string& file, std::vector<std::uint8_t>& 
     YY_BUFFER_STATE yybuffer = s1__scan_buffer(reinterpret_cast<char*>(data.data()), data.size(), scanner);
 
     parser parser(scanner, &ctx, result);
-    
+
     if (parser.parse() || result == nullptr)
     {
         throw comp_error(ctx.loc, "An unknown error ocurred while parsing gsc file.");
@@ -102,7 +102,7 @@ void compiler::compile_program(const ast::program::ptr& program)
 
     for (const auto& declaration : program->declarations)
     {
-        emit_declaration(declaration);  
+        emit_declaration(declaration);
     }
 }
 
@@ -393,9 +393,9 @@ void compiler::emit_stmt_endon(const ast::stmt_endon::ptr& stmt, const block::pt
 void compiler::emit_stmt_notify(const ast::stmt_notify::ptr& stmt, const block::ptr& blk)
 {
     emit_opcode(opcode::OP_voidCodepos);
-    
+
     std::reverse(stmt->args->list.begin(), stmt->args->list.end());
-    
+
     for (const auto& arg : stmt->args->list)
     {
         emit_expr(arg, blk);
@@ -534,7 +534,7 @@ void compiler::emit_stmt_while(const ast::stmt_while::ptr& stmt, const block::pt
     stmt->blk->loc_continue = continue_loc;
 
     emit_create_local_vars(stmt->blk);
-    
+
     blk->local_vars_create_count = stmt->blk->local_vars_create_count;
 
     for (auto i = 0u; i < blk->local_vars_create_count; i++)
@@ -588,7 +588,7 @@ void compiler::emit_stmt_dowhile(const ast::stmt_dowhile::ptr& stmt, const block
     stmt->blk->loc_continue = continue_loc;
 
     emit_create_local_vars(stmt->blk);
-    
+
     blk->local_vars_create_count = stmt->blk->local_vars_create_count;
 
     for (auto i = 0u; i < blk->local_vars_create_count; i++)
@@ -734,7 +734,7 @@ void compiler::emit_stmt_foreach(const ast::stmt_foreach::ptr& stmt, const block
 
     emit_expr_variable(stmt->key_expr, blk);
     emit_opcode(opcode::OP_CallBuiltin1, "isdefined");
-	emit_opcode(opcode::OP_JumpOnFalse, break_loc);
+    emit_opcode(opcode::OP_JumpOnFalse, break_loc);
 
     can_break_ = true;
     can_continue_ = true;
@@ -755,9 +755,9 @@ void compiler::emit_stmt_foreach(const ast::stmt_foreach::ptr& stmt, const block
     stmt->ctx_post->init_from_child(continue_blks_);
 
     emit_expr_variable(stmt->key_expr, stmt->ctx_post);
-	emit_expr_variable(stmt->array, stmt->ctx_post);
-	emit_opcode(opcode::OP_CallBuiltin2, "getnextarraykey");
-	emit_expr_variable_ref(stmt->key_expr, stmt->ctx_post, true);
+    emit_expr_variable(stmt->array, stmt->ctx_post);
+    emit_opcode(opcode::OP_CallBuiltin2, "getnextarraykey");
+    emit_expr_variable_ref(stmt->key_expr, stmt->ctx_post, true);
     emit_opcode(opcode::OP_jumpback, begin_loc);
 
     insert_label(break_loc);
@@ -847,7 +847,7 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt, const block::
         {
             throw comp_error(entry.loc(), "missing case statement");
         }
-    }    
+    }
 
     if (has_default)
     {
@@ -897,7 +897,7 @@ void compiler::emit_stmt_continue(const ast::stmt_continue::ptr& stmt, const blo
 {
     if (!can_continue_ || blk->abort != abort_t::abort_none || blk->loc_continue == "")
         throw comp_error(stmt->loc(), "illegal continue statement");
-    
+
     continue_blks_.push_back(blk.get());
     emit_remove_local_vars(blk);
     blk->abort = abort_t::abort_continue;
@@ -1055,7 +1055,7 @@ void compiler::emit_expr(const ast::expr& expr, const block::ptr& blk)
     }
 }
 
-void compiler::emit_expr_assign(const ast::expr_assign::ptr& expr, const block::ptr& blk)	
+void compiler::emit_expr_assign(const ast::expr_assign::ptr& expr, const block::ptr& blk)
 {
     if (expr->kind() == ast::kind::expr_assign_equal)
     {
@@ -1109,7 +1109,7 @@ void compiler::emit_expr_assign(const ast::expr_assign::ptr& expr, const block::
             throw comp_error(expr->loc(), "unknown assign operation");
     }
 
-    emit_expr_variable_ref(expr->lvalue, blk, true); 
+    emit_expr_variable_ref(expr->lvalue, blk, true);
 }
 
 void compiler::emit_expr_clear(const ast::expr& expr, const block::ptr& blk)
@@ -1372,10 +1372,10 @@ void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr, cons
                     emit_opcode(opcode::OP_ScriptFarFunctionCall2, { expr->path->value, expr->name->value });
                 break;
             case ast::call::mode::thread:
-                emit_opcode(opcode::OP_ScriptFarThreadCall, { argcount, expr->path->value, expr->name->value });
+                emit_opcode(opcode::OP_ScriptFarThreadCall, { expr->path->value, expr->name->value, argcount });
                 break;
             case ast::call::mode::childthread:
-                emit_opcode(opcode::OP_ScriptFarChildThreadCall, { argcount, expr->path->value, expr->name->value });
+                emit_opcode(opcode::OP_ScriptFarChildThreadCall, { expr->path->value, expr->name->value, argcount });
                 break;
             case ast::call::mode::builtin:
                 // no far builtins
@@ -1392,7 +1392,7 @@ void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr, cons
             case 0:
                 emit_opcode(opcode::OP_CallBuiltin0, expr->name->value);
                 break;
-            case 1: 
+            case 1:
                 emit_opcode(opcode::OP_CallBuiltin1, expr->name->value);
                 break;
             case 2:
@@ -1408,7 +1408,7 @@ void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr, cons
                 emit_opcode(opcode::OP_CallBuiltin5, expr->name->value);
                 break;
             default:
-                emit_opcode(opcode::OP_CallBuiltin, { argcount, expr->name->value });
+                emit_opcode(opcode::OP_CallBuiltin, { expr->name->value, argcount });
                 break;
         }
     }
@@ -1490,10 +1490,10 @@ void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, co
                 emit_opcode(opcode::OP_ScriptFarMethodCall, { expr->path->value, expr->name->value });
                 break;
             case ast::call::mode::thread:
-                emit_opcode(opcode::OP_ScriptFarMethodThreadCall, { argcount, expr->path->value, expr->name->value });
+                emit_opcode(opcode::OP_ScriptFarMethodThreadCall, { expr->path->value, expr->name->value, argcount });
                 break;
             case ast::call::mode::childthread:
-                emit_opcode(opcode::OP_ScriptFarMethodChildThreadCall, { argcount, expr->path->value, expr->name->value });
+                emit_opcode(opcode::OP_ScriptFarMethodChildThreadCall, { expr->path->value, expr->name->value, argcount });
                 break;
             case ast::call::mode::builtin:
                 // no far builtins
@@ -1510,7 +1510,7 @@ void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, co
             case 0:
                 emit_opcode(opcode::OP_CallBuiltinMethod0, expr->name->value);
                 break;
-            case 1: 
+            case 1:
                 emit_opcode(opcode::OP_CallBuiltinMethod1, expr->name->value);
                 break;
             case 2:
@@ -1526,7 +1526,7 @@ void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, co
                 emit_opcode(opcode::OP_CallBuiltinMethod5, expr->name->value);
                 break;
             default:
-                emit_opcode(opcode::OP_CallBuiltinMethod, { argcount, expr->name->value });
+                emit_opcode(opcode::OP_CallBuiltinMethod, { expr->name->value, argcount });
                 break;
         }
     }
@@ -1548,7 +1548,7 @@ void compiler::emit_expr_parameters(const ast::expr_parameters::ptr& expr, const
     for (const auto& entry : expr->list)
     {
         initialize_variable(entry, blk);
-        emit_opcode(opcode::OP_SafeCreateVariableFieldCached, variable_create_index(entry, blk));     
+        emit_opcode(opcode::OP_SafeCreateVariableFieldCached, variable_create_index(entry, blk));
     }
 
     emit_opcode(opcode::OP_checkclearparams);
@@ -1624,7 +1624,7 @@ void compiler::emit_expr_array_ref(const ast::expr_array::ptr& expr, const block
         case ast::kind::expr_array:
         case ast::kind::expr_field:
             emit_expr_variable_ref(expr->obj, blk, false);
-            emit_opcode(opcode::OP_EvalArrayRef);      
+            emit_opcode(opcode::OP_EvalArrayRef);
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case ast::kind::expr_identifier:
@@ -1791,7 +1791,7 @@ void compiler::emit_expr_field(const ast::expr_field::ptr& expr, const block::pt
         case ast::kind::expr_array:
             emit_expr_array(expr->obj.as_array, blk);
             emit_opcode(opcode::OP_CastFieldObject);
-            emit_opcode(opcode::OP_EvalFieldVariable, field);  
+            emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         case ast::kind::expr_field:
             emit_expr_field(expr->obj.as_field, blk);
@@ -2082,7 +2082,7 @@ void compiler::emit_remove_local_vars(const block::ptr& blk)
 void compiler::emit_opcode(opcode op)
 {
     function_->instructions.push_back(std::make_unique<instruction>());
-    
+
     auto& inst = function_->instructions.back();
     inst->opcode = static_cast<std::uint8_t>(op);
     inst->size = opcode_size(std::uint8_t(op));
@@ -2094,7 +2094,7 @@ void compiler::emit_opcode(opcode op)
 void compiler::emit_opcode(opcode op, const std::string& data)
 {
     function_->instructions.push_back(std::make_unique<instruction>());
-    
+
     auto& inst = function_->instructions.back();
     inst->opcode = static_cast<std::uint8_t>(op);
     inst->size = opcode_size(std::uint8_t(op));
@@ -2107,7 +2107,7 @@ void compiler::emit_opcode(opcode op, const std::string& data)
 void compiler::emit_opcode(opcode op, const std::vector<std::string>& data)
 {
     function_->instructions.push_back(std::make_unique<instruction>());
-    
+
     auto& inst = function_->instructions.back();
     inst->opcode = static_cast<std::uint8_t>(op);
     inst->size = opcode_size(std::uint8_t(op));
@@ -2224,7 +2224,7 @@ void compiler::process_stmt_expr(const ast::stmt_expr::ptr& stmt, const block::p
             throw comp_error(stmt->loc(), "unknown expr statement expression");
     }
 }
-    
+
 void compiler::process_stmt_assign(const ast::stmt_assign::ptr& stmt, const block::ptr& blk)
 {
     switch (stmt->expr.kind())
@@ -2261,7 +2261,7 @@ void compiler::process_stmt_waittill(const ast::stmt_waittill::ptr& stmt, const 
         {
             throw comp_error(entry.loc(), "illegal waittill param, must be a local variable");
         }
-    
+
         register_variable(entry.as_identifier->value, blk);
     }
 }
@@ -2304,7 +2304,7 @@ void compiler::process_stmt_ifelse(const ast::stmt_ifelse::ptr& stmt, const bloc
         if (abort == abort_t::abort_none)
             childs.push_back(stmt->blk_else.get());
     }
-    
+
     if (blk->abort == abort_t::abort_none)
         blk->abort = abort;
 
@@ -2434,7 +2434,7 @@ void compiler::process_stmt_foreach(const ast::stmt_foreach::ptr& stmt, const bl
     // calculate stmt variables & add missing array access as first stmt
     process_expr(stmt->value_expr, stmt->ctx);
     process_stmt(stmt->stmt, stmt->ctx);
-    
+
     continue_blks_.push_back(stmt->ctx.get());
 
     for (auto i = 0; i < continue_blks_.size(); i++)
@@ -2706,7 +2706,7 @@ auto compiler::variable_stack_index(const ast::expr_identifier::ptr& name, const
             }
 
             throw comp_error(name->loc(), "local variable '" + name->value + "' not initialized.");
-        }   
+        }
     }
 
     throw comp_error(name->loc(), "local variable '" + name->value + "' not found.");
@@ -2735,7 +2735,7 @@ auto compiler::variable_access_index(const ast::expr_identifier::ptr& name, cons
             }
 
             throw comp_error(name->loc(), "local variable '" + name->value + "' not initialized.");
-        }   
+        }
     }
 
     throw comp_error(name->loc(), "local variable '" + name->value + "' not found.");

@@ -16,7 +16,7 @@ auto asset::serialize() -> std::vector<std::uint8_t>
     std::memset(data.data(), 0, data.size());
 
     auto pos = 0u;
-    
+
     std::memcpy(&data[pos], name.data(), name.size() + 1);
     pos += name.size() + 1;
 

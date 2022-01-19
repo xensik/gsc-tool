@@ -555,8 +555,8 @@ static void yynoreturn yy_fatal_error ( const char* msg , yyscan_t yyscanner );
 	yyg->yy_hold_char = *yy_cp; \
 	*yy_cp = '\0'; \
 	yyg->yy_c_buf_p = yy_cp;
-#define YY_NUM_RULES 110
-#define YY_END_OF_BUFFER 111
+#define YY_NUM_RULES 111
+#define YY_END_OF_BUFFER 112
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -566,24 +566,24 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[328] =
     {   0,
-        0,    0,    0,    0,    0,    0,    0,    0,  111,  109,
-        1,    2,   94,  109,  109,   93,   97,  109,   54,   55,
-       91,   89,   60,   90,   61,   92,  108,  108,   63,   64,
+        0,    0,    0,    0,    0,    0,    0,    0,  112,  110,
+        1,    2,   94,  110,  110,   93,   97,  110,   54,   55,
+       91,   89,   60,   90,   61,   92,  109,  109,   63,   64,
        78,   88,   79,   65,  100,   58,   59,   98,  100,  100,
       100,  100,  100,  100,  100,  100,  100,  100,  100,  100,
       100,  100,  100,  100,   56,   96,   57,   95,    5,    6,
-        5,   12,   13,   12,  109,   91,   92,   75,    0,  102,
+        5,   12,   13,   12,  110,   91,   92,   75,    0,  102,
         0,   15,    0,    0,    0,    0,   84,    0,   73,    0,
-       86,    0,    0,    8,   82,   66,   80,   67,   81,  104,
-        0,   11,    4,    3,   83,  104,  108,  105,    0,    0,
+       86,    0,    0,    8,   82,   66,   80,   67,   81,  105,
+        0,   11,    4,    3,   83,  105,  109,  106,    0,    0,
 
         0,    0,   62,   70,   76,   74,   77,   71,  100,   87,
       100,  100,  100,  100,  100,  100,   28,  100,  100,  100,
       100,  100,   26,   32,  100,  100,  100,  100,  100,  100,
       100,  100,  100,  100,  100,   85,   72,    7,   14,   10,
         9,    0,  102,    0,    0,    0,    0,    0,    0,  101,
-        0,    0,    0,    0,  102,    0,  104,    0,    3,  104,
-      104,  105,  106,  107,   99,   68,   69,  100,  100,  100,
+        0,    0,    0,    0,  102,    0,  105,    0,    3,  105,
+      105,  106,  107,  108,   99,   68,   69,  100,  100,  100,
       100,  100,  100,  100,  100,  100,  100,   30,  100,  100,
       100,  100,  100,  100,  100,  100,  100,  100,  100,  100,
       100,  103,    0,    0,    0,    0,    0,  101,    0,    0,
@@ -594,7 +594,7 @@ static const flex_int16_t yy_accept[328] =
         0,    0,   49,   36,  100,  100,  100,   20,   47,  100,
        53,  100,  100,  100,  100,  100,  100,  100,  100,   29,
         0,    0,    0,    0,    0,  100,  100,  100,  100,  100,
-       21,  100,  100,   38,   33,  100,   42,  100,  100,  103,
+       21,  100,  100,   38,   33,  100,   42,  100,  100,  104,
         0,    0,   16,    0,  100,  100,  100,   35,   31,  100,
       100,  100,  100,  100,    0,   17,    0,  100,  100,   37,
       100,   41,  100,  100,   23,   19,    0,  100,  100,  100,
@@ -1188,11 +1188,11 @@ YY_DECL
 		}
 
 	{
-#line 43 "lexer.lpp"
+#line 44 "lexer.lpp"
 
 
 
-#line 47 "lexer.lpp"
+#line 48 "lexer.lpp"
     ctx->loc.step();
 
 
@@ -1251,577 +1251,582 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 50 "lexer.lpp"
+#line 51 "lexer.lpp"
 { ctx->loc.step(); }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 51 "lexer.lpp"
+#line 52 "lexer.lpp"
 { ctx->loc.lines(yyleng); ctx->loc.step(); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 53 "lexer.lpp"
+#line 54 "lexer.lpp"
 
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 55 "lexer.lpp"
+#line 56 "lexer.lpp"
 { BEGIN(COMMENT_STATE); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 56 "lexer.lpp"
+#line 57 "lexer.lpp"
 
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 57 "lexer.lpp"
+#line 58 "lexer.lpp"
 { ctx->loc.lines(yyleng); ctx->loc.step(); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 58 "lexer.lpp"
+#line 59 "lexer.lpp"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case YY_STATE_EOF(COMMENT_STATE):
-#line 59 "lexer.lpp"
+#line 60 "lexer.lpp"
 { throw iw7::parser::syntax_error(ctx->loc, "unmatched multiline comment start ('/*')"); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 60 "lexer.lpp"
+#line 61 "lexer.lpp"
 { throw iw7::parser::syntax_error(ctx->loc, "unmatched multiline comment end ('*/')"); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 62 "lexer.lpp"
+#line 63 "lexer.lpp"
 { throw iw7::parser::syntax_error(ctx->loc, "cannot recurse devblock ('/#')"); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 63 "lexer.lpp"
+#line 64 "lexer.lpp"
 { BEGIN(INITIAL); return iw7::parser::make_DEVEND(ctx->loc); }
 	YY_BREAK
 case YY_STATE_EOF(DEV_ON_STATE):
-#line 64 "lexer.lpp"
+#line 65 "lexer.lpp"
 { throw iw7::parser::syntax_error(ctx->loc, "unmatched devblock start ('/#')"); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 66 "lexer.lpp"
+#line 67 "lexer.lpp"
 { BEGIN(ctx->mode == xsk::gsc::build::dev ? DEV_ON_STATE : DEV_OFF_STATE); if(ctx->mode == xsk::gsc::build::dev) return iw7::parser::make_DEVBEGIN(ctx->loc); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 67 "lexer.lpp"
+#line 68 "lexer.lpp"
 
 	YY_BREAK
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
-#line 68 "lexer.lpp"
+#line 69 "lexer.lpp"
 { ctx->loc.lines(yyleng); ctx->loc.step(); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 69 "lexer.lpp"
+#line 70 "lexer.lpp"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case YY_STATE_EOF(DEV_OFF_STATE):
-#line 70 "lexer.lpp"
+#line 71 "lexer.lpp"
 { throw iw7::parser::syntax_error(ctx->loc, "unmatched devblock start ('/#')"); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 71 "lexer.lpp"
+#line 72 "lexer.lpp"
 { throw iw7::parser::syntax_error(ctx->loc, "unmatched devblock end ('#/')"); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 73 "lexer.lpp"
+#line 74 "lexer.lpp"
 { return iw7::parser::make_INLINE(ctx->loc); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 74 "lexer.lpp"
+#line 75 "lexer.lpp"
 { return iw7::parser::make_INCLUDE(ctx->loc); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 75 "lexer.lpp"
+#line 76 "lexer.lpp"
 { return iw7::parser::make_USINGTREE(ctx->loc); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 76 "lexer.lpp"
+#line 77 "lexer.lpp"
 { return iw7::parser::make_ANIMTREE(ctx->loc); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 77 "lexer.lpp"
+#line 78 "lexer.lpp"
 { return iw7::parser::make_ENDON(ctx->loc); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 78 "lexer.lpp"
+#line 79 "lexer.lpp"
 { return iw7::parser::make_NOTIFY(ctx->loc); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 79 "lexer.lpp"
+#line 80 "lexer.lpp"
 { return iw7::parser::make_WAIT(ctx->loc); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 80 "lexer.lpp"
+#line 81 "lexer.lpp"
 { return iw7::parser::make_WAITTILL(ctx->loc); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 81 "lexer.lpp"
+#line 82 "lexer.lpp"
 { return iw7::parser::make_WAITTILLMATCH(ctx->loc); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 82 "lexer.lpp"
+#line 83 "lexer.lpp"
 { return iw7::parser::make_WAITTILLFRAMEEND(ctx->loc); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 83 "lexer.lpp"
+#line 84 "lexer.lpp"
 { return iw7::parser::make_IF(ctx->loc); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 84 "lexer.lpp"
+#line 85 "lexer.lpp"
 { return iw7::parser::make_ELSE(ctx->loc); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 85 "lexer.lpp"
+#line 86 "lexer.lpp"
 { return iw7::parser::make_DO(ctx->loc); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 86 "lexer.lpp"
+#line 87 "lexer.lpp"
 { return iw7::parser::make_WHILE(ctx->loc); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 87 "lexer.lpp"
+#line 88 "lexer.lpp"
 { return iw7::parser::make_FOR(ctx->loc); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 88 "lexer.lpp"
+#line 89 "lexer.lpp"
 { return iw7::parser::make_FOREACH(ctx->loc); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 89 "lexer.lpp"
+#line 90 "lexer.lpp"
 { return iw7::parser::make_IN(ctx->loc); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 90 "lexer.lpp"
+#line 91 "lexer.lpp"
 { return iw7::parser::make_SWITCH(ctx->loc); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 91 "lexer.lpp"
+#line 92 "lexer.lpp"
 { return iw7::parser::make_CASE(ctx->loc); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 92 "lexer.lpp"
+#line 93 "lexer.lpp"
 { return iw7::parser::make_DEFAULT(ctx->loc); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 93 "lexer.lpp"
+#line 94 "lexer.lpp"
 { return iw7::parser::make_BREAK(ctx->loc); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 94 "lexer.lpp"
+#line 95 "lexer.lpp"
 { return iw7::parser::make_CONTINUE(ctx->loc); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 95 "lexer.lpp"
+#line 96 "lexer.lpp"
 { return iw7::parser::make_RETURN(ctx->loc); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 96 "lexer.lpp"
+#line 97 "lexer.lpp"
 { return iw7::parser::make_BREAKPOINT(ctx->loc); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 97 "lexer.lpp"
+#line 98 "lexer.lpp"
 { return iw7::parser::make_PROFBEGIN(ctx->loc); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 98 "lexer.lpp"
+#line 99 "lexer.lpp"
 { return iw7::parser::make_PROFEND(ctx->loc); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 99 "lexer.lpp"
+#line 100 "lexer.lpp"
 { return iw7::parser::make_THREAD(ctx->loc); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 100 "lexer.lpp"
+#line 101 "lexer.lpp"
 { return iw7::parser::make_CHILDTHREAD(ctx->loc); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 101 "lexer.lpp"
+#line 102 "lexer.lpp"
 { return iw7::parser::make_THISTHREAD(ctx->loc); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 102 "lexer.lpp"
+#line 103 "lexer.lpp"
 { return iw7::parser::make_CALL(ctx->loc); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 103 "lexer.lpp"
+#line 104 "lexer.lpp"
 { return iw7::parser::make_TRUE(ctx->loc); }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 104 "lexer.lpp"
+#line 105 "lexer.lpp"
 { return iw7::parser::make_FALSE(ctx->loc); }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 105 "lexer.lpp"
+#line 106 "lexer.lpp"
 { return iw7::parser::make_UNDEFINED(ctx->loc); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 106 "lexer.lpp"
+#line 107 "lexer.lpp"
 { return iw7::parser::make_SIZE(ctx->loc); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 107 "lexer.lpp"
+#line 108 "lexer.lpp"
 { return iw7::parser::make_GAME(ctx->loc); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 108 "lexer.lpp"
+#line 109 "lexer.lpp"
 { return iw7::parser::make_SELF(ctx->loc); }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 109 "lexer.lpp"
+#line 110 "lexer.lpp"
 { return iw7::parser::make_ANIM(ctx->loc); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 110 "lexer.lpp"
+#line 111 "lexer.lpp"
 { return iw7::parser::make_LEVEL(ctx->loc); }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 111 "lexer.lpp"
+#line 112 "lexer.lpp"
 { return iw7::parser::make_LPAREN(ctx->loc); }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 112 "lexer.lpp"
+#line 113 "lexer.lpp"
 { return iw7::parser::make_RPAREN(ctx->loc); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 113 "lexer.lpp"
+#line 114 "lexer.lpp"
 { return iw7::parser::make_LBRACE(ctx->loc); }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 114 "lexer.lpp"
+#line 115 "lexer.lpp"
 { return iw7::parser::make_RBRACE(ctx->loc); }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 115 "lexer.lpp"
+#line 116 "lexer.lpp"
 { return iw7::parser::make_LBRACKET(ctx->loc); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 116 "lexer.lpp"
+#line 117 "lexer.lpp"
 { return iw7::parser::make_RBRACKET(ctx->loc); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 117 "lexer.lpp"
+#line 118 "lexer.lpp"
 { return iw7::parser::make_COMMA(ctx->loc); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 118 "lexer.lpp"
+#line 119 "lexer.lpp"
 { return iw7::parser::make_DOT(ctx->loc); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 119 "lexer.lpp"
+#line 120 "lexer.lpp"
 { return iw7::parser::make_DOUBLECOLON(ctx->loc); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 120 "lexer.lpp"
+#line 121 "lexer.lpp"
 { return iw7::parser::make_COLON(ctx->loc); }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 121 "lexer.lpp"
+#line 122 "lexer.lpp"
 { return iw7::parser::make_SEMICOLON(ctx->loc); }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 122 "lexer.lpp"
+#line 123 "lexer.lpp"
 { return iw7::parser::make_QMARK(ctx->loc); }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 123 "lexer.lpp"
+#line 124 "lexer.lpp"
 { return iw7::parser::make_INCREMENT(ctx->loc); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 124 "lexer.lpp"
+#line 125 "lexer.lpp"
 { return iw7::parser::make_DECREMENT(ctx->loc); }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 125 "lexer.lpp"
+#line 126 "lexer.lpp"
 { return iw7::parser::make_ASSIGN_LSHIFT(ctx->loc); }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 126 "lexer.lpp"
+#line 127 "lexer.lpp"
 { return iw7::parser::make_ASSIGN_RSHIFT(ctx->loc); }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 127 "lexer.lpp"
+#line 128 "lexer.lpp"
 { return iw7::parser::make_LSHIFT(ctx->loc); }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 128 "lexer.lpp"
+#line 129 "lexer.lpp"
 { return iw7::parser::make_RSHIFT(ctx->loc); }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 129 "lexer.lpp"
+#line 130 "lexer.lpp"
 { return iw7::parser::make_OR(ctx->loc); }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 130 "lexer.lpp"
+#line 131 "lexer.lpp"
 { return iw7::parser::make_AND(ctx->loc); }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 131 "lexer.lpp"
+#line 132 "lexer.lpp"
 { return iw7::parser::make_EQUALITY(ctx->loc); }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 132 "lexer.lpp"
+#line 133 "lexer.lpp"
 { return iw7::parser::make_INEQUALITY(ctx->loc); }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 133 "lexer.lpp"
+#line 134 "lexer.lpp"
 { return iw7::parser::make_LESS_EQUAL(ctx->loc); }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 134 "lexer.lpp"
+#line 135 "lexer.lpp"
 { return iw7::parser::make_GREATER_EQUAL(ctx->loc); }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 135 "lexer.lpp"
+#line 136 "lexer.lpp"
 { return iw7::parser::make_LESS(ctx->loc); }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 136 "lexer.lpp"
+#line 137 "lexer.lpp"
 { return iw7::parser::make_GREATER(ctx->loc); }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 137 "lexer.lpp"
+#line 138 "lexer.lpp"
 { return iw7::parser::make_ASSIGN_ADD(ctx->loc); }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 138 "lexer.lpp"
+#line 139 "lexer.lpp"
 { return iw7::parser::make_ASSIGN_SUB(ctx->loc); }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 139 "lexer.lpp"
+#line 140 "lexer.lpp"
 { return iw7::parser::make_ASSIGN_MUL(ctx->loc); }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 140 "lexer.lpp"
+#line 141 "lexer.lpp"
 { return iw7::parser::make_ASSIGN_DIV(ctx->loc); }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 141 "lexer.lpp"
+#line 142 "lexer.lpp"
 { return iw7::parser::make_ASSIGN_MOD(ctx->loc); }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 142 "lexer.lpp"
+#line 143 "lexer.lpp"
 { return iw7::parser::make_ASSIGN_BW_OR(ctx->loc); }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 143 "lexer.lpp"
+#line 144 "lexer.lpp"
 { return iw7::parser::make_ASSIGN_BW_AND(ctx->loc); }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 144 "lexer.lpp"
+#line 145 "lexer.lpp"
 { return iw7::parser::make_ASSIGN_BW_EXOR(ctx->loc); }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 145 "lexer.lpp"
+#line 146 "lexer.lpp"
 { return iw7::parser::make_ASSIGN(ctx->loc); }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 146 "lexer.lpp"
+#line 147 "lexer.lpp"
 { return iw7::parser::make_ADD(ctx->loc); }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 147 "lexer.lpp"
+#line 148 "lexer.lpp"
 { return iw7::parser::make_SUB(ctx->loc); }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 148 "lexer.lpp"
+#line 149 "lexer.lpp"
 { return iw7::parser::make_MUL(ctx->loc); }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 149 "lexer.lpp"
+#line 150 "lexer.lpp"
 { return iw7::parser::make_DIV(ctx->loc); }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 150 "lexer.lpp"
+#line 151 "lexer.lpp"
 { return iw7::parser::make_MOD(ctx->loc); }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 151 "lexer.lpp"
+#line 152 "lexer.lpp"
 { return iw7::parser::make_NOT(ctx->loc); }
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 152 "lexer.lpp"
+#line 153 "lexer.lpp"
 { return iw7::parser::make_COMPLEMENT(ctx->loc); }
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 153 "lexer.lpp"
+#line 154 "lexer.lpp"
 { return iw7::parser::make_BITWISE_OR(ctx->loc); }
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 154 "lexer.lpp"
+#line 155 "lexer.lpp"
 { return iw7::parser::make_BITWISE_AND(ctx->loc); }
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 155 "lexer.lpp"
+#line 156 "lexer.lpp"
 { return iw7::parser::make_BITWISE_EXOR(ctx->loc); }
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 156 "lexer.lpp"
-{ return iw7::parser::make_PATH(xsk::utils::string::fordslash(yytext), ctx->loc); }
+#line 157 "lexer.lpp"
+{ return iw7::parser::make_PATH(xsk::gsc::iw7::resolver::make_token(std::string_view(yytext, yyleng)), ctx->loc); }
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 157 "lexer.lpp"
-{ return iw7::parser::make_IDENTIFIER((std::string(yytext, 3) == "_ID") ? std::string(yytext) : xsk::utils::string::to_lower(yytext), ctx->loc); }
+#line 158 "lexer.lpp"
+{ return iw7::parser::make_IDENTIFIER(xsk::gsc::iw7::resolver::make_token(std::string_view(yytext, yyleng)), ctx->loc); }
 	YY_BREAK
 case 101:
 /* rule 101 can match eol */
 YY_RULE_SETUP
-#line 158 "lexer.lpp"
-{ return iw7::parser::make_ISTRING(std::string(yytext).substr(1), ctx->loc); }
+#line 159 "lexer.lpp"
+{ return iw7::parser::make_ISTRING(std::string(++yytext, --yyleng), ctx->loc); }
 	YY_BREAK
 case 102:
 /* rule 102 can match eol */
 YY_RULE_SETUP
-#line 159 "lexer.lpp"
+#line 160 "lexer.lpp"
 { return iw7::parser::make_STRING(std::string(yytext), ctx->loc); }
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 160 "lexer.lpp"
-{ return iw7::parser::make_COLOR(std::string(yytext).substr(1), ctx->loc); }
+#line 161 "lexer.lpp"
+{ return iw7::parser::make_COLOR(std::string(++yytext, --yyleng), ctx->loc); }
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 161 "lexer.lpp"
-{ return iw7::parser::make_FLOAT(std::string(yytext), ctx->loc); }
+#line 162 "lexer.lpp"
+{ return iw7::parser::make_COLOR(std::string(++yytext, --yyleng), ctx->loc); }
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 162 "lexer.lpp"
-{ return iw7::parser::make_INT_OCT(xsk::utils::string::oct_to_dec(yytext), ctx->loc); }
+#line 163 "lexer.lpp"
+{ return iw7::parser::make_FLOAT(std::string(yytext), ctx->loc); }
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 163 "lexer.lpp"
-{ return iw7::parser::make_INT_BIN(xsk::utils::string::bin_to_dec(yytext), ctx->loc); }
+#line 164 "lexer.lpp"
+{ return iw7::parser::make_INTEGER(xsk::utils::string::oct_to_dec(yytext), ctx->loc); }
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 164 "lexer.lpp"
-{ return iw7::parser::make_INT_HEX(xsk::utils::string::hex_to_dec(yytext), ctx->loc); }
+#line 165 "lexer.lpp"
+{ return iw7::parser::make_INTEGER(xsk::utils::string::bin_to_dec(yytext), ctx->loc); }
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 165 "lexer.lpp"
-{ return iw7::parser::make_INT_DEC(std::string(yytext), ctx->loc); }
-	YY_BREAK
-case YY_STATE_EOF(INITIAL):
 #line 166 "lexer.lpp"
-{ if(ctx->header_top > 0) iw7_pop_header(ctx); else return iw7::parser::make_IW7EOF(ctx->loc); }
+{ return iw7::parser::make_INTEGER(xsk::utils::string::hex_to_dec(yytext), ctx->loc); }
 	YY_BREAK
 case 109:
-/* rule 109 can match eol */
 YY_RULE_SETUP
 #line 167 "lexer.lpp"
-{ throw iw7::parser::syntax_error(ctx->loc, "bad token: \'" + std::string(yytext) + "\'"); }
+{ return iw7::parser::make_INTEGER(std::string(yytext), ctx->loc); }
+	YY_BREAK
+case YY_STATE_EOF(INITIAL):
+#line 168 "lexer.lpp"
+{ if(ctx->header_top > 0) iw7_pop_header(ctx); else return iw7::parser::make_IW7EOF(ctx->loc); }
 	YY_BREAK
 case 110:
+/* rule 110 can match eol */
 YY_RULE_SETUP
 #line 169 "lexer.lpp"
+{ throw iw7::parser::syntax_error(ctx->loc, "bad token: \'" + std::string(yytext) + "\'"); }
+	YY_BREAK
+case 111:
+YY_RULE_SETUP
+#line 171 "lexer.lpp"
 ECHO;
 	YY_BREAK
-#line 1824 "lexer.cpp"
+#line 1829 "lexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2951,65 +2956,65 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 169 "lexer.lpp"
+#line 171 "lexer.lpp"
 
 
 void iw7_push_header(xsk::gsc::context* ctx, const std::string& file)
 {
-	try
+    try
     {
-		if (ctx->header_top >= 4)
-		{
-			throw xsk::gsc::error("maximum gsh depth exceeded '4'");
-		}
+        if (ctx->header_top >= 4)
+        {
+            throw xsk::gsc::error("maximum gsh depth exceeded '4'");
+        }
 
-		ctx->header_top++;
+        ctx->header_top++;
 
-		char* buf_data = 0;
-		size_t buf_size = 0;
+        char* buf_data = 0;
+        size_t buf_size = 0;
 
-		for (auto& src : *ctx->sources)
-		{
-			if (src.name == file)
-			{
-				buf_data = reinterpret_cast<char*>(src.buf.data());
-				buf_size = src.buf.size();
+        for (auto& src : *ctx->sources)
+        {
+            if (src.name == file)
+            {
+                buf_data = reinterpret_cast<char*>(src.buf.data());
+                buf_size = src.buf.size();
 
-				ctx->locs.push(ctx->loc);
-				ctx->loc.initialize(&src.name);
-			}
-		}
+                ctx->locs.push(ctx->loc);
+                ctx->loc.initialize(&src.name);
+            }
+        }
 
-		if (buf_data == 0)
-		{
-			ctx->sources->push_back(xsk::gsc::source());
-			auto& source = ctx->sources->back();
-			source.name = file;
-			source.buf = ctx->read_callback(file + ".gsh");
-			source.buf.push_back(0);
-			source.buf.push_back(0);
+        if (buf_data == 0)
+        {
+            ctx->sources->push_back(xsk::gsc::source());
+            auto& source = ctx->sources->back();
+            source.name = file;
+            source.buf = ctx->read_callback(file + ".gsh");
+            source.buf.push_back(0);
+            source.buf.push_back(0);
 
-			buf_data = reinterpret_cast<char*>(source.buf.data());
-			buf_size = source.buf.size();
+            buf_data = reinterpret_cast<char*>(source.buf.data());
+            buf_size = source.buf.size();
 
-			ctx->locs.push(ctx->loc);
-			ctx->loc.initialize(&source.name);
-		}
+            ctx->locs.push(ctx->loc);
+            ctx->loc.initialize(&source.name);
+        }
 
-		auto state = new yy_buffer_state();
-		state->yy_buf_size = buf_size - 2;
-		state->yy_buf_pos = state->yy_ch_buf = buf_data;
-		state->yy_is_our_buffer = 0;
-		state->yy_input_file = NULL;
-		state->yy_n_chars = state->yy_buf_size;
-		state->yy_is_interactive = 0;
-		state->yy_at_bol = 1;
-		state->yy_fill_buffer = 0;
-		state->yy_buffer_status = 0;
+        auto state = new yy_buffer_state();
+        state->yy_buf_size = buf_size - 2;
+        state->yy_buf_pos = state->yy_ch_buf = buf_data;
+        state->yy_is_our_buffer = 0;
+        state->yy_input_file = NULL;
+        state->yy_n_chars = state->yy_buf_size;
+        state->yy_is_interactive = 0;
+        state->yy_at_bol = 1;
+        state->yy_fill_buffer = 0;
+        state->yy_buffer_status = 0;
 
-		yypush_buffer_state(state, ctx->scanner);
-	}
-	catch (const std::exception& e)
+        yypush_buffer_state(state, ctx->scanner);
+    }
+    catch (const std::exception& e)
     {
         throw xsk::gsc::error("parsing header file '" + file + "': " + e.what());
     }
@@ -3017,9 +3022,9 @@ void iw7_push_header(xsk::gsc::context* ctx, const std::string& file)
 
 void iw7_pop_header(xsk::gsc::context* ctx)
 {
-	ctx->header_top--;
-	ctx->loc = ctx->locs.top();
-	ctx->locs.pop();
-	yypop_buffer_state(ctx->scanner);
+    ctx->header_top--;
+    ctx->loc = ctx->locs.top();
+    ctx->locs.pop();
+    yypop_buffer_state(ctx->scanner);
 }
 

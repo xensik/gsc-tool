@@ -29,9 +29,9 @@ void decompiler::decompile(const std::string& file, std::vector<function::ptr>& 
     filename_ = file;
     program_ = std::make_unique<ast::program>();
 
-    for (auto& func : funcs)
+    for (const auto& func : funcs)
     {
-        auto name = std::make_unique<ast::expr_identifier>(func->name.substr(4));
+        auto name = std::make_unique<ast::expr_identifier>(func->name);
         auto params = std::make_unique<ast::expr_parameters>();
         auto block = std::make_unique<ast::stmt_list>();
         func_ = std::make_unique<ast::decl_thread>(std::move(name), std::move(params), std::move(block));
@@ -52,9 +52,9 @@ void decompiler::decompile(const std::string& file, std::vector<function::ptr>& 
 
 void decompiler::decompile_function(const function::ptr& func)
 {
-    bool in_waittill_ = false;
+    in_waittill_ = false;
 
-    for (auto& inst : func->instructions)
+    for (const auto& inst : func->instructions)
     {
         decompile_instruction(inst);
     }
@@ -64,7 +64,7 @@ void decompiler::decompile_function(const function::ptr& func)
         throw decomp_error("stack isn't emty at function end");
     }
 
-    auto& stmt = func_->stmt;
+    const auto& stmt = func_->stmt;
 
     block blk;
     blk.loc_end = utils::string::va("loc_%X", stmt->list.back().as_node->loc().begin.line);
@@ -114,7 +114,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             stack_.push(std::move(node));
         }
             break;
-        case opcode::OP_GetByte:		
+        case opcode::OP_GetByte:
         case opcode::OP_GetUnsignedShort:
         case opcode::OP_GetInteger:
         {
@@ -244,14 +244,14 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_GetLocalFunction:
         {
             auto path = std::make_unique<ast::expr_path>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0].substr(4));
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto node = std::make_unique<ast::expr_reference>(loc, std::move(path), std::move(name));
             stack_.push(std::move(node));
         }
             break;
         case opcode::OP_GetFarFunction:
         {
-            auto path = std::make_unique<ast::expr_path>(loc, utils::string::backslash(inst->data[0]));
+            auto path = std::make_unique<ast::expr_path>(loc, inst->data[0]);
             auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
             auto node = std::make_unique<ast::expr_reference>(loc, std::move(path), std::move(name));
             stack_.push(std::move(node));
@@ -348,7 +348,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             auto key = ast::expr(std::move(stack_.top())); stack_.pop();
             auto obj = ast::expr(std::make_unique<ast::asm_access>(loc, "0"));
             auto node = std::make_unique<ast::expr_array>(key.loc(), std::move(obj), std::move(key));
-            stack_.push(std::move(node));	
+            stack_.push(std::move(node));
         }
             break;
         case opcode::OP_EvalLocalArrayRefCached:
@@ -411,8 +411,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptLocalFunctionCall2:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0].substr(4));
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto call = ast::call(std::make_unique<ast::expr_function>(loc, std::move(path), std::move(name), std::move(args), ast::call::mode::normal));
             auto node = std::make_unique<ast::expr_call>(loc, std::move(call));
             stack_.push(std::move(node));
@@ -421,8 +421,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptLocalFunctionCall:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0].substr(4));
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             auto var = std::move(stack_.top());
             stack_.pop();
@@ -447,8 +447,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             loc = obj.loc();
 
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0].substr(4));
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             auto var = std::move(stack_.top()); stack_.pop();
             loc = var->loc();
@@ -468,8 +468,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptLocalThreadCall:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0].substr(4));
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = std::stoul(inst->data[1]); i > 0; i--)
             {
@@ -487,8 +487,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptLocalChildThreadCall:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0].substr(4));
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = std::stoul(inst->data[1]); i > 0; i--)
             {
@@ -508,8 +508,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             loc = obj.loc();
 
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0].substr(4));
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = std::stoul(inst->data[1]); i > 0; i--)
             {
@@ -529,8 +529,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             loc = obj.loc();
 
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0].substr(4));
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = std::stoul(inst->data[1]); i > 0; i--)
             {
@@ -547,8 +547,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptFarFunctionCall2:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
+            auto path = std::make_unique<ast::expr_path>(loc, inst->data[0]);
             auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
-            auto path = std::make_unique<ast::expr_path>(loc, utils::string::backslash(inst->data[0]));
             auto call = ast::call(std::make_unique<ast::expr_function>(loc, std::move(path), std::move(name), std::move(args), ast::call::mode::normal));
             auto node = std::make_unique<ast::expr_call>(loc, std::move(call));
             stack_.push(std::move(node));
@@ -557,8 +557,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptFarFunctionCall:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
+            auto path = std::make_unique<ast::expr_path>(loc, inst->data[0]);
             auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
-            auto path = std::make_unique<ast::expr_path>(loc, utils::string::backslash(inst->data[0]));
 
             auto var = std::move(stack_.top()); stack_.pop();
             loc = var->loc();
@@ -581,8 +581,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             loc = obj.as_node->loc();
 
             auto args = std::make_unique<ast::expr_arguments>(loc);
+            auto path = std::make_unique<ast::expr_path>(loc, inst->data[0]);
             auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
-            auto path = std::make_unique<ast::expr_path>(loc, utils::string::backslash(inst->data[0]));
 
             auto var = std::move(stack_.top()); stack_.pop();
             loc = var->loc();
@@ -602,10 +602,10 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptFarThreadCall:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[2]);
-            auto path = std::make_unique<ast::expr_path>(loc, utils::string::backslash(inst->data[1]));
+            auto path = std::make_unique<ast::expr_path>(loc, inst->data[0]);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
 
-            for (auto i = std::stoul(inst->data[0]); i > 0; i--)
+            for (auto i = std::stoul(inst->data[2]); i > 0; i--)
             {
                 auto var = std::move(stack_.top()); stack_.pop();
                 loc = var->loc();
@@ -620,10 +620,10 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptFarChildThreadCall:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[2]);
-            auto path = std::make_unique<ast::expr_path>(loc, utils::string::backslash(inst->data[1]));
+            auto path = std::make_unique<ast::expr_path>(loc, inst->data[0]);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
 
-            for (auto i = std::stoul(inst->data[0]); i > 0; i--)
+            for (auto i = std::stoul(inst->data[2]); i > 0; i--)
             {
                 auto var = std::move(stack_.top()); stack_.pop();
                 loc = var->loc();
@@ -641,10 +641,10 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             loc = obj.as_node->loc();
 
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[2]);
-            auto path = std::make_unique<ast::expr_path>(loc, utils::string::backslash(inst->data[1]));
+            auto path = std::make_unique<ast::expr_path>(loc, inst->data[0]);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
 
-            for (auto i = std::stoul(inst->data[0]); i > 0; i--)
+            for (auto i = std::stoul(inst->data[2]); i > 0; i--)
             {
                 auto var = std::move(stack_.top()); stack_.pop();
                 loc = var->loc();
@@ -662,10 +662,10 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             loc = obj.as_node->loc();
 
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[2]);
-            auto path = std::make_unique<ast::expr_path>(loc, utils::string::backslash(inst->data[1]));
+            auto path = std::make_unique<ast::expr_path>(loc, inst->data[0]);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
 
-            for (auto i = std::stoul(inst->data[0]); i > 0; i--)
+            for (auto i = std::stoul(inst->data[2]); i > 0; i--)
             {
                 auto var = std::move(stack_.top()); stack_.pop();
                 loc = var->loc();
@@ -830,8 +830,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_CallBuiltin0:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto call = ast::call(std::make_unique<ast::expr_function>(loc, std::move(path), std::move(name), std::move(args), ast::call::mode::builtin));
             auto node = std::make_unique<ast::expr_call>(loc, std::move(call));
             stack_.push(std::move(node));
@@ -840,8 +840,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_CallBuiltin1:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = 1u; i > 0; i--)
             {
@@ -849,7 +849,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
                 loc = var->loc();
                 args->list.push_back(std::move(var));
             }
-            
+
             auto call = ast::call(std::make_unique<ast::expr_function>(loc, std::move(path), std::move(name), std::move(args), ast::call::mode::builtin));
             auto node = std::make_unique<ast::expr_call>(loc, std::move(call));
             stack_.push(std::move(node));
@@ -858,8 +858,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_CallBuiltin2:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = 2u; i > 0; i--)
             {
@@ -867,7 +867,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
                 loc = var->loc();
                 args->list.push_back(std::move(var));
             }
-            
+
             auto call = ast::call(std::make_unique<ast::expr_function>(loc, std::move(path), std::move(name), std::move(args), ast::call::mode::builtin));
             auto node = std::make_unique<ast::expr_call>(loc, std::move(call));
             stack_.push(std::move(node));
@@ -876,8 +876,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_CallBuiltin3:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = 3u; i > 0; i--)
             {
@@ -885,7 +885,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
                 loc = var->loc();
                 args->list.push_back(std::move(var));
             }
-            
+
             auto call = ast::call(std::make_unique<ast::expr_function>(loc, std::move(path), std::move(name), std::move(args), ast::call::mode::builtin));
             auto node = std::make_unique<ast::expr_call>(loc, std::move(call));
             stack_.push(std::move(node));
@@ -894,8 +894,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_CallBuiltin4:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = 4u; i > 0; i--)
             {
@@ -903,7 +903,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
                 loc = var->loc();
                 args->list.push_back(std::move(var));
             }
-            
+
             auto call = ast::call(std::make_unique<ast::expr_function>(loc, std::move(path), std::move(name), std::move(args), ast::call::mode::builtin));
             auto node = std::make_unique<ast::expr_call>(loc, std::move(call));
             stack_.push(std::move(node));
@@ -912,8 +912,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_CallBuiltin5:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = 5u; i > 0; i--)
             {
@@ -921,7 +921,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
                 loc = var->loc();
                 args->list.push_back(std::move(var));
             }
-            
+
             auto call = ast::call(std::make_unique<ast::expr_function>(loc, std::move(path), std::move(name), std::move(args), ast::call::mode::builtin));
             auto node = std::make_unique<ast::expr_call>(loc, std::move(call));
             stack_.push(std::move(node));
@@ -930,10 +930,10 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_CallBuiltin:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
-            for (auto i = std::stoul(inst->data[0]); i > 0; i--)
+            for (auto i = std::stoul(inst->data[1]); i > 0; i--)
             {
                 auto var = std::move(stack_.top()); stack_.pop();
                 loc = var->loc();
@@ -962,8 +962,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         {
             auto obj = ast::expr(std::move(stack_.top())); stack_.pop();
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = 1u; i > 0; i--)
             {
@@ -981,8 +981,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         {
             auto obj = ast::expr(std::move(stack_.top())); stack_.pop();
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = 2u; i > 0; i--)
             {
@@ -1000,8 +1000,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         {
             auto obj = ast::expr(std::move(stack_.top())); stack_.pop();
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = 3u; i > 0; i--)
             {
@@ -1019,8 +1019,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         {
             auto obj = ast::expr(std::move(stack_.top())); stack_.pop();
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = 4u; i > 0; i--)
             {
@@ -1038,8 +1038,8 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         {
             auto obj = ast::expr(std::move(stack_.top())); stack_.pop();
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
 
             for (auto i = 5u; i > 0; i--)
             {
@@ -1056,12 +1056,12 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_CallBuiltinMethod:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
-            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
             auto path = std::make_unique<ast::expr_path>(loc);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
             auto obj = ast::expr(std::move(stack_.top())); stack_.pop();
             loc = obj.as_node->loc();
 
-            for (auto i = std::stoul(inst->data[0]); i > 0; i--)
+            for (auto i = std::stoul(inst->data[1]); i > 0; i--)
             {
                 auto var = std::move(stack_.top()); stack_.pop();
                 loc = var->loc();
@@ -1365,7 +1365,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             auto node = std::make_unique<ast::expr_size>(loc, std::move(lvalue));
             stack_.push(std::move(node));
         }
-            break;		
+            break;
         case opcode::OP_EvalLevelFieldVariable:
         {
             auto obj = ast::expr(std::make_unique<ast::expr_level>(loc));
@@ -1853,7 +1853,7 @@ void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
 
         if(entry == ast::kind::asm_jump_cond)
         {
-            auto j = (entry.as_cond->value == blocks_.back().loc_end) ? (stmt->list.size() - 1) : (find_location_index(stmt, entry.as_cond->value) - 1);            
+            auto j = (entry.as_cond->value == blocks_.back().loc_end) ? (stmt->list.size() - 1) : (find_location_index(stmt, entry.as_cond->value) - 1);
             auto last_loc = blocks_.back().loc_end;
 
             if (stmt->list.at(j) == ast::kind::asm_jump)
@@ -1928,7 +1928,7 @@ void decompiler::decompile_aborts(const ast::stmt_list::ptr& block)
         {
             auto loc = block->list.at(i).loc();
             auto jump_loc = block->list.at(i).as_jump->value;
-    
+
             if (jump_loc == blocks_.back().loc_continue)
             {
                 block->list.erase(block->list.begin() + i);
@@ -2064,7 +2064,7 @@ void decompiler::decompile_last_ifelse(const ast::stmt_list::ptr& stmt, std::uin
 
         end = stmt->list.size() - 1;
         else_blk.loc_end = stmt->list.at(end).loc().label();
-    
+
         auto else_stmt = std::make_unique<ast::stmt_list>(loc);
 
         for (auto i = begin; i < end; i++)
@@ -2171,11 +2171,11 @@ void decompiler::decompile_loop(const ast::stmt_list::ptr& block, std::uint32_t 
                 {
                     decompile_for(block, start, end);
                     return;
-                }	
+                }
             }
         }
     }
-    
+
     decompile_while(block, start, end);
 }
 
@@ -2573,7 +2573,7 @@ void decompiler::process_stmt(const ast::stmt& stmt, const block::ptr& blk)
         {
             auto expr = ast::expr(std::make_unique<ast::asm_create>(stmt.as_asm_create->index));
             process_var_create(expr, blk, true);
-        } 
+        }
             break;
         default:
             break;
@@ -2692,7 +2692,7 @@ void decompiler::process_stmt_waittill(const ast::stmt_waittill::ptr& stmt, cons
 {
     process_expr(stmt->event ,blk);
     process_expr(stmt->obj, blk);
-    
+
     for (auto& entry : stmt->args->list)
     {
         process_expr(entry, blk);
@@ -3083,7 +3083,7 @@ void decompiler::process_expr_decrement(const ast::expr_decrement::ptr& expr, co
 {
     process_expr(expr->lvalue, blk);
 }
-    
+
 void decompiler::process_expr_ternary(const ast::expr_ternary::ptr& expr, const block::ptr& blk)
 {
     process_expr(expr->test, blk);

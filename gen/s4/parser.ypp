@@ -139,10 +139,7 @@ xsk::gsc::s4::parser::symbol_type S4lex(yyscan_t yyscanner, xsk::gsc::context* c
 %token <std::string> ISTRING    "localized string"
 %token <std::string> COLOR      "color"
 %token <std::string> FLOAT      "float"
-%token <std::string> INT_DEC    "int"
-%token <std::string> INT_OCT    "octal int"
-%token <std::string> INT_BIN    "binary int"
-%token <std::string> INT_HEX    "hexadecimal int"
+%token <std::string> INTEGER    "integer"
 
 %type <ast::program::ptr>               program
 %type <ast::include::ptr>               include
@@ -472,7 +469,7 @@ stmt_default
     ;
 
 stmt_break
-    : BREAK SEMICOLON 
+    : BREAK SEMICOLON
         { $$ = std::make_unique<ast::stmt_break>(@$); }
     ;
 
@@ -837,15 +834,9 @@ expr_float
     ;
 
 expr_integer
-    : SUB INT_DEC %prec NEG
+    : SUB INTEGER %prec NEG
         { $$ = std::make_unique<ast::expr_integer>(@$, "-" + $2); };
-    | INT_DEC
-        { $$ = std::make_unique<ast::expr_integer>(@$, $1); };
-    | INT_OCT
-        { $$ = std::make_unique<ast::expr_integer>(@$, $1); };
-    | INT_BIN
-        { $$ = std::make_unique<ast::expr_integer>(@$, $1); };
-    | INT_HEX
+    | INTEGER
         { $$ = std::make_unique<ast::expr_integer>(@$, $1); };
     ;
 

@@ -31,6 +31,8 @@ public:
 
     static void add_function(const std::string& name, std::uint16_t id);
     static void add_method(const std::string& name, std::uint16_t id);
+
+    static auto make_token(std::string_view str) -> std::string;
 };
 
 } // namespace xsk::gsc::iw5

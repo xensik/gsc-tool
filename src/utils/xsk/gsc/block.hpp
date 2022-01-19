@@ -28,7 +28,7 @@ struct block
     abort_t abort;
     bool is_last;
 
-	block();
+    block();
     void transfer(const block::ptr& child);
     void copy(const block::ptr& child);
     void append(const std::vector<block*>& childs);

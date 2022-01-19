@@ -7,7 +7,7 @@
 
 namespace xsk::gsc
 {
-    
+
 class decompiler
 {
 public:

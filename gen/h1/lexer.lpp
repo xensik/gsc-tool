@@ -28,7 +28,8 @@ void h1_pop_header(xsk::gsc::context* ctx);
 RGX_PATH        ([_A-Za-z0-9]+\\)+[_A-Za-z0-9]+
 RGX_IDENTIFIER  [_A-Za-z][_A-Za-z0-9]*
 RGX_STRING      \"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\'
-RGX_COLOR       #([0-9a-fA-F]{6}|[0-9a-fA-F]{3})
+RGX_COLOR_S     #[0-9a-fA-F]{3}
+RGX_COLOR_L     #[0-9a-fA-F]{6}
 RGX_FLT_DEC     [0-9]+\.(?:[0-9]*)?f?|\.[0-9]+f?
 RGX_INT_OCT     0[1-7][0-7]*
 RGX_INT_BIN     0[bB][01]+
@@ -153,16 +154,17 @@ RGX_DEFAULT     (.|\n)
 \|                  { return h1::parser::make_BITWISE_OR(ctx->loc); }
 \&                  { return h1::parser::make_BITWISE_AND(ctx->loc); }
 \^                  { return h1::parser::make_BITWISE_EXOR(ctx->loc); }
-{RGX_PATH}          { return h1::parser::make_PATH(xsk::utils::string::fordslash(yytext), ctx->loc); }
-{RGX_IDENTIFIER}    { return h1::parser::make_IDENTIFIER((std::string(yytext, 3) == "_ID") ? std::string(yytext) : xsk::utils::string::to_lower(yytext), ctx->loc); }
-\&{RGX_STRING}      { return h1::parser::make_ISTRING(std::string(yytext).substr(1), ctx->loc); }
+{RGX_PATH}          { return h1::parser::make_PATH(xsk::gsc::h1::resolver::make_token(std::string_view(yytext, yyleng)), ctx->loc); }
+{RGX_IDENTIFIER}    { return h1::parser::make_IDENTIFIER(xsk::gsc::h1::resolver::make_token(std::string_view(yytext, yyleng)), ctx->loc); }
+\&{RGX_STRING}      { return h1::parser::make_ISTRING(std::string(++yytext, --yyleng), ctx->loc); }
 {RGX_STRING}        { return h1::parser::make_STRING(std::string(yytext), ctx->loc); }
-{RGX_COLOR}         { return h1::parser::make_COLOR(std::string(yytext).substr(1), ctx->loc); }
+{RGX_COLOR_S}       { return h1::parser::make_COLOR(std::string(++yytext, --yyleng), ctx->loc); }
+{RGX_COLOR_L}       { return h1::parser::make_COLOR(std::string(++yytext, --yyleng), ctx->loc); }
 {RGX_FLT_DEC}       { return h1::parser::make_FLOAT(std::string(yytext), ctx->loc); }
-{RGX_INT_OCT}       { return h1::parser::make_INT_OCT(xsk::utils::string::oct_to_dec(yytext), ctx->loc); }
-{RGX_INT_BIN}       { return h1::parser::make_INT_BIN(xsk::utils::string::bin_to_dec(yytext), ctx->loc); }
-{RGX_INT_HEX}       { return h1::parser::make_INT_HEX(xsk::utils::string::hex_to_dec(yytext), ctx->loc); }
-{RGX_INT_DEC}       { return h1::parser::make_INT_DEC(std::string(yytext), ctx->loc); }
+{RGX_INT_OCT}       { return h1::parser::make_INTEGER(xsk::utils::string::oct_to_dec(yytext), ctx->loc); }
+{RGX_INT_BIN}       { return h1::parser::make_INTEGER(xsk::utils::string::bin_to_dec(yytext), ctx->loc); }
+{RGX_INT_HEX}       { return h1::parser::make_INTEGER(xsk::utils::string::hex_to_dec(yytext), ctx->loc); }
+{RGX_INT_DEC}       { return h1::parser::make_INTEGER(std::string(yytext), ctx->loc); }
 <<EOF>>             { if(ctx->header_top > 0) h1_pop_header(ctx); else return h1::parser::make_H1EOF(ctx->loc); }
 <*>{RGX_DEFAULT}    { throw h1::parser::syntax_error(ctx->loc, "bad token: \'" + std::string(yytext) + "\'"); }
 
@@ -170,60 +172,60 @@ RGX_DEFAULT     (.|\n)
 
 void h1_push_header(xsk::gsc::context* ctx, const std::string& file)
 {
-	try
+    try
     {
-		if (ctx->header_top >= 4)
-		{
-			throw xsk::gsc::error("maximum gsh depth exceeded '4'");
-		}
+        if (ctx->header_top >= 4)
+        {
+            throw xsk::gsc::error("maximum gsh depth exceeded '4'");
+        }
 
-		ctx->header_top++;
+        ctx->header_top++;
 
-		char* buf_data = 0;
-		size_t buf_size = 0;
+        char* buf_data = 0;
+        size_t buf_size = 0;
 
-		for (auto& src : *ctx->sources)
-		{
-			if (src.name == file)
-			{
-				buf_data = reinterpret_cast<char*>(src.buf.data());
-				buf_size = src.buf.size();
+        for (auto& src : *ctx->sources)
+        {
+            if (src.name == file)
+            {
+                buf_data = reinterpret_cast<char*>(src.buf.data());
+                buf_size = src.buf.size();
 
-				ctx->locs.push(ctx->loc);
-				ctx->loc.initialize(&src.name);
-			}
-		}
+                ctx->locs.push(ctx->loc);
+                ctx->loc.initialize(&src.name);
+            }
+        }
 
-		if (buf_data == 0)
-		{
-			ctx->sources->push_back(xsk::gsc::source());
-			auto& source = ctx->sources->back();
-			source.name = file;
-			source.buf = ctx->read_callback(file + ".gsh");
-			source.buf.push_back(0);
-			source.buf.push_back(0);
+        if (buf_data == 0)
+        {
+            ctx->sources->push_back(xsk::gsc::source());
+            auto& source = ctx->sources->back();
+            source.name = file;
+            source.buf = ctx->read_callback(file + ".gsh");
+            source.buf.push_back(0);
+            source.buf.push_back(0);
 
-			buf_data = reinterpret_cast<char*>(source.buf.data());
-			buf_size = source.buf.size();
+            buf_data = reinterpret_cast<char*>(source.buf.data());
+            buf_size = source.buf.size();
 
-			ctx->locs.push(ctx->loc);
-			ctx->loc.initialize(&source.name);
-		}
+            ctx->locs.push(ctx->loc);
+            ctx->loc.initialize(&source.name);
+        }
 
-		auto state = new yy_buffer_state();
-		state->yy_buf_size = buf_size - 2;
-		state->yy_buf_pos = state->yy_ch_buf = buf_data;
-		state->yy_is_our_buffer = 0;
-		state->yy_input_file = NULL;
-		state->yy_n_chars = state->yy_buf_size;
-		state->yy_is_interactive = 0;
-		state->yy_at_bol = 1;
-		state->yy_fill_buffer = 0;
-		state->yy_buffer_status = 0;
+        auto state = new yy_buffer_state();
+        state->yy_buf_size = buf_size - 2;
+        state->yy_buf_pos = state->yy_ch_buf = buf_data;
+        state->yy_is_our_buffer = 0;
+        state->yy_input_file = NULL;
+        state->yy_n_chars = state->yy_buf_size;
+        state->yy_is_interactive = 0;
+        state->yy_at_bol = 1;
+        state->yy_fill_buffer = 0;
+        state->yy_buffer_status = 0;
 
-		yypush_buffer_state(state, ctx->scanner);
-	}
-	catch (const std::exception& e)
+        yypush_buffer_state(state, ctx->scanner);
+    }
+    catch (const std::exception& e)
     {
         throw xsk::gsc::error("parsing header file '" + file + "': " + e.what());
     }
@@ -231,8 +233,8 @@ void h1_push_header(xsk::gsc::context* ctx, const std::string& file)
 
 void h1_pop_header(xsk::gsc::context* ctx)
 {
-	ctx->header_top--;
-	ctx->loc = ctx->locs.top();
-	ctx->locs.pop();
-	yypop_buffer_state(ctx->scanner);
+    ctx->header_top--;
+    ctx->loc = ctx->locs.top();
+    ctx->locs.pop();
+    yypop_buffer_state(ctx->scanner);
 }

@@ -28,14 +28,14 @@ private:
     void assemble_builtin_call(const instruction::ptr& inst, bool method, bool args);
     void assemble_local_call(const instruction::ptr& inst, bool thread);
     void assemble_far_call(const instruction::ptr& inst, bool thread);
-    void assemble_formal_params(const instruction::ptr& inst);
     void assemble_switch(const instruction::ptr& inst);
     void assemble_end_switch(const instruction::ptr& inst);
     void assemble_field_variable(const instruction::ptr& inst);
+    void assemble_formal_params(const instruction::ptr& inst);
     void assemble_jump(const instruction::ptr& inst, bool expr, bool back);
     void assemble_offset(std::int32_t offset);
-    auto resolve_function(const std::string& name) -> std::uint32_t;
-    auto resolve_label(const std::string& name) -> std::uint32_t;
+    auto resolve_function(const std::string& name) -> std::int32_t;
+    auto resolve_label(const std::string& name) -> std::int32_t;
 };
 
 } // namespace xsk::gsc::iw8

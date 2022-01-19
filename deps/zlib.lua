@@ -18,11 +18,11 @@ function zlib:project()
     self:include()
 
     files
-    { 
+    {
         path.join(zlib.base, "*.h"),
         path.join(zlib.base, "*.c")
     }
-    
+
     defines
     {
         "_CRT_SECURE_NO_WARNINGS",
