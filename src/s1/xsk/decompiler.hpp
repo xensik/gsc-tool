@@ -40,6 +40,7 @@ private:
     void decompile_infinite(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end);
     void decompile_loop(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end);
     void decompile_while(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end);
+    void decompile_dowhile(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end);
     void decompile_for(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end);
     void decompile_foreach(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end);
     void decompile_switch(const ast::stmt_list::ptr& stmt, std::uint32_t begin);

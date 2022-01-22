@@ -1825,7 +1825,11 @@ void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
             auto break_loc = last_location_index(stmt, i) ? blocks_.back().loc_end : stmt->list.at(i + 1).loc().label();
             auto start = find_location_index(stmt, stmt->list.at(i).as_jump_back->value);
 
-            if (stmt->list.at(start).as_node->kind() != ast::kind::asm_jump_cond)
+            if (i > 0 && stmt->list.at(i - 1).as_node->kind() == ast::kind::asm_jump_cond)
+            {
+                continue;
+            }
+            else if (stmt->list.at(start).as_node->kind() != ast::kind::asm_jump_cond)
             {
                 decompile_infinite(stmt, start, i);
                 i = start;
@@ -1849,10 +1853,18 @@ void decompiler::decompile_loops(const ast::stmt_list::ptr& stmt)
         {
             auto j = (entry.as_cond->value == blocks_.back().loc_end) ? (stmt->list.size() - 1) : (find_location_index(stmt, entry.as_cond->value) - 1);
 
-            if (stmt->list.at(j) == ast::kind::asm_jump_back && stmt->list.at(i).loc().label() == stmt->list.at(j).as_jump_back->value)
+            if (stmt->list.at(j) == ast::kind::asm_jump_back)
             {
-                decompile_loop(stmt, i, j);
-                i = 0;
+                if (j == i + 1)
+                {
+                    decompile_dowhile(stmt, i, j);
+                    i = 0;
+                }
+                else if (stmt->list.at(i).loc().label() == stmt->list.at(j).as_jump_back->value)
+                {
+                    decompile_loop(stmt, i, j);
+                    i = 0;
+                } 
             }
         }
     }
@@ -2230,6 +2242,37 @@ void decompiler::decompile_while(const ast::stmt_list::ptr& stmt, std::uint32_t 
     blocks_.pop_back();
 
     auto new_stmt = ast::stmt(std::make_unique<ast::stmt_while>(loc, std::move(test), ast::stmt(std::move(while_stmt))));
+    stmt->list.insert(stmt->list.begin() + begin, std::move(new_stmt));
+}
+
+void decompiler::decompile_dowhile(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end)
+{
+    block blk;
+    blk.loc_break = stmt->list.at(begin).as_cond->value;
+    blk.loc_end = stmt->list.at(begin).loc().label();
+    blk.loc_continue = stmt->list.at(begin).loc().label();
+
+    auto test = std::move(stmt->list.at(begin).as_cond->expr);
+    begin = find_location_index(stmt, stmt->list.at(end).as_jump_back->value);
+    auto loc = stmt->list.at(begin).loc();
+
+    end--;
+    stmt->list.erase(stmt->list.begin() + end); // remove 'test'
+    stmt->list.erase(stmt->list.begin() + end); // remove 'jumpback'
+
+    auto while_stmt = std::make_unique<ast::stmt_list>(loc);
+
+    for (auto i = begin; i < end; i++)
+    {
+        while_stmt->list.push_back(std::move(stmt->list[begin]));
+        stmt->list.erase(stmt->list.begin() + begin);
+    }
+
+    blocks_.push_back(blk);
+    decompile_statements(while_stmt);
+    blocks_.pop_back();
+
+    auto new_stmt = ast::stmt(std::make_unique<ast::stmt_dowhile>(loc, std::move(test), ast::stmt(std::move(while_stmt))));
     stmt->list.insert(stmt->list.begin() + begin, std::move(new_stmt));
 }
 
