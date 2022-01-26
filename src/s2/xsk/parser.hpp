@@ -45,13 +45,12 @@
 #ifndef YY_S2_PARSER_HPP_INCLUDED
 # define YY_S2_PARSER_HPP_INCLUDED
 // "%code requires" blocks.
-#line 33 "parser.ypp"
+#line 28 "parser.ypp"
 
 #include "s2.hpp"
-typedef void *yyscan_t;
-#define YY_DECL xsk::gsc::s2::parser::symbol_type S2lex(yyscan_t yyscanner, xsk::gsc::context* ctx)
+namespace xsk::gsc::s2 { class lexer; }
 
-#line 55 "parser.hpp"
+#line 54 "parser.hpp"
 
 # include <cassert>
 # include <cstdlib> // std::abort
@@ -194,7 +193,7 @@ typedef void *yyscan_t;
 
 #line 13 "parser.ypp"
 namespace xsk { namespace gsc { namespace s2 {
-#line 198 "parser.hpp"
+#line 197 "parser.hpp"
 
 
 
@@ -2685,7 +2684,7 @@ switch (yykind)
     };
 
     /// Build a parser object.
-    parser (yyscan_t yyscanner_yyarg, xsk::gsc::context* ctx_yyarg, xsk::gsc::ast::program::ptr& ast_yyarg);
+    parser (xsk::gsc::s2::lexer& lexer_yyarg, xsk::gsc::ast::program::ptr& ast_yyarg);
     virtual ~parser ();
 
 #if 201103L <= YY_CPLUSPLUS
@@ -4656,8 +4655,7 @@ switch (yykind)
 
 
     // User arguments.
-    yyscan_t yyscanner;
-    xsk::gsc::context* ctx;
+    xsk::gsc::s2::lexer& lexer;
     xsk::gsc::ast::program::ptr& ast;
 
   };
@@ -5342,7 +5340,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::gsc::s2
-#line 5346 "parser.hpp"
+#line 5344 "parser.hpp"
 
 
 

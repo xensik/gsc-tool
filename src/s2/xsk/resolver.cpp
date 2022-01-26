@@ -1,4 +1,4 @@
-// Copyright 2021 xensik. All rights reserved.
+// Copyright 2022 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -204,6 +204,35 @@ auto resolver::make_token(std::string_view str) -> std::string
     }
 
     return data;
+}
+
+std::function<std::vector<std::uint8_t>(const std::string&)> read_callback = nullptr;
+std::unordered_map<std::string, std::vector<std::uint8_t>> files;
+
+auto resolver::file_data(const std::string& name) -> std::tuple<const std::string*, char*, size_t>
+{
+    const auto& itr = files.find(name);
+
+    if(itr != files.end())
+    {
+        return { &itr->first ,reinterpret_cast<char*>(itr->second.data()), itr->second.size() };
+    }
+
+    auto data = read_callback(name);
+
+    const auto& res = files.insert({ name, std::move(data)});
+
+    if(res.second)
+    {
+        return { &res.first->first, reinterpret_cast<char*>(res.first->second.data()), res.first->second.size() };
+    }
+
+    throw error("couldn't open gsc file '" + name + "'");
+}
+
+void resolver::set_reader(std::function<std::vector<std::uint8_t>(const std::string&)> callback)
+{
+    read_callback = callback;
 }
 
 const std::array<std::pair<std::uint8_t, const char*>, 155> opcode_list

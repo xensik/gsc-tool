@@ -1,4 +1,4 @@
-/* Copyright 2021 xensik. All rights reserved.
+/* Copyright 2022 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -19,21 +19,15 @@
 %define parse.trace
 %define parse.error detailed
 %define parse.lac full
-
 %locations
-
-%lex-param   { yyscan_t yyscanner }
-%lex-param   { xsk::gsc::context* ctx }
-
-%parse-param { yyscan_t yyscanner }
-%parse-param { xsk::gsc::context* ctx }
+%lex-param   { xsk::gsc::s1::lexer& lexer }
+%parse-param { xsk::gsc::s1::lexer& lexer }
 %parse-param { xsk::gsc::ast::program::ptr& ast }
 
 %code requires
 {
 #include "s1.hpp"
-typedef void *yyscan_t;
-#define YY_DECL xsk::gsc::s1::parser::symbol_type S1lex(yyscan_t yyscanner, xsk::gsc::context* ctx)
+namespace xsk::gsc::s1 { class lexer; }
 }
 
 %code top
@@ -42,7 +36,7 @@ typedef void *yyscan_t;
 #include "parser.hpp"
 #include "lexer.hpp"
 using namespace xsk::gsc;
-xsk::gsc::s1::parser::symbol_type S1lex(yyscan_t yyscanner, xsk::gsc::context* ctx);
+xsk::gsc::s1::parser::symbol_type S1lex(xsk::gsc::s1::lexer& lexer);
 }
 
 %token DEVBEGIN         "/#"
@@ -268,7 +262,7 @@ program
     ;
 
 inline
-    : INLINE expr_path SEMICOLON { s1_push_header(ctx, $2->value); }
+    : INLINE expr_path SEMICOLON { lexer.push_header($2->value); }
     ;
 
 include
@@ -286,7 +280,7 @@ declaration
 
 decl_usingtree
     : USINGTREE LPAREN expr_string RPAREN SEMICOLON
-        { ctx->restrict_header(@$); $$ = std::make_unique<ast::decl_usingtree>(@$, std::move($3)); }
+        { lexer.restrict_header(@$); $$ = std::make_unique<ast::decl_usingtree>(@$, std::move($3)); }
     ;
 
 decl_constant
@@ -296,7 +290,7 @@ decl_constant
 
 decl_thread
     : expr_identifier LPAREN expr_parameters RPAREN stmt_block
-        { ctx->restrict_header(@$); $$ = std::make_unique<ast::decl_thread>(@$, std::move($1), std::move($3), std::move($5)); }
+        { lexer.restrict_header(@$); $$ = std::make_unique<ast::decl_thread>(@$, std::move($1), std::move($3), std::move($5)); }
     ;
 
 stmt

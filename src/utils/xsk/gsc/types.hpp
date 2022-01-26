@@ -1,4 +1,4 @@
-// Copyright 2021 xensik. All rights reserved.
+// Copyright 2022 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -20,27 +20,6 @@ enum class abort_t
     abort_continue = 1,
     abort_break = 2,
     abort_return = 3,
-};
-
-struct source
-{
-    std::string name;
-    std::vector<std::uint8_t> buf;
-};
-
-struct context
-{
-    using ptr = std::unique_ptr<context>;
-
-    void* scanner;
-    std::uint32_t header_top;
-    xsk::gsc::build mode;
-    xsk::gsc::location loc;
-    std::stack<xsk::gsc::location> locs;
-    std::vector<xsk::gsc::source>* sources;
-    std::function<std::vector<std::uint8_t>(const std::string&)> read_callback;
-
-    void restrict_header(const xsk::gsc::location& loc);
 };
 
 struct include_t

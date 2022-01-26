@@ -3,10 +3,7 @@ generate: S2
 clean:
 	rm -rf ./parser.hpp
 	rm -rf ./parser.cpp
-	rm -rf ./lexer.hpp
-	rm -rf ./lexer.cpp
 
-S2: lexer.lpp parser.ypp
-	flex lexer.lpp
+S2: parser.ypp
 	bison parser.ypp -Wcounterexamples
-	mv lexer.hpp lexer.cpp parser.hpp parser.cpp ../../src/s2/xsk/
+	mv parser.hpp parser.cpp ../../src/s2/xsk/

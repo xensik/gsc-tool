@@ -1,4 +1,4 @@
-// Copyright 2021 xensik. All rights reserved.
+// Copyright 2022 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -25,7 +25,6 @@ class compiler : public gsc::compiler
     std::vector<animtree_t> animtrees_;
     std::unordered_map<std::string, ast::expr> constants_;
     std::function<std::vector<std::uint8_t>(const std::string&)> read_callback_;
-    std::vector<gsc::source> sources_;
     std::vector<block*> break_blks_;
     std::vector<block*> continue_blks_;
     bool can_break_;

@@ -45,13 +45,12 @@
 #ifndef YY_IW8_PARSER_HPP_INCLUDED
 # define YY_IW8_PARSER_HPP_INCLUDED
 // "%code requires" blocks.
-#line 33 "parser.ypp"
+#line 28 "parser.ypp"
 
 #include "iw8.hpp"
-typedef void *yyscan_t;
-#define YY_DECL xsk::gsc::iw8::parser::symbol_type IW8lex(yyscan_t yyscanner, xsk::gsc::context* ctx)
+namespace xsk::gsc::iw8 { class lexer; }
 
-#line 55 "parser.hpp"
+#line 54 "parser.hpp"
 
 # include <cassert>
 # include <cstdlib> // std::abort
@@ -194,7 +193,7 @@ typedef void *yyscan_t;
 
 #line 13 "parser.ypp"
 namespace xsk { namespace gsc { namespace iw8 {
-#line 198 "parser.hpp"
+#line 197 "parser.hpp"
 
 
 
@@ -2741,7 +2740,7 @@ switch (yykind)
     };
 
     /// Build a parser object.
-    parser (yyscan_t yyscanner_yyarg, xsk::gsc::context* ctx_yyarg, xsk::gsc::ast::program::ptr& ast_yyarg);
+    parser (xsk::gsc::iw8::lexer& lexer_yyarg, xsk::gsc::ast::program::ptr& ast_yyarg);
     virtual ~parser ();
 
 #if 201103L <= YY_CPLUSPLUS
@@ -4742,8 +4741,7 @@ switch (yykind)
 
 
     // User arguments.
-    yyscan_t yyscanner;
-    xsk::gsc::context* ctx;
+    xsk::gsc::iw8::lexer& lexer;
     xsk::gsc::ast::program::ptr& ast;
 
   };
@@ -5444,7 +5442,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::gsc::iw8
-#line 5448 "parser.hpp"
+#line 5446 "parser.hpp"
 
 
 

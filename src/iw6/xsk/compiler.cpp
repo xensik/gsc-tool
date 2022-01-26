@@ -1,4 +1,4 @@
-// Copyright 2021 xensik. All rights reserved.
+// Copyright 2022 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -19,7 +19,6 @@ auto compiler::output() -> std::vector<function::ptr>
 void compiler::compile(const std::string& file, std::vector<std::uint8_t>& data)
 {
     filename_ = file;
-    sources_.clear();
 
     auto prog = parse_buffer(filename_, data);
 
@@ -33,38 +32,18 @@ void compiler::read_callback(std::function<std::vector<std::uint8_t>(const std::
 
 auto compiler::parse_buffer(const std::string& file, std::vector<std::uint8_t>& data) -> ast::program::ptr
 {
-    yyscan_t scanner;
-    context ctx;
     ast::program::ptr result(nullptr);
 
-    ctx.header_top = 0;
-    ctx.mode = mode_;
-    ctx.read_callback = read_callback_;
-    ctx.sources = &sources_;
-    ctx.loc.initialize(&file);
+    resolver::set_reader(read_callback_);
 
-    // Add the two NULL terminators, required by flex.
-    data.push_back(0);
-    data.push_back(0);
+    lexer lexer(file, reinterpret_cast<char*>(data.data()), data.size());
 
-    if (iw6_lex_init(&scanner))
-    {
-        throw comp_error(ctx.loc, "An unknown error ocurred while starting lexer context.");
-    }
-
-    ctx.scanner = scanner;
-
-    YY_BUFFER_STATE yybuffer = iw6__scan_buffer(reinterpret_cast<char*>(data.data()), data.size(), scanner);
-
-    parser parser(scanner, &ctx, result);
+    parser parser(lexer, result);
 
     if (parser.parse() || result == nullptr)
     {
-        throw comp_error(ctx.loc, "An unknown error ocurred while parsing gsc file.");
+        throw comp_error(xsk::gsc::location(&file), "An unknown error ocurred while parsing gsc file.");
     }
-
-    iw6__delete_buffer(yybuffer, scanner);
-    iw6_lex_destroy(scanner);
 
     return result;
 }

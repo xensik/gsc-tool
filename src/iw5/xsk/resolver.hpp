@@ -1,4 +1,4 @@
-// Copyright 2021 xensik. All rights reserved.
+// Copyright 2022 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -33,6 +33,8 @@ public:
     static void add_method(const std::string& name, std::uint16_t id);
 
     static auto make_token(std::string_view str) -> std::string;
+    static auto file_data(const std::string& name) -> std::tuple<const std::string*, char*, size_t>;
+    static void set_reader(std::function<std::vector<std::uint8_t>(const std::string&)> callback);
 };
 
 } // namespace xsk::gsc::iw5
