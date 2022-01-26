@@ -1833,7 +1833,7 @@ void decompiler::decompile_loops(const ast::stmt_list::ptr& stmt)
                 {
                     decompile_loop(stmt, i, j);
                     i = 0;
-                } 
+                }
             }
         }
     }

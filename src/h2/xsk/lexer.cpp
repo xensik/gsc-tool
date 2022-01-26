@@ -325,7 +325,7 @@ auto lexer::lex() -> xsk::gsc::h2::parser::symbol_type
                             {
                                 color = false;
                                 break;
-                            }      
+                            }
                         }
 
                         if (color) return h2::parser::make_COLOR(std::string(++data, --len), loc_);
@@ -335,17 +335,17 @@ auto lexer::lex() -> xsk::gsc::h2::parser::symbol_type
 
                     if (key == keyword::KW_INVALID)
                         throw h2::parser::syntax_error(loc_, utils::string::va("unknown preprocessor directive ('%s')", "#"));
-            
+
                     if (keyword_is_token(key))
                         return keyword_token(key);
 
-                    // call preprocessor(key);                
+                    // call preprocessor(key);
                 }
                 continue;
             case '*':
                 if (reader_.state == reader::end || (curr != '/' && curr != '='))
                     return h2::parser::make_MUL(loc_);
-                
+
                 reader_.advance();
 
                 if (curr == '/')
@@ -399,24 +399,24 @@ auto lexer::lex() -> xsk::gsc::h2::parser::symbol_type
                 if (curr != '=')
                     return h2::parser::make_MOD(loc_);
                 reader_.advance();
-                return h2::parser::make_ASSIGN_MOD(loc_);                
+                return h2::parser::make_ASSIGN_MOD(loc_);
             case '|':
                 if (curr != '|' && curr != '=')
                     return h2::parser::make_BITWISE_OR(loc_);
                 reader_.advance();
-                return (last == '|') ? h2::parser::make_OR(loc_) : h2::parser::make_ASSIGN_BW_OR(loc_); 
+                return (last == '|') ? h2::parser::make_OR(loc_) : h2::parser::make_ASSIGN_BW_OR(loc_);
             case '&':
                 if (curr != '&' && curr != '=' && curr != '"' && curr != '\'')
                     return h2::parser::make_BITWISE_AND(loc_);
                 reader_.advance();
                 if (last == '"' || last == '\'')
                     return read_string(last, true);
-                return (last == '&') ? h2::parser::make_AND(loc_) : h2::parser::make_ASSIGN_BW_AND(loc_); 
+                return (last == '&') ? h2::parser::make_AND(loc_) : h2::parser::make_ASSIGN_BW_AND(loc_);
             case '^':
                 if (curr != '=')
                     return h2::parser::make_BITWISE_EXOR(loc_);
                 reader_.advance();
-                return h2::parser::make_ASSIGN_BW_EXOR(loc_); 
+                return h2::parser::make_ASSIGN_BW_EXOR(loc_);
             case '!':
                 if (curr != '=')
                     return h2::parser::make_NOT(loc_);
