@@ -125,6 +125,7 @@ xsk::gsc::h2::parser::symbol_type H2lex(xsk::gsc::h2::lexer& lexer);
 %token MUL              "*"
 %token DIV              "/"
 %token MOD              "%"
+%token <std::string> FIELD      "field"
 %token <std::string> PATH       "path"
 %token <std::string> IDENTIFIER "identifier"
 %token <std::string> STRING     "string literal"
@@ -703,6 +704,8 @@ expr_array
 expr_field
     : expr_object DOT expr_identifier
         { $$ = std::make_unique<ast::expr_field>(@$, std::move($1), std::move($3)); }
+    | expr_object FIELD
+        { $$ = std::make_unique<ast::expr_field>(@$, std::move($1), std::make_unique<ast::expr_identifier>(@$, $2)); }
     ;
 
 expr_size

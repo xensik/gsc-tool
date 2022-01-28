@@ -127,6 +127,7 @@ xsk::gsc::s4::parser::symbol_type S4lex(xsk::gsc::s4::lexer& lexer);
 %token MUL              "*"
 %token DIV              "/"
 %token MOD              "%"
+%token <std::string> FIELD      "field"
 %token <std::string> PATH       "path"
 %token <std::string> IDENTIFIER "identifier"
 %token <std::string> STRING     "string literal"
@@ -719,6 +720,8 @@ expr_array
 expr_field
     : expr_object DOT expr_identifier
         { $$ = std::make_unique<ast::expr_field>(@$, std::move($1), std::move($3)); }
+    | expr_object FIELD
+        { $$ = std::make_unique<ast::expr_field>(@$, std::move($1), std::make_unique<ast::expr_identifier>(@$, $2)); }
     ;
 
 expr_size

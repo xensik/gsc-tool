@@ -12,11 +12,12 @@ namespace xsk::gsc::iw8
 
 enum class keyword;
 
+constexpr size_t max_buf_size = 0x2000;
+
 struct buffer
 {
-    int size;
-    int length;
     char* data;
+    int length;
 
     buffer();
     ~buffer();
@@ -25,13 +26,13 @@ struct buffer
 
 struct reader
 {
-    enum states { end, ok };
+    enum state_type : std::uint8_t { end, ok };
 
-    states state;
-    int bytes_remaining;
     const char* buffer_pos;
+    std::uint32_t bytes_remaining;
     char last_byte;
     char current_byte;
+    state_type state;
 
     reader();
 
@@ -47,15 +48,17 @@ struct reader
 
 class lexer
 {
-private:
+    enum class state : std::uint8_t { start, string, localize, field, preprocessor };
+
     reader reader_;
     buffer buffer_;
     location loc_;
     build mode_;
-    bool in_dev_state_;
     std::stack<location> locs_;
     std::stack<reader> readers_;
     std::uint32_t header_top_;
+    state state_;
+    bool indev_;
 
 public:
     lexer(const std::string& name, const char* data, size_t size);
@@ -65,10 +68,6 @@ public:
     void restrict_header(const xsk::gsc::location& loc);
 
 private:
-    auto read_string(char quote, bool localize) -> xsk::gsc::iw8::parser::symbol_type;
-    auto read_number(char first) -> xsk::gsc::iw8::parser::symbol_type;
-    auto read_word(char first) -> xsk::gsc::iw8::parser::symbol_type;
-    auto read_dotsize() -> xsk::gsc::iw8::parser::symbol_type;
     auto keyword_token(keyword k) -> xsk::gsc::iw8::parser::symbol_type;
     static auto keyword_is_token(keyword k) -> bool;
     static auto get_keyword(std::string_view str) -> keyword;

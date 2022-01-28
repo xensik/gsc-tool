@@ -28,6 +28,8 @@
 {
 #include "h1.hpp"
 namespace xsk::gsc::h1 { class lexer; }
+typedef void *yyscan_t;
+#define YY_DECL xsk::gsc::h1::parser::symbol_type yylex(yyscan_t yyscanner, xsk::gsc::location& loc)
 }
 
 %code top
@@ -125,6 +127,7 @@ xsk::gsc::h1::parser::symbol_type H1lex(xsk::gsc::h1::lexer& lexer);
 %token MUL              "*"
 %token DIV              "/"
 %token MOD              "%"
+%token <std::string> FIELD      "field"
 %token <std::string> PATH       "path"
 %token <std::string> IDENTIFIER "identifier"
 %token <std::string> STRING     "string literal"
@@ -703,6 +706,8 @@ expr_array
 expr_field
     : expr_object DOT expr_identifier
         { $$ = std::make_unique<ast::expr_field>(@$, std::move($1), std::move($3)); }
+    | expr_object FIELD
+        { $$ = std::make_unique<ast::expr_field>(@$, std::move($1), std::make_unique<ast::expr_identifier>(@$, $2)); }
     ;
 
 expr_size
