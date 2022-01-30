@@ -39,6 +39,14 @@ using namespace xsk::gsc;
 xsk::gsc::iw7::parser::symbol_type IW7lex(xsk::gsc::iw7::lexer& lexer);
 }
 
+%token HSDEFINE         "#define"
+%token HSUNDEF          "#undef"
+%token HSIFDEF          "#ifdef"
+%token HSIFNDEF         "#ifndef"
+%token HSIF             "#if"
+%token HSELIF           "#elif"
+%token HSELSE           "#else"
+%token HSENDIF          "#endif"
 %token DEVBEGIN         "/#"
 %token DEVEND           "#/"
 %token INLINE           "#inline"
@@ -279,7 +287,7 @@ declaration
 
 decl_usingtree
     : USINGTREE LPAREN expr_string RPAREN SEMICOLON
-        { lexer.restrict_header(@$); $$ = std::make_unique<ast::decl_usingtree>(@$, std::move($3)); }
+        { lexer.ban_header(@$); $$ = std::make_unique<ast::decl_usingtree>(@$, std::move($3)); }
     ;
 
 decl_constant
@@ -289,7 +297,7 @@ decl_constant
 
 decl_thread
     : expr_identifier LPAREN expr_parameters RPAREN stmt_block
-        { lexer.restrict_header(@$); $$ = std::make_unique<ast::decl_thread>(@$, std::move($1), std::move($3), std::move($5)); }
+        { lexer.ban_header(@$); $$ = std::make_unique<ast::decl_thread>(@$, std::move($1), std::move($3), std::move($5)); }
     ;
 
 stmt

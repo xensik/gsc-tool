@@ -10,8 +10,6 @@
 namespace xsk::gsc::s2
 {
 
-enum class keyword;
-
 constexpr size_t max_buf_size = 0x2000;
 
 struct buffer
@@ -53,26 +51,22 @@ class lexer
     reader reader_;
     buffer buffer_;
     location loc_;
-    build mode_;
     std::stack<location> locs_;
     std::stack<reader> readers_;
     std::uint32_t header_top_;
     state state_;
+    build mode_;
     bool indev_;
 
 public:
     lexer(const std::string& name, const char* data, size_t size);
-    auto lex() -> xsk::gsc::s2::parser::symbol_type;
+    auto lex() -> parser::symbol_type;
     void push_header(const std::string& file);
     void pop_header();
-    void restrict_header(const xsk::gsc::location& loc);
+    void ban_header(const location& loc);
 
 private:
-    auto keyword_token(keyword k) -> xsk::gsc::s2::parser::symbol_type;
-    static auto keyword_is_token(keyword k) -> bool;
-    static auto get_keyword(std::string_view str) -> keyword;
-
-    static std::unordered_map<std::string_view, keyword> keywords;
+    static const std::unordered_map<std::string_view, parser::token::token_kind_type> keyword_map;
 };
 
 } // namespace xsk::gsc::s2

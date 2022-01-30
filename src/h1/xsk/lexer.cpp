@@ -16,57 +16,6 @@ xsk::gsc::h1::parser::symbol_type H1lex(xsk::gsc::h1::lexer& lexer)
 namespace xsk::gsc::h1
 {
 
-enum class keyword
-{
-/*  KW_pre_define,
-    KW_pre_undef,
-    KW_pre_ifdef,
-    KW_pre_ifndef,
-    KW_pre_if,
-    KW_pre_elif,
-    KW_pre_else,
-    KW_pre_endif,*/
-    KW_pre_inline,
-    KW_pre_include,
-    KW_pre_using_animtree,
-    KW_pre_animtree,
-    KW_endon,
-    KW_notify,
-    KW_wait,
-    KW_waittill,
-    KW_waittillmatch,
-    KW_waittillframeend,
-    KW_waitframe,
-    KW_if,
-    KW_else,
-    KW_do,
-    KW_while,
-    KW_for,
-    KW_foreach,
-    KW_in,
-    KW_switch,
-    KW_case,
-    KW_default,
-    KW_break,
-    KW_continue,
-    KW_return,
-    KW_breakpoint,
-    KW_prof_begin,
-    KW_prof_end,
-    KW_thread,
-    KW_childthread,
-    KW_thisthread,
-    KW_call,
-    KW_true,
-    KW_false,
-    KW_undefined,
-    KW_game,
-    KW_self,
-    KW_anim,
-    KW_level,
-    KW_INVALID,
-};
-
 buffer::buffer() : length(0)
 {
     data = static_cast<char*>(std::malloc(max_buf_size));
@@ -129,7 +78,7 @@ void reader::advance()
     }
 }
 
-lexer::lexer(const std::string& name, const char* data, size_t size) : indev_(false), loc_(xsk::gsc::location(&name)),
+lexer::lexer(const std::string& name, const char* data, size_t size) : indev_(false), loc_(location(&name)),
     mode_(build::dev), header_top_(0), locs_(std::stack<location>()), readers_(std::stack<reader>())
 {
     reader_.init(data, size);
@@ -140,7 +89,7 @@ void lexer::push_header(const std::string& file)
     try
     {
         if (header_top_++ >= 10)
-            throw xsk::gsc::error("maximum gsh depth exceeded '10'");
+            throw comp_error(loc_, "maximum gsh depth exceeded '10'");
 
         auto data = resolver::file_data(file + ".gsh");
 
@@ -151,7 +100,7 @@ void lexer::push_header(const std::string& file)
     }
     catch (const std::exception& e)
     {
-        throw xsk::gsc::error("parsing header file '" + file + "': " + e.what());
+        throw error("parsing header file '" + file + "': " + e.what());
     }
 }
 
@@ -164,7 +113,7 @@ void lexer::pop_header()
     readers_.pop();
 }
 
-void lexer::restrict_header(const xsk::gsc::location& loc)
+void lexer::ban_header(const location& loc)
 {
     if (header_top_ > 0)
     {
@@ -172,7 +121,7 @@ void lexer::restrict_header(const xsk::gsc::location& loc)
     }
 }
 
-auto lexer::lex() -> xsk::gsc::h1::parser::symbol_type
+auto lexer::lex() -> parser::symbol_type
 {
     buffer_.length = 0;
     state_ = state::start;
@@ -193,7 +142,7 @@ auto lexer::lex() -> xsk::gsc::h1::parser::symbol_type
             if (header_top_ > 0)
                 pop_header();
             else
-                return h1::parser::make_H1EOF(loc_);
+                return parser::make_H1EOF(loc_);
         }
 
         reader_.advance();
@@ -211,22 +160,22 @@ auto lexer::lex() -> xsk::gsc::h1::parser::symbol_type
                 continue;
             case '/':
                 if (curr != '/' && curr != '*' && curr != '#' && curr != '=')
-                    return h1::parser::make_DIV(loc_);
+                    return parser::make_DIV(loc_);
 
                 reader_.advance();
 
                 if (last == '=')
-                    return h1::parser::make_ASSIGN_DIV(loc_);
+                    return parser::make_ASSIGN_DIV(loc_);
 
                 if (last == '#')
                 {
                     if (indev_)
                         throw comp_error(loc_, "cannot recurse devblock ('/#')");
 
-                    if (mode_ == xsk::gsc::build::dev)
+                    if (mode_ == build::dev)
                     {
                         indev_ = true;
-                        return h1::parser::make_DEVBEGIN(loc_);
+                        return parser::make_DEVBEGIN(loc_);
                     }
                     else
                     {
@@ -290,7 +239,7 @@ auto lexer::lex() -> xsk::gsc::h1::parser::symbol_type
 
                     indev_ = false;
                     reader_.advance();
-                    return h1::parser::make_DEVEND(loc_);
+                    return parser::make_DEVEND(loc_);
                 }
 
                 buffer_.push(last);
@@ -303,12 +252,12 @@ auto lexer::lex() -> xsk::gsc::h1::parser::symbol_type
                 goto lex_name;
             case '*':
                 if (curr != '/' && curr != '=')
-                    return h1::parser::make_MUL(loc_);
+                    return parser::make_MUL(loc_);
 
                 reader_.advance();
 
                 if (last == '=')
-                    return h1::parser::make_ASSIGN_MUL(loc_);
+                    return parser::make_ASSIGN_MUL(loc_);
 
                 throw comp_error(loc_, "unmatched multiline comment end ('*/')");
             case '"':
@@ -323,127 +272,127 @@ auto lexer::lex() -> xsk::gsc::h1::parser::symbol_type
                 state_ = state::field;
                 goto lex_name_or_number;
             case '(':
-                return h1::parser::make_LPAREN(loc_);
+                return parser::make_LPAREN(loc_);
             case ')':
-                return h1::parser::make_RPAREN(loc_);
+                return parser::make_RPAREN(loc_);
             case '{':
-                return h1::parser::make_LBRACE(loc_);
+                return parser::make_LBRACE(loc_);
             case '}':
-                return h1::parser::make_RBRACE(loc_);
+                return parser::make_RBRACE(loc_);
             case '[':
-                return h1::parser::make_LBRACKET(loc_);
+                return parser::make_LBRACKET(loc_);
             case ']':
-                return h1::parser::make_RBRACKET(loc_);
+                return parser::make_RBRACKET(loc_);
             case ',':
-                return h1::parser::make_COMMA(loc_);
+                return parser::make_COMMA(loc_);
             case ';':
-                return h1::parser::make_SEMICOLON(loc_);
+                return parser::make_SEMICOLON(loc_);
             case ':':
                 if (curr != ':')
-                    return h1::parser::make_COLON(loc_);
+                    return parser::make_COLON(loc_);
 
                 reader_.advance();
-                return h1::parser::make_DOUBLECOLON(loc_);
+                return parser::make_DOUBLECOLON(loc_);
             case '?':
-                return h1::parser::make_QMARK(loc_);
+                return parser::make_QMARK(loc_);
             case '=':
                 if (curr != '=')
-                    return h1::parser::make_ASSIGN(loc_);
+                    return parser::make_ASSIGN(loc_);
 
                 reader_.advance();
-                return h1::parser::make_EQUALITY(loc_);
+                return parser::make_EQUALITY(loc_);
             case '+':
                 if (curr != '+' && curr != '=')
-                    return h1::parser::make_ADD(loc_);
+                    return parser::make_ADD(loc_);
 
                 reader_.advance();
 
                 if (last == '+')
-                    return h1::parser::make_INCREMENT(loc_);
+                    return parser::make_INCREMENT(loc_);
 
-                return h1::parser::make_ASSIGN_ADD(loc_);
+                return parser::make_ASSIGN_ADD(loc_);
             case '-':
                 if (curr != '-' && curr != '=')
-                    return h1::parser::make_SUB(loc_);
+                    return parser::make_SUB(loc_);
 
                 reader_.advance();
 
                 if (last == '-')
-                    return h1::parser::make_DECREMENT(loc_);
+                    return parser::make_DECREMENT(loc_);
 
-                return h1::parser::make_ASSIGN_SUB(loc_);
+                return parser::make_ASSIGN_SUB(loc_);
             case '%':
                 if (curr != '=')
-                    return h1::parser::make_MOD(loc_);
+                    return parser::make_MOD(loc_);
 
                 reader_.advance();
 
-                return h1::parser::make_ASSIGN_MOD(loc_);
+                return parser::make_ASSIGN_MOD(loc_);
             case '|':
                 if (curr != '|' && curr != '=')
-                    return h1::parser::make_BITWISE_OR(loc_);
+                    return parser::make_BITWISE_OR(loc_);
 
                 reader_.advance();
 
                 if (last == '|')
-                    return h1::parser::make_OR(loc_);
+                    return parser::make_OR(loc_);
 
-                return h1::parser::make_ASSIGN_BW_OR(loc_);
+                return parser::make_ASSIGN_BW_OR(loc_);
             case '&':
                 if (curr != '&' && curr != '=' && curr != '"' && curr != '\'')
-                    return h1::parser::make_BITWISE_AND(loc_);
+                    return parser::make_BITWISE_AND(loc_);
 
                 reader_.advance();
 
                 if (last == '&')
-                    return h1::parser::make_AND(loc_);
+                    return parser::make_AND(loc_);
 
                 if (last == '=')
-                    return h1::parser::make_ASSIGN_BW_AND(loc_);
+                    return parser::make_ASSIGN_BW_AND(loc_);
 
                 state_ = state::localize;
                 goto lex_string;
             case '^':
                 if (curr != '=')
-                    return h1::parser::make_BITWISE_EXOR(loc_);
+                    return parser::make_BITWISE_EXOR(loc_);
 
                 reader_.advance();
-                return h1::parser::make_ASSIGN_BW_EXOR(loc_);
+                return parser::make_ASSIGN_BW_EXOR(loc_);
             case '!':
                 if (curr != '=')
-                    return h1::parser::make_NOT(loc_);
+                    return parser::make_NOT(loc_);
 
                 reader_.advance();
-                return h1::parser::make_INEQUALITY(loc_);
+                return parser::make_INEQUALITY(loc_);
             case '~':
-                return h1::parser::make_COMPLEMENT(loc_);
+                return parser::make_COMPLEMENT(loc_);
             case '<':
                 if (curr != '<' && curr != '=')
-                    return h1::parser::make_LESS(loc_);
+                    return parser::make_LESS(loc_);
 
                 reader_.advance();
                 if (last == '=')
-                    return h1::parser::make_LESS_EQUAL(loc_);
+                    return parser::make_LESS_EQUAL(loc_);
 
                 if (curr != '=')
-                    return h1::parser::make_LSHIFT(loc_);
+                    return parser::make_LSHIFT(loc_);
 
                 reader_.advance();
-                return h1::parser::make_ASSIGN_LSHIFT(loc_);
+                return parser::make_ASSIGN_LSHIFT(loc_);
             case '>':
                 if (curr != '>' && curr != '=')
-                    return h1::parser::make_GREATER(loc_);
+                    return parser::make_GREATER(loc_);
 
                 reader_.advance();
 
                 if (last == '=')
-                    return h1::parser::make_GREATER_EQUAL(loc_);
+                    return parser::make_GREATER_EQUAL(loc_);
 
                 if (curr != '=')
-                    return h1::parser::make_RSHIFT(loc_);
+                    return parser::make_RSHIFT(loc_);
 
                 reader_.advance();
-                return h1::parser::make_ASSIGN_RSHIFT(loc_);
+                return parser::make_ASSIGN_RSHIFT(loc_);
             default:
 lex_name_or_number:
                 if (last >= '0' && last <= '9')
@@ -496,9 +445,9 @@ lex_string:
         }
 
         if (state_ == state::localize)
-            return h1::parser::make_ISTRING(std::string(buffer_.data, buffer_.length), loc_);
+            return parser::make_ISTRING(std::string(buffer_.data, buffer_.length), loc_);
 
-        return h1::parser::make_STRING(std::string(buffer_.data, buffer_.length), loc_);
+        return parser::make_STRING(std::string(buffer_.data, buffer_.length), loc_);
 
 lex_name:
         buffer_.push(last);
@@ -533,44 +482,55 @@ lex_name:
 
             if (std::string_view(buffer_.data, buffer_.length) == "size")
             {
-                return h1::parser::make_SIZE(loc_);
+                return parser::make_SIZE(loc_);
             }
 
-            return h1::parser::make_FIELD(std::string(buffer_.data, buffer_.length), loc_);
+            return parser::make_FIELD(std::string(buffer_.data, buffer_.length), loc_);
         }
         else if (state_ == state::preprocessor)
         {
             if (path)
                 throw comp_error(loc_, "invalid preprocessor directive");
+            
+            auto token = parser::token::H1UNDEF;
 
-            auto key = get_keyword(std::string_view(buffer_.data, buffer_.length));
+            if (buffer_.length < 16)
+            {
+                const auto& itr = keyword_map.find(std::string_view(buffer_.data, buffer_.length));
 
-            if (key != keyword::KW_INVALID)
-                return keyword_token(key);
+                if(itr != keyword_map.end()) 
+                {
+                    if (itr->second > parser::token::HSENDIF)
+                        return parser::symbol_type(itr->second, loc_);
+                    
+                    token = itr->second;
+                }
+            }
 
-            // TODO: call preprocessor(key);
+            // TODO: call preprocessor(token);
             throw comp_error(loc_, "unknown preprocessor directive");
             state_ = state::start;
             continue;
         }
         else
         {
-            auto key = get_keyword(std::string_view(buffer_.data, buffer_.length));
+            if (buffer_.length < 17)
+            {
+                const auto& itr = keyword_map.find(std::string_view(buffer_.data, buffer_.length));
 
-            if (key != keyword::KW_INVALID)
-                return keyword_token(key);
+                if(itr != keyword_map.end()) 
+                    return parser::symbol_type(itr->second, loc_);
+            }
 
             if (path)
             {
                 if (buffer_.data[buffer_.length - 1] == '/')
                     throw comp_error(loc_, "invalid path end '\\'");
 
-                //return h1::parser::make_PATH(xsk::gsc::h1::resolver::make_token(std::string_view(buffer_.data, buffer_.length)), loc_);
-                return h1::parser::make_PATH(std::string(buffer_.data, buffer_.length), loc_);
+                return parser::make_PATH(resolver::make_token(std::string_view(buffer_.data, buffer_.length)), loc_);
             }
 
-            //return h1::parser::make_IDENTIFIER(xsk::gsc::h1::resolver::make_token(std::string_view(buffer_.data, buffer_.length)), loc_);
-            return h1::parser::make_IDENTIFIER(std::string(buffer_.data, buffer_.length), loc_);
+            return parser::make_IDENTIFIER(resolver::make_token(std::string_view(buffer_.data, buffer_.length)), loc_);
         }
 
 lex_number:
@@ -621,9 +581,9 @@ lex_number:
                 throw comp_error(loc_, "invalid number literal");
 
             if (state_ == state::field || dot || flt)
-                return h1::parser::make_FLOAT(std::string(buffer_.data, buffer_.length), loc_);
+                return parser::make_FLOAT(std::string(buffer_.data, buffer_.length), loc_);
 
-            return h1::parser::make_INTEGER(std::string(buffer_.data, buffer_.length), loc_);
+            return parser::make_INTEGER(std::string(buffer_.data, buffer_.length), loc_);
         }
         else if (curr == 'o')
         {
@@ -655,7 +615,7 @@ lex_number:
             if (last == '\'' || buffer_.length <= 0)
                 throw comp_error(loc_, "invalid octal literal");
 
-            return h1::parser::make_INTEGER(xsk::utils::string::oct_to_dec(buffer_.data), loc_);
+            return parser::make_INTEGER(xsk::utils::string::oct_to_dec(buffer_.data), loc_);
         }
         else if (curr == 'b')
         {
@@ -689,7 +649,7 @@ lex_number:
             if (last == '\'' || buffer_.length < 3)
                 throw comp_error(loc_, "invalid binary literal");
 
-            return h1::parser::make_INTEGER(xsk::utils::string::bin_to_dec(buffer_.data), loc_);
+            return parser::make_INTEGER(xsk::utils::string::bin_to_dec(buffer_.data), loc_);
         }
         else if (curr == 'x')
         {
@@ -723,176 +683,60 @@ lex_number:
             if (last == '\'' || buffer_.length < 3)
                 throw comp_error(loc_, "invalid hexadecimal literal");
 
-            return h1::parser::make_INTEGER(xsk::utils::string::hex_to_dec(buffer_.data), loc_);
+            return parser::make_INTEGER(xsk::utils::string::hex_to_dec(buffer_.data), loc_);
         }
         // cant get here!
     }
 }
 
-auto lexer::keyword_token(keyword k) -> xsk::gsc::h1::parser::symbol_type
-{
-    switch (k)
-    {
-        case keyword::KW_pre_inline:
-            return h1::parser::make_INLINE(loc_);
-        case keyword::KW_pre_include:
-            return h1::parser::make_INCLUDE(loc_);
-        case keyword::KW_pre_using_animtree:
-            return h1::parser::make_USINGTREE(loc_);
-        case keyword::KW_pre_animtree:
-            return h1::parser::make_ANIMTREE(loc_);
-        case keyword::KW_endon:
-            return h1::parser::make_ENDON(loc_);
-        case keyword::KW_notify:
-            return h1::parser::make_NOTIFY(loc_);
-        case keyword::KW_wait:
-            return h1::parser::make_WAIT(loc_);
-        case keyword::KW_waittill:
-            return h1::parser::make_WAITTILL(loc_);
-        case keyword::KW_waittillmatch:
-            return h1::parser::make_WAITTILLMATCH(loc_);
-        case keyword::KW_waittillframeend:
-            return h1::parser::make_WAITTILLFRAMEEND(loc_);
-        case keyword::KW_waitframe:
-            return h1::parser::make_WAITFRAME(loc_);
-        case keyword::KW_if:
-            return h1::parser::make_IF(loc_);
-        case keyword::KW_else:
-            return h1::parser::make_ELSE(loc_);
-        case keyword::KW_do:
-            return h1::parser::make_DO(loc_);
-        case keyword::KW_while:
-            return h1::parser::make_WHILE(loc_);
-        case keyword::KW_for:
-            return h1::parser::make_FOR(loc_);
-        case keyword::KW_foreach:
-            return h1::parser::make_FOREACH(loc_);
-        case keyword::KW_in:
-            return h1::parser::make_IN(loc_);
-        case keyword::KW_switch:
-            return h1::parser::make_SWITCH(loc_);
-        case keyword::KW_case:
-            return h1::parser::make_CASE(loc_);
-        case keyword::KW_default:
-            return h1::parser::make_DEFAULT(loc_);
-        case keyword::KW_break:
-            return h1::parser::make_BREAK(loc_);
-        case keyword::KW_continue:
-            return h1::parser::make_CONTINUE(loc_);
-        case keyword::KW_return:
-            return h1::parser::make_RETURN(loc_);
-        case keyword::KW_breakpoint:
-            return h1::parser::make_BREAKPOINT(loc_);
-        case keyword::KW_prof_begin:
-            return h1::parser::make_PROFBEGIN(loc_);
-        case keyword::KW_prof_end:
-            return h1::parser::make_PROFEND(loc_);
-        case keyword::KW_thread:
-            return h1::parser::make_THREAD(loc_);
-        case keyword::KW_childthread:
-            return h1::parser::make_CHILDTHREAD(loc_);
-        case keyword::KW_thisthread:
-            return h1::parser::make_THISTHREAD(loc_);
-        case keyword::KW_call:
-            return h1::parser::make_CALL(loc_);
-        case keyword::KW_true:
-            return h1::parser::make_TRUE(loc_);
-        case keyword::KW_false:
-        return h1::parser::make_FALSE(loc_);
-        case keyword::KW_undefined:
-            return h1::parser::make_UNDEFINED(loc_);
-        case keyword::KW_game:
-            return h1::parser::make_GAME(loc_);
-        case keyword::KW_self:
-            return h1::parser::make_SELF(loc_);
-        case keyword::KW_anim:
-            return h1::parser::make_ANIM(loc_);
-        case keyword::KW_level:
-            return h1::parser::make_LEVEL(loc_);
-        default:
-            throw error("gsc lexer: INVALID KEYWORD TOKEN!");
-    }
-}
-
-auto lexer::keyword_is_token(keyword k) -> bool
-{
-    switch (k)
-    {
-/*      case keyword::KW_pre_define:
-        case keyword::KW_pre_undef:
-        case keyword::KW_pre_ifdef:
-        case keyword::KW_pre_ifndef:
-        case keyword::KW_pre_if:
-        case keyword::KW_pre_elif:
-        case keyword::KW_pre_else:
-        case keyword::KW_pre_endif:*/
-        case keyword::KW_INVALID:
-            return false;
-        default:
-            return true;
-    }
-}
-
-auto lexer::get_keyword(std::string_view str) -> keyword
-{
-    auto itr = keywords.find(str);
-
-    if(itr != keywords.end())
-    {
-        return itr->second;
-    }
-
-    return keyword::KW_INVALID;
-}
-
-std::unordered_map<std::string_view, keyword> lexer::keywords
+const std::unordered_map<std::string_view, parser::token::token_kind_type> lexer::keyword_map
 {{
-/*  { "#define", keyword::KW_pre_define },
-    { "#undef", keyword::KW_pre_undef },
-    { "#ifdef", keyword::KW_pre_ifdef },
-    { "#ifndef", keyword::KW_pre_ifndef },
-    { "#if", keyword::KW_pre_if },
-    { "#elif", keyword::KW_pre_elif },
-    { "#else", keyword::KW_pre_else },
-    { "#endif", keyword::KW_pre_endif },*/
-    { "#inline", keyword::KW_pre_inline },
-    { "#include", keyword::KW_pre_include },
-    { "#using_animtree", keyword::KW_pre_using_animtree },
-    { "#animtree", keyword::KW_pre_animtree },
-    { "endon", keyword::KW_endon },
-    { "notify", keyword::KW_notify },
-    { "wait", keyword::KW_wait },
-    { "waittill", keyword::KW_waittill },
-    { "waittillmatch", keyword::KW_waittillmatch },
-    { "waittillframeend", keyword::KW_waittillframeend },
-    { "waitframe", keyword::KW_waitframe },
-    { "if", keyword::KW_if },
-    { "else", keyword::KW_else },
-    { "do", keyword::KW_do },
-    { "while", keyword::KW_while },
-    { "for", keyword::KW_for },
-    { "foreach", keyword::KW_foreach },
-    { "in", keyword::KW_in },
-    { "switch", keyword::KW_switch },
-    { "case", keyword::KW_case },
-    { "default", keyword::KW_default },
-    { "break", keyword::KW_break },
-    { "continue", keyword::KW_continue },
-    { "return", keyword::KW_return },
-    { "breakpoint", keyword::KW_breakpoint },
-    { "prof_begin", keyword::KW_prof_begin },
-    { "prof_end", keyword::KW_prof_end },
-    { "thread", keyword::KW_thread },
-    { "childthread", keyword::KW_childthread },
-    { "thisthread", keyword::KW_thisthread },
-    { "call", keyword::KW_call },
-    { "true", keyword::KW_true },
-    { "false", keyword::KW_false },
-    { "undefined", keyword::KW_undefined },
-    { "game", keyword::KW_game },
-    { "self", keyword::KW_self },
-    { "anim", keyword::KW_anim },
-    { "level", keyword::KW_level },
+    { "#define", parser::token::HSDEFINE },
+    { "#undef", parser::token::HSUNDEF },
+    { "#ifdef", parser::token::HSIFDEF },
+    { "#ifndef", parser::token::HSIFNDEF },
+    { "#if", parser::token::HSIF },
+    { "#elif", parser::token::HSELIF },
+    { "#else", parser::token::HSELSE },
+    { "#endif", parser::token::HSENDIF },
+    { "#inline", parser::token::INLINE },
+    { "#include", parser::token::INCLUDE },
+    { "#using_animtree", parser::token::USINGTREE },
+    { "#animtree", parser::token::ANIMTREE },
+    { "endon", parser::token::ENDON },
+    { "notify", parser::token::NOTIFY },
+    { "wait", parser::token::WAIT },
+    { "waittill", parser::token::WAITTILL },
+    { "waittillmatch", parser::token::WAITTILLMATCH },
+    { "waittillframeend", parser::token::WAITTILLFRAMEEND },
+    { "waitframe", parser::token::WAITFRAME },
+    { "if", parser::token::IF },
+    { "else", parser::token::ELSE },
+    { "do", parser::token::DO },
+    { "while", parser::token::WHILE },
+    { "for", parser::token::FOR },
+    { "foreach", parser::token::FOREACH },
+    { "in", parser::token::IN },
+    { "switch", parser::token::SWITCH },
+    { "case", parser::token::CASE },
+    { "default", parser::token::DEFAULT },
+    { "break", parser::token::BREAK },
+    { "continue", parser::token::CONTINUE },
+    { "return", parser::token::RETURN },
+    { "breakpoint", parser::token::BREAKPOINT },
+    { "prof_begin", parser::token::PROFBEGIN },
+    { "prof_end", parser::token::PROFEND },
+    { "thread", parser::token::THREAD },
+    { "childthread", parser::token::CHILDTHREAD },
+    { "thisthread", parser::token::THISTHREAD },
+    { "call", parser::token::CALL },
+    { "true", parser::token::TRUE },
+    { "false", parser::token::FALSE },
+    { "undefined", parser::token::UNDEFINED },
+    { "game", parser::token::GAME },
+    { "self", parser::token::SELF },
+    { "anim", parser::token::ANIM },
+    { "level", parser::token::LEVEL },
 }};
 
 } // namespace xsk::gsc::h1
