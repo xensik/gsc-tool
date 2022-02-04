@@ -16,6 +16,56 @@ xsk::gsc::h1::parser::symbol_type H1lex(xsk::gsc::h1::lexer& lexer)
 namespace xsk::gsc::h1
 {
 
+const std::unordered_map<std::string_view, parser::token::token_kind_type> keyword_map
+{{
+    { "#define", parser::token::SH_DEFINE },
+    { "#undef", parser::token::SH_UNDEF },
+    { "#ifdef", parser::token::SH_IFDEF },
+    { "#ifndef", parser::token::SH_IFNDEF },
+    { "#if", parser::token::SH_IF },
+    { "#elif", parser::token::SH_ELIF },
+    { "#else", parser::token::SH_ELSE },
+    { "#endif", parser::token::SH_ENDIF },
+    { "#inline", parser::token::INLINE },
+    { "#include", parser::token::INCLUDE },
+    { "#using_animtree", parser::token::USINGTREE },
+    { "#animtree", parser::token::ANIMTREE },
+    { "endon", parser::token::ENDON },
+    { "notify", parser::token::NOTIFY },
+    { "wait", parser::token::WAIT },
+    { "waittill", parser::token::WAITTILL },
+    { "waittillmatch", parser::token::WAITTILLMATCH },
+    { "waittillframeend", parser::token::WAITTILLFRAMEEND },
+    { "waitframe", parser::token::WAITFRAME },
+    { "if", parser::token::IF },
+    { "else", parser::token::ELSE },
+    { "do", parser::token::DO },
+    { "while", parser::token::WHILE },
+    { "for", parser::token::FOR },
+    { "foreach", parser::token::FOREACH },
+    { "in", parser::token::IN },
+    { "switch", parser::token::SWITCH },
+    { "case", parser::token::CASE },
+    { "default", parser::token::DEFAULT },
+    { "break", parser::token::BREAK },
+    { "continue", parser::token::CONTINUE },
+    { "return", parser::token::RETURN },
+    { "breakpoint", parser::token::BREAKPOINT },
+    { "prof_begin", parser::token::PROFBEGIN },
+    { "prof_end", parser::token::PROFEND },
+    { "thread", parser::token::THREAD },
+    { "childthread", parser::token::CHILDTHREAD },
+    { "thisthread", parser::token::THISTHREAD },
+    { "call", parser::token::CALL },
+    { "true", parser::token::TRUE },
+    { "false", parser::token::FALSE },
+    { "undefined", parser::token::UNDEFINED },
+    { "game", parser::token::GAME },
+    { "self", parser::token::SELF },
+    { "anim", parser::token::ANIM },
+    { "level", parser::token::LEVEL },
+}};
+
 buffer::buffer() : length(0)
 {
     data = static_cast<char*>(std::malloc(max_buf_size));
@@ -35,10 +85,8 @@ bool buffer::push(char c)
     return true;
 }
 
-reader::reader() : state(reader::end), buffer_pos(0), bytes_remaining(0), last_byte(0), current_byte(0)
-{
-
-}
+reader::reader() : state(reader::end), buffer_pos(0), bytes_remaining(0),
+    last_byte(0), current_byte(0) { }
 
 void reader::init(const char* data, size_t size)
 {
@@ -78,7 +126,7 @@ void reader::advance()
     }
 }
 
-lexer::lexer(const std::string& name, const char* data, size_t size) : indev_(false), loc_(location(&name)),
+lexer::lexer(const std::string& name, const char* data, size_t size) : indev_(false), clean_(true), loc_(location(&name)),
     mode_(build::dev), header_top_(0), locs_(std::stack<location>()), readers_(std::stack<reader>())
 {
     reader_.init(data, size);
@@ -97,6 +145,7 @@ void lexer::push_header(const std::string& file)
         locs_.push(loc_);
         loc_.initialize(std::get<0>(data));
         reader_.init(std::get<1>(data), std::get<2>(data));
+        clean_ = true;
     }
     catch (const std::exception& e)
     {
@@ -145,7 +194,10 @@ auto lexer::lex() -> parser::symbol_type
                 return parser::make_H1EOF(loc_);
         }
 
-        reader_.advance();
+        if (clean_ && last != 0 && last != ' ' && last != '\t' && last != '\n')
+            clean_ = false;
+
+        advance();
 
         switch (last)
         {
@@ -157,12 +209,15 @@ auto lexer::lex() -> parser::symbol_type
             case '\n':
                 loc_.lines();
                 loc_.step();
+                clean_ = true;
                 continue;
+            case '\\':
+                throw comp_error(loc_, "invalid token ('\\')");
             case '/':
                 if (curr != '/' && curr != '*' && curr != '#' && curr != '=')
                     return parser::make_DIV(loc_);
 
-                reader_.advance();
+                advance();
 
                 if (last == '=')
                     return parser::make_ASSIGN_DIV(loc_);
@@ -224,7 +279,30 @@ auto lexer::lex() -> parser::symbol_type
                 {
                     while (true)
                     {
-                        if (state == reader::end || curr == '\n')
+                        if (state == reader::end)
+                            break;
+
+                        if (last == '\\' && curr == '\r' || curr == '\n')
+                        {
+                            reader_.advance();
+
+                            if (state == reader::end)
+                                break;
+
+                            if (last == '\r')
+                            {
+                                if (curr != '\n')
+                                    throw comp_error(loc_, "invalid token ('\')");
+
+                                reader_.advance();
+                            }
+
+                            loc_.lines();
+                            loc_.step();
+                            continue;
+                        }
+
+                        if (curr == '\n')
                             break;
 
                         reader_.advance();
@@ -238,15 +316,23 @@ auto lexer::lex() -> parser::symbol_type
                         throw comp_error(loc_, "unmatched devblock end ('#/')");
 
                     indev_ = false;
-                    reader_.advance();
+                    advance();
                     return parser::make_DEVEND(loc_);
                 }
 
                 buffer_.push(last);
-                reader_.advance();
+                advance();
+
+                while (state == reader::ok)
+                {
+                    if (last != ' ' || last != '\t')
+                        break;
+
+                    advance();
+                }
 
                 if (state == reader::end || !((last > 64 && last < 91) || (last > 96 && last < 123)))
-                    throw comp_error(loc_, "unterminated preprocessor directive ('#')");
+                    throw comp_error(loc_, "invalid preprocessor directive ('#')");
 
                 state_ = state::preprocessor;
                 goto lex_name;
@@ -254,7 +340,7 @@ auto lexer::lex() -> parser::symbol_type
                 if (curr != '/' && curr != '=')
                     return parser::make_MUL(loc_);
 
-                reader_.advance();
+                advance();
 
                 if (last == '=')
                     return parser::make_ASSIGN_MUL(loc_);
@@ -264,9 +350,9 @@ auto lexer::lex() -> parser::symbol_type
                 state_ = state::string;
                 goto lex_string;
             case '.':
-                reader_.advance();
+                advance();
 
-                if(state == reader::end)
+                if (state == reader::end)
                     throw comp_error(loc_, "unterminated field ('.')");
 
                 state_ = state::field;
@@ -291,7 +377,7 @@ auto lexer::lex() -> parser::symbol_type
                 if (curr != ':')
                     return parser::make_COLON(loc_);
 
-                reader_.advance();
+                advance();
                 return parser::make_DOUBLECOLON(loc_);
             case '?':
                 return parser::make_QMARK(loc_);
@@ -299,13 +385,13 @@ auto lexer::lex() -> parser::symbol_type
                 if (curr != '=')
                     return parser::make_ASSIGN(loc_);
 
-                reader_.advance();
+                advance();
                 return parser::make_EQUALITY(loc_);
             case '+':
                 if (curr != '+' && curr != '=')
                     return parser::make_ADD(loc_);
 
-                reader_.advance();
+                advance();
 
                 if (last == '+')
                     return parser::make_INCREMENT(loc_);
@@ -315,7 +401,7 @@ auto lexer::lex() -> parser::symbol_type
                 if (curr != '-' && curr != '=')
                     return parser::make_SUB(loc_);
 
-                reader_.advance();
+                advance();
 
                 if (last == '-')
                     return parser::make_DECREMENT(loc_);
@@ -325,24 +411,24 @@ auto lexer::lex() -> parser::symbol_type
                 if (curr != '=')
                     return parser::make_MOD(loc_);
 
-                reader_.advance();
+                advance();
 
                 return parser::make_ASSIGN_MOD(loc_);
             case '|':
                 if (curr != '|' && curr != '=')
                     return parser::make_BITWISE_OR(loc_);
 
-                reader_.advance();
+                advance();
 
                 if (last == '|')
                     return parser::make_OR(loc_);
 
                 return parser::make_ASSIGN_BW_OR(loc_);
             case '&':
-                if (curr != '&' && curr != '=' && curr != '"' && curr != '\'')
+                if (curr != '&' && curr != '=' && curr != '"')
                     return parser::make_BITWISE_AND(loc_);
 
-                reader_.advance();
+                advance();
 
                 if (last == '&')
                     return parser::make_AND(loc_);
@@ -356,13 +442,13 @@ auto lexer::lex() -> parser::symbol_type
                 if (curr != '=')
                     return parser::make_BITWISE_EXOR(loc_);
 
-                reader_.advance();
+                advance();
                 return parser::make_ASSIGN_BW_EXOR(loc_);
             case '!':
                 if (curr != '=')
                     return parser::make_NOT(loc_);
 
-                reader_.advance();
+                advance();
                 return parser::make_INEQUALITY(loc_);
             case '~':
                 return parser::make_COMPLEMENT(loc_);
@@ -370,20 +456,20 @@ auto lexer::lex() -> parser::symbol_type
                 if (curr != '<' && curr != '=')
                     return parser::make_LESS(loc_);
 
-                reader_.advance();
+                advance();
                 if (last == '=')
                     return parser::make_LESS_EQUAL(loc_);
 
                 if (curr != '=')
                     return parser::make_LSHIFT(loc_);
 
-                reader_.advance();
+                advance();
                 return parser::make_ASSIGN_LSHIFT(loc_);
             case '>':
                 if (curr != '>' && curr != '=')
                     return parser::make_GREATER(loc_);
 
-                reader_.advance();
+                advance();
 
                 if (last == '=')
                     return parser::make_GREATER_EQUAL(loc_);
@@ -391,7 +477,7 @@ auto lexer::lex() -> parser::symbol_type
                 if (curr != '=')
                     return parser::make_RSHIFT(loc_);
 
-                reader_.advance();
+                advance();
                 return parser::make_ASSIGN_RSHIFT(loc_);
             default:
 lex_name_or_number:
@@ -404,24 +490,27 @@ lex_name_or_number:
         }
 
 lex_string:
-        if (state == reader::end)
-            throw comp_error(loc_, "unmatched string start ('\"')");
-
-        reader_.advance();
-
         while (true)
         {
-            if (last == '"')
-                break;
-
-            if (last == '\n')
-                throw comp_error(loc_, "unterminated string literal");
-
             if (state == reader::end)
                 throw comp_error(loc_, "unmatched string start ('\"')");
 
-            if (last == '\\')
+            if (curr == '"')
             {
+                advance();
+                break;
+            }
+
+            if (curr == '\n')
+                throw comp_error(loc_, "unterminated string literal");
+
+            if (curr == '\\')
+            {
+                advance();
+
+                if (state == reader::end)
+                    throw comp_error(loc_, "invalid token ('\')");
+
                 char c = curr;
                 switch (curr)
                 {
@@ -435,13 +524,11 @@ lex_string:
 
                 if (!buffer_.push(c))
                     throw comp_error(loc_, "max string size exceeded");
-
-                reader_.advance();
             }
-            else if (!buffer_.push(last))
+            else if (!buffer_.push(curr))
                 throw comp_error(loc_, "max string size exceeded");
 
-            reader_.advance();
+            advance();
         }
 
         if (state_ == state::localize)
@@ -472,7 +559,7 @@ lex_name:
             else if (!buffer_.push(curr))
                 throw comp_error(loc_, "max string size exceeded");
 
-            reader_.advance();
+            advance();
         }
 
         if(state_ == state::field)
@@ -491,24 +578,23 @@ lex_name:
         {
             if (path)
                 throw comp_error(loc_, "invalid preprocessor directive");
-            
+
             auto token = parser::token::H1UNDEF;
 
             if (buffer_.length < 16)
             {
                 const auto& itr = keyword_map.find(std::string_view(buffer_.data, buffer_.length));
 
-                if(itr != keyword_map.end()) 
+                if (itr != keyword_map.end())
                 {
-                    if (itr->second > parser::token::HSENDIF)
+                    if (itr->second > parser::token::SH_ENDIF)
                         return parser::symbol_type(itr->second, loc_);
-                    
+
                     token = itr->second;
                 }
             }
 
-            // TODO: call preprocessor(token);
-            throw comp_error(loc_, "unknown preprocessor directive");
+            preprocessor(token);
             state_ = state::start;
             continue;
         }
@@ -518,7 +604,7 @@ lex_name:
             {
                 const auto& itr = keyword_map.find(std::string_view(buffer_.data, buffer_.length));
 
-                if(itr != keyword_map.end()) 
+                if (itr != keyword_map.end())
                     return parser::symbol_type(itr->second, loc_);
             }
 
@@ -557,7 +643,7 @@ lex_number:
 
                 if (curr == '\'')
                 {
-                    reader_.advance();
+                    advance();
                     continue;
                 }
 
@@ -571,7 +657,7 @@ lex_number:
                 if (!buffer_.push(curr))
                     throw comp_error(loc_, "number literal size exceeded");
 
-                reader_.advance();
+                advance();
             }
 
             if (last == '\'')
@@ -587,7 +673,7 @@ lex_number:
         }
         else if (curr == 'o')
         {
-            reader_.advance();
+            advance();
 
             while (true)
             {
@@ -599,7 +685,7 @@ lex_number:
 
                 if (curr == '\'')
                 {
-                    reader_.advance();
+                    advance();
                     continue;
                 }
 
@@ -609,7 +695,7 @@ lex_number:
                 if (!buffer_.push(curr))
                     throw error("gsc lexer: out of memory!");
 
-                reader_.advance();
+                advance();
             }
 
             if (last == '\'' || buffer_.length <= 0)
@@ -621,7 +707,7 @@ lex_number:
         {
             buffer_.push(last);
             buffer_.push(curr);
-            reader_.advance();
+            advance();
 
             while (true)
             {
@@ -633,7 +719,7 @@ lex_number:
 
                 if (curr == '\'')
                 {
-                    reader_.advance();
+                    advance();
                     continue;
                 }
 
@@ -643,7 +729,7 @@ lex_number:
                 if (!buffer_.push(curr))
                     throw comp_error(loc_, "number literal size exceeded");
 
-                reader_.advance();
+                advance();
             }
 
             if (last == '\'' || buffer_.length < 3)
@@ -655,7 +741,7 @@ lex_number:
         {
             buffer_.push(last);
             buffer_.push(curr);
-            reader_.advance();
+            advance();
 
             while (true)
             {
@@ -667,7 +753,7 @@ lex_number:
 
                 if (curr == '\'')
                 {
-                    reader_.advance();
+                    advance();
                     continue;
                 }
 
@@ -677,7 +763,7 @@ lex_number:
                 if (!buffer_.push(curr))
                     throw error("gsc lexer: out of memory!");
 
-                reader_.advance();
+                advance();
             }
 
             if (last == '\'' || buffer_.length < 3)
@@ -689,54 +775,89 @@ lex_number:
     }
 }
 
-const std::unordered_map<std::string_view, parser::token::token_kind_type> lexer::keyword_map
-{{
-    { "#define", parser::token::HSDEFINE },
-    { "#undef", parser::token::HSUNDEF },
-    { "#ifdef", parser::token::HSIFDEF },
-    { "#ifndef", parser::token::HSIFNDEF },
-    { "#if", parser::token::HSIF },
-    { "#elif", parser::token::HSELIF },
-    { "#else", parser::token::HSELSE },
-    { "#endif", parser::token::HSENDIF },
-    { "#inline", parser::token::INLINE },
-    { "#include", parser::token::INCLUDE },
-    { "#using_animtree", parser::token::USINGTREE },
-    { "#animtree", parser::token::ANIMTREE },
-    { "endon", parser::token::ENDON },
-    { "notify", parser::token::NOTIFY },
-    { "wait", parser::token::WAIT },
-    { "waittill", parser::token::WAITTILL },
-    { "waittillmatch", parser::token::WAITTILLMATCH },
-    { "waittillframeend", parser::token::WAITTILLFRAMEEND },
-    { "waitframe", parser::token::WAITFRAME },
-    { "if", parser::token::IF },
-    { "else", parser::token::ELSE },
-    { "do", parser::token::DO },
-    { "while", parser::token::WHILE },
-    { "for", parser::token::FOR },
-    { "foreach", parser::token::FOREACH },
-    { "in", parser::token::IN },
-    { "switch", parser::token::SWITCH },
-    { "case", parser::token::CASE },
-    { "default", parser::token::DEFAULT },
-    { "break", parser::token::BREAK },
-    { "continue", parser::token::CONTINUE },
-    { "return", parser::token::RETURN },
-    { "breakpoint", parser::token::BREAKPOINT },
-    { "prof_begin", parser::token::PROFBEGIN },
-    { "prof_end", parser::token::PROFEND },
-    { "thread", parser::token::THREAD },
-    { "childthread", parser::token::CHILDTHREAD },
-    { "thisthread", parser::token::THISTHREAD },
-    { "call", parser::token::CALL },
-    { "true", parser::token::TRUE },
-    { "false", parser::token::FALSE },
-    { "undefined", parser::token::UNDEFINED },
-    { "game", parser::token::GAME },
-    { "self", parser::token::SELF },
-    { "anim", parser::token::ANIM },
-    { "level", parser::token::LEVEL },
-}};
+void lexer::advance()
+{
+    reader_.advance();
+
+    // dont wrap comment marks '/\/' '/\*' outside strings
+    if (state_ == state::start && reader_.last_byte == '/')
+        return;
+
+    while (reader_.current_byte == '\\')
+    {
+        if (reader_.bytes_remaining == 1)
+            throw comp_error(loc_, "invalid token ('\\')");
+
+        if (reader_.buffer_pos[1] != '\r' && reader_.buffer_pos[1] != '\n')
+            break;
+
+        if (reader_.buffer_pos[1] == '\r')
+        {
+            if (reader_.bytes_remaining <= 3 || reader_.buffer_pos[2] != '\n')
+                throw comp_error(loc_, "invalid token ('\\')");
+
+            reader_.buffer_pos += 3;
+            reader_.bytes_remaining -= 3;
+        }
+
+        if ((reader_.buffer_pos[1] == '\n'))
+        {
+            if (reader_.bytes_remaining == 2)
+                throw comp_error(loc_, "invalid token ('\\')");
+
+            reader_.buffer_pos += 2;
+            reader_.bytes_remaining -= 2;
+        }
+
+        if (reader_.bytes_remaining == 0)
+        {
+            reader_.state = reader::end;
+            reader_.current_byte = 0;
+        }
+        else
+        {
+            reader_.current_byte = *reader_.buffer_pos;
+        }
+
+        loc_.lines();
+        loc_.step();
+    }
+}
+
+void lexer::preprocessor(parser::token::token_kind_type token)
+{
+    if (!clean_)
+        throw comp_error(loc_, "invalid token ('#')");
+
+    switch (token)
+    {
+        case parser::token::SH_DEFINE:
+            throw comp_error(loc_, "unimplemented preprocessor directive");
+            break;
+        case parser::token::SH_UNDEF:
+            throw comp_error(loc_, "unimplemented preprocessor directive");
+            break;
+        case parser::token::SH_IFDEF:
+            throw comp_error(loc_, "unimplemented preprocessor directive");
+            break;
+        case parser::token::SH_IFNDEF:
+            throw comp_error(loc_, "unimplemented preprocessor directive");
+            break;
+        case parser::token::SH_IF:
+            throw comp_error(loc_, "unimplemented preprocessor directive");
+            break;
+        case parser::token::SH_ELIF:
+            throw comp_error(loc_, "unimplemented preprocessor directive");
+            break;
+        case parser::token::SH_ELSE:
+            throw comp_error(loc_, "unimplemented preprocessor directive");
+            break;
+        case parser::token::SH_ENDIF:
+            throw comp_error(loc_, "unimplemented preprocessor directive");
+            break;
+        default:
+            throw comp_error(loc_, "unknown preprocessor directive");
+    }
+}
 
 } // namespace xsk::gsc::h1

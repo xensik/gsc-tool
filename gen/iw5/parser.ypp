@@ -39,14 +39,14 @@ using namespace xsk::gsc;
 xsk::gsc::iw5::parser::symbol_type IW5lex(xsk::gsc::iw5::lexer& lexer);
 }
 
-%token HSDEFINE         "#define"
-%token HSUNDEF          "#undef"
-%token HSIFDEF          "#ifdef"
-%token HSIFNDEF         "#ifndef"
-%token HSIF             "#if"
-%token HSELIF           "#elif"
-%token HSELSE           "#else"
-%token HSENDIF          "#endif"
+%token SH_DEFINE        "#define"
+%token SH_UNDEF         "#undef"
+%token SH_IFDEF         "#ifdef"
+%token SH_IFNDEF        "#ifndef"
+%token SH_IF            "#if"
+%token SH_ELIF          "#elif"
+%token SH_ELSE          "#else"
+%token SH_ENDIF         "#endif"
 %token DEVBEGIN         "/#"
 %token DEVEND           "#/"
 %token INLINE           "#inline"

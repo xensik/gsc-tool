@@ -683,14 +683,14 @@ namespace xsk { namespace gsc { namespace s4 {
     S4EOF = 0,                     // "end of file"
     S4error = 1,                   // error
     S4UNDEF = 2,                   // "invalid token"
-    HSDEFINE = 3,                  // "#define"
-    HSUNDEF = 4,                   // "#undef"
-    HSIFDEF = 5,                   // "#ifdef"
-    HSIFNDEF = 6,                  // "#ifndef"
-    HSIF = 7,                      // "#if"
-    HSELIF = 8,                    // "#elif"
-    HSELSE = 9,                    // "#else"
-    HSENDIF = 10,                  // "#endif"
+    SH_DEFINE = 3,                 // "#define"
+    SH_UNDEF = 4,                  // "#undef"
+    SH_IFDEF = 5,                  // "#ifdef"
+    SH_IFNDEF = 6,                 // "#ifndef"
+    SH_IF = 7,                     // "#if"
+    SH_ELIF = 8,                   // "#elif"
+    SH_ELSE = 9,                   // "#else"
+    SH_ENDIF = 10,                 // "#endif"
     DEVBEGIN = 11,                 // "/#"
     DEVEND = 12,                   // "#/"
     INLINE = 13,                   // "#inline"
@@ -817,14 +817,14 @@ namespace xsk { namespace gsc { namespace s4 {
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
         S_YYUNDEF = 2,                           // "invalid token"
-        S_HSDEFINE = 3,                          // "#define"
-        S_HSUNDEF = 4,                           // "#undef"
-        S_HSIFDEF = 5,                           // "#ifdef"
-        S_HSIFNDEF = 6,                          // "#ifndef"
-        S_HSIF = 7,                              // "#if"
-        S_HSELIF = 8,                            // "#elif"
-        S_HSELSE = 9,                            // "#else"
-        S_HSENDIF = 10,                          // "#endif"
+        S_SH_DEFINE = 3,                         // "#define"
+        S_SH_UNDEF = 4,                          // "#undef"
+        S_SH_IFDEF = 5,                          // "#ifdef"
+        S_SH_IFNDEF = 6,                         // "#ifndef"
+        S_SH_IF = 7,                             // "#if"
+        S_SH_ELIF = 8,                           // "#elif"
+        S_SH_ELSE = 9,                           // "#else"
+        S_SH_ENDIF = 10,                         // "#endif"
         S_DEVBEGIN = 11,                         // "/#"
         S_DEVEND = 12,                           // "#/"
         S_INLINE = 13,                           // "#inline"
@@ -2854,121 +2854,121 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_HSDEFINE (location_type l)
+      make_SH_DEFINE (location_type l)
       {
-        return symbol_type (token::HSDEFINE, std::move (l));
+        return symbol_type (token::SH_DEFINE, std::move (l));
       }
 #else
       static
       symbol_type
-      make_HSDEFINE (const location_type& l)
+      make_SH_DEFINE (const location_type& l)
       {
-        return symbol_type (token::HSDEFINE, l);
+        return symbol_type (token::SH_DEFINE, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_HSUNDEF (location_type l)
+      make_SH_UNDEF (location_type l)
       {
-        return symbol_type (token::HSUNDEF, std::move (l));
+        return symbol_type (token::SH_UNDEF, std::move (l));
       }
 #else
       static
       symbol_type
-      make_HSUNDEF (const location_type& l)
+      make_SH_UNDEF (const location_type& l)
       {
-        return symbol_type (token::HSUNDEF, l);
+        return symbol_type (token::SH_UNDEF, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_HSIFDEF (location_type l)
+      make_SH_IFDEF (location_type l)
       {
-        return symbol_type (token::HSIFDEF, std::move (l));
+        return symbol_type (token::SH_IFDEF, std::move (l));
       }
 #else
       static
       symbol_type
-      make_HSIFDEF (const location_type& l)
+      make_SH_IFDEF (const location_type& l)
       {
-        return symbol_type (token::HSIFDEF, l);
+        return symbol_type (token::SH_IFDEF, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_HSIFNDEF (location_type l)
+      make_SH_IFNDEF (location_type l)
       {
-        return symbol_type (token::HSIFNDEF, std::move (l));
+        return symbol_type (token::SH_IFNDEF, std::move (l));
       }
 #else
       static
       symbol_type
-      make_HSIFNDEF (const location_type& l)
+      make_SH_IFNDEF (const location_type& l)
       {
-        return symbol_type (token::HSIFNDEF, l);
+        return symbol_type (token::SH_IFNDEF, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_HSIF (location_type l)
+      make_SH_IF (location_type l)
       {
-        return symbol_type (token::HSIF, std::move (l));
+        return symbol_type (token::SH_IF, std::move (l));
       }
 #else
       static
       symbol_type
-      make_HSIF (const location_type& l)
+      make_SH_IF (const location_type& l)
       {
-        return symbol_type (token::HSIF, l);
+        return symbol_type (token::SH_IF, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_HSELIF (location_type l)
+      make_SH_ELIF (location_type l)
       {
-        return symbol_type (token::HSELIF, std::move (l));
+        return symbol_type (token::SH_ELIF, std::move (l));
       }
 #else
       static
       symbol_type
-      make_HSELIF (const location_type& l)
+      make_SH_ELIF (const location_type& l)
       {
-        return symbol_type (token::HSELIF, l);
+        return symbol_type (token::SH_ELIF, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_HSELSE (location_type l)
+      make_SH_ELSE (location_type l)
       {
-        return symbol_type (token::HSELSE, std::move (l));
+        return symbol_type (token::SH_ELSE, std::move (l));
       }
 #else
       static
       symbol_type
-      make_HSELSE (const location_type& l)
+      make_SH_ELSE (const location_type& l)
       {
-        return symbol_type (token::HSELSE, l);
+        return symbol_type (token::SH_ELSE, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_HSENDIF (location_type l)
+      make_SH_ENDIF (location_type l)
       {
-        return symbol_type (token::HSENDIF, std::move (l));
+        return symbol_type (token::SH_ENDIF, std::move (l));
       }
 #else
       static
       symbol_type
-      make_HSENDIF (const location_type& l)
+      make_SH_ENDIF (const location_type& l)
       {
-        return symbol_type (token::HSENDIF, l);
+        return symbol_type (token::SH_ENDIF, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS

@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include "iw5.hpp"
-
 namespace xsk::gsc::iw5
 {
 
@@ -57,6 +55,7 @@ class lexer
     state state_;
     build mode_;
     bool indev_;
+    bool clean_;
 
 public:
     lexer(const std::string& name, const char* data, size_t size);
@@ -66,7 +65,8 @@ public:
     void ban_header(const location& loc);
 
 private:
-    static const std::unordered_map<std::string_view, parser::token::token_kind_type> keyword_map;
+    void advance();
+    void preprocessor(parser::token::token_kind_type token);
 };
 
 } // namespace xsk::gsc::iw5
