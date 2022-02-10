@@ -282,7 +282,7 @@ auto lexer::lex() -> parser::symbol_type
                         if (state == reader::end)
                             break;
 
-                        if (last == '\\' && curr == '\r' || curr == '\n')
+                        if (last == '\\' && (curr == '\r' || curr == '\n'))
                         {
                             reader_.advance();
 
