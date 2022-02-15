@@ -38,10 +38,42 @@ auto node::is_special_stmt() -> bool
     }
 }
 
+auto node::is_special_stmt_dev() -> bool
+{
+    switch (kind_)
+    {
+        case kind::stmt_dev:
+        case kind::stmt_if:
+        case kind::stmt_ifelse:
+        case kind::stmt_while:
+        case kind::stmt_for:
+        case kind::stmt_foreach:
+        case kind::stmt_switch:
+            return true;
+        default:
+            return false;
+    }
+}
+
 auto node::is_special_stmt_noif() -> bool
 {
     switch (kind_)
     {
+        case kind::stmt_while:
+        case kind::stmt_for:
+        case kind::stmt_foreach:
+        case kind::stmt_switch:
+            return true;
+        default:
+            return false;
+    }
+}
+
+auto node::is_special_stmt_dev_noif() -> bool
+{
+    switch (kind_)
+    {
+        case kind::stmt_dev:
         case kind::stmt_while:
         case kind::stmt_for:
         case kind::stmt_foreach:
@@ -120,9 +152,6 @@ expr_float::expr_float(const location& loc, const std::string& value) : node(kin
 
 expr_vector::expr_vector(expr x, expr y, expr z) : node(kind::expr_vector), x(std::move(x)), y(std::move(y)), z(std::move(z)) {}
 expr_vector::expr_vector(const location& loc, expr x, expr y, expr z) : node(kind::expr_vector, loc), x(std::move(x)), y(std::move(y)), z(std::move(z)) {}
-
-expr_color::expr_color(const std::string& value) : node(kind::expr_color), value(value) {}
-expr_color::expr_color(const location& loc, const std::string& value) : node(kind::expr_color, loc), value(value) {}
 
 expr_string::expr_string(const std::string& value) : node(kind::expr_string), value(value) {}
 expr_string::expr_string(const location& loc, const std::string& value) : node(kind::expr_string, loc), value(value) {}
@@ -318,6 +347,9 @@ expr_assign_bitwise_exor::expr_assign_bitwise_exor(const location& loc, expr lva
 stmt_list::stmt_list() : node(kind::stmt_list) {}
 stmt_list::stmt_list(const location& loc) : node(kind::stmt_list, loc) {}
 
+stmt_dev::stmt_dev(ast::stmt_list::ptr list) : node(kind::stmt_dev), list(std::move(list)) {}
+stmt_dev::stmt_dev(const location& loc, ast::stmt_list::ptr list) : node(kind::stmt_dev, loc), list(std::move(list)) {}
+
 stmt_expr::stmt_expr(ast::expr expr) : node(kind::stmt_expr), expr(std::move(expr)) {}
 stmt_expr::stmt_expr(const location& loc, ast::expr expr) : node(kind::stmt_expr, loc), expr(std::move(expr)) {}
 
@@ -484,11 +516,6 @@ auto expr_float::print() const -> std::string
 auto expr_vector::print() const -> std::string
 {
     return "( "s + x.print() + ", " + y.print() + ", " + z.print() + " )";
-}
-
-auto expr_color::print() const -> std::string
-{
-    return "#"s += value;
 }
 
 auto expr_string::print() const -> std::string
@@ -861,7 +888,10 @@ auto stmt_list::print() const -> std::string
         if (&stmt != &list.front() && stmt.as_node->is_special_stmt() || last_special)
             data += "\n";
 
-        data += stmts_pad + stmt.print();
+        if (stmt == kind::stmt_dev)
+            data += stmt.print();
+        else
+            data += stmts_pad + stmt.print();
 
         if (&stmt != &list.back())
             data += "\n";
@@ -876,6 +906,39 @@ auto stmt_list::print() const -> std::string
 
     if (!is_case)
         data += "\n" + block_pad + "}";
+
+    return data;
+}
+
+auto stmt_dev::print() const -> std::string
+{
+    std::string data;
+    bool last_special = false;
+
+    auto stmts_pad = indented(indent_);
+
+    data += "/#\n";
+
+    for (const auto& stmt : list->list)
+    {
+        if (&stmt != &list->list.front() && stmt.as_node->is_special_stmt() || last_special)
+            data += "\n";
+
+        if (stmt == kind::stmt_dev)
+            data += stmt.print();
+        else
+            data += stmts_pad + stmt.print();
+
+        if (&stmt != &list->list.back())
+            data += "\n";
+
+        if (stmt.as_node->is_special_stmt())
+            last_special = true;
+        else
+            last_special = false;
+    }
+
+    data += "\n#/";
 
     return data;
 }
@@ -905,7 +968,7 @@ auto stmt_notify::print() const -> std::string
     if (args->list.size() == 0)
         return obj.print() + " notify( " + event.print() + " );";
     else
-        return obj.print() + " notify( " + event.print() + ", " + args->print() + " );";
+        return obj.print() + " notify( " + event.print() + "," + args->print() + ");";
 };
 
 auto stmt_wait::print() const -> std::string
@@ -921,7 +984,7 @@ auto stmt_waittill::print() const -> std::string
     if (args->list.size() == 0)
         return obj.print() + " waittill( " + event.print() + " );";
     else
-        return obj.print() + " waittill( " + event.print() + ", " + args->print() + " );";
+        return obj.print() + " waittill( " + event.print() + "," + args->print() + ");";
 };
 
 auto stmt_waittillmatch::print() const -> std::string
@@ -929,7 +992,7 @@ auto stmt_waittillmatch::print() const -> std::string
     if (args->list.size() == 0)
         return obj.print() + " waittillmatch( " + event.print() + " );";
     else
-        return obj.print() + " waittillmatch( " + event.print() + ", " + args->print() + " );";
+        return obj.print() + " waittillmatch( " + event.print() + "," + args->print() + ");";
 };
 
 auto stmt_waittillframeend::print() const -> std::string
@@ -1228,32 +1291,32 @@ auto asm_loc::print() const -> std::string
 
 auto asm_jump::print() const -> std::string
 {
-    return "jump " + value;
+    return "__asm_jump( " + value + " );";
 }
 
 auto asm_jump_back::print() const -> std::string
 {
-    return "jump_back " + value;
+    return "__asm_jump_back( " + value + " );";
 }
 
 auto asm_jump_cond::print() const -> std::string
 {
-    return "jump_cond( " + expr.print() + " ) " + value;
+    return "__asm_jump_cond( " + expr.print() + ", " + value + " );";
 }
 
 auto asm_jump_true_expr::print() const -> std::string
 {
-    return "expr_true " + value;
+    return "__asm_jump_expr_true( " + value + " );";
 }
 
 auto asm_jump_false_expr::print() const -> std::string
 {
-    return "expr_false " + value;
+    return "__asm_jump_expr_false( " + value + " );";
 }
 
 auto asm_switch::print() const -> std::string
 {
-    return "switch( " + expr.print() + " ) " + value;
+    return "__asm_switch( " + expr.print() + ", " + value + " );";
 }
 
 auto asm_endswitch::print() const -> std::string
@@ -1264,37 +1327,37 @@ auto asm_endswitch::print() const -> std::string
     {
         result += " " + entry;
     }
-    return "endswitch( " + count + " )" + result;
+    return "__asm_endswitch( " + count + "," + result + ");";
 }
 
 auto asm_prescriptcall::print() const -> std::string
 {
-    return "prescriptcall";
+    return "__asm_prescriptcall();";
 }
 
 auto asm_voidcodepos::print() const -> std::string
 {
-    return "voidcodepos";
+    return "__asm_voidcodepos();";
 }
 
 auto asm_create::print() const -> std::string
 {
-    return "var_create_" + index;
+    return "__asm_var_create( " + index + " );";
 }
 
 auto asm_access::print() const -> std::string
 {
-    return "var_access_" + index;
+    return "__asm_var_access( " + index + " );";
 }
 
 auto asm_remove::print() const -> std::string
 {
-    return "var_remove_" + index;
+    return "__asm_var_remove( " + index + " );";
 }
 
 auto asm_clear::print() const -> std::string
 {
-    return "var_clear_" + index;
+    return "__asm_var_clear( " + index + " );";
 }
 
 // operators
@@ -1332,11 +1395,6 @@ bool operator==(const expr_float& lhs, const expr_float& rhs)
 bool operator==(const expr_vector& lhs, const expr_vector& rhs)
 {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
-}
-
-bool operator==(const expr_color& lhs, const expr_color& rhs)
-{
-    return lhs.value == rhs.value;
 }
 
 bool operator==(const expr_string& lhs, const expr_string& rhs)
@@ -1493,7 +1551,6 @@ expr::~expr()
         case kind::expr_integer: as_integer.~unique_ptr(); return;
         case kind::expr_float: as_float.~unique_ptr(); return;
         case kind::expr_vector: as_vector.~unique_ptr(); return;
-        case kind::expr_color: as_color.~unique_ptr(); return;
         case kind::expr_string: as_string.~unique_ptr(); return;
         case kind::expr_istring: as_istring.~unique_ptr(); return;
         case kind::expr_path: as_path.~unique_ptr(); return;
@@ -1571,7 +1628,7 @@ bool operator==(const expr& lhs, kind rhs)
 
 bool operator==(const expr& lhs, const expr& rhs)
 {
-    if(!(*lhs.as_node == *rhs.as_node)) return false;
+    if (!(*lhs.as_node == *rhs.as_node)) return false;
 
     switch(lhs.as_node->kind())
     {
@@ -1580,7 +1637,6 @@ bool operator==(const expr& lhs, const expr& rhs)
         case kind::expr_integer: return *lhs.as_integer == *rhs.as_integer;
         case kind::expr_float: return *lhs.as_float == *rhs.as_float;
         case kind::expr_vector: return *lhs.as_vector == *rhs.as_vector;
-        case kind::expr_color: return *lhs.as_color == *rhs.as_color;
         case kind::expr_string: return *lhs.as_string == *rhs.as_string;
         case kind::expr_istring: return *lhs.as_istring == *rhs.as_istring;
         case kind::expr_path: return *lhs.as_path == *rhs.as_path;
@@ -1640,6 +1696,7 @@ stmt::~stmt()
     {
         case kind::null: as_node.~unique_ptr(); return;
         case kind::stmt_list: as_list.~unique_ptr(); return;
+        case kind::stmt_dev: as_dev.~unique_ptr(); return;
         case kind::stmt_expr: as_expr.~unique_ptr(); return;
         case kind::stmt_call: as_call.~unique_ptr(); return;
         case kind::stmt_assign: as_assign.~unique_ptr(); return;
@@ -1666,9 +1723,9 @@ stmt::~stmt()
         case kind::stmt_prof_begin: as_prof_begin.~unique_ptr(); return;
         case kind::stmt_prof_end: as_prof_end.~unique_ptr(); return;
         case kind::asm_loc: as_loc.~unique_ptr(); return;
-        case kind::asm_jump_cond: as_cond.~unique_ptr(); return;
         case kind::asm_jump: as_jump.~unique_ptr(); return;
         case kind::asm_jump_back: as_jump_back.~unique_ptr(); return;
+        case kind::asm_jump_cond: as_cond.~unique_ptr(); return;
         case kind::asm_switch: as_asm_switch.~unique_ptr(); return;
         case kind::asm_endswitch: as_asm_endswitch.~unique_ptr(); return;
         case kind::asm_create: as_asm_create.~unique_ptr(); return;

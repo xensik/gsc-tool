@@ -535,6 +535,7 @@ namespace xsk { namespace gsc { namespace s1 {
       char dummy39[sizeof (ast::program::ptr)];
 
       // stmt
+      // stmt_or_dev
       char dummy40[sizeof (ast::stmt)];
 
       // stmt_assign
@@ -558,64 +559,67 @@ namespace xsk { namespace gsc { namespace s1 {
       // stmt_default
       char dummy47[sizeof (ast::stmt_default::ptr)];
 
+      // stmt_dev
+      char dummy48[sizeof (ast::stmt_dev::ptr)];
+
       // stmt_dowhile
-      char dummy48[sizeof (ast::stmt_dowhile::ptr)];
+      char dummy49[sizeof (ast::stmt_dowhile::ptr)];
 
       // stmt_endon
-      char dummy49[sizeof (ast::stmt_endon::ptr)];
+      char dummy50[sizeof (ast::stmt_endon::ptr)];
 
       // stmt_expr
-      char dummy50[sizeof (ast::stmt_expr::ptr)];
+      char dummy51[sizeof (ast::stmt_expr::ptr)];
 
       // stmt_for
-      char dummy51[sizeof (ast::stmt_for::ptr)];
+      char dummy52[sizeof (ast::stmt_for::ptr)];
 
       // stmt_foreach
-      char dummy52[sizeof (ast::stmt_foreach::ptr)];
+      char dummy53[sizeof (ast::stmt_foreach::ptr)];
 
       // stmt_if
-      char dummy53[sizeof (ast::stmt_if::ptr)];
+      char dummy54[sizeof (ast::stmt_if::ptr)];
 
       // stmt_ifelse
-      char dummy54[sizeof (ast::stmt_ifelse::ptr)];
+      char dummy55[sizeof (ast::stmt_ifelse::ptr)];
 
-      // stmt_dev
-      // stmt_block
       // stmt_list
-      char dummy55[sizeof (ast::stmt_list::ptr)];
+      // stmt_or_dev_list
+      // stmt_block
+      char dummy56[sizeof (ast::stmt_list::ptr)];
 
       // stmt_notify
-      char dummy56[sizeof (ast::stmt_notify::ptr)];
+      char dummy57[sizeof (ast::stmt_notify::ptr)];
 
       // stmt_prof_begin
-      char dummy57[sizeof (ast::stmt_prof_begin::ptr)];
+      char dummy58[sizeof (ast::stmt_prof_begin::ptr)];
 
       // stmt_prof_end
-      char dummy58[sizeof (ast::stmt_prof_end::ptr)];
+      char dummy59[sizeof (ast::stmt_prof_end::ptr)];
 
       // stmt_return
-      char dummy59[sizeof (ast::stmt_return::ptr)];
+      char dummy60[sizeof (ast::stmt_return::ptr)];
 
       // stmt_switch
-      char dummy60[sizeof (ast::stmt_switch::ptr)];
+      char dummy61[sizeof (ast::stmt_switch::ptr)];
 
       // stmt_wait
-      char dummy61[sizeof (ast::stmt_wait::ptr)];
+      char dummy62[sizeof (ast::stmt_wait::ptr)];
 
       // stmt_waitframe
-      char dummy62[sizeof (ast::stmt_waitframe::ptr)];
+      char dummy63[sizeof (ast::stmt_waitframe::ptr)];
 
       // stmt_waittill
-      char dummy63[sizeof (ast::stmt_waittill::ptr)];
+      char dummy64[sizeof (ast::stmt_waittill::ptr)];
 
       // stmt_waittillframeend
-      char dummy64[sizeof (ast::stmt_waittillframeend::ptr)];
+      char dummy65[sizeof (ast::stmt_waittillframeend::ptr)];
 
       // stmt_waittillmatch
-      char dummy65[sizeof (ast::stmt_waittillmatch::ptr)];
+      char dummy66[sizeof (ast::stmt_waittillmatch::ptr)];
 
       // stmt_while
-      char dummy66[sizeof (ast::stmt_while::ptr)];
+      char dummy67[sizeof (ast::stmt_while::ptr)];
 
       // "field"
       // "path"
@@ -625,7 +629,7 @@ namespace xsk { namespace gsc { namespace s1 {
       // "color"
       // "float"
       // "integer"
-      char dummy67[sizeof (std::string)];
+      char dummy68[sizeof (std::string)];
     };
 
     /// The size of the largest semantic type.
@@ -930,77 +934,79 @@ namespace xsk { namespace gsc { namespace s1 {
         S_decl_constant = 121,                   // decl_constant
         S_decl_thread = 122,                     // decl_thread
         S_stmt = 123,                            // stmt
-        S_stmt_dev = 124,                        // stmt_dev
-        S_stmt_block = 125,                      // stmt_block
-        S_stmt_list = 126,                       // stmt_list
-        S_stmt_expr = 127,                       // stmt_expr
-        S_stmt_call = 128,                       // stmt_call
-        S_stmt_assign = 129,                     // stmt_assign
-        S_stmt_endon = 130,                      // stmt_endon
-        S_stmt_notify = 131,                     // stmt_notify
-        S_stmt_wait = 132,                       // stmt_wait
-        S_stmt_waittill = 133,                   // stmt_waittill
-        S_stmt_waittillmatch = 134,              // stmt_waittillmatch
-        S_stmt_waittillframeend = 135,           // stmt_waittillframeend
-        S_stmt_waitframe = 136,                  // stmt_waitframe
-        S_stmt_if = 137,                         // stmt_if
-        S_stmt_ifelse = 138,                     // stmt_ifelse
-        S_stmt_while = 139,                      // stmt_while
-        S_stmt_dowhile = 140,                    // stmt_dowhile
-        S_stmt_for = 141,                        // stmt_for
-        S_stmt_foreach = 142,                    // stmt_foreach
-        S_stmt_switch = 143,                     // stmt_switch
-        S_stmt_case = 144,                       // stmt_case
-        S_stmt_default = 145,                    // stmt_default
-        S_stmt_break = 146,                      // stmt_break
-        S_stmt_continue = 147,                   // stmt_continue
-        S_stmt_return = 148,                     // stmt_return
-        S_stmt_breakpoint = 149,                 // stmt_breakpoint
-        S_stmt_prof_begin = 150,                 // stmt_prof_begin
-        S_stmt_prof_end = 151,                   // stmt_prof_end
-        S_expr = 152,                            // expr
-        S_expr_or_empty = 153,                   // expr_or_empty
-        S_expr_assign = 154,                     // expr_assign
-        S_expr_increment = 155,                  // expr_increment
-        S_expr_decrement = 156,                  // expr_decrement
-        S_expr_ternary = 157,                    // expr_ternary
-        S_expr_binary = 158,                     // expr_binary
-        S_expr_primitive = 159,                  // expr_primitive
-        S_expr_complement = 160,                 // expr_complement
-        S_expr_not = 161,                        // expr_not
-        S_expr_call = 162,                       // expr_call
-        S_expr_method = 163,                     // expr_method
-        S_expr_function = 164,                   // expr_function
-        S_expr_pointer = 165,                    // expr_pointer
-        S_expr_add_array = 166,                  // expr_add_array
-        S_expr_parameters = 167,                 // expr_parameters
-        S_expr_arguments = 168,                  // expr_arguments
-        S_expr_arguments_no_empty = 169,         // expr_arguments_no_empty
-        S_expr_reference = 170,                  // expr_reference
-        S_expr_array = 171,                      // expr_array
-        S_expr_field = 172,                      // expr_field
-        S_expr_size = 173,                       // expr_size
-        S_expr_paren = 174,                      // expr_paren
-        S_expr_object = 175,                     // expr_object
-        S_expr_thisthread = 176,                 // expr_thisthread
-        S_expr_empty_array = 177,                // expr_empty_array
-        S_expr_undefined = 178,                  // expr_undefined
-        S_expr_game = 179,                       // expr_game
-        S_expr_self = 180,                       // expr_self
-        S_expr_anim = 181,                       // expr_anim
-        S_expr_level = 182,                      // expr_level
-        S_expr_animation = 183,                  // expr_animation
-        S_expr_animtree = 184,                   // expr_animtree
-        S_expr_identifier = 185,                 // expr_identifier
-        S_expr_path = 186,                       // expr_path
-        S_expr_istring = 187,                    // expr_istring
-        S_expr_string = 188,                     // expr_string
-        S_expr_color = 189,                      // expr_color
-        S_expr_vector = 190,                     // expr_vector
-        S_expr_float = 191,                      // expr_float
-        S_expr_integer = 192,                    // expr_integer
-        S_expr_false = 193,                      // expr_false
-        S_expr_true = 194                        // expr_true
+        S_stmt_or_dev = 124,                     // stmt_or_dev
+        S_stmt_list = 125,                       // stmt_list
+        S_stmt_or_dev_list = 126,                // stmt_or_dev_list
+        S_stmt_dev = 127,                        // stmt_dev
+        S_stmt_block = 128,                      // stmt_block
+        S_stmt_expr = 129,                       // stmt_expr
+        S_stmt_call = 130,                       // stmt_call
+        S_stmt_assign = 131,                     // stmt_assign
+        S_stmt_endon = 132,                      // stmt_endon
+        S_stmt_notify = 133,                     // stmt_notify
+        S_stmt_wait = 134,                       // stmt_wait
+        S_stmt_waittill = 135,                   // stmt_waittill
+        S_stmt_waittillmatch = 136,              // stmt_waittillmatch
+        S_stmt_waittillframeend = 137,           // stmt_waittillframeend
+        S_stmt_waitframe = 138,                  // stmt_waitframe
+        S_stmt_if = 139,                         // stmt_if
+        S_stmt_ifelse = 140,                     // stmt_ifelse
+        S_stmt_while = 141,                      // stmt_while
+        S_stmt_dowhile = 142,                    // stmt_dowhile
+        S_stmt_for = 143,                        // stmt_for
+        S_stmt_foreach = 144,                    // stmt_foreach
+        S_stmt_switch = 145,                     // stmt_switch
+        S_stmt_case = 146,                       // stmt_case
+        S_stmt_default = 147,                    // stmt_default
+        S_stmt_break = 148,                      // stmt_break
+        S_stmt_continue = 149,                   // stmt_continue
+        S_stmt_return = 150,                     // stmt_return
+        S_stmt_breakpoint = 151,                 // stmt_breakpoint
+        S_stmt_prof_begin = 152,                 // stmt_prof_begin
+        S_stmt_prof_end = 153,                   // stmt_prof_end
+        S_expr = 154,                            // expr
+        S_expr_or_empty = 155,                   // expr_or_empty
+        S_expr_assign = 156,                     // expr_assign
+        S_expr_increment = 157,                  // expr_increment
+        S_expr_decrement = 158,                  // expr_decrement
+        S_expr_ternary = 159,                    // expr_ternary
+        S_expr_binary = 160,                     // expr_binary
+        S_expr_primitive = 161,                  // expr_primitive
+        S_expr_complement = 162,                 // expr_complement
+        S_expr_not = 163,                        // expr_not
+        S_expr_call = 164,                       // expr_call
+        S_expr_method = 165,                     // expr_method
+        S_expr_function = 166,                   // expr_function
+        S_expr_pointer = 167,                    // expr_pointer
+        S_expr_add_array = 168,                  // expr_add_array
+        S_expr_parameters = 169,                 // expr_parameters
+        S_expr_arguments = 170,                  // expr_arguments
+        S_expr_arguments_no_empty = 171,         // expr_arguments_no_empty
+        S_expr_reference = 172,                  // expr_reference
+        S_expr_array = 173,                      // expr_array
+        S_expr_field = 174,                      // expr_field
+        S_expr_size = 175,                       // expr_size
+        S_expr_paren = 176,                      // expr_paren
+        S_expr_object = 177,                     // expr_object
+        S_expr_thisthread = 178,                 // expr_thisthread
+        S_expr_empty_array = 179,                // expr_empty_array
+        S_expr_undefined = 180,                  // expr_undefined
+        S_expr_game = 181,                       // expr_game
+        S_expr_self = 182,                       // expr_self
+        S_expr_anim = 183,                       // expr_anim
+        S_expr_level = 184,                      // expr_level
+        S_expr_animation = 185,                  // expr_animation
+        S_expr_animtree = 186,                   // expr_animtree
+        S_expr_identifier = 187,                 // expr_identifier
+        S_expr_path = 188,                       // expr_path
+        S_expr_istring = 189,                    // expr_istring
+        S_expr_string = 190,                     // expr_string
+        S_expr_color = 191,                      // expr_color
+        S_expr_vector = 192,                     // expr_vector
+        S_expr_float = 193,                      // expr_float
+        S_expr_integer = 194,                    // expr_integer
+        S_expr_false = 195,                      // expr_false
+        S_expr_true = 196                        // expr_true
       };
     };
 
@@ -1204,6 +1210,7 @@ namespace xsk { namespace gsc { namespace s1 {
         break;
 
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_or_dev: // stmt_or_dev
         value.move< ast::stmt > (std::move (that.value));
         break;
 
@@ -1235,6 +1242,10 @@ namespace xsk { namespace gsc { namespace s1 {
         value.move< ast::stmt_default::ptr > (std::move (that.value));
         break;
 
+      case symbol_kind::S_stmt_dev: // stmt_dev
+        value.move< ast::stmt_dev::ptr > (std::move (that.value));
+        break;
+
       case symbol_kind::S_stmt_dowhile: // stmt_dowhile
         value.move< ast::stmt_dowhile::ptr > (std::move (that.value));
         break;
@@ -1263,9 +1274,9 @@ namespace xsk { namespace gsc { namespace s1 {
         value.move< ast::stmt_ifelse::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_stmt_dev: // stmt_dev
-      case symbol_kind::S_stmt_block: // stmt_block
       case symbol_kind::S_stmt_list: // stmt_list
+      case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
+      case symbol_kind::S_stmt_block: // stmt_block
         value.move< ast::stmt_list::ptr > (std::move (that.value));
         break;
 
@@ -2006,6 +2017,20 @@ namespace xsk { namespace gsc { namespace s1 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_dev::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_dev::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, ast::stmt_dowhile::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -2474,6 +2499,7 @@ switch (yykind)
         break;
 
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_or_dev: // stmt_or_dev
         value.template destroy< ast::stmt > ();
         break;
 
@@ -2505,6 +2531,10 @@ switch (yykind)
         value.template destroy< ast::stmt_default::ptr > ();
         break;
 
+      case symbol_kind::S_stmt_dev: // stmt_dev
+        value.template destroy< ast::stmt_dev::ptr > ();
+        break;
+
       case symbol_kind::S_stmt_dowhile: // stmt_dowhile
         value.template destroy< ast::stmt_dowhile::ptr > ();
         break;
@@ -2533,9 +2563,9 @@ switch (yykind)
         value.template destroy< ast::stmt_ifelse::ptr > ();
         break;
 
-      case symbol_kind::S_stmt_dev: // stmt_dev
-      case symbol_kind::S_stmt_block: // stmt_block
       case symbol_kind::S_stmt_list: // stmt_list
+      case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
+      case symbol_kind::S_stmt_block: // stmt_block
         value.template destroy< ast::stmt_list::ptr > ();
         break;
 
@@ -4804,8 +4834,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2291,     ///< Last index in yytable_.
-      yynnts_ = 81,  ///< Number of nonterminal symbols.
+      yylast_ = 2285,     ///< Last index in yytable_.
+      yynnts_ = 83,  ///< Number of nonterminal symbols.
       yyfinal_ = 21 ///< Termination state number.
     };
 
@@ -4999,6 +5029,7 @@ switch (yykind)
         break;
 
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_or_dev: // stmt_or_dev
         value.copy< ast::stmt > (YY_MOVE (that.value));
         break;
 
@@ -5030,6 +5061,10 @@ switch (yykind)
         value.copy< ast::stmt_default::ptr > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_stmt_dev: // stmt_dev
+        value.copy< ast::stmt_dev::ptr > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_stmt_dowhile: // stmt_dowhile
         value.copy< ast::stmt_dowhile::ptr > (YY_MOVE (that.value));
         break;
@@ -5058,9 +5093,9 @@ switch (yykind)
         value.copy< ast::stmt_ifelse::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_stmt_dev: // stmt_dev
-      case symbol_kind::S_stmt_block: // stmt_block
       case symbol_kind::S_stmt_list: // stmt_list
+      case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
+      case symbol_kind::S_stmt_block: // stmt_block
         value.copy< ast::stmt_list::ptr > (YY_MOVE (that.value));
         break;
 
@@ -5315,6 +5350,7 @@ switch (yykind)
         break;
 
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_or_dev: // stmt_or_dev
         value.move< ast::stmt > (YY_MOVE (s.value));
         break;
 
@@ -5346,6 +5382,10 @@ switch (yykind)
         value.move< ast::stmt_default::ptr > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_stmt_dev: // stmt_dev
+        value.move< ast::stmt_dev::ptr > (YY_MOVE (s.value));
+        break;
+
       case symbol_kind::S_stmt_dowhile: // stmt_dowhile
         value.move< ast::stmt_dowhile::ptr > (YY_MOVE (s.value));
         break;
@@ -5374,9 +5414,9 @@ switch (yykind)
         value.move< ast::stmt_ifelse::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_stmt_dev: // stmt_dev
-      case symbol_kind::S_stmt_block: // stmt_block
       case symbol_kind::S_stmt_list: // stmt_list
+      case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
+      case symbol_kind::S_stmt_block: // stmt_block
         value.move< ast::stmt_list::ptr > (YY_MOVE (s.value));
         break;
 
@@ -5498,7 +5538,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::gsc::s1
-#line 5502 "parser.hpp"
+#line 5542 "parser.hpp"
 
 
 

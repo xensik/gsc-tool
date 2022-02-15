@@ -571,4 +571,4 @@ auto assembler::resolve_label(const std::string& name) -> std::int32_t
     throw asm_error("Couldn't resolve label address of '" + name + "'!");
 }
 
-}  // namespace xsk::gsc::h1
+} // namespace xsk::gsc::h1

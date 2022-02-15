@@ -535,6 +535,7 @@ namespace xsk { namespace gsc { namespace iw7 {
       char dummy39[sizeof (ast::program::ptr)];
 
       // stmt
+      // stmt_or_dev
       char dummy40[sizeof (ast::stmt)];
 
       // stmt_assign
@@ -558,61 +559,64 @@ namespace xsk { namespace gsc { namespace iw7 {
       // stmt_default
       char dummy47[sizeof (ast::stmt_default::ptr)];
 
+      // stmt_dev
+      char dummy48[sizeof (ast::stmt_dev::ptr)];
+
       // stmt_dowhile
-      char dummy48[sizeof (ast::stmt_dowhile::ptr)];
+      char dummy49[sizeof (ast::stmt_dowhile::ptr)];
 
       // stmt_endon
-      char dummy49[sizeof (ast::stmt_endon::ptr)];
+      char dummy50[sizeof (ast::stmt_endon::ptr)];
 
       // stmt_expr
-      char dummy50[sizeof (ast::stmt_expr::ptr)];
+      char dummy51[sizeof (ast::stmt_expr::ptr)];
 
       // stmt_for
-      char dummy51[sizeof (ast::stmt_for::ptr)];
+      char dummy52[sizeof (ast::stmt_for::ptr)];
 
       // stmt_foreach
-      char dummy52[sizeof (ast::stmt_foreach::ptr)];
+      char dummy53[sizeof (ast::stmt_foreach::ptr)];
 
       // stmt_if
-      char dummy53[sizeof (ast::stmt_if::ptr)];
+      char dummy54[sizeof (ast::stmt_if::ptr)];
 
       // stmt_ifelse
-      char dummy54[sizeof (ast::stmt_ifelse::ptr)];
+      char dummy55[sizeof (ast::stmt_ifelse::ptr)];
 
-      // stmt_dev
-      // stmt_block
       // stmt_list
-      char dummy55[sizeof (ast::stmt_list::ptr)];
+      // stmt_or_dev_list
+      // stmt_block
+      char dummy56[sizeof (ast::stmt_list::ptr)];
 
       // stmt_notify
-      char dummy56[sizeof (ast::stmt_notify::ptr)];
+      char dummy57[sizeof (ast::stmt_notify::ptr)];
 
       // stmt_prof_begin
-      char dummy57[sizeof (ast::stmt_prof_begin::ptr)];
+      char dummy58[sizeof (ast::stmt_prof_begin::ptr)];
 
       // stmt_prof_end
-      char dummy58[sizeof (ast::stmt_prof_end::ptr)];
+      char dummy59[sizeof (ast::stmt_prof_end::ptr)];
 
       // stmt_return
-      char dummy59[sizeof (ast::stmt_return::ptr)];
+      char dummy60[sizeof (ast::stmt_return::ptr)];
 
       // stmt_switch
-      char dummy60[sizeof (ast::stmt_switch::ptr)];
+      char dummy61[sizeof (ast::stmt_switch::ptr)];
 
       // stmt_wait
-      char dummy61[sizeof (ast::stmt_wait::ptr)];
+      char dummy62[sizeof (ast::stmt_wait::ptr)];
 
       // stmt_waittill
-      char dummy62[sizeof (ast::stmt_waittill::ptr)];
+      char dummy63[sizeof (ast::stmt_waittill::ptr)];
 
       // stmt_waittillframeend
-      char dummy63[sizeof (ast::stmt_waittillframeend::ptr)];
+      char dummy64[sizeof (ast::stmt_waittillframeend::ptr)];
 
       // stmt_waittillmatch
-      char dummy64[sizeof (ast::stmt_waittillmatch::ptr)];
+      char dummy65[sizeof (ast::stmt_waittillmatch::ptr)];
 
       // stmt_while
-      char dummy65[sizeof (ast::stmt_while::ptr)];
+      char dummy66[sizeof (ast::stmt_while::ptr)];
 
       // "field"
       // "path"
@@ -622,7 +626,7 @@ namespace xsk { namespace gsc { namespace iw7 {
       // "color"
       // "float"
       // "integer"
-      char dummy66[sizeof (std::string)];
+      char dummy67[sizeof (std::string)];
     };
 
     /// The size of the largest semantic type.
@@ -925,76 +929,78 @@ namespace xsk { namespace gsc { namespace iw7 {
         S_decl_constant = 120,                   // decl_constant
         S_decl_thread = 121,                     // decl_thread
         S_stmt = 122,                            // stmt
-        S_stmt_dev = 123,                        // stmt_dev
-        S_stmt_block = 124,                      // stmt_block
-        S_stmt_list = 125,                       // stmt_list
-        S_stmt_expr = 126,                       // stmt_expr
-        S_stmt_call = 127,                       // stmt_call
-        S_stmt_assign = 128,                     // stmt_assign
-        S_stmt_endon = 129,                      // stmt_endon
-        S_stmt_notify = 130,                     // stmt_notify
-        S_stmt_wait = 131,                       // stmt_wait
-        S_stmt_waittill = 132,                   // stmt_waittill
-        S_stmt_waittillmatch = 133,              // stmt_waittillmatch
-        S_stmt_waittillframeend = 134,           // stmt_waittillframeend
-        S_stmt_if = 135,                         // stmt_if
-        S_stmt_ifelse = 136,                     // stmt_ifelse
-        S_stmt_while = 137,                      // stmt_while
-        S_stmt_dowhile = 138,                    // stmt_dowhile
-        S_stmt_for = 139,                        // stmt_for
-        S_stmt_foreach = 140,                    // stmt_foreach
-        S_stmt_switch = 141,                     // stmt_switch
-        S_stmt_case = 142,                       // stmt_case
-        S_stmt_default = 143,                    // stmt_default
-        S_stmt_break = 144,                      // stmt_break
-        S_stmt_continue = 145,                   // stmt_continue
-        S_stmt_return = 146,                     // stmt_return
-        S_stmt_breakpoint = 147,                 // stmt_breakpoint
-        S_stmt_prof_begin = 148,                 // stmt_prof_begin
-        S_stmt_prof_end = 149,                   // stmt_prof_end
-        S_expr = 150,                            // expr
-        S_expr_or_empty = 151,                   // expr_or_empty
-        S_expr_assign = 152,                     // expr_assign
-        S_expr_increment = 153,                  // expr_increment
-        S_expr_decrement = 154,                  // expr_decrement
-        S_expr_ternary = 155,                    // expr_ternary
-        S_expr_binary = 156,                     // expr_binary
-        S_expr_primitive = 157,                  // expr_primitive
-        S_expr_complement = 158,                 // expr_complement
-        S_expr_not = 159,                        // expr_not
-        S_expr_call = 160,                       // expr_call
-        S_expr_method = 161,                     // expr_method
-        S_expr_function = 162,                   // expr_function
-        S_expr_pointer = 163,                    // expr_pointer
-        S_expr_add_array = 164,                  // expr_add_array
-        S_expr_parameters = 165,                 // expr_parameters
-        S_expr_arguments = 166,                  // expr_arguments
-        S_expr_arguments_no_empty = 167,         // expr_arguments_no_empty
-        S_expr_reference = 168,                  // expr_reference
-        S_expr_array = 169,                      // expr_array
-        S_expr_field = 170,                      // expr_field
-        S_expr_size = 171,                       // expr_size
-        S_expr_paren = 172,                      // expr_paren
-        S_expr_object = 173,                     // expr_object
-        S_expr_thisthread = 174,                 // expr_thisthread
-        S_expr_empty_array = 175,                // expr_empty_array
-        S_expr_undefined = 176,                  // expr_undefined
-        S_expr_game = 177,                       // expr_game
-        S_expr_self = 178,                       // expr_self
-        S_expr_anim = 179,                       // expr_anim
-        S_expr_level = 180,                      // expr_level
-        S_expr_animation = 181,                  // expr_animation
-        S_expr_animtree = 182,                   // expr_animtree
-        S_expr_identifier = 183,                 // expr_identifier
-        S_expr_path = 184,                       // expr_path
-        S_expr_istring = 185,                    // expr_istring
-        S_expr_string = 186,                     // expr_string
-        S_expr_color = 187,                      // expr_color
-        S_expr_vector = 188,                     // expr_vector
-        S_expr_float = 189,                      // expr_float
-        S_expr_integer = 190,                    // expr_integer
-        S_expr_false = 191,                      // expr_false
-        S_expr_true = 192                        // expr_true
+        S_stmt_or_dev = 123,                     // stmt_or_dev
+        S_stmt_list = 124,                       // stmt_list
+        S_stmt_or_dev_list = 125,                // stmt_or_dev_list
+        S_stmt_dev = 126,                        // stmt_dev
+        S_stmt_block = 127,                      // stmt_block
+        S_stmt_expr = 128,                       // stmt_expr
+        S_stmt_call = 129,                       // stmt_call
+        S_stmt_assign = 130,                     // stmt_assign
+        S_stmt_endon = 131,                      // stmt_endon
+        S_stmt_notify = 132,                     // stmt_notify
+        S_stmt_wait = 133,                       // stmt_wait
+        S_stmt_waittill = 134,                   // stmt_waittill
+        S_stmt_waittillmatch = 135,              // stmt_waittillmatch
+        S_stmt_waittillframeend = 136,           // stmt_waittillframeend
+        S_stmt_if = 137,                         // stmt_if
+        S_stmt_ifelse = 138,                     // stmt_ifelse
+        S_stmt_while = 139,                      // stmt_while
+        S_stmt_dowhile = 140,                    // stmt_dowhile
+        S_stmt_for = 141,                        // stmt_for
+        S_stmt_foreach = 142,                    // stmt_foreach
+        S_stmt_switch = 143,                     // stmt_switch
+        S_stmt_case = 144,                       // stmt_case
+        S_stmt_default = 145,                    // stmt_default
+        S_stmt_break = 146,                      // stmt_break
+        S_stmt_continue = 147,                   // stmt_continue
+        S_stmt_return = 148,                     // stmt_return
+        S_stmt_breakpoint = 149,                 // stmt_breakpoint
+        S_stmt_prof_begin = 150,                 // stmt_prof_begin
+        S_stmt_prof_end = 151,                   // stmt_prof_end
+        S_expr = 152,                            // expr
+        S_expr_or_empty = 153,                   // expr_or_empty
+        S_expr_assign = 154,                     // expr_assign
+        S_expr_increment = 155,                  // expr_increment
+        S_expr_decrement = 156,                  // expr_decrement
+        S_expr_ternary = 157,                    // expr_ternary
+        S_expr_binary = 158,                     // expr_binary
+        S_expr_primitive = 159,                  // expr_primitive
+        S_expr_complement = 160,                 // expr_complement
+        S_expr_not = 161,                        // expr_not
+        S_expr_call = 162,                       // expr_call
+        S_expr_method = 163,                     // expr_method
+        S_expr_function = 164,                   // expr_function
+        S_expr_pointer = 165,                    // expr_pointer
+        S_expr_add_array = 166,                  // expr_add_array
+        S_expr_parameters = 167,                 // expr_parameters
+        S_expr_arguments = 168,                  // expr_arguments
+        S_expr_arguments_no_empty = 169,         // expr_arguments_no_empty
+        S_expr_reference = 170,                  // expr_reference
+        S_expr_array = 171,                      // expr_array
+        S_expr_field = 172,                      // expr_field
+        S_expr_size = 173,                       // expr_size
+        S_expr_paren = 174,                      // expr_paren
+        S_expr_object = 175,                     // expr_object
+        S_expr_thisthread = 176,                 // expr_thisthread
+        S_expr_empty_array = 177,                // expr_empty_array
+        S_expr_undefined = 178,                  // expr_undefined
+        S_expr_game = 179,                       // expr_game
+        S_expr_self = 180,                       // expr_self
+        S_expr_anim = 181,                       // expr_anim
+        S_expr_level = 182,                      // expr_level
+        S_expr_animation = 183,                  // expr_animation
+        S_expr_animtree = 184,                   // expr_animtree
+        S_expr_identifier = 185,                 // expr_identifier
+        S_expr_path = 186,                       // expr_path
+        S_expr_istring = 187,                    // expr_istring
+        S_expr_string = 188,                     // expr_string
+        S_expr_color = 189,                      // expr_color
+        S_expr_vector = 190,                     // expr_vector
+        S_expr_float = 191,                      // expr_float
+        S_expr_integer = 192,                    // expr_integer
+        S_expr_false = 193,                      // expr_false
+        S_expr_true = 194                        // expr_true
       };
     };
 
@@ -1198,6 +1204,7 @@ namespace xsk { namespace gsc { namespace iw7 {
         break;
 
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_or_dev: // stmt_or_dev
         value.move< ast::stmt > (std::move (that.value));
         break;
 
@@ -1229,6 +1236,10 @@ namespace xsk { namespace gsc { namespace iw7 {
         value.move< ast::stmt_default::ptr > (std::move (that.value));
         break;
 
+      case symbol_kind::S_stmt_dev: // stmt_dev
+        value.move< ast::stmt_dev::ptr > (std::move (that.value));
+        break;
+
       case symbol_kind::S_stmt_dowhile: // stmt_dowhile
         value.move< ast::stmt_dowhile::ptr > (std::move (that.value));
         break;
@@ -1257,9 +1268,9 @@ namespace xsk { namespace gsc { namespace iw7 {
         value.move< ast::stmt_ifelse::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_stmt_dev: // stmt_dev
-      case symbol_kind::S_stmt_block: // stmt_block
       case symbol_kind::S_stmt_list: // stmt_list
+      case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
+      case symbol_kind::S_stmt_block: // stmt_block
         value.move< ast::stmt_list::ptr > (std::move (that.value));
         break;
 
@@ -1996,6 +2007,20 @@ namespace xsk { namespace gsc { namespace iw7 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::stmt_dev::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::stmt_dev::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, ast::stmt_dowhile::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -2450,6 +2475,7 @@ switch (yykind)
         break;
 
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_or_dev: // stmt_or_dev
         value.template destroy< ast::stmt > ();
         break;
 
@@ -2481,6 +2507,10 @@ switch (yykind)
         value.template destroy< ast::stmt_default::ptr > ();
         break;
 
+      case symbol_kind::S_stmt_dev: // stmt_dev
+        value.template destroy< ast::stmt_dev::ptr > ();
+        break;
+
       case symbol_kind::S_stmt_dowhile: // stmt_dowhile
         value.template destroy< ast::stmt_dowhile::ptr > ();
         break;
@@ -2509,9 +2539,9 @@ switch (yykind)
         value.template destroy< ast::stmt_ifelse::ptr > ();
         break;
 
-      case symbol_kind::S_stmt_dev: // stmt_dev
-      case symbol_kind::S_stmt_block: // stmt_block
       case symbol_kind::S_stmt_list: // stmt_list
+      case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
+      case symbol_kind::S_stmt_block: // stmt_block
         value.template destroy< ast::stmt_list::ptr > ();
         break;
 
@@ -4761,8 +4791,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2249,     ///< Last index in yytable_.
-      yynnts_ = 80,  ///< Number of nonterminal symbols.
+      yylast_ = 2262,     ///< Last index in yytable_.
+      yynnts_ = 82,  ///< Number of nonterminal symbols.
       yyfinal_ = 21 ///< Termination state number.
     };
 
@@ -4956,6 +4986,7 @@ switch (yykind)
         break;
 
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_or_dev: // stmt_or_dev
         value.copy< ast::stmt > (YY_MOVE (that.value));
         break;
 
@@ -4987,6 +5018,10 @@ switch (yykind)
         value.copy< ast::stmt_default::ptr > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_stmt_dev: // stmt_dev
+        value.copy< ast::stmt_dev::ptr > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_stmt_dowhile: // stmt_dowhile
         value.copy< ast::stmt_dowhile::ptr > (YY_MOVE (that.value));
         break;
@@ -5015,9 +5050,9 @@ switch (yykind)
         value.copy< ast::stmt_ifelse::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_stmt_dev: // stmt_dev
-      case symbol_kind::S_stmt_block: // stmt_block
       case symbol_kind::S_stmt_list: // stmt_list
+      case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
+      case symbol_kind::S_stmt_block: // stmt_block
         value.copy< ast::stmt_list::ptr > (YY_MOVE (that.value));
         break;
 
@@ -5268,6 +5303,7 @@ switch (yykind)
         break;
 
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_or_dev: // stmt_or_dev
         value.move< ast::stmt > (YY_MOVE (s.value));
         break;
 
@@ -5299,6 +5335,10 @@ switch (yykind)
         value.move< ast::stmt_default::ptr > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_stmt_dev: // stmt_dev
+        value.move< ast::stmt_dev::ptr > (YY_MOVE (s.value));
+        break;
+
       case symbol_kind::S_stmt_dowhile: // stmt_dowhile
         value.move< ast::stmt_dowhile::ptr > (YY_MOVE (s.value));
         break;
@@ -5327,9 +5367,9 @@ switch (yykind)
         value.move< ast::stmt_ifelse::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_stmt_dev: // stmt_dev
-      case symbol_kind::S_stmt_block: // stmt_block
       case symbol_kind::S_stmt_list: // stmt_list
+      case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
+      case symbol_kind::S_stmt_block: // stmt_block
         value.move< ast::stmt_list::ptr > (YY_MOVE (s.value));
         break;
 
@@ -5447,7 +5487,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::gsc::iw7
-#line 5451 "parser.hpp"
+#line 5491 "parser.hpp"
 
 
 

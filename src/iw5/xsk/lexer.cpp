@@ -72,12 +72,12 @@ buffer::buffer() : length(0)
 
 buffer::~buffer()
 {
-    if(data) std::free(data);
+    if (data) std::free(data);
 }
 
 bool buffer::push(char c)
 {
-    if(length >= max_buf_size)
+    if (length >= max_buf_size)
         return false;
 
     data[length++] = c;
@@ -89,7 +89,7 @@ reader::reader() : state(reader::end), buffer_pos(0), bytes_remaining(0),
 
 void reader::init(const char* data, size_t size)
 {
-    if(data && size)
+    if (data && size)
     {
         state = reader::ok;
         buffer_pos = data;
@@ -111,7 +111,7 @@ void reader::advance()
 {
     ++buffer_pos;
 
-    if(bytes_remaining-- == 1)
+    if (bytes_remaining-- == 1)
     {
         state = reader::end;
         bytes_remaining = 0;
@@ -561,7 +561,7 @@ lex_name:
             advance();
         }
 
-        if(state_ == state::field)
+        if (state_ == state::field)
         {
             if (path)
                 throw comp_error(loc_, "invalid field token '\\'");

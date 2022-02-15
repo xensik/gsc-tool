@@ -48,6 +48,7 @@ private:
     void emit_decl_thread(const ast::decl_thread::ptr& thread);
     void emit_stmt(const ast::stmt& stmt, const block::ptr& blk, bool last);
     void emit_stmt_list(const ast::stmt_list::ptr& stmt, const block::ptr& blk, bool last);
+    void emit_stmt_dev(const ast::stmt_dev::ptr& stmt, const block::ptr& blk, bool last);
     void emit_stmt_expr(const ast::stmt_expr::ptr& stmt, const block::ptr& blk);
     void emit_stmt_call(const ast::stmt_call::ptr& stmt, const block::ptr& blk);
     void emit_stmt_assign(const ast::stmt_assign::ptr& stmt, const block::ptr& blk);
@@ -112,7 +113,6 @@ private:
     void emit_expr_animtree(const ast::expr_animtree::ptr& expr);
     void emit_expr_istring(const ast::expr_istring::ptr& expr);
     void emit_expr_string(const ast::expr_string::ptr& expr);
-    void emit_expr_color(const ast::expr_color::ptr& expr);
     void emit_expr_float(const ast::expr_float::ptr& expr);
     void emit_expr_integer(const ast::expr_integer::ptr& expr);
     void emit_expr_false(const ast::expr_false::ptr& expr);
@@ -125,6 +125,7 @@ private:
     void process_thread(const ast::decl_thread::ptr& decl, const block::ptr& blk);
     void process_stmt(const ast::stmt& stmt, const block::ptr& blk);
     void process_stmt_list(const ast::stmt_list::ptr& stmt, const block::ptr& blk);
+    void process_stmt_dev(const ast::stmt_dev::ptr& stmt, const block::ptr& blk);
     void process_stmt_expr(const ast::stmt_expr::ptr& stmt, const block::ptr& blk);
     void process_stmt_assign(const ast::stmt_assign::ptr& stmt, const block::ptr& blk);
     void process_stmt_waittill(const ast::stmt_waittill::ptr& stmt, const block::ptr& blk);

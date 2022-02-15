@@ -98,7 +98,7 @@ void block::merge(const std::vector<block*>& childs)
             {
                 child->local_vars.insert(child->local_vars.begin() + i, this->local_vars.at(i));
             }
-            else if(pos > i)
+            else if (pos > i)
             {
                 auto& v = child->local_vars;
                 std::rotate(v.rend() - pos - 1, v.rend() - pos, v.rend() - i);

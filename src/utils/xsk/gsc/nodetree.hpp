@@ -16,7 +16,6 @@ enum class kind
     expr_integer,
     expr_float,
     expr_vector,
-    expr_color,
     expr_string,
     expr_istring,
     expr_path,
@@ -79,6 +78,7 @@ enum class kind
     expr_assign_bitwise_and,
     expr_assign_bitwise_exor,
     stmt_list,
+    stmt_dev,
     stmt_expr,
     stmt_call,
     stmt_assign,
@@ -134,7 +134,6 @@ struct expr_false;
 struct expr_integer;
 struct expr_float;
 struct expr_vector;
-struct expr_color;
 struct expr_string;
 struct expr_istring;
 struct expr_path;
@@ -199,6 +198,7 @@ struct expr_assign_bitwise_or;
 struct expr_assign_bitwise_and;
 struct expr_assign_bitwise_exor;
 struct stmt_list;
+struct stmt_dev;
 struct stmt_expr;
 struct stmt_call;
 struct stmt_assign;
@@ -273,7 +273,6 @@ union expr
     std::unique_ptr<expr_integer> as_integer;
     std::unique_ptr<expr_float> as_float;
     std::unique_ptr<expr_vector> as_vector;
-    std::unique_ptr<expr_color> as_color;
     std::unique_ptr<expr_string> as_string;
     std::unique_ptr<expr_istring> as_istring;
     std::unique_ptr<expr_path> as_path;
@@ -359,6 +358,7 @@ union stmt
 {
     std::unique_ptr<node> as_node;
     std::unique_ptr<stmt_list> as_list;
+    std::unique_ptr<stmt_dev> as_dev;
     std::unique_ptr<stmt_expr> as_expr;
     std::unique_ptr<stmt_call> as_call;
     std::unique_ptr<stmt_assign> as_assign;
@@ -453,7 +453,9 @@ public:
     auto loc() -> location& { return loc_; }
 
     auto is_special_stmt() -> bool;
+    auto is_special_stmt_dev() -> bool;
     auto is_special_stmt_noif() -> bool;
+    auto is_special_stmt_dev_noif() -> bool;
     auto is_binary() -> bool;
     auto precedence() -> std::uint8_t;
 
@@ -519,18 +521,6 @@ struct expr_vector : public node
     expr_vector(const location& loc, expr x, expr y, expr z);
     auto print() const -> std::string override;
     friend bool operator==(const expr_vector& lhs, const expr_vector& rhs);
-};
-
-struct expr_color : public node
-{
-    using ptr = std::unique_ptr<expr_color>;
-
-    std::string value;
-
-    expr_color(const std::string& value);
-    expr_color(const location& loc, const std::string& value);
-    auto print() const -> std::string override;
-    friend bool operator==(const expr_color& lhs, const expr_color& rhs);
 };
 
 struct expr_string : public node
@@ -1196,6 +1186,17 @@ struct stmt_list : public node
 
     stmt_list();
     stmt_list(const location& loc);
+    auto print() const -> std::string override;
+};
+
+struct stmt_dev : public node
+{
+    using ptr = std::unique_ptr<stmt_dev>;
+
+    stmt_list::ptr list;
+
+    stmt_dev(stmt_list::ptr list);
+    stmt_dev(const location& loc, stmt_list::ptr list);
     auto print() const -> std::string override;
 };
 

@@ -75,7 +75,7 @@ void decompiler::decompile_function(const function::ptr& func)
     // hotfix empty else block at func end
     if (stmt->list.size() > 0 && stmt->list.back() == ast::kind::asm_jump)
     {
-        if(stmt->list.back().as_jump->value == blk.loc_end)
+        if (stmt->list.back().as_jump->value == blk.loc_end)
             stmt->list.pop_back();
     }
 
@@ -255,7 +255,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
             auto node = std::make_unique<ast::expr_reference>(loc, std::move(path), std::move(name));
             stack_.push(std::move(node));
-        };
+        }
             break;
         case opcode::OP_CreateLocalVariable:
         {
@@ -1657,7 +1657,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         {
             auto expr = std::make_unique<ast::asm_jump>(loc, inst->data[0]);
             func_->stmt->list.push_back(ast::stmt(std::move(expr)));
-            if(stack_.size() != 0) tern_labels_.push_back(inst->data[0]);
+            if (stack_.size() != 0) tern_labels_.push_back(inst->data[0]);
         }
             break;
         case opcode::OP_jumpback:
@@ -1856,7 +1856,7 @@ void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
     {
         auto& entry = stmt->list.at(i);
 
-        if(entry == ast::kind::asm_jump_cond)
+        if (entry == ast::kind::asm_jump_cond)
         {
             auto j = (entry.as_cond->value == blocks_.back().loc_end) ? (stmt->list.size() - 1) : (find_location_index(stmt, entry.as_cond->value) - 1);
             auto last_loc = blocks_.back().loc_end;
@@ -2135,7 +2135,7 @@ void decompiler::decompile_loop(const ast::stmt_list::ptr& block, std::uint32_t 
                 {
                     auto ref = block->list.at(start).loc().label();
 
-                    if(!find_location_reference(block, 0, start, ref))
+                    if (!find_location_reference(block, 0, start, ref))
                     {
                         decompile_foreach(block, start, end);
                         return;
@@ -2144,29 +2144,29 @@ void decompiler::decompile_loop(const ast::stmt_list::ptr& block, std::uint32_t 
             }
         }
 
-        if(start > 0) // while at func start
+        if (start > 0) // while at func start
         {
             auto index = 1;
-            while(block->list.at(start - index) == ast::kind::asm_create)
+            while (block->list.at(start - index) == ast::kind::asm_create)
             {
-                if(start - index > 0)
+                if (start - index > 0)
                     index++;
                 else
                     break;
             }
 
-            if(block->list.at(start - index) == ast::kind::stmt_assign)
+            if (block->list.at(start - index) == ast::kind::stmt_assign)
             {
                 auto ref = block->list.at(end).loc().label();
                 auto ref2 = block->list.at(start).loc().label();
 
-                if(find_location_reference(block, start, end, ref))
+                if (find_location_reference(block, start, end, ref))
                 {
                     // continue is at jumpback, not post-expr
                     decompile_while(block, start, end);
                     return;
                 }
-                else if(find_location_reference(block, 0, start, ref2))
+                else if (find_location_reference(block, 0, start, ref2))
                 {
                     // begin is at condition, not pre-expr
                     decompile_while(block, start, end);
@@ -2406,7 +2406,7 @@ void decompiler::decompile_switch(const ast::stmt_list::ptr& stmt, std::uint32_t
             auto list = std::make_unique<ast::stmt_list>(loc);
             list->is_case = true;
             auto def_stmt = ast::stmt(std::make_unique<ast::stmt_default>(loc_pos, std::move(list)));
-            while(stmt->list.at(loc_idx) == ast::kind::stmt_case)
+            while (stmt->list.at(loc_idx) == ast::kind::stmt_case)
                 loc_idx++;
             stmt->list.insert(stmt->list.begin() + loc_idx, std::move(def_stmt));
             idx += 2;
@@ -2507,7 +2507,7 @@ auto decompiler::find_location_index(const ast::stmt_list::ptr& stmt, const std:
 
     for (auto& entry : stmt->list)
     {
-        if(entry.loc().label() == location)
+        if (entry.loc().label() == location)
             return index;
 
         index++;
@@ -2773,7 +2773,7 @@ void decompiler::process_stmt_ifelse(const ast::stmt_ifelse::ptr& stmt, const bl
     {
         abort = stmt->blk_if->abort;
 
-        if(abort == abort_t::abort_none)
+        if (abort == abort_t::abort_none)
             childs.push_back(stmt->blk_if.get());
     }
 

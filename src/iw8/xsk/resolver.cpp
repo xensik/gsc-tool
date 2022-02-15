@@ -46,7 +46,7 @@ auto resolver::opcode_name(std::uint8_t id) -> std::string
 
 auto resolver::function_id(const std::string& name) -> std::uint16_t
 {
-    if(name.starts_with("_func_"))
+    if (name.starts_with("_func_"))
     {
         return std::stoul(name.substr(6), nullptr, 16);
     }
@@ -75,7 +75,7 @@ auto resolver::function_name(std::uint16_t id) -> std::string
 
 auto resolver::method_id(const std::string& name) -> std::uint16_t
 {
-    if(name.starts_with("_meth_"))
+    if (name.starts_with("_meth_"))
     {
         return std::stoul(name.substr(6), nullptr, 16);
     }
@@ -104,7 +104,7 @@ auto resolver::method_name(std::uint16_t id) -> std::string
 
 auto resolver::file_id(const std::string& name) -> std::uint32_t
 {
-    if(name.starts_with("_id_"))
+    if (name.starts_with("_id_"))
     {
         return std::stoul(name.substr(4), nullptr, 16);
     }
@@ -133,7 +133,7 @@ auto resolver::file_name(std::uint32_t id) -> std::string
 
 auto resolver::token_id(const std::string& name) -> std::uint32_t
 {
-    if(name.starts_with("_id_"))
+    if (name.starts_with("_id_"))
     {
         return std::stoul(name.substr(4), nullptr, 16);
     }
@@ -162,7 +162,7 @@ auto resolver::token_name(std::uint32_t id) -> std::string
 
 auto resolver::find_function(const std::string& name) -> bool
 {
-    if(name.starts_with("_func_")) return true;
+    if (name.starts_with("_func_")) return true;
 
     const auto itr = function_map_rev.find(name);
 
@@ -176,7 +176,7 @@ auto resolver::find_function(const std::string& name) -> bool
 
 auto resolver::find_method(const std::string& name) -> bool
 {
-    if(name.starts_with("_meth_")) return true;
+    if (name.starts_with("_meth_")) return true;
 
     const auto itr = method_map_rev.find(name);
 
@@ -190,7 +190,7 @@ auto resolver::find_method(const std::string& name) -> bool
 
 auto resolver::make_token(std::string_view str) -> std::string
 {
-    if(str.starts_with("_id_") || str.starts_with("_func_") || str.starts_with("_meth_"))
+    if (str.starts_with("_id_") || str.starts_with("_func_") || str.starts_with("_meth_"))
     {
         return std::string(str);
     }
@@ -213,7 +213,7 @@ auto resolver::file_data(const std::string& name) -> std::tuple<const std::strin
 {
     const auto& itr = files.find(name);
 
-    if(itr != files.end())
+    if (itr != files.end())
     {
         return { &itr->first ,reinterpret_cast<char*>(itr->second.data()), itr->second.size() };
     }
@@ -222,7 +222,7 @@ auto resolver::file_data(const std::string& name) -> std::tuple<const std::strin
 
     const auto& res = files.insert({ name, std::move(data)});
 
-    if(res.second)
+    if (res.second)
     {
         return { &res.first->first, reinterpret_cast<char*>(res.first->second.data()), res.first->second.size() };
     }
@@ -75564,7 +75564,7 @@ struct __init__
     __init__()
     {
         static bool init = false;
-        if(init) return;
+        if (init) return;
         init = true;
 
         opcode_map.reserve(opcode_list.size());
@@ -75578,31 +75578,31 @@ struct __init__
         token_map.reserve(token_list.size());
         token_map_rev.reserve(token_list.size());
 
-        for(const auto& entry : opcode_list)
+        for (const auto& entry : opcode_list)
         {
             opcode_map.insert({ entry.first, entry.second });
             opcode_map_rev.insert({ entry.second, entry.first });
         }
 
-        for(const auto& entry : function_list)
+        for (const auto& entry : function_list)
         {
             function_map.insert({ entry.first, entry.second });
             function_map_rev.insert({ entry.second, entry.first });
         }
 
-        for(const auto& entry : method_list)
+        for (const auto& entry : method_list)
         {
             method_map.insert({ entry.first, entry.second });
             method_map_rev.insert({ entry.second, entry.first });
         }
 
-        for(const auto& entry : file_list)
+        for (const auto& entry : file_list)
         {
             file_map.insert({ entry.first, entry.second });
             file_map_rev.insert({ entry.second, entry.first });
         }
 
-        for(const auto& entry : token_list)
+        for (const auto& entry : token_list)
         {
             token_map.insert({ entry.first, entry.second });
             token_map_rev.insert({ entry.second, entry.first });

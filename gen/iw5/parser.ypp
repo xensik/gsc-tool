@@ -148,9 +148,11 @@ xsk::gsc::iw5::parser::symbol_type IW5lex(xsk::gsc::iw5::lexer& lexer);
 %type <ast::decl_constant::ptr>         decl_constant
 %type <ast::decl_thread::ptr>           decl_thread
 %type <ast::stmt>                       stmt
-%type <ast::stmt_list::ptr>             stmt_dev
-%type <ast::stmt_list::ptr>             stmt_block
+%type <ast::stmt>                       stmt_or_dev
 %type <ast::stmt_list::ptr>             stmt_list
+%type <ast::stmt_list::ptr>             stmt_or_dev_list
+%type <ast::stmt_dev::ptr>              stmt_dev
+%type <ast::stmt_list::ptr>             stmt_block
 %type <ast::stmt_expr::ptr>             stmt_expr
 %type <ast::stmt_call::ptr>             stmt_call
 %type <ast::stmt_assign::ptr>           stmt_assign
@@ -301,8 +303,7 @@ decl_thread
     ;
 
 stmt
-    : stmt_dev               { $$.as_list = std::move($1); }
-    | stmt_block             { $$.as_list = std::move($1); }
+    : stmt_block             { $$.as_list = std::move($1); }
     | stmt_call              { $$.as_call = std::move($1); }
     | stmt_assign            { $$.as_assign = std::move($1); }
     | stmt_endon             { $$.as_endon = std::move($1); }
@@ -328,14 +329,9 @@ stmt
     | stmt_prof_end          { $$.as_prof_end = std::move($1); }
     ;
 
-stmt_dev
-    : DEVBEGIN stmt_list DEVEND { $$ = std::move($2); }
-    | DEVBEGIN DEVEND { $$ = std::make_unique<ast::stmt_list>(@$); }
-    ;
-
-stmt_block
-    : LBRACE stmt_list RBRACE { $$ = std::move($2); }
-    | LBRACE RBRACE { $$ = std::make_unique<ast::stmt_list>(@$); }
+stmt_or_dev
+    : stmt     { $$ = std::move($1); }
+    | stmt_dev { $$.as_dev = std::move($1); }
     ;
 
 stmt_list
@@ -343,6 +339,23 @@ stmt_list
         { $$ = std::move($1); $$->list.push_back(std::move($2)); }
     | stmt
         { $$ = std::make_unique<ast::stmt_list>(@$); $$->list.push_back(std::move($1)); }
+    ;
+
+stmt_or_dev_list
+    : stmt_or_dev_list stmt_or_dev
+        { $$ = std::move($1); $$->list.push_back(std::move($2)); }
+    | stmt_or_dev
+        { $$ = std::make_unique<ast::stmt_list>(@$); $$->list.push_back(std::move($1)); }
+    ;
+
+stmt_dev
+    : DEVBEGIN stmt_list DEVEND { $$ = std::make_unique<ast::stmt_dev>(@$, std::move($2)); }
+    | DEVBEGIN DEVEND { $$ = std::make_unique<ast::stmt_dev>(@$, std::make_unique<ast::stmt_list>(@$)); }
+    ;
+
+stmt_block
+    : LBRACE stmt_or_dev_list RBRACE { $$ = std::move($2); }
+    | LBRACE RBRACE { $$ = std::make_unique<ast::stmt_list>(@$); }
     ;
 
 stmt_expr

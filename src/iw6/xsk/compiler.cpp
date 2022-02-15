@@ -152,7 +152,7 @@ void compiler::emit_declaration(const ast::decl& decl)
 
 void compiler::emit_decl_usingtree(const ast::decl_usingtree::ptr& animtree)
 {
-    if(developer_thread_)
+    if (developer_thread_)
         throw comp_error(animtree->loc(), "cannot put #using_animtree inside /# ... #/ comment");
 
     animtrees_.push_back({ animtree->name->value, false });
@@ -194,6 +194,9 @@ void compiler::emit_stmt(const ast::stmt& stmt, const block::ptr& blk, bool last
     {
         case ast::kind::stmt_list:
             emit_stmt_list(stmt.as_list, blk, last);
+            break;
+        case ast::kind::stmt_dev:
+            emit_stmt_dev(stmt.as_dev, blk, last);
             break;
         case ast::kind::stmt_expr:
             emit_stmt_expr(stmt.as_expr, blk);
@@ -279,6 +282,11 @@ void compiler::emit_stmt_list(const ast::stmt_list::ptr& stmt, const block::ptr&
         bool last_ = (&entry == &stmt->list.back() && last) ? true : false;
         emit_stmt(entry, blk, last_);
     }
+}
+
+void compiler::emit_stmt_dev(const ast::stmt_dev::ptr& stmt, const block::ptr& blk, bool last)
+{
+    emit_stmt_list(stmt->list, blk, last);
 }
 
 void compiler::emit_stmt_expr(const ast::stmt_expr::ptr& stmt, const block::ptr& blk)
@@ -572,6 +580,8 @@ void compiler::emit_stmt_dowhile(const ast::stmt_dowhile::ptr& stmt, const block
 
     emit_stmt(stmt->stmt, stmt->blk, false);
 
+    insert_label(continue_loc);
+
     bool const_cond = is_constant_condition(stmt->test);
 
     if (!const_cond)
@@ -580,7 +590,6 @@ void compiler::emit_stmt_dowhile(const ast::stmt_dowhile::ptr& stmt, const block
         emit_opcode(opcode::OP_JumpOnFalse, break_loc);
     }
 
-    insert_label(continue_loc);
     emit_opcode(opcode::OP_jumpback, begin_loc);
 
     insert_label(break_loc);
@@ -1000,9 +1009,6 @@ void compiler::emit_expr(const ast::expr& expr, const block::ptr& blk)
             break;
         case ast::kind::expr_string:
             emit_expr_string(expr.as_string);
-            break;
-        case ast::kind::expr_color:
-            emit_expr_color(expr.as_color);
             break;
         case ast::kind::expr_vector:
             emit_expr_vector(expr.as_vector, blk);
@@ -1953,30 +1959,6 @@ void compiler::emit_expr_string(const ast::expr_string::ptr& expr)
     emit_opcode(opcode::OP_GetString, expr->value);
 }
 
-void compiler::emit_expr_color(const ast::expr_color::ptr& expr)
-{
-    std::vector<std::string> data;
-    std::string x, y, z;
-
-    if (expr->value.size() == 3)
-    {
-        x = "0x" + expr->value.substr(0, 1) + expr->value.substr(0, 1);
-        y = "0x" + expr->value.substr(1, 1) + expr->value.substr(1, 1);
-        z = "0x" + expr->value.substr(2, 1) + expr->value.substr(2, 1);
-    }
-    else
-    {
-        x = "0x" + expr->value.substr(0, 2);
-        y = "0x" + expr->value.substr(2, 2);
-        z = "0x" + expr->value.substr(4, 2);
-    }
-
-    data.push_back(utils::string::hex_to_dec(x.data()));
-    data.push_back(utils::string::hex_to_dec(y.data()));
-    data.push_back(utils::string::hex_to_dec(z.data()));
-    emit_opcode(opcode::OP_GetVector, data);
-}
-
 void compiler::emit_expr_float(const ast::expr_float::ptr& expr)
 {
     emit_opcode(opcode::OP_GetFloat, expr->value);
@@ -2101,6 +2083,9 @@ void compiler::process_stmt(const ast::stmt& stmt, const block::ptr& blk)
         case ast::kind::stmt_list:
             process_stmt_list(stmt.as_list, blk);
             break;
+        case ast::kind::stmt_dev:
+            process_stmt_dev(stmt.as_dev, blk);
+            break;
         case ast::kind::stmt_expr:
             process_stmt_expr(stmt.as_expr, blk);
             break;
@@ -2163,6 +2148,11 @@ void compiler::process_stmt_list(const ast::stmt_list::ptr& stmt, const block::p
     {
         process_stmt(entry, blk);
     }
+}
+
+void compiler::process_stmt_dev(const ast::stmt_dev::ptr& stmt, const block::ptr& blk)
+{
+    process_stmt_list(stmt->list, blk);
 }
 
 void compiler::process_stmt_expr(const ast::stmt_expr::ptr& stmt, const block::ptr& blk)
