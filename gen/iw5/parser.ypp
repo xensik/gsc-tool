@@ -137,7 +137,6 @@ xsk::gsc::iw5::parser::symbol_type IW5lex(xsk::gsc::iw5::lexer& lexer);
 %token <std::string> IDENTIFIER "identifier"
 %token <std::string> STRING     "string literal"
 %token <std::string> ISTRING    "localized string"
-%token <std::string> COLOR      "color"
 %token <std::string> FLOAT      "float"
 %token <std::string> INTEGER    "integer"
 
@@ -214,7 +213,6 @@ xsk::gsc::iw5::parser::symbol_type IW5lex(xsk::gsc::iw5::lexer& lexer);
 %type <ast::expr_path::ptr>             expr_path
 %type <ast::expr_istring::ptr>          expr_istring
 %type <ast::expr_string::ptr>           expr_string
-%type <ast::expr_color::ptr>            expr_color
 %type <ast::expr_vector::ptr>           expr_vector
 %type <ast::expr_float::ptr>            expr_float
 %type <ast::expr_integer::ptr>          expr_integer
@@ -619,7 +617,6 @@ expr_primitive
     | expr_identifier       { $$.as_node = std::move($1); }
     | expr_istring          { $$.as_node = std::move($1); }
     | expr_string           { $$.as_node = std::move($1); }
-    | expr_color            { $$.as_node = std::move($1); }
     | expr_vector           { $$.as_node = std::move($1); }
     | expr_float            { $$.as_node = std::move($1); }
     | expr_integer          { $$.as_node = std::move($1); }
@@ -806,11 +803,6 @@ expr_istring
 expr_string
     : STRING
         { $$ = std::make_unique<ast::expr_string>(@$, $1); };
-    ;
-
-expr_color
-    : COLOR
-        { $$ = std::make_unique<ast::expr_color>(@$, $1); };
     ;
 
 expr_vector
