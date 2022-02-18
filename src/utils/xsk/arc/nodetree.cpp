@@ -5,7 +5,7 @@
 
 #include "stdafx.hpp"
 
-namespace xsk::gsc::ast
+namespace xsk::arc::ast
 {
 
 std::uint32_t node::indent_;
@@ -26,6 +26,8 @@ auto node::is_special_stmt() -> bool
 {
     switch (kind_)
     {
+        case kind::stmt_waittill:
+        case kind::stmt_waittillmatch:
         case kind::stmt_if:
         case kind::stmt_ifelse:
         case kind::stmt_while:
@@ -59,6 +61,8 @@ auto node::is_special_stmt_noif() -> bool
 {
     switch (kind_)
     {
+        case kind::stmt_waittill:
+        case kind::stmt_waittillmatch:
         case kind::stmt_while:
         case kind::stmt_for:
         case kind::stmt_foreach:
@@ -153,6 +157,9 @@ expr_float::expr_float(const location& loc, const std::string& value) : node(kin
 expr_vector::expr_vector(expr x, expr y, expr z) : node(kind::expr_vector), x(std::move(x)), y(std::move(y)), z(std::move(z)) {}
 expr_vector::expr_vector(const location& loc, expr x, expr y, expr z) : node(kind::expr_vector, loc), x(std::move(x)), y(std::move(y)), z(std::move(z)) {}
 
+expr_hash::expr_hash(const std::string& value) : node(kind::expr_hash), value(value) {}
+expr_hash::expr_hash(const location& loc, const std::string& value) : node(kind::expr_hash, loc), value(value) {}
+
 expr_string::expr_string(const std::string& value) : node(kind::expr_string), value(value) {}
 expr_string::expr_string(const location& loc, const std::string& value) : node(kind::expr_string, loc), value(value) {}
 
@@ -166,9 +173,6 @@ expr_path::expr_path(const location& loc, const std::string& value) : node(kind:
 
 expr_identifier::expr_identifier(const std::string& value) : node(kind::expr_identifier), value(value) {}
 expr_identifier::expr_identifier(const location& loc, const std::string& value) : node(kind::expr_identifier, loc), value(value) {}
-
-expr_animtree::expr_animtree() : node(kind::expr_animtree) {}
-expr_animtree::expr_animtree(const location& loc) : node(kind::expr_animtree, loc) {}
 
 expr_animation::expr_animation(const std::string& value) : node(kind::expr_animation), value(value) {}
 expr_animation::expr_animation(const location& loc, const std::string& value) : node(kind::expr_animation, loc), value(value) {}
@@ -191,9 +195,6 @@ expr_undefined::expr_undefined(const location& loc) : node(kind::expr_undefined,
 expr_empty_array::expr_empty_array() : node(kind::expr_empty_array) {}
 expr_empty_array::expr_empty_array(const location& loc) : node(kind::expr_empty_array, loc) {}
 
-expr_thisthread::expr_thisthread() : node(kind::expr_thisthread) {}
-expr_thisthread::expr_thisthread(const location& loc) : node(kind::expr_thisthread, loc) {}
-
 expr_paren::expr_paren(expr child) : node(kind::expr_paren), child(std::move(child)) {}
 expr_paren::expr_paren(const location& loc, expr child) : node(kind::expr_paren, loc), child(std::move(child)) {}
 
@@ -209,20 +210,68 @@ expr_array::expr_array(const location& loc, expr obj, expr key) : node(kind::exp
 expr_reference::expr_reference(expr_path::ptr path, expr_identifier::ptr name) : node(kind::expr_reference), path(std::move(path)), name(std::move(name)) {}
 expr_reference::expr_reference(const location& loc, expr_path::ptr path, expr_identifier::ptr name) : node(kind::expr_reference, loc), path(std::move(path)), name(std::move(name)) {}
 
-expr_istrue::expr_istrue(ast::expr expr) : node(kind::expr_istrue), expr(std::move(expr)) {}
-expr_istrue::expr_istrue(const location& loc, ast::expr expr) : node(kind::expr_istrue, loc), expr(std::move(expr)) {}
+expr_getnextarraykey::expr_getnextarraykey(expr arg1, expr arg2) : node(kind::expr_getnextarraykey), arg1(std::move(arg1)), arg2(std::move(arg2)) {}
+expr_getnextarraykey::expr_getnextarraykey(const location& loc, expr arg1, expr arg2) : node(kind::expr_getnextarraykey, loc), arg1(std::move(arg1)), arg2(std::move(arg2)) {}
 
-expr_isdefined::expr_isdefined(ast::expr expr) : node(kind::expr_isdefined), expr(std::move(expr)) {}
-expr_isdefined::expr_isdefined(const location& loc, ast::expr expr) : node(kind::expr_isdefined, loc), expr(std::move(expr)) {}
+expr_getfirstarraykey::expr_getfirstarraykey(expr arg) : node(kind::expr_getfirstarraykey), arg(std::move(arg)) {}
+expr_getfirstarraykey::expr_getfirstarraykey(const location& loc, expr arg) : node(kind::expr_getfirstarraykey, loc), arg(std::move(arg)) {}
+
+expr_getdvarcoloralpha::expr_getdvarcoloralpha(expr arg) : node(kind::expr_getdvarcoloralpha), arg(std::move(arg)) {}
+expr_getdvarcoloralpha::expr_getdvarcoloralpha(const location& loc, expr arg) : node(kind::expr_getdvarcoloralpha, loc), arg(std::move(arg)) {}
+
+expr_getdvarcolorblue::expr_getdvarcolorblue(expr arg) : node(kind::expr_getdvarcolorblue), arg(std::move(arg)) {}
+expr_getdvarcolorblue::expr_getdvarcolorblue(const location& loc, expr arg) : node(kind::expr_getdvarcolorblue, loc), arg(std::move(arg)) {}
+
+expr_getdvarcolorgreen::expr_getdvarcolorgreen(expr arg) : node(kind::expr_getdvarcolorgreen), arg(std::move(arg)) {}
+expr_getdvarcolorgreen::expr_getdvarcolorgreen(const location& loc, expr arg) : node(kind::expr_getdvarcolorgreen, loc), arg(std::move(arg)) {}
+
+expr_getdvarcolorred::expr_getdvarcolorred(expr arg) : node(kind::expr_getdvarcolorred), arg(std::move(arg)) {}
+expr_getdvarcolorred::expr_getdvarcolorred(const location& loc, expr arg) : node(kind::expr_getdvarcolorred, loc), arg(std::move(arg)) {}
+
+expr_getdvarvector::expr_getdvarvector(expr arg) : node(kind::expr_getdvarvector), arg(std::move(arg)) {}
+expr_getdvarvector::expr_getdvarvector(const location& loc, expr arg) : node(kind::expr_getdvarvector, loc), arg(std::move(arg)) {}
+
+expr_getdvarfloat::expr_getdvarfloat(expr arg) : node(kind::expr_getdvarfloat), arg(std::move(arg)) {}
+expr_getdvarfloat::expr_getdvarfloat(const location& loc, expr arg) : node(kind::expr_getdvarfloat, loc), arg(std::move(arg)) {}
+
+expr_getdvarint::expr_getdvarint(expr arg) : node(kind::expr_getdvarint), arg(std::move(arg)) {}
+expr_getdvarint::expr_getdvarint(const location& loc, expr arg) : node(kind::expr_getdvarint, loc), arg(std::move(arg)) {}
+
+expr_getdvar::expr_getdvar(expr arg) : node(kind::expr_getdvar), arg(std::move(arg)) {}
+expr_getdvar::expr_getdvar(const location& loc, expr arg) : node(kind::expr_getdvar, loc), arg(std::move(arg)) {}
+
+expr_gettime::expr_gettime() : node(kind::expr_gettime) {}
+expr_gettime::expr_gettime(const location& loc) : node(kind::expr_gettime, loc) {}
+
+expr_abs::expr_abs(expr arg) : node(kind::expr_abs), arg(std::move(arg)) {}
+expr_abs::expr_abs(const location& loc, expr arg) : node(kind::expr_abs, loc), arg(std::move(arg)) {}
+
+expr_vectortoangles::expr_vectortoangles(expr arg) : node(kind::expr_vectortoangles), arg(std::move(arg)) {}
+expr_vectortoangles::expr_vectortoangles(const location& loc, expr arg) : node(kind::expr_vectortoangles, loc), arg(std::move(arg)) {}
+
+expr_angleclamp180::expr_angleclamp180(expr arg) : node(kind::expr_angleclamp180), arg(std::move(arg)) {}
+expr_angleclamp180::expr_angleclamp180(const location& loc, expr arg) : node(kind::expr_angleclamp180, loc), arg(std::move(arg)) {}
+
+expr_anglestoforward::expr_anglestoforward(expr arg) : node(kind::expr_anglestoforward), arg(std::move(arg)) {}
+expr_anglestoforward::expr_anglestoforward(const location& loc, expr arg) : node(kind::expr_anglestoforward, loc), arg(std::move(arg)) {}
+
+expr_anglestoright::expr_anglestoright(expr arg) : node(kind::expr_anglestoright), arg(std::move(arg)) {}
+expr_anglestoright::expr_anglestoright(const location& loc, expr arg) : node(kind::expr_anglestoright, loc), arg(std::move(arg)) {}
+
+expr_anglestoup::expr_anglestoup(expr arg) : node(kind::expr_anglestoup), arg(std::move(arg)) {}
+expr_anglestoup::expr_anglestoup(const location& loc, expr arg) : node(kind::expr_anglestoup, loc), arg(std::move(arg)) {}
+
+expr_vectorscale::expr_vectorscale(expr arg1, expr arg2) : node(kind::expr_vectorscale), arg1(std::move(arg1)), arg2(std::move(arg2)) {}
+expr_vectorscale::expr_vectorscale(const location& loc, expr arg1, expr arg2) : node(kind::expr_vectorscale, loc), arg1(std::move(arg1)), arg2(std::move(arg2)) {}
+
+expr_isdefined::expr_isdefined(expr arg) : node(kind::expr_isdefined), arg(std::move(arg)) {}
+expr_isdefined::expr_isdefined(const location& loc, expr arg) : node(kind::expr_isdefined, loc), arg(std::move(arg)) {}
 
 expr_arguments::expr_arguments() : node(kind::expr_arguments) {}
 expr_arguments::expr_arguments(const location& loc) : node(kind::expr_arguments, loc) {}
 
 expr_parameters::expr_parameters() : node(kind::expr_parameters) {}
 expr_parameters::expr_parameters(const location& loc) : node(kind::expr_parameters, loc) {}
-
-expr_add_array::expr_add_array(expr_arguments::ptr args) : node(kind::expr_add_array), args(std::move(args)) {}
-expr_add_array::expr_add_array(const location& loc, expr_arguments::ptr args) : node(kind::expr_add_array, loc), args(std::move(args)) {}
 
 expr_pointer::expr_pointer(expr func, expr_arguments::ptr args, call::mode mode) : node(kind::expr_pointer), func(std::move(func)), args(std::move(args)), mode(mode) {}
 expr_pointer::expr_pointer(const location& loc, expr func, expr_arguments::ptr args, call::mode mode) : node(kind::expr_pointer, loc), func(std::move(func)), args(std::move(args)), mode(mode) {}
@@ -365,6 +414,9 @@ stmt_endon::stmt_endon(const location& loc, expr obj, expr event) : node(kind::s
 stmt_notify::stmt_notify(expr obj, expr event, expr_arguments::ptr args) : node(kind::stmt_notify), obj(std::move(obj)), event(std::move(event)), args(std::move(args)) {}
 stmt_notify::stmt_notify(const location& loc, expr obj, expr event, expr_arguments::ptr args) : node(kind::stmt_notify, loc), obj(std::move(obj)), event(std::move(event)), args(std::move(args)) {}
 
+stmt_realwait::stmt_realwait(expr time) : node(kind::stmt_realwait), time(std::move(time)) {}
+stmt_realwait::stmt_realwait(const location& loc, expr time) : node(kind::stmt_realwait, loc), time(std::move(time)) {}
+
 stmt_wait::stmt_wait(expr time) : node(kind::stmt_wait), time(std::move(time)) {}
 stmt_wait::stmt_wait(const location& loc, expr time) : node(kind::stmt_wait, loc), time(std::move(time)) {}
 
@@ -376,9 +428,6 @@ stmt_waittillmatch::stmt_waittillmatch(const location& loc, expr obj, expr event
 
 stmt_waittillframeend::stmt_waittillframeend() : node(kind::stmt_waittillframeend) {}
 stmt_waittillframeend::stmt_waittillframeend(const location& loc) : node(kind::stmt_waittillframeend, loc) {}
-
-stmt_waitframe::stmt_waitframe() : node(kind::stmt_waitframe) {}
-stmt_waitframe::stmt_waitframe(const location& loc) : node(kind::stmt_waitframe, loc) {}
 
 stmt_if::stmt_if(expr test, ast::stmt stmt) : node(kind::stmt_if), test(std::move(test)), stmt(std::move(stmt)), blk(nullptr) {}
 stmt_if::stmt_if(const location& loc, expr test, ast::stmt stmt) : node(kind::stmt_if, loc), test(std::move(test)), stmt(std::move(stmt)), blk(nullptr) {}
@@ -481,17 +530,8 @@ asm_prescriptcall::asm_prescriptcall(const location& loc) : node(kind::asm_presc
 asm_voidcodepos::asm_voidcodepos() : node(kind::asm_voidcodepos) {}
 asm_voidcodepos::asm_voidcodepos(const location& loc) : node(kind::asm_voidcodepos, loc) {}
 
-asm_create::asm_create(const std::string& index) : node(kind::asm_create), index(index) {}
-asm_create::asm_create(const location& loc, const std::string& index) : node(kind::asm_create, loc), index(index) {}
-
-asm_access::asm_access(const std::string& index) : node(kind::asm_access), index(index) {}
-asm_access::asm_access(const location& loc, const std::string& index) : node(kind::asm_access, loc), index(index) {}
-
-asm_remove::asm_remove(const std::string& index) : node(kind::asm_remove), index(index) {}
-asm_remove::asm_remove(const location& loc, const std::string& index) : node(kind::asm_remove, loc), index(index) {}
-
-asm_clear::asm_clear(const std::string& index) : node(kind::asm_clear), index(index) {}
-asm_clear::asm_clear(const location& loc, const std::string& index) : node(kind::asm_clear, loc), index(index) {}
+asm_dev::asm_dev(const std::string& value) : node(kind::asm_dev), value(std::move(value)) {}
+asm_dev::asm_dev(const location& loc, const std::string& value) : node(kind::asm_dev, loc), value(value) {}
 
 auto expr_true::print() const -> std::string
 {
@@ -518,6 +558,11 @@ auto expr_vector::print() const -> std::string
     return "( "s + x.print() + ", " + y.print() + ", " + z.print() + " )";
 }
 
+auto expr_hash::print() const -> std::string
+{
+    return value.starts_with("_hash_") ? value : ("\"" + value + "\"");
+}
+
 auto expr_string::print() const -> std::string
 {
     return value;
@@ -536,11 +581,6 @@ auto expr_path::print() const -> std::string
 auto expr_identifier::print() const -> std::string
 {
     return value;
-}
-
-auto expr_animtree::print() const -> std::string
-{
-    return "#animtree";
 }
 
 auto expr_animation::print() const -> std::string
@@ -578,11 +618,6 @@ auto expr_empty_array::print() const -> std::string
     return "[]";
 }
 
-auto expr_thisthread::print() const -> std::string
-{
-    return "thisthread";
-}
-
 auto expr_paren::print() const -> std::string
 {
     return "( " + child.print() + " )";
@@ -608,14 +643,99 @@ auto expr_reference::print() const -> std::string
     return path->print() + "::" + name->print();
 }
 
-auto expr_istrue::print() const -> std::string
+auto expr_getnextarraykey::print() const -> std::string
 {
-    return "istrue( " + expr.print() + " )";
+    return "getnextarraykey( " + arg1.print() + ", " + arg2.print() + " )";
+}
+
+auto expr_getfirstarraykey::print() const -> std::string
+{
+    return "getfirstarraykey( " + arg.print() + " )";
+}
+
+auto expr_getdvarcoloralpha::print() const -> std::string
+{
+    return "getdvarcoloralpha( " + arg.print() + " )";
+}
+
+auto expr_getdvarcolorblue::print() const -> std::string
+{
+    return "getdvarcolorblue( " + arg.print() + " )";
+}
+
+auto expr_getdvarcolorgreen::print() const -> std::string
+{
+    return "getdvarcolorgreen( " + arg.print() + " )";
+}
+
+auto expr_getdvarcolorred::print() const -> std::string
+{
+    return "getdvarcolorred( " + arg.print() + " )";
+}
+
+auto expr_getdvarvector::print() const -> std::string
+{
+    return "getdvarvector( " + arg.print() + " )";
+}
+
+auto expr_getdvarfloat::print() const -> std::string
+{
+    return "getdvarfloat( " + arg.print() + " )";
+}
+
+auto expr_getdvarint::print() const -> std::string
+{
+    return "getdvarint( " + arg.print() + " )";
+}
+
+auto expr_getdvar::print() const -> std::string
+{
+    return "getdvar( " + arg.print() + " )";
+}
+
+auto expr_gettime::print() const -> std::string
+{
+    return "gettime()";
+}
+
+auto expr_abs::print() const -> std::string
+{
+    return "abs( " + arg.print() + " )";
+}
+
+auto expr_vectortoangles::print() const -> std::string
+{
+    return "vectortoangles( " + arg.print() + " )";
+}
+
+auto expr_angleclamp180::print() const -> std::string
+{
+    return "angleclamp180( " + arg.print() + " )";
+}
+
+auto expr_anglestoforward::print() const -> std::string
+{
+    return "anglestoforward( " + arg.print() + " )";
+}
+
+auto expr_anglestoright::print() const -> std::string
+{
+    return "anglestoright( " + arg.print() + " )";
+}
+
+auto expr_anglestoup::print() const -> std::string
+{
+    return "anglestoup( " + arg.print() + " )";
+}
+
+auto expr_vectorscale::print() const -> std::string
+{
+    return "vectorscale( " + arg1.print() + ", " + arg2.print() + " )";
 }
 
 auto expr_isdefined::print() const -> std::string
 {
-    return "isdefined( " + expr.print() + " )";
+    return "isdefined( " + arg.print() + " )";
 }
 
 auto expr_arguments::print() const -> std::string
@@ -644,21 +764,12 @@ auto expr_parameters::print() const -> std::string
     return data;
 }
 
-auto expr_add_array::print() const -> std::string
-{
-    return "[" + args->print() + "]";
-}
-
 auto expr_pointer::print() const -> std::string
 {
     std::string data;
 
-    if (mode == call::mode::builtin)
-        data += "call ";
-    else if (mode == call::mode::thread)
+    if (mode == call::mode::thread)
         data += "thread ";
-    else if (mode == call::mode::childthread)
-        data += "childthread ";
 
     return data += "[[ "s + func.print() + " ]](" + args->print() + ")";
 }
@@ -669,8 +780,6 @@ auto expr_function::print() const -> std::string
 
     if (mode == call::mode::thread)
         data += "thread ";
-    else if (mode == call::mode::childthread)
-        data += "childthread ";
 
     if (path->value != "")
         data += path->print() + "::";
@@ -971,12 +1080,20 @@ auto stmt_notify::print() const -> std::string
         return obj.print() + " notify( " + event.print() + "," + args->print() + ");";
 };
 
+auto stmt_realwait::print() const -> std::string
+{
+    if (time == kind::expr_float || time == kind::expr_integer)
+        return "realwait " + time.print() + ";";
+    else
+        return "realwait( " + time.print() + " );";
+};
+
 auto stmt_wait::print() const -> std::string
 {
     if (time == kind::expr_float || time == kind::expr_integer)
         return "wait " + time.print() + ";";
     else
-        return "wait(" + time.print() + ");";
+        return "wait( " + time.print() + " );";
 };
 
 auto stmt_waittill::print() const -> std::string
@@ -998,11 +1115,6 @@ auto stmt_waittillmatch::print() const -> std::string
 auto stmt_waittillframeend::print() const -> std::string
 {
     return "waittillframeend;";
-};
-
-auto stmt_waitframe::print() const -> std::string
-{
-    return "waitframe;";
 };
 
 auto stmt_if::print() const -> std::string
@@ -1291,32 +1403,32 @@ auto asm_loc::print() const -> std::string
 
 auto asm_jump::print() const -> std::string
 {
-    return "__asm_jump( " + value + " );";
+    return "asm_jump( " + value + " );";
 }
 
 auto asm_jump_back::print() const -> std::string
 {
-    return "__asm_jump_back( " + value + " );";
+    return "asm_jump_back( " + value + " );";
 }
 
 auto asm_jump_cond::print() const -> std::string
 {
-    return "__asm_jump_cond( " + expr.print() + ", " + value + " );";
+    return "asm_cond( " + expr.print() + ", " + value + " );";
 }
 
 auto asm_jump_true_expr::print() const -> std::string
 {
-    return "__asm_jump_expr_true( " + value + " );";
+    return "asm_expr_true( " + value + " );";
 }
 
 auto asm_jump_false_expr::print() const -> std::string
 {
-    return "__asm_jump_expr_false( " + value + " );";
+    return "asm_expr_false( " + value + " );";
 }
 
 auto asm_switch::print() const -> std::string
 {
-    return "__asm_switch( " + expr.print() + ", " + value + " );";
+    return "asm_switch( " + expr.print() + ", " + value + " );";
 }
 
 auto asm_endswitch::print() const -> std::string
@@ -1327,37 +1439,22 @@ auto asm_endswitch::print() const -> std::string
     {
         result += " " + entry;
     }
-    return "__asm_endswitch( " + count + "," + result + ");";
+    return "asm_endswitch( " + count + result + " );";
 }
 
 auto asm_prescriptcall::print() const -> std::string
 {
-    return "__asm_prescriptcall();";
+    return "asm_prescriptcall();";
 }
 
 auto asm_voidcodepos::print() const -> std::string
 {
-    return "__asm_voidcodepos();";
+    return "asm_voidcodepos();";
 }
 
-auto asm_create::print() const -> std::string
+auto asm_dev::print() const -> std::string
 {
-    return "__asm_var_create( " + index + " );";
-}
-
-auto asm_access::print() const -> std::string
-{
-    return "__asm_var_access( " + index + " );";
-}
-
-auto asm_remove::print() const -> std::string
-{
-    return "__asm_var_remove( " + index + " );";
-}
-
-auto asm_clear::print() const -> std::string
-{
-    return "__asm_var_clear( " + index + " );";
+    return "devblock( " + value + " );";
 }
 
 // operators
@@ -1397,6 +1494,11 @@ bool operator==(const expr_vector& lhs, const expr_vector& rhs)
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
 }
 
+bool operator==(const expr_hash& lhs, const expr_hash& rhs)
+{
+    return lhs.value == rhs.value;
+}
+
 bool operator==(const expr_string& lhs, const expr_string& rhs)
 {
     return lhs.value == rhs.value;
@@ -1415,11 +1517,6 @@ bool operator==(const expr_path& lhs, const expr_path& rhs)
 bool operator==(const expr_identifier& lhs, const expr_identifier& rhs)
 {
     return lhs.value == rhs.value;
-}
-
-bool operator==(const expr_animtree&, const expr_animtree&)
-{
-    return true;
 }
 
 bool operator==(const expr_animation& lhs, const expr_animation& rhs)
@@ -1453,11 +1550,6 @@ bool operator==(const expr_undefined&, const expr_undefined&)
 }
 
 bool operator==(const expr_empty_array&, const expr_empty_array&)
-{
-    return true;
-}
-
-bool operator==(const expr_thisthread&, const expr_thisthread&)
 {
     return true;
 }
@@ -1551,11 +1643,11 @@ expr::~expr()
         case kind::expr_integer: as_integer.~unique_ptr(); return;
         case kind::expr_float: as_float.~unique_ptr(); return;
         case kind::expr_vector: as_vector.~unique_ptr(); return;
+        case kind::expr_hash: as_hash.~unique_ptr(); return;
         case kind::expr_string: as_string.~unique_ptr(); return;
         case kind::expr_istring: as_istring.~unique_ptr(); return;
         case kind::expr_path: as_path.~unique_ptr(); return;
         case kind::expr_identifier: as_identifier.~unique_ptr(); return;
-        case kind::expr_animtree: as_animtree.~unique_ptr(); return;
         case kind::expr_animation: as_animation.~unique_ptr(); return;
         case kind::expr_level: as_level.~unique_ptr(); return;
         case kind::expr_anim: as_anim.~unique_ptr(); return;
@@ -1563,15 +1655,32 @@ expr::~expr()
         case kind::expr_game: as_game.~unique_ptr(); return;
         case kind::expr_undefined: as_undefined.~unique_ptr(); return;
         case kind::expr_empty_array: as_empty_array.~unique_ptr(); return;
-        case kind::expr_thisthread: as_thisthread.~unique_ptr(); return;
         case kind::expr_paren: as_paren.~unique_ptr(); return;
         case kind::expr_size: as_size.~unique_ptr(); return;
         case kind::expr_field: as_field.~unique_ptr(); return;
         case kind::expr_array: as_array.~unique_ptr(); return;
         case kind::expr_reference: as_reference.~unique_ptr(); return;
+        case kind::expr_getnextarraykey: as_getnextarraykey.~unique_ptr(); return;
+        case kind::expr_getfirstarraykey: as_getfirstarraykey.~unique_ptr(); return;
+        case kind::expr_getdvarcoloralpha: as_getdvarcoloralpha.~unique_ptr(); return;
+        case kind::expr_getdvarcolorblue: as_getdvarcolorblue.~unique_ptr(); return;
+        case kind::expr_getdvarcolorgreen: as_getdvarcolorgreen.~unique_ptr(); return;
+        case kind::expr_getdvarcolorred: as_getdvarcolorred.~unique_ptr(); return;
+        case kind::expr_getdvarvector: as_getdvarvector.~unique_ptr(); return;
+        case kind::expr_getdvarfloat: as_getdvarfloat.~unique_ptr(); return;
+        case kind::expr_getdvarint: as_getdvarint.~unique_ptr(); return;
+        case kind::expr_getdvar: as_getdvar.~unique_ptr(); return;
+        case kind::expr_gettime: as_gettime.~unique_ptr(); return;
+        case kind::expr_abs: as_abs.~unique_ptr(); return;
+        case kind::expr_vectortoangles: as_vectortoangles.~unique_ptr(); return;
+        case kind::expr_angleclamp180: as_angleclamp180.~unique_ptr(); return;
+        case kind::expr_anglestoforward: as_anglestoforward.~unique_ptr(); return;
+        case kind::expr_anglestoright: as_anglestoright.~unique_ptr(); return;
+        case kind::expr_anglestoup: as_anglestoup.~unique_ptr(); return;
+        case kind::expr_vectorscale: as_vectorscale.~unique_ptr(); return;
+        case kind::expr_isdefined: as_isdefined.~unique_ptr(); return;
         case kind::expr_arguments: as_arguments.~unique_ptr(); return;
         case kind::expr_parameters: as_parameters.~unique_ptr(); return;
-        case kind::expr_add_array: as_add_array.~unique_ptr(); return;
         case kind::expr_pointer: as_pointer.~unique_ptr(); return;
         case kind::expr_function: as_function.~unique_ptr(); return;
         case kind::expr_method: as_method.~unique_ptr(); return;
@@ -1610,8 +1719,6 @@ expr::~expr()
         case kind::expr_assign_bitwise_or: as_assign_bw_or.~unique_ptr(); return;
         case kind::expr_assign_bitwise_and: as_assign_bw_and.~unique_ptr(); return;
         case kind::expr_assign_bitwise_exor: as_assign_bw_exor.~unique_ptr(); return;
-        case kind::asm_create: as_asm_create.~unique_ptr(); return;
-        case kind::asm_access: as_asm_access.~unique_ptr(); return;
         default: return;
     }
 }
@@ -1637,11 +1744,11 @@ bool operator==(const expr& lhs, const expr& rhs)
         case kind::expr_integer: return *lhs.as_integer == *rhs.as_integer;
         case kind::expr_float: return *lhs.as_float == *rhs.as_float;
         case kind::expr_vector: return *lhs.as_vector == *rhs.as_vector;
+        case kind::expr_hash: return *lhs.as_hash == *rhs.as_hash;
         case kind::expr_string: return *lhs.as_string == *rhs.as_string;
         case kind::expr_istring: return *lhs.as_istring == *rhs.as_istring;
         case kind::expr_path: return *lhs.as_path == *rhs.as_path;
         case kind::expr_identifier: return *lhs.as_identifier == *rhs.as_identifier;
-        case kind::expr_animtree: return *lhs.as_animtree == *rhs.as_animtree;
         case kind::expr_animation: return *lhs.as_animation == *rhs.as_animation;
         case kind::expr_level: return *lhs.as_level == *rhs.as_level;
         case kind::expr_anim: return *lhs.as_anim == *rhs.as_anim;
@@ -1649,7 +1756,6 @@ bool operator==(const expr& lhs, const expr& rhs)
         case kind::expr_game: return *lhs.as_game == *rhs.as_game;
         case kind::expr_undefined: return *lhs.as_undefined == *rhs.as_undefined;
         case kind::expr_empty_array: return *lhs.as_empty_array == *rhs.as_empty_array;
-        case kind::expr_thisthread: return *lhs.as_thisthread == *rhs.as_thisthread;
         case kind::expr_paren: return *lhs.as_paren == *rhs.as_paren;
         case kind::expr_size: return *lhs.as_size == *rhs.as_size;
         case kind::expr_field: return *lhs.as_field == *rhs.as_field;
@@ -1702,11 +1808,11 @@ stmt::~stmt()
         case kind::stmt_assign: as_assign.~unique_ptr(); return;
         case kind::stmt_endon: as_endon.~unique_ptr(); return;
         case kind::stmt_notify: as_notify.~unique_ptr(); return;
+        case kind::stmt_realwait: as_realwait.~unique_ptr(); return;
         case kind::stmt_wait: as_wait.~unique_ptr(); return;
         case kind::stmt_waittill: as_waittill.~unique_ptr(); return;
         case kind::stmt_waittillmatch: as_waittillmatch.~unique_ptr(); return;
         case kind::stmt_waittillframeend: as_waittillframeend.~unique_ptr(); return;
-        case kind::stmt_waitframe: as_waitframe.~unique_ptr(); return;
         case kind::stmt_if: as_if.~unique_ptr(); return;
         case kind::stmt_ifelse: as_ifelse.~unique_ptr(); return;
         case kind::stmt_while: as_while.~unique_ptr(); return;
@@ -1726,12 +1832,13 @@ stmt::~stmt()
         case kind::asm_jump: as_jump.~unique_ptr(); return;
         case kind::asm_jump_back: as_jump_back.~unique_ptr(); return;
         case kind::asm_jump_cond: as_cond.~unique_ptr(); return;
+        case kind::asm_jump_true_expr: as_jump_true_expr.~unique_ptr(); return;
+        case kind::asm_jump_false_expr: as_jump_false_expr.~unique_ptr(); return;
         case kind::asm_switch: as_asm_switch.~unique_ptr(); return;
         case kind::asm_endswitch: as_asm_endswitch.~unique_ptr(); return;
-        case kind::asm_create: as_asm_create.~unique_ptr(); return;
-        case kind::asm_access: as_asm_access.~unique_ptr(); return;
-        case kind::asm_remove: as_asm_remove.~unique_ptr(); return;
-        case kind::asm_clear: as_asm_clear.~unique_ptr(); return;
+        case kind::asm_prescriptcall: as_asm_prescriptcall.~unique_ptr(); return;
+        case kind::asm_voidcodepos: as_asm_voidcodepos.~unique_ptr(); return;
+        case kind::asm_dev: as_asm_dev.~unique_ptr(); return;
         default: return;
     }
 }
@@ -1807,4 +1914,4 @@ auto decl::print() const -> std::string
     return as_node->print();
 }
 
-} // namespace xsk::gsc::ast
+} // namespace xsk::arc::ast

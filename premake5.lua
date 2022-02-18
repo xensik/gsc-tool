@@ -58,6 +58,7 @@ project "xsk-gsc-tool"
     dependson "xsk-gsc-s4"
     dependson "xsk-gsc-h1"
     dependson "xsk-gsc-h2"
+    dependson "xsk-arc-t6"
 
     pchheader "stdafx.hpp"
     pchsource "src/tool/stdafx.cpp"
@@ -78,7 +79,8 @@ project "xsk-gsc-tool"
         "xsk-gsc-s2",
         "xsk-gsc-s4",
         "xsk-gsc-h1",
-        "xsk-gsc-h2"
+        "xsk-gsc-h2",
+        "xsk-arc-t6"
     }
 
     includedirs {
@@ -267,6 +269,24 @@ project "xsk-gsc-h2"
 
     includedirs {
         "./src/h2",
+        "./src"
+    }
+
+project "xsk-arc-t6"
+    kind "StaticLib"
+    language "C++"
+
+    pchheader "stdafx.hpp"
+    pchsource "src/t6/stdafx.cpp"
+
+    files {
+        "./src/t6/**.h",
+        "./src/t6/**.hpp",
+        "./src/t6/**.cpp"
+    }
+
+    includedirs {
+        "./src/t6",
         "./src"
     }
 

@@ -16,13 +16,13 @@ A utility to compile & decompile IW engine game scripts.
 - **H2** *(Call of Duty: Modern Warfare 2 Campaign Remastered)*
 - **T4** *(Call of Duty: World at War)* ***\*WIP\****
 - **T5** *(Call of Duty: Black Ops)* ***\*WIP\****
-- **T6** *(Call of Duty: Black Ops II)* ***\*WIP\****
+- **T6** *(Call of Duty: Black Ops II)*
 ## Usage
 ``./gsc-tool.exe <mode> <game> <path>``
 
 **modes**: `asm`, `disasm`, `comp`, `decomp`
 
-**games**: `iw5`, `iw6`, `iw7`, `iw8`, `s1`, `s2`, `s4`, `h1`, `h2`
+**games**: `iw5`, `iw6`, `iw7`, `iw8`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6`
 
 **paths**: `file`, `directory` (recursive process all files with mode extension)
 

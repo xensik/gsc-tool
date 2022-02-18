@@ -24,3 +24,16 @@
 #include "gsc/interfaces/disassembler.hpp"
 #include "gsc/interfaces/compiler.hpp"
 #include "gsc/interfaces/decompiler.hpp"
+
+// ARC Types
+#include "arc/location.hpp"
+#include "arc/types.hpp"
+#include "arc/block.hpp"
+#include "arc/nodetree.hpp"
+
+// ARC Interfaces
+#include "arc/interfaces/exception.hpp"
+#include "arc/interfaces/assembler.hpp"
+#include "arc/interfaces/disassembler.hpp"
+#include "arc/interfaces/compiler.hpp"
+#include "arc/interfaces/decompiler.hpp"
