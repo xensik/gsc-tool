@@ -96,6 +96,60 @@ void resolver::set_reader(std::function<std::vector<std::uint8_t>(const std::str
     read_callback = callback;
 }
 
+std::set<std::string> paths
+{
+    "aitype",
+    "animscripts",
+    "character",
+    "codescripts",
+    "common_scripts",
+    "maps",
+    "mpbody",
+    "xmodelalias",
+    "animscripts/ai_subclass",
+    "animscripts/aitype",
+    "animscripts/bigdog",
+    "animscripts/traverse",
+    "animscripts/turret",
+    "maps/ai_subclass",
+    "maps/createart",
+    "maps/createfx",
+    "maps/gametypes",
+    "maps/mp",
+    "maps/voice",
+    "maps/mp/animscripts",
+    "maps/mp/animscripts/traverse",
+    "maps/mp/bots",
+    "maps/mp/createart",
+    "maps/mp/createfx",
+    "maps/mp/gametypes",
+    "maps/mp/gametypes_zm",
+    "maps/mp/killstreaks",
+    "maps/mp/teams",
+    "maps/mp/zombies",
+};
+
+auto resolver::fs_to_game_path(const std::filesystem::path& file) -> std::filesystem::path
+{
+    auto result = std::filesystem::path();
+    auto root = false;
+
+    for (auto& entry : file)
+    {
+        if (!root && paths.contains(entry.string()))
+        {
+            result = entry;
+            root = true;
+        }
+        else if (paths.contains(result.string()))
+        {
+            result /= entry;
+        }
+    }
+
+    return result.empty() ? file : result;
+}
+
 const std::array<std::pair<std::uint8_t, const char*>, 126> opcode_list
 {{
     { std::uint8_t(opcode::OP_End),"END" },

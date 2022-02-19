@@ -23,6 +23,7 @@
 #include <filesystem>
 #include <functional>
 #include <stdexcept>
+#include <set>
 #include <map>
 #include <stack>
 #include <array>

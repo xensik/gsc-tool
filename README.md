@@ -24,9 +24,9 @@ A utility to compile & decompile IW engine game scripts.
 
 **games**: `iw5`, `iw6`, `iw7`, `iw8`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6`
 
-**paths**: `file`, `directory` (recursive process all files with mode extension)
+**paths**: `file`, `directory` (recursive process all files inside dir)
 
-for zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zdecomp`
+for zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zdecomp` modes
 
 | Mode     |Description                | Output      |
 |:---------|:--------------------------|:------------|
@@ -35,10 +35,12 @@ for zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zd
 |`comp`    |compile a `file.gsc`       |`file.gscbin`|
 |`decomp`  |decompile a `file.gscbin`  |`file.gsc`   |
 
-## Format
+## File Format
 - gsc-tool ``.gscbin`` format is a serialized ScriptFile struct: ***name***: null-term string, ***compressedLen***: 4 byte uint, ***len***: 4 byte uint, ***bytecodeLen***: 4 byte uint, ***buffer***: byte array[compressedLen], ***bytecode***: byte array[bytecodeLen].
 
-- zonetool format made of bytecode file ``.cgsc`` and decompressed stack buffer ``.cgsc.stack``.
+- zonetool (IW5) format made of bytecode file ``.cgsc`` and decompressed stack buffer ``.cgsc.stack``.
+
+- treyarch (T6) format is a single buffer with gscobj data ``.gsc`` or ``.csc``.
 ## Credits
 This project is based on  [*RektInator's* gsc-asm](https://github.com/ZoneTool/gsc-asm). Special thanks to **RektInator**, **JTAG** & **Dasfonia**.
 ## Disclaimer

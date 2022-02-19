@@ -15,20 +15,21 @@
 #include "s4/xsk/s4.hpp"
 #include "h1/xsk/h1.hpp"
 #include "h2/xsk/h2.hpp"
+#include "t6/xsk/t6.hpp"
 
-namespace xsk::gsc
+namespace xsk
 {
 
 enum class encd { __, SOURCE, ASSEMBLY, BINARY };
 enum class mode { __, ASM, DISASM, COMP, DECOMP };
-enum class game { __, IW5, IW6, IW7, IW8, S1, S2, S4, H1, H2 };
+enum class game { __, IW5, IW6, IW7, IW8, S1, S2, S4, H1, H2, T6 };
 
 const std::map<std::string, encd> exts =
 {
     { ".gsc", encd::SOURCE },
-    { ".gscasm", encd::ASSEMBLY },
     { ".cgsc", encd::BINARY },
     { ".gscbin", encd::BINARY },
+    { ".gscasm", encd::ASSEMBLY },
 };
 
 const std::map<std::string, mode> modes =
@@ -50,6 +51,7 @@ const std::map<std::string, game> games =
     { "s4", game::S4 },
     { "h1", game::H1 },
     { "h2", game::H2 },
+    { "t6", game::T6 },
 };
 
 const std::map<mode, encd> encds =
@@ -59,14 +61,6 @@ const std::map<mode, encd> encds =
     { mode::COMP, encd::SOURCE },
     { mode::DECOMP, encd::BINARY },
 };
-
-std::map<game, gsc::assembler::ptr> assemblers;
-std::map<game, gsc::disassembler::ptr> disassemblers;
-std::map<game, gsc::compiler::ptr> compilers;
-std::map<game, gsc::decompiler::ptr> decompilers;
-std::map<mode, std::function<void(game game, std::string file)>> funcs;
-
-bool zonetool = false;
 
 auto overwrite_prompt(const std::string& file) -> bool
 {
@@ -93,6 +87,16 @@ auto overwrite_prompt(const std::string& file) -> bool
 
     return overwrite;
 }
+
+namespace gsc
+{
+
+std::map<game, gsc::assembler::ptr> assemblers;
+std::map<game, gsc::disassembler::ptr> disassemblers;
+std::map<game, gsc::compiler::ptr> compilers;
+std::map<game, gsc::decompiler::ptr> decompilers;
+std::map<mode, std::function<void(game game, std::string file)>> funcs;
+bool zonetool = false;
 
 auto choose_resolver_file_name(uint32_t id, game& game) -> std::string
 {
@@ -142,8 +146,8 @@ void assemble_file(game game, std::string file)
         {
             if (zonetool)
             {
-                utils::file::save(file + ".cgsc", assembler->output_script());
-                utils::file::save(file + ".cgsc.stack", assembler->output_stack());
+                utils::file::save("assembled/" + file + ".cgsc", assembler->output_script());
+                utils::file::save("assembled/" + file + ".cgsc.stack", assembler->output_stack());
                 std::cout << "assembled " << file << ".cgsc\n";
             }
             else
@@ -161,7 +165,7 @@ void assemble_file(game game, std::string file)
                 script.bytecodeLen = script.bytecode.size();
 
                 auto output = script.serialize();
-                utils::file::save(file + ".gscbin", output);
+                utils::file::save("assembled/" + file + ".gscbin", output);
                 std::cout << "assembled " << file << ".gscbin\n";
             }
         }
@@ -228,7 +232,7 @@ void disassemble_file(game game, std::string file)
 
         if (!isdigit(scriptid.data()[0]))
         {
-            utils::file::save(file + ".gscasm", disassembler->output_data());
+            utils::file::save("disassembled/" + file + ".gscasm", disassembler->output_data());
             std::cout << "disassembled " << file << ".gscasm\n";
         }
         else
@@ -244,7 +248,7 @@ void disassemble_file(game game, std::string file)
                 }
             }
 
-            utils::file::save(file + filename + ".gscasm", disassembler->output_data());
+            utils::file::save("disassembled/" + file + filename + ".gscasm", disassembler->output_data());
             std::cout << "disassembled " << file << filename << ".gscasm\n";
         }
     }
@@ -281,8 +285,8 @@ void compile_file(game game, std::string file)
         {
             if (zonetool)
             {
-                utils::file::save(file + ".cgsc", assembler->output_script());
-                utils::file::save(file + ".cgsc.stack", assembler->output_stack());
+                utils::file::save("compiled/" + file + ".cgsc", assembler->output_script());
+                utils::file::save("compiled/" + file + ".cgsc.stack", assembler->output_stack());
                 std::cout << "compiled " << file << ".cgsc\n";
             }
             else
@@ -300,7 +304,7 @@ void compile_file(game game, std::string file)
                 script.bytecodeLen = script.bytecode.size();
 
                 auto output = script.serialize();
-                utils::file::save(file + ".gscbin", output);
+                utils::file::save("compiled/" + file + ".gscbin", output);
                 std::cout << "compiled " << file << ".gscbin\n";
             }
         }
@@ -373,7 +377,7 @@ void decompile_file(game game, std::string file)
 
         if (!isdigit(scriptid.data()[0]))
         {
-            utils::file::save(file + ".gsc", decompiler->output());
+            utils::file::save("decompiled/" + file + ".gsc", decompiler->output());
             std::cout << "decompiled " << file << ".gsc\n";
         }
         else
@@ -389,7 +393,7 @@ void decompile_file(game game, std::string file)
                 }
             }
 
-            utils::file::save(file + filename + ".gsc", decompiler->output());
+            utils::file::save("decompiled/" + file + filename + ".gsc", decompiler->output());
             std::cout << "decompiled " << file << filename << ".gsc\n";
         }
     }
@@ -399,6 +403,168 @@ void decompile_file(game game, std::string file)
     }
 }
 
+void init()
+{
+    assemblers[game::IW5] = std::make_unique<iw5::assembler>();
+    assemblers[game::IW6] = std::make_unique<iw6::assembler>();
+    assemblers[game::IW7] = std::make_unique<iw7::assembler>();
+    assemblers[game::IW8] = std::make_unique<iw8::assembler>();
+    assemblers[game::S1] = std::make_unique<s1::assembler>();
+    assemblers[game::S2] = std::make_unique<s2::assembler>();
+    assemblers[game::S4] = std::make_unique<s4::assembler>();
+    assemblers[game::H1] = std::make_unique<h1::assembler>();
+    assemblers[game::H2] = std::make_unique<h2::assembler>();
+    disassemblers[game::IW5] = std::make_unique<iw5::disassembler>();
+    disassemblers[game::IW6] = std::make_unique<iw6::disassembler>();
+    disassemblers[game::IW7] = std::make_unique<iw7::disassembler>();
+    disassemblers[game::IW8] = std::make_unique<iw8::disassembler>();
+    disassemblers[game::S1] = std::make_unique<s1::disassembler>();
+    disassemblers[game::S2] = std::make_unique<s2::disassembler>();
+    disassemblers[game::S4] = std::make_unique<s4::disassembler>();
+    disassemblers[game::H1] = std::make_unique<h1::disassembler>();
+    disassemblers[game::H2] = std::make_unique<h2::disassembler>();
+    compilers[game::IW5] = std::make_unique<iw5::compiler>(build::prod);
+    compilers[game::IW6] = std::make_unique<iw6::compiler>(build::prod);
+    compilers[game::IW7] = std::make_unique<iw7::compiler>(build::prod);
+    compilers[game::IW8] = std::make_unique<iw8::compiler>(build::prod);
+    compilers[game::S1] = std::make_unique<s1::compiler>(build::prod);
+    compilers[game::S2] = std::make_unique<s2::compiler>(build::prod);
+    compilers[game::S4] = std::make_unique<s4::compiler>(build::prod);
+    compilers[game::H1] = std::make_unique<h1::compiler>(build::prod);
+    compilers[game::H2] = std::make_unique<h2::compiler>(build::prod);
+    decompilers[game::IW5] = std::make_unique<iw5::decompiler>();
+    decompilers[game::IW6] = std::make_unique<iw6::decompiler>();
+    decompilers[game::IW7] = std::make_unique<iw7::decompiler>();
+    decompilers[game::IW8] = std::make_unique<iw8::decompiler>();
+    decompilers[game::S1] = std::make_unique<s1::decompiler>();
+    decompilers[game::S2] = std::make_unique<s2::decompiler>();
+    decompilers[game::S4] = std::make_unique<s4::decompiler>();
+    decompilers[game::H1] = std::make_unique<h1::decompiler>();
+    decompilers[game::H2] = std::make_unique<h2::decompiler>();
+    funcs[mode::ASM] = assemble_file;
+    funcs[mode::DISASM] = disassemble_file;
+    funcs[mode::COMP] = compile_file;
+    funcs[mode::DECOMP] = decompile_file;
+}
+
+} // namespace xsk::gsc
+
+namespace arc
+{
+
+std::map<game, assembler::ptr> assemblers;
+std::map<game, disassembler::ptr> disassemblers;
+std::map<game, compiler::ptr> compilers;
+std::map<game, decompiler::ptr> decompilers;
+std::map<mode, std::function<void(game game, const std::filesystem::path& file)>> funcs;
+
+void assemble_file(game game, const std::filesystem::path& file)
+{
+    try
+    {
+        const auto& assembler = assemblers[game];
+
+        auto data = utils::file::read(file);
+        auto path = t6::resolver::fs_to_game_path(file);
+        auto next = path.extension() == ".gscasm" ? path.replace_extension(".gsc") : path.replace_extension(".csc");
+
+        assembler->assemble(next, data);
+
+        utils::file::save(std::filesystem::path("assembled/t6") / next, assembler->output());
+        std::cout << "assembled " << path.replace_extension() << "\n";
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+}
+
+void disassemble_file(game game, const std::filesystem::path& file)
+{
+    try
+    {
+        const auto& disassembler = disassemblers[game];
+
+        auto data = utils::file::read(file);
+        auto path = t6::resolver::fs_to_game_path(file);
+        auto next = path.extension() == ".gsc" ? path.replace_extension(".gscasm") : path.replace_extension(".cscasm");
+
+        disassembler->disassemble(file, data);
+
+        utils::file::save(std::filesystem::path("disassembled/t6") / next, disassembler->output_data());
+        std::cout << "disassembled " << path.replace_extension() << "\n";
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+}
+
+void compile_file(game game, const std::filesystem::path& file)
+{
+    try
+    {
+        const auto& assembler = assemblers[game];
+        const auto& compiler = compilers[game];
+
+        auto data = utils::file::read(file);
+        auto path = t6::resolver::fs_to_game_path(file);
+
+        compiler->read_callback(utils::file::read);
+        compiler->compile(file, data);
+
+        auto assembly = compiler->output();
+
+        assembler->assemble(path, assembly);
+
+        utils::file::save(std::filesystem::path("compiled/t6") / path, assembler->output());
+        std::cout << "compiled " << path.replace_extension() << "\n";
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+}
+
+void decompile_file(game game, const std::filesystem::path& file)
+{
+    try
+    {
+        const auto& disassembler = disassemblers[game];
+        const auto& decompiler = decompilers[game];
+
+        auto data = utils::file::read(file);
+        auto path = t6::resolver::fs_to_game_path(file);
+
+        disassembler->disassemble(file, data);
+
+        auto output = disassembler->output();
+
+        decompiler->decompile(file, output);
+
+        utils::file::save(std::filesystem::path("decompiled/t6") / path, decompiler->output());
+        std::cout << "decompiled " << path.replace_extension() << "\n";
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+}
+
+void init()
+{
+    assemblers[game::T6] = std::make_unique<t6::assembler>();
+    disassemblers[game::T6] = std::make_unique<t6::disassembler>();
+    compilers[game::T6] = std::make_unique<t6::compiler>(build::prod);
+    decompilers[game::T6] = std::make_unique<t6::decompiler>();
+    funcs[mode::ASM] = assemble_file;
+    funcs[mode::DISASM] = disassemble_file;
+    funcs[mode::COMP] = compile_file;
+    funcs[mode::DECOMP] = decompile_file;
+}
+
+} // namespace xsk::arc
+
 void execute(mode mode, game game, const std::string& path)
 {
     if (std::filesystem::is_directory(path))
@@ -407,35 +573,29 @@ void execute(mode mode, game game, const std::string& path)
         {
             if (entry.is_regular_file())
             {
-                auto it1 = encds.find(mode);
-                auto it2 = exts.find(entry.path().extension().string());
-
-                if (it1 != encds.end() && it2 != exts.end() && it1->second == it2->second)
-                {
-                    funcs[mode](game, entry.path().string());
-                }
+                if (game < game::T6) gsc::funcs[mode](game, entry.path().string()); else arc::funcs[mode](game, entry.path());
             }
         }
     }
     else if (std::filesystem::is_regular_file(path))
     {
-        funcs[mode](game, path);
+        if (game < game::T6) gsc::funcs[mode](game, path); else arc::funcs[mode](game, path);
     }
 }
 
-int parse_flags(int argc, char** argv, game& game, mode& mode, std::string& path)
+auto parse_flags(int argc, char** argv, game& game, mode& mode, std::string& path) -> bool
 {
-    if (argc != 4) return 1;
+    if (argc != 4) return false;
 
     auto arg = utils::string::to_lower(argv[1]);
 
     if (arg.at(0) == 'z')
     {
         arg.erase(arg.begin());
-        zonetool = true;
+        gsc::zonetool = true;
     }
 
-    const auto it = modes.find(arg);
+    const auto& it = modes.find(arg);
 
     if (it != modes.end())
     {
@@ -443,13 +603,13 @@ int parse_flags(int argc, char** argv, game& game, mode& mode, std::string& path
     }
     else
     {
-        std::cout << "Unknown mode '" << argv[1] << "'.\n\n";
-        return 1;
+        std::cout << "[ERROR] unknown mode '" << argv[1] << "'.\n\n";
+        return false;
     }
 
     arg = utils::string::to_lower(argv[2]);
 
-    const auto itr = games.find(arg);
+    const auto& itr = games.find(arg);
 
     if (itr != games.end())
     {
@@ -457,88 +617,141 @@ int parse_flags(int argc, char** argv, game& game, mode& mode, std::string& path
     }
     else
     {
-        std::cout << "Unknown game '" << argv[2] << "'.\n\n";
-        return 1;
+        std::cout << "[ERROR] unknown game '" << argv[2] << "'.\n\n";
+        return false;
     }
 
     path = utils::string::fordslash(argv[3]);
 
-    return 0;
+    return true;
 }
 
 void print_usage()
 {
     std::cout << "usage: gsc-tool.exe <mode> <game> <path>\n";
     std::cout << "\t* modes: asm, disasm, comp, decomp\n";
-    std::cout << "\t* games: iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2\n";
+    std::cout << "\t* games: iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2, t6\n";
     std::cout << "\t* paths: file or directory (recursive)\n";
 }
+/*
+auto shell_parse(const std::vector<std::string>& data, game& game, mode& mode, std::string& path) -> bool
+{
+    if (data.size() != 3) return false;
 
-std::uint32_t main(std::uint32_t argc, char** argv)
+    auto arg = utils::string::to_lower(data[0]);
+
+    if (arg.at(0) == 'z')
+    {
+        arg.erase(arg.begin());
+        gsc::zonetool = true;
+    }
+
+    const auto& it = modes.find(arg);
+
+    if (it != modes.end())
+    {
+        mode = it->second;
+    }
+    else
+    {
+        std::cout << "[ERROR] unknown mode '" << data[0] << "'.\n";
+        return false;
+    }
+
+    arg = utils::string::to_lower(data[1]);
+
+    const auto& itr = games.find(arg);
+
+    if (itr != games.end())
+    {
+        game = itr->second;
+    }
+    else
+    {
+        std::cout << "[ERROR] unknown game '" << data[1] << "'.\n";
+        return false;
+    }
+
+    path = utils::string::fordslash(data[2]);
+
+    return true;
+}
+
+void shell_usage()
+{
+    std::cout << "\nusage: <mode> <game> <path>\n";
+    std::cout << "\t* modes: asm, disasm, comp, decomp\n";
+    std::cout << "\t* games: iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2, t6\n";
+    std::cout << "\t* paths: file or directory (recursive)\n";
+    std::cout << "type 'exit' to close\n";
+    std::cout << "------------------------------------------------------\n";
+}
+
+void shell()
+{
+    std::string cmd;
+    cmd.resize(1024);
+    std::vector<std::string> data;
+    std::regex exp(R"(([A-Za-z0-9.\/\\]+|\"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\'))");
+
+    std::cout << "GSC Tool - https://github.com/xensik/gsc-tool\n";
+    shell_usage();
+
+    while (true)
+    {
+        std::cout << "> ";
+        std::memset(cmd.data(), 0, 1024);
+        std::cin.getline(cmd.data(), 1024, '\n');
+        data.clear();
+
+        for (auto i = std::sregex_iterator(cmd.begin(), cmd.end(), exp); i != std::sregex_iterator(); ++i)
+        {
+            data.push_back(i->str());
+        }
+
+        if (data.size() == 0)
+            continue;
+
+        if (data.size() == 1 && data[0] == "exit")
+            break;
+
+        auto path = ""s;
+        mode mode = mode::__;
+        game game = game::__;
+
+        if (shell_parse(data, game, mode, path))
+            execute(mode, game, path);
+        else
+            shell_usage();
+    }
+}
+*/
+void main(std::uint32_t argc, char** argv)
 {
     auto path = ""s;
     mode mode = mode::__;
     game game = game::__;
 
-    assemblers[game::IW5] = std::make_unique<gsc::iw5::assembler>();
-    assemblers[game::IW6] = std::make_unique<gsc::iw6::assembler>();
-    assemblers[game::IW7] = std::make_unique<gsc::iw7::assembler>();
-    assemblers[game::IW8] = std::make_unique<gsc::iw8::assembler>();
-    assemblers[game::S1] = std::make_unique<gsc::s1::assembler>();
-    assemblers[game::S2] = std::make_unique<gsc::s2::assembler>();
-    assemblers[game::S4] = std::make_unique<gsc::s4::assembler>();
-    assemblers[game::H1] = std::make_unique<gsc::h1::assembler>();
-    assemblers[game::H2] = std::make_unique<gsc::h2::assembler>();
-
-    disassemblers[game::IW5] = std::make_unique<gsc::iw5::disassembler>();
-    disassemblers[game::IW6] = std::make_unique<gsc::iw6::disassembler>();
-    disassemblers[game::IW7] = std::make_unique<gsc::iw7::disassembler>();
-    disassemblers[game::IW8] = std::make_unique<gsc::iw8::disassembler>();
-    disassemblers[game::S1] = std::make_unique<gsc::s1::disassembler>();
-    disassemblers[game::S2] = std::make_unique<gsc::s2::disassembler>();
-    disassemblers[game::S4] = std::make_unique<gsc::s4::disassembler>();
-    disassemblers[game::H1] = std::make_unique<gsc::h1::disassembler>();
-    disassemblers[game::H2] = std::make_unique<gsc::h2::disassembler>();
-
-    compilers[game::IW5] = std::make_unique<gsc::iw5::compiler>(gsc::build::prod);
-    compilers[game::IW6] = std::make_unique<gsc::iw6::compiler>(gsc::build::prod);
-    compilers[game::IW7] = std::make_unique<gsc::iw7::compiler>(gsc::build::prod);
-    compilers[game::IW8] = std::make_unique<gsc::iw8::compiler>(gsc::build::prod);
-    compilers[game::S1] = std::make_unique<gsc::s1::compiler>(gsc::build::prod);
-    compilers[game::S2] = std::make_unique<gsc::s2::compiler>(gsc::build::prod);
-    compilers[game::S4] = std::make_unique<gsc::s4::compiler>(gsc::build::prod);
-    compilers[game::H1] = std::make_unique<gsc::h1::compiler>(gsc::build::prod);
-    compilers[game::H2] = std::make_unique<gsc::h2::compiler>(gsc::build::prod);
-
-    decompilers[game::IW5] = std::make_unique<gsc::iw5::decompiler>();
-    decompilers[game::IW6] = std::make_unique<gsc::iw6::decompiler>();
-    decompilers[game::IW7] = std::make_unique<gsc::iw7::decompiler>();
-    decompilers[game::IW8] = std::make_unique<gsc::iw8::decompiler>();
-    decompilers[game::S1] = std::make_unique<gsc::s1::decompiler>();
-    decompilers[game::S2] = std::make_unique<gsc::s2::decompiler>();
-    decompilers[game::S4] = std::make_unique<gsc::s4::decompiler>();
-    decompilers[game::H1] = std::make_unique<gsc::h1::decompiler>();
-    decompilers[game::H2] = std::make_unique<gsc::h2::decompiler>();
-
-    funcs[mode::ASM] = assemble_file;
-    funcs[mode::DISASM] = disassemble_file;
-    funcs[mode::COMP] = compile_file;
-    funcs[mode::DECOMP] = decompile_file;
-
-    if (parse_flags(argc, argv, game, mode, path))
+    gsc::init();
+    arc::init();
+/*
+    if (argc <= 1)
     {
-        print_usage();
-        return 0;
+        return shell();
+    }
+*/
+    if (!parse_flags(argc, argv, game, mode, path))
+    {
+        return print_usage();
     }
 
     execute(mode, game, path);
-
-    return 0;
 }
 
-} // namespace xsk::gsc
+} // namespace xsk
 
 int main(int argc, char** argv)
 {
-    xsk::gsc::main(argc, argv);
+    xsk::main(argc, argv);
+    return 0;
 }
