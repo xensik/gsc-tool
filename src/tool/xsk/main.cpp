@@ -464,13 +464,13 @@ void assemble_file(game game, const std::filesystem::path& file)
     {
         const auto& assembler = assemblers[game];
 
-        auto data = utils::file::read(file);
+        auto data = utils::file::read(file.string());
         auto path = t6::resolver::fs_to_game_path(file);
         auto next = path.extension() == ".gscasm" ? path.replace_extension(".gsc") : path.replace_extension(".csc");
 
-        assembler->assemble(next, data);
+        assembler->assemble(next.string(), data);
 
-        utils::file::save(std::filesystem::path("assembled/t6") / next, assembler->output());
+        utils::file::save((std::filesystem::path("assembled/t6") / next).string(), assembler->output());
         std::cout << "assembled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
@@ -485,13 +485,13 @@ void disassemble_file(game game, const std::filesystem::path& file)
     {
         const auto& disassembler = disassemblers[game];
 
-        auto data = utils::file::read(file);
+        auto data = utils::file::read(file.string());
         auto path = t6::resolver::fs_to_game_path(file);
         auto next = path.extension() == ".gsc" ? path.replace_extension(".gscasm") : path.replace_extension(".cscasm");
 
-        disassembler->disassemble(file, data);
+        disassembler->disassemble(file.string(), data);
 
-        utils::file::save(std::filesystem::path("disassembled/t6") / next, disassembler->output_data());
+        utils::file::save((std::filesystem::path("disassembled/t6") / next).string(), disassembler->output_data());
         std::cout << "disassembled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
@@ -507,17 +507,17 @@ void compile_file(game game, const std::filesystem::path& file)
         const auto& assembler = assemblers[game];
         const auto& compiler = compilers[game];
 
-        auto data = utils::file::read(file);
+        auto data = utils::file::read(file.string());
         auto path = t6::resolver::fs_to_game_path(file);
 
         compiler->read_callback(utils::file::read);
-        compiler->compile(file, data);
+        compiler->compile(file.string(), data);
 
         auto assembly = compiler->output();
 
-        assembler->assemble(path, assembly);
+        assembler->assemble(path.string(), assembly);
 
-        utils::file::save(std::filesystem::path("compiled/t6") / path, assembler->output());
+        utils::file::save((std::filesystem::path("compiled/t6") / path).string(), assembler->output());
         std::cout << "compiled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
@@ -533,16 +533,16 @@ void decompile_file(game game, const std::filesystem::path& file)
         const auto& disassembler = disassemblers[game];
         const auto& decompiler = decompilers[game];
 
-        auto data = utils::file::read(file);
+        auto data = utils::file::read(file.string());
         auto path = t6::resolver::fs_to_game_path(file);
 
-        disassembler->disassemble(file, data);
+        disassembler->disassemble(file.string(), data);
 
         auto output = disassembler->output();
 
-        decompiler->decompile(file, output);
+        decompiler->decompile(file.string(), output);
 
-        utils::file::save(std::filesystem::path("decompiled/t6") / path, decompiler->output());
+        utils::file::save((std::filesystem::path("decompiled/t6") / path).string(), decompiler->output());
         std::cout << "decompiled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
