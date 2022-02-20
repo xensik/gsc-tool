@@ -1624,7 +1624,7 @@ void compiler::emit_expr_reference(const ast::expr_reference::ptr& expr, const b
 
 void compiler::emit_expr_size(const ast::expr_size::ptr& expr, const block::ptr& blk)
 {
-    emit_expr_variable(expr->obj, blk);
+    emit_expr(expr->obj, blk);
     emit_opcode(opcode::OP_size);
 }
 

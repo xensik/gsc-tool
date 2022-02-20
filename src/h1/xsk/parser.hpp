@@ -476,6 +476,7 @@ namespace xsk { namespace gsc { namespace h1 {
       // expr_game
       char dummy19[sizeof (ast::expr_game::ptr)];
 
+      // expr_identifier_nosize
       // expr_identifier
       char dummy20[sizeof (ast::expr_identifier::ptr)];
 
@@ -620,7 +621,6 @@ namespace xsk { namespace gsc { namespace h1 {
       // stmt_while
       char dummy66[sizeof (ast::stmt_while::ptr)];
 
-      // "field"
       // "path"
       // "identifier"
       // "string literal"
@@ -723,7 +723,7 @@ namespace xsk { namespace gsc { namespace h1 {
     TRUE = 44,                     // "true"
     FALSE = 45,                    // "false"
     UNDEFINED = 46,                // "undefined"
-    SIZE = 47,                     // ".size"
+    SIZE = 47,                     // "size"
     GAME = 48,                     // "game"
     SELF = 49,                     // "self"
     ANIM = 50,                     // "anim"
@@ -773,13 +773,13 @@ namespace xsk { namespace gsc { namespace h1 {
     MUL = 94,                      // "*"
     DIV = 95,                      // "/"
     MOD = 96,                      // "%"
-    FIELD = 97,                    // "field"
-    PATH = 98,                     // "path"
-    IDENTIFIER = 99,               // "identifier"
-    STRING = 100,                  // "string literal"
-    ISTRING = 101,                 // "localized string"
-    FLOAT = 102,                   // "float"
-    INTEGER = 103,                 // "integer"
+    PATH = 97,                     // "path"
+    IDENTIFIER = 98,               // "identifier"
+    STRING = 99,                   // "string literal"
+    ISTRING = 100,                 // "localized string"
+    FLOAT = 101,                   // "float"
+    INTEGER = 102,                 // "integer"
+    SIZEOF = 103,                  // SIZEOF
     ADD_ARRAY = 104,               // ADD_ARRAY
     THEN = 105,                    // THEN
     TERN = 106,                    // TERN
@@ -854,7 +854,7 @@ namespace xsk { namespace gsc { namespace h1 {
         S_TRUE = 44,                             // "true"
         S_FALSE = 45,                            // "false"
         S_UNDEFINED = 46,                        // "undefined"
-        S_SIZE = 47,                             // ".size"
+        S_SIZE = 47,                             // "size"
         S_GAME = 48,                             // "game"
         S_SELF = 49,                             // "self"
         S_ANIM = 50,                             // "anim"
@@ -904,13 +904,13 @@ namespace xsk { namespace gsc { namespace h1 {
         S_MUL = 94,                              // "*"
         S_DIV = 95,                              // "/"
         S_MOD = 96,                              // "%"
-        S_FIELD = 97,                            // "field"
-        S_PATH = 98,                             // "path"
-        S_IDENTIFIER = 99,                       // "identifier"
-        S_STRING = 100,                          // "string literal"
-        S_ISTRING = 101,                         // "localized string"
-        S_FLOAT = 102,                           // "float"
-        S_INTEGER = 103,                         // "integer"
+        S_PATH = 97,                             // "path"
+        S_IDENTIFIER = 98,                       // "identifier"
+        S_STRING = 99,                           // "string literal"
+        S_ISTRING = 100,                         // "localized string"
+        S_FLOAT = 101,                           // "float"
+        S_INTEGER = 102,                         // "integer"
+        S_SIZEOF = 103,                          // SIZEOF
         S_ADD_ARRAY = 104,                       // ADD_ARRAY
         S_THEN = 105,                            // THEN
         S_TERN = 106,                            // TERN
@@ -993,15 +993,16 @@ namespace xsk { namespace gsc { namespace h1 {
         S_expr_level = 183,                      // expr_level
         S_expr_animation = 184,                  // expr_animation
         S_expr_animtree = 185,                   // expr_animtree
-        S_expr_identifier = 186,                 // expr_identifier
-        S_expr_path = 187,                       // expr_path
-        S_expr_istring = 188,                    // expr_istring
-        S_expr_string = 189,                     // expr_string
-        S_expr_vector = 190,                     // expr_vector
-        S_expr_float = 191,                      // expr_float
-        S_expr_integer = 192,                    // expr_integer
-        S_expr_false = 193,                      // expr_false
-        S_expr_true = 194                        // expr_true
+        S_expr_identifier_nosize = 186,          // expr_identifier_nosize
+        S_expr_identifier = 187,                 // expr_identifier
+        S_expr_path = 188,                       // expr_path
+        S_expr_istring = 189,                    // expr_istring
+        S_expr_string = 190,                     // expr_string
+        S_expr_vector = 191,                     // expr_vector
+        S_expr_float = 192,                      // expr_float
+        S_expr_integer = 193,                    // expr_integer
+        S_expr_false = 194,                      // expr_false
+        S_expr_true = 195                        // expr_true
       };
     };
 
@@ -1124,6 +1125,7 @@ namespace xsk { namespace gsc { namespace h1 {
         value.move< ast::expr_game::ptr > (std::move (that.value));
         break;
 
+      case symbol_kind::S_expr_identifier_nosize: // expr_identifier_nosize
       case symbol_kind::S_expr_identifier: // expr_identifier
         value.move< ast::expr_identifier::ptr > (std::move (that.value));
         break;
@@ -1315,7 +1317,6 @@ namespace xsk { namespace gsc { namespace h1 {
         value.move< ast::stmt_while::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_FIELD: // "field"
       case symbol_kind::S_PATH: // "path"
       case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
@@ -2394,6 +2395,7 @@ switch (yykind)
         value.template destroy< ast::expr_game::ptr > ();
         break;
 
+      case symbol_kind::S_expr_identifier_nosize: // expr_identifier_nosize
       case symbol_kind::S_expr_identifier: // expr_identifier
         value.template destroy< ast::expr_identifier::ptr > ();
         break;
@@ -2585,7 +2587,6 @@ switch (yykind)
         value.template destroy< ast::stmt_while::ptr > ();
         break;
 
-      case symbol_kind::S_FIELD: // "field"
       case symbol_kind::S_PATH: // "path"
       case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
@@ -2691,7 +2692,7 @@ switch (yykind)
       {
         H1_ASSERT (tok == token::H1EOF
                    || (token::H1error <= tok && tok <= token::MOD)
-                   || (token::ADD_ARRAY <= tok && tok <= token::POSTDEC));
+                   || (token::SIZEOF <= tok && tok <= token::POSTDEC));
       }
 #if 201103L <= YY_CPLUSPLUS
       symbol_type (int tok, std::string v, location_type l)
@@ -2701,7 +2702,7 @@ switch (yykind)
         : super_type(token_type (tok), v, l)
 #endif
       {
-        H1_ASSERT ((token::FIELD <= tok && tok <= token::INTEGER));
+        H1_ASSERT ((token::PATH <= tok && tok <= token::INTEGER));
       }
     };
 
@@ -4209,21 +4210,6 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_FIELD (std::string v, location_type l)
-      {
-        return symbol_type (token::FIELD, std::move (v), std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_FIELD (const std::string& v, const location_type& l)
-      {
-        return symbol_type (token::FIELD, v, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
       make_PATH (std::string v, location_type l)
       {
         return symbol_type (token::PATH, std::move (v), std::move (l));
@@ -4309,6 +4295,21 @@ switch (yykind)
       make_INTEGER (const std::string& v, const location_type& l)
       {
         return symbol_type (token::INTEGER, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_SIZEOF (location_type l)
+      {
+        return symbol_type (token::SIZEOF, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_SIZEOF (const location_type& l)
+      {
+        return symbol_type (token::SIZEOF, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -4790,9 +4791,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2300,     ///< Last index in yytable_.
-      yynnts_ = 82,  ///< Number of nonterminal symbols.
-      yyfinal_ = 21 ///< Termination state number.
+      yylast_ = 2251,     ///< Last index in yytable_.
+      yynnts_ = 83,  ///< Number of nonterminal symbols.
+      yyfinal_ = 22 ///< Termination state number.
     };
 
 
@@ -4904,6 +4905,7 @@ switch (yykind)
         value.copy< ast::expr_game::ptr > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_expr_identifier_nosize: // expr_identifier_nosize
       case symbol_kind::S_expr_identifier: // expr_identifier
         value.copy< ast::expr_identifier::ptr > (YY_MOVE (that.value));
         break;
@@ -5095,7 +5097,6 @@ switch (yykind)
         value.copy< ast::stmt_while::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_FIELD: // "field"
       case symbol_kind::S_PATH: // "path"
       case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
@@ -5220,6 +5221,7 @@ switch (yykind)
         value.move< ast::expr_game::ptr > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_expr_identifier_nosize: // expr_identifier_nosize
       case symbol_kind::S_expr_identifier: // expr_identifier
         value.move< ast::expr_identifier::ptr > (YY_MOVE (s.value));
         break;
@@ -5411,7 +5413,6 @@ switch (yykind)
         value.move< ast::stmt_while::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_FIELD: // "field"
       case symbol_kind::S_PATH: // "path"
       case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
@@ -5484,7 +5485,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::gsc::h1
-#line 5488 "parser.hpp"
+#line 5489 "parser.hpp"
 
 
 

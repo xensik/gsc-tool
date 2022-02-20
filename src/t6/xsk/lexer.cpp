@@ -55,6 +55,7 @@ const std::unordered_map<std::string_view, parser::token::token_kind_type> keywo
     { "true", parser::token::TRUE },
     { "false", parser::token::FALSE },
     { "undefined", parser::token::UNDEFINED },
+    { "size", parser::token::SIZE },
     { "game", parser::token::GAME },
     { "self", parser::token::SELF },
     { "anim", parser::token::ANIM },
@@ -99,8 +100,8 @@ bool buffer::push(char c)
     return true;
 }
 
-reader::reader() : state(reader::end), buffer_pos(0), bytes_remaining(0),
-    last_byte(0), current_byte(0) { }
+reader::reader() : state(reader::end), buffer_pos(0),
+    bytes_remaining(0), last_byte(0), current_byte(0) {}
 
 void reader::init(const char* data, size_t size)
 {
@@ -188,7 +189,6 @@ auto lexer::lex() -> parser::symbol_type
 {
     buffer_.length = 0;
     state_ = state::start;
-    loc_.step();
 
     while (true)
     {
@@ -196,6 +196,7 @@ auto lexer::lex() -> parser::symbol_type
         auto& last = reader_.last_byte;
         auto& curr = reader_.current_byte;
         auto path = false;
+        loc_.step();
 
         if (state == reader::end)
         {
@@ -228,7 +229,7 @@ auto lexer::lex() -> parser::symbol_type
             case '\\':
                 throw comp_error(loc_, "invalid token ('\\')");
             case '/':
-                if (curr != '/' && curr != '*' && curr != '#' && curr != '=')
+                if (curr != '=' && curr != '#' && curr != '@' && curr != '*' && curr != '/')
                     return parser::make_DIV(loc_);
 
                 advance();
@@ -260,12 +261,33 @@ auto lexer::lex() -> parser::symbol_type
                             }
                             else if (last == '#' && curr == '/')
                             {
-                                reader_.advance();
+                                advance();
                                 break;
                             }
 
-                            reader_.advance();
+                            advance();
                         }
+                    }
+                }
+                else if (last == '@')
+                {
+                    while (true)
+                    {
+                        if (state == reader::end)
+                            throw comp_error(loc_, "unmatched script doc comment start ('/@')");
+
+                        if (curr == '\n')
+                        {
+                            loc_.lines();
+                            loc_.step();
+                        }
+                        else if (last == '@' && curr == '/')
+                        {
+                            advance();
+                            break;
+                        }
+
+                        advance();
                     }
                 }
                 else if (last == '*')
@@ -280,13 +302,13 @@ auto lexer::lex() -> parser::symbol_type
                             loc_.lines();
                             loc_.step();
                         }
-                        else if (last  == '*' && curr == '/')
+                        else if (last == '*' && curr == '/')
                         {
-                            reader_.advance();
+                            advance();
                             break;
                         }
 
-                        reader_.advance();
+                        advance();
                     }
                 }
                 else if (last == '/')
@@ -296,30 +318,10 @@ auto lexer::lex() -> parser::symbol_type
                         if (state == reader::end)
                             break;
 
-                        if (last == '\\' && (curr == '\r' || curr == '\n'))
-                        {
-                            reader_.advance();
-
-                            if (state == reader::end)
-                                break;
-
-                            if (last == '\r')
-                            {
-                                if (curr != '\n')
-                                    throw comp_error(loc_, "invalid token ('\')");
-
-                                reader_.advance();
-                            }
-
-                            loc_.lines();
-                            loc_.step();
-                            continue;
-                        }
-
                         if (curr == '\n')
                             break;
 
-                        reader_.advance();
+                        advance();
                     }
                 }
                 continue;
@@ -329,8 +331,8 @@ auto lexer::lex() -> parser::symbol_type
                     if (!indev_)
                         throw comp_error(loc_, "unmatched devblock end ('#/')");
 
-                    indev_ = false;
                     advance();
+                    indev_ = false;
                     return parser::make_DEVEND(loc_);
                 }
 
@@ -351,7 +353,7 @@ auto lexer::lex() -> parser::symbol_type
                 state_ = state::preprocessor;
                 goto lex_name;
             case '*':
-                if (curr != '/' && curr != '=')
+                if (curr != '=' && curr != '/')
                     return parser::make_MUL(loc_);
 
                 advance();
@@ -364,13 +366,9 @@ auto lexer::lex() -> parser::symbol_type
                 state_ = state::string;
                 goto lex_string;
             case '.':
-                advance();
-
-                if (state == reader::end)
-                    throw comp_error(loc_, "unterminated field ('.')");
-
-                state_ = state::field;
-                goto lex_name_or_number;
+                if (curr < '0' || curr > '9')
+                    return parser::make_DOT(loc_);
+                goto lex_number;
             case '(':
                 return parser::make_LPAREN(loc_);
             case ')':
@@ -494,7 +492,6 @@ auto lexer::lex() -> parser::symbol_type
                 advance();
                 return parser::make_ASSIGN_RSHIFT(loc_);
             default:
-lex_name_or_number:
                 if (last >= '0' && last <= '9')
                     goto lex_number;
                 else if (last == '_' || last >= 'A' && last <= 'Z' || last >= 'a' && last <= 'z')
@@ -576,23 +573,8 @@ lex_name:
             advance();
         }
 
-        if (state_ == state::field)
+        if (state_ == state::preprocessor)
         {
-            if (path)
-                throw comp_error(loc_, "invalid field token '\\'");
-
-            if (std::string_view(buffer_.data, buffer_.length) == "size")
-            {
-                return parser::make_SIZE(loc_);
-            }
-
-            return parser::make_FIELD(std::string(buffer_.data, buffer_.length), loc_);
-        }
-        else if (state_ == state::preprocessor)
-        {
-            if (path)
-                throw comp_error(loc_, "invalid preprocessor directive");
-
             auto token = parser::token::T6UNDEF;
 
             if (buffer_.length < 16)
@@ -608,7 +590,8 @@ lex_name:
                 }
             }
 
-            preprocessor(token);
+            preprocessor_run(token);
+
             state_ = state::start;
             continue;
         }
@@ -647,14 +630,11 @@ lex_name:
         }
 
 lex_number:
-        if (state_ == state::field)
-            buffer_.push('.');
-
-        if (state_ == state::field || last == '.' || last != '0' || (last == '0' && (curr != 'o' && curr != 'b' && curr != 'x')))
+        if (last == '.' || last != '0' || (last == '0' && (curr != 'o' && curr != 'b' && curr != 'x')))
         {
             buffer_.push(last);
 
-            auto dot = 0;
+            auto dot = last == '.' ? 1 : 0;
             auto flt = 0;
 
             while (true)
@@ -690,10 +670,10 @@ lex_number:
             if (last == '\'')
                 throw comp_error(loc_, "invalid number literal");
 
-            if (state_ == state::field && dot || dot > 1 || flt > 1 || flt && buffer_.data[buffer_.length - 1] != 'f')
+            if (dot > 1 || flt > 1 || flt && buffer_.data[buffer_.length - 1] != 'f')
                 throw comp_error(loc_, "invalid number literal");
 
-            if (state_ == state::field || dot || flt)
+            if (dot || flt)
                 return parser::make_FLOAT(std::string(buffer_.data, buffer_.length), loc_);
 
             return parser::make_INTEGER(std::string(buffer_.data, buffer_.length), loc_);
@@ -708,7 +688,7 @@ lex_number:
                     break;
 
                 if (curr == '\'' && (last == '\'' || last == 'o') || (curr == 'o' && last == '\''))
-                    throw comp_error(loc_,  "invalid octal literal");
+                    throw comp_error(loc_, "invalid octal literal");
 
                 if (curr == '\'')
                 {
@@ -798,18 +778,22 @@ lex_number:
 
             return parser::make_INTEGER(xsk::utils::string::hex_to_dec(buffer_.data), loc_);
         }
-        // cant get here!
+
+        throw error("UNEXPECTED LEXER INTERNAL ERROR!");
     }
 }
 
 void lexer::advance()
 {
     reader_.advance();
+    loc_.end.column++;
 
-    // dont wrap comment marks '/\/' '/\*' outside strings
-    if (state_ == state::start && reader_.last_byte == '/')
-        return;
+    if (reader_.current_byte == '\\') [[unlikely]]
+        preprocessor_wrap();
+}
 
+void lexer::preprocessor_wrap()
+{
     while (reader_.current_byte == '\\')
     {
         if (reader_.bytes_remaining == 1)
@@ -851,7 +835,7 @@ void lexer::advance()
     }
 }
 
-void lexer::preprocessor(parser::token::token_kind_type token)
+void lexer::preprocessor_run(parser::token::token_kind_type token)
 {
     if (!clean_)
         throw comp_error(loc_, "invalid token ('#')");

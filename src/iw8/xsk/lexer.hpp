@@ -44,7 +44,7 @@ struct reader
 
 class lexer
 {
-    enum class state : std::uint8_t { start, string, localize, field, preprocessor };
+    enum class state : std::uint8_t { start, string, localize, preprocessor };
 
     reader reader_;
     buffer buffer_;
@@ -66,7 +66,8 @@ public:
 
 private:
     void advance();
-    void preprocessor(parser::token::token_kind_type token);
+    void preprocessor_wrap();
+    void preprocessor_run(parser::token::token_kind_type token);
 };
 
 } // namespace xsk::gsc::iw8

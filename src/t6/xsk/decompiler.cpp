@@ -1412,7 +1412,7 @@ void decompiler::decompile_aborts(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_devblocks(const ast::stmt_list::ptr& stmt)
 {
-    for (auto i = 0; i < stmt->list.size(); i++)
+    for (auto i = 0u; i < stmt->list.size(); i++)
     {
         if (stmt->list.at(i) == ast::kind::asm_dev)
         {

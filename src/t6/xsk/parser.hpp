@@ -519,6 +519,7 @@ namespace xsk { namespace arc { namespace t6 {
       // expr_hash
       char dummy34[sizeof (ast::expr_hash::ptr)];
 
+      // expr_identifier_nosize
       // expr_identifier
       char dummy35[sizeof (ast::expr_identifier::ptr)];
 
@@ -666,7 +667,6 @@ namespace xsk { namespace arc { namespace t6 {
       // stmt_while
       char dummy82[sizeof (ast::stmt_while::ptr)];
 
-      // "field"
       // "path"
       // "identifier"
       // "string literal"
@@ -765,7 +765,7 @@ namespace xsk { namespace arc { namespace t6 {
     TRUE = 39,                     // "true"
     FALSE = 40,                    // "false"
     UNDEFINED = 41,                // "undefined"
-    SIZE = 42,                     // ".size"
+    SIZE = 42,                     // "size"
     GAME = 43,                     // "game"
     SELF = 44,                     // "self"
     ANIM = 45,                     // "anim"
@@ -834,14 +834,14 @@ namespace xsk { namespace arc { namespace t6 {
     MUL = 108,                     // "*"
     DIV = 109,                     // "/"
     MOD = 110,                     // "%"
-    FIELD = 111,                   // "field"
-    PATH = 112,                    // "path"
-    IDENTIFIER = 113,              // "identifier"
-    STRING = 114,                  // "string literal"
-    ISTRING = 115,                 // "localized string"
-    HASH = 116,                    // "hash"
-    FLOAT = 117,                   // "float"
-    INTEGER = 118,                 // "integer"
+    PATH = 111,                    // "path"
+    IDENTIFIER = 112,              // "identifier"
+    STRING = 113,                  // "string literal"
+    ISTRING = 114,                 // "localized string"
+    HASH = 115,                    // "hash"
+    FLOAT = 116,                   // "float"
+    INTEGER = 117,                 // "integer"
+    SIZEOF = 118,                  // SIZEOF
     THEN = 119,                    // THEN
     TERN = 120,                    // TERN
     NEG = 121,                     // NEG
@@ -910,7 +910,7 @@ namespace xsk { namespace arc { namespace t6 {
         S_TRUE = 39,                             // "true"
         S_FALSE = 40,                            // "false"
         S_UNDEFINED = 41,                        // "undefined"
-        S_SIZE = 42,                             // ".size"
+        S_SIZE = 42,                             // "size"
         S_GAME = 43,                             // "game"
         S_SELF = 44,                             // "self"
         S_ANIM = 45,                             // "anim"
@@ -979,14 +979,14 @@ namespace xsk { namespace arc { namespace t6 {
         S_MUL = 108,                             // "*"
         S_DIV = 109,                             // "/"
         S_MOD = 110,                             // "%"
-        S_FIELD = 111,                           // "field"
-        S_PATH = 112,                            // "path"
-        S_IDENTIFIER = 113,                      // "identifier"
-        S_STRING = 114,                          // "string literal"
-        S_ISTRING = 115,                         // "localized string"
-        S_HASH = 116,                            // "hash"
-        S_FLOAT = 117,                           // "float"
-        S_INTEGER = 118,                         // "integer"
+        S_PATH = 111,                            // "path"
+        S_IDENTIFIER = 112,                      // "identifier"
+        S_STRING = 113,                          // "string literal"
+        S_ISTRING = 114,                         // "localized string"
+        S_HASH = 115,                            // "hash"
+        S_FLOAT = 116,                           // "float"
+        S_INTEGER = 117,                         // "integer"
+        S_SIZEOF = 118,                          // SIZEOF
         S_THEN = 119,                            // THEN
         S_TERN = 120,                            // TERN
         S_NEG = 121,                             // NEG
@@ -1083,16 +1083,17 @@ namespace xsk { namespace arc { namespace t6 {
         S_expr_anim = 212,                       // expr_anim
         S_expr_level = 213,                      // expr_level
         S_expr_animation = 214,                  // expr_animation
-        S_expr_identifier = 215,                 // expr_identifier
-        S_expr_path = 216,                       // expr_path
-        S_expr_istring = 217,                    // expr_istring
-        S_expr_string = 218,                     // expr_string
-        S_expr_vector = 219,                     // expr_vector
-        S_expr_hash = 220,                       // expr_hash
-        S_expr_float = 221,                      // expr_float
-        S_expr_integer = 222,                    // expr_integer
-        S_expr_false = 223,                      // expr_false
-        S_expr_true = 224                        // expr_true
+        S_expr_identifier_nosize = 215,          // expr_identifier_nosize
+        S_expr_identifier = 216,                 // expr_identifier
+        S_expr_path = 217,                       // expr_path
+        S_expr_istring = 218,                    // expr_istring
+        S_expr_string = 219,                     // expr_string
+        S_expr_vector = 220,                     // expr_vector
+        S_expr_hash = 221,                       // expr_hash
+        S_expr_float = 222,                      // expr_float
+        S_expr_integer = 223,                    // expr_integer
+        S_expr_false = 224,                      // expr_false
+        S_expr_true = 225                        // expr_true
       };
     };
 
@@ -1275,6 +1276,7 @@ namespace xsk { namespace arc { namespace t6 {
         value.move< ast::expr_hash::ptr > (std::move (that.value));
         break;
 
+      case symbol_kind::S_expr_identifier_nosize: // expr_identifier_nosize
       case symbol_kind::S_expr_identifier: // expr_identifier
         value.move< ast::expr_identifier::ptr > (std::move (that.value));
         break;
@@ -1470,7 +1472,6 @@ namespace xsk { namespace arc { namespace t6 {
         value.move< ast::stmt_while::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_FIELD: // "field"
       case symbol_kind::S_PATH: // "path"
       case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
@@ -2834,6 +2835,7 @@ switch (yykind)
         value.template destroy< ast::expr_hash::ptr > ();
         break;
 
+      case symbol_kind::S_expr_identifier_nosize: // expr_identifier_nosize
       case symbol_kind::S_expr_identifier: // expr_identifier
         value.template destroy< ast::expr_identifier::ptr > ();
         break;
@@ -3029,7 +3031,6 @@ switch (yykind)
         value.template destroy< ast::stmt_while::ptr > ();
         break;
 
-      case symbol_kind::S_FIELD: // "field"
       case symbol_kind::S_PATH: // "path"
       case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
@@ -3136,7 +3137,7 @@ switch (yykind)
       {
         T6_ASSERT (tok == token::T6EOF
                    || (token::T6error <= tok && tok <= token::MOD)
-                   || (token::THEN <= tok && tok <= token::POSTDEC));
+                   || (token::SIZEOF <= tok && tok <= token::POSTDEC));
       }
 #if 201103L <= YY_CPLUSPLUS
       symbol_type (int tok, std::string v, location_type l)
@@ -3146,7 +3147,7 @@ switch (yykind)
         : super_type(token_type (tok), v, l)
 #endif
       {
-        T6_ASSERT ((token::FIELD <= tok && tok <= token::INTEGER));
+        T6_ASSERT ((token::PATH <= tok && tok <= token::INTEGER));
       }
     };
 
@@ -4864,21 +4865,6 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_FIELD (std::string v, location_type l)
-      {
-        return symbol_type (token::FIELD, std::move (v), std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_FIELD (const std::string& v, const location_type& l)
-      {
-        return symbol_type (token::FIELD, v, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
       make_PATH (std::string v, location_type l)
       {
         return symbol_type (token::PATH, std::move (v), std::move (l));
@@ -4979,6 +4965,21 @@ switch (yykind)
       make_INTEGER (const std::string& v, const location_type& l)
       {
         return symbol_type (token::INTEGER, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_SIZEOF (location_type l)
+      {
+        return symbol_type (token::SIZEOF, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_SIZEOF (const location_type& l)
+      {
+        return symbol_type (token::SIZEOF, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -5445,9 +5446,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2819,     ///< Last index in yytable_.
-      yynnts_ = 98,  ///< Number of nonterminal symbols.
-      yyfinal_ = 21 ///< Termination state number.
+      yylast_ = 2863,     ///< Last index in yytable_.
+      yynnts_ = 99,  ///< Number of nonterminal symbols.
+      yyfinal_ = 22 ///< Termination state number.
     };
 
 
@@ -5619,6 +5620,7 @@ switch (yykind)
         value.copy< ast::expr_hash::ptr > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_expr_identifier_nosize: // expr_identifier_nosize
       case symbol_kind::S_expr_identifier: // expr_identifier
         value.copy< ast::expr_identifier::ptr > (YY_MOVE (that.value));
         break;
@@ -5814,7 +5816,6 @@ switch (yykind)
         value.copy< ast::stmt_while::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_FIELD: // "field"
       case symbol_kind::S_PATH: // "path"
       case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
@@ -6000,6 +6001,7 @@ switch (yykind)
         value.move< ast::expr_hash::ptr > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_expr_identifier_nosize: // expr_identifier_nosize
       case symbol_kind::S_expr_identifier: // expr_identifier
         value.move< ast::expr_identifier::ptr > (YY_MOVE (s.value));
         break;
@@ -6195,7 +6197,6 @@ switch (yykind)
         value.move< ast::stmt_while::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_FIELD: // "field"
       case symbol_kind::S_PATH: // "path"
       case symbol_kind::S_IDENTIFIER: // "identifier"
       case symbol_kind::S_STRING: // "string literal"
@@ -6269,7 +6270,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::arc::t6
-#line 6273 "parser.hpp"
+#line 6274 "parser.hpp"
 
 
 

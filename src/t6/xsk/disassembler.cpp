@@ -542,7 +542,7 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
     const auto count = script_->read<std::uint32_t>();
     inst->data.push_back(utils::string::va("%i", count));
 
-    for (auto i = 0; i < count; i++)
+    for (auto i = 0u; i < count; i++)
     {
         const auto value = script_->read<std::uint32_t>();
 

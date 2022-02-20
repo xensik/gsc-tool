@@ -78,7 +78,7 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %token TRUE             "true"
 %token FALSE            "false"
 %token UNDEFINED        "undefined"
-%token SIZE             ".size"
+%token SIZE             "size"
 %token GAME             "game"
 %token SELF             "self"
 %token ANIM             "anim"
@@ -147,7 +147,6 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %token MUL              "*"
 %token DIV              "/"
 %token MOD              "%"
-%token <std::string> FIELD      "field"
 %token <std::string> PATH       "path"
 %token <std::string> IDENTIFIER "identifier"
 %token <std::string> STRING     "string literal"
@@ -241,6 +240,7 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %type <ast::expr_anim::ptr>              expr_anim
 %type <ast::expr_level::ptr>             expr_level
 %type <ast::expr_animation::ptr>         expr_animation
+%type <ast::expr_identifier::ptr>        expr_identifier_nosize
 %type <ast::expr_identifier::ptr>        expr_identifier
 %type <ast::expr_path::ptr>              expr_path
 %type <ast::expr_istring::ptr>           expr_istring
@@ -252,6 +252,7 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %type <ast::expr_false::ptr>             expr_false
 %type <ast::expr_true::ptr>              expr_true
 
+%nonassoc SIZEOF
 %nonassoc RBRACKET
 %nonassoc THEN
 %nonassoc ELSE
@@ -841,14 +842,12 @@ expr_array
     ;
 
 expr_field
-    : expr_object DOT expr_identifier
+    : expr_object DOT expr_identifier_nosize
         { $$ = std::make_unique<ast::expr_field>(@$, std::move($1), std::move($3)); }
-    | expr_object FIELD
-        { $$ = std::make_unique<ast::expr_field>(@$, std::move($1), std::make_unique<ast::expr_identifier>(@$, $2)); }
     ;
 
 expr_size
-    : expr_object SIZE
+    : expr_object DOT SIZE %prec SIZEOF
         { $$ = std::make_unique<ast::expr_size>(@$, std::move($1)); }
     ;
 
@@ -904,16 +903,23 @@ expr_animation
         { $$ = std::make_unique<ast::expr_animation>(@$, $2); };
     ;
 
-expr_identifier
+expr_identifier_nosize
     : IDENTIFIER
         { $$ = std::make_unique<ast::expr_identifier>(@$, $1); };
     ;
 
+expr_identifier
+    : IDENTIFIER
+        { $$ = std::make_unique<ast::expr_identifier>(@$, $1); };
+    | SIZE
+        { $$ = std::make_unique<ast::expr_identifier>(@$, "size"); };
+    ;
+
 expr_path
-    : PATH
+    : IDENTIFIER
         { $$ = std::make_unique<ast::expr_path>(@$, $1); };
-    | expr_identifier
-        { $$ = std::make_unique<ast::expr_path>(@$, $1->value); };
+    | PATH
+        { $$ = std::make_unique<ast::expr_path>(@$, $1); };
     ;
 
 expr_istring

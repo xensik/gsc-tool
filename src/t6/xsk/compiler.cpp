@@ -1272,11 +1272,11 @@ void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr)
     switch (expr->mode)
     {
         case ast::call::mode::normal:
-            flags |=  std::uint8_t(import_flags::func_call);
+            flags |= std::uint8_t(import_flags::func_call);
             emit_opcode(opcode::OP_ScriptFunctionCall, { expr->path->value, expr->name->value, argcount, utils::string::va("%d", flags) });
             break;
         case ast::call::mode::thread:
-            flags |=  std::uint8_t(import_flags::func_call_thread);
+            flags |= std::uint8_t(import_flags::func_call_thread);
             emit_opcode(opcode::OP_ScriptThreadCall, { expr->path->value, expr->name->value, argcount, utils::string::va("%d", flags) });
             break;
         default:
@@ -1348,11 +1348,11 @@ void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, co
     switch (expr->mode)
     {
         case ast::call::mode::normal:
-            flags |=  std::uint8_t(import_flags::meth_call);
+            flags |= std::uint8_t(import_flags::meth_call);
             emit_opcode(opcode::OP_ScriptMethodCall, { expr->path->value, expr->name->value, argcount, utils::string::va("%d", flags) });
             break;
         case ast::call::mode::thread:
-            flags |=  std::uint8_t(import_flags::meth_call_thread);
+            flags |= std::uint8_t(import_flags::meth_call_thread);
             emit_opcode(opcode::OP_ScriptMethodThreadCall, { expr->path->value, expr->name->value, argcount, utils::string::va("%d", flags) });
             break;
         default:
@@ -1529,14 +1529,14 @@ void compiler::emit_expr_reference(const ast::expr_reference::ptr& expr)
 
     auto flags = developer_thread_ ? std::uint8_t(import_flags::developer) : 0;
 
-    flags |=  std::uint8_t(import_flags::func_reference);
+    flags |= std::uint8_t(import_flags::func_reference);
 
     emit_opcode(opcode::OP_GetFunction, { expr->path->value, expr->name->value, "0", utils::string::va("%d", flags) });
 }
 
 void compiler::emit_expr_size(const ast::expr_size::ptr& expr)
 {
-    emit_expr_variable(expr->obj);
+    emit_expr(expr->obj);
     emit_opcode(opcode::OP_SizeOf);
 }
 
