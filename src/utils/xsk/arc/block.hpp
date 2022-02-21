@@ -19,6 +19,8 @@ struct block
     bool is_dev;
 
     block() : is_dev(false), abort(abort_t::abort_none) {}
+    block(const std::string& lbreak, const std::string& lcont)
+        : is_dev(false), abort(abort_t::abort_none), loc_break(lbreak), loc_continue(lcont) {}
 };
 
 } // namespace xsk::arc

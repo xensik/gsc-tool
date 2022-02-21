@@ -12,6 +12,18 @@ namespace xsk::arc::t6
 std::unordered_map<std::uint8_t, std::string_view> opcode_map;
 std::unordered_map<std::string_view, std::uint8_t> opcode_map_rev;
 std::unordered_map<std::uint32_t, std::string_view> dvar_map;
+std::unordered_map<std::string, std::vector<std::uint8_t>> files;
+std::function<std::vector<std::uint8_t>(const std::string&)> read_callback = nullptr;
+
+void resolver::init(read_cb_type callback)
+{
+    read_callback = callback;
+}
+
+void resolver::cleanup()
+{
+    files.clear();
+}
 
 auto resolver::opcode_id(const std::string& name) -> std::uint8_t
 {
@@ -22,7 +34,7 @@ auto resolver::opcode_id(const std::string& name) -> std::uint8_t
         return itr->second;
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve opcode id for name '%s'!", name.data()));
+    throw error(utils::string::va("Couldn't resolve opcode id for name '%s'!", name.data()));
 }
 
 auto resolver::opcode_name(std::uint8_t id) -> std::string
@@ -34,7 +46,7 @@ auto resolver::opcode_name(std::uint8_t id) -> std::string
         return std::string(itr->second);
     }
 
-    throw gsc::error(utils::string::va("Couldn't resolve opcode name for id '0x%hhX'!", id));
+    throw error(utils::string::va("Couldn't resolve opcode name for id '0x%hhX'!", id));
 }
 
 auto resolver::dvar_name(std::uint32_t id) -> std::string
@@ -67,9 +79,6 @@ auto resolver::make_token(std::string_view str) -> std::string
     return data;
 }
 
-std::function<std::vector<std::uint8_t>(const std::string&)> read_callback = nullptr;
-std::unordered_map<std::string, std::vector<std::uint8_t>> files;
-
 auto resolver::file_data(const std::string& name) -> std::tuple<const std::string*, char*, size_t>
 {
     const auto& itr = files.find(name);
@@ -81,7 +90,7 @@ auto resolver::file_data(const std::string& name) -> std::tuple<const std::strin
 
     auto data = read_callback(name);
 
-    const auto& res = files.insert({ name, std::move(data)});
+    const auto& res = files.insert({ name, std::move(data) });
 
     if (res.second)
     {
@@ -89,11 +98,6 @@ auto resolver::file_data(const std::string& name) -> std::tuple<const std::strin
     }
 
     throw error("couldn't open gsc file '" + name + "'");
-}
-
-void resolver::set_reader(std::function<std::vector<std::uint8_t>(const std::string&)> callback)
-{
-    read_callback = callback;
 }
 
 std::set<std::string> paths

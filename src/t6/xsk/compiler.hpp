@@ -12,7 +12,6 @@ enum class opcode : std::uint8_t;
 
 class compiler : public arc::compiler
 {
-    build mode_;
     std::string filename_;
     assembly::ptr assembly_;
     function::ptr function_;
@@ -24,23 +23,20 @@ class compiler : public arc::compiler
     std::vector<include_t> includes_;
     std::vector<animtree_t> animtrees_;
     std::unordered_map<std::string, ast::expr> constants_;
-    std::function<std::vector<std::uint8_t>(const std::string&)> read_callback_;
-    abort_t abort_;
-    std::string break_loc_;
-    std::string continue_loc_;
+    std::vector<block> blocks_;
     bool can_break_;
     bool can_continue_;
     bool developer_thread_;
+    build mode_;
 
 public:
-    compiler(build mode) : mode_(mode) {}
     auto output() -> assembly::ptr;
     auto output_data() -> std::vector<std::uint8_t>;
     void compile(const std::string& file, std::vector<std::uint8_t>& data);
-    void read_callback(std::function<std::vector<std::uint8_t>(const std::string&)> func);
+    void mode(build mode);
 
 private:
-    auto parse_buffer(const std::string& file, std::vector<std::uint8_t>& data) -> ast::program::ptr;
+    auto parse_buffer(const std::string& file, char* data, size_t size) -> ast::program::ptr;
     auto parse_file(const std::string& file) -> ast::program::ptr;
     void compile_program(const ast::program::ptr& program);
     void emit_include(const ast::include::ptr& include);
@@ -162,7 +158,6 @@ private:
     void insert_label(const std::string& label);
 
     auto map_known_includes(const std::string& include) -> bool;
-
 
     utils::byte_buffer::ptr output_;
     void print_function(const function::ptr& func);

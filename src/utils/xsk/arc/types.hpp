@@ -8,10 +8,12 @@
 namespace xsk::arc
 {
 
+using read_cb_type = std::function<std::vector<std::uint8_t>(const std::string&)>;
+
 enum class build
 {
-    dev,
     prod,
+    dev,
 };
 
 enum class abort_t

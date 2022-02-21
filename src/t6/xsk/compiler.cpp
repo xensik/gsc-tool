@@ -40,23 +40,21 @@ void compiler::compile(const std::string& file, std::vector<std::uint8_t>& data)
 {
     filename_ = file;
 
-    auto prog = parse_buffer(filename_, data);
+    auto prog = parse_buffer(filename_, reinterpret_cast<char*>(data.data()), data.size());
 
     compile_program(prog);
 }
 
-void compiler::read_callback(std::function<std::vector<std::uint8_t>(const std::string&)> func)
+void compiler::mode(build mode)
 {
-    read_callback_ = func;
+    mode_ = mode;
 }
 
-auto compiler::parse_buffer(const std::string& file, std::vector<std::uint8_t>& data) -> ast::program::ptr
+auto compiler::parse_buffer(const std::string& file, char* data, size_t size) -> ast::program::ptr
 {
     ast::program::ptr result(nullptr);
 
-    resolver::set_reader(read_callback_);
-
-    lexer lexer(mode_, file, reinterpret_cast<char*>(data.data()), data.size());
+    lexer lexer(mode_, file, data, size);
 
     parser parser(lexer, result);
 
@@ -70,8 +68,8 @@ auto compiler::parse_buffer(const std::string& file, std::vector<std::uint8_t>& 
 
 auto compiler::parse_file(const std::string& file) -> ast::program::ptr
 {
-    auto buffer = read_callback_(file);
-    auto result = parse_buffer(file, buffer);
+    auto data = resolver::file_data(file);
+    auto result = parse_buffer(file, std::get<1>(data), std::get<2>(data));
 
     return result;
 }
@@ -113,7 +111,7 @@ void compiler::emit_include(const ast::include::ptr& include)
     {
         if (entry == path)
         {
-            throw comp_error(include->loc(), "error duplicated include file '" + path + "'.");
+            throw comp_error(include->loc(), "duplicated include file '" + path + "'.");
         }
     }
 
@@ -213,17 +211,19 @@ void compiler::emit_decl_thread(const ast::decl_thread::ptr& thread)
     can_break_ = false;
     can_continue_ = false;
     local_stack_.clear();
-    break_loc_ = "";
-    continue_loc_ = "";
-    abort_ = abort_t::abort_none;
+    blocks_.clear();
 
     process_thread(thread);
+
+    blocks_.push_back(block());
 
     emit_expr_parameters(thread->params);
     emit_stmt_list(thread->stmt);
 
-    if (abort_ == abort_t::abort_none)
+    if (blocks_.back().abort == abort_t::abort_none)
         emit_opcode(opcode::OP_End);
+
+    blocks_.pop_back();
 
     function_->size = index_ - function_->index;
     assembly_->functions.push_back(std::move(function_));
@@ -479,7 +479,12 @@ void compiler::emit_stmt_if(const ast::stmt_if::ptr& stmt)
         emit_opcode(opcode::OP_JumpOnFalse, end_loc);
     }
 
+    auto& paren = blocks_.back();
+    blocks_.push_back(block(paren.loc_break, paren.loc_continue));
+
     emit_stmt(stmt->stmt);
+
+    blocks_.pop_back();
 
     insert_label(end_loc);
 }
@@ -500,106 +505,102 @@ void compiler::emit_stmt_ifelse(const ast::stmt_ifelse::ptr& stmt)
         emit_opcode(opcode::OP_JumpOnFalse, else_loc);
     }
 
+    auto& paren = blocks_.back();
+    blocks_.push_back(block(paren.loc_break, paren.loc_continue));
     emit_stmt(stmt->stmt_if);
+    blocks_.pop_back();
 
     emit_opcode(opcode::OP_Jump, end_loc);
 
     insert_label(else_loc);
 
+    auto& root = blocks_.back();
+    blocks_.push_back(block(root.loc_break, root.loc_continue));
     emit_stmt(stmt->stmt_else);
+    blocks_.pop_back();
 
     insert_label(end_loc);
 }
 
 void compiler::emit_stmt_while(const ast::stmt_while::ptr& stmt)
 {
-    auto old_abort = abort_;
-    auto old_break_loc = break_loc_;
-    auto old_continue_loc = continue_loc_;
     auto old_break = can_break_;
     auto old_continue = can_continue_;
 
     can_break_ = true;
     can_continue_ = true;
-    break_loc_ = create_label();
-    continue_loc_ = insert_label();
+    auto break_loc = create_label();
+    auto continue_loc = insert_label();
 
-    auto begin_loc = continue_loc_;
+    auto begin_loc = continue_loc;
 
     if (stmt->test == ast::kind::expr_not)
     {
         emit_expr(stmt->test.as_not->rvalue);
-        emit_opcode(opcode::OP_JumpOnTrue, break_loc_);
+        emit_opcode(opcode::OP_JumpOnTrue, break_loc);
     }
     else
     {
         emit_expr(stmt->test);
-        emit_opcode(opcode::OP_JumpOnFalse, break_loc_);
+        emit_opcode(opcode::OP_JumpOnFalse, break_loc);
     }
 
+    blocks_.push_back(block(break_loc, continue_loc));
     emit_stmt(stmt->stmt);
-    emit_opcode(opcode::OP_Jump, begin_loc);
-    insert_label(break_loc_);
+    blocks_.pop_back();
+
+    emit_opcode(opcode::OP_Jump, continue_loc);
+    insert_label(break_loc);
 
     can_break_ = old_break;
     can_continue_ = old_continue;
-    break_loc_ = old_break_loc;
-    continue_loc_ = old_continue_loc;
-    abort_ = old_abort;
 }
 
 void compiler::emit_stmt_dowhile(const ast::stmt_dowhile::ptr& stmt)
 {
-    auto old_abort = abort_;
-    auto old_break_loc = break_loc_;
-    auto old_continue_loc = continue_loc_;
     auto old_break = can_break_;
     auto old_continue = can_continue_;
 
     can_break_ = true;
     can_continue_ = true;
-    break_loc_ = create_label();
-    continue_loc_ = create_label();
+    auto break_loc = create_label();
+    auto continue_loc = create_label();
 
     auto begin_loc = insert_label();
 
+    blocks_.push_back(block(break_loc, continue_loc));
     emit_stmt(stmt->stmt);
+    blocks_.pop_back();
 
-    insert_label(continue_loc_);
+    insert_label(continue_loc);
 
     if (stmt->test == ast::kind::expr_not)
     {
         emit_expr(stmt->test.as_not->rvalue);
-        emit_opcode(opcode::OP_JumpOnTrue, break_loc_);
+        emit_opcode(opcode::OP_JumpOnTrue, break_loc);
     }
     else
     {
         emit_expr(stmt->test);
-        emit_opcode(opcode::OP_JumpOnFalse, break_loc_);
+        emit_opcode(opcode::OP_JumpOnFalse, break_loc);
     }
 
     emit_opcode(opcode::OP_Jump, begin_loc);
-    insert_label(break_loc_);
+    insert_label(break_loc);
 
     can_break_ = old_break;
     can_continue_ = old_continue;
-    break_loc_ = old_break_loc;
-    continue_loc_ = old_continue_loc;
-    abort_ = old_abort;
 }
 
 void compiler::emit_stmt_for(const ast::stmt_for::ptr& stmt)
 {
-    auto old_abort = abort_;
-    auto old_break_loc = break_loc_;
-    auto old_continue_loc = continue_loc_;
     auto old_break = can_break_;
     auto old_continue = can_continue_;
 
     emit_stmt(stmt->init);
 
-    break_loc_ = create_label();
-    continue_loc_ = create_label();
+    auto break_loc = create_label();
+    auto continue_loc = create_label();
 
     auto begin_loc = insert_label();
 
@@ -608,34 +609,30 @@ void compiler::emit_stmt_for(const ast::stmt_for::ptr& stmt)
     if (!const_cond)
     {
         emit_expr(stmt->test);
-        emit_opcode(opcode::OP_JumpOnFalse, break_loc_);
+        emit_opcode(opcode::OP_JumpOnFalse, break_loc);
     }
 
     can_break_ = true;
     can_continue_ = true;
 
+    blocks_.push_back(block(break_loc, continue_loc));
     emit_stmt(stmt->stmt);
+    blocks_.pop_back();
 
     can_break_ = false;
     can_continue_ = false;
 
-    insert_label(continue_loc_);
+    insert_label(continue_loc);
     emit_stmt(stmt->iter);
     emit_opcode(opcode::OP_Jump, begin_loc);
-    insert_label(break_loc_);
+    insert_label(break_loc);
 
     can_break_ = old_break;
     can_continue_ = old_continue;
-    break_loc_ = old_break_loc;
-    continue_loc_ = old_continue_loc;
-    abort_ = old_abort;
 }
 
 void compiler::emit_stmt_foreach(const ast::stmt_foreach::ptr& stmt)
 {
-    auto old_abort = abort_;
-    auto old_break_loc = break_loc_;
-    auto old_continue_loc = continue_loc_;
     auto old_break = can_break_;
     auto old_continue = can_continue_;
 
@@ -645,14 +642,14 @@ void compiler::emit_stmt_foreach(const ast::stmt_foreach::ptr& stmt)
     emit_opcode(opcode::OP_FirstArrayKey);
     emit_expr_variable_ref(stmt->key_expr, true);
 
-    break_loc_ = create_label();
-    continue_loc_ = create_label();
+    auto break_loc = create_label();
+    auto continue_loc = create_label();
 
     auto begin_loc = insert_label();
 
     emit_expr_variable(stmt->key_expr);
     emit_opcode(opcode::OP_IsDefined);
-    emit_opcode(opcode::OP_JumpOnFalse, break_loc_);
+    emit_opcode(opcode::OP_JumpOnFalse, break_loc);
 
     can_break_ = true;
     can_continue_ = true;
@@ -661,43 +658,43 @@ void compiler::emit_stmt_foreach(const ast::stmt_foreach::ptr& stmt)
     emit_opcode(opcode::OP_EvalLocalVariableCached, variable_access(stmt->array.as_identifier));
     emit_opcode(opcode::OP_EvalArray);
     emit_expr_variable_ref(stmt->value_expr, true);
+
+    blocks_.push_back(block(break_loc, continue_loc));
     emit_stmt(stmt->stmt);
+    blocks_.pop_back();
 
     can_break_ = false;
     can_continue_ = false;
 
-    insert_label(continue_loc_);
+    insert_label(continue_loc);
 
     emit_expr_variable(stmt->key_expr);
     emit_expr_variable(stmt->array);
     emit_opcode(opcode::OP_NextArrayKey);
     emit_expr_variable_ref(stmt->key_expr, true);
     emit_opcode(opcode::OP_Jump, begin_loc);
-    insert_label(break_loc_);
+    insert_label(break_loc);
 
     can_break_ = old_break;
     can_continue_ = old_continue;
-    break_loc_ = old_break_loc;
-    continue_loc_ = old_continue_loc;
-    abort_ = old_abort;
 }
 
 void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt)
 {
-    auto old_abort = abort_;
-    auto old_break_loc = break_loc_;
     auto old_break = can_break_;
 
     can_break_ = false;
 
     auto jmptable_loc = create_label();
 
-    break_loc_ = create_label();
+    auto break_loc = create_label();
 
     emit_expr(stmt->test);
     emit_opcode(opcode::OP_Switch, jmptable_loc);
 
     can_break_ = true;
+
+    blocks_.push_back(block(break_loc, blocks_.back().loc_continue));
 
     std::vector<std::string> data;
     data.push_back(utils::string::va("%d", stmt->stmt->list.size()));
@@ -735,7 +732,10 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt)
                 throw comp_error(stmt->loc(), "case type must be int or string");
             }
 
+            auto& paren = blocks_.back();
+            blocks_.push_back(block(paren.loc_break, paren.loc_continue));
             emit_stmt_list(case_->stmt);
+            blocks_.pop_back();
         }
         else if (entry == ast::kind::stmt_default)
         {
@@ -743,7 +743,11 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt)
             data.push_back("default");
             data.push_back(loc);
             has_default = true;
+
+            auto& paren = blocks_.back();
+            blocks_.push_back(block(paren.loc_break, paren.loc_continue));
             emit_stmt_list(entry.as_default->stmt);
+            blocks_.pop_back();
         }
         else
         {
@@ -751,13 +755,13 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt)
         }
     }
 
+    blocks_.pop_back();
+
     insert_label(jmptable_loc);
     emit_opcode(opcode::OP_EndSwitch, data);
-    insert_label(break_loc_);
+    insert_label(break_loc);
 
     can_break_ = old_break;
-    break_loc_ = old_break_loc;
-    abort_ = old_abort;
 }
 
 void compiler::emit_stmt_case(const ast::stmt_case::ptr& stmt)
@@ -772,26 +776,26 @@ void compiler::emit_stmt_default(const ast::stmt_default::ptr& stmt)
 
 void compiler::emit_stmt_break(const ast::stmt_break::ptr& stmt)
 {
-    if (!can_break_ || abort_ != abort_t::abort_none || break_loc_ == "")
+    if (!can_break_ || blocks_.back().abort != abort_t::abort_none || blocks_.back().loc_break == "")
         throw comp_error(stmt->loc(), "illegal break statement");
 
-    abort_ = abort_t::abort_break;
-    emit_opcode(opcode::OP_Jump, break_loc_);
+    blocks_.back().abort = abort_t::abort_break;
+    emit_opcode(opcode::OP_Jump, blocks_.back().loc_break);
 }
 
 void compiler::emit_stmt_continue(const ast::stmt_continue::ptr& stmt)
 {
-    if (!can_continue_ || abort_ != abort_t::abort_none || continue_loc_ == "")
+    if (!can_continue_ || blocks_.back().abort != abort_t::abort_none || blocks_.back().loc_continue == "")
         throw comp_error(stmt->loc(), "illegal continue statement");
 
-    abort_ = abort_t::abort_continue;
-    emit_opcode(opcode::OP_Jump, continue_loc_);
+    blocks_.back().abort = abort_t::abort_continue;
+    emit_opcode(opcode::OP_Jump, blocks_.back().loc_continue);
 }
 
 void compiler::emit_stmt_return(const ast::stmt_return::ptr& stmt)
 {
-    if (abort_ == abort_t::abort_none)
-        abort_ = abort_t::abort_return;
+    if (blocks_.back().abort == abort_t::abort_none)
+        blocks_.back().abort = abort_t::abort_return;
 
     if (stmt->expr != ast::kind::null)
     {
@@ -1222,6 +1226,7 @@ void compiler::emit_expr_call(const ast::expr_call::ptr& expr)
 
 void compiler::emit_expr_call_pointer(const ast::expr_pointer::ptr& expr)
 {
+    emit_opcode(opcode::OP_PreScriptCall);
     emit_expr_arguments(expr->args);
     emit_expr(expr->func);
 
@@ -1296,6 +1301,7 @@ void compiler::emit_expr_method(const ast::expr_method::ptr& expr)
 
 void compiler::emit_expr_method_pointer(const ast::expr_pointer::ptr& expr, const ast::expr& obj)
 {
+    emit_opcode(opcode::OP_PreScriptCall);
     emit_expr_arguments(expr->args);
     emit_expr(obj);
     emit_expr(expr->func);
@@ -1571,12 +1577,9 @@ void compiler::emit_expr_array_ref(const ast::expr_array::ptr& expr, bool set)
             break;
         case ast::kind::expr_array:
         case ast::kind::expr_field:
+        case ast::kind::expr_identifier:
             emit_expr_variable_ref(expr->obj, false);
             emit_opcode(opcode::OP_EvalArrayRef);
-            if (set) emit_opcode(opcode::OP_SetVariableField);
-            break;
-        case ast::kind::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalArrayRefCached, variable_access(expr->obj.as_identifier));
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case ast::kind::expr_call:

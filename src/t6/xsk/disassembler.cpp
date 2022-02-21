@@ -248,6 +248,8 @@ void disassembler::disassemble_function(const function::ptr& func)
     }
 }
 
+
+
 void disassembler::disassemble_instruction(const instruction::ptr& inst)
 {
     switch (opcode(inst->opcode))
@@ -264,9 +266,7 @@ void disassembler::disassemble_instruction(const instruction::ptr& inst)
         case opcode::OP_GetAnim:
         case opcode::OP_GetGameRef:
         case opcode::OP_CreateLocalVariable:
-        case opcode::OP_RemoveLocalVariables:
         case opcode::OP_EvalArray:
-        case opcode::OP_EvalLocalArrayRefCached:
         case opcode::OP_EvalArrayRef:
         case opcode::OP_ClearArray:
         case opcode::OP_EmptyArray:
@@ -351,17 +351,14 @@ void disassembler::disassemble_instruction(const instruction::ptr& inst)
             inst->data.push_back(utils::string::va("%i", script_->read<std::int32_t>()));
             break;
         case opcode::OP_GetFloat:
-        {
             inst->size += script_->align(4);
-            auto val = script_->read<float>();
-            inst->data.push_back(utils::string::va("%g%s", val, val == int(val) ? ".0" : ""));
-        }
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
             break;
         case opcode::OP_GetVector:
             inst->size += script_->align(4);
-            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
-            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
-            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
             break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
@@ -383,7 +380,9 @@ void disassembler::disassemble_instruction(const instruction::ptr& inst)
         case opcode::OP_SafeCreateLocalVariables:
             disassemble_localvars(inst);
             break;
+        case opcode::OP_RemoveLocalVariables:
         case opcode::OP_EvalLocalVariableCached:
+        case opcode::OP_EvalLocalArrayRefCached:
         case opcode::OP_SafeSetWaittillVariableFieldCached:
         case opcode::OP_EvalLocalVariableRefCached:
             inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));

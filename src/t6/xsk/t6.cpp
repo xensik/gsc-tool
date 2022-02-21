@@ -25,9 +25,7 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_GetAnim:
         case opcode::OP_GetGameRef:
         case opcode::OP_CreateLocalVariable:
-        case opcode::OP_RemoveLocalVariables:
         case opcode::OP_EvalArray:
-        case opcode::OP_EvalLocalArrayRefCached:
         case opcode::OP_EvalArrayRef:
         case opcode::OP_ClearArray:
         case opcode::OP_EmptyArray:
@@ -102,7 +100,9 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_GetByte:
         case opcode::OP_GetNegByte:
         case opcode::OP_SafeCreateLocalVariables:
+        case opcode::OP_RemoveLocalVariables:
         case opcode::OP_EvalLocalVariableCached:
+        case opcode::OP_EvalLocalArrayRefCached:
         case opcode::OP_SafeSetWaittillVariableFieldCached:
         case opcode::OP_EvalLocalVariableRefCached:
         case opcode::OP_ScriptFunctionCallPointer:

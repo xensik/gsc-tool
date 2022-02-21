@@ -9,9 +9,10 @@
 
 #include "assembler.hpp"
 #include "disassembler.hpp"
-#include "decompiler.hpp"
 #include "compiler.hpp"
+#include "decompiler.hpp"
 #include "resolver.hpp"
+#include "context.hpp"
 
 namespace xsk::arc::t6
 {

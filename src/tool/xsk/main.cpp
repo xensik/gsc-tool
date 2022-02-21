@@ -452,25 +452,22 @@ void init()
 namespace arc
 {
 
-std::map<game, assembler::ptr> assemblers;
-std::map<game, disassembler::ptr> disassemblers;
-std::map<game, compiler::ptr> compilers;
-std::map<game, decompiler::ptr> decompilers;
+std::map<game, context::ptr> contexts;
 std::map<mode, std::function<void(game game, const std::filesystem::path& file)>> funcs;
 
 void assemble_file(game game, const std::filesystem::path& file)
 {
     try
     {
-        const auto& assembler = assemblers[game];
+        auto& assembler = contexts[game]->assembler();
 
         auto data = utils::file::read(file.string());
         auto path = t6::resolver::fs_to_game_path(file);
         auto next = path.extension() == ".gscasm" ? path.replace_extension(".gsc") : path.replace_extension(".csc");
 
-        assembler->assemble(next.string(), data);
+        assembler.assemble(next.string(), data);
 
-        utils::file::save((std::filesystem::path("assembled/t6") / next).string(), assembler->output());
+        utils::file::save((std::filesystem::path("assembled/t6") / next).string(), assembler.output());
         std::cout << "assembled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
@@ -483,15 +480,15 @@ void disassemble_file(game game, const std::filesystem::path& file)
 {
     try
     {
-        const auto& disassembler = disassemblers[game];
+        auto& disassembler = contexts[game]->disassembler();
 
         auto data = utils::file::read(file.string());
         auto path = t6::resolver::fs_to_game_path(file);
         auto next = path.extension() == ".gsc" ? path.replace_extension(".gscasm") : path.replace_extension(".cscasm");
 
-        disassembler->disassemble(file.string(), data);
+        disassembler.disassemble(file.string(), data);
 
-        utils::file::save((std::filesystem::path("disassembled/t6") / next).string(), disassembler->output_data());
+        utils::file::save((std::filesystem::path("disassembled/t6") / next).string(), disassembler.output_data());
         std::cout << "disassembled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
@@ -504,20 +501,19 @@ void compile_file(game game, const std::filesystem::path& file)
 {
     try
     {
-        const auto& assembler = assemblers[game];
-        const auto& compiler = compilers[game];
+        auto& assembler = contexts[game]->assembler();
+        auto& compiler = contexts[game]->compiler();
 
         auto data = utils::file::read(file.string());
         auto path = t6::resolver::fs_to_game_path(file);
 
-        compiler->read_callback(utils::file::read);
-        compiler->compile(file.string(), data);
+        compiler.compile(file.string(), data);
 
-        auto assembly = compiler->output();
+        auto assembly = compiler.output();
 
-        assembler->assemble(path.string(), assembly);
+        assembler.assemble(path.string(), assembly);
 
-        utils::file::save((std::filesystem::path("compiled/t6") / path).string(), assembler->output());
+        utils::file::save((std::filesystem::path("compiled/t6") / path).string(), assembler.output());
         std::cout << "compiled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
@@ -530,19 +526,19 @@ void decompile_file(game game, const std::filesystem::path& file)
 {
     try
     {
-        const auto& disassembler = disassemblers[game];
-        const auto& decompiler = decompilers[game];
+        auto& disassembler = contexts[game]->disassembler();
+        auto& decompiler = contexts[game]->decompiler();
 
         auto data = utils::file::read(file.string());
         auto path = t6::resolver::fs_to_game_path(file);
 
-        disassembler->disassemble(file.string(), data);
+        disassembler.disassemble(file.string(), data);
 
-        auto output = disassembler->output();
+        auto output = disassembler.output();
 
-        decompiler->decompile(file.string(), output);
+        decompiler.decompile(file.string(), output);
 
-        utils::file::save((std::filesystem::path("decompiled/t6") / path).string(), decompiler->output());
+        utils::file::save((std::filesystem::path("decompiled/t6") / path).string(), decompiler.output());
         std::cout << "decompiled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
@@ -553,10 +549,9 @@ void decompile_file(game game, const std::filesystem::path& file)
 
 void init()
 {
-    assemblers[game::T6] = std::make_unique<t6::assembler>();
-    disassemblers[game::T6] = std::make_unique<t6::disassembler>();
-    compilers[game::T6] = std::make_unique<t6::compiler>(build::prod);
-    decompilers[game::T6] = std::make_unique<t6::decompiler>();
+    contexts[game::T6] = std::make_unique<t6::context>();
+    contexts[game::T6]->init(build::prod, utils::file::read);
+
     funcs[mode::ASM] = assemble_file;
     funcs[mode::DISASM] = disassemble_file;
     funcs[mode::COMP] = compile_file;

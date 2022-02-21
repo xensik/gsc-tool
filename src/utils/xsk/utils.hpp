@@ -37,3 +37,4 @@
 #include "arc/interfaces/disassembler.hpp"
 #include "arc/interfaces/compiler.hpp"
 #include "arc/interfaces/decompiler.hpp"
+#include "arc/interfaces/context.hpp"

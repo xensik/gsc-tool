@@ -37,6 +37,7 @@ public:
     static auto split(std::string& str, char delimiter) -> std::vector<std::string>;
     static auto clean_buffer_lines(std::vector<std::uint8_t>& buffer) -> std::vector<std::string>;
     static auto parse_code(std::string& line) -> std::vector<std::string>;
+    static auto float_string(float value) -> std::string;
 };
 
 } // namespace xsk::utils

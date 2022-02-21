@@ -185,6 +185,7 @@ void assembler::assemble_function(const function::ptr& func)
 {
     func->index = script_->pos();
     func->size = 0;
+    labels_.clear();
 
     for (const auto& inst : func->instructions)
     {
@@ -197,7 +198,7 @@ void assembler::assemble_function(const function::ptr& func)
 
         const auto& itr = func->labels.find(old_idx);
 
-        if (itr != labels_.end())
+        if (itr != func->labels.end())
         {
             labels_.insert({ inst->index, itr->second });
         }
@@ -235,9 +236,7 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_GetAnim:
         case opcode::OP_GetGameRef:
         case opcode::OP_CreateLocalVariable:
-        case opcode::OP_RemoveLocalVariables:
         case opcode::OP_EvalArray:
-        case opcode::OP_EvalLocalArrayRefCached:
         case opcode::OP_EvalArrayRef:
         case opcode::OP_ClearArray:
         case opcode::OP_EmptyArray:
@@ -364,7 +363,9 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_SafeCreateLocalVariables:
             assemble_localvars(inst);
             break;
+        case opcode::OP_RemoveLocalVariables:
         case opcode::OP_EvalLocalVariableCached:
+        case opcode::OP_EvalLocalArrayRefCached:
         case opcode::OP_SafeSetWaittillVariableFieldCached:
         case opcode::OP_EvalLocalVariableRefCached:
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
@@ -523,9 +524,7 @@ void assembler::align_instruction(const instruction::ptr& inst)
         case opcode::OP_GetAnim:
         case opcode::OP_GetGameRef:
         case opcode::OP_CreateLocalVariable:
-        case opcode::OP_RemoveLocalVariables:
         case opcode::OP_EvalArray:
-        case opcode::OP_EvalLocalArrayRefCached:
         case opcode::OP_EvalArrayRef:
         case opcode::OP_ClearArray:
         case opcode::OP_EmptyArray:
@@ -649,7 +648,9 @@ void assembler::align_instruction(const instruction::ptr& inst)
                 }
             }
             break;
+        case opcode::OP_RemoveLocalVariables:
         case opcode::OP_EvalLocalVariableCached:
+        case opcode::OP_EvalLocalArrayRefCached:
         case opcode::OP_SafeSetWaittillVariableFieldCached:
         case opcode::OP_EvalLocalVariableRefCached:
             script_->seek(1);
