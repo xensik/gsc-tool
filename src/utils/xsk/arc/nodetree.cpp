@@ -984,6 +984,7 @@ auto stmt_list::print() const -> std::string
 
     std::string data;
     bool last_special = false;
+    bool last_devblock = false;
     auto block_pad = indented(indent_);
     indent_ += 4;
 
@@ -994,13 +995,19 @@ auto stmt_list::print() const -> std::string
 
     for (const auto& stmt : list)
     {
-        if (&stmt != &list.front() && stmt.as_node->is_special_stmt() || last_special)
+        if ((&stmt != &list.front() && stmt.as_node->is_special_stmt() || last_special) && stmt != kind::stmt_dev && !last_devblock)
             data += "\n";
 
         if (stmt == kind::stmt_dev)
+        {
             data += stmt.print();
+            last_devblock = true;
+        }
         else
+        {
             data += stmts_pad + stmt.print();
+            last_devblock = false;
+        }
 
         if (&stmt != &list.back())
             data += "\n";
@@ -1033,10 +1040,7 @@ auto stmt_dev::print() const -> std::string
         if (&stmt != &list->list.front() && stmt.as_node->is_special_stmt() || last_special)
             data += "\n";
 
-        if (stmt == kind::stmt_dev)
-            data += stmt.print();
-        else
-            data += stmts_pad + stmt.print();
+        data += stmts_pad + stmt.print();
 
         if (&stmt != &list->list.back())
             data += "\n";

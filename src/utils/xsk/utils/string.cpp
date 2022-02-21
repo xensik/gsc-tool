@@ -249,7 +249,7 @@ auto string::float_string(float value) -> std::string
     std::string p_dec;
     std::string p_exp;
 
-    if(flags & integer)
+    if (flags & integer)
     {
         auto i = (flags & negative) ? 1 : 0;
 
@@ -268,7 +268,7 @@ auto string::float_string(float value) -> std::string
 
         while (offset--)
         {
-            if((flags & exp_neg))
+            if ((flags & exp_neg))
                 p_int.insert(p_int.begin(), '0');
             else
                 p_int.push_back('0');
@@ -299,7 +299,7 @@ auto string::float_string(float value) -> std::string
 
         while (offset--)
         {
-            if(flags & exp_neg)
+            if (flags & exp_neg)
                 p_int.insert(p_int.begin(), '0');
             else
                 p_dec.push_back('0');

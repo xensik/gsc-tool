@@ -27,7 +27,7 @@ void resolver::cleanup()
 
 auto resolver::opcode_id(const std::string& name) -> std::uint8_t
 {
-    const auto itr = opcode_map_rev.find(name);
+    const auto& itr = opcode_map_rev.find(name);
 
     if (itr != opcode_map_rev.end())
     {
@@ -39,7 +39,7 @@ auto resolver::opcode_id(const std::string& name) -> std::uint8_t
 
 auto resolver::opcode_name(std::uint8_t id) -> std::string
 {
-    const auto itr = opcode_map.find(id);
+    const auto& itr = opcode_map.find(id);
 
     if (itr != opcode_map.end())
     {
