@@ -101,6 +101,8 @@ void compiler::compile_program(const ast::program::ptr& program)
     {
         emit_declaration(declaration);
     }
+
+    std::reverse(assembly_->includes.begin(), assembly_->includes.end());
 }
 
 void compiler::emit_include(const ast::include::ptr& include)
@@ -1247,10 +1249,10 @@ void compiler::emit_expr_call_pointer(const ast::expr_pointer::ptr& expr)
 
 void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr)
 {
-    bool found = false;
-
-    if(expr->path->value != "")
+    if (expr->path->value != "")
     {
+        bool found = false;
+
         for (const auto& entry : assembly_->includes)
         {
             if (entry == expr->path->value)
@@ -1259,11 +1261,11 @@ void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr)
                 break;
             }
         }
-    }
 
-    if(!found)
-    {
-        assembly_->includes.push_back(expr->path->value);
+        if (!found)
+        {
+            assembly_->includes.push_back(expr->path->value);
+        }
     }
 
     // TODO: resolve import calls path
@@ -1323,10 +1325,10 @@ void compiler::emit_expr_method_pointer(const ast::expr_pointer::ptr& expr, cons
 
 void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, const ast::expr& obj)
 {
-    bool found = false;
-
-    if(expr->path->value != "")
+    if (expr->path->value != "")
     {
+        bool found = false;
+
         for (const auto& entry : assembly_->includes)
         {
             if (entry == expr->path->value)
@@ -1335,11 +1337,11 @@ void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, co
                 break;
             }
         }
-    }
 
-    if(!found)
-    {
-        assembly_->includes.push_back(expr->path->value);
+        if (!found)
+        {
+            assembly_->includes.push_back(expr->path->value);
+        }
     }
 
     // TODO: resolve import calls path
@@ -1512,10 +1514,10 @@ void compiler::emit_expr_getnextarraykey(const ast::expr_getnextarraykey::ptr& e
 
 void compiler::emit_expr_reference(const ast::expr_reference::ptr& expr)
 {
-    bool found = false;
-
-    if(expr->path->value != "")
+    if (expr->path->value != "")
     {
+        bool found = false;
+
         for (const auto& entry : assembly_->includes)
         {
             if (entry == expr->path->value)
@@ -1524,11 +1526,11 @@ void compiler::emit_expr_reference(const ast::expr_reference::ptr& expr)
                 break;
             }
         }
-    }
 
-    if(!found)
-    {
-        assembly_->includes.push_back(expr->path->value);
+        if (!found)
+        {
+            assembly_->includes.push_back(expr->path->value);
+        }
     }
 
     // TODO: resolve import calls path
@@ -1834,9 +1836,7 @@ void compiler::emit_expr_animation(const ast::expr_animation::ptr& expr)
         throw comp_error(expr->loc(), "trying to use animation without specified using animtree");
     }
 
-    auto& tree = animtrees_.back();
-
-    emit_opcode(opcode::OP_GetAnimation, { tree.name, expr->value });
+    emit_opcode(opcode::OP_GetAnimation, { animtrees_.back(), expr->value });
 }
 
 void compiler::emit_expr_istring(const ast::expr_istring::ptr& expr)
@@ -2394,6 +2394,7 @@ void compiler::insert_label(const std::string& name)
                 case opcode::OP_Jump:
                 case opcode::OP_JumpBack:
                 case opcode::OP_Switch:
+                case opcode::OP_DevblockBegin:
                     if (inst->data[0] == name)
                         inst->data[0] = itr->second;
                     break;

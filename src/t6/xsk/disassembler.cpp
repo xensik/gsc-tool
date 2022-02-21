@@ -40,7 +40,7 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
     script_ = std::make_unique<utils::byte_buffer>(data);
     assembly_ = std::make_unique<assembly>();
 
-    std::memset(&header_, 0 ,sizeof(header_));
+    std::memset(&header_, 0, sizeof(header_));
     exports_.clear();
     imports_.clear();
     strings_.clear();
@@ -191,19 +191,25 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
 
         if (i < exports_.size() - 1)
         {
-            entry->size = (exports_[i+1]->offset - entry->offset) - 4;
+            entry->size = (exports_[i+1]->offset - entry->offset);
 
-            auto end_pos = entry->offset + entry->size;
+            auto end_pos = entry->offset + entry->size - 4;
 
-            for (auto j = 1; j < 4; j++)
+            script_->pos(end_pos);
+
+            if (script_->read<std::uint32_t>() == 0)
             {
-                script_->pos(end_pos - j);
-                auto op = script_->read<std::uint8_t>();
+                entry->size -= 4;
 
-                if (op == '\x00' || op == '\x01')
-                    break;
-                else
+                for (auto j = 1; j < 4; j++)
+                {
+                    script_->pos(end_pos - j);
+                    auto op = script_->read<std::uint8_t>();
+
+                    if (op <= 0x01) break;
+
                     entry->size--;
+                }
             }
         }
         else
@@ -243,12 +249,30 @@ void disassembler::disassemble_function(const function::ptr& func)
         inst->opcode = script_->read<std::uint8_t>();
         inst->size = opcode_size(inst->opcode);
 
+        if (size < 4 && inst->opcode >= std::uint8_t(opcode::OP_Count))
+        {
+            func->instructions.pop_back();
+            break;
+        }
+
         this->disassemble_instruction(inst);
         size -= inst->size;
     }
+
+    for (auto i = func->instructions.size() - 1; i >= 1; i--)
+    {
+        auto& inst = func->instructions.at(i);
+        auto& last = func->instructions.at(i-1);
+
+        if (labels_.contains(inst->index))
+            break;
+
+        if (inst->opcode <= 0x01 && (last->opcode > 0x01))
+            break;
+
+        func->instructions.pop_back();
+    }
 }
-
-
 
 void disassembler::disassemble_instruction(const instruction::ptr& inst)
 {

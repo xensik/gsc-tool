@@ -21,7 +21,7 @@ class compiler : public arc::compiler
     std::vector<std::string> local_stack_;
     std::vector<std::string> local_functions_;
     std::vector<include_t> includes_;
-    std::vector<animtree_t> animtrees_;
+    std::vector<std::string> animtrees_;
     std::unordered_map<std::string, ast::expr> constants_;
     std::vector<block> blocks_;
     bool can_break_;

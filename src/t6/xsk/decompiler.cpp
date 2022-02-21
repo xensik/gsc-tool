@@ -29,6 +29,14 @@ void decompiler::decompile(const std::string& file, const assembly::ptr& data)
     filename_ = file;
     program_ = std::make_unique<ast::program>();
 
+    std::reverse(data->includes.begin(), data->includes.end());
+
+    for (const auto& inc : data->includes)
+    {
+        auto include = std::make_unique<ast::include>(std::make_unique<ast::expr_path>(inc));
+        program_->includes.push_back(std::move(include));
+    }
+
     for (const auto& func : data->functions)
     {
         auto name = std::make_unique<ast::expr_identifier>(func->name);
