@@ -1187,10 +1187,6 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
         case opcode::OP_ProfileStop:
             throw decomp_error("unhandled opcode " + resolver::opcode_name(inst->opcode));
         case opcode::OP_SafeDecTop:
-        {
-            auto node = std::make_unique<ast::expr_undefined>(loc);
-            stack_.push(std::move(node));
-        }
             break;
         case opcode::OP_Nop:
         case opcode::OP_Abort:
