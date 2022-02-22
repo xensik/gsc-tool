@@ -31,6 +31,7 @@ auto node::is_special_stmt() -> bool
         case kind::stmt_if:
         case kind::stmt_ifelse:
         case kind::stmt_while:
+        case kind::stmt_dowhile:
         case kind::stmt_for:
         case kind::stmt_foreach:
         case kind::stmt_switch:
@@ -48,6 +49,7 @@ auto node::is_special_stmt_dev() -> bool
         case kind::stmt_if:
         case kind::stmt_ifelse:
         case kind::stmt_while:
+        case kind::stmt_dowhile:
         case kind::stmt_for:
         case kind::stmt_foreach:
         case kind::stmt_switch:
@@ -64,6 +66,7 @@ auto node::is_special_stmt_noif() -> bool
         case kind::stmt_waittill:
         case kind::stmt_waittillmatch:
         case kind::stmt_while:
+        case kind::stmt_dowhile:
         case kind::stmt_for:
         case kind::stmt_foreach:
         case kind::stmt_switch:
@@ -79,6 +82,7 @@ auto node::is_special_stmt_dev_noif() -> bool
     {
         case kind::stmt_dev:
         case kind::stmt_while:
+        case kind::stmt_dowhile:
         case kind::stmt_for:
         case kind::stmt_foreach:
         case kind::stmt_switch:

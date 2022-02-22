@@ -51,6 +51,7 @@ private:
     auto find_location_index(const ast::stmt_list::ptr& stmt, const std::string& location) -> std::uint32_t;
     auto last_location_index(const ast::stmt_list::ptr& stmt, std::uint32_t index) -> bool;
     auto lvalues_match(const ast::stmt_assign::ptr& stmt1, const ast::stmt_assign::ptr& stmt2) -> bool;
+    auto resolve_label(const std::string& name) -> std::int32_t;
     void process_thread(const ast::decl_thread::ptr& thread);
     void process_stmt(const ast::stmt& stmt);
     void process_stmt_list(const ast::stmt_list::ptr& stmt);

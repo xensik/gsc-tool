@@ -579,15 +579,14 @@ void compiler::emit_stmt_dowhile(const ast::stmt_dowhile::ptr& stmt)
     if (stmt->test == ast::kind::expr_not)
     {
         emit_expr(stmt->test.as_not->rvalue);
-        emit_opcode(opcode::OP_JumpOnTrue, break_loc);
+        emit_opcode(opcode::OP_JumpOnFalse, begin_loc);
     }
     else
     {
         emit_expr(stmt->test);
-        emit_opcode(opcode::OP_JumpOnFalse, break_loc);
+        emit_opcode(opcode::OP_JumpOnTrue, begin_loc);
     }
 
-    emit_opcode(opcode::OP_Jump, begin_loc);
     insert_label(break_loc);
 
     can_break_ = old_break;

@@ -669,9 +669,18 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
             auto lvalue = ast::expr(std::move(stack_.top()));
             stack_.pop();
             loc = lvalue.as_node->loc();
-            auto e_not = ast::expr(std::make_unique<ast::expr_not>(loc, std::move(lvalue)));
-            auto expr = std::make_unique<ast::asm_jump_cond>(loc, std::move(e_not), inst->data[0]);
-            func_->stmt->list.push_back(ast::stmt(std::move(expr)));
+
+            if (inst->index > resolve_label(inst->data[0]))
+            {
+                auto expr = std::make_unique<ast::asm_jump_cond>(loc, std::move(lvalue), inst->data[0]);
+                func_->stmt->list.push_back(ast::stmt(std::move(expr)));
+            }
+            else
+            {
+                auto e_not = ast::expr(std::make_unique<ast::expr_not>(loc, std::move(lvalue)));
+                auto expr = std::make_unique<ast::asm_jump_cond>(loc, std::move(e_not), inst->data[0]);
+                func_->stmt->list.push_back(ast::stmt(std::move(expr)));
+            }
         }
             break;
         case opcode::OP_JumpOnFalse:
@@ -679,8 +688,18 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
             auto lvalue = ast::expr(std::move(stack_.top()));
             stack_.pop();
             loc = lvalue.as_node->loc();
-            auto expr = std::make_unique<ast::asm_jump_cond>(loc, std::move(lvalue), inst->data[0]);
-            func_->stmt->list.push_back(ast::stmt(std::move(expr)));
+
+            if (inst->index > resolve_label(inst->data[0]))
+            {
+                auto e_not = ast::expr(std::make_unique<ast::expr_not>(loc, std::move(lvalue)));
+                auto expr = std::make_unique<ast::asm_jump_cond>(loc, std::move(e_not), inst->data[0]);
+                func_->stmt->list.push_back(ast::stmt(std::move(expr)));
+            }
+            else
+            {
+                auto expr = std::make_unique<ast::asm_jump_cond>(loc, std::move(lvalue), inst->data[0]);
+                func_->stmt->list.push_back(ast::stmt(std::move(expr)));
+            }
         }
             break;
         case opcode::OP_JumpOnTrueExpr:
@@ -1166,7 +1185,13 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
             break;
         case opcode::OP_ProfileStart:
         case opcode::OP_ProfileStop:
+            throw decomp_error("unhandled opcode " + resolver::opcode_name(inst->opcode));
         case opcode::OP_SafeDecTop:
+        {
+            auto node = std::make_unique<ast::expr_undefined>(loc);
+            stack_.push(std::move(node));
+        }
+            break;
         case opcode::OP_Nop:
         case opcode::OP_Abort:
         case opcode::OP_Object:
@@ -1309,19 +1334,23 @@ void decompiler::decompile_loops(const ast::stmt_list::ptr& stmt)
 
         if (entry == ast::kind::asm_jump_cond)
         {
-            auto j = (entry.as_cond->value == blocks_.back().loc_end) ? (stmt->list.size() - 1) : (find_location_index(stmt, entry.as_cond->value) - 1);
+            auto j = (entry.as_cond->value == blocks_.back().loc_end) ? (stmt->list.size()) : (find_location_index(stmt, entry.as_cond->value));
+
+            if (j < i)
+            {
+                decompile_dowhile(stmt, j, i);
+                i = 0;
+                continue;
+            }
+
+            j -= 1;
 
             if (stmt->list.at(j) == ast::kind::asm_jump)
             {
                 if (stmt->list.at(j).as_node->loc().begin.line < std::stol(stmt->list.at(j).as_jump->value.substr(4), 0, 16))
                     continue;
 
-                if (j == i + 1 && (stmt->list.at(j).as_jump->value != blocks_.back().loc_continue))
-                {
-                    decompile_dowhile(stmt, i, j);
-                    i = 0;
-                }
-                else if (stmt->list.at(i).loc().label() == stmt->list.at(j).as_jump->value)
+                if (stmt->list.at(i).loc().label() == stmt->list.at(j).as_jump->value)
                 {
                     decompile_loop(stmt, i, j);
                     i = 0;
@@ -1613,12 +1642,11 @@ void decompiler::decompile_loop(const ast::stmt_list::ptr& stmt, std::uint32_t s
                     return;
                 }
 
-                auto ref = stmt->list.at(end).loc().label();
                 auto ref2 = stmt->list.at(start).loc().label();
 
-                if (find_location_reference(stmt, start, end, ref))
+                if (find_location_reference(stmt, start, end, ref2))
                 {
-                    // continue is at jumpback, not post-expr
+                    // continue is at begin, not post-expr
                     decompile_while(stmt, start, end);
                     return;
                 }
@@ -1673,17 +1701,14 @@ void decompiler::decompile_while(const ast::stmt_list::ptr& stmt, std::uint32_t 
 void decompiler::decompile_dowhile(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end)
 {
     block blk;
-    blk.loc_break = stmt->list.at(begin).as_cond->value;
-    blk.loc_end = stmt->list.at(begin).loc().label();
-    blk.loc_continue = stmt->list.at(begin).loc().label();
+    blk.loc_break = last_location_index(stmt, end) ? blocks_.back().loc_end : stmt->list.at(end + 1).loc().label();
+    blk.loc_end = stmt->list.at(end).loc().label();
+    blk.loc_continue = stmt->list.at(end).loc().label();
 
-    auto test = std::move(stmt->list.at(begin).as_cond->expr);
-    begin = find_location_index(stmt, stmt->list.at(end).as_jump->value);
+    auto test = std::move(stmt->list.at(end).as_cond->expr);
     auto loc = stmt->list.at(begin).loc();
 
-    end--;
-    stmt->list.erase(stmt->list.begin() + end); // remove 'test'
-    stmt->list.erase(stmt->list.begin() + end); // remove 'jumpback'
+    stmt->list.erase(stmt->list.begin() + end); // remove 'test jump'
 
     auto while_stmt = std::make_unique<ast::stmt_list>(loc);
 
@@ -2012,6 +2037,19 @@ auto decompiler::lvalues_match(const ast::stmt_assign::ptr& stmt1, const ast::st
         return true;
 
     return false;
+}
+
+auto decompiler::resolve_label(const std::string& name) -> std::int32_t
+{
+    for (const auto& entry : labels_)
+    {
+        if (entry.second == name)
+        {
+            return entry.first;
+        }
+    }
+
+    throw decomp_error("Couldn't resolve label address of '" + name + "'!");
 }
 
 void decompiler::process_thread(const ast::decl_thread::ptr& thread)
