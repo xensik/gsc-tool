@@ -215,35 +215,36 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
             break;
         case opcode::OP_GetAnimation:
         {
-            auto value = utils::string::unquote(inst->data[0]);
+            bool found = false;
 
-            if (value != "")
+            for (const auto& entry : program_->declarations)
+            {
+                if (entry == ast::kind::decl_usingtree)
+                {
+                    if (entry.as_usingtree->name->value == inst->data[0])
+                        found = true;
+                    else
+                        found = false;
+                }
+            }
+
+            if (!found)
             {
                 auto tree = std::make_unique<ast::expr_string>(loc, inst->data[0]);
                 auto decl = std::make_unique<ast::decl_usingtree>(loc, std::move(tree));
                 program_->declarations.push_back(ast::decl(std::move(decl)));
             }
 
-            auto node = std::make_unique<ast::expr_animation>(loc, utils::string::unquote(inst->data[1]));
+            auto node = std::make_unique<ast::expr_animation>(loc, inst->data[1]);
             stack_.push(std::move(node));
         }
             break;
         case opcode::OP_GetFunction:
         {
-            if (inst->data.size() == 1)
-            {
-                auto path = std::make_unique<ast::expr_path>(loc);
-                auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[0]);
-                auto node = std::make_unique<ast::expr_reference>(loc, std::move(path), std::move(name));
-                stack_.push(std::move(node));
-            }
-            else
-            {
-                auto path = std::make_unique<ast::expr_path>(loc, inst->data[0]);
-                auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
-                auto node = std::make_unique<ast::expr_reference>(loc, std::move(path), std::move(name));
-                stack_.push(std::move(node));
-            }
+            auto path = std::make_unique<ast::expr_path>(loc, inst->data[0]);
+            auto name = std::make_unique<ast::expr_identifier>(loc, inst->data[1]);
+            auto node = std::make_unique<ast::expr_reference>(loc, std::move(path), std::move(name));
+            stack_.push(std::move(node));
         }
             break;
         case opcode::OP_CreateLocalVariable:
@@ -892,7 +893,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
             auto expr = ast::expr(std::move(stack_.top())); stack_.pop();
             loc = expr.as_node->loc();
 
-            for (auto i = std::stoul(inst->data[0]); i > 0; i++)
+            for (auto i = std::stoul(inst->data[0]); i > 0; i--)
             {
                 auto node = std::move(stack_.top()); stack_.pop();
                 loc = node->loc();

@@ -565,12 +565,12 @@ auto expr_hash::print() const -> std::string
 
 auto expr_string::print() const -> std::string
 {
-    return value;
+    return utils::string::to_literal(value);
 }
 
 auto expr_istring::print() const -> std::string
 {
-    return "&"s += value;
+    return "&"s += utils::string::to_literal(value);
 }
 
 auto expr_path::print() const -> std::string
@@ -1365,12 +1365,12 @@ auto decl_usingtree::print() const -> std::string
 
 auto decl_dev_begin::print() const -> std::string
 {
-    return "/#";
+    return "/#\n";
 }
 
 auto decl_dev_end::print() const -> std::string
 {
-    return "#/";
+    return "#/\n";
 }
 
 auto include::print() const -> std::string
@@ -1387,14 +1387,14 @@ auto program::print() const -> std::string
         data += include->print();
     }
 
+    data += "\n";
+
     for (const auto& entry : declarations)
     {
-        if (entry == kind::decl_thread)
-        {
-            data += "\n";
-        }
-
         data += entry.print();
+
+        if (&entry != &declarations.back())
+            data += "\n";
     }
 
     return data;

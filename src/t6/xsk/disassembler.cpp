@@ -462,7 +462,7 @@ void disassembler::disassemble_string(const instruction::ptr& inst)
 
     const auto& entry = string_refs_.at(script_->pos());
 
-    inst->data.push_back(entry->type ? entry->name : utils::string::to_literal(entry->name));
+    inst->data.push_back(entry->name);
     script_->seek(2);
 }
 
@@ -573,7 +573,7 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
         {
             inst->data.push_back("case");
             const auto& entry = string_refs_.at(script_->pos() - 2);
-            inst->data.push_back(utils::string::quote(entry->name, false));
+            inst->data.push_back(entry->name);
         }
         else if (value == 0)
         {
