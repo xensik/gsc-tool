@@ -797,7 +797,7 @@ void assembler::process_instruction(const instruction::ptr& inst)
                 {
                     if (!utils::string::is_number(inst->data[1 + (3 * i) + 1]))
                     {
-                        process_string(utils::string::unquote(inst->data[1 + (3 * i) + 1]));
+                        process_string(inst->data[1 + (3 * i) + 1]);
                     }
                 }
             }

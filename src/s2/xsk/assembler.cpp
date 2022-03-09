@@ -261,19 +261,19 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_GetIString:
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint32_t>(0);
-            stack_->write_c_string(utils::string::to_code(inst->data[0]));
+            stack_->write_c_string(inst->data[0]);
             break;
         case opcode::OP_GetAnimation:
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint32_t>(0);
             script_->write<std::uint32_t>(0);
-            stack_->write_c_string(utils::string::unquote(inst->data[0]));
-            stack_->write_c_string(utils::string::unquote(inst->data[1]));
+            stack_->write_c_string(inst->data[0]);
+            stack_->write_c_string(inst->data[1]);
             break;
         case opcode::OP_GetAnimTree:
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(0);
-            stack_->write_c_string(utils::string::unquote(inst->data[0]));
+            stack_->write_c_string(inst->data[0]);
             break;
         case opcode::OP_waittillmatch:
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
@@ -469,7 +469,7 @@ void assembler::assemble_end_switch(const instruction::ptr& inst)
             else
             {
                 script_->write<uint32_t>(i + 1);
-                stack_->write_c_string(utils::string::unquote(inst->data[1 + (3 * i) + 1]));
+                stack_->write_c_string(inst->data[1 + (3 * i) + 1]);
             }
 
             index += 4;
