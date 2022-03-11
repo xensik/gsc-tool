@@ -568,13 +568,19 @@ void execute(mode mode, game game, const std::string& path)
         {
             if (entry.is_regular_file())
             {
-                if (game < game::T6) gsc::funcs[mode](game, entry.path().string()); else arc::funcs[mode](game, entry.path());
+                if (game < game::T6)
+                    gsc::funcs[mode](game, entry.path().string());
+                else
+                    arc::funcs[mode](game, std::filesystem::path(entry.path(), std::filesystem::path::format::generic_format));
             }
         }
     }
     else if (std::filesystem::is_regular_file(path))
     {
-        if (game < game::T6) gsc::funcs[mode](game, path); else arc::funcs[mode](game, path);
+        if (game < game::T6)
+            gsc::funcs[mode](game, path);
+        else
+            arc::funcs[mode](game, std::filesystem::path(path, std::filesystem::path::format::generic_format));
     }
 }
 

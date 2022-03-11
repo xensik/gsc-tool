@@ -2035,7 +2035,7 @@ auto decompiler::lvalues_match(const ast::stmt_assign::ptr& stmt1, const ast::st
     return false;
 }
 
-auto decompiler::resolve_label(const std::string& name) -> std::int32_t
+auto decompiler::resolve_label(const std::string& name) -> std::uint32_t
 {
     for (const auto& entry : labels_)
     {
