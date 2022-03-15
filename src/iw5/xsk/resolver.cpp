@@ -296,6 +296,57 @@ auto resolver::file_data(const std::string& name) -> std::tuple<const std::strin
     throw error("couldn't open gsc file '" + name + "'");
 }
 
+std::set<std::string_view> paths
+{
+    "aitype"sv,
+    "animscripts"sv,
+    "character"sv,
+    "codescripts"sv,
+    "common_scripts"sv,
+    "maps"sv,
+    "mptype"sv,
+    "vehicle_scripts"sv,
+    "xmodelalias"sv,
+    "animscripts/civilian"sv,
+    "animscripts/dog"sv,
+    "animscripts/hummer_turret"sv,
+    "animscripts/riotshield"sv,
+    "animscripts/saw"sv,
+    "animscripts/scripted"sv,
+    "animscripts/technical"sv,
+    "animscripts/traverse"sv,
+    "maps/animated_models"sv,
+    "maps/cinematic_setups"sv,
+    "maps/createart"sv,
+    "maps/createfx"sv,
+    "maps/gametypes"sv,
+    "maps/mp"sv,
+    "maps/mp/gametypes"sv,
+    "maps/mp/killstreaks"sv,
+    "maps/mp/perks"sv,
+};
+
+auto resolver::fs_to_game_path(const std::filesystem::path& file) -> std::filesystem::path
+{
+    auto result = std::filesystem::path();
+    auto root = false;
+
+    for (auto& entry : file)
+    {
+        if (!root && paths.contains(entry.string()))
+        {
+            result = entry;
+            root = true;
+        }
+        else if (paths.contains(result.string()))
+        {
+            result /= entry;
+        }
+    }
+
+    return result.empty() ? file : result;
+}
+
 const std::array<std::pair<std::uint8_t, const char*>, 153> opcode_list
 {{
     { 0x00, "END" },
