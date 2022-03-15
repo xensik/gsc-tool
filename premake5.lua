@@ -27,18 +27,18 @@ workspace "gsc-tool"
         buildoptions "/Zc:__cplusplus"
     filter {}
 
-    configurations { "debug", "release" }
+    configurations { "Debug", "Release" }
 
     symbols "On"
 
-    filter "configurations:release"
+    filter "configurations:Release"
         optimize "Full"
-        defines { "NDEBUG", "YY_NO_UNISTD_H" }
+        defines { "NDEBUG" }
     filter {}
 
-    filter "configurations:debug"
+    filter "configurations:Debug"
         optimize "Debug"
-        defines { "DEBUG", "_DEBUG", "YY_NO_UNISTD_H" }
+        defines { "DEBUG", "_DEBUG" }
     filter {}
 
     startproject "xsk-gsc-tool"
