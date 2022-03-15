@@ -24,7 +24,6 @@ class compiler : public gsc::compiler
     std::vector<include_t> includes_;
     std::vector<animtree_t> animtrees_;
     std::unordered_map<std::string, ast::expr> constants_;
-    std::function<std::vector<std::uint8_t>(const std::string&)> read_callback_;
     std::vector<block*> break_blks_;
     std::vector<block*> continue_blks_;
     bool can_break_;
@@ -32,13 +31,12 @@ class compiler : public gsc::compiler
     bool developer_thread_;
 
 public:
-    compiler(build mode) : mode_(mode) {}
     auto output() -> std::vector<function::ptr>;
     void compile(const std::string& file, std::vector<std::uint8_t>& data);
-    void read_callback(std::function<std::vector<std::uint8_t>(const std::string&)> func);
+    void mode(build mode);
 
 private:
-    auto parse_buffer(const std::string& file, std::vector<std::uint8_t>& data) -> ast::program::ptr;
+    auto parse_buffer(const std::string& file, char* data, size_t size) -> ast::program::ptr;
     auto parse_file(const std::string& file) -> ast::program::ptr;
     void compile_program(const ast::program::ptr& program);
     void emit_include(const ast::include::ptr& include);

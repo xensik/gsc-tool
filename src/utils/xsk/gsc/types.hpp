@@ -8,6 +8,8 @@
 namespace xsk::gsc
 {
 
+using read_cb_type = std::function<std::vector<std::uint8_t>(const std::string&)>;
+
 enum class build
 {
     dev,

@@ -129,8 +129,8 @@ void reader::advance()
     }
 }
 
-lexer::lexer(const std::string& name, const char* data, size_t size) : indev_(false), clean_(true), loc_(location(&name)),
-    mode_(build::dev), header_top_(0), locs_(std::stack<location>()), readers_(std::stack<reader>())
+lexer::lexer(build mode, const std::string& name, const char* data, size_t size) : indev_(false), clean_(true), loc_(location(&name)),
+    mode_(mode), header_top_(0), locs_(std::stack<location>()), readers_(std::stack<reader>())
 {
     reader_.init(data, size);
 }

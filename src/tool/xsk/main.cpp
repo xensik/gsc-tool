@@ -91,10 +91,7 @@ auto overwrite_prompt(const std::string& file) -> bool
 namespace gsc
 {
 
-std::map<game, gsc::assembler::ptr> assemblers;
-std::map<game, gsc::disassembler::ptr> disassemblers;
-std::map<game, gsc::compiler::ptr> compilers;
-std::map<game, gsc::decompiler::ptr> decompilers;
+std::map<game, context::ptr> contexts;
 std::map<mode, std::function<void(game game, std::string file)>> funcs;
 bool zonetool = false;
 
@@ -129,7 +126,7 @@ void assemble_file(game game, std::string file)
 {
     try
     {
-        const auto& assembler = assemblers[game];
+        auto& assembler = contexts[game]->assembler();
         const auto ext = std::string(".gscasm");
         const auto extpos = file.find(ext);
 
@@ -140,25 +137,25 @@ void assemble_file(game game, std::string file)
 
         auto data = utils::file::read(file + ext);
 
-        assembler->assemble(file, data);
+        assembler.assemble(file, data);
 
         if (overwrite_prompt(file + (zonetool ? ".cgsc" : ".gscbin")))
         {
             if (zonetool)
             {
-                utils::file::save("assembled/" + file + ".cgsc", assembler->output_script());
-                utils::file::save("assembled/" + file + ".cgsc.stack", assembler->output_stack());
+                utils::file::save("assembled/" + file + ".cgsc", assembler.output_script());
+                utils::file::save("assembled/" + file + ".cgsc.stack", assembler.output_stack());
                 std::cout << "assembled " << file << ".cgsc\n";
             }
             else
             {
                 asset script;
 
-                auto uncompressed = assembler->output_stack();
+                auto uncompressed = assembler.output_stack();
                 auto compressed = utils::zlib::compress(uncompressed);
 
                 script.name = file;
-                script.bytecode = assembler->output_script();
+                script.bytecode = assembler.output_script();
                 script.buffer = std::move(compressed);
                 script.len = uncompressed.size();
                 script.compressedLen = script.buffer.size();
@@ -180,7 +177,7 @@ void disassemble_file(game game, std::string file)
 {
     try
     {
-        const auto& disassembler = disassemblers[game];
+        auto& disassembler = contexts[game]->disassembler();
 
         if (zonetool)
         {
@@ -203,7 +200,7 @@ void disassemble_file(game game, std::string file)
             auto script = utils::file::read(file + ".cgsc");
             auto stack = utils::file::read(file + ".cgsc.stack");
 
-            disassembler->disassemble(file, script, stack);
+            disassembler.disassemble(file, script, stack);
         }
         else
         {
@@ -225,14 +222,14 @@ void disassemble_file(game game, std::string file)
 
             auto stack = utils::zlib::decompress(script.buffer, script.len);
 
-            disassembler->disassemble(file, script.bytecode, stack);
+            disassembler.disassemble(file, script.bytecode, stack);
         }
 
         auto scriptid = std::filesystem::path(file).filename().string();
 
         if (!isdigit(scriptid.data()[0]))
         {
-            utils::file::save("disassembled/" + file + ".gscasm", disassembler->output_data());
+            utils::file::save("disassembled/" + file + ".gscasm", disassembler.output_data());
             std::cout << "disassembled " << file << ".gscasm\n";
         }
         else
@@ -248,7 +245,7 @@ void disassemble_file(game game, std::string file)
                 }
             }
 
-            utils::file::save("disassembled/" + file + filename + ".gscasm", disassembler->output_data());
+            utils::file::save("disassembled/" + file + filename + ".gscasm", disassembler.output_data());
             std::cout << "disassembled " << file << filename << ".gscasm\n";
         }
     }
@@ -262,8 +259,8 @@ void compile_file(game game, std::string file)
 {
     try
     {
-        const auto& assembler = assemblers[game];
-        const auto& compiler = compilers[game];
+        auto& assembler = contexts[game]->assembler();
+        auto& compiler = contexts[game]->compiler();
         const auto ext = std::string(".gsc");
         const auto extpos = file.find(ext);
 
@@ -274,30 +271,29 @@ void compile_file(game game, std::string file)
 
         auto data = utils::file::read(file + ext);
 
-        compiler->read_callback(utils::file::read);
-        compiler->compile(file, data);
+        compiler.compile(file, data);
 
-        auto assembly = compiler->output();
+        auto assembly = compiler.output();
 
-        assembler->assemble(file, assembly);
+        assembler.assemble(file, assembly);
 
         if (overwrite_prompt(file + (zonetool ? ".cgsc" : ".gscbin")))
         {
             if (zonetool)
             {
-                utils::file::save("compiled/" + file + ".cgsc", assembler->output_script());
-                utils::file::save("compiled/" + file + ".cgsc.stack", assembler->output_stack());
+                utils::file::save("compiled/" + file + ".cgsc", assembler.output_script());
+                utils::file::save("compiled/" + file + ".cgsc.stack", assembler.output_stack());
                 std::cout << "compiled " << file << ".cgsc\n";
             }
             else
             {
                 asset script;
 
-                auto uncompressed = assembler->output_stack();
+                auto uncompressed = assembler.output_stack();
                 auto compressed = utils::zlib::compress(uncompressed);
 
                 script.name = file;
-                script.bytecode = assembler->output_script();
+                script.bytecode = assembler.output_script();
                 script.buffer = std::move(compressed);
                 script.len = uncompressed.size();
                 script.compressedLen = script.buffer.size();
@@ -319,7 +315,7 @@ void decompile_file(game game, std::string file)
 {
     try
     {
-        const auto& disassembler = disassemblers[game];
+        auto& disassembler = contexts[game]->disassembler();
 
         if (zonetool)
         {
@@ -342,7 +338,7 @@ void decompile_file(game game, std::string file)
             auto script = utils::file::read(file + ".cgsc");
             auto stack = utils::file::read(file + ".cgsc.stack");
 
-            disassembler->disassemble(file, script, stack);
+            disassembler.disassemble(file, script, stack);
         }
         else
         {
@@ -364,20 +360,20 @@ void decompile_file(game game, std::string file)
 
             auto stack = utils::zlib::decompress(script.buffer, script.len);
 
-            disassembler->disassemble(file, script.bytecode, stack);
+            disassembler.disassemble(file, script.bytecode, stack);
         }
 
-        const auto& decompiler = decompilers[game];
+        auto& decompiler = contexts[game]->decompiler();
 
-        auto output = disassembler->output();
+        auto output = disassembler.output();
 
-        decompiler->decompile(file, output);
+        decompiler.decompile(file, output);
 
         auto scriptid = std::filesystem::path(file).filename().string();
 
         if (!isdigit(scriptid.data()[0]))
         {
-            utils::file::save("decompiled/" + file + ".gsc", decompiler->output());
+            utils::file::save("decompiled/" + file + ".gsc", decompiler.output());
             std::cout << "decompiled " << file << ".gsc\n";
         }
         else
@@ -393,7 +389,7 @@ void decompile_file(game game, std::string file)
                 }
             }
 
-            utils::file::save("decompiled/" + file + filename + ".gsc", decompiler->output());
+            utils::file::save("decompiled/" + file + filename + ".gsc", decompiler.output());
             std::cout << "decompiled " << file << filename << ".gsc\n";
         }
     }
@@ -405,42 +401,25 @@ void decompile_file(game game, std::string file)
 
 void init()
 {
-    assemblers[game::IW5] = std::make_unique<iw5::assembler>();
-    assemblers[game::IW6] = std::make_unique<iw6::assembler>();
-    assemblers[game::IW7] = std::make_unique<iw7::assembler>();
-    assemblers[game::IW8] = std::make_unique<iw8::assembler>();
-    assemblers[game::S1] = std::make_unique<s1::assembler>();
-    assemblers[game::S2] = std::make_unique<s2::assembler>();
-    assemblers[game::S4] = std::make_unique<s4::assembler>();
-    assemblers[game::H1] = std::make_unique<h1::assembler>();
-    assemblers[game::H2] = std::make_unique<h2::assembler>();
-    disassemblers[game::IW5] = std::make_unique<iw5::disassembler>();
-    disassemblers[game::IW6] = std::make_unique<iw6::disassembler>();
-    disassemblers[game::IW7] = std::make_unique<iw7::disassembler>();
-    disassemblers[game::IW8] = std::make_unique<iw8::disassembler>();
-    disassemblers[game::S1] = std::make_unique<s1::disassembler>();
-    disassemblers[game::S2] = std::make_unique<s2::disassembler>();
-    disassemblers[game::S4] = std::make_unique<s4::disassembler>();
-    disassemblers[game::H1] = std::make_unique<h1::disassembler>();
-    disassemblers[game::H2] = std::make_unique<h2::disassembler>();
-    compilers[game::IW5] = std::make_unique<iw5::compiler>(build::prod);
-    compilers[game::IW6] = std::make_unique<iw6::compiler>(build::prod);
-    compilers[game::IW7] = std::make_unique<iw7::compiler>(build::prod);
-    compilers[game::IW8] = std::make_unique<iw8::compiler>(build::prod);
-    compilers[game::S1] = std::make_unique<s1::compiler>(build::prod);
-    compilers[game::S2] = std::make_unique<s2::compiler>(build::prod);
-    compilers[game::S4] = std::make_unique<s4::compiler>(build::prod);
-    compilers[game::H1] = std::make_unique<h1::compiler>(build::prod);
-    compilers[game::H2] = std::make_unique<h2::compiler>(build::prod);
-    decompilers[game::IW5] = std::make_unique<iw5::decompiler>();
-    decompilers[game::IW6] = std::make_unique<iw6::decompiler>();
-    decompilers[game::IW7] = std::make_unique<iw7::decompiler>();
-    decompilers[game::IW8] = std::make_unique<iw8::decompiler>();
-    decompilers[game::S1] = std::make_unique<s1::decompiler>();
-    decompilers[game::S2] = std::make_unique<s2::decompiler>();
-    decompilers[game::S4] = std::make_unique<s4::decompiler>();
-    decompilers[game::H1] = std::make_unique<h1::decompiler>();
-    decompilers[game::H2] = std::make_unique<h2::decompiler>();
+    contexts[game::IW5] = std::make_unique<iw5::context>();
+    contexts[game::IW5]->init(build::prod, utils::file::read);
+    contexts[game::IW6] = std::make_unique<iw6::context>();
+    contexts[game::IW6]->init(build::prod, utils::file::read);
+    contexts[game::IW7] = std::make_unique<iw7::context>();
+    contexts[game::IW7]->init(build::prod, utils::file::read);
+    contexts[game::IW8] = std::make_unique<iw8::context>();
+    contexts[game::IW8]->init(build::prod, utils::file::read);
+    contexts[game::S1] = std::make_unique<s1::context>();
+    contexts[game::S1]->init(build::prod, utils::file::read);
+    contexts[game::S2] = std::make_unique<s2::context>();
+    contexts[game::S2]->init(build::prod, utils::file::read);
+    contexts[game::S4] = std::make_unique<s4::context>();
+    contexts[game::S4]->init(build::prod, utils::file::read);
+    contexts[game::H1] = std::make_unique<h1::context>();
+    contexts[game::H1]->init(build::prod, utils::file::read);
+    contexts[game::H2] = std::make_unique<h2::context>();
+    contexts[game::H2]->init(build::prod, utils::file::read);
+
     funcs[mode::ASM] = assemble_file;
     funcs[mode::DISASM] = disassemble_file;
     funcs[mode::COMP] = compile_file;

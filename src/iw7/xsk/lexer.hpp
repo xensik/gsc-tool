@@ -58,7 +58,7 @@ class lexer
     bool clean_;
 
 public:
-    lexer(const std::string& name, const char* data, size_t size);
+    lexer(build mode, const std::string& name, const char* data, size_t size);
     auto lex() -> parser::symbol_type;
     void push_header(const std::string& file);
     void pop_header();

@@ -24,6 +24,7 @@
 #include "gsc/interfaces/disassembler.hpp"
 #include "gsc/interfaces/compiler.hpp"
 #include "gsc/interfaces/decompiler.hpp"
+#include "gsc/interfaces/context.hpp"
 
 // ARC Types
 #include "arc/location.hpp"

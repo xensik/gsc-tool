@@ -19,8 +19,6 @@ public:
 
     static auto make_token(std::string_view str) -> std::string;
     static auto file_data(const std::string& name) -> std::tuple<const std::string*, char*, size_t>;
-    static void set_reader(std::function<std::vector<std::uint8_t>(const std::string&)> callback);
-
     static auto fs_to_game_path(const std::filesystem::path& file) -> std::filesystem::path;
 };
 

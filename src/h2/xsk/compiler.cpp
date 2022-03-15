@@ -20,29 +20,27 @@ void compiler::compile(const std::string& file, std::vector<std::uint8_t>& data)
 {
     filename_ = file;
 
-    auto prog = parse_buffer(filename_, data);
+    auto prog = parse_buffer(filename_, reinterpret_cast<char*>(data.data()), data.size());
 
     compile_program(prog);
 }
 
-void compiler::read_callback(std::function<std::vector<std::uint8_t>(const std::string&)> func)
+void compiler::mode(build mode)
 {
-    read_callback_ = func;
+    mode_ = mode;
 }
 
-auto compiler::parse_buffer(const std::string& file, std::vector<std::uint8_t>& data) -> ast::program::ptr
+auto compiler::parse_buffer(const std::string& file, char* data, size_t size) -> ast::program::ptr
 {
     ast::program::ptr result(nullptr);
 
-    resolver::set_reader(read_callback_);
-
-    lexer lexer(file, reinterpret_cast<char*>(data.data()), data.size());
+    lexer lexer(mode_, file, data, size);
 
     parser parser(lexer, result);
 
     if (parser.parse() || result == nullptr)
     {
-        throw comp_error(xsk::gsc::location(&file), "An unknown error ocurred while parsing gsc file.");
+        throw comp_error(location(&file), "An unknown error ocurred while parsing gsc file.");
     }
 
     return result;
@@ -50,8 +48,8 @@ auto compiler::parse_buffer(const std::string& file, std::vector<std::uint8_t>& 
 
 auto compiler::parse_file(const std::string& file) -> ast::program::ptr
 {
-    auto buffer = read_callback_(file);
-    auto result = parse_buffer(file, buffer);
+    auto data = resolver::file_data(file);
+    auto result = parse_buffer(file, std::get<1>(data), std::get<2>(data));
 
     return result;
 }

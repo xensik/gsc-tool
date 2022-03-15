@@ -19,8 +19,19 @@ std::unordered_map<std::string_view, std::uint16_t> function_map_rev;
 std::unordered_map<std::string_view, std::uint16_t> method_map_rev;
 std::unordered_map<std::string_view, std::uint16_t> file_map_rev;
 std::unordered_map<std::string, std::uint16_t> token_map_rev;
-
+std::unordered_map<std::string, std::vector<std::uint8_t>> files;
+read_cb_type read_callback = nullptr;
 std::set<std::string> string_map;
+
+void resolver::init(read_cb_type callback)
+{
+    read_callback = callback;
+}
+
+void resolver::cleanup()
+{
+    files.clear();
+}
 
 auto resolver::opcode_id(const std::string& name) -> std::uint8_t
 {
@@ -264,9 +275,6 @@ auto resolver::make_token(std::string_view str) -> std::string
     return data;
 }
 
-std::function<std::vector<std::uint8_t>(const std::string&)> read_callback = nullptr;
-std::unordered_map<std::string, std::vector<std::uint8_t>> files;
-
 auto resolver::file_data(const std::string& name) -> std::tuple<const std::string*, char*, size_t>
 {
     const auto& itr = files.find(name);
@@ -286,11 +294,6 @@ auto resolver::file_data(const std::string& name) -> std::tuple<const std::strin
     }
 
     throw error("couldn't open gsc file '" + name + "'");
-}
-
-void resolver::set_reader(std::function<std::vector<std::uint8_t>(const std::string&)> callback)
-{
-    read_callback = callback;
 }
 
 const std::array<std::pair<std::uint8_t, const char*>, 153> opcode_list

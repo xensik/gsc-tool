@@ -16,7 +16,6 @@ public:
     virtual ~compiler() = default;
     virtual auto output() -> std::vector<gsc::function::ptr> = 0;
     virtual void compile(const std::string& file, std::vector<std::uint8_t>& data) = 0;
-    virtual void read_callback(std::function<std::vector<std::uint8_t>(const std::string&)> func) = 0;
 };
 
 } // namespace xsk::gsc

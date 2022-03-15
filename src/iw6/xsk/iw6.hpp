@@ -12,6 +12,7 @@
 #include "compiler.hpp"
 #include "decompiler.hpp"
 #include "resolver.hpp"
+#include "context.hpp"
 
 namespace xsk::gsc::iw6
 {
