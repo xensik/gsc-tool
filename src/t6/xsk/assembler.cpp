@@ -32,8 +32,11 @@ void assembler::assemble(const std::string& file, assembly::ptr& data)
     filename_ = file;
     assembly_ = std::move(data);
     stringlist_.clear();
-
-    std::memset(&header_, 0 ,sizeof(header_));
+    exports_.clear();
+    imports_.clear();
+    animtrees_.clear();
+    stringtables_.clear();
+    std::memset(&header_, 0, sizeof(header_));
 
     // skip header
     script_->pos(64);
@@ -638,7 +641,7 @@ void assembler::align_instruction(const instruction::ptr& inst)
         case opcode::OP_SafeCreateLocalVariables:
             script_->seek(1);
             {
-                for (auto i = 0; i < inst->data.size(); i++)
+                for (auto i = 0u; i < inst->data.size(); i++)
                 {
                     inst->size += script_->align(2) + 2;
                     add_string_reference(inst->data[i], string_type::canonical, script_->pos());
@@ -849,7 +852,7 @@ void assembler::add_import_reference(const std::vector<std::string>& data, std::
 {
     for (auto& entry : imports_)
     {
-        if (entry.space == data[0] && entry.name == data[1] && entry.params == std::stoi(data[2]) && entry.params == std::stoi(data[3]))
+        if (entry.space == data[0] && entry.name == data[1] && entry.params == std::stoi(data[2]) && entry.flags == std::stoi(data[3]))
         {
             entry.refs.push_back(ref);
             return;

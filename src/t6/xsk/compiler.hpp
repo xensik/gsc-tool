@@ -31,7 +31,7 @@ class compiler : public arc::compiler
 
 public:
     auto output() -> assembly::ptr;
-    auto output_data() -> std::vector<std::uint8_t>;
+    auto output_raw() -> std::vector<std::uint8_t>;
     void compile(const std::string& file, std::vector<std::uint8_t>& data);
     void mode(build mode);
 

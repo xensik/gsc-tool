@@ -467,7 +467,7 @@ void disassemble_file(game game, const std::filesystem::path& file)
 
         disassembler.disassemble(file.string(), data);
 
-        utils::file::save((std::filesystem::path("disassembled/t6") / next).string(), disassembler.output_data());
+        utils::file::save((std::filesystem::path("disassembled/t6") / next).string(), disassembler.output_raw());
         std::cout << "disassembled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)

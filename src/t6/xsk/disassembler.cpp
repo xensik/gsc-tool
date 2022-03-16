@@ -14,7 +14,7 @@ auto disassembler::output() -> assembly::ptr
     return std::move(assembly_);
 }
 
-auto disassembler::output_data() -> std::vector<std::uint8_t>
+auto disassembler::output_raw() -> std::vector<std::uint8_t>
 {
     output_ = std::make_unique<utils::byte_buffer>(0x100000);
 
@@ -39,8 +39,6 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
     filename_ = file;
     script_ = std::make_unique<utils::byte_buffer>(data);
     assembly_ = std::make_unique<assembly>();
-
-    std::memset(&header_, 0, sizeof(header_));
     exports_.clear();
     imports_.clear();
     strings_.clear();
@@ -50,6 +48,7 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
     anim_refs_.clear();
     import_refs_.clear();
     labels_.clear();
+    std::memset(&header_, 0, sizeof(header_));
 
     // header
     header_.magic = script_->read<std::uint64_t>();
@@ -490,7 +489,7 @@ void disassembler::disassemble_localvars(const instruction::ptr& inst)
 {
     const auto count = script_->read<std::uint8_t>();
 
-    for (auto i = 0; i < count; i++)
+    for (auto i = 0u; i < count; i++)
     {
         disassemble_string(inst);
         inst->size += 2;

@@ -15,7 +15,7 @@ public:
 
     virtual ~disassembler() = default;
     virtual auto output() -> assembly::ptr = 0;
-    virtual auto output_data() -> std::vector<std::uint8_t> = 0;
+    virtual auto output_raw() -> std::vector<std::uint8_t> = 0;
     virtual void disassemble(const std::string& file, std::vector<std::uint8_t>& data) = 0;
 };
 

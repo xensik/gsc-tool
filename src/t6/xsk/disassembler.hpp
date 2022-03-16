@@ -27,7 +27,7 @@ class disassembler : public arc::disassembler
 
 public:
     auto output() -> assembly::ptr;
-    auto output_data() -> std::vector<std::uint8_t>;
+    auto output_raw() -> std::vector<std::uint8_t>;
     void disassemble(const std::string& file, std::vector<std::uint8_t>& data);
 
 private:

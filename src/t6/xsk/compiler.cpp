@@ -16,7 +16,7 @@ auto compiler::output() -> assembly::ptr
     return std::move(assembly_);
 }
 
-auto compiler::output_data() -> std::vector<std::uint8_t>
+auto compiler::output_raw() -> std::vector<std::uint8_t>
 {
     output_ = std::make_unique<utils::byte_buffer>(0x100000);
 
@@ -533,8 +533,6 @@ void compiler::emit_stmt_while(const ast::stmt_while::ptr& stmt)
     can_continue_ = true;
     auto break_loc = create_label();
     auto continue_loc = insert_label();
-
-    auto begin_loc = continue_loc;
 
     if (stmt->test == ast::kind::expr_not)
     {
@@ -1371,18 +1369,11 @@ void compiler::emit_expr_parameters(const ast::expr_parameters::ptr&)
 {
     if (local_stack_.size() == 0)
     {
-        emit_opcode( opcode::OP_CheckClearParams);
+        emit_opcode(opcode::OP_CheckClearParams);
     }
     else
     {
-        std::vector<std::string> data;
-
-        for (const auto& entry : local_stack_)
-        {
-            data.push_back(entry);
-        }
-
-        emit_opcode(opcode::OP_SafeCreateLocalVariables, data);
+        emit_opcode(opcode::OP_SafeCreateLocalVariables, local_stack_);
     }
 }
 
@@ -2405,7 +2396,7 @@ void compiler::insert_label(const std::string& name)
     }
     else
     {
-        function_->labels.insert({index_, name});
+        function_->labels.insert({ index_, name });
     }
 }
 
