@@ -850,12 +850,12 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt, const block::
     break_blks_ = old_breaks;
 }
 
-void compiler::emit_stmt_case(const ast::stmt_case::ptr& stmt, const block::ptr& blk)
+void compiler::emit_stmt_case(const ast::stmt_case::ptr& stmt, const block::ptr&)
 {
     throw comp_error(stmt->loc(), "illegal case statement");
 }
 
-void compiler::emit_stmt_default(const ast::stmt_default::ptr& stmt, const block::ptr& blk)
+void compiler::emit_stmt_default(const ast::stmt_default::ptr& stmt, const block::ptr&)
 {
     throw comp_error(stmt->loc(), "illegal default statement");
 }
@@ -896,17 +896,17 @@ void compiler::emit_stmt_return(const ast::stmt_return::ptr& stmt, const block::
         emit_opcode(opcode::OP_End);
 }
 
-void compiler::emit_stmt_breakpoint(const ast::stmt_breakpoint::ptr& stmt, const block::ptr& blk)
+void compiler::emit_stmt_breakpoint(const ast::stmt_breakpoint::ptr&, const block::ptr&)
 {
     // TODO:
 }
 
-void compiler::emit_stmt_prof_begin(const ast::stmt_prof_begin::ptr& stmt, const block::ptr& blk)
+void compiler::emit_stmt_prof_begin(const ast::stmt_prof_begin::ptr&, const block::ptr&)
 {
     // TODO:
 }
 
-void compiler::emit_stmt_prof_end(const ast::stmt_prof_end::ptr& stmt, const block::ptr& blk)
+void compiler::emit_stmt_prof_end(const ast::stmt_prof_end::ptr&, const block::ptr&)
 {
     // TODO:
 }
@@ -1539,7 +1539,7 @@ void compiler::emit_expr_arguments(const ast::expr_arguments::ptr& expr, const b
     }
 }
 
-void compiler::emit_expr_reference(const ast::expr_reference::ptr& expr, const block::ptr& blk)
+void compiler::emit_expr_reference(const ast::expr_reference::ptr& expr, const block::ptr&)
 {
     bool method = false;
     auto type = resolve_reference_type(expr, method);
@@ -2532,7 +2532,7 @@ void compiler::process_stmt_switch(const ast::stmt_switch::ptr& stmt, const bloc
     break_blks_ = old_breaks;
 }
 
-void compiler::process_stmt_break(const ast::stmt_break::ptr& stmt, const block::ptr& blk)
+void compiler::process_stmt_break(const ast::stmt_break::ptr&, const block::ptr& blk)
 {
     if (blk->abort == abort_t::abort_none)
     {
@@ -2541,7 +2541,7 @@ void compiler::process_stmt_break(const ast::stmt_break::ptr& stmt, const block:
     }
 }
 
-void compiler::process_stmt_continue(const ast::stmt_continue::ptr& stmt, const block::ptr& blk)
+void compiler::process_stmt_continue(const ast::stmt_continue::ptr&, const block::ptr& blk)
 {
     if (blk->abort == abort_t::abort_none)
     {
@@ -2550,7 +2550,7 @@ void compiler::process_stmt_continue(const ast::stmt_continue::ptr& stmt, const 
     }
 }
 
-void compiler::process_stmt_return(const ast::stmt_return::ptr& stmt, const block::ptr& blk)
+void compiler::process_stmt_return(const ast::stmt_return::ptr&, const block::ptr& blk)
 {
     if (blk->abort == abort_t::abort_none)
     {
@@ -2863,7 +2863,7 @@ void compiler::insert_label(const std::string& name)
     }
 }
 
-auto compiler::map_known_includes(const std::string& include) -> bool
+auto compiler::map_known_includes(const std::string&) -> bool
 {
     return false;
 }

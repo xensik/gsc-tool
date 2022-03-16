@@ -67,13 +67,13 @@ void assembler::assemble(const std::string& file, std::vector<std::uint8_t>& dat
         }
         else
         {
-            auto data = utils::string::parse_code(line);
+            auto opdata = utils::string::parse_code(line);
 
             if (switchnum)
             {
-                if (data[0] == "case" || data[0] == "default")
+                if (opdata[0] == "case" || opdata[0] == "default")
                 {
-                    for (auto& entry : data)
+                    for (auto& entry : opdata)
                     {
                         func->instructions.back()->data.push_back(entry);
                     }
@@ -87,10 +87,10 @@ void assembler::assemble(const std::string& file, std::vector<std::uint8_t>& dat
             {
                 auto inst = std::make_unique<instruction>();
                 inst->index = index;
-                inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(data[0]));
+                inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(opdata[0]));
                 inst->size = opcode_size(inst->opcode);
-                data.erase(data.begin());
-                inst->data = std::move(data);
+                opdata.erase(opdata.begin());
+                inst->data = std::move(opdata);
 
                 switch (opcode(inst->opcode))
                 {

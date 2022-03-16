@@ -17,10 +17,10 @@ workspace "gsc-tool"
     objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{prj.name}"
     targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
     targetname "%{prj.name}"
-
+    staticruntime "On"
     language "C++"
     cppdialect "C++20"
-    architecture "x86_64"
+    architecture "x64"
 
     filter "action:vs*"
         buildoptions "/bigobj"
@@ -30,10 +30,12 @@ workspace "gsc-tool"
     configurations { "Debug", "Release" }
 
     symbols "On"
+    warnings "Extra"
 
     filter "configurations:Release"
         optimize "Full"
         defines { "NDEBUG" }
+        flags { "FatalCompileWarnings" }
     filter {}
 
     filter "configurations:Debug"

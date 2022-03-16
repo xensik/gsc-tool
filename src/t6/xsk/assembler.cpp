@@ -21,7 +21,7 @@ auto assembler::output() -> std::vector<std::uint8_t>
     return output;
 }
 
-void assembler::assemble(const std::string& file, std::vector<std::uint8_t>& data)
+void assembler::assemble(const std::string&, std::vector<std::uint8_t>&)
 {
     throw error("assemble from source unimplemented!");
 }
@@ -429,7 +429,7 @@ void assembler::assemble_localvars(const instruction::ptr& inst)
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->data.size()));
 
-    for (const auto& entry : inst->data)
+    for (auto i = 0u; i < inst->data.size(); i++)
     {
         script_->align(2);
         script_->write<std::uint16_t>(0);
@@ -464,8 +464,6 @@ void assembler::assemble_end_switch(const instruction::ptr& inst)
 
     script_->align(4);
     script_->write<std::uint32_t>(count);
-
-    std::uint32_t index = inst->index + 3;
 
     for (auto i = 0u; i < count; i++)
     {

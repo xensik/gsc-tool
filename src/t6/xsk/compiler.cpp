@@ -807,17 +807,17 @@ void compiler::emit_stmt_return(const ast::stmt_return::ptr& stmt)
         emit_opcode(opcode::OP_End);
 }
 
-void compiler::emit_stmt_breakpoint(const ast::stmt_breakpoint::ptr& stmt)
+void compiler::emit_stmt_breakpoint(const ast::stmt_breakpoint::ptr&)
 {
     // TODO:
 }
 
-void compiler::emit_stmt_prof_begin(const ast::stmt_prof_begin::ptr& stmt)
+void compiler::emit_stmt_prof_begin(const ast::stmt_prof_begin::ptr&)
 {
     // TODO:
 }
 
-void compiler::emit_stmt_prof_end(const ast::stmt_prof_end::ptr& stmt)
+void compiler::emit_stmt_prof_end(const ast::stmt_prof_end::ptr&)
 {
     // TODO:
 }
@@ -1367,7 +1367,7 @@ void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, co
     }
 }
 
-void compiler::emit_expr_parameters(const ast::expr_parameters::ptr& expr)
+void compiler::emit_expr_parameters(const ast::expr_parameters::ptr&)
 {
     if (local_stack_.size() == 0)
     {
@@ -1445,7 +1445,7 @@ void compiler::emit_expr_abs(const ast::expr_abs::ptr& expr)
     emit_opcode(opcode::OP_Abs);
 }
 
-void compiler::emit_expr_gettime(const ast::expr_gettime::ptr& expr)
+void compiler::emit_expr_gettime(const ast::expr_gettime::ptr&)
 {
     emit_opcode(opcode::OP_GetTime);
 }
@@ -1795,7 +1795,7 @@ void compiler::emit_expr_vector(const ast::expr_vector::ptr& expr)
     std::vector<std::string> data;
 
     bool isexpr = false;
-    bool isconst = true;
+    //bool isconst = true;
 
     if (expr->x == ast::kind::expr_integer)
         data.push_back(expr->x.as_integer->value);
@@ -2409,7 +2409,7 @@ void compiler::insert_label(const std::string& name)
     }
 }
 
-auto compiler::map_known_includes(const std::string& include) -> bool
+auto compiler::map_known_includes(const std::string&) -> bool
 {
     return false;
 }

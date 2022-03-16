@@ -1,7 +1,7 @@
 version: 1.0.{build}
 skip_tags: true
 image: Visual Studio 2019
-configuration: release
+configuration: Release
 platform: x64
 before_build:
 - git submodule update --init --recursive

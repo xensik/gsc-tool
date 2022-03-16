@@ -2954,7 +2954,7 @@ void decompiler::process_stmt_cases(const ast::stmt_list::ptr& stmt, const block
     }
 }
 
-void decompiler::process_stmt_break(const ast::stmt_break::ptr& stmt, const block::ptr& blk)
+void decompiler::process_stmt_break(const ast::stmt_break::ptr&, const block::ptr& blk)
 {
     if (blk->abort == abort_t::abort_none)
     {
@@ -2962,7 +2962,7 @@ void decompiler::process_stmt_break(const ast::stmt_break::ptr& stmt, const bloc
     }
 }
 
-void decompiler::process_stmt_continue(const ast::stmt_continue::ptr& stmt, const block::ptr& blk)
+void decompiler::process_stmt_continue(const ast::stmt_continue::ptr&, const block::ptr& blk)
 {
     if (blk->abort == abort_t::abort_none)
     {
@@ -3279,7 +3279,7 @@ void decompiler::process_field_variable(const ast::expr_field::ptr& expr, const 
     process_expr(expr->obj, blk);
 }
 
-void decompiler::process_local_variable(const ast::expr_identifier::ptr& expr, const block::ptr& blk)
+void decompiler::process_local_variable(const ast::expr_identifier::ptr&, const block::ptr&)
 {
     return;
 }

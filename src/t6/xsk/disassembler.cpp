@@ -187,7 +187,6 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
     for (auto i = 0; i < exports_.size(); i++)
     {
         auto& entry = exports_[i];
-        auto size = 0;
 
         if (i < exports_.size() - 1)
         {
