@@ -20,7 +20,7 @@ workspace "gsc-tool"
     staticruntime "On"
     language "C++"
     cppdialect "C++20"
-    architecture "x64"
+    architecture "x86_64"
 
     filter "action:vs*"
         buildoptions "/bigobj"
