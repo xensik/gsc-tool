@@ -547,12 +547,10 @@ void execute(mode mode, game game, const std::string& path)
         {
             if (entry.is_regular_file())
             {
-                auto gen_path = std::filesystem::path(utils::string::fordslash(entry.path().string()), std::filesystem::path::format::generic_format);
-
                 if (game < game::T6)
-                    gsc::funcs[mode](game, gen_path.string());
+                    gsc::funcs[mode](game, entry.path().string());
                 else
-                    arc::funcs[mode](game, gen_path);
+                    arc::funcs[mode](game, std::filesystem::path(entry.path(), std::filesystem::path::format::generic_format));
             }
         }
     }
