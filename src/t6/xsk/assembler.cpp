@@ -156,6 +156,7 @@ void assembler::assemble(const std::string& file, assembly::ptr& data)
     header_.profile_count = 0;
 
     header_.flags = 0;
+    header_.name = string_offset(filename_);
 
     auto endpos = script_->pos();
 

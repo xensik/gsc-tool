@@ -140,7 +140,7 @@ std::set<std::string_view> paths
 
 auto resolver::fs_to_game_path(const std::filesystem::path& file) -> std::filesystem::path
 {
-    auto result = std::filesystem::path();
+    auto result = std::filesystem::path("", std::filesystem::path::format::generic_format);
     auto root = false;
 
     for (auto& entry : file)
