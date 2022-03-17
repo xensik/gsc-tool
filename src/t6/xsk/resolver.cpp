@@ -105,6 +105,7 @@ std::set<std::string_view> paths
     "aitype"sv,
     "animscripts"sv,
     "character"sv,
+    "clientscripts"sv,
     "codescripts"sv,
     "common_scripts"sv,
     "maps"sv,
