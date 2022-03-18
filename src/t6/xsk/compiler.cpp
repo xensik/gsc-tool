@@ -336,7 +336,6 @@ void compiler::emit_stmt_dev(const ast::stmt_dev::ptr& stmt)
     insert_label(end);
 
     developer_thread_ = false;
-
 }
 
 void compiler::emit_stmt_expr(const ast::stmt_expr::ptr& stmt)
@@ -1615,7 +1614,7 @@ void compiler::emit_expr_field_ref(const ast::expr_field::ptr& expr, bool set)
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case ast::kind::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableRefCached, variable_access(expr->obj.as_identifier));
+            emit_opcode(opcode::OP_EvalLocalVariableCached, variable_access(expr->obj.as_identifier));
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
