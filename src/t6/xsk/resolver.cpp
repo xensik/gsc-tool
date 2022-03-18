@@ -152,7 +152,7 @@ auto resolver::fs_to_game_path(const std::filesystem::path& file) -> std::filesy
         }
         else if (paths.contains(result.string()))
         {
-            result /= entry;
+            result += "/"s + entry.string();
         }
     }
 

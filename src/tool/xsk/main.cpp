@@ -446,7 +446,7 @@ void assemble_file(game game, const std::filesystem::path& file)
 
         assembler.assemble(next.string(), data);
 
-        utils::file::save((std::filesystem::path("assembled/t6") / next).string(), assembler.output());
+        utils::file::save((std::filesystem::path("assembled/t6") / next).generic_string(), assembler.output());
         std::cout << "assembled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
@@ -467,7 +467,7 @@ void disassemble_file(game game, const std::filesystem::path& file)
 
         disassembler.disassemble(file.string(), data);
 
-        utils::file::save((std::filesystem::path("disassembled/t6") / next).string(), disassembler.output_raw());
+        utils::file::save((std::filesystem::path("disassembled/t6") / next).generic_string(), disassembler.output_raw());
         std::cout << "disassembled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
@@ -492,7 +492,7 @@ void compile_file(game game, const std::filesystem::path& file)
 
         assembler.assemble(path.string(), assembly);
 
-        utils::file::save((std::filesystem::path("compiled/t6") / path).string(), assembler.output());
+        utils::file::save((std::filesystem::path("compiled/t6") / path).generic_string(), assembler.output());
         std::cout << "compiled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
@@ -517,7 +517,7 @@ void decompile_file(game game, const std::filesystem::path& file)
 
         decompiler.decompile(file.string(), output);
 
-        utils::file::save((std::filesystem::path("decompiled/t6") / path).string(), decompiler.output());
+        utils::file::save((std::filesystem::path("decompiled/t6") / path).generic_string(), decompiler.output());
         std::cout << "decompiled " << path.replace_extension() << "\n";
     }
     catch (const std::exception& e)
@@ -548,9 +548,9 @@ void execute(mode mode, game game, const std::string& path)
             if (entry.is_regular_file())
             {
                 if (game < game::T6)
-                    gsc::funcs[mode](game, entry.path().string());
+                    gsc::funcs[mode](game, entry.path().generic_string());
                 else
-                    arc::funcs[mode](game, std::filesystem::path(entry.path(), std::filesystem::path::format::generic_format));
+                    arc::funcs[mode](game, std::filesystem::path(entry.path().generic_string(), std::filesystem::path::format::generic_format));
             }
         }
     }
