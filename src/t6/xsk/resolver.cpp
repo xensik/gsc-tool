@@ -116,11 +116,9 @@ auto resolver::fs_to_game_path(const std::filesystem::path& file) -> std::filesy
 
     if (!str.empty())
     {
-        //
         while(str.std::string::at(0) == '.' || str.std::string::at(0) == '/')
         {
             str.std::string::erase(0, 1);
-
         }
         result = std::filesystem::path(str, std::filesystem::path::format::generic_format);
     }
