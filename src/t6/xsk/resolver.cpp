@@ -100,60 +100,29 @@ auto resolver::file_data(const std::string& name) -> std::tuple<const std::strin
     throw error("couldn't open gsc file '" + name + "'");
 }
 
-std::set<std::string_view> paths
-{
-    "aitype"sv,
-    "animscripts"sv,
-    "animscripts/ai_subclass"sv,
-    "animscripts/aitype"sv,
-    "animscripts/bigdog"sv,
-    "animscripts/traverse"sv,
-    "animscripts/turret"sv,
-    "character"sv,
-    "clientscripts"sv,
-    "clientscripts/mp"sv,
-    "clientscripts/mp/createfx"sv,
-    "clientscripts/mp/gametypes"sv,
-    "clientscripts/mp/zombies"sv,
-    "codescripts"sv,
-    "common_scripts"sv,
-    "maps"sv,
-    "maps/ai_subclass"sv,
-    "maps/createart"sv,
-    "maps/createfx"sv,
-    "maps/gametypes"sv,
-    "maps/mp"sv,
-    "maps/mp/animscripts"sv,
-    "maps/mp/animscripts/traverse"sv,
-    "maps/mp/bots"sv,
-    "maps/mp/createart"sv,
-    "maps/mp/createfx"sv,
-    "maps/mp/gametypes"sv,
-    "maps/mp/gametypes_zm"sv,
-    "maps/mp/killstreaks"sv,
-    "maps/mp/teams"sv,
-    "maps/mp/zombies"sv,
-    "maps/voice"sv,
-    "mpbody"sv,
-    "xmodelalias"sv,
-};
 
 auto resolver::fs_to_game_path(const std::filesystem::path& file) -> std::filesystem::path
 {
     auto result = std::filesystem::path("", std::filesystem::path::format::generic_format);
-    auto root = false;
-
-    for (auto& entry : file)
+    std::string str;
+    if (file.is_relative())
     {
-        if (!root && paths.contains(entry.string()))
+        str = file.generic_string();
+    }
+    else if(file.is_absolute())
+    {
+        str = std::filesystem::relative(file).generic_string();
+    }
+
+    if (!str.empty())
+    {
+        //
+        while(str.std::string::at(0) == '.' || str.std::string::at(0) == '/')
         {
-            result = entry;
-            root = true;
+            str.std::string::erase(0, 1);
+
         }
-        else if (paths.contains(result.string()))
-        {
-            result /= entry;
-        }
+        result = std::filesystem::path(str, std::filesystem::path::format::generic_format);
     }
 
     return result.empty() ? file : result;
