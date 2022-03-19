@@ -100,12 +100,13 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_ScriptThreadCallPointer:
         case opcode::OP_CreateLocalVariable:
         case opcode::OP_EvalLocalVariableObjectCached:
+        case opcode::OP_GetAnimTree:
         case opcode::OP_GetNegByte:
         case opcode::OP_CallBuiltinMethodPointer:
         case opcode::OP_EvalLocalArrayCached:
         case opcode::OP_GetByte:
         case opcode::OP_ScriptChildThreadCallPointer:
-        case opcode::OP_GetAnimTree:
+        case opcode::OP_waittillmatch:
             return 2;
         case opcode::OP_EvalSelfFieldVariable:
         case opcode::OP_SetLevelFieldVariableField:
@@ -132,7 +133,6 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_GetBuiltinFunction:
         case opcode::OP_jumpback:
         case opcode::OP_GetBuiltinMethod:
-        case opcode::OP_waittillmatch:
         case opcode::OP_GetNegUnsignedShort:
         case opcode::OP_CallBuiltinMethod0:
         case opcode::OP_CallBuiltinMethod1:

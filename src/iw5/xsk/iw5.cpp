@@ -96,6 +96,7 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_ScriptMethodChildThreadCallPointer:
         case opcode::OP_CallBuiltinPointer:
         case opcode::OP_CallBuiltinMethodPointer:
+        case opcode::OP_waittillmatch:
         case opcode::OP_SafeCreateVariableFieldCached:
         case opcode::OP_SafeSetVariableFieldCached:
         case opcode::OP_SafeSetWaittillVariableFieldCached:
@@ -118,7 +119,6 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_endswitch:
         case opcode::OP_JumpOnFalse:
         case opcode::OP_JumpOnTrue:
-        case opcode::OP_waittillmatch:
         case opcode::OP_EvalLevelFieldVariable:
         case opcode::OP_EvalAnimFieldVariable:
         case opcode::OP_EvalSelfFieldVariable:

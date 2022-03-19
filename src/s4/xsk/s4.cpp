@@ -98,6 +98,7 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
             return 1;
         case opcode::OP_SetLocalVariableFieldCached:
         case opcode::OP_RemoveLocalVariables:
+        case opcode::OP_waittillmatch:
         case opcode::OP_ScriptMethodChildThreadCallPointer:
         case opcode::OP_GetByte:
         case opcode::OP_SafeSetWaittillVariableFieldCached:
@@ -127,7 +128,6 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_SafeCreateVariableFieldCached_Precompiled:
         case opcode::OP_FormalParams_Precompiled:*/
             return 2;
-        case opcode::OP_waittillmatch:
         case opcode::OP_JumpOnTrue:
         case opcode::OP_JumpOnFalseExpr:
         case opcode::OP_jumpback:
