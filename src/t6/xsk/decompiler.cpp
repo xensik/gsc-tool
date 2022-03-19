@@ -1638,9 +1638,16 @@ void decompiler::decompile_loop(const ast::stmt_list::ptr& stmt, std::uint32_t s
                     return;
                 }
 
+                auto ref1 = stmt->list.at(end).loc().label();
                 auto ref2 = stmt->list.at(start).loc().label();
-
-                if (find_location_reference(stmt, start, end, ref2))
+                
+                if (find_location_reference(stmt, start, end, ref1))
+                {
+                    // jump is referenced, not post-expr
+                    decompile_while(stmt, start, end);
+                    return;
+                }
+                else if (find_location_reference(stmt, start, end, ref2))
                 {
                     // continue is at begin, not post-expr
                     decompile_while(stmt, start, end);
