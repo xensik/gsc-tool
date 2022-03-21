@@ -159,7 +159,7 @@ auto resolver::fs_to_game_path(const std::filesystem::path& file) -> std::filesy
     return result.empty() ? file : result;
 }
 
-const std::array<std::pair<std::uint8_t, const char*>, 126> opcode_list
+const std::array<std::pair<std::uint8_t, const char*>, 125> opcode_list
 {{
     { 0x00, "OP_End" },
     { 0x01, "OP_Return" },
