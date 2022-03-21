@@ -82,6 +82,11 @@ auto string::to_code(const std::string& input) -> std::string
         data.erase(data.begin() + pos);
     }
 
+    while ((pos = data.find("\\\\")) != std::string::npos)
+    {
+        data.erase(data.begin() + pos);
+    }
+
     return data;
 }
 
@@ -110,10 +115,15 @@ auto string::to_literal(const std::string& input) -> std::string
 
     for (pos = 0; pos < data.size(); pos++)
     {
-        if (data.at(pos) == '\"')
+        if (data.at(pos) == '\\')
         {
             data.insert(data.begin() + pos, '\\');
-            pos++;
+            pos += 2;
+        }
+        else if (data.at(pos) == '\"')
+        {
+            data.insert(data.begin() + pos, '\\');
+            pos += 2;
         }
     }
 
