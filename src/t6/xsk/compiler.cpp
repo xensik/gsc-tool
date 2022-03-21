@@ -118,42 +118,6 @@ void compiler::emit_include(const ast::include::ptr& include)
     }
 
     assembly_->includes.push_back(path);
-
-    /*for (const auto& inc : includes_)
-    {
-        if (inc.name == path)
-        {
-            throw comp_error(include->loc(), "error duplicated include file '" + path + "'.");
-        }
-    }
-
-    if (map_known_includes(path)) return;
-
-    try
-    {
-        auto program = parse_file(path);
-
-        std::vector<std::string> funcs;
-
-        for (const auto& decl : program->declarations)
-        {
-            if (decl == ast::kind::decl_thread)
-            {
-                funcs.push_back(decl.as_thread->name->value);
-            }
-        }
-
-        if (funcs.size() == 0)
-        {
-            throw comp_error(include->loc(), "error empty include file '" + path + "'.");
-        }
-
-        includes_.push_back(include_t(path, funcs));
-    }
-    catch(const std::exception& e)
-    {
-        throw comp_error(include->loc(), "error parsing include file '" + path + "': " + e.what());
-    }*/
 }
 
 void compiler::emit_declaration(const ast::decl& decl)
@@ -303,9 +267,6 @@ void compiler::emit_stmt(const ast::stmt& stmt)
             break;
         case ast::kind::stmt_return:
             emit_stmt_return(stmt.as_return);
-            break;
-        case ast::kind::stmt_breakpoint:
-            emit_stmt_breakpoint(stmt.as_breakpoint);
             break;
         case ast::kind::stmt_prof_begin:
             emit_stmt_prof_begin(stmt.as_prof_begin);
@@ -699,7 +660,7 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt)
 
     bool has_default = false;
 
-    for (auto i = 0; i < stmt->stmt->list.size(); i++)
+    for (auto i = 0u; i < stmt->stmt->list.size(); i++)
     {
         auto& entry = stmt->stmt->list[i];
 
@@ -802,11 +763,6 @@ void compiler::emit_stmt_return(const ast::stmt_return::ptr& stmt)
     }
     else
         emit_opcode(opcode::OP_End);
-}
-
-void compiler::emit_stmt_breakpoint(const ast::stmt_breakpoint::ptr&)
-{
-    // TODO:
 }
 
 void compiler::emit_stmt_prof_begin(const ast::stmt_prof_begin::ptr&)
@@ -1983,7 +1939,6 @@ void compiler::process_stmt(const ast::stmt& stmt)
         case ast::kind::stmt_break:
         case ast::kind::stmt_continue:
         case ast::kind::stmt_return:
-        case ast::kind::stmt_breakpoint:
         case ast::kind::stmt_prof_begin:
         case ast::kind::stmt_prof_end:
             break;
@@ -2138,7 +2093,7 @@ void compiler::process_stmt_switch(const ast::stmt_switch::ptr& stmt)
 
     auto num = stmt->stmt->list.size();
 
-    for (auto i = 0; i < num; i++)
+    for (auto i = 0u; i < num; i++)
     {
         auto& entry = stmt->stmt->list[0];
 
@@ -2179,7 +2134,7 @@ void compiler::process_stmt_switch(const ast::stmt_switch::ptr& stmt)
         stmt_list->list.push_back(std::move(current_case));
     }
 
-    for (auto i = 0; i < stmt_list->list.size(); i++)
+    for (auto i = 0u; i < stmt_list->list.size(); i++)
     {
         auto& entry = stmt_list->list[i];
 
@@ -2246,78 +2201,7 @@ auto compiler::variable_access(const ast::expr_identifier::ptr& name) -> std::st
 
     throw comp_error(name->loc(), "local variable '" + name->value + "' not found.");
 }
-/*
-auto compiler::resolve_function_type(const ast::expr_function::ptr& expr) -> ast::call::type
-{
-    if (expr->path->value != "")
-        return ast::call::type::far;
 
-    auto& name = expr->name->value;
-
-    //if (resolver::find_function(name) || resolver::find_method(name))
-    //    return ast::call::type::builtin;
-
-    for (const auto& entry : local_functions_)
-    {
-        if (entry == name)
-            return ast::call::type::local;
-    }
-
-    for (const auto& inc : includes_)
-    {
-        for (const auto& fun : inc.funcs)
-        {
-            if (name == fun)
-            {
-                expr->path->value = inc.name;
-                return ast::call::type::far;
-            }
-        }
-    }
-
-    throw comp_error(expr->loc(), "couldn't determine function type");
-}
-
-auto compiler::resolve_reference_type(const ast::expr_reference::ptr& expr, bool& method) -> ast::call::type
-{
-    if (expr->path->value != "")
-        return ast::call::type::far;
-
-    auto& name = expr->name->value;
-
-    //if (resolver::find_function(name))
-    // {
-    //     method = false;
-    //     return ast::call::type::builtin;
-    // }
-
-    // if (resolver::find_method(name))
-    // {
-    //     method = true;
-    //     return ast::call::type::builtin;
-    // }
-
-    for (const auto& entry : local_functions_)
-    {
-        if (entry == name)
-            return ast::call::type::local;
-    }
-
-    for (const auto& inc : includes_)
-    {
-        for (const auto& fun : inc.funcs)
-        {
-            if (name == fun)
-            {
-                expr->path->value = inc.name;
-                return ast::call::type::far;
-            }
-        }
-    }
-
-    throw comp_error(expr->loc(), "couldn't determine function reference type");
-}
-*/
 auto compiler::is_constant_condition(const ast::expr& expr) -> bool
 {
     switch (expr.kind())

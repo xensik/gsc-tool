@@ -71,7 +71,6 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %token BREAK            "break"
 %token CONTINUE         "continue"
 %token RETURN           "return"
-%token BREAKPOINT       "breakpoint"
 %token PROFBEGIN        "prof_begin"
 %token PROFEND          "prof_end"
 %token THREAD           "thread"
@@ -188,7 +187,6 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %type <ast::stmt_break::ptr>             stmt_break
 %type <ast::stmt_continue::ptr>          stmt_continue
 %type <ast::stmt_return::ptr>            stmt_return
-%type <ast::stmt_breakpoint::ptr>        stmt_breakpoint
 %type <ast::stmt_prof_begin::ptr>        stmt_prof_begin
 %type <ast::stmt_prof_end::ptr>          stmt_prof_end
 %type <ast::expr>                        expr
@@ -355,7 +353,6 @@ stmt
     | stmt_break             { $$.as_break = std::move($1); }
     | stmt_continue          { $$.as_continue = std::move($1); }
     | stmt_return            { $$.as_return = std::move($1); }
-    | stmt_breakpoint        { $$.as_breakpoint = std::move($1); }
     | stmt_prof_begin        { $$.as_prof_begin = std::move($1); }
     | stmt_prof_end          { $$.as_prof_end = std::move($1); }
     ;
@@ -516,11 +513,6 @@ stmt_return
         { $$ = std::make_unique<ast::stmt_return>(@$, std::move($2)); }
     | RETURN SEMICOLON
         { $$ = std::make_unique<ast::stmt_return>(@$, std::make_unique<ast::node>(@$)); }
-    ;
-
-stmt_breakpoint
-    : BREAKPOINT SEMICOLON
-        { $$ = std::make_unique<ast::stmt_breakpoint>(@$); }
     ;
 
 stmt_prof_begin
@@ -839,6 +831,20 @@ expr_reference
 expr_array
     : expr_object LBRACKET expr RBRACKET
         { $$ = std::make_unique<ast::expr_array>(@$, std::move($1), std::move($3)); }
+    | expr_getdvarvector LBRACKET expr RBRACKET
+        { $$ = std::make_unique<ast::expr_array>(@$, ast::expr(std::move($1)), std::move($3)); }
+    | expr_vectortoangles LBRACKET expr RBRACKET
+        { $$ = std::make_unique<ast::expr_array>(@$, ast::expr(std::move($1)), std::move($3)); }
+    | expr_angleclamp180 LBRACKET expr RBRACKET
+        { $$ = std::make_unique<ast::expr_array>(@$, ast::expr(std::move($1)), std::move($3)); }
+    | expr_anglestoforward LBRACKET expr RBRACKET
+        { $$ = std::make_unique<ast::expr_array>(@$, ast::expr(std::move($1)), std::move($3)); }
+    | expr_anglestoright LBRACKET expr RBRACKET
+        { $$ = std::make_unique<ast::expr_array>(@$, ast::expr(std::move($1)), std::move($3)); }
+    | expr_anglestoup LBRACKET expr RBRACKET
+        { $$ = std::make_unique<ast::expr_array>(@$, ast::expr(std::move($1)), std::move($3)); }
+    | expr_vectorscale LBRACKET expr RBRACKET
+        { $$ = std::make_unique<ast::expr_array>(@$, ast::expr(std::move($1)), std::move($3)); }
     ;
 
 expr_field

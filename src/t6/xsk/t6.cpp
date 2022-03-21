@@ -95,7 +95,6 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_ThreadObject:
         case opcode::OP_EvalLocalVariable:
         case opcode::OP_EvalLocalVariableRef:
-        case opcode::OP_Breakpoint:
             return 1;
         case opcode::OP_GetByte:
         case opcode::OP_GetNegByte:

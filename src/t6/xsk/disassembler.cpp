@@ -183,7 +183,7 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
         exports_.push_back(entry);
     }
 
-    for (auto i = 0; i < exports_.size(); i++)
+    for (auto i = 0u; i < exports_.size(); i++)
     {
         auto& entry = exports_[i];
 

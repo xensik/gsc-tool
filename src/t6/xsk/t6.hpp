@@ -146,8 +146,7 @@ enum class opcode : std::uint8_t
     OP_EvalLocalVariableRef = 0x7A,
     OP_DevblockBegin = 0x7B,
     OP_DevblockEnd = 0x7C,
-    OP_Breakpoint = 0x7D,
-    OP_Count = 0x7E,
+    OP_Count = 0x7D,
 };
 
 auto opcode_size(std::uint8_t id) -> std::uint32_t;

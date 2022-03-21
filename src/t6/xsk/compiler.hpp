@@ -68,7 +68,6 @@ private:
     void emit_stmt_break(const ast::stmt_break::ptr& stmt);
     void emit_stmt_continue(const ast::stmt_continue::ptr& stmt);
     void emit_stmt_return(const ast::stmt_return::ptr& stmt);
-    void emit_stmt_breakpoint(const ast::stmt_breakpoint::ptr& stmt);
     void emit_stmt_prof_begin(const ast::stmt_prof_begin::ptr& stmt);
     void emit_stmt_prof_end(const ast::stmt_prof_end::ptr& stmt);
     void emit_expr(const ast::expr& expr);
@@ -150,8 +149,6 @@ private:
     void process_expr_parameters(const ast::expr_parameters::ptr& expr);
     void variable_register(const std::string& name);
     auto variable_access(const ast::expr_identifier::ptr& name) -> std::string;
-    //auto resolve_function_type(const ast::expr_function::ptr& expr) -> ast::call::type;
-    //auto resolve_reference_type(const ast::expr_reference::ptr& expr, bool& method) -> ast::call::type;
     auto is_constant_condition(const ast::expr& expr) -> bool;
     auto create_label() -> std::string;
     auto insert_label() -> std::string;

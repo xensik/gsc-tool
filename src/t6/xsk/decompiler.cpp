@@ -1202,7 +1202,6 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
         }
             break;
         case opcode::OP_DevblockEnd:
-        case opcode::OP_Breakpoint:
         default:
             throw decomp_error("unhandled opcode " + resolver::opcode_name(inst->opcode));
     }
@@ -1324,7 +1323,7 @@ void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_loops(const ast::stmt_list::ptr& stmt)
 {
-    for (auto i = 0; i < stmt->list.size(); i++)
+    for (auto i = 0u; i < stmt->list.size(); i++)
     {
         auto& entry = stmt->list.at(i);
 
@@ -1358,7 +1357,7 @@ void decompiler::decompile_loops(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_switches(const ast::stmt_list::ptr& stmt)
 {
-    for (auto i = 0; i < stmt->list.size(); i++)
+    for (auto i = 0u; i < stmt->list.size(); i++)
     {
         if (stmt->list.at(i) == ast::kind::asm_switch)
         {
@@ -1369,7 +1368,7 @@ void decompiler::decompile_switches(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
 {
-    for (auto i = 0; i < stmt->list.size(); i++)
+    for (auto i = 0u; i < stmt->list.size(); i++)
     {
         auto& entry = stmt->list.at(i);
 
@@ -1383,10 +1382,39 @@ void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
                 // if block is a loop check break, continue
                 if (stmt->list.at(j).as_jump->value == blocks_.back().loc_continue)
                 {
-                    decompile_if(stmt, i, j);
-                    /*if (stmt->list.at(j).as_jump->loc().begin.line < std::stol(stmt->list.at(j).as_jump->value.substr(4), 0, 16))
+                    //if its a while, continue jumps back
+                    if (stmt->list.at(j).as_node->loc().begin.line > std::stol(stmt->list.at(j).as_jump->value.substr(4), 0, 16))
+                    {
+                        decompile_if(stmt, i, j);
+                    }
+                    // a dowhile, for or foreach, check for if/else or if/continue
+                    else if (j - i > 1 && stmt->list.at(j - 1) == ast::kind::stmt_return)
+                    {
+                        // block ends with a return, so jump belows to if/else
                         decompile_ifelse(stmt, i, j);
-                    else decompile_if(stmt, i, j);*/
+                    }
+                    else if (j - i > 1 && stmt->list.at(j - 1) == ast::kind::asm_jump)
+                    {
+                        if (stmt->list.at(j - 1).as_jump->value == blocks_.back().loc_break)
+                        {
+                            // block ends with a break, so jump belows to if/else
+                            decompile_ifelse(stmt, i, j);
+                        }
+                        else if (stmt->list.at(j - 1).as_jump->value == blocks_.back().loc_continue)
+                        {
+                            // block ends with a continue, so jump belows to if/else
+                            decompile_ifelse(stmt, i, j);
+                        }
+                        else
+                        {
+                            // jump belows to if/continue
+                            decompile_if(stmt, i, j);
+                        }
+                    }
+                    else
+                    {
+                        decompile_if(stmt, i, j);
+                    }
                 }
                 else if (stmt->list.at(j).as_jump->value == blocks_.back().loc_break)
                 {
@@ -1421,7 +1449,7 @@ void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_aborts(const ast::stmt_list::ptr& stmt)
 {
-    for (auto i = 0; i < stmt->list.size(); i++)
+    for (auto i = 0u; i < stmt->list.size(); i++)
     {
         if (stmt->list.at(i) == ast::kind::asm_jump)
         {
@@ -1640,7 +1668,7 @@ void decompiler::decompile_loop(const ast::stmt_list::ptr& stmt, std::uint32_t s
 
                 auto ref1 = stmt->list.at(end).loc().label();
                 auto ref2 = stmt->list.at(start).loc().label();
-                
+
                 if (find_location_reference(stmt, start, end, ref1))
                 {
                     // jump is referenced, not post-expr
@@ -1887,7 +1915,7 @@ void decompiler::decompile_switch(const ast::stmt_list::ptr& stmt, std::uint32_t
     auto current_case = ast::stmt(std::make_unique<ast::node>());
 
     auto num = sw_stmt->list.size();
-    for (auto i = 0; i < num; i++)
+    for (auto i = 0u; i < num; i++)
     {
         auto& entry = sw_stmt->list[0];
 
@@ -2567,7 +2595,7 @@ void decompiler::process_expr_binary(const ast::expr_binary::ptr& expr)
 
     prec = expr->rvalue.as_node->precedence();
 
-    if (prec && prec < expr->precedence() || (prec == expr->precedence() && expr->kind() == expr->rvalue.as_node->kind()))
+    if ((prec && prec < expr->precedence()) || (prec == expr->precedence() && expr->kind() == expr->rvalue.as_node->kind()))
     {
         expr->rvalue = ast::expr(std::make_unique<ast::expr_paren>(std::move(expr->rvalue)));
     }
@@ -2587,7 +2615,7 @@ void decompiler::process_expr_and(const ast::expr_and::ptr& expr)
 
     prec = expr->rvalue.as_node->precedence();
 
-    if (prec && prec < expr->precedence() || (prec == expr->precedence() && expr->kind() == expr->rvalue.kind()))
+    if ((prec && prec < expr->precedence()) || (prec == expr->precedence() && expr->kind() == expr->rvalue.kind()))
     {
         expr->rvalue = ast::expr(std::make_unique<ast::expr_paren>(std::move(expr->rvalue)));
     }
