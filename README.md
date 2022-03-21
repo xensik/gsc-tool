@@ -17,6 +17,7 @@ A utility to compile & decompile IW engine game scripts.
 - **T4** *(Call of Duty: World at War)* ***\*WIP\****
 - **T5** *(Call of Duty: Black Ops)* ***\*WIP\****
 - **T6** *(Call of Duty: Black Ops II)*
+- **T6** *(Call of Duty: Black Ops III)* ***\*WIP\****
 ## Usage
 ``./gsc-tool.exe <mode> <game> <path>``
 
