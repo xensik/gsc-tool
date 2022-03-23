@@ -6619,7 +6619,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 5534> token_list
     { 13637, "getBestSpawnPoint" },
     { 13638, "spawnScore" },
     { 13639, "_fire" },
-    { 13640, "_fire_noplayer" },
+    { 13640, "handleDamage" },
     { 13641, "MissileEyes" },
     { 13642, "delayedFOFOverlay" },
     { 13643, "staticEffect" },
