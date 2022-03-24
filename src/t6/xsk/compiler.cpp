@@ -1739,38 +1739,102 @@ void compiler::emit_expr_object(const ast::expr& expr)
 void compiler::emit_expr_vector(const ast::expr_vector::ptr& expr)
 {
     std::vector<std::string> data;
-
     bool isexpr = false;
-    //bool isconst = true;
+    bool isconst = true;
+    auto flags = 0;
 
     if (expr->x == ast::kind::expr_integer)
-        data.push_back(expr->x.as_integer->value);
-    else if (expr->x == ast::kind::expr_float)
-        data.push_back(expr->x.as_float->value);
-    else isexpr = true;
-
-    if (expr->y == ast::kind::expr_integer)
-        data.push_back(expr->y.as_integer->value);
-    else if (expr->y == ast::kind::expr_float)
-        data.push_back(expr->y.as_float->value);
-    else isexpr = true;
-
-    if (expr->z == ast::kind::expr_integer)
-        data.push_back(expr->z.as_integer->value);
-    else if (expr->z == ast::kind::expr_float)
-        data.push_back(expr->z.as_float->value);
-    else isexpr = true;
-
-    if (!isexpr)
     {
-        emit_opcode(opcode::OP_GetVector, data);
+        auto value = std::atoi(expr->x.as_integer->value.data());
+        data.push_back(expr->x.as_integer->value);
+
+        if (value != 1 && value != -1 && value != 0)
+            isconst = false;
+        else
+            flags |= (value == 1) ? 0x20 : (value == -1) ? 0x10 : 0;
+    }
+    else if (expr->x == ast::kind::expr_float)
+    {
+        auto value = std::stof(expr->x.as_float->value.data());
+        data.push_back(expr->x.as_float->value);
+
+        if (value != 1.0 && value != -1.0 && value != 0.0)        
+            isconst = false;
+        else
+            flags |= (value == 1.0) ? 0x20 : (value == -1.0) ? 0x10 : 0;
     }
     else
+    {
+        isexpr = true;
+        isconst = false;
+    }
+
+    if (expr->y == ast::kind::expr_integer)
+    {
+        auto value = std::atoi(expr->y.as_integer->value.data());
+        data.push_back(expr->y.as_integer->value);
+
+        if (value != 1 && value != -1 && value != 0)
+            isconst = false;
+        else
+            flags |= (value == 1) ? 0x08 : (value == -1) ? 0x04 : 0;
+    }
+    else if (expr->y == ast::kind::expr_float)
+    {
+        auto value = std::stof(expr->y.as_float->value.data());
+        data.push_back(expr->y.as_float->value);
+
+        if (value != 1.0 && value != -1.0 && value != 0.0)
+            isconst = false;
+        else
+            flags |= (value == 1.0) ? 0x08 : (value == -1.0) ? 0x04 : 0;
+    }
+    else
+    {
+        isexpr = true;
+        isconst = false;
+    }
+
+    if (expr->z == ast::kind::expr_integer)
+    {
+        auto value = std::atoi(expr->z.as_integer->value.data());
+        data.push_back(expr->z.as_integer->value);
+
+        if (value != 1 && value != -1 && value != 0)
+            isconst = false;
+        else
+            flags |= (value == 1) ? 0x02 : (value == -1) ? 0x01 : 0;
+    }
+    else if (expr->z == ast::kind::expr_float)
+    {
+        auto value = std::stof(expr->z.as_float->value.data());
+        data.push_back(expr->z.as_float->value);
+
+        if (value != 1.0 && value != -1.0 && value != 0.0)
+            isconst = false;
+        else
+            flags |= (value == 1.0) ? 0x02 : (value == -1.0) ? 0x01 : 0;
+    }
+    else
+    {
+        isexpr = true;
+        isconst = false;
+    }
+
+    if (isconst)
+    {
+        emit_opcode(opcode::OP_VectorConstant, utils::string::va("%d", flags));
+    }
+    else if (isexpr)
     {
         emit_expr(expr->z);
         emit_expr(expr->y);
         emit_expr(expr->x);
         emit_opcode(opcode::OP_Vector);
+    }
+    else
+    {
+        emit_opcode(opcode::OP_GetVector, data);
     }
 }
 
