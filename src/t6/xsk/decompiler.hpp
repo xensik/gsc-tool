@@ -93,7 +93,7 @@ private:
     void process_expr_size(const ast::expr_size::ptr& expr);
     void process_array_variable(const ast::expr_array::ptr& expr);
     void process_field_variable(const ast::expr_field::ptr& expr);
-    void process_expr_vector(const ast::expr_vector::ptr& vec);
+    void process_expr_vector(const ast::expr_vector::ptr& expr);
 };
 
 } // namespace xsk::arc::t6

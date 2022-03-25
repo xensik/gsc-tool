@@ -2725,11 +2725,11 @@ void decompiler::process_field_variable(const ast::expr_field::ptr& expr)
     process_expr(expr->obj);
 }
 
-void decompiler::process_expr_vector(const ast::expr_vector::ptr& vec)
+void decompiler::process_expr_vector(const ast::expr_vector::ptr& expr)
 {
-    process_expr(vec->z);
-    process_expr(vec->y);
-    process_expr(vec->x);
+    process_expr(expr->z);
+    process_expr(expr->y);
+    process_expr(expr->x);
 }
 
 } // namespace xsk::arc::t6

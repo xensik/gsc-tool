@@ -626,12 +626,36 @@ void disassembler::print_function(const function::ptr& func)
 
 void disassembler::print_instruction(const instruction::ptr& inst)
 {
-    output_->write_string(utils::string::va("\t\t%s", resolver::opcode_name(inst->opcode).data()));
+    output_->write_string(utils::string::va("\t\t%s(", resolver::opcode_name(inst->opcode).data()));
 
     switch (opcode(inst->opcode))
     {
+        case opcode::OP_GetHash:
+        case opcode::OP_GetString:
+        case opcode::OP_GetIString:
+        case opcode::OP_ClearFieldVariable:
+        case opcode::OP_EvalFieldVariable:
+        case opcode::OP_EvalFieldVariableRef:
+            output_->write_string(utils::string::va("\"%s\"", inst->data[0].data()));
+            break;
+        case opcode::OP_GetAnimation:
+        case opcode::OP_GetFunction:
+        case opcode::OP_CallBuiltin:
+        case opcode::OP_CallBuiltinMethod:
+        case opcode::OP_ScriptFunctionCall:
+        case opcode::OP_ScriptMethodCall:
+        case opcode::OP_ScriptThreadCall:
+        case opcode::OP_ScriptMethodThreadCall:
+            output_->write_string(utils::string::va("\"%s\", \"%s\"", inst->data[0].data(), inst->data[1].data()));
+            break;
+        case opcode::OP_SafeCreateLocalVariables:
+            for (const auto& d : inst->data)
+            {
+                output_->write_string(utils::string::va("\"%s\"%s", d.data(), &d == &inst->data.back() ? "" : ", "));
+            }
+            break;
         case opcode::OP_EndSwitch:
-            output_->write_string(utils::string::va(" %s\n", inst->data[0].data()));
+            output_->write_string(utils::string::va("%s", inst->data[0].data()));
             {
                 std::uint32_t totalcase = std::stoul(inst->data[0]);
                 auto index = 0;
@@ -639,27 +663,26 @@ void disassembler::print_instruction(const instruction::ptr& inst)
                 {
                     if (inst->data[1 + index] == "case")
                     {
-                        output_->write_string(utils::string::va("\t\t\t%s %s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
+                        output_->write_string(utils::string::va(", %s, \"%s\", %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
                         index += 3;
                     }
                     else if (inst->data[1 + index] == "default")
                     {
-                        output_->write_string(utils::string::va("\t\t\t%s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data()));
+                        output_->write_string(utils::string::va(", %s, %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data()));
                         index += 2;
                     }
-                    output_->write_string("\n");
                 }
             }
             break;
         default:
             for (const auto& d : inst->data)
             {
-                output_->write_string(utils::string::va(" %s", d.data()));
+                output_->write_string(utils::string::va("%s%s", d.data(), &d == &inst->data.back() ? "" : ", "));
             }
-
-            output_->write_string("\n");
             break;
     }
+
+    output_->write_string(");\n");
 }
 
 } // namespace xsk::arc::t6
