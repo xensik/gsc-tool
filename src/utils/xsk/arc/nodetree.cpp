@@ -448,11 +448,11 @@ stmt_dowhile::stmt_dowhile(const location& loc, expr test, ast::stmt stmt) : nod
 stmt_for::stmt_for(ast::stmt init, expr test, ast::stmt iter, ast::stmt stmt) : node(kind::stmt_for), init(std::move(init)), test(std::move(test)), iter(std::move(iter)), stmt(std::move(stmt)), blk(nullptr), blk_iter(nullptr) {}
 stmt_for::stmt_for(const location& loc, ast::stmt init, expr test, ast::stmt iter, ast::stmt stmt) : node(kind::stmt_for, loc), init(std::move(init)), test(std::move(test)), iter(std::move(iter)), stmt(std::move(stmt)), blk(nullptr), blk_iter(nullptr) {}
 
-stmt_foreach::stmt_foreach(const location& loc, ast::stmt stmt, bool use_key) : node(kind::stmt_foreach, loc), stmt(std::move(stmt)), use_key(use_key), array_expr(nullptr), value_expr(nullptr), key_expr(nullptr), array(nullptr), pre_expr(nullptr), cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), ctx(nullptr), ctx_post(nullptr) {}
-stmt_foreach::stmt_foreach(ast::expr element, ast::expr container, ast::stmt stmt) : node(kind::stmt_foreach), value_expr(std::move(element)), array_expr(std::move(container)), stmt(std::move(stmt)), use_key(false), key_expr(nullptr), array(nullptr), pre_expr(nullptr), cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), ctx(nullptr), ctx_post(nullptr) {}
-stmt_foreach::stmt_foreach(ast::expr key, ast::expr element, ast::expr container, ast::stmt stmt) : node(kind::stmt_foreach), key_expr(std::move(key)), value_expr(std::move(element)), array_expr(std::move(container)), stmt(std::move(stmt)), use_key(true), array(nullptr), pre_expr(nullptr), cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), ctx(nullptr), ctx_post(nullptr) {}
-stmt_foreach::stmt_foreach(const location& loc, ast::expr element, ast::expr container, ast::stmt stmt) : node(kind::stmt_foreach, loc), value_expr(std::move(element)), array_expr(std::move(container)), stmt(std::move(stmt)), use_key(false), key_expr(nullptr), array(nullptr), pre_expr(nullptr), cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), ctx(nullptr), ctx_post(nullptr) {}
-stmt_foreach::stmt_foreach(const location& loc, ast::expr key, ast::expr element, ast::expr container, ast::stmt stmt) : node(kind::stmt_foreach, loc), key_expr(std::move(key)), value_expr(std::move(element)), array_expr(std::move(container)), stmt(std::move(stmt)), use_key(true), array(nullptr), pre_expr(nullptr), cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), ctx(nullptr), ctx_post(nullptr) {}
+stmt_foreach::stmt_foreach(const location& loc, ast::stmt stmt, bool use_key) : node(kind::stmt_foreach, loc), array_expr(nullptr), value_expr(nullptr), key_expr(nullptr), array(nullptr), pre_expr(nullptr), cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), stmt(std::move(stmt)), ctx(nullptr), ctx_post(nullptr), use_key(use_key) {}
+stmt_foreach::stmt_foreach(ast::expr element, ast::expr container, ast::stmt stmt) : node(kind::stmt_foreach), array_expr(std::move(container)), value_expr(std::move(element)), key_expr(nullptr), array(nullptr), pre_expr(nullptr), cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), stmt(std::move(stmt)), ctx(nullptr), ctx_post(nullptr), use_key(false) {}
+stmt_foreach::stmt_foreach(ast::expr key, ast::expr element, ast::expr container, ast::stmt stmt) : node(kind::stmt_foreach), array_expr(std::move(container)), value_expr(std::move(element)), key_expr(std::move(key)), array(nullptr), pre_expr(nullptr), cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), stmt(std::move(stmt)), ctx(nullptr), ctx_post(nullptr), use_key(true) {}
+stmt_foreach::stmt_foreach(const location& loc, ast::expr element, ast::expr container, ast::stmt stmt) : node(kind::stmt_foreach, loc), array_expr(std::move(container)), value_expr(std::move(element)), key_expr(nullptr), array(nullptr), pre_expr(nullptr), cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), stmt(std::move(stmt)), ctx(nullptr), ctx_post(nullptr), use_key(false) {}
+stmt_foreach::stmt_foreach(const location& loc, ast::expr key, ast::expr element, ast::expr container, ast::stmt stmt) : node(kind::stmt_foreach, loc), array_expr(std::move(container)), value_expr(std::move(element)), key_expr(std::move(key)), array(nullptr), pre_expr(nullptr), cond_expr(nullptr), post_expr(nullptr), stmt0(nullptr), stmt(std::move(stmt)), ctx(nullptr), ctx_post(nullptr), use_key(true) {}
 
 stmt_switch::stmt_switch(expr test, stmt_list::ptr stmt) : node(kind::stmt_switch), test(std::move(test)), stmt(std::move(stmt)), ctx(nullptr) {}
 stmt_switch::stmt_switch(const location& loc, expr test, stmt_list::ptr stmt) : node(kind::stmt_switch, loc), test(std::move(test)), stmt(std::move(stmt)), ctx(nullptr) {}
@@ -999,7 +999,7 @@ auto stmt_list::print() const -> std::string
 
     for (const auto& stmt : list)
     {
-        if ((&stmt != &list.front() && stmt.as_node->is_special_stmt() || last_special) && stmt != kind::stmt_dev && !last_devblock)
+        if (((&stmt != &list.front() && stmt.as_node->is_special_stmt()) || last_special) && stmt != kind::stmt_dev && !last_devblock)
             data += "\n";
 
         if (stmt == kind::stmt_dev)
@@ -1041,7 +1041,7 @@ auto stmt_dev::print() const -> std::string
 
     for (const auto& stmt : list->list)
     {
-        if (&stmt != &list->list.front() && stmt.as_node->is_special_stmt() || last_special)
+        if ((&stmt != &list->list.front() && stmt.as_node->is_special_stmt()) || last_special)
             data += "\n";
 
         data += stmts_pad + stmt.print();

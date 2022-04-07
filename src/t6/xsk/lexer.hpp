@@ -13,7 +13,7 @@ constexpr size_t max_buf_size = 0x2000;
 struct buffer
 {
     char* data;
-    std::uint32_t length;
+    size_t length;
 
     buffer();
     ~buffer();

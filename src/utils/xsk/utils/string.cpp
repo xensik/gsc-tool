@@ -245,7 +245,7 @@ auto string::float_string(float value) -> std::string
 
     auto flags = integer | (str[0] == '-' ? negative : none);
 
-    for (auto i = 1; i < str.size(); i++)
+    for (auto i = 1u; i < str.size(); i++)
     {
         if (str[i] == '-') flags |= exp_neg;
         else if (str[i] == 'e') flags |= has_exp;
@@ -261,7 +261,7 @@ auto string::float_string(float value) -> std::string
 
     if (flags & integer)
     {
-        auto i = (flags & negative) ? 1 : 0;
+        auto i = (flags & negative) ? 1u : 0u;
 
         while (str[i] != 'e')
             p_int.push_back(str[i++]);
@@ -288,7 +288,7 @@ auto string::float_string(float value) -> std::string
     }
     else
     {
-        auto i = (flags & negative) ? 1 : 0;
+        auto i = (flags & negative) ? 1u : 0u;
 
         while (str[i] != '.')
             p_int.push_back(str[i++]);

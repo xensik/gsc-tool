@@ -8,8 +8,8 @@
 namespace xsk::gsc
 {
 
-block::block() : is_last(false), abort(abort_t::abort_none),
-    local_vars_create_count(0), local_vars_public_count(0) { }
+block::block() : local_vars_create_count(0), local_vars_public_count(0), 
+    abort(abort_t::abort_none), is_last(false) { }
 
 void block::transfer(const block::ptr& child)
 {
@@ -98,7 +98,7 @@ void block::merge(const std::vector<block*>& childs)
             {
                 child->local_vars.insert(child->local_vars.begin() + i, this->local_vars.at(i));
             }
-            else if (pos > i)
+            else if (pos > static_cast<std::int32_t>(i))
             {
                 auto& v = child->local_vars;
                 std::rotate(v.rend() - pos - 1, v.rend() - pos, v.rend() - i);

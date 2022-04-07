@@ -86,8 +86,10 @@ bool buffer::push(char c)
     return true;
 }
 
-reader::reader() : state(reader::end), buffer_pos(0),
-    bytes_remaining(0), last_byte(0), current_byte(0) {}
+reader::reader() : buffer_pos(0), bytes_remaining(0), last_byte(0), current_byte(0), state(reader::end)
+{
+
+}
 
 void reader::init(const char* data, size_t size)
 {
@@ -127,8 +129,8 @@ void reader::advance()
     }
 }
 
-lexer::lexer(build mode, const std::string& name, const char* data, size_t size) : indev_(false), clean_(true), loc_(location(&name)),
-    mode_(mode), header_top_(0), locs_(std::stack<location>()), readers_(std::stack<reader>())
+lexer::lexer(build mode, const std::string& name, const char* data, size_t size) : loc_(location(&name)),
+    locs_(std::stack<location>()), readers_(std::stack<reader>()), header_top_(0), mode_(mode), indev_(false), clean_(true)
 {
     reader_.init(data, size);
 }
@@ -480,7 +482,7 @@ auto lexer::lex() -> parser::symbol_type
             default:
                 if (last >= '0' && last <= '9')
                     goto lex_number;
-                else if (last == '_' || last >= 'A' && last <= 'Z' || last >= 'a' && last <= 'z')
+                else if (last == '_' || (last >= 'A' && last <= 'Z') || (last >= 'a' && last <= 'z'))
                     goto lex_name;
 
                 throw comp_error(loc_, utils::string::va("bad token: \'%c\'", last));
@@ -643,7 +645,7 @@ lex_number:
             if (last == '\'')
                 throw comp_error(loc_, "invalid number literal");
 
-            if (dot > 1 || flt > 1 || flt && buffer_.data[buffer_.length - 1] != 'f')
+            if (dot > 1 || flt > 1 || (flt && buffer_.data[buffer_.length - 1] != 'f'))
                 throw comp_error(loc_, "invalid number literal");
 
             if (dot || flt)
@@ -660,7 +662,7 @@ lex_number:
                 if (state == reader::end)
                     break;
 
-                if (curr == '\'' && (last == '\'' || last == 'o') || (curr == 'o' && last == '\''))
+                if ((curr == '\'' && (last == '\'' || last == 'o')) || (curr == 'o' && last == '\''))
                     throw comp_error(loc_, "invalid octal literal");
 
                 if (curr == '\'')
@@ -694,7 +696,7 @@ lex_number:
                 if (state == reader::end)
                     break;
 
-                if (curr == '\'' && (last == '\'' || last == 'b') || (curr == 'b' && last == '\''))
+                if ((curr == '\'' && (last == '\'' || last == 'b')) || (curr == 'b' && last == '\''))
                     throw comp_error(loc_, "invalid binary literal");
 
                 if (curr == '\'')
@@ -728,7 +730,7 @@ lex_number:
                 if (state == reader::end)
                     break;
 
-                if (curr == '\'' && (last == '\'' || last == 'x') || (curr == 'x' && last == '\''))
+                if ((curr == '\'' && (last == '\'' || last == 'x')) || (curr == 'x' && last == '\''))
                     throw comp_error(loc_, "invalid hexadecimal literal");
 
                 if (curr == '\'')

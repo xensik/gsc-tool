@@ -13,7 +13,7 @@ constexpr size_t max_buf_size = 0x2000;
 struct buffer
 {
     char* data;
-    int length;
+    size_t length;
 
     buffer();
     ~buffer();
@@ -32,9 +32,14 @@ struct reader
 
     reader();
 
-    reader& operator=(const reader& r)
+    reader(const reader& obj)
     {
-        std::memcpy(this, &r, sizeof(reader));
+        std::memcpy(this, &obj, sizeof(reader));
+    }
+
+    reader& operator=(const reader& obj)
+    {
+        std::memcpy(this, &obj, sizeof(reader));
         return *this;
     }
 

@@ -1626,8 +1626,8 @@ struct asm_jump_cond : public node
 {
     using ptr = std::unique_ptr<asm_jump_cond>;
 
-    std::string value;
     ast::expr expr;
+    std::string value;
 
     asm_jump_cond(ast::expr expr, const std::string& value);
     asm_jump_cond(const location& loc, ast::expr expr, const std::string& value);

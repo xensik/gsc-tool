@@ -777,7 +777,7 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt, const block::
     bool has_default = false;
     block* default_ctx = nullptr;
 
-    for (auto i = 0; i < stmt->stmt->list.size(); i++)
+    for (auto i = 0u; i < stmt->stmt->list.size(); i++)
     {
         auto& entry = stmt->stmt->list[i];
 
@@ -2295,7 +2295,7 @@ void compiler::process_stmt_while(const ast::stmt_while::ptr& stmt, const block:
 
     continue_blks_.push_back(stmt->blk.get());
 
-    for (auto i = 0; i < continue_blks_.size(); i++)
+    for (auto i = 0u; i < continue_blks_.size(); i++)
         blk->append({continue_blks_.at(i)});
 
     if (const_cond) blk->append(break_blks_);
@@ -2322,7 +2322,7 @@ void compiler::process_stmt_dowhile(const ast::stmt_dowhile::ptr& stmt, const bl
 
     continue_blks_.push_back(stmt->blk.get());
 
-    for (auto i = 0; i < continue_blks_.size(); i++)
+    for (auto i = 0u; i < continue_blks_.size(); i++)
         blk->append({continue_blks_.at(i)});
 
     if (const_cond) blk->append(break_blks_);
@@ -2354,7 +2354,7 @@ void compiler::process_stmt_for(const ast::stmt_for::ptr& stmt, const block::ptr
 
     continue_blks_.push_back(stmt->blk.get());
 
-    for (auto i = 0; i < continue_blks_.size(); i++)
+    for (auto i = 0u; i < continue_blks_.size(); i++)
         blk->append({continue_blks_.at(i)});
 
     process_stmt(stmt->iter, stmt->blk_iter);
@@ -2404,7 +2404,7 @@ void compiler::process_stmt_foreach(const ast::stmt_foreach::ptr& stmt, const bl
 
     continue_blks_.push_back(stmt->ctx.get());
 
-    for (auto i = 0; i < continue_blks_.size(); i++)
+    for (auto i = 0u; i < continue_blks_.size(); i++)
         blk->append({continue_blks_.at(i)});
 
     process_expr(stmt->key_expr, stmt->ctx_post);
@@ -2424,7 +2424,7 @@ void compiler::process_stmt_switch(const ast::stmt_switch::ptr& stmt, const bloc
 
     auto num = stmt->stmt->list.size();
 
-    for (auto i = 0; i < num; i++)
+    for (auto i = 0u; i < num; i++)
     {
         auto& entry = stmt->stmt->list[0];
 
@@ -2474,7 +2474,7 @@ void compiler::process_stmt_switch(const ast::stmt_switch::ptr& stmt, const bloc
     auto old_breaks = break_blks_;
     break_blks_.clear();
 
-    for (auto i = 0; i < stmt_list->list.size(); i++)
+    for (auto i = 0u; i < stmt_list->list.size(); i++)
     {
         auto& entry = stmt_list->list[i];
 

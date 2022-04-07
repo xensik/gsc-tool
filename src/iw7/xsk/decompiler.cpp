@@ -1808,7 +1808,7 @@ void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_loops(const ast::stmt_list::ptr& stmt)
 {
-    for (auto i = 0; i < stmt->list.size(); i++)
+    for (auto i = 0u; i < stmt->list.size(); i++)
     {
         auto& entry = stmt->list.at(i);
 
@@ -1835,7 +1835,7 @@ void decompiler::decompile_loops(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_switches(const ast::stmt_list::ptr& stmt)
 {
-    for (auto i = 0; i < stmt->list.size(); i++)
+    for (auto i = 0u; i < stmt->list.size(); i++)
     {
         if (stmt->list.at(i) == ast::kind::asm_switch)
         {
@@ -1846,7 +1846,7 @@ void decompiler::decompile_switches(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
 {
-    for (auto i = 0; i < stmt->list.size(); i++)
+    for (auto i = 0u; i < stmt->list.size(); i++)
     {
         auto& entry = stmt->list.at(i);
 
@@ -1921,7 +1921,7 @@ void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_aborts(const ast::stmt_list::ptr& block)
 {
-    for (auto i = 0; i < block->list.size(); i++)
+    for (auto i = 0u; i < block->list.size(); i++)
     {
         if (block->list.at(i) == ast::kind::asm_jump)
         {
@@ -2428,7 +2428,7 @@ void decompiler::decompile_switch(const ast::stmt_list::ptr& stmt, std::uint32_t
     auto current_case = ast::stmt(std::make_unique<ast::node>());
 
     auto num = sw_stmt->list.size();
-    for (auto i = 0; i < num; i++)
+    for (auto i = 0u; i < num; i++)
     {
         auto& entry = sw_stmt->list[0];
 
@@ -2617,15 +2617,19 @@ void decompiler::process_stmt_list(const ast::stmt_list::ptr& stmt, const block:
         process_stmt(entry, blk);
     }
 
-    for (auto i = 0; i < stmt->list.size(); i++)
+    auto i = 0u;
+
+    while (i < stmt->list.size())
     {
         auto type = stmt->list.at(i).kind();
 
         if (type == ast::kind::asm_create || type == ast::kind::asm_remove)
         {
             stmt->list.erase(stmt->list.begin() + i);
-            i--;
+            continue;
         }
+
+        i++;
     }
 }
 
@@ -3135,7 +3139,7 @@ void decompiler::process_expr_binary(const ast::expr_binary::ptr& expr, const bl
 
     prec = expr->rvalue.as_node->precedence();
 
-    if (prec && prec < expr->precedence() || (prec == expr->precedence() && expr->kind() == expr->rvalue.as_node->kind()))
+    if ((prec && prec < expr->precedence()) || (prec == expr->precedence() && expr->kind() == expr->rvalue.as_node->kind()))
     {
         expr->rvalue = ast::expr(std::make_unique<ast::expr_paren>(std::move(expr->rvalue)));
     }
@@ -3155,7 +3159,7 @@ void decompiler::process_expr_and(const ast::expr_and::ptr& expr, const block::p
 
     prec = expr->rvalue.as_node->precedence();
 
-    if (prec && prec < expr->precedence() || (prec == expr->precedence() && expr->kind() == expr->rvalue.kind()))
+    if ((prec && prec < expr->precedence()) || (prec == expr->precedence() && expr->kind() == expr->rvalue.kind()))
     {
         expr->rvalue = ast::expr(std::make_unique<ast::expr_paren>(std::move(expr->rvalue)));
     }
@@ -3311,7 +3315,7 @@ void decompiler::process_var_create(ast::expr& expr, const block::ptr& blk, bool
 
 void decompiler::process_var_access(ast::expr& expr, const block::ptr& blk)
 {
-    if (blk->local_vars.size() <= std::stoi(expr.as_asm_access->index))
+    if (blk->local_vars.size() <= std::stoul(expr.as_asm_access->index))
     {
         printf("WARNING: bad local var access\n");
     }
