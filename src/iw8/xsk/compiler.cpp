@@ -848,7 +848,7 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt, const block::
 
     emit_opcode(opcode::OP_endswitch, data);
 
-    auto offset =  7 * stmt->stmt->list.size();
+    auto offset = static_cast<std::uint32_t>(7 * stmt->stmt->list.size());
     function_->instructions.back()->size += offset;
     index_ += offset;
 
@@ -1552,7 +1552,7 @@ void compiler::emit_expr_add_array(const ast::expr_add_array::ptr& expr, const b
 
 void compiler::emit_expr_parameters(const ast::expr_parameters::ptr& expr, const block::ptr& blk)
 {
-    auto num = expr->list.size();
+    auto num = static_cast<std::uint32_t>(expr->list.size());
 
     if (num)
     {
@@ -2720,7 +2720,7 @@ auto compiler::variable_stack_index(const ast::expr_identifier::ptr& name, const
         {
             if (blk->local_vars.at(i).init)
             {
-                return blk->local_vars_create_count - 1 - i;
+                return static_cast<std::uint8_t>(blk->local_vars_create_count - 1 - i);
             }
 
             throw comp_error(name->loc(), "local variable '" + name->value + "' not initialized.");

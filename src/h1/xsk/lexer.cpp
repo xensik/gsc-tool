@@ -97,7 +97,7 @@ void reader::init(const char* data, size_t size)
     {
         state = reader::ok;
         buffer_pos = data;
-        bytes_remaining = size;
+        bytes_remaining = static_cast<std::uint32_t>(size);
         last_byte = 0;
         current_byte = *data;
     }

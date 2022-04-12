@@ -1818,7 +1818,7 @@ void decompiler::decompile_statements(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
 {
-    for (int i = stmt->list.size() - 1; i >= 0; i--)
+    for (auto i = stmt->list.size() - 1; i > 0; i--)
     {
         if (stmt->list.at(i) == ast::kind::asm_jump_back)
         {
@@ -1981,7 +1981,7 @@ void decompiler::decompile_aborts(const ast::stmt_list::ptr& block)
     }
 }
 
-void decompiler::decompile_if(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end)
+void decompiler::decompile_if(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end)
 {
     block blk;
     blk.loc_end = stmt->list.at(begin).as_cond->value;
@@ -2009,7 +2009,7 @@ void decompiler::decompile_if(const ast::stmt_list::ptr& stmt, std::uint32_t beg
     stmt->list.insert(stmt->list.begin() + begin, std::move(new_stmt));
 }
 
-void decompiler::decompile_ifelse(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end)
+void decompiler::decompile_ifelse(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end)
 {
     block if_blk;
     if_blk.loc_end = stmt->list.at(end).loc().label();
@@ -2060,7 +2060,7 @@ void decompiler::decompile_ifelse(const ast::stmt_list::ptr& stmt, std::uint32_t
     stmt->list.insert(stmt->list.begin() + begin, std::move(new_stmt));
 }
 
-void decompiler::decompile_last_ifelse(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end)
+void decompiler::decompile_last_ifelse(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end)
 {
     block if_blk;
     if_blk.is_last = true;
@@ -2120,7 +2120,7 @@ void decompiler::decompile_last_ifelse(const ast::stmt_list::ptr& stmt, std::uin
     }
 }
 
-void decompiler::decompile_infinite(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end)
+void decompiler::decompile_infinite(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end)
 {
     block blk;
     blk.loc_break = last_location_index(stmt, end) ? blocks_.back().loc_end : stmt->list.at(end + 1).loc().label();
@@ -2150,7 +2150,7 @@ void decompiler::decompile_infinite(const ast::stmt_list::ptr& stmt, std::uint32
     stmt->list.insert(stmt->list.begin() + begin, std::move(new_stmt));
 }
 
-void decompiler::decompile_loop(const ast::stmt_list::ptr& block, std::uint32_t start, std::uint32_t end)
+void decompiler::decompile_loop(const ast::stmt_list::ptr& block, std::size_t start, std::size_t end)
 {
     auto& last = block->list.at(end - 1);
 
@@ -2215,7 +2215,7 @@ void decompiler::decompile_loop(const ast::stmt_list::ptr& block, std::uint32_t 
     decompile_while(block, start, end);
 }
 
-void decompiler::decompile_while(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end)
+void decompiler::decompile_while(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end)
 {
     block blk;
     blk.loc_break = stmt->list.at(begin).as_cond->value;
@@ -2245,7 +2245,7 @@ void decompiler::decompile_while(const ast::stmt_list::ptr& stmt, std::uint32_t 
     stmt->list.insert(stmt->list.begin() + begin, std::move(new_stmt));
 }
 
-void decompiler::decompile_dowhile(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end)
+void decompiler::decompile_dowhile(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end)
 {
     block blk;
     blk.loc_break = stmt->list.at(begin).as_cond->value;
@@ -2276,7 +2276,7 @@ void decompiler::decompile_dowhile(const ast::stmt_list::ptr& stmt, std::uint32_
     stmt->list.insert(stmt->list.begin() + begin, std::move(new_stmt));
 }
 
-void decompiler::decompile_for(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end)
+void decompiler::decompile_for(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end)
 {
     block blk;
     blk.loc_break = stmt->list.at(begin).as_cond->value;
@@ -2330,7 +2330,7 @@ void decompiler::decompile_for(const ast::stmt_list::ptr& stmt, std::uint32_t be
     stmt->list.insert(stmt->list.begin() + begin, std::move(new_stmt));
 }
 
-void decompiler::decompile_foreach(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end)
+void decompiler::decompile_foreach(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end)
 {
     block blk;
     blk.loc_break = stmt->list.at(begin).as_cond->value;
@@ -2397,7 +2397,7 @@ void decompiler::decompile_foreach(const ast::stmt_list::ptr& stmt, std::uint32_
     stmt->list.insert(stmt->list.begin() + begin, std::move(new_stmt));
 }
 
-void decompiler::decompile_switch(const ast::stmt_list::ptr& stmt, std::uint32_t start)
+void decompiler::decompile_switch(const ast::stmt_list::ptr& stmt, std::size_t start)
 {
     block blk;
     blk.loc_continue = blocks_.back().loc_continue;
@@ -2510,7 +2510,7 @@ void decompiler::decompile_switch(const ast::stmt_list::ptr& stmt, std::uint32_t
     stmt->list.insert(stmt->list.begin() + start, std::move(new_stmt));
 }
 
-auto decompiler::find_location_reference(const ast::stmt_list::ptr& stmt, std::uint32_t begin, std::uint32_t end, const std::string& location) -> bool
+auto decompiler::find_location_reference(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end, const std::string& location) -> bool
 {
     for (auto i = begin; i < end; i++)
     {
@@ -2529,7 +2529,7 @@ auto decompiler::find_location_reference(const ast::stmt_list::ptr& stmt, std::u
     return false;
 }
 
-auto decompiler::find_location_index(const ast::stmt_list::ptr& stmt, const std::string& location) -> std::uint32_t
+auto decompiler::find_location_index(const ast::stmt_list::ptr& stmt, const std::string& location) -> std::size_t
 {
     auto index = 0u;
 
@@ -2547,7 +2547,7 @@ auto decompiler::find_location_index(const ast::stmt_list::ptr& stmt, const std:
     throw decomp_error("LOCATION NOT FOUND! (" + location + ")");
 }
 
-auto decompiler::last_location_index(const ast::stmt_list::ptr& stmt, std::uint32_t index) -> bool
+auto decompiler::last_location_index(const ast::stmt_list::ptr& stmt, std::size_t index) -> bool
 {
     if (index == stmt->list.size() - 1)
         return true;
@@ -3371,7 +3371,7 @@ void decompiler::process_var_access(ast::expr& expr, const block::ptr& blk)
 
 void decompiler::process_var_remove(const ast::asm_remove::ptr& expr, const block::ptr& blk)
 {
-    blk->local_vars_public_count = blk->local_vars.size() - std::stoi(expr->index);
+    blk->local_vars_public_count = static_cast<std::uint32_t>(blk->local_vars.size() - std::stoi(expr->index));
 }
 
 } // namespace xsk::gsc::iw8

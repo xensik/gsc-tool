@@ -30,7 +30,7 @@ auto zlib::decompress(const std::vector<std::uint8_t>& data, std::uint32_t lengt
     std::vector<std::uint8_t> output;
     output.resize(length);
 
-    auto result = uncompress(output.data(), (uLongf*)&length, (Bytef*)data.data(), data.size());
+    auto result = uncompress(reinterpret_cast<Bytef*>(output.data()), reinterpret_cast<uLong*>(&length), reinterpret_cast<const Bytef*>(data.data()), static_cast<uLong>(data.size()));
 
     if (result != Z_OK) return {};
 

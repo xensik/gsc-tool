@@ -143,7 +143,7 @@ void assembler::assemble_function(const function::ptr& func)
     func->id = resolver::token_id(func->name);
 
     stack_->write<std::uint32_t>(func->size);
-    stack_->write<std::uint16_t>(func->id);
+    stack_->write<std::uint16_t>(static_cast<std::uint16_t>(func->id));
 
     if (func->id == 0)
     {
@@ -452,7 +452,7 @@ void assembler::assemble_end_switch(const instruction::ptr& inst)
 
     const auto count = std::stoul(inst->data[0]);
 
-    script_->write<std::uint16_t>(count);
+    script_->write<std::uint16_t>(static_cast<std::uint16_t>(count));
 
     std::uint32_t index = inst->index + 3;
 
@@ -519,15 +519,15 @@ void assembler::assemble_jump(const instruction::ptr& inst, bool expr, bool back
 
     if (expr)
     {
-        script_->write<std::int16_t>(addr - inst->index - 3);
+        script_->write<std::int16_t>(static_cast<std::int16_t>(addr - inst->index - 3));
     }
     else if (back)
     {
-        script_->write<std::int16_t>((inst->index + 3) - addr);
+        script_->write<std::int16_t>(static_cast<std::int16_t>((inst->index + 3) - addr));
     }
     else
     {
-        script_->write<std::int32_t>(addr - inst->index - 5);
+        script_->write<std::int32_t>(static_cast<std::int32_t>(addr - inst->index - 5));
     }
 }
 
@@ -546,11 +546,11 @@ void assembler::assemble_offset(std::int32_t offset)
 
 auto assembler::resolve_function(const std::string& name) -> std::int32_t
 {
-    for (const auto& func : functions_)
+    for (const auto& entry : functions_)
     {
-        if (func->name == name)
+        if (entry->name == name)
         {
-            return func->index;
+            return entry->index;
         }
     }
 
@@ -559,11 +559,11 @@ auto assembler::resolve_function(const std::string& name) -> std::int32_t
 
 auto assembler::resolve_label(const std::string& name) -> std::int32_t
 {
-    for (const auto& func : labels_)
+    for (const auto& entry : labels_)
     {
-        if (func.second == name)
+        if (entry.second == name)
         {
-            return func.first;
+            return entry.first;
         }
     }
 

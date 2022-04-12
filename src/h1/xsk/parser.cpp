@@ -1,4 +1,4 @@
-// A Bison parser, made by GNU Bison 3.7.5.
+// A Bison parser, made by GNU Bison 3.8.2.
 
 // Skeleton implementation for Bison LALR(1) parsers in C++
 
@@ -15,7 +15,7 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // As a special exception, you may create a larger work that contains
 // part or all of the Bison parser skeleton and distribute that work
@@ -35,7 +35,7 @@
 // private implementation details that can be changed or removed.
 
 // "%code top" blocks.
-#line 36 "parser.ypp"
+#line 38 "parser.ypp"
 
 #include "stdafx.hpp"
 #include "parser.hpp"
@@ -166,9 +166,9 @@ namespace xsk { namespace gsc { namespace h1 {
   parser::syntax_error::~syntax_error () YY_NOEXCEPT YY_NOTHROW
   {}
 
-  /*---------------.
-  | symbol kinds.  |
-  `---------------*/
+  /*---------.
+  | symbol.  |
+  `---------*/
 
 
 
@@ -1467,7 +1467,7 @@ namespace xsk { namespace gsc { namespace h1 {
   }
 
   void
-  parser::yypop_ (int n)
+  parser::yypop_ (int n) YY_NOEXCEPT
   {
     yystack_.pop (n);
   }
@@ -1510,13 +1510,13 @@ namespace xsk { namespace gsc { namespace h1 {
   }
 
   bool
-  parser::yy_pact_value_is_default_ (int yyvalue)
+  parser::yy_pact_value_is_default_ (int yyvalue) YY_NOEXCEPT
   {
     return yyvalue == yypact_ninf_;
   }
 
   bool
-  parser::yy_table_value_is_error_ (int yyvalue)
+  parser::yy_table_value_is_error_ (int yyvalue) YY_NOEXCEPT
   {
     return yyvalue == yytable_ninf_;
   }
@@ -1547,8 +1547,8 @@ namespace xsk { namespace gsc { namespace h1 {
     /// The return value of parse ().
     int yyresult;
 
-    /// Discard the LAC context in case there still is one left from a
-    /// previous invocation.
+    // Discard the LAC context in case there still is one left from a
+    // previous invocation.
     yy_lac_discard_ ("init");
 
 #if YY_EXCEPTIONS
@@ -1626,7 +1626,7 @@ namespace xsk { namespace gsc { namespace h1 {
     if (yyn < 0 || yylast_ < yyn || yycheck_[yyn] != yyla.kind ())
       {
         if (!yy_lac_establish_ (yyla.kind ()))
-           goto yyerrlab;
+          goto yyerrlab;
         goto yydefault;
       }
 
@@ -1637,7 +1637,7 @@ namespace xsk { namespace gsc { namespace h1 {
         if (yy_table_value_is_error_ (yyn))
           goto yyerrlab;
         if (!yy_lac_establish_ (yyla.kind ()))
-           goto yyerrlab;
+          goto yyerrlab;
 
         yyn = -yyn;
         goto yyreduce;
@@ -1984,1315 +1984,1315 @@ namespace xsk { namespace gsc { namespace h1 {
           switch (yyn)
             {
   case 2: // root: program
-#line 257 "parser.ypp"
+#line 259 "parser.ypp"
               { ast = std::move(yystack_[0].value.as < ast::program::ptr > ()); }
 #line 1990 "parser.cpp"
     break;
 
   case 3: // root: %empty
-#line 258 "parser.ypp"
+#line 260 "parser.ypp"
               { ast = std::make_unique<ast::program>(yylhs.location); }
 #line 1996 "parser.cpp"
     break;
 
   case 4: // program: program inline
-#line 263 "parser.ypp"
+#line 265 "parser.ypp"
         { yylhs.value.as < ast::program::ptr > () = std::move(yystack_[1].value.as < ast::program::ptr > ()); }
 #line 2002 "parser.cpp"
     break;
 
   case 5: // program: program include
-#line 265 "parser.ypp"
+#line 267 "parser.ypp"
         { yylhs.value.as < ast::program::ptr > () = std::move(yystack_[1].value.as < ast::program::ptr > ()); yylhs.value.as < ast::program::ptr > ()->includes.push_back(std::move(yystack_[0].value.as < ast::include::ptr > ())); }
 #line 2008 "parser.cpp"
     break;
 
   case 6: // program: program declaration
-#line 267 "parser.ypp"
+#line 269 "parser.ypp"
         { yylhs.value.as < ast::program::ptr > () = std::move(yystack_[1].value.as < ast::program::ptr > ()); yylhs.value.as < ast::program::ptr > ()->declarations.push_back(std::move(yystack_[0].value.as < ast::decl > ())); }
 #line 2014 "parser.cpp"
     break;
 
   case 7: // program: inline
-#line 269 "parser.ypp"
+#line 271 "parser.ypp"
         { yylhs.value.as < ast::program::ptr > () = std::make_unique<ast::program>(yylhs.location); }
 #line 2020 "parser.cpp"
     break;
 
   case 8: // program: include
-#line 271 "parser.ypp"
+#line 273 "parser.ypp"
         { yylhs.value.as < ast::program::ptr > () = std::make_unique<ast::program>(yylhs.location); yylhs.value.as < ast::program::ptr > ()->includes.push_back(std::move(yystack_[0].value.as < ast::include::ptr > ())); }
 #line 2026 "parser.cpp"
     break;
 
   case 9: // program: declaration
-#line 273 "parser.ypp"
+#line 275 "parser.ypp"
         { yylhs.value.as < ast::program::ptr > () = std::make_unique<ast::program>(yylhs.location); yylhs.value.as < ast::program::ptr > ()->declarations.push_back(std::move(yystack_[0].value.as < ast::decl > ())); }
 #line 2032 "parser.cpp"
     break;
 
   case 10: // inline: "#inline" expr_path ";"
-#line 277 "parser.ypp"
+#line 279 "parser.ypp"
                                  { lexer.push_header(yystack_[1].value.as < ast::expr_path::ptr > ()->value); }
 #line 2038 "parser.cpp"
     break;
 
   case 11: // include: "#include" expr_path ";"
-#line 282 "parser.ypp"
+#line 284 "parser.ypp"
         { yylhs.value.as < ast::include::ptr > () = std::make_unique<ast::include>(yylhs.location, std::move(yystack_[1].value.as < ast::expr_path::ptr > ())); }
 #line 2044 "parser.cpp"
     break;
 
   case 12: // declaration: "/#"
-#line 286 "parser.ypp"
+#line 288 "parser.ypp"
                         { yylhs.value.as < ast::decl > ().as_dev_begin = std::make_unique<ast::decl_dev_begin>(yylhs.location); }
 #line 2050 "parser.cpp"
     break;
 
   case 13: // declaration: "#/"
-#line 287 "parser.ypp"
+#line 289 "parser.ypp"
                         { yylhs.value.as < ast::decl > ().as_dev_end = std::make_unique<ast::decl_dev_end>(yylhs.location); }
 #line 2056 "parser.cpp"
     break;
 
   case 14: // declaration: decl_usingtree
-#line 288 "parser.ypp"
+#line 290 "parser.ypp"
                         { yylhs.value.as < ast::decl > ().as_usingtree = std::move(yystack_[0].value.as < ast::decl_usingtree::ptr > ()); }
 #line 2062 "parser.cpp"
     break;
 
   case 15: // declaration: decl_constant
-#line 289 "parser.ypp"
+#line 291 "parser.ypp"
                         { yylhs.value.as < ast::decl > ().as_constant = std::move(yystack_[0].value.as < ast::decl_constant::ptr > ()); }
 #line 2068 "parser.cpp"
     break;
 
   case 16: // declaration: decl_thread
-#line 290 "parser.ypp"
+#line 292 "parser.ypp"
                         { yylhs.value.as < ast::decl > ().as_thread = std::move(yystack_[0].value.as < ast::decl_thread::ptr > ()); }
 #line 2074 "parser.cpp"
     break;
 
   case 17: // decl_usingtree: "#using_animtree" "(" expr_string ")" ";"
-#line 295 "parser.ypp"
+#line 297 "parser.ypp"
         { lexer.ban_header(yylhs.location); yylhs.value.as < ast::decl_usingtree::ptr > () = std::make_unique<ast::decl_usingtree>(yylhs.location, std::move(yystack_[2].value.as < ast::expr_string::ptr > ())); }
 #line 2080 "parser.cpp"
     break;
 
   case 18: // decl_constant: expr_identifier "=" expr ";"
-#line 300 "parser.ypp"
+#line 302 "parser.ypp"
         { yylhs.value.as < ast::decl_constant::ptr > () = std::make_unique<ast::decl_constant>(yylhs.location, std::move(yystack_[3].value.as < ast::expr_identifier::ptr > ()), std::move(yystack_[1].value.as < ast::expr > ())); }
 #line 2086 "parser.cpp"
     break;
 
   case 19: // decl_thread: expr_identifier "(" expr_parameters ")" stmt_block
-#line 305 "parser.ypp"
+#line 307 "parser.ypp"
         { lexer.ban_header(yylhs.location); yylhs.value.as < ast::decl_thread::ptr > () = std::make_unique<ast::decl_thread>(yylhs.location, std::move(yystack_[4].value.as < ast::expr_identifier::ptr > ()), std::move(yystack_[2].value.as < ast::expr_parameters::ptr > ()), std::move(yystack_[0].value.as < ast::stmt_list::ptr > ())); }
 #line 2092 "parser.cpp"
     break;
 
   case 20: // stmt: stmt_block
-#line 309 "parser.ypp"
+#line 311 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_list = std::move(yystack_[0].value.as < ast::stmt_list::ptr > ()); }
 #line 2098 "parser.cpp"
     break;
 
   case 21: // stmt: stmt_call
-#line 310 "parser.ypp"
+#line 312 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_call = std::move(yystack_[0].value.as < ast::stmt_call::ptr > ()); }
 #line 2104 "parser.cpp"
     break;
 
   case 22: // stmt: stmt_assign
-#line 311 "parser.ypp"
+#line 313 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_assign = std::move(yystack_[0].value.as < ast::stmt_assign::ptr > ()); }
 #line 2110 "parser.cpp"
     break;
 
   case 23: // stmt: stmt_endon
-#line 312 "parser.ypp"
+#line 314 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_endon = std::move(yystack_[0].value.as < ast::stmt_endon::ptr > ()); }
 #line 2116 "parser.cpp"
     break;
 
   case 24: // stmt: stmt_notify
-#line 313 "parser.ypp"
+#line 315 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_notify = std::move(yystack_[0].value.as < ast::stmt_notify::ptr > ()); }
 #line 2122 "parser.cpp"
     break;
 
   case 25: // stmt: stmt_wait
-#line 314 "parser.ypp"
+#line 316 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_wait = std::move(yystack_[0].value.as < ast::stmt_wait::ptr > ()); }
 #line 2128 "parser.cpp"
     break;
 
   case 26: // stmt: stmt_waittill
-#line 315 "parser.ypp"
+#line 317 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_waittill = std::move(yystack_[0].value.as < ast::stmt_waittill::ptr > ()); }
 #line 2134 "parser.cpp"
     break;
 
   case 27: // stmt: stmt_waittillmatch
-#line 316 "parser.ypp"
+#line 318 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_waittillmatch = std::move(yystack_[0].value.as < ast::stmt_waittillmatch::ptr > ()); }
 #line 2140 "parser.cpp"
     break;
 
   case 28: // stmt: stmt_waittillframeend
-#line 317 "parser.ypp"
+#line 319 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_waittillframeend = std::move(yystack_[0].value.as < ast::stmt_waittillframeend::ptr > ()); }
 #line 2146 "parser.cpp"
     break;
 
   case 29: // stmt: stmt_waitframe
-#line 318 "parser.ypp"
+#line 320 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_waitframe = std::move(yystack_[0].value.as < ast::stmt_waitframe::ptr > ()); }
 #line 2152 "parser.cpp"
     break;
 
   case 30: // stmt: stmt_if
-#line 319 "parser.ypp"
+#line 321 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_if = std::move(yystack_[0].value.as < ast::stmt_if::ptr > ()); }
 #line 2158 "parser.cpp"
     break;
 
   case 31: // stmt: stmt_ifelse
-#line 320 "parser.ypp"
+#line 322 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_ifelse = std::move(yystack_[0].value.as < ast::stmt_ifelse::ptr > ()); }
 #line 2164 "parser.cpp"
     break;
 
   case 32: // stmt: stmt_while
-#line 321 "parser.ypp"
+#line 323 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_while = std::move(yystack_[0].value.as < ast::stmt_while::ptr > ()); }
 #line 2170 "parser.cpp"
     break;
 
   case 33: // stmt: stmt_dowhile
-#line 322 "parser.ypp"
+#line 324 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_dowhile = std::move(yystack_[0].value.as < ast::stmt_dowhile::ptr > ()); }
 #line 2176 "parser.cpp"
     break;
 
   case 34: // stmt: stmt_for
-#line 323 "parser.ypp"
+#line 325 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_for = std::move(yystack_[0].value.as < ast::stmt_for::ptr > ()); }
 #line 2182 "parser.cpp"
     break;
 
   case 35: // stmt: stmt_foreach
-#line 324 "parser.ypp"
+#line 326 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_foreach = std::move(yystack_[0].value.as < ast::stmt_foreach::ptr > ()); }
 #line 2188 "parser.cpp"
     break;
 
   case 36: // stmt: stmt_switch
-#line 325 "parser.ypp"
+#line 327 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_switch = std::move(yystack_[0].value.as < ast::stmt_switch::ptr > ()); }
 #line 2194 "parser.cpp"
     break;
 
   case 37: // stmt: stmt_case
-#line 326 "parser.ypp"
+#line 328 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_case = std::move(yystack_[0].value.as < ast::stmt_case::ptr > ()); }
 #line 2200 "parser.cpp"
     break;
 
   case 38: // stmt: stmt_default
-#line 327 "parser.ypp"
+#line 329 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_default = std::move(yystack_[0].value.as < ast::stmt_default::ptr > ()); }
 #line 2206 "parser.cpp"
     break;
 
   case 39: // stmt: stmt_break
-#line 328 "parser.ypp"
+#line 330 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_break = std::move(yystack_[0].value.as < ast::stmt_break::ptr > ()); }
 #line 2212 "parser.cpp"
     break;
 
   case 40: // stmt: stmt_continue
-#line 329 "parser.ypp"
+#line 331 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_continue = std::move(yystack_[0].value.as < ast::stmt_continue::ptr > ()); }
 #line 2218 "parser.cpp"
     break;
 
   case 41: // stmt: stmt_return
-#line 330 "parser.ypp"
+#line 332 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_return = std::move(yystack_[0].value.as < ast::stmt_return::ptr > ()); }
 #line 2224 "parser.cpp"
     break;
 
   case 42: // stmt: stmt_breakpoint
-#line 331 "parser.ypp"
+#line 333 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_breakpoint = std::move(yystack_[0].value.as < ast::stmt_breakpoint::ptr > ()); }
 #line 2230 "parser.cpp"
     break;
 
   case 43: // stmt: stmt_prof_begin
-#line 332 "parser.ypp"
+#line 334 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_prof_begin = std::move(yystack_[0].value.as < ast::stmt_prof_begin::ptr > ()); }
 #line 2236 "parser.cpp"
     break;
 
   case 44: // stmt: stmt_prof_end
-#line 333 "parser.ypp"
+#line 335 "parser.ypp"
                              { yylhs.value.as < ast::stmt > ().as_prof_end = std::move(yystack_[0].value.as < ast::stmt_prof_end::ptr > ()); }
 #line 2242 "parser.cpp"
     break;
 
   case 45: // stmt_or_dev: stmt
-#line 337 "parser.ypp"
+#line 339 "parser.ypp"
                { yylhs.value.as < ast::stmt > () = std::move(yystack_[0].value.as < ast::stmt > ()); }
 #line 2248 "parser.cpp"
     break;
 
   case 46: // stmt_or_dev: stmt_dev
-#line 338 "parser.ypp"
+#line 340 "parser.ypp"
                { yylhs.value.as < ast::stmt > ().as_dev = std::move(yystack_[0].value.as < ast::stmt_dev::ptr > ()); }
 #line 2254 "parser.cpp"
     break;
 
   case 47: // stmt_list: stmt_list stmt
-#line 343 "parser.ypp"
+#line 345 "parser.ypp"
         { yylhs.value.as < ast::stmt_list::ptr > () = std::move(yystack_[1].value.as < ast::stmt_list::ptr > ()); yylhs.value.as < ast::stmt_list::ptr > ()->list.push_back(std::move(yystack_[0].value.as < ast::stmt > ())); }
 #line 2260 "parser.cpp"
     break;
 
   case 48: // stmt_list: stmt
-#line 345 "parser.ypp"
+#line 347 "parser.ypp"
         { yylhs.value.as < ast::stmt_list::ptr > () = std::make_unique<ast::stmt_list>(yylhs.location); yylhs.value.as < ast::stmt_list::ptr > ()->list.push_back(std::move(yystack_[0].value.as < ast::stmt > ())); }
 #line 2266 "parser.cpp"
     break;
 
   case 49: // stmt_or_dev_list: stmt_or_dev_list stmt_or_dev
-#line 350 "parser.ypp"
+#line 352 "parser.ypp"
         { yylhs.value.as < ast::stmt_list::ptr > () = std::move(yystack_[1].value.as < ast::stmt_list::ptr > ()); yylhs.value.as < ast::stmt_list::ptr > ()->list.push_back(std::move(yystack_[0].value.as < ast::stmt > ())); }
 #line 2272 "parser.cpp"
     break;
 
   case 50: // stmt_or_dev_list: stmt_or_dev
-#line 352 "parser.ypp"
+#line 354 "parser.ypp"
         { yylhs.value.as < ast::stmt_list::ptr > () = std::make_unique<ast::stmt_list>(yylhs.location); yylhs.value.as < ast::stmt_list::ptr > ()->list.push_back(std::move(yystack_[0].value.as < ast::stmt > ())); }
 #line 2278 "parser.cpp"
     break;
 
   case 51: // stmt_dev: "/#" stmt_list "#/"
-#line 356 "parser.ypp"
+#line 358 "parser.ypp"
                                 { yylhs.value.as < ast::stmt_dev::ptr > () = std::make_unique<ast::stmt_dev>(yylhs.location, std::move(yystack_[1].value.as < ast::stmt_list::ptr > ())); }
 #line 2284 "parser.cpp"
     break;
 
   case 52: // stmt_dev: "/#" "#/"
-#line 357 "parser.ypp"
+#line 359 "parser.ypp"
                       { yylhs.value.as < ast::stmt_dev::ptr > () = std::make_unique<ast::stmt_dev>(yylhs.location, std::make_unique<ast::stmt_list>(yylhs.location)); }
 #line 2290 "parser.cpp"
     break;
 
   case 53: // stmt_block: "{" stmt_or_dev_list "}"
-#line 361 "parser.ypp"
+#line 363 "parser.ypp"
                                      { yylhs.value.as < ast::stmt_list::ptr > () = std::move(yystack_[1].value.as < ast::stmt_list::ptr > ()); }
 #line 2296 "parser.cpp"
     break;
 
   case 54: // stmt_block: "{" "}"
-#line 362 "parser.ypp"
+#line 364 "parser.ypp"
                     { yylhs.value.as < ast::stmt_list::ptr > () = std::make_unique<ast::stmt_list>(yylhs.location); }
 #line 2302 "parser.cpp"
     break;
 
   case 55: // stmt_expr: expr_assign
-#line 367 "parser.ypp"
+#line 369 "parser.ypp"
         { yylhs.value.as < ast::stmt_expr::ptr > () = std::make_unique<ast::stmt_expr>(yylhs.location, std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2308 "parser.cpp"
     break;
 
   case 56: // stmt_expr: expr_increment
-#line 369 "parser.ypp"
+#line 371 "parser.ypp"
         { yylhs.value.as < ast::stmt_expr::ptr > () = std::make_unique<ast::stmt_expr>(yylhs.location, std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2314 "parser.cpp"
     break;
 
   case 57: // stmt_expr: expr_decrement
-#line 371 "parser.ypp"
+#line 373 "parser.ypp"
         { yylhs.value.as < ast::stmt_expr::ptr > () = std::make_unique<ast::stmt_expr>(yylhs.location, std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2320 "parser.cpp"
     break;
 
   case 58: // stmt_expr: %empty
-#line 373 "parser.ypp"
+#line 375 "parser.ypp"
         { yylhs.value.as < ast::stmt_expr::ptr > () = std::make_unique<ast::stmt_expr>(yylhs.location, std::make_unique<ast::node>(yylhs.location)); }
 #line 2326 "parser.cpp"
     break;
 
   case 59: // stmt_call: expr_call ";"
-#line 378 "parser.ypp"
+#line 380 "parser.ypp"
         { yylhs.value.as < ast::stmt_call::ptr > () = std::make_unique<ast::stmt_call>(yylhs.location, ast::expr(std::move(yystack_[1].value.as < ast::expr_call::ptr > ()))); }
 #line 2332 "parser.cpp"
     break;
 
   case 60: // stmt_call: expr_method ";"
-#line 380 "parser.ypp"
+#line 382 "parser.ypp"
         { yylhs.value.as < ast::stmt_call::ptr > () = std::make_unique<ast::stmt_call>(yylhs.location, ast::expr(std::move(yystack_[1].value.as < ast::expr_method::ptr > ()))); }
 #line 2338 "parser.cpp"
     break;
 
   case 61: // stmt_assign: expr_assign ";"
-#line 385 "parser.ypp"
+#line 387 "parser.ypp"
         { yylhs.value.as < ast::stmt_assign::ptr > () = std::make_unique<ast::stmt_assign>(yylhs.location, std::move(yystack_[1].value.as < ast::expr > ())); }
 #line 2344 "parser.cpp"
     break;
 
   case 62: // stmt_assign: expr_increment ";"
-#line 387 "parser.ypp"
+#line 389 "parser.ypp"
         { yylhs.value.as < ast::stmt_assign::ptr > () = std::make_unique<ast::stmt_assign>(yylhs.location, std::move(yystack_[1].value.as < ast::expr > ())); }
 #line 2350 "parser.cpp"
     break;
 
   case 63: // stmt_assign: expr_decrement ";"
-#line 389 "parser.ypp"
+#line 391 "parser.ypp"
         { yylhs.value.as < ast::stmt_assign::ptr > () = std::make_unique<ast::stmt_assign>(yylhs.location, std::move(yystack_[1].value.as < ast::expr > ())); }
 #line 2356 "parser.cpp"
     break;
 
   case 64: // stmt_endon: expr_object "endon" "(" expr ")" ";"
-#line 394 "parser.ypp"
+#line 396 "parser.ypp"
         { yylhs.value.as < ast::stmt_endon::ptr > () = std::make_unique<ast::stmt_endon>(yylhs.location, std::move(yystack_[5].value.as < ast::expr > ()), std::move(yystack_[2].value.as < ast::expr > ())); }
 #line 2362 "parser.cpp"
     break;
 
   case 65: // stmt_notify: expr_object "notify" "(" expr "," expr_arguments_no_empty ")" ";"
-#line 399 "parser.ypp"
+#line 401 "parser.ypp"
         { yylhs.value.as < ast::stmt_notify::ptr > () = std::make_unique<ast::stmt_notify>(yylhs.location, std::move(yystack_[7].value.as < ast::expr > ()), std::move(yystack_[4].value.as < ast::expr > ()), std::move(yystack_[2].value.as < ast::expr_arguments::ptr > ())); }
 #line 2368 "parser.cpp"
     break;
 
   case 66: // stmt_notify: expr_object "notify" "(" expr ")" ";"
-#line 401 "parser.ypp"
+#line 403 "parser.ypp"
         { yylhs.value.as < ast::stmt_notify::ptr > () = std::make_unique<ast::stmt_notify>(yylhs.location, std::move(yystack_[5].value.as < ast::expr > ()), std::move(yystack_[2].value.as < ast::expr > ()), std::make_unique<ast::expr_arguments>(yylhs.location)); }
 #line 2374 "parser.cpp"
     break;
 
   case 67: // stmt_wait: "wait" expr ";"
-#line 406 "parser.ypp"
+#line 408 "parser.ypp"
         { yylhs.value.as < ast::stmt_wait::ptr > () = std::make_unique<ast::stmt_wait>(yylhs.location, std::move(yystack_[1].value.as < ast::expr > ())); }
 #line 2380 "parser.cpp"
     break;
 
   case 68: // stmt_waittill: expr_object "waittill" "(" expr "," expr_arguments_no_empty ")" ";"
-#line 411 "parser.ypp"
+#line 413 "parser.ypp"
         { yylhs.value.as < ast::stmt_waittill::ptr > () = std::make_unique<ast::stmt_waittill>(yylhs.location, std::move(yystack_[7].value.as < ast::expr > ()), std::move(yystack_[4].value.as < ast::expr > ()), std::move(yystack_[2].value.as < ast::expr_arguments::ptr > ())); }
 #line 2386 "parser.cpp"
     break;
 
   case 69: // stmt_waittill: expr_object "waittill" "(" expr ")" ";"
-#line 413 "parser.ypp"
+#line 415 "parser.ypp"
         { yylhs.value.as < ast::stmt_waittill::ptr > () = std::make_unique<ast::stmt_waittill>(yylhs.location, std::move(yystack_[5].value.as < ast::expr > ()), std::move(yystack_[2].value.as < ast::expr > ()), std::make_unique<ast::expr_arguments>(yylhs.location)); }
 #line 2392 "parser.cpp"
     break;
 
   case 70: // stmt_waittillmatch: expr_object "waittillmatch" "(" expr "," expr_arguments_no_empty ")" ";"
-#line 418 "parser.ypp"
+#line 420 "parser.ypp"
         { yylhs.value.as < ast::stmt_waittillmatch::ptr > () = std::make_unique<ast::stmt_waittillmatch>(yylhs.location, std::move(yystack_[7].value.as < ast::expr > ()), std::move(yystack_[4].value.as < ast::expr > ()), std::move(yystack_[2].value.as < ast::expr_arguments::ptr > ())); }
 #line 2398 "parser.cpp"
     break;
 
   case 71: // stmt_waittillmatch: expr_object "waittillmatch" "(" expr ")" ";"
-#line 420 "parser.ypp"
+#line 422 "parser.ypp"
         { yylhs.value.as < ast::stmt_waittillmatch::ptr > () = std::make_unique<ast::stmt_waittillmatch>(yylhs.location, std::move(yystack_[5].value.as < ast::expr > ()), std::move(yystack_[2].value.as < ast::expr > ()), std::make_unique<ast::expr_arguments>(yylhs.location)); }
 #line 2404 "parser.cpp"
     break;
 
   case 72: // stmt_waittillframeend: "waittillframeend" ";"
-#line 425 "parser.ypp"
+#line 427 "parser.ypp"
         { yylhs.value.as < ast::stmt_waittillframeend::ptr > () = std::make_unique<ast::stmt_waittillframeend>(yylhs.location); }
 #line 2410 "parser.cpp"
     break;
 
   case 73: // stmt_waitframe: "waitframe" ";"
-#line 430 "parser.ypp"
+#line 432 "parser.ypp"
         { yylhs.value.as < ast::stmt_waitframe::ptr > () = std::make_unique<ast::stmt_waitframe>(yylhs.location); }
 #line 2416 "parser.cpp"
     break;
 
   case 74: // stmt_waitframe: "waitframe" "(" ")" ";"
-#line 432 "parser.ypp"
+#line 434 "parser.ypp"
         { yylhs.value.as < ast::stmt_waitframe::ptr > () = std::make_unique<ast::stmt_waitframe>(yylhs.location); }
 #line 2422 "parser.cpp"
     break;
 
   case 75: // stmt_if: "if" "(" expr ")" stmt
-#line 437 "parser.ypp"
+#line 439 "parser.ypp"
         { yylhs.value.as < ast::stmt_if::ptr > () = std::make_unique<ast::stmt_if>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::stmt > ())); }
 #line 2428 "parser.cpp"
     break;
 
   case 76: // stmt_ifelse: "if" "(" expr ")" stmt "else" stmt
-#line 442 "parser.ypp"
+#line 444 "parser.ypp"
         { yylhs.value.as < ast::stmt_ifelse::ptr > () = std::make_unique<ast::stmt_ifelse>(yylhs.location, std::move(yystack_[4].value.as < ast::expr > ()), std::move(yystack_[2].value.as < ast::stmt > ()), std::move(yystack_[0].value.as < ast::stmt > ())); }
 #line 2434 "parser.cpp"
     break;
 
   case 77: // stmt_while: "while" "(" expr ")" stmt
-#line 447 "parser.ypp"
+#line 449 "parser.ypp"
         { yylhs.value.as < ast::stmt_while::ptr > () = std::make_unique<ast::stmt_while>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::stmt > ())); }
 #line 2440 "parser.cpp"
     break;
 
   case 78: // stmt_dowhile: "do" stmt "while" "(" expr ")" ";"
-#line 452 "parser.ypp"
+#line 454 "parser.ypp"
         { yylhs.value.as < ast::stmt_dowhile::ptr > () = std::make_unique<ast::stmt_dowhile>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[5].value.as < ast::stmt > ())); }
 #line 2446 "parser.cpp"
     break;
 
   case 79: // stmt_for: "for" "(" stmt_expr ";" expr_or_empty ";" stmt_expr ")" stmt
-#line 457 "parser.ypp"
+#line 459 "parser.ypp"
         { yylhs.value.as < ast::stmt_for::ptr > () = std::make_unique<ast::stmt_for>(yylhs.location, ast::stmt(std::move(yystack_[6].value.as < ast::stmt_expr::ptr > ())), std::move(yystack_[4].value.as < ast::expr > ()), ast::stmt(std::move(yystack_[2].value.as < ast::stmt_expr::ptr > ())), std::move(yystack_[0].value.as < ast::stmt > ())); }
 #line 2452 "parser.cpp"
     break;
 
   case 80: // stmt_foreach: "foreach" "(" expr_identifier "in" expr ")" stmt
-#line 462 "parser.ypp"
+#line 464 "parser.ypp"
         { yylhs.value.as < ast::stmt_foreach::ptr > () = std::make_unique<ast::stmt_foreach>(yylhs.location, ast::expr(std::move(yystack_[4].value.as < ast::expr_identifier::ptr > ())), std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::stmt > ())); }
 #line 2458 "parser.cpp"
     break;
 
   case 81: // stmt_foreach: "foreach" "(" expr_identifier "," expr_identifier "in" expr ")" stmt
-#line 464 "parser.ypp"
+#line 466 "parser.ypp"
         { yylhs.value.as < ast::stmt_foreach::ptr > () = std::make_unique<ast::stmt_foreach>(yylhs.location, ast::expr(std::move(yystack_[6].value.as < ast::expr_identifier::ptr > ())), ast::expr(std::move(yystack_[4].value.as < ast::expr_identifier::ptr > ())), std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::stmt > ())); }
 #line 2464 "parser.cpp"
     break;
 
   case 82: // stmt_switch: "switch" "(" expr ")" stmt_block
-#line 469 "parser.ypp"
+#line 471 "parser.ypp"
         { yylhs.value.as < ast::stmt_switch::ptr > () = std::make_unique<ast::stmt_switch>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::stmt_list::ptr > ())); }
 #line 2470 "parser.cpp"
     break;
 
   case 83: // stmt_case: "case" expr_integer ":"
-#line 474 "parser.ypp"
+#line 476 "parser.ypp"
         { yylhs.value.as < ast::stmt_case::ptr > () = std::make_unique<ast::stmt_case>(yylhs.location, ast::expr(std::move(yystack_[1].value.as < ast::expr_integer::ptr > ())), std::make_unique<ast::stmt_list>(yylhs.location)); }
 #line 2476 "parser.cpp"
     break;
 
   case 84: // stmt_case: "case" expr_string ":"
-#line 476 "parser.ypp"
+#line 478 "parser.ypp"
         { yylhs.value.as < ast::stmt_case::ptr > () = std::make_unique<ast::stmt_case>(yylhs.location, ast::expr(std::move(yystack_[1].value.as < ast::expr_string::ptr > ())), std::make_unique<ast::stmt_list>(yylhs.location)); }
 #line 2482 "parser.cpp"
     break;
 
   case 85: // stmt_default: "default" ":"
-#line 481 "parser.ypp"
+#line 483 "parser.ypp"
         { yylhs.value.as < ast::stmt_default::ptr > () = std::make_unique<ast::stmt_default>(yylhs.location, std::make_unique<ast::stmt_list>(yylhs.location)); }
 #line 2488 "parser.cpp"
     break;
 
   case 86: // stmt_break: "break" ";"
-#line 486 "parser.ypp"
+#line 488 "parser.ypp"
         { yylhs.value.as < ast::stmt_break::ptr > () = std::make_unique<ast::stmt_break>(yylhs.location); }
 #line 2494 "parser.cpp"
     break;
 
   case 87: // stmt_continue: "continue" ";"
-#line 491 "parser.ypp"
+#line 493 "parser.ypp"
         { yylhs.value.as < ast::stmt_continue::ptr > () = std::make_unique<ast::stmt_continue>(yylhs.location); }
 #line 2500 "parser.cpp"
     break;
 
   case 88: // stmt_return: "return" expr ";"
-#line 496 "parser.ypp"
+#line 498 "parser.ypp"
         { yylhs.value.as < ast::stmt_return::ptr > () = std::make_unique<ast::stmt_return>(yylhs.location, std::move(yystack_[1].value.as < ast::expr > ())); }
 #line 2506 "parser.cpp"
     break;
 
   case 89: // stmt_return: "return" ";"
-#line 498 "parser.ypp"
+#line 500 "parser.ypp"
         { yylhs.value.as < ast::stmt_return::ptr > () = std::make_unique<ast::stmt_return>(yylhs.location, std::make_unique<ast::node>(yylhs.location)); }
 #line 2512 "parser.cpp"
     break;
 
   case 90: // stmt_breakpoint: "breakpoint" ";"
-#line 503 "parser.ypp"
+#line 505 "parser.ypp"
         { yylhs.value.as < ast::stmt_breakpoint::ptr > () = std::make_unique<ast::stmt_breakpoint>(yylhs.location); }
 #line 2518 "parser.cpp"
     break;
 
   case 91: // stmt_prof_begin: "prof_begin" "(" expr_arguments ")" ";"
-#line 508 "parser.ypp"
+#line 510 "parser.ypp"
         { yylhs.value.as < ast::stmt_prof_begin::ptr > () = std::make_unique<ast::stmt_prof_begin>(yylhs.location, std::move(yystack_[2].value.as < ast::expr_arguments::ptr > ())); }
 #line 2524 "parser.cpp"
     break;
 
   case 92: // stmt_prof_end: "prof_end" "(" expr_arguments ")" ";"
-#line 513 "parser.ypp"
+#line 515 "parser.ypp"
         { yylhs.value.as < ast::stmt_prof_end::ptr > () = std::make_unique<ast::stmt_prof_end>(yylhs.location, std::move(yystack_[2].value.as < ast::expr_arguments::ptr > ())); }
 #line 2530 "parser.cpp"
     break;
 
   case 93: // expr: expr_ternary
-#line 517 "parser.ypp"
+#line 519 "parser.ypp"
                      { yylhs.value.as < ast::expr > () = std::move(yystack_[0].value.as < ast::expr > ()); }
 #line 2536 "parser.cpp"
     break;
 
   case 94: // expr: expr_binary
-#line 518 "parser.ypp"
+#line 520 "parser.ypp"
                      { yylhs.value.as < ast::expr > () = std::move(yystack_[0].value.as < ast::expr > ()); }
 #line 2542 "parser.cpp"
     break;
 
   case 95: // expr: expr_primitive
-#line 519 "parser.ypp"
+#line 521 "parser.ypp"
                      { yylhs.value.as < ast::expr > () = std::move(yystack_[0].value.as < ast::expr > ()); }
 #line 2548 "parser.cpp"
     break;
 
   case 96: // expr_or_empty: expr
-#line 523 "parser.ypp"
+#line 525 "parser.ypp"
                      { yylhs.value.as < ast::expr > () = std::move(yystack_[0].value.as < ast::expr > ()); }
 #line 2554 "parser.cpp"
     break;
 
   case 97: // expr_or_empty: %empty
-#line 524 "parser.ypp"
+#line 526 "parser.ypp"
                      { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::node>(yylhs.location); }
 #line 2560 "parser.cpp"
     break;
 
   case 98: // expr_assign: expr_object "=" expr
-#line 529 "parser.ypp"
+#line 531 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_assign_equal>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2566 "parser.cpp"
     break;
 
   case 99: // expr_assign: expr_object "|=" expr
-#line 531 "parser.ypp"
+#line 533 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_assign_bitwise_or>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2572 "parser.cpp"
     break;
 
   case 100: // expr_assign: expr_object "&=" expr
-#line 533 "parser.ypp"
+#line 535 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_assign_bitwise_and>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2578 "parser.cpp"
     break;
 
   case 101: // expr_assign: expr_object "^=" expr
-#line 535 "parser.ypp"
+#line 537 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_assign_bitwise_exor>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2584 "parser.cpp"
     break;
 
   case 102: // expr_assign: expr_object "<<=" expr
-#line 537 "parser.ypp"
+#line 539 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_assign_shift_left>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()),std::move( yystack_[0].value.as < ast::expr > ())); }
 #line 2590 "parser.cpp"
     break;
 
   case 103: // expr_assign: expr_object ">>=" expr
-#line 539 "parser.ypp"
+#line 541 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_assign_shift_right>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2596 "parser.cpp"
     break;
 
   case 104: // expr_assign: expr_object "+=" expr
-#line 541 "parser.ypp"
+#line 543 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_assign_add>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2602 "parser.cpp"
     break;
 
   case 105: // expr_assign: expr_object "-=" expr
-#line 543 "parser.ypp"
+#line 545 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_assign_sub>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2608 "parser.cpp"
     break;
 
   case 106: // expr_assign: expr_object "*=" expr
-#line 545 "parser.ypp"
+#line 547 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_assign_mul>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2614 "parser.cpp"
     break;
 
   case 107: // expr_assign: expr_object "/=" expr
-#line 547 "parser.ypp"
+#line 549 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_assign_div>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2620 "parser.cpp"
     break;
 
   case 108: // expr_assign: expr_object "%=" expr
-#line 549 "parser.ypp"
+#line 551 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_assign_mod>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2626 "parser.cpp"
     break;
 
   case 109: // expr_increment: "++" expr_object
-#line 554 "parser.ypp"
+#line 556 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_increment>(yylhs.location, std::move(yystack_[0].value.as < ast::expr > ()), true); }
 #line 2632 "parser.cpp"
     break;
 
   case 110: // expr_increment: expr_object "++"
-#line 556 "parser.ypp"
+#line 558 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_increment>(yylhs.location, std::move(yystack_[1].value.as < ast::expr > ()), false); }
 #line 2638 "parser.cpp"
     break;
 
   case 111: // expr_decrement: "--" expr_object
-#line 561 "parser.ypp"
+#line 563 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_decrement>(yylhs.location, std::move(yystack_[0].value.as < ast::expr > ()), true); }
 #line 2644 "parser.cpp"
     break;
 
   case 112: // expr_decrement: expr_object "--"
-#line 563 "parser.ypp"
+#line 565 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_decrement>(yylhs.location, std::move(yystack_[1].value.as < ast::expr > ()), false); }
 #line 2650 "parser.cpp"
     break;
 
   case 113: // expr_ternary: expr "?" expr ":" expr
-#line 568 "parser.ypp"
+#line 570 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_ternary>(yylhs.location, std::move(yystack_[4].value.as < ast::expr > ()), std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2656 "parser.cpp"
     break;
 
   case 114: // expr_binary: expr "||" expr
-#line 573 "parser.ypp"
+#line 575 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_or>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2662 "parser.cpp"
     break;
 
   case 115: // expr_binary: expr "&&" expr
-#line 575 "parser.ypp"
+#line 577 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_and>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2668 "parser.cpp"
     break;
 
   case 116: // expr_binary: expr "==" expr
-#line 577 "parser.ypp"
+#line 579 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_equality>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2674 "parser.cpp"
     break;
 
   case 117: // expr_binary: expr "!=" expr
-#line 579 "parser.ypp"
+#line 581 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_inequality>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2680 "parser.cpp"
     break;
 
   case 118: // expr_binary: expr "<=" expr
-#line 581 "parser.ypp"
+#line 583 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_less_equal>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2686 "parser.cpp"
     break;
 
   case 119: // expr_binary: expr ">=" expr
-#line 583 "parser.ypp"
+#line 585 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_greater_equal>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2692 "parser.cpp"
     break;
 
   case 120: // expr_binary: expr "<" expr
-#line 585 "parser.ypp"
+#line 587 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_less>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2698 "parser.cpp"
     break;
 
   case 121: // expr_binary: expr ">" expr
-#line 587 "parser.ypp"
+#line 589 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_greater>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2704 "parser.cpp"
     break;
 
   case 122: // expr_binary: expr "|" expr
-#line 589 "parser.ypp"
+#line 591 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_bitwise_or>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2710 "parser.cpp"
     break;
 
   case 123: // expr_binary: expr "&" expr
-#line 591 "parser.ypp"
+#line 593 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_bitwise_and>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2716 "parser.cpp"
     break;
 
   case 124: // expr_binary: expr "^" expr
-#line 593 "parser.ypp"
+#line 595 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_bitwise_exor>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2722 "parser.cpp"
     break;
 
   case 125: // expr_binary: expr "<<" expr
-#line 595 "parser.ypp"
+#line 597 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_shift_left>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2728 "parser.cpp"
     break;
 
   case 126: // expr_binary: expr ">>" expr
-#line 597 "parser.ypp"
+#line 599 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_shift_right>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2734 "parser.cpp"
     break;
 
   case 127: // expr_binary: expr "+" expr
-#line 599 "parser.ypp"
+#line 601 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_add>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2740 "parser.cpp"
     break;
 
   case 128: // expr_binary: expr "-" expr
-#line 601 "parser.ypp"
+#line 603 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_sub>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2746 "parser.cpp"
     break;
 
   case 129: // expr_binary: expr "*" expr
-#line 603 "parser.ypp"
+#line 605 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_mul>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2752 "parser.cpp"
     break;
 
   case 130: // expr_binary: expr "/" expr
-#line 605 "parser.ypp"
+#line 607 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_div>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2758 "parser.cpp"
     break;
 
   case 131: // expr_binary: expr "%" expr
-#line 607 "parser.ypp"
+#line 609 "parser.ypp"
         { yylhs.value.as < ast::expr > ().as_node = std::make_unique<ast::expr_mod>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2764 "parser.cpp"
     break;
 
   case 132: // expr_primitive: expr_complement
-#line 611 "parser.ypp"
+#line 613 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_complement::ptr > ()); }
 #line 2770 "parser.cpp"
     break;
 
   case 133: // expr_primitive: expr_not
-#line 612 "parser.ypp"
+#line 614 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_not::ptr > ()); }
 #line 2776 "parser.cpp"
     break;
 
   case 134: // expr_primitive: expr_call
-#line 613 "parser.ypp"
+#line 615 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_call::ptr > ()); }
 #line 2782 "parser.cpp"
     break;
 
   case 135: // expr_primitive: expr_method
-#line 614 "parser.ypp"
+#line 616 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_method::ptr > ()); }
 #line 2788 "parser.cpp"
     break;
 
   case 136: // expr_primitive: expr_add_array
-#line 615 "parser.ypp"
+#line 617 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_add_array::ptr > ()); }
 #line 2794 "parser.cpp"
     break;
 
   case 137: // expr_primitive: expr_reference
-#line 616 "parser.ypp"
+#line 618 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_reference::ptr > ()); }
 #line 2800 "parser.cpp"
     break;
 
   case 138: // expr_primitive: expr_array
-#line 617 "parser.ypp"
+#line 619 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_array::ptr > ()); }
 #line 2806 "parser.cpp"
     break;
 
   case 139: // expr_primitive: expr_field
-#line 618 "parser.ypp"
+#line 620 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_field::ptr > ()); }
 #line 2812 "parser.cpp"
     break;
 
   case 140: // expr_primitive: expr_size
-#line 619 "parser.ypp"
+#line 621 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_size::ptr > ()); }
 #line 2818 "parser.cpp"
     break;
 
   case 141: // expr_primitive: expr_paren
-#line 620 "parser.ypp"
+#line 622 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_paren::ptr > ()); }
 #line 2824 "parser.cpp"
     break;
 
   case 142: // expr_primitive: expr_thisthread
-#line 621 "parser.ypp"
+#line 623 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_thisthread::ptr > ()); }
 #line 2830 "parser.cpp"
     break;
 
   case 143: // expr_primitive: expr_empty_array
-#line 622 "parser.ypp"
+#line 624 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_empty_array::ptr > ()); }
 #line 2836 "parser.cpp"
     break;
 
   case 144: // expr_primitive: expr_undefined
-#line 623 "parser.ypp"
+#line 625 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_undefined::ptr > ()); }
 #line 2842 "parser.cpp"
     break;
 
   case 145: // expr_primitive: expr_game
-#line 624 "parser.ypp"
+#line 626 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_game::ptr > ()); }
 #line 2848 "parser.cpp"
     break;
 
   case 146: // expr_primitive: expr_self
-#line 625 "parser.ypp"
+#line 627 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_self::ptr > ()); }
 #line 2854 "parser.cpp"
     break;
 
   case 147: // expr_primitive: expr_anim
-#line 626 "parser.ypp"
+#line 628 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_anim::ptr > ()); }
 #line 2860 "parser.cpp"
     break;
 
   case 148: // expr_primitive: expr_level
-#line 627 "parser.ypp"
+#line 629 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_level::ptr > ()); }
 #line 2866 "parser.cpp"
     break;
 
   case 149: // expr_primitive: expr_animation
-#line 628 "parser.ypp"
+#line 630 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_animation::ptr > ()); }
 #line 2872 "parser.cpp"
     break;
 
   case 150: // expr_primitive: expr_animtree
-#line 629 "parser.ypp"
+#line 631 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_animtree::ptr > ()); }
 #line 2878 "parser.cpp"
     break;
 
   case 151: // expr_primitive: expr_identifier
-#line 630 "parser.ypp"
+#line 632 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_identifier::ptr > ()); }
 #line 2884 "parser.cpp"
     break;
 
   case 152: // expr_primitive: expr_istring
-#line 631 "parser.ypp"
+#line 633 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_istring::ptr > ()); }
 #line 2890 "parser.cpp"
     break;
 
   case 153: // expr_primitive: expr_string
-#line 632 "parser.ypp"
+#line 634 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_string::ptr > ()); }
 #line 2896 "parser.cpp"
     break;
 
   case 154: // expr_primitive: expr_vector
-#line 633 "parser.ypp"
+#line 635 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_vector::ptr > ()); }
 #line 2902 "parser.cpp"
     break;
 
   case 155: // expr_primitive: expr_float
-#line 634 "parser.ypp"
+#line 636 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_float::ptr > ()); }
 #line 2908 "parser.cpp"
     break;
 
   case 156: // expr_primitive: expr_integer
-#line 635 "parser.ypp"
+#line 637 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_integer::ptr > ()); }
 #line 2914 "parser.cpp"
     break;
 
   case 157: // expr_primitive: expr_false
-#line 636 "parser.ypp"
+#line 638 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_false::ptr > ()); }
 #line 2920 "parser.cpp"
     break;
 
   case 158: // expr_primitive: expr_true
-#line 637 "parser.ypp"
+#line 639 "parser.ypp"
                             { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_true::ptr > ()); }
 #line 2926 "parser.cpp"
     break;
 
   case 159: // expr_complement: "~" expr
-#line 642 "parser.ypp"
+#line 644 "parser.ypp"
         { yylhs.value.as < ast::expr_complement::ptr > () = std::make_unique<ast::expr_complement>(yylhs.location, std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2932 "parser.cpp"
     break;
 
   case 160: // expr_not: "!" expr
-#line 647 "parser.ypp"
+#line 649 "parser.ypp"
         { yylhs.value.as < ast::expr_not::ptr > () = std::make_unique<ast::expr_not>(yylhs.location, std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 2938 "parser.cpp"
     break;
 
   case 161: // expr_call: expr_function
-#line 651 "parser.ypp"
+#line 653 "parser.ypp"
                                    { yylhs.value.as < ast::expr_call::ptr > () = std::make_unique<ast::expr_call>(yylhs.location, std::move(yystack_[0].value.as < ast::call > ())); }
 #line 2944 "parser.cpp"
     break;
 
   case 162: // expr_call: expr_pointer
-#line 652 "parser.ypp"
+#line 654 "parser.ypp"
                                    { yylhs.value.as < ast::expr_call::ptr > () = std::make_unique<ast::expr_call>(yylhs.location, std::move(yystack_[0].value.as < ast::call > ())); }
 #line 2950 "parser.cpp"
     break;
 
   case 163: // expr_method: expr_object expr_function
-#line 655 "parser.ypp"
+#line 657 "parser.ypp"
                                    { yylhs.value.as < ast::expr_method::ptr > () = std::make_unique<ast::expr_method>(yylhs.location, std::move(yystack_[1].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::call > ())); }
 #line 2956 "parser.cpp"
     break;
 
   case 164: // expr_method: expr_object expr_pointer
-#line 656 "parser.ypp"
+#line 658 "parser.ypp"
                                    { yylhs.value.as < ast::expr_method::ptr > () = std::make_unique<ast::expr_method>(yylhs.location, std::move(yystack_[1].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::call > ())); }
 #line 2962 "parser.cpp"
     break;
 
   case 165: // expr_function: expr_identifier "(" expr_arguments ")"
-#line 661 "parser.ypp"
+#line 663 "parser.ypp"
         { yylhs.value.as < ast::call > ().as_function = std::make_unique<ast::expr_function>(yylhs.location, std::make_unique<ast::expr_path>(yylhs.location), std::move(yystack_[3].value.as < ast::expr_identifier::ptr > ()), std::move(yystack_[1].value.as < ast::expr_arguments::ptr > ()), ast::call::mode::normal); }
 #line 2968 "parser.cpp"
     break;
 
   case 166: // expr_function: expr_path "::" expr_identifier "(" expr_arguments ")"
-#line 663 "parser.ypp"
+#line 665 "parser.ypp"
         { yylhs.value.as < ast::call > ().as_function = std::make_unique<ast::expr_function>(yylhs.location, std::move(yystack_[5].value.as < ast::expr_path::ptr > ()), std::move(yystack_[3].value.as < ast::expr_identifier::ptr > ()), std::move(yystack_[1].value.as < ast::expr_arguments::ptr > ()), ast::call::mode::normal); }
 #line 2974 "parser.cpp"
     break;
 
   case 167: // expr_function: "thread" expr_identifier "(" expr_arguments ")"
-#line 665 "parser.ypp"
+#line 667 "parser.ypp"
         { yylhs.value.as < ast::call > ().as_function = std::make_unique<ast::expr_function>(yylhs.location, std::make_unique<ast::expr_path>(yylhs.location), std::move(yystack_[3].value.as < ast::expr_identifier::ptr > ()), std::move(yystack_[1].value.as < ast::expr_arguments::ptr > ()), ast::call::mode::thread); }
 #line 2980 "parser.cpp"
     break;
 
   case 168: // expr_function: "thread" expr_path "::" expr_identifier "(" expr_arguments ")"
-#line 667 "parser.ypp"
+#line 669 "parser.ypp"
         { yylhs.value.as < ast::call > ().as_function = std::make_unique<ast::expr_function>(yylhs.location, std::move(yystack_[5].value.as < ast::expr_path::ptr > ()), std::move(yystack_[3].value.as < ast::expr_identifier::ptr > ()), std::move(yystack_[1].value.as < ast::expr_arguments::ptr > ()), ast::call::mode::thread); }
 #line 2986 "parser.cpp"
     break;
 
   case 169: // expr_function: "childthread" expr_identifier "(" expr_arguments ")"
-#line 669 "parser.ypp"
+#line 671 "parser.ypp"
         { yylhs.value.as < ast::call > ().as_function = std::make_unique<ast::expr_function>(yylhs.location, std::make_unique<ast::expr_path>(yylhs.location), std::move(yystack_[3].value.as < ast::expr_identifier::ptr > ()), std::move(yystack_[1].value.as < ast::expr_arguments::ptr > ()), ast::call::mode::childthread); }
 #line 2992 "parser.cpp"
     break;
 
   case 170: // expr_function: "childthread" expr_path "::" expr_identifier "(" expr_arguments ")"
-#line 671 "parser.ypp"
+#line 673 "parser.ypp"
         { yylhs.value.as < ast::call > ().as_function = std::make_unique<ast::expr_function>(yylhs.location, std::move(yystack_[5].value.as < ast::expr_path::ptr > ()), std::move(yystack_[3].value.as < ast::expr_identifier::ptr > ()), std::move(yystack_[1].value.as < ast::expr_arguments::ptr > ()), ast::call::mode::childthread); }
 #line 2998 "parser.cpp"
     break;
 
   case 171: // expr_pointer: "[" "[" expr "]" "]" "(" expr_arguments ")"
-#line 676 "parser.ypp"
+#line 678 "parser.ypp"
         { yylhs.value.as < ast::call > ().as_pointer = std::make_unique<ast::expr_pointer>(yylhs.location, std::move(yystack_[5].value.as < ast::expr > ()), std::move(yystack_[1].value.as < ast::expr_arguments::ptr > ()), ast::call::mode::normal); }
 #line 3004 "parser.cpp"
     break;
 
   case 172: // expr_pointer: "thread" "[" "[" expr "]" "]" "(" expr_arguments ")"
-#line 678 "parser.ypp"
+#line 680 "parser.ypp"
         { yylhs.value.as < ast::call > ().as_pointer = std::make_unique<ast::expr_pointer>(yylhs.location, std::move(yystack_[5].value.as < ast::expr > ()), std::move(yystack_[1].value.as < ast::expr_arguments::ptr > ()), ast::call::mode::thread); }
 #line 3010 "parser.cpp"
     break;
 
   case 173: // expr_pointer: "childthread" "[" "[" expr "]" "]" "(" expr_arguments ")"
-#line 680 "parser.ypp"
+#line 682 "parser.ypp"
         { yylhs.value.as < ast::call > ().as_pointer = std::make_unique<ast::expr_pointer>(yylhs.location, std::move(yystack_[5].value.as < ast::expr > ()), std::move(yystack_[1].value.as < ast::expr_arguments::ptr > ()), ast::call::mode::childthread); }
 #line 3016 "parser.cpp"
     break;
 
   case 174: // expr_pointer: "call" "[" "[" expr "]" "]" "(" expr_arguments ")"
-#line 682 "parser.ypp"
+#line 684 "parser.ypp"
         { yylhs.value.as < ast::call > ().as_pointer = std::make_unique<ast::expr_pointer>(yylhs.location, std::move(yystack_[5].value.as < ast::expr > ()), std::move(yystack_[1].value.as < ast::expr_arguments::ptr > ()), ast::call::mode::builtin); }
 #line 3022 "parser.cpp"
     break;
 
   case 175: // expr_add_array: "[" expr_arguments_no_empty "]"
-#line 687 "parser.ypp"
+#line 689 "parser.ypp"
         { yylhs.value.as < ast::expr_add_array::ptr > () = std::make_unique<ast::expr_add_array>(yylhs.location, std::move(yystack_[1].value.as < ast::expr_arguments::ptr > ())); }
 #line 3028 "parser.cpp"
     break;
 
   case 176: // expr_parameters: expr_parameters "," expr_identifier
-#line 692 "parser.ypp"
+#line 694 "parser.ypp"
         { yylhs.value.as < ast::expr_parameters::ptr > () = std::move(yystack_[2].value.as < ast::expr_parameters::ptr > ()); yylhs.value.as < ast::expr_parameters::ptr > ()->list.push_back(std::move(yystack_[0].value.as < ast::expr_identifier::ptr > ())); }
 #line 3034 "parser.cpp"
     break;
 
   case 177: // expr_parameters: expr_identifier
-#line 694 "parser.ypp"
+#line 696 "parser.ypp"
         { yylhs.value.as < ast::expr_parameters::ptr > () = std::make_unique<ast::expr_parameters>(yylhs.location); yylhs.value.as < ast::expr_parameters::ptr > ()->list.push_back(std::move(yystack_[0].value.as < ast::expr_identifier::ptr > ())); }
 #line 3040 "parser.cpp"
     break;
 
   case 178: // expr_parameters: %empty
-#line 696 "parser.ypp"
+#line 698 "parser.ypp"
         { yylhs.value.as < ast::expr_parameters::ptr > () = std::make_unique<ast::expr_parameters>(yylhs.location); }
 #line 3046 "parser.cpp"
     break;
 
   case 179: // expr_arguments: expr_arguments_no_empty
-#line 701 "parser.ypp"
+#line 703 "parser.ypp"
         { yylhs.value.as < ast::expr_arguments::ptr > () = std::move(yystack_[0].value.as < ast::expr_arguments::ptr > ()); }
 #line 3052 "parser.cpp"
     break;
 
   case 180: // expr_arguments: %empty
-#line 703 "parser.ypp"
+#line 705 "parser.ypp"
         { yylhs.value.as < ast::expr_arguments::ptr > () = std::make_unique<ast::expr_arguments>(yylhs.location); }
 #line 3058 "parser.cpp"
     break;
 
   case 181: // expr_arguments_no_empty: expr_arguments "," expr
-#line 708 "parser.ypp"
+#line 710 "parser.ypp"
         { yylhs.value.as < ast::expr_arguments::ptr > () = std::move(yystack_[2].value.as < ast::expr_arguments::ptr > ()); yylhs.value.as < ast::expr_arguments::ptr > ()->list.push_back(std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 3064 "parser.cpp"
     break;
 
   case 182: // expr_arguments_no_empty: expr
-#line 710 "parser.ypp"
+#line 712 "parser.ypp"
         { yylhs.value.as < ast::expr_arguments::ptr > () = std::make_unique<ast::expr_arguments>(yylhs.location); yylhs.value.as < ast::expr_arguments::ptr > ()->list.push_back(std::move(yystack_[0].value.as < ast::expr > ())); }
 #line 3070 "parser.cpp"
     break;
 
   case 183: // expr_reference: "::" expr_identifier
-#line 715 "parser.ypp"
+#line 717 "parser.ypp"
         { yylhs.value.as < ast::expr_reference::ptr > () = std::make_unique<ast::expr_reference>(yylhs.location, std::make_unique<ast::expr_path>(yylhs.location), std::move(yystack_[0].value.as < ast::expr_identifier::ptr > ())); }
 #line 3076 "parser.cpp"
     break;
 
   case 184: // expr_reference: expr_path "::" expr_identifier
-#line 717 "parser.ypp"
+#line 719 "parser.ypp"
         { yylhs.value.as < ast::expr_reference::ptr > () = std::make_unique<ast::expr_reference>(yylhs.location, std::move(yystack_[2].value.as < ast::expr_path::ptr > ()), std::move(yystack_[0].value.as < ast::expr_identifier::ptr > ())); }
 #line 3082 "parser.cpp"
     break;
 
   case 185: // expr_array: expr_object "[" expr "]"
-#line 722 "parser.ypp"
+#line 724 "parser.ypp"
         { yylhs.value.as < ast::expr_array::ptr > () = std::make_unique<ast::expr_array>(yylhs.location, std::move(yystack_[3].value.as < ast::expr > ()), std::move(yystack_[1].value.as < ast::expr > ())); }
 #line 3088 "parser.cpp"
     break;
 
   case 186: // expr_field: expr_object "." expr_identifier_nosize
-#line 727 "parser.ypp"
+#line 729 "parser.ypp"
         { yylhs.value.as < ast::expr_field::ptr > () = std::make_unique<ast::expr_field>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ()), std::move(yystack_[0].value.as < ast::expr_identifier::ptr > ())); }
 #line 3094 "parser.cpp"
     break;
 
   case 187: // expr_size: expr_object "." "size"
-#line 732 "parser.ypp"
+#line 734 "parser.ypp"
         { yylhs.value.as < ast::expr_size::ptr > () = std::make_unique<ast::expr_size>(yylhs.location, std::move(yystack_[2].value.as < ast::expr > ())); }
 #line 3100 "parser.cpp"
     break;
 
   case 188: // expr_paren: "(" expr ")"
-#line 737 "parser.ypp"
+#line 739 "parser.ypp"
         { yylhs.value.as < ast::expr_paren::ptr > () = std::make_unique<ast::expr_paren>(yylhs.location, std::move(yystack_[1].value.as < ast::expr > ())); }
 #line 3106 "parser.cpp"
     break;
 
   case 189: // expr_object: expr_call
-#line 741 "parser.ypp"
+#line 743 "parser.ypp"
                       { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_call::ptr > ()); }
 #line 3112 "parser.cpp"
     break;
 
   case 190: // expr_object: expr_method
-#line 742 "parser.ypp"
+#line 744 "parser.ypp"
                       { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_method::ptr > ()); }
 #line 3118 "parser.cpp"
     break;
 
   case 191: // expr_object: expr_array
-#line 743 "parser.ypp"
+#line 745 "parser.ypp"
                       { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_array::ptr > ()); }
 #line 3124 "parser.cpp"
     break;
 
   case 192: // expr_object: expr_field
-#line 744 "parser.ypp"
+#line 746 "parser.ypp"
                       { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_field::ptr > ()); }
 #line 3130 "parser.cpp"
     break;
 
   case 193: // expr_object: expr_game
-#line 745 "parser.ypp"
+#line 747 "parser.ypp"
                       { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_game::ptr > ()); }
 #line 3136 "parser.cpp"
     break;
 
   case 194: // expr_object: expr_self
-#line 746 "parser.ypp"
+#line 748 "parser.ypp"
                       { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_self::ptr > ()); }
 #line 3142 "parser.cpp"
     break;
 
   case 195: // expr_object: expr_anim
-#line 747 "parser.ypp"
+#line 749 "parser.ypp"
                       { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_anim::ptr > ()); }
 #line 3148 "parser.cpp"
     break;
 
   case 196: // expr_object: expr_level
-#line 748 "parser.ypp"
+#line 750 "parser.ypp"
                       { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_level::ptr > ()); }
 #line 3154 "parser.cpp"
     break;
 
   case 197: // expr_object: expr_identifier
-#line 749 "parser.ypp"
+#line 751 "parser.ypp"
                       { yylhs.value.as < ast::expr > ().as_node = std::move(yystack_[0].value.as < ast::expr_identifier::ptr > ()); }
 #line 3160 "parser.cpp"
     break;
 
   case 198: // expr_thisthread: "thisthread"
-#line 754 "parser.ypp"
+#line 756 "parser.ypp"
         { yylhs.value.as < ast::expr_thisthread::ptr > () = std::make_unique<ast::expr_thisthread>(yylhs.location); }
 #line 3166 "parser.cpp"
     break;
 
   case 199: // expr_empty_array: "[" "]"
-#line 759 "parser.ypp"
+#line 761 "parser.ypp"
         { yylhs.value.as < ast::expr_empty_array::ptr > () = std::make_unique<ast::expr_empty_array>(yylhs.location); }
 #line 3172 "parser.cpp"
     break;
 
   case 200: // expr_undefined: "undefined"
-#line 764 "parser.ypp"
+#line 766 "parser.ypp"
         { yylhs.value.as < ast::expr_undefined::ptr > () = std::make_unique<ast::expr_undefined>(yylhs.location); }
 #line 3178 "parser.cpp"
     break;
 
   case 201: // expr_game: "game"
-#line 769 "parser.ypp"
+#line 771 "parser.ypp"
         { yylhs.value.as < ast::expr_game::ptr > () = std::make_unique<ast::expr_game>(yylhs.location); }
 #line 3184 "parser.cpp"
     break;
 
   case 202: // expr_self: "self"
-#line 774 "parser.ypp"
+#line 776 "parser.ypp"
         { yylhs.value.as < ast::expr_self::ptr > () = std::make_unique<ast::expr_self>(yylhs.location); }
 #line 3190 "parser.cpp"
     break;
 
   case 203: // expr_anim: "anim"
-#line 779 "parser.ypp"
+#line 781 "parser.ypp"
         { yylhs.value.as < ast::expr_anim::ptr > () = std::make_unique<ast::expr_anim>(yylhs.location); }
 #line 3196 "parser.cpp"
     break;
 
   case 204: // expr_level: "level"
-#line 784 "parser.ypp"
+#line 786 "parser.ypp"
         { yylhs.value.as < ast::expr_level::ptr > () = std::make_unique<ast::expr_level>(yylhs.location); }
 #line 3202 "parser.cpp"
     break;
 
   case 205: // expr_animation: "%" "identifier"
-#line 789 "parser.ypp"
+#line 791 "parser.ypp"
         { yylhs.value.as < ast::expr_animation::ptr > () = std::make_unique<ast::expr_animation>(yylhs.location, yystack_[0].value.as < std::string > ()); }
 #line 3208 "parser.cpp"
     break;
 
   case 206: // expr_animtree: "#animtree"
-#line 794 "parser.ypp"
+#line 796 "parser.ypp"
         { yylhs.value.as < ast::expr_animtree::ptr > () = std::make_unique<ast::expr_animtree>(yylhs.location); }
 #line 3214 "parser.cpp"
     break;
 
   case 207: // expr_identifier_nosize: "identifier"
-#line 799 "parser.ypp"
+#line 801 "parser.ypp"
         { yylhs.value.as < ast::expr_identifier::ptr > () = std::make_unique<ast::expr_identifier>(yylhs.location, yystack_[0].value.as < std::string > ()); }
 #line 3220 "parser.cpp"
     break;
 
   case 208: // expr_identifier: "identifier"
-#line 804 "parser.ypp"
+#line 806 "parser.ypp"
         { yylhs.value.as < ast::expr_identifier::ptr > () = std::make_unique<ast::expr_identifier>(yylhs.location, yystack_[0].value.as < std::string > ()); }
 #line 3226 "parser.cpp"
     break;
 
   case 209: // expr_identifier: "size"
-#line 806 "parser.ypp"
+#line 808 "parser.ypp"
         { yylhs.value.as < ast::expr_identifier::ptr > () = std::make_unique<ast::expr_identifier>(yylhs.location, "size"); }
 #line 3232 "parser.cpp"
     break;
 
   case 210: // expr_path: "identifier"
-#line 811 "parser.ypp"
+#line 813 "parser.ypp"
         { yylhs.value.as < ast::expr_path::ptr > () = std::make_unique<ast::expr_path>(yylhs.location, yystack_[0].value.as < std::string > ()); }
 #line 3238 "parser.cpp"
     break;
 
   case 211: // expr_path: "path"
-#line 813 "parser.ypp"
+#line 815 "parser.ypp"
         { yylhs.value.as < ast::expr_path::ptr > () = std::make_unique<ast::expr_path>(yylhs.location, yystack_[0].value.as < std::string > ()); }
 #line 3244 "parser.cpp"
     break;
 
   case 212: // expr_istring: "localized string"
-#line 818 "parser.ypp"
+#line 820 "parser.ypp"
         { yylhs.value.as < ast::expr_istring::ptr > () = std::make_unique<ast::expr_istring>(yylhs.location, yystack_[0].value.as < std::string > ()); }
 #line 3250 "parser.cpp"
     break;
 
   case 213: // expr_string: "string literal"
-#line 823 "parser.ypp"
+#line 825 "parser.ypp"
         { yylhs.value.as < ast::expr_string::ptr > () = std::make_unique<ast::expr_string>(yylhs.location, yystack_[0].value.as < std::string > ()); }
 #line 3256 "parser.cpp"
     break;
 
   case 214: // expr_vector: "(" expr "," expr "," expr ")"
-#line 828 "parser.ypp"
+#line 830 "parser.ypp"
         { yylhs.value.as < ast::expr_vector::ptr > () = std::make_unique<ast::expr_vector>(yylhs.location, std::move(yystack_[5].value.as < ast::expr > ()), std::move(yystack_[3].value.as < ast::expr > ()), std::move(yystack_[1].value.as < ast::expr > ())); }
 #line 3262 "parser.cpp"
     break;
 
   case 215: // expr_float: "-" "float"
-#line 833 "parser.ypp"
+#line 835 "parser.ypp"
         { yylhs.value.as < ast::expr_float::ptr > () = std::make_unique<ast::expr_float>(yylhs.location, "-" + yystack_[0].value.as < std::string > ()); }
 #line 3268 "parser.cpp"
     break;
 
   case 216: // expr_float: "float"
-#line 835 "parser.ypp"
+#line 837 "parser.ypp"
         { yylhs.value.as < ast::expr_float::ptr > () = std::make_unique<ast::expr_float>(yylhs.location, yystack_[0].value.as < std::string > ()); }
 #line 3274 "parser.cpp"
     break;
 
   case 217: // expr_integer: "-" "integer"
-#line 840 "parser.ypp"
+#line 842 "parser.ypp"
         { yylhs.value.as < ast::expr_integer::ptr > () = std::make_unique<ast::expr_integer>(yylhs.location, "-" + yystack_[0].value.as < std::string > ()); }
 #line 3280 "parser.cpp"
     break;
 
   case 218: // expr_integer: "integer"
-#line 842 "parser.ypp"
+#line 844 "parser.ypp"
         { yylhs.value.as < ast::expr_integer::ptr > () = std::make_unique<ast::expr_integer>(yylhs.location, yystack_[0].value.as < std::string > ()); }
 #line 3286 "parser.cpp"
     break;
 
   case 219: // expr_false: "false"
-#line 847 "parser.ypp"
+#line 849 "parser.ypp"
         { yylhs.value.as < ast::expr_false::ptr > () = std::make_unique<ast::expr_false>(yylhs.location); }
 #line 3292 "parser.cpp"
     break;
 
   case 220: // expr_true: "true"
-#line 852 "parser.ypp"
+#line 854 "parser.ypp"
         { yylhs.value.as < ast::expr_true::ptr > () = std::make_unique<ast::expr_true>(yylhs.location); }
 #line 3298 "parser.cpp"
     break;
@@ -3562,6 +3562,8 @@ namespace xsk { namespace gsc { namespace h1 {
   }
 
 
+
+
   bool
   parser::yy_lac_check_ (symbol_kind_type yytoken) const
   {
@@ -3666,7 +3668,9 @@ namespace xsk { namespace gsc { namespace h1 {
        follows.  If no initial context is currently established for the
        current lookahead, then check if that lookahead can eventually be
        shifted if syntactic actions continue from the current context.  */
-    if (!yy_lac_established_)
+    if (yy_lac_established_)
+      return true;
+    else
       {
 #if H1DEBUG
         YYCDEBUG << "LAC: initial context established for "
@@ -3675,12 +3679,11 @@ namespace xsk { namespace gsc { namespace h1 {
         yy_lac_established_ = true;
         return yy_lac_check_ (yytoken);
       }
-    return true;
   }
 
   // Discard any previous initial lookahead context.
   void
-  parser::yy_lac_discard_ (const char* evt)
+  parser::yy_lac_discard_ (const char* event)
   {
    /* Discard any previous initial lookahead context because of Event,
       which may be a lookahead change or an invalidation of the currently
@@ -3696,10 +3699,11 @@ namespace xsk { namespace gsc { namespace h1 {
     if (yy_lac_established_)
       {
         YYCDEBUG << "LAC: initial context discarded due to "
-                 << evt << '\n';
+                 << event << '\n';
         yy_lac_established_ = false;
       }
   }
+
 
   int
   parser::yy_syntax_error_arguments_ (const context& yyctx,
@@ -4487,29 +4491,29 @@ namespace xsk { namespace gsc { namespace h1 {
   const short
   parser::yyrline_[] =
   {
-       0,   257,   257,   258,   262,   264,   266,   268,   270,   272,
-     277,   281,   286,   287,   288,   289,   290,   294,   299,   304,
-     309,   310,   311,   312,   313,   314,   315,   316,   317,   318,
-     319,   320,   321,   322,   323,   324,   325,   326,   327,   328,
-     329,   330,   331,   332,   333,   337,   338,   342,   344,   349,
-     351,   356,   357,   361,   362,   366,   368,   370,   373,   377,
-     379,   384,   386,   388,   393,   398,   400,   405,   410,   412,
-     417,   419,   424,   429,   431,   436,   441,   446,   451,   456,
-     461,   463,   468,   473,   475,   480,   485,   490,   495,   497,
-     502,   507,   512,   517,   518,   519,   523,   524,   528,   530,
-     532,   534,   536,   538,   540,   542,   544,   546,   548,   553,
-     555,   560,   562,   567,   572,   574,   576,   578,   580,   582,
-     584,   586,   588,   590,   592,   594,   596,   598,   600,   602,
-     604,   606,   611,   612,   613,   614,   615,   616,   617,   618,
-     619,   620,   621,   622,   623,   624,   625,   626,   627,   628,
-     629,   630,   631,   632,   633,   634,   635,   636,   637,   641,
-     646,   651,   652,   655,   656,   660,   662,   664,   666,   668,
-     670,   675,   677,   679,   681,   686,   691,   693,   696,   700,
-     703,   707,   709,   714,   716,   721,   726,   731,   736,   741,
-     742,   743,   744,   745,   746,   747,   748,   749,   753,   758,
-     763,   768,   773,   778,   783,   788,   793,   798,   803,   805,
-     810,   812,   817,   822,   827,   832,   834,   839,   841,   846,
-     851
+       0,   259,   259,   260,   264,   266,   268,   270,   272,   274,
+     279,   283,   288,   289,   290,   291,   292,   296,   301,   306,
+     311,   312,   313,   314,   315,   316,   317,   318,   319,   320,
+     321,   322,   323,   324,   325,   326,   327,   328,   329,   330,
+     331,   332,   333,   334,   335,   339,   340,   344,   346,   351,
+     353,   358,   359,   363,   364,   368,   370,   372,   375,   379,
+     381,   386,   388,   390,   395,   400,   402,   407,   412,   414,
+     419,   421,   426,   431,   433,   438,   443,   448,   453,   458,
+     463,   465,   470,   475,   477,   482,   487,   492,   497,   499,
+     504,   509,   514,   519,   520,   521,   525,   526,   530,   532,
+     534,   536,   538,   540,   542,   544,   546,   548,   550,   555,
+     557,   562,   564,   569,   574,   576,   578,   580,   582,   584,
+     586,   588,   590,   592,   594,   596,   598,   600,   602,   604,
+     606,   608,   613,   614,   615,   616,   617,   618,   619,   620,
+     621,   622,   623,   624,   625,   626,   627,   628,   629,   630,
+     631,   632,   633,   634,   635,   636,   637,   638,   639,   643,
+     648,   653,   654,   657,   658,   662,   664,   666,   668,   670,
+     672,   677,   679,   681,   683,   688,   693,   695,   698,   702,
+     705,   709,   711,   716,   718,   723,   728,   733,   738,   743,
+     744,   745,   746,   747,   748,   749,   750,   751,   755,   760,
+     765,   770,   775,   780,   785,   790,   795,   800,   805,   807,
+     812,   814,   819,   824,   829,   834,   836,   841,   843,   848,
+     853
   };
 
   void
@@ -4542,9 +4546,9 @@ namespace xsk { namespace gsc { namespace h1 {
 
 #line 13 "parser.ypp"
 } } } // xsk::gsc::h1
-#line 4546 "parser.cpp"
+#line 4550 "parser.cpp"
 
-#line 855 "parser.ypp"
+#line 857 "parser.ypp"
 
 
 void xsk::gsc::h1::parser::error(const xsk::gsc::location& loc, const std::string& msg)

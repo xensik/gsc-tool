@@ -15,18 +15,20 @@ public:
 
 private:
     std::vector<std::uint8_t> data_;
-    std::size_t size_;
-    std::size_t pos_;
+    std::uint32_t size_;
+    std::uint32_t pos_;
 
 public:
     byte_buffer();
-    byte_buffer(std::size_t size);
+    byte_buffer(std::uint32_t size);
     byte_buffer(const std::vector<std::uint8_t>& data);
     ~byte_buffer();
 
     template <typename T>
     auto read() -> T
     {
+        if (pos_ + sizeof(T) > size_) return T{};
+
         auto ret = *reinterpret_cast<T*>(data_.data() + pos_);
         pos_ += sizeof(T);
         return ret;
@@ -35,6 +37,8 @@ public:
     template <typename T>
     void write(T data)
     {
+        if (pos_ + sizeof(T) > size_) return;
+
         T* mem = reinterpret_cast<T*>(data_.data() + pos_);
         std::memcpy(mem, &data, sizeof(T));
         pos_ += sizeof(T);
@@ -43,6 +47,8 @@ public:
     template <typename T>
     auto read_endian() -> T
     {
+        if (pos_ + sizeof(T) > size_) return T{};
+
         std::array<std::uint8_t, sizeof(T)> mem;
 
         for (auto i = 0; i < sizeof(T); i++)
@@ -58,6 +64,8 @@ public:
     template <typename T>
     void write_endian(T data)
     {
+        if (pos_ + sizeof(T) > size_) return;
+
         auto* mem = data_.data() + pos_;
 
         for (auto i = 0; i < sizeof(T); i++)
@@ -70,15 +78,15 @@ public:
 
     void clear();
     auto is_avail() -> bool;
-    void seek(std::size_t pos);
-    void seek_neg(std::size_t pos);
+    void seek(std::uint32_t count);
+    void seek_neg(std::uint32_t count);
     void write_string(const std::string& data);
     void write_c_string(const std::string& data);
     auto read_c_string() -> std::string;
-    auto print_bytes(std::size_t pos, std::size_t count) -> std::string;
-    auto pos() -> std::size_t;
-    void pos(std::size_t pos);
-    auto align(std::size_t size) -> std::size_t;
+    auto print_bytes(std::uint32_t pos, std::uint32_t count) -> std::string;
+    auto pos() -> std::uint32_t;
+    void pos(std::uint32_t pos);
+    auto align(std::uint32_t size) -> std::uint32_t;
     auto buffer() -> std::vector<std::uint8_t>&;
 };
 

@@ -5,35 +5,22 @@
 
 #pragma once
 
-// Warnings
-#ifdef _WIN32
-#pragma warning(disable:4244)
-#pragma warning(disable:4267)
-#pragma warning(disable:4005)
-#pragma warning(disable:4065)
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-// C/C++
-#include <regex>
-#include <string>
-#include <vector>
-#include <memory>
+#include <cstdio>
 #include <algorithm>
-#include <filesystem>
-#include <functional>
-#include <stdexcept>
-#include <map>
-#include <stack>
 #include <array>
-#include <iostream>
-#include <sstream>
+#include <filesystem>
 #include <fstream>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <regex>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <stdexcept>
+#include <string>
 #include <unordered_map>
-#include <stdio.h>
-#include <cassert>
+#include <vector>
 
-// Ext
 using namespace std::literals;
-
-#include "xsk/t4.hpp"

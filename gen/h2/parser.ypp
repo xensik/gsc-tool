@@ -26,6 +26,10 @@
 
 %code requires
 {
+#ifdef _MSC_VER
+#pragma warning(disable:4065)
+#pragma warning(disable:4127)
+#endif
 #include "h2.hpp"
 namespace xsk::gsc::h2 { class lexer; }
 }

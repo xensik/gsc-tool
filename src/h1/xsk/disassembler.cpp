@@ -51,7 +51,7 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
         func->index = static_cast<std::uint32_t>(script_->pos());
         func->size = stack_->read<std::uint32_t>();
         func->id = stack_->read<std::uint16_t>();
-        func->name = func->id == 0 ? stack_->read_c_string() : resolver::token_name(func->id);
+        func->name = func->id == 0 ? stack_->read_c_string() : resolver::token_name(static_cast<std::uint16_t>(func->id));
 
         dissasemble_function(func);
 

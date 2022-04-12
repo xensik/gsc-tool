@@ -15,7 +15,7 @@ auto asset::serialize() -> std::vector<std::uint8_t>
     data.resize(name.size() + compressedLen + bytecodeLen + 13);
     std::memset(data.data(), 0, data.size());
 
-    auto pos = 0u;
+    std::size_t pos = 0;
 
     std::memcpy(&data[pos], name.data(), name.size() + 1);
     pos += name.size() + 1;
@@ -39,7 +39,7 @@ auto asset::serialize() -> std::vector<std::uint8_t>
 
 void asset::deserialize(std::vector<std::uint8_t> data)
 {
-    auto pos = 0u;
+    std::size_t pos = 0;
 
     name = std::string(reinterpret_cast<const char*>(data.data()));
     pos += name.size() + 1;

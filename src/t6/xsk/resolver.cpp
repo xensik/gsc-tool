@@ -6,6 +6,11 @@
 #include "stdafx.hpp"
 #include "t6.hpp"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4244)
+#endif
+
 namespace xsk::arc::t6
 {
 
@@ -3637,3 +3642,7 @@ struct __init__
 __init__ _;
 
 } // namespace xsk::arc::t6
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

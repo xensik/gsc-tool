@@ -56,7 +56,7 @@ void assembler::assemble(const std::string& file, assembly::ptr& data)
 
     // assemble includes
     header_.include_offset = script_->pos();
-    header_.include_count = assembly_->includes.size();
+    header_.include_count = static_cast<std::uint8_t>(assembly_->includes.size());
 
     for (const auto& entry : assembly_->includes)
     {
@@ -79,7 +79,7 @@ void assembler::assemble(const std::string& file, assembly::ptr& data)
 
     // assemble exports
     header_.exports_offset = script_->pos();
-    header_.exports_count = exports_.size();
+    header_.exports_count = static_cast<std::uint16_t>(exports_.size());
 
     for (const auto& entry : exports_)
     {
@@ -92,13 +92,13 @@ void assembler::assemble(const std::string& file, assembly::ptr& data)
 
     // assemble imports
     header_.imports_offset = script_->pos();
-    header_.imports_count = imports_.size();
+    header_.imports_count = static_cast<std::uint16_t>(imports_.size());
 
     for (const auto& entry : imports_)
     {
         script_->write<std::uint16_t>(string_offset(entry.name));
         script_->write<std::uint16_t>(string_offset(entry.space));
-        script_->write<std::uint16_t>(entry.refs.size());
+        script_->write<std::uint16_t>(static_cast<std::uint16_t>(entry.refs.size()));
         script_->write<std::uint8_t>(entry.params);
         script_->write<std::uint8_t>(entry.flags);
 
@@ -110,13 +110,13 @@ void assembler::assemble(const std::string& file, assembly::ptr& data)
 
     // assemble animtrees
     header_.animtree_offset = script_->pos();
-    header_.animtree_count = animtrees_.size();
+    header_.animtree_count = static_cast<std::uint8_t>(animtrees_.size());
 
     for (const auto& entry : animtrees_)
     {
         script_->write<std::uint16_t>(string_offset(entry.name));
-        script_->write<std::uint16_t>(entry.refs.size());
-        script_->write<std::uint16_t>(entry.anims.size());
+        script_->write<std::uint16_t>(static_cast<std::uint16_t>(entry.refs.size()));
+        script_->write<std::uint16_t>(static_cast<std::uint16_t>(entry.anims.size()));
         script_->seek(2);
 
         for (const auto& ref : entry.refs)
@@ -133,12 +133,12 @@ void assembler::assemble(const std::string& file, assembly::ptr& data)
 
     // assemble stringtable
     header_.stringtablefixup_offset = script_->pos();
-    header_.stringtablefixup_count = stringtables_.size();
+    header_.stringtablefixup_count = static_cast<std::uint16_t>(stringtables_.size());
 
     for (const auto& entry : stringtables_)
     {
         script_->write<std::uint16_t>(string_offset(entry.name));
-        script_->write<std::uint8_t>(entry.refs.size());
+        script_->write<std::uint8_t>(static_cast<std::uint8_t>(entry.refs.size()));
         script_->write<std::uint8_t>(entry.type);
 
         for (const auto& ref : entry.refs)
@@ -444,7 +444,7 @@ void assembler::assemble_jump(const instruction::ptr& inst)
 {
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
-    const std::int16_t addr = resolve_label(inst->data[0]) - inst->index - inst->size;
+    const auto addr = static_cast<std::int16_t>(resolve_label(inst->data[0]) - inst->index - inst->size);
 
     script_->align(2);
     script_->write<std::int16_t>(addr);
@@ -501,7 +501,7 @@ void assembler::assemble_devblock(const instruction::ptr& inst)
 {
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
-    const std::int16_t addr = resolve_label(inst->data[0]) - inst->index - inst->size;
+    const auto addr = static_cast<std::int16_t>(resolve_label(inst->data[0]) - inst->index - inst->size);
 
     script_->align(2);
     script_->write<std::int16_t>(addr);
@@ -735,7 +735,7 @@ void assembler::process_string(const std::string& data)
 {
     if (!stringlist_.contains(data))
     {
-        auto pos = script_->pos();
+        auto pos = static_cast<std::uint16_t>(script_->pos());
         script_->write_c_string(data);
         stringlist_.insert({ data, pos });
     }
@@ -823,7 +823,7 @@ auto assembler::resolve_label(const std::string& name) -> std::int32_t
     throw asm_error("Couldn't resolve label address of '" + name + "'!");
 }
 
-auto assembler::string_offset(const std::string& name) -> std::uint32_t
+auto assembler::string_offset(const std::string& name) -> std::uint16_t
 {
     const auto& itr = stringlist_.find(name);
 
@@ -863,8 +863,8 @@ void assembler::add_import_reference(const std::vector<std::string>& data, std::
     import_ref n;
     n.space = data[0];
     n.name = data[1];
-    n.params = std::stoi(data[2]);
-    n.flags = std::stoi(data[3]);
+    n.params = static_cast<std::uint8_t>(std::stoi(data[2]));
+    n.flags = static_cast<std::uint8_t>(std::stoi(data[3]));
     n.refs.push_back(ref);
     imports_.push_back(std::move(n));
 }

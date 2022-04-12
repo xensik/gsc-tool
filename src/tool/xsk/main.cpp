@@ -4,7 +4,6 @@
 // that can be found in the LICENSE file.
 
 #include "stdafx.hpp"
-
 #include "utils/xsk/utils.hpp"
 #include "iw5/xsk/iw5.hpp"
 #include "iw6/xsk/iw6.hpp"
@@ -157,9 +156,9 @@ void assemble_file(game game, std::string file)
                 script.name = file;
                 script.bytecode = assembler.output_script();
                 script.buffer = std::move(compressed);
-                script.len = uncompressed.size();
-                script.compressedLen = script.buffer.size();
-                script.bytecodeLen = script.bytecode.size();
+                script.len = static_cast<std::uint32_t>(uncompressed.size());
+                script.compressedLen = static_cast<std::uint32_t>(script.buffer.size());
+                script.bytecodeLen = static_cast<std::uint32_t>(script.bytecode.size());
 
                 auto output = script.serialize();
                 utils::file::save("assembled/" + file + ".gscbin", output);
@@ -295,9 +294,9 @@ void compile_file(game game, std::string file)
                 script.name = file;
                 script.bytecode = assembler.output_script();
                 script.buffer = std::move(compressed);
-                script.len = uncompressed.size();
-                script.compressedLen = script.buffer.size();
-                script.bytecodeLen = script.bytecode.size();
+                script.len = static_cast<std::uint32_t>(uncompressed.size());
+                script.compressedLen = static_cast<std::uint32_t>(script.buffer.size());
+                script.bytecodeLen = static_cast<std::uint32_t>(script.bytecode.size());
 
                 auto output = script.serialize();
                 utils::file::save("compiled/" + file + ".gscbin", output);

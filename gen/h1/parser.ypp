@@ -26,10 +26,12 @@
 
 %code requires
 {
+#ifdef _MSC_VER
+#pragma warning(disable:4065)
+#pragma warning(disable:4127)
+#endif
 #include "h1.hpp"
 namespace xsk::gsc::h1 { class lexer; }
-typedef void *yyscan_t;
-#define YY_DECL xsk::gsc::h1::parser::symbol_type yylex(yyscan_t yyscanner, xsk::gsc::location& loc)
 }
 
 %code top

@@ -48,7 +48,7 @@ auto string::to_lower(const std::string& input) -> std::string
 
     for (std::size_t i = 0; i < data.size(); i++)
     {
-        data[i] = std::tolower(input[i]);
+        data[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(input[i])));
     }
 
     return data;
@@ -271,7 +271,7 @@ auto string::float_string(float value) -> std::string
         while (i < str.size())
             p_exp.push_back(str[i++]);
 
-        auto offset = std::stoi(p_exp);
+        std::size_t offset = std::stoi(p_exp);
 
         if ((flags & exp_neg))
             offset -= p_int.size();
@@ -303,7 +303,7 @@ auto string::float_string(float value) -> std::string
         while (i < str.size())
             p_exp.push_back(str[i++]);
 
-        auto offset = std::stoi(p_exp);
+        std::size_t offset = std::stoi(p_exp);
 
         offset -= (flags & exp_neg) ? p_int.size() : p_dec.size();
 

@@ -87,7 +87,7 @@ void block::merge(const std::vector<block*>& childs)
     {
         auto child = childs[childidx];
 
-        child->local_vars_public_count = this->local_vars.size();
+        child->local_vars_public_count = static_cast<std::uint32_t>(this->local_vars.size());
         for (std::size_t i = 0; i < this->local_vars.size(); i++ )
         {
             auto& name = this->local_vars.at(i).name;
@@ -147,7 +147,7 @@ auto block::find_variable(std::size_t start, const std::string& name) -> std::in
     for (std::size_t i = start; i < local_vars.size(); ++i )
     {
         if (local_vars.at(i).name == name)
-            return i;
+            return static_cast<std::int32_t>(i);
     }
     return -1;
 }
@@ -159,14 +159,14 @@ void block::transfer_decompiler(const block::ptr& child)
         child->local_vars.push_back(this->local_vars.at(i));
     }
 
-    child->local_vars_public_count = this->local_vars.size();
+    child->local_vars_public_count = static_cast<std::uint32_t>(this->local_vars.size());
 }
 
 void block::append_decompiler(const block::ptr& child, bool all)
 {
     auto total = all ? child->local_vars.size() : child->local_vars_public_count;
 
-    for (std::uint32_t i = this->local_vars.size(); i < total; i++ )
+    for (auto i = this->local_vars.size(); i < total; i++ )
     {
         this->local_vars.push_back(child->local_vars.at(i));
     }

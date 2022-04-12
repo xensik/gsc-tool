@@ -169,7 +169,7 @@ void compiler::emit_decl_thread(const ast::decl_thread::ptr& thread)
     function_ = std::make_unique<function>();
     function_->index = index_;
     function_->name = thread->name->value;
-    function_->params = thread->params->list.size();
+    function_->params = static_cast<std::uint8_t>(thread->params->list.size());
     function_->flags = 0;
 
     stack_idx_ = 0;

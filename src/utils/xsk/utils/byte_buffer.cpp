@@ -10,16 +10,16 @@ namespace xsk::utils
 
 byte_buffer::byte_buffer()
 {
-    data_.resize(0x1000000);
-    std::fill(data_.begin(), data_.end(), 0);
-    size_ = data_.size();
+    data_.resize(0x100000);
+    std::fill(data_.begin(), data_.end(), '\0');
+    size_ = static_cast<std::uint32_t>(data_.size());
     pos_ = 0;
 }
 
-byte_buffer::byte_buffer(std::size_t size)
+byte_buffer::byte_buffer(std::uint32_t size)
 {
     data_.resize(size);
-    std::fill(data_.begin(), data_.end(), 0);
+    std::fill(data_.begin(), data_.end(), '\0');
     size_ = size;
     pos_ = 0;
 }
@@ -27,56 +27,61 @@ byte_buffer::byte_buffer(std::size_t size)
 byte_buffer::byte_buffer(const std::vector<std::uint8_t>& data)
 {
     data_ = data;
-    size_ = data.size();
+    size_ = static_cast<std::uint32_t>(data_.size());
     pos_ = 0;
 }
 
 byte_buffer::~byte_buffer()
 {
     data_.clear();
+    size_ = 0;
     pos_ = 0;
 }
 
 void byte_buffer::clear()
 {
-    std::fill(data_.begin(), data_.end(), 0);
+    std::fill(data_.begin(), data_.end(), '\0');
 }
 
 auto byte_buffer::is_avail() -> bool
 {
-    if (pos_ < data_.size()) return true;
-    return false;
+    return (pos_ < size_) ? true : false;
 }
 
-void byte_buffer::seek(std::size_t pos)
+void byte_buffer::seek(std::uint32_t count)
 {
-    pos_ += pos;
+    pos_ += count;
 }
-void byte_buffer::seek_neg(std::size_t pos)
+
+void byte_buffer::seek_neg(std::uint32_t count)
 {
-    pos_ -= pos;
+    pos_ -= count;
 }
 
 void byte_buffer::write_string(const std::string& data)
 {
-    strcpy(reinterpret_cast<char*>(data_.data() + pos_), data.data());
-    pos_ += data.size();
+    if (pos_ + data.size() > size_) return;
+
+    std::memcpy(reinterpret_cast<void*>(data_.data() + pos_), data.data(), data.size());
+    pos_ += static_cast<std::uint32_t>(data.size());
 }
 
 void byte_buffer::write_c_string(const std::string& data)
 {
-    strcpy(reinterpret_cast<char*>(data_.data() + pos_), data.data());
-    pos_ += data.size() + 1;
+    if (pos_ + data.size() >= size_) return;
+
+    std::memcpy(reinterpret_cast<void*>(data_.data() + pos_), data.data(), data.size());
+    pos_ += static_cast<std::uint32_t>(data.size() + 1);
 }
 
 auto byte_buffer::read_c_string() -> std::string
 {
     auto ret = std::string(reinterpret_cast<const char*>(data_.data() + pos_));
-    pos_ += ret.size() + 1;
+    pos_ += static_cast<std::uint32_t>(ret.size() + 1);
     return ret;
 }
 
-auto byte_buffer::print_bytes(std::size_t pos, std::size_t count) -> std::string
+auto byte_buffer::print_bytes(std::uint32_t pos, std::uint32_t count) -> std::string
 {
     std::string data {};
 
@@ -88,12 +93,12 @@ auto byte_buffer::print_bytes(std::size_t pos, std::size_t count) -> std::string
     return data;
 }
 
-auto byte_buffer::pos() -> std::size_t
+auto byte_buffer::pos() -> std::uint32_t
 {
     return pos_;
 }
 
-void byte_buffer::pos(std::size_t pos)
+void byte_buffer::pos(std::uint32_t pos)
 {
     if (pos >= 0 && pos <= size_)
     {
@@ -101,7 +106,7 @@ void byte_buffer::pos(std::size_t pos)
     }
 }
 
-auto byte_buffer::align(std::size_t size) -> std::size_t
+auto byte_buffer::align(std::uint32_t size) -> std::uint32_t
 {
     auto pos = pos_;
 

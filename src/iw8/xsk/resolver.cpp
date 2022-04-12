@@ -6,6 +6,11 @@
 #include "stdafx.hpp"
 #include "iw8.hpp"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4244)
+#endif
+
 namespace xsk::gsc::iw8
 {
 
@@ -61,7 +66,7 @@ auto resolver::function_id(const std::string& name) -> std::uint16_t
 {
     if (name.starts_with("_func_"))
     {
-        return std::stoul(name.substr(6), nullptr, 16);
+        return static_cast<std::uint16_t>(std::stoul(name.substr(6), nullptr, 16));
     }
 
     const auto itr = function_map_rev.find(name);
@@ -90,7 +95,7 @@ auto resolver::method_id(const std::string& name) -> std::uint16_t
 {
     if (name.starts_with("_meth_"))
     {
-        return std::stoul(name.substr(6), nullptr, 16);
+        return static_cast<std::uint16_t>(std::stoul(name.substr(6), nullptr, 16));
     }
 
     const auto itr = method_map_rev.find(name);
@@ -119,7 +124,7 @@ auto resolver::file_id(const std::string& name) -> std::uint32_t
 {
     if (name.starts_with("_id_"))
     {
-        return std::stoul(name.substr(4), nullptr, 16);
+        return static_cast<std::uint32_t>(std::stoul(name.substr(4), nullptr, 16));
     }
 
     const auto itr = file_map_rev.find(name);
@@ -148,7 +153,7 @@ auto resolver::token_id(const std::string& name) -> std::uint32_t
 {
     if (name.starts_with("_id_"))
     {
-        return std::stoul(name.substr(4), nullptr, 16);
+        return static_cast<std::uint32_t>(std::stoul(name.substr(4), nullptr, 16));
     }
 
     const auto itr = token_map_rev.find(name);
@@ -212,7 +217,7 @@ auto resolver::make_token(std::string_view str) -> std::string
 
     for (std::size_t i = 0; i < data.size(); i++)
     {
-        data[i] = std::tolower(str[i]);
+        data[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(str[i])));
         if (data[i] == '\\') data[i] = '/';
     }
 
@@ -75643,3 +75648,7 @@ struct __init__
 __init__ _;
 
 } // namespace xsk::gsc::iw8
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

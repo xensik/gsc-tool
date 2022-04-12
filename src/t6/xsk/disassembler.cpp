@@ -83,7 +83,7 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
 
     while (script_->pos() < header_.include_offset)
     {
-        std::uint16_t pos = script_->pos();
+        auto pos = script_->pos();
         stringlist_.insert({ pos, script_->read_c_string() });
     }
 

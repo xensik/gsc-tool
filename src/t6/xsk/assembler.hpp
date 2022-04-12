@@ -39,7 +39,7 @@ private:
     void process_instruction(const instruction::ptr& inst);
     void align_instruction(const instruction::ptr& inst);
     auto resolve_label(const std::string& name) -> std::int32_t;
-    auto string_offset(const std::string& data) -> std::uint32_t;
+    auto string_offset(const std::string& data) -> std::uint16_t;
     void add_string_reference(const std::string& str, string_type type, std::uint32_t ref);
     void add_import_reference(const std::vector<std::string>& data, std::uint32_t ref);
     void add_anim_reference(const std::vector<std::string>& data, std::uint32_t ref);
