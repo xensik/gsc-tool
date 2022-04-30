@@ -31,7 +31,7 @@ auto compiler::output_raw() -> std::vector<std::uint8_t>
     std::vector<std::uint8_t> output;
 
     output.resize(output_->pos());
-    memcpy(output.data(), output_->buffer().data(), output.size());
+    std::memcpy(output.data(), output_->buffer().data(), output.size());
 
     return output;
 }
@@ -332,13 +332,11 @@ void compiler::emit_stmt_expr(const ast::stmt_expr::ptr& stmt)
 void compiler::emit_stmt_call(const ast::stmt_call::ptr& stmt)
 {
     if (stmt->expr == ast::kind::expr_call)
-        emit_expr_call(stmt->expr.as_call);
+        emit_expr_call(stmt->expr.as_call, true);
     else if (stmt->expr == ast::kind::expr_method)
-        emit_expr_method(stmt->expr.as_method);
+        emit_expr_method(stmt->expr.as_method, true);
     else
         throw comp_error(stmt->loc(), "unknown call statement expression");
-
-    emit_opcode(opcode::OP_DecTop);
 }
 
 void compiler::emit_stmt_assign(const ast::stmt_assign::ptr& stmt)
@@ -816,10 +814,10 @@ void compiler::emit_expr(const ast::expr& expr)
             emit_expr_not(expr.as_not);
             break;
         case ast::kind::expr_call:
-            emit_expr_call(expr.as_call);
+            emit_expr_call(expr.as_call, false);
             break;
         case ast::kind::expr_method:
-            emit_expr_method(expr.as_method);
+            emit_expr_method(expr.as_method, false);
             break;
         case ast::kind::expr_isdefined:
             emit_expr_isdefined(expr.as_isdefined);
@@ -1024,9 +1022,9 @@ void compiler::emit_expr_clear(const ast::expr& expr)
     }
 }
 
-void compiler::emit_expr_increment(const ast::expr_increment::ptr& expr, bool fromstmt)
+void compiler::emit_expr_increment(const ast::expr_increment::ptr& expr, bool is_stmt)
 {
-    if (fromstmt)
+    if (is_stmt)
     {
         emit_expr_variable_ref(expr->lvalue, false);
         emit_opcode(opcode::OP_Inc);
@@ -1037,9 +1035,9 @@ void compiler::emit_expr_increment(const ast::expr_increment::ptr& expr, bool fr
     }
 }
 
-void compiler::emit_expr_decrement(const ast::expr_decrement::ptr& expr, bool fromstmt)
+void compiler::emit_expr_decrement(const ast::expr_decrement::ptr& expr, bool is_stmt)
 {
-    if (fromstmt)
+    if (is_stmt)
     {
         emit_expr_variable_ref(expr->lvalue, false);
         emit_opcode(opcode::OP_Dec);
@@ -1168,17 +1166,17 @@ void compiler::emit_expr_not(const ast::expr_not::ptr& expr)
     emit_opcode(opcode::OP_BoolNot);
 }
 
-void compiler::emit_expr_call(const ast::expr_call::ptr& expr)
+void compiler::emit_expr_call(const ast::expr_call::ptr& expr, bool is_stmt)
 {
     if (expr->call == ast::kind::expr_pointer)
-        emit_expr_call_pointer(expr->call.as_pointer);
+        emit_expr_call_pointer(expr->call.as_pointer, is_stmt);
     else if (expr->call == ast::kind::expr_function)
-        emit_expr_call_function(expr->call.as_function);
+        emit_expr_call_function(expr->call.as_function, is_stmt);
     else
         throw comp_error(expr->loc(), "unknown function call expression");
 }
 
-void compiler::emit_expr_call_pointer(const ast::expr_pointer::ptr& expr)
+void compiler::emit_expr_call_pointer(const ast::expr_pointer::ptr& expr, bool is_stmt)
 {
     emit_opcode(opcode::OP_PreScriptCall);
     emit_expr_arguments(expr->args);
@@ -1197,9 +1195,11 @@ void compiler::emit_expr_call_pointer(const ast::expr_pointer::ptr& expr)
         default:
             break;
     }
+
+    if (is_stmt) emit_opcode(opcode::OP_DecTop);
 }
 
-void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr)
+void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr, bool is_stmt)
 {
     if (expr->path->value != "")
     {
@@ -1221,6 +1221,16 @@ void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr)
     }
 
     // TODO: resolve import calls path
+    bool as_dev = false;
+    std::string end;
+
+    if (!developer_thread_ && is_stmt && expr->name->value == "assert")
+    {
+        as_dev = true;
+        developer_thread_ = true;
+        end = create_label();
+        emit_opcode(opcode::OP_DevblockBegin, end);
+    }
 
     emit_opcode(opcode::OP_PreScriptCall);
     emit_expr_arguments(expr->args);
@@ -1241,19 +1251,27 @@ void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr)
         default:
             break;
     }
+
+    if (is_stmt) emit_opcode(opcode::OP_DecTop);
+
+    if (as_dev)
+    {
+        insert_label(end);
+        developer_thread_ = false;
+    }
 }
 
-void compiler::emit_expr_method(const ast::expr_method::ptr& expr)
+void compiler::emit_expr_method(const ast::expr_method::ptr& expr, bool is_stmt)
 {
     if (expr->call == ast::kind::expr_pointer)
-        emit_expr_method_pointer(expr->call.as_pointer, expr->obj);
+        emit_expr_method_pointer(expr->call.as_pointer, expr->obj, is_stmt);
     else if (expr->call == ast::kind::expr_function)
-        emit_expr_method_function(expr->call.as_function, expr->obj);
+        emit_expr_method_function(expr->call.as_function, expr->obj, is_stmt);
     else
         throw comp_error(expr->loc(), "unknown method call expression");
 }
 
-void compiler::emit_expr_method_pointer(const ast::expr_pointer::ptr& expr, const ast::expr& obj)
+void compiler::emit_expr_method_pointer(const ast::expr_pointer::ptr& expr, const ast::expr& obj, bool is_stmt)
 {
     emit_opcode(opcode::OP_PreScriptCall);
     emit_expr_arguments(expr->args);
@@ -1273,9 +1291,11 @@ void compiler::emit_expr_method_pointer(const ast::expr_pointer::ptr& expr, cons
         default:
             break;
     }
+
+    if (is_stmt) emit_opcode(opcode::OP_DecTop);
 }
 
-void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, const ast::expr& obj)
+void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, const ast::expr& obj, bool is_stmt)
 {
     if (expr->path->value != "")
     {
@@ -1318,6 +1338,8 @@ void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, co
         default:
             break;
     }
+
+    if (is_stmt) emit_opcode(opcode::OP_DecTop);
 }
 
 void compiler::emit_expr_parameters(const ast::expr_parameters::ptr&)
@@ -1576,13 +1598,13 @@ void compiler::emit_expr_field_ref(const ast::expr_field::ptr& expr, bool set)
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case ast::kind::expr_call:
-            emit_expr_call(expr->obj.as_call);
+            emit_expr_call(expr->obj.as_call, false);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case ast::kind::expr_method:
-            emit_expr_method(expr->obj.as_method);
+            emit_expr_method(expr->obj.as_method, false);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
@@ -1663,12 +1685,12 @@ void compiler::emit_expr_field(const ast::expr_field::ptr& expr)
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         case ast::kind::expr_call:
-            emit_expr_call(expr->obj.as_call);
+            emit_expr_call(expr->obj.as_call, false);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         case ast::kind::expr_method:
-            emit_expr_method(expr->obj.as_method);
+            emit_expr_method(expr->obj.as_method, false);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
@@ -1720,11 +1742,11 @@ void compiler::emit_expr_object(const ast::expr& expr)
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         case ast::kind::expr_call:
-            emit_expr_call(expr.as_call);
+            emit_expr_call(expr.as_call, false);
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         case ast::kind::expr_method:
-            emit_expr_method(expr.as_method);
+            emit_expr_method(expr.as_method, false);
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         case ast::kind::expr_identifier:

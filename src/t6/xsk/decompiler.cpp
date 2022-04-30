@@ -1285,6 +1285,8 @@ void decompiler::decompile_statements(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
 {
+    if (stmt->list.size() == 0) return;
+
     for (auto i = stmt->list.size() - 1; i > 0; i--)
     {
         if (stmt->list.at(i) == ast::kind::asm_jump)
@@ -1515,6 +1517,22 @@ void decompiler::decompile_devblocks(const ast::stmt_list::ptr& stmt)
             blocks_.push_back(dev_blk);
             decompile_statements(list_stmt);
             blocks_.pop_back();
+
+            if (list_stmt->list.size() == 1 && list_stmt->list.at(0) == ast::kind::stmt_call)
+            {
+                const auto& st = list_stmt->list.at(0);
+
+                if (st.as_call->expr == ast::kind::expr_call && st.as_call->expr.as_call->call == ast::kind::expr_function)
+                {
+                    if (st.as_call->expr.as_call->call.as_function->name->value == "assert")
+                    {
+                        auto new_stmt = ast::stmt(std::make_unique<ast::stmt_call>(loc, std::move(st.as_call->expr)));
+                        stmt->list.insert(stmt->list.begin() + i, std::move(new_stmt));
+                        continue;
+                    }
+                    
+                }
+            }
 
             auto new_stmt = ast::stmt(std::make_unique<ast::stmt_dev>(loc, std::move(list_stmt)));
             stmt->list.insert(stmt->list.begin() + i, std::move(new_stmt));

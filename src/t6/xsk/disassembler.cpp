@@ -29,7 +29,7 @@ auto disassembler::output_raw() -> std::vector<std::uint8_t>
     std::vector<std::uint8_t> output;
 
     output.resize(output_->pos());
-    memcpy(output.data(), output_->buffer().data(), output.size());
+    std::memcpy(output.data(), output_->buffer().data(), output.size());
 
     return output;
 }
