@@ -108,6 +108,7 @@ auto resolver::file_data(const std::string& name) -> std::tuple<const std::strin
 std::set<std::string_view> paths
 {
     "aitype"sv,
+    "aitype/clientscripts"sv,
     "animscripts"sv,
     "animscripts/ai_subclass"sv,
     "animscripts/aitype"sv,
@@ -115,6 +116,7 @@ std::set<std::string_view> paths
     "animscripts/traverse"sv,
     "animscripts/turret"sv,
     "character"sv,
+    "character/clientscripts"sv,
     "clientscripts"sv,
     "clientscripts/mp"sv,
     "clientscripts/mp/createfx"sv,
@@ -293,7 +295,7 @@ const std::array<std::pair<std::uint8_t, const char*>, 125> opcode_list
     { 0x7C, "OP_DevblockEnd" },
 }};
 
-const std::array<std::pair<std::uint32_t, const char*>, 3318> dvar_list
+const std::array<std::pair<std::uint32_t, const char*>, 3326> dvar_list
 {{
     { 0x146F2C73, "ClickToContinue" },
     { 0x209FFF3B, "FriendXuidToJoinOnBoot" },
@@ -575,6 +577,7 @@ const std::array<std::pair<std::uint32_t, const char*>, 3318> dvar_list
     { 0xB37A7570, "bg_weaponBobMax" },
     { 0x5038F351, "bg_weaponOffscreenReloadScale" },
     { 0xBB02FAE4, "blackboxHighVolumeProbability" },
+    { 0x7FB1F9A2, "blurpain" },
     { 0x1F9C84D1, "bot_AllowGrenades" },
     { 0xE9443BF3, "bot_AllowMovement" },
     { 0xD55E5EAA, "bot_CloseDistance" },
@@ -1519,6 +1522,7 @@ const std::array<std::pair<std::uint32_t, const char*>, 3318> dvar_list
     { 0xB00BD629, "m_pitch" },
     { 0x0D1944B6, "m_side" },
     { 0x0FE996C2, "m_yaw" },
+    { 0x39A6CD41, "magic_chest_movable" },
     { 0x5B1C0FAC, "mantle_adjustment_tu" },
     { 0xB2BB0509, "mantle_check_angle" },
     { 0x7EF6A72B, "mantle_check_glass_extra_range" },
@@ -2774,6 +2778,7 @@ const std::array<std::pair<std::uint32_t, const char*>, 3318> dvar_list
     { 0x5625D4BA, "scr_x_kills_y" },
     { 0x12E4DD1C, "scr_xpscale" },
     { 0x92FC9AA3, "scr_xpzmscale" },
+    { 0xB0FB65D0, "scr_zm_enable_bots" },
     { 0xD3E0C36D, "sd_can_switch_device" },
     { 0xDF2D597D, "sd_xa2_device_guid" },
     { 0xDF30DB95, "sd_xa2_device_name" },
@@ -3352,6 +3357,8 @@ const std::array<std::pair<std::uint32_t, const char*>, 3318> dvar_list
     { 0xF2772EAC, "ui_useCustomClassInfo" },
     { 0x41A6C572, "ui_weapon_tiers" },
     { 0xA4E1C392, "ui_xpscale" },
+    { 0x6B64B9B4, "ui_zm_gamemodegroup" },
+    { 0xC955B4CD, "ui_zm_mapstartlocation" },
     { 0x2FA084D6, "unsubscriptionCooloffTimer" },
     { 0x19548C15, "useMapPreloading" },
     { 0xAE1FF67E, "useSvMapPreloading" },
@@ -3609,6 +3616,9 @@ const std::array<std::pair<std::uint32_t, const char*>, 3318> dvar_list
     { 0x0BB50EBB, "ytAuthCooloffTime" },
     { 0x26DDBBBC, "ytForcePrivate" },
     { 0x59145A10, "zero_stats_check" },
+    { 0x5D1D04D4, "zm_rand_mode" },
+    { 0xD446AE4D, "zm_rand_loc" },
+    { 0xFA91EA91, "zombie_debug" },
     { 0x4CD9FAEE, "zombie_devgui" },
     { 0x27D7087D, "zombie_double_wide_checks" },
     { 0xDEB90F93, "zombie_useOldPathFallback" },
