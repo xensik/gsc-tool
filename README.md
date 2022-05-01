@@ -37,11 +37,14 @@ for zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zd
 |`decomp`  |decompile a `file.gscbin`  |`file.gsc`   |
 
 ## File Format
+If you need to extract scripts from fastfiles or game memory, use [Zonetool](https://github.com/ZoneTool/zonetool) or [Jekyll](https://github.com/EthanC/Jekyll).
+
 - gsc-tool ``.gscbin`` format is a serialized ScriptFile struct: ***name***: null-term string, ***compressedLen***: 4 byte uint, ***len***: 4 byte uint, ***bytecodeLen***: 4 byte uint, ***buffer***: byte array[compressedLen], ***bytecode***: byte array[bytecodeLen].
 
 - zonetool (IW5) format made of bytecode file ``.cgsc`` and decompressed stack buffer ``.cgsc.stack``.
 
 - treyarch (T6) format is a single buffer with gscobj data ``.gsc`` or ``.csc``.
+
 ## Credits
 This project is based on  [*RektInator's* gsc-asm](https://github.com/ZoneTool/gsc-asm). Special thanks to **RektInator**, **JTAG** & **Dasfonia**.
 ## Disclaimer
