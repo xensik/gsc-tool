@@ -1196,7 +1196,8 @@ void compiler::emit_expr_call_pointer(const ast::expr_pointer::ptr& expr, bool i
             break;
     }
 
-    if (is_stmt) emit_opcode(opcode::OP_DecTop);
+    if (is_stmt)
+        emit_opcode(opcode::OP_DecTop);
 }
 
 void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr, bool is_stmt)
@@ -1252,7 +1253,8 @@ void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr, bool
             break;
     }
 
-    if (is_stmt) emit_opcode(opcode::OP_DecTop);
+    if (is_stmt)
+        emit_opcode(opcode::OP_DecTop);
 
     if (as_dev)
     {
@@ -1292,7 +1294,8 @@ void compiler::emit_expr_method_pointer(const ast::expr_pointer::ptr& expr, cons
             break;
     }
 
-    if (is_stmt) emit_opcode(opcode::OP_DecTop);
+    if (is_stmt)
+        emit_opcode(opcode::OP_DecTop);
 }
 
 void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, const ast::expr& obj, bool is_stmt)
@@ -1339,7 +1342,8 @@ void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, co
             break;
     }
 
-    if (is_stmt) emit_opcode(opcode::OP_DecTop);
+    if (is_stmt)
+        emit_opcode(opcode::OP_DecTop);
 }
 
 void compiler::emit_expr_parameters(const ast::expr_parameters::ptr&)
