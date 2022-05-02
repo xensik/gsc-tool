@@ -656,6 +656,7 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt)
     std::vector<std::string> data;
     data.push_back(utils::string::va("%d", stmt->stmt->list.size()));
 
+    bool numerical = false;
     bool has_default = false;
 
     for (auto i = 0u; i < stmt->stmt->list.size(); i++)
@@ -672,6 +673,7 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt)
             auto& case_ = entry.as_case;
             if (case_->label == ast::kind::expr_integer)
             {
+                numerical = true;
                 auto loc = insert_label();
                 data.push_back("case");
                 data.push_back(case_->label.as_integer->value);
@@ -713,6 +715,7 @@ void compiler::emit_stmt_switch(const ast::stmt_switch::ptr& stmt)
     }
 
     blocks_.pop_back();
+    data.push_back(numerical ? "i" : "s");
 
     insert_label(jmptable_loc);
     emit_opcode(opcode::OP_EndSwitch, data);
@@ -2432,12 +2435,14 @@ void compiler::print_instruction(const instruction::ptr& inst)
             output_->write_string(utils::string::va("%s", inst->data[0].data()));
             {
                 std::uint32_t totalcase = std::stoul(inst->data[0]);
+                auto numerical = inst->data.back() == "i";
                 auto index = 0;
                 for (auto casenum = 0u; casenum < totalcase; casenum++)
                 {
                     if (inst->data[1 + index] == "case")
                     {
-                        output_->write_string(utils::string::va(", %s, \"%s\", %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
+                        auto fmt = numerical ? ", %s, %s, %s"s : ", %s, \"%s\", %s"s;
+                        output_->write_string(utils::string::va(fmt, inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
                         index += 3;
                     }
                     else if (inst->data[1 + index] == "default")

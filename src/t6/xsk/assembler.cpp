@@ -465,6 +465,7 @@ void assembler::assemble_end_switch(const instruction::ptr& inst)
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
 
     const auto count = std::stoul(inst->data[0]);
+    const auto numerical = inst->data.back() == "i";
 
     script_->align(4);
     script_->write<std::uint32_t>(count);
@@ -473,7 +474,7 @@ void assembler::assemble_end_switch(const instruction::ptr& inst)
     {
         if (inst->data[1 + (3 * i)] == "case")
         {
-            if (utils::string::is_number(inst->data[1 + (3 * i) + 1]))
+            if (numerical /*&& utils::string::is_number(inst->data[1 + (3 * i) + 1])*/)
             {
                 script_->write<uint32_t>((std::stoi(inst->data[1 + (3 * i) + 1]) & 0xFFFFFF) + 0x800000);
             }
@@ -705,12 +706,13 @@ void assembler::align_instruction(const instruction::ptr& inst)
             script_->seek(4);
 
             const auto count = std::stoul(inst->data[0]);
+            const auto numerical = inst->data.back() == "i";
 
             for (auto i = 0u; i < count; i++)
             {
                 if (inst->data[1 + (3 * i)] == "case")
                 {
-                    if (!utils::string::is_number(inst->data[1 + (3 * i) + 1]))
+                    if (!numerical /*|| !utils::string::is_number(inst->data[1 + (3 * i) + 1])*/)
                     {
                         add_string_reference(inst->data[1 + (3 * i) + 1], string_type::literal, script_->pos() + 2);
                     }
@@ -792,12 +794,13 @@ void assembler::process_instruction(const instruction::ptr& inst)
         case opcode::OP_EndSwitch:
         {
             const auto count = std::stoul(inst->data[0]);
+            const auto numerical = inst->data.back() == "i";
 
             for (auto i = 0u; i < count; i++)
             {
                 if (inst->data[1 + (3 * i)] == "case")
                 {
-                    if (!utils::string::is_number(inst->data[1 + (3 * i) + 1]))
+                    if (!numerical /*|| !utils::string::is_number(inst->data[1 + (3 * i) + 1])*/)
                     {
                         process_string(inst->data[1 + (3 * i) + 1]);
                     }

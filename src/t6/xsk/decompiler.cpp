@@ -1881,6 +1881,7 @@ void decompiler::decompile_switch(const ast::stmt_list::ptr& stmt, std::size_t s
     // collect cases
     auto casenum = std::atol(stmt->list.at(end).as_asm_endswitch->count.data());
     auto data = stmt->list.at(end).as_asm_endswitch->data;
+    auto numerical = data.back() == "i";
     auto idx = 0;
 
     for (auto i = 0; i < casenum; i++)
@@ -1890,7 +1891,7 @@ void decompiler::decompile_switch(const ast::stmt_list::ptr& stmt, std::size_t s
             auto loc_str = data.at(idx + 2);
             auto loc_idx = find_location_index(stmt, loc_str);
             auto loc_pos = location(&filename_, std::stol(loc_str.substr(4), 0, 16));
-            auto value = ast::expr(std::make_unique<ast::expr_string>(loc_pos, data.at(idx + 1)));
+            auto value = numerical ? ast::expr(std::make_unique<ast::expr_integer>(loc_pos, data.at(idx + 1))) : ast::expr(std::make_unique<ast::expr_string>(loc_pos, data.at(idx + 1)));
             auto list = std::make_unique<ast::stmt_list>(loc);
             list->is_case = true;
             auto case_stmt = ast::stmt(std::make_unique<ast::stmt_case>(loc_pos, std::move(value), std::move(list)));

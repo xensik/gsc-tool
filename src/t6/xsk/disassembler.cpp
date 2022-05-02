@@ -560,6 +560,7 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
         }
     }
 
+    auto numerical = false;
     const auto count = script_->read<std::uint32_t>();
     inst->data.push_back(utils::string::va("%i", count));
 
@@ -579,6 +580,7 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
         }
         else
         {
+            numerical = true;
             inst->data.push_back("case");
             inst->data.push_back(utils::string::va("%i", (value - 0x800000) & 0xFFFFFF));
         }
@@ -591,6 +593,8 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
 
         inst->size += 8;
     }
+
+    inst->data.push_back((numerical) ? "i" : "s");
 }
 
 void disassembler::disassemble_devblock(const instruction::ptr& inst)
@@ -658,12 +662,14 @@ void disassembler::print_instruction(const instruction::ptr& inst)
             output_->write_string(utils::string::va("%s", inst->data[0].data()));
             {
                 std::uint32_t totalcase = std::stoul(inst->data[0]);
+                auto numerical = inst->data.back() == "i";
                 auto index = 0;
                 for (auto casenum = 0u; casenum < totalcase; casenum++)
                 {
                     if (inst->data[1 + index] == "case")
                     {
-                        output_->write_string(utils::string::va(", %s, \"%s\", %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
+                        auto fmt = numerical ? ", %s, %s, %s"s : ", %s, \"%s\", %s"s;
+                        output_->write_string(utils::string::va(fmt, inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data()));
                         index += 3;
                     }
                     else if (inst->data[1 + index] == "default")
