@@ -1317,7 +1317,7 @@ void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
             else if (stmt->list.at(start).as_cond->value == break_loc)
             {
                 decompile_loop(stmt, start, i);
-                i = stmt->list.size() - 1;
+                i = stmt->list.size();
             }
         }
     }
@@ -1913,7 +1913,12 @@ void decompiler::decompile_switch(const ast::stmt_list::ptr& stmt, std::size_t s
         }
     }
 
-    end = find_location_index(stmt, end_loc) - 1; // update end;
+    end = find_location_index(stmt, end_loc); // update end
+
+    // fix empty cases at end
+    if (stmt->list.at(end) == ast::kind::asm_endswitch)
+        end--;
+
     stmt->list.erase(stmt->list.begin() + start); // remove 'switch'
     stmt->list.erase(stmt->list.begin() + end); // remove 'endswitch'
 
