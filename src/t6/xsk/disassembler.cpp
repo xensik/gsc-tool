@@ -81,6 +81,8 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
     // string list
     script_->pos(64);
 
+    stringlist_.insert({ 0x3E, "" }); // old compiler null string points to header flags
+
     while (script_->pos() < header_.include_offset)
     {
         auto pos = script_->pos();
@@ -212,7 +214,14 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
         }
         else
         {
-            entry->size = (header_.cseg_offset + header_.cseg_size) - entry->offset;
+            if (header_.cseg_size == 0) // old compiler fucked!
+            {
+                entry->size = (header_.exports_offset) - entry->offset;
+            }
+            else
+            {
+                entry->size = (header_.cseg_offset + header_.cseg_size) - entry->offset;
+            }
         }
 
         script_->pos(entry->offset);

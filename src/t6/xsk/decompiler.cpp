@@ -263,8 +263,16 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
             break;
         case opcode::OP_EvalLocalVariableCached:
         {
-            auto node = std::make_unique<ast::expr_identifier>(loc, locals_.at(std::stoi(inst->data[0])));
-            stack_.push(std::move(node));
+            try
+            {
+                auto node = std::make_unique<ast::expr_identifier>(loc, locals_.at(std::stoi(inst->data[0])));
+                stack_.push(std::move(node));
+            }
+            catch(const std::exception& e)
+            {
+                auto node = std::make_unique<ast::expr_identifier>(loc, "broken_code!!");
+                stack_.push(std::move(node));
+            }
         }
             break;
         case opcode::OP_EvalArray:
@@ -1624,7 +1632,7 @@ void decompiler::decompile_infinite(const ast::stmt_list::ptr& stmt, std::size_t
     block blk;
     blk.loc_break = last_location_index(stmt, end) ? blocks_.back().loc_end : stmt->list.at(end + 1).loc().label();
     blk.loc_end = stmt->list.at(end).loc().label();
-    blk.loc_continue = stmt->list.at(end).loc().label();
+    blk.loc_continue = stmt->list.at(begin).loc().label();
 
     auto loc = stmt->list.at(begin).loc();
 
