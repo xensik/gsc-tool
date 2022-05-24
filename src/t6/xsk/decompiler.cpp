@@ -1307,12 +1307,12 @@ void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
             else if (stmt->list.at(start).as_node->kind() != ast::kind::asm_jump_cond)
             {
                 decompile_infinite(stmt, start, i);
-                i = start;
+                i = stmt->list.size();
             }
             else if (stmt->list.at(start).as_cond->value != break_loc)
             {
                 decompile_infinite(stmt, start, i);
-                i = start;
+                i = stmt->list.size();
             }
             else if (stmt->list.at(start).as_cond->value == break_loc)
             {
