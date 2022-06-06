@@ -447,6 +447,7 @@ namespace xsk { namespace arc { namespace t6 {
       // expr_binary
       // expr_primitive
       // expr_object
+      // expr_identifier_neg
       char dummy6[sizeof (ast::expr)];
 
       // expr_abs
@@ -1093,17 +1094,18 @@ namespace xsk { namespace arc { namespace t6 {
         S_expr_anim = 210,                       // expr_anim
         S_expr_level = 211,                      // expr_level
         S_expr_animation = 212,                  // expr_animation
-        S_expr_identifier_nosize = 213,          // expr_identifier_nosize
-        S_expr_identifier = 214,                 // expr_identifier
-        S_expr_path = 215,                       // expr_path
-        S_expr_istring = 216,                    // expr_istring
-        S_expr_string = 217,                     // expr_string
-        S_expr_vector = 218,                     // expr_vector
-        S_expr_hash = 219,                       // expr_hash
-        S_expr_float = 220,                      // expr_float
-        S_expr_integer = 221,                    // expr_integer
-        S_expr_false = 222,                      // expr_false
-        S_expr_true = 223                        // expr_true
+        S_expr_identifier_neg = 213,             // expr_identifier_neg
+        S_expr_identifier_nosize = 214,          // expr_identifier_nosize
+        S_expr_identifier = 215,                 // expr_identifier
+        S_expr_path = 216,                       // expr_path
+        S_expr_istring = 217,                    // expr_istring
+        S_expr_string = 218,                     // expr_string
+        S_expr_vector = 219,                     // expr_vector
+        S_expr_hash = 220,                       // expr_hash
+        S_expr_float = 221,                      // expr_float
+        S_expr_integer = 222,                    // expr_integer
+        S_expr_false = 223,                      // expr_false
+        S_expr_true = 224                        // expr_true
       };
     };
 
@@ -1170,6 +1172,7 @@ namespace xsk { namespace arc { namespace t6 {
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
+      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.move< ast::expr > (std::move (that.value));
         break;
 
@@ -2713,6 +2716,7 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
+      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.template destroy< ast::expr > ();
         break;
 
@@ -5427,8 +5431,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 3411,     ///< Last index in yytable_.
-      yynnts_ = 98,  ///< Number of nonterminal symbols.
+      yylast_ = 3494,     ///< Last index in yytable_.
+      yynnts_ = 99,  ///< Number of nonterminal symbols.
       yyfinal_ = 22 ///< Termination state number.
     };
 
@@ -5485,6 +5489,7 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
+      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.copy< ast::expr > (YY_MOVE (that.value));
         break;
 
@@ -5864,6 +5869,7 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
+      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.move< ast::expr > (YY_MOVE (s.value));
         break;
 
@@ -6249,7 +6255,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::arc::t6
-#line 6253 "parser.hpp"
+#line 6259 "parser.hpp"
 
 
 
