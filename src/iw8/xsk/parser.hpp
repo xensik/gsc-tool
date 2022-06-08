@@ -447,6 +447,7 @@ namespace xsk { namespace gsc { namespace iw8 {
       // expr_binary
       // expr_primitive
       // expr_object
+      // expr_identifier_neg
       char dummy6[sizeof (ast::expr)];
 
       // expr_add_array
@@ -1019,16 +1020,17 @@ namespace xsk { namespace gsc { namespace iw8 {
         S_expr_level = 187,                      // expr_level
         S_expr_animation = 188,                  // expr_animation
         S_expr_animtree = 189,                   // expr_animtree
-        S_expr_identifier_nosize = 190,          // expr_identifier_nosize
-        S_expr_identifier = 191,                 // expr_identifier
-        S_expr_path = 192,                       // expr_path
-        S_expr_istring = 193,                    // expr_istring
-        S_expr_string = 194,                     // expr_string
-        S_expr_vector = 195,                     // expr_vector
-        S_expr_float = 196,                      // expr_float
-        S_expr_integer = 197,                    // expr_integer
-        S_expr_false = 198,                      // expr_false
-        S_expr_true = 199                        // expr_true
+        S_expr_identifier_neg = 190,             // expr_identifier_neg
+        S_expr_identifier_nosize = 191,          // expr_identifier_nosize
+        S_expr_identifier = 192,                 // expr_identifier
+        S_expr_path = 193,                       // expr_path
+        S_expr_istring = 194,                    // expr_istring
+        S_expr_string = 195,                     // expr_string
+        S_expr_vector = 196,                     // expr_vector
+        S_expr_float = 197,                      // expr_float
+        S_expr_integer = 198,                    // expr_integer
+        S_expr_false = 199,                      // expr_false
+        S_expr_true = 200                        // expr_true
       };
     };
 
@@ -1095,6 +1097,7 @@ namespace xsk { namespace gsc { namespace iw8 {
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
+      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.move< ast::expr > (std::move (that.value));
         break;
 
@@ -2403,6 +2406,7 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
+      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.template destroy< ast::expr > ();
         break;
 
@@ -4899,8 +4903,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2278,     ///< Last index in yytable_.
-      yynnts_ = 85,  ///< Number of nonterminal symbols.
+      yylast_ = 2360,     ///< Last index in yytable_.
+      yynnts_ = 86,  ///< Number of nonterminal symbols.
       yyfinal_ = 22 ///< Termination state number.
     };
 
@@ -4957,6 +4961,7 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
+      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.copy< ast::expr > (YY_MOVE (that.value));
         break;
 
@@ -5283,6 +5288,7 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
+      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.move< ast::expr > (YY_MOVE (s.value));
         break;
 
@@ -5615,7 +5621,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::gsc::iw8
-#line 5619 "parser.hpp"
+#line 5625 "parser.hpp"
 
 
 
