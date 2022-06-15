@@ -202,6 +202,7 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %type <ast::expr>                        expr_binary
 %type <ast::expr>                        expr_primitive
 %type <ast::expr_complement::ptr>        expr_complement
+%type <ast::expr_negate::ptr>            expr_negate
 %type <ast::expr_not::ptr>               expr_not
 %type <ast::expr_call::ptr>              expr_call
 %type <ast::expr_method::ptr>            expr_method
@@ -242,7 +243,6 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %type <ast::expr_anim::ptr>              expr_anim
 %type <ast::expr_level::ptr>             expr_level
 %type <ast::expr_animation::ptr>         expr_animation
-%type <ast::expr>                        expr_identifier_neg
 %type <ast::expr_identifier::ptr>        expr_identifier_nosize
 %type <ast::expr_identifier::ptr>        expr_identifier
 %type <ast::expr_path::ptr>              expr_path
@@ -626,6 +626,7 @@ expr_binary
 
 expr_primitive
     : expr_complement        { $$.as_node = std::move($1); }
+    | expr_negate            { $$.as_node = std::move($1); }
     | expr_not               { $$.as_node = std::move($1); }
     | expr_call              { $$.as_node = std::move($1); }
     | expr_method            { $$.as_node = std::move($1); }
@@ -660,7 +661,6 @@ expr_primitive
     | expr_anim              { $$.as_node = std::move($1); }
     | expr_level             { $$.as_node = std::move($1); }
     | expr_animation         { $$.as_node = std::move($1); }
-    | expr_identifier_neg    { $$ = std::move($1); }
     | expr_identifier        { $$.as_node = std::move($1); }
     | expr_istring           { $$.as_node = std::move($1); }
     | expr_string            { $$.as_node = std::move($1); }
@@ -675,6 +675,17 @@ expr_primitive
 expr_complement
     : COMPLEMENT expr
         { $$ = std::make_unique<ast::expr_complement>(@$, std::move($2)); }
+    ;
+
+expr_negate
+    : SUB expr_identifier %prec NEG
+        { $$ = std::make_unique<ast::expr_negate>(@$, ast::expr(std::move($2))); }
+    | SUB expr_paren %prec NEG
+        { $$ = std::make_unique<ast::expr_negate>(@$, ast::expr(std::move($2))); }
+    | SUB expr_array %prec NEG
+        { $$ = std::make_unique<ast::expr_negate>(@$, ast::expr(std::move($2))); }
+    | SUB expr_field %prec NEG
+        { $$ = std::make_unique<ast::expr_negate>(@$, ast::expr(std::move($2))); }
     ;
 
 expr_not
@@ -913,11 +924,6 @@ expr_level
 expr_animation
     : MOD IDENTIFIER %prec ANIMREF
         { $$ = std::make_unique<ast::expr_animation>(@$, $2); };
-    ;
-
-expr_identifier_neg
-    : SUB IDENTIFIER
-        { $$.as_node = std::make_unique<ast::expr_sub>(@$, ast::expr(std::make_unique<ast::expr_integer>(@$, "0")), ast::expr(std::make_unique<ast::expr_identifier>(@$, $2))); }
     ;
 
 expr_identifier_nosize

@@ -292,6 +292,9 @@ expr_call::expr_call(const location& loc, ast::call call) : node(kind::expr_call
 expr_complement::expr_complement(expr rvalue) : node(kind::expr_complement), rvalue(std::move(rvalue)) {}
 expr_complement::expr_complement(const location& loc, expr rvalue) : node(kind::expr_complement, loc), rvalue(std::move(rvalue)) {}
 
+expr_negate::expr_negate(expr rvalue) : node(kind::expr_negate), rvalue(std::move(rvalue)) {}
+expr_negate::expr_negate(const location& loc, expr rvalue) : node(kind::expr_negate, loc), rvalue(std::move(rvalue)) {}
+
 expr_not::expr_not(expr rvalue) : node(kind::expr_not), rvalue(std::move(rvalue)) {}
 expr_not::expr_not(const location& loc, expr rvalue) : node(kind::expr_not, loc), rvalue(std::move(rvalue)) {}
 
@@ -804,6 +807,11 @@ auto expr_call::print() const -> std::string
 auto expr_complement::print() const -> std::string
 {
     return "~" + rvalue.print();
+}
+
+auto expr_negate::print() const -> std::string
+{
+    return "-" + rvalue.print();
 }
 
 auto expr_not::print() const -> std::string
@@ -1694,6 +1702,7 @@ expr::~expr()
         case kind::expr_method: as_method.~unique_ptr(); return;
         case kind::expr_call: as_call.~unique_ptr(); return;
         case kind::expr_complement: as_complement.~unique_ptr(); return;
+        case kind::expr_negate: as_negate.~unique_ptr(); return;
         case kind::expr_not: as_not.~unique_ptr(); return;
         case kind::expr_add: as_add.~unique_ptr(); return;
         case kind::expr_sub: as_sub.~unique_ptr(); return;

@@ -813,6 +813,9 @@ void compiler::emit_expr(const ast::expr& expr)
         case ast::kind::expr_complement:
             emit_expr_complement(expr.as_complement);
             break;
+        case ast::kind::expr_negate:
+            emit_expr_negate(expr.as_negate);
+            break;
         case ast::kind::expr_not:
             emit_expr_not(expr.as_not);
             break;
@@ -1161,6 +1164,13 @@ void compiler::emit_expr_complement(const ast::expr_complement::ptr& expr)
 {
     emit_expr(expr->rvalue);
     emit_opcode(opcode::OP_BoolComplement);
+}
+
+void compiler::emit_expr_negate(const ast::expr_negate::ptr& expr)
+{
+    emit_opcode(opcode::OP_GetZero);
+    emit_expr(expr->rvalue);
+    emit_opcode(opcode::OP_Minus);
 }
 
 void compiler::emit_expr_not(const ast::expr_not::ptr& expr)

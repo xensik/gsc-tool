@@ -44,6 +44,7 @@ enum class kind
     expr_method,
     expr_call,
     expr_complement,
+    expr_negate,
     expr_not,
     expr_add,
     expr_sub,
@@ -162,6 +163,7 @@ struct expr_function;
 struct expr_method;
 struct expr_call;
 struct expr_complement;
+struct expr_negate;
 struct expr_not;
 struct expr_binary;
 struct expr_add;
@@ -301,6 +303,7 @@ union expr
     std::unique_ptr<expr_method> as_method;
     std::unique_ptr<expr_call> as_call;
     std::unique_ptr<expr_complement> as_complement;
+    std::unique_ptr<expr_negate> as_negate;
     std::unique_ptr<expr_not> as_not;
     std::unique_ptr<expr_binary> as_binary;
     std::unique_ptr<expr_add> as_add;
@@ -840,6 +843,17 @@ struct expr_complement : public node
 
     expr_complement(expr rvalue);
     expr_complement(const location& loc, expr rvalue);
+    auto print() const -> std::string override;
+};
+
+struct expr_negate : public node
+{
+    using ptr = std::unique_ptr<expr_negate>;
+
+    expr rvalue;
+
+    expr_negate(expr rvalue);
+    expr_negate(const location& loc, expr rvalue);
     auto print() const -> std::string override;
 };
 

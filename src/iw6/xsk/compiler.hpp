@@ -82,6 +82,7 @@ private:
     void emit_expr_and(const ast::expr_and::ptr& expr, const block::ptr& blk);
     void emit_expr_or(const ast::expr_or::ptr& expr, const block::ptr& blk);
     void emit_expr_complement(const ast::expr_complement::ptr& expr, const block::ptr& blk);
+    void emit_expr_negate(const ast::expr_negate::ptr& expr, const block::ptr& blk);
     void emit_expr_not(const ast::expr_not::ptr& expr, const block::ptr& blk);
     void emit_expr_call(const ast::expr_call::ptr& expr, const block::ptr& blk, bool is_stmt);
     void emit_expr_call_pointer(const ast::expr_pointer::ptr& expr, const block::ptr& blk, bool is_stmt);

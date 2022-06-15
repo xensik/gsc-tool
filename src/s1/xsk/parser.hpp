@@ -447,7 +447,6 @@ namespace xsk { namespace gsc { namespace s1 {
       // expr_binary
       // expr_primitive
       // expr_object
-      // expr_identifier_neg
       char dummy6[sizeof (ast::expr)];
 
       // expr_add_array
@@ -506,134 +505,137 @@ namespace xsk { namespace gsc { namespace s1 {
       // expr_method
       char dummy24[sizeof (ast::expr_method::ptr)];
 
+      // expr_negate
+      char dummy25[sizeof (ast::expr_negate::ptr)];
+
       // expr_not
-      char dummy25[sizeof (ast::expr_not::ptr)];
+      char dummy26[sizeof (ast::expr_not::ptr)];
 
       // expr_parameters
-      char dummy26[sizeof (ast::expr_parameters::ptr)];
+      char dummy27[sizeof (ast::expr_parameters::ptr)];
 
       // expr_paren
-      char dummy27[sizeof (ast::expr_paren::ptr)];
+      char dummy28[sizeof (ast::expr_paren::ptr)];
 
       // expr_path
-      char dummy28[sizeof (ast::expr_path::ptr)];
+      char dummy29[sizeof (ast::expr_path::ptr)];
 
       // expr_reference
-      char dummy29[sizeof (ast::expr_reference::ptr)];
+      char dummy30[sizeof (ast::expr_reference::ptr)];
 
       // expr_self
-      char dummy30[sizeof (ast::expr_self::ptr)];
+      char dummy31[sizeof (ast::expr_self::ptr)];
 
       // expr_size
-      char dummy31[sizeof (ast::expr_size::ptr)];
+      char dummy32[sizeof (ast::expr_size::ptr)];
 
       // expr_string
-      char dummy32[sizeof (ast::expr_string::ptr)];
+      char dummy33[sizeof (ast::expr_string::ptr)];
 
       // expr_thisthread
-      char dummy33[sizeof (ast::expr_thisthread::ptr)];
+      char dummy34[sizeof (ast::expr_thisthread::ptr)];
 
       // expr_true
-      char dummy34[sizeof (ast::expr_true::ptr)];
+      char dummy35[sizeof (ast::expr_true::ptr)];
 
       // expr_undefined
-      char dummy35[sizeof (ast::expr_undefined::ptr)];
+      char dummy36[sizeof (ast::expr_undefined::ptr)];
 
       // expr_vector
-      char dummy36[sizeof (ast::expr_vector::ptr)];
+      char dummy37[sizeof (ast::expr_vector::ptr)];
 
       // include
-      char dummy37[sizeof (ast::include::ptr)];
+      char dummy38[sizeof (ast::include::ptr)];
 
       // program
-      char dummy38[sizeof (ast::program::ptr)];
+      char dummy39[sizeof (ast::program::ptr)];
 
       // stmt
       // stmt_or_dev
-      char dummy39[sizeof (ast::stmt)];
+      char dummy40[sizeof (ast::stmt)];
 
       // stmt_assign
-      char dummy40[sizeof (ast::stmt_assign::ptr)];
+      char dummy41[sizeof (ast::stmt_assign::ptr)];
 
       // stmt_break
-      char dummy41[sizeof (ast::stmt_break::ptr)];
+      char dummy42[sizeof (ast::stmt_break::ptr)];
 
       // stmt_breakpoint
-      char dummy42[sizeof (ast::stmt_breakpoint::ptr)];
+      char dummy43[sizeof (ast::stmt_breakpoint::ptr)];
 
       // stmt_call
-      char dummy43[sizeof (ast::stmt_call::ptr)];
+      char dummy44[sizeof (ast::stmt_call::ptr)];
 
       // stmt_case
-      char dummy44[sizeof (ast::stmt_case::ptr)];
+      char dummy45[sizeof (ast::stmt_case::ptr)];
 
       // stmt_continue
-      char dummy45[sizeof (ast::stmt_continue::ptr)];
+      char dummy46[sizeof (ast::stmt_continue::ptr)];
 
       // stmt_default
-      char dummy46[sizeof (ast::stmt_default::ptr)];
+      char dummy47[sizeof (ast::stmt_default::ptr)];
 
       // stmt_dev
-      char dummy47[sizeof (ast::stmt_dev::ptr)];
+      char dummy48[sizeof (ast::stmt_dev::ptr)];
 
       // stmt_dowhile
-      char dummy48[sizeof (ast::stmt_dowhile::ptr)];
+      char dummy49[sizeof (ast::stmt_dowhile::ptr)];
 
       // stmt_endon
-      char dummy49[sizeof (ast::stmt_endon::ptr)];
+      char dummy50[sizeof (ast::stmt_endon::ptr)];
 
       // stmt_expr
-      char dummy50[sizeof (ast::stmt_expr::ptr)];
+      char dummy51[sizeof (ast::stmt_expr::ptr)];
 
       // stmt_for
-      char dummy51[sizeof (ast::stmt_for::ptr)];
+      char dummy52[sizeof (ast::stmt_for::ptr)];
 
       // stmt_foreach
-      char dummy52[sizeof (ast::stmt_foreach::ptr)];
+      char dummy53[sizeof (ast::stmt_foreach::ptr)];
 
       // stmt_if
-      char dummy53[sizeof (ast::stmt_if::ptr)];
+      char dummy54[sizeof (ast::stmt_if::ptr)];
 
       // stmt_ifelse
-      char dummy54[sizeof (ast::stmt_ifelse::ptr)];
+      char dummy55[sizeof (ast::stmt_ifelse::ptr)];
 
       // stmt_list
       // stmt_or_dev_list
       // stmt_block
-      char dummy55[sizeof (ast::stmt_list::ptr)];
+      char dummy56[sizeof (ast::stmt_list::ptr)];
 
       // stmt_notify
-      char dummy56[sizeof (ast::stmt_notify::ptr)];
+      char dummy57[sizeof (ast::stmt_notify::ptr)];
 
       // stmt_prof_begin
-      char dummy57[sizeof (ast::stmt_prof_begin::ptr)];
+      char dummy58[sizeof (ast::stmt_prof_begin::ptr)];
 
       // stmt_prof_end
-      char dummy58[sizeof (ast::stmt_prof_end::ptr)];
+      char dummy59[sizeof (ast::stmt_prof_end::ptr)];
 
       // stmt_return
-      char dummy59[sizeof (ast::stmt_return::ptr)];
+      char dummy60[sizeof (ast::stmt_return::ptr)];
 
       // stmt_switch
-      char dummy60[sizeof (ast::stmt_switch::ptr)];
+      char dummy61[sizeof (ast::stmt_switch::ptr)];
 
       // stmt_wait
-      char dummy61[sizeof (ast::stmt_wait::ptr)];
+      char dummy62[sizeof (ast::stmt_wait::ptr)];
 
       // stmt_waitframe
-      char dummy62[sizeof (ast::stmt_waitframe::ptr)];
+      char dummy63[sizeof (ast::stmt_waitframe::ptr)];
 
       // stmt_waittill
-      char dummy63[sizeof (ast::stmt_waittill::ptr)];
+      char dummy64[sizeof (ast::stmt_waittill::ptr)];
 
       // stmt_waittillframeend
-      char dummy64[sizeof (ast::stmt_waittillframeend::ptr)];
+      char dummy65[sizeof (ast::stmt_waittillframeend::ptr)];
 
       // stmt_waittillmatch
-      char dummy65[sizeof (ast::stmt_waittillmatch::ptr)];
+      char dummy66[sizeof (ast::stmt_waittillmatch::ptr)];
 
       // stmt_while
-      char dummy66[sizeof (ast::stmt_while::ptr)];
+      char dummy67[sizeof (ast::stmt_while::ptr)];
 
       // "path"
       // "identifier"
@@ -641,7 +643,7 @@ namespace xsk { namespace gsc { namespace s1 {
       // "localized string"
       // "float"
       // "integer"
-      char dummy67[sizeof (std::string)];
+      char dummy68[sizeof (std::string)];
     };
 
     /// The size of the largest semantic type.
@@ -984,31 +986,31 @@ namespace xsk { namespace gsc { namespace s1 {
         S_expr_binary = 159,                     // expr_binary
         S_expr_primitive = 160,                  // expr_primitive
         S_expr_complement = 161,                 // expr_complement
-        S_expr_not = 162,                        // expr_not
-        S_expr_call = 163,                       // expr_call
-        S_expr_method = 164,                     // expr_method
-        S_expr_function = 165,                   // expr_function
-        S_expr_pointer = 166,                    // expr_pointer
-        S_expr_add_array = 167,                  // expr_add_array
-        S_expr_parameters = 168,                 // expr_parameters
-        S_expr_arguments = 169,                  // expr_arguments
-        S_expr_arguments_no_empty = 170,         // expr_arguments_no_empty
-        S_expr_reference = 171,                  // expr_reference
-        S_expr_array = 172,                      // expr_array
-        S_expr_field = 173,                      // expr_field
-        S_expr_size = 174,                       // expr_size
-        S_expr_paren = 175,                      // expr_paren
-        S_expr_object = 176,                     // expr_object
-        S_expr_thisthread = 177,                 // expr_thisthread
-        S_expr_empty_array = 178,                // expr_empty_array
-        S_expr_undefined = 179,                  // expr_undefined
-        S_expr_game = 180,                       // expr_game
-        S_expr_self = 181,                       // expr_self
-        S_expr_anim = 182,                       // expr_anim
-        S_expr_level = 183,                      // expr_level
-        S_expr_animation = 184,                  // expr_animation
-        S_expr_animtree = 185,                   // expr_animtree
-        S_expr_identifier_neg = 186,             // expr_identifier_neg
+        S_expr_negate = 162,                     // expr_negate
+        S_expr_not = 163,                        // expr_not
+        S_expr_call = 164,                       // expr_call
+        S_expr_method = 165,                     // expr_method
+        S_expr_function = 166,                   // expr_function
+        S_expr_pointer = 167,                    // expr_pointer
+        S_expr_add_array = 168,                  // expr_add_array
+        S_expr_parameters = 169,                 // expr_parameters
+        S_expr_arguments = 170,                  // expr_arguments
+        S_expr_arguments_no_empty = 171,         // expr_arguments_no_empty
+        S_expr_reference = 172,                  // expr_reference
+        S_expr_array = 173,                      // expr_array
+        S_expr_field = 174,                      // expr_field
+        S_expr_size = 175,                       // expr_size
+        S_expr_paren = 176,                      // expr_paren
+        S_expr_object = 177,                     // expr_object
+        S_expr_thisthread = 178,                 // expr_thisthread
+        S_expr_empty_array = 179,                // expr_empty_array
+        S_expr_undefined = 180,                  // expr_undefined
+        S_expr_game = 181,                       // expr_game
+        S_expr_self = 182,                       // expr_self
+        S_expr_anim = 183,                       // expr_anim
+        S_expr_level = 184,                      // expr_level
+        S_expr_animation = 185,                  // expr_animation
+        S_expr_animtree = 186,                   // expr_animtree
         S_expr_identifier_nosize = 187,          // expr_identifier_nosize
         S_expr_identifier = 188,                 // expr_identifier
         S_expr_path = 189,                       // expr_path
@@ -1085,7 +1087,6 @@ namespace xsk { namespace gsc { namespace s1 {
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
-      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.move< ast::expr > (std::move (that.value));
         break;
 
@@ -1161,6 +1162,10 @@ namespace xsk { namespace gsc { namespace s1 {
 
       case symbol_kind::S_expr_method: // expr_method
         value.move< ast::expr_method::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_negate: // expr_negate
+        value.move< ast::expr_negate::ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_expr_not: // expr_not
@@ -1696,6 +1701,20 @@ namespace xsk { namespace gsc { namespace s1 {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const ast::expr_method::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_negate::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_negate::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -2358,7 +2377,6 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
-      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.template destroy< ast::expr > ();
         break;
 
@@ -2434,6 +2452,10 @@ switch (yykind)
 
       case symbol_kind::S_expr_method: // expr_method
         value.template destroy< ast::expr_method::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_negate: // expr_negate
+        value.template destroy< ast::expr_negate::ptr > ();
         break;
 
       case symbol_kind::S_expr_not: // expr_not
@@ -4817,7 +4839,7 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2310,     ///< Last index in yytable_.
+      yylast_ = 2419,     ///< Last index in yytable_.
       yynnts_ = 84,  ///< Number of nonterminal symbols.
       yyfinal_ = 22 ///< Termination state number.
     };
@@ -4875,7 +4897,6 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
-      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.copy< ast::expr > (YY_MOVE (that.value));
         break;
 
@@ -4951,6 +4972,10 @@ switch (yykind)
 
       case symbol_kind::S_expr_method: // expr_method
         value.copy< ast::expr_method::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_negate: // expr_negate
+        value.copy< ast::expr_negate::ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_expr_not: // expr_not
@@ -5194,7 +5219,6 @@ switch (yykind)
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_object: // expr_object
-      case symbol_kind::S_expr_identifier_neg: // expr_identifier_neg
         value.move< ast::expr > (YY_MOVE (s.value));
         break;
 
@@ -5270,6 +5294,10 @@ switch (yykind)
 
       case symbol_kind::S_expr_method: // expr_method
         value.move< ast::expr_method::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_negate: // expr_negate
+        value.move< ast::expr_negate::ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_expr_not: // expr_not
@@ -5519,7 +5547,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::gsc::s1
-#line 5523 "parser.hpp"
+#line 5551 "parser.hpp"
 
 
 
