@@ -1272,7 +1272,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             auto expr = ast::expr(std::move(stack_.top())); stack_.pop();
             loc = expr.as_node->loc();
 
-            for (auto i = std::stoul(inst->data[0]); i > 0; i++)
+            for (auto i = std::stoul(inst->data[0]); i > 0; i--)
             {
                 auto node = std::move(stack_.top()); stack_.pop();
                 loc = node->loc();
