@@ -1722,7 +1722,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 780> method_list
     { 0x830C, "setgametypestring" },
 }};
 
-const std::array<std::pair<std::uint16_t, const char*>, 6157> token_list
+const std::array<std::pair<std::uint16_t, const char*>, 6153> token_list
 {{
     { 0x0000, "" },
     { 0x0001, "pl#" },
@@ -1741,9 +1741,9 @@ const std::array<std::pair<std::uint16_t, const char*>, 6157> token_list
 //  { 0x000E, "" },
 //  { 0x000F, "" },
 //  { 0x0010, "" },
-    { 0x0011, "teamhasremoteuav" },
-    { 0x0012, "carriedremoteuav" },
-    { 0x0013, "imsbombsquadmodel" },
+    { 0x0011, "teamhasremoteuav" }, // guessed IW patch
+    { 0x0012, "carriedremoteuav" }, // guessed IW patch
+    { 0x0013, "imsbombsquadmodel" }, // guessed IW patch
     { 0x0014, "zonescycling" },
 //  { 0x0015, "" },
 //  { 0x0016, "" },
@@ -1778,7 +1778,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 6157> token_list
 //  { 0x0033, "" },
 //  { 0x0034, "" },
 //  { 0x0035, "" },
-    { 0x0036, "_unk_field_id54" },
+//  { 0x0036, "" },
     { 0x0037, "isbuffequippedonweapon" },
     { 0x0038, "ondisconnect" },
 //  { 0x0039, "" },
@@ -2147,9 +2147,9 @@ const std::array<std::pair<std::uint16_t, const char*>, 6157> token_list
     { 0x01A4, "painted" },
     { 0x01A5, "hidecarryiconongameend" },
     { 0x01A6, "emptimeremaining" },
-    { 0x01A7, "juggremoveradarongameended" },
+    { 0x01A7, "juggremoveradarongameended" },  // guessed IW patch
     { 0x01A8, "airstrikessfx" },
-    { 0x01A9, "airstrikeexplosion" },
+    { 0x01A9, "airstrikeexplosion" }, // guessed IW patch
     { 0x01AA, "keepemptimeremaining" },
     { 0x01AB, "nukeemptimeremaining" },
     { 0x01AC, "keepnukeemptimeremaining" },
@@ -3071,7 +3071,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 6157> token_list
     { 0x0540, "codescripts/delete" },
     { 0x0541, "codescripts/struct" },
 //  { 0x0542, "" },
-//  { 0x0543, "" },
+    { 0x0543, "maps/_breach" },
 //  { 0x0544, "" },
 //  { 0x0545, "" },
 //  { 0x0546, "" },
@@ -7521,7 +7521,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 6157> token_list
 //  { 0x16A2, "" },
 //  { 0x16A3, "" },
 //  { 0x16A4, "" },
-    { 0x16A5, "_unk_field_id5797" },
+//  { 0x16A5, "" },
 //  { 0x16A6, "" },
 //  { 0x16A7, "" },
 //  { 0x16A8, "" },
@@ -12359,9 +12359,9 @@ const std::array<std::pair<std::uint16_t, const char*>, 6157> token_list
 //  { 0x2988, "" },
 //  { 0x2989, "" },
 //  { 0x298A, "" },
-    { 0x298B, "_unk_field_id10635" },
+//  { 0x298B, "" },
 //  { 0x298C, "" },
-    { 0x298D, "_unk_field_id10637" },
+//  { 0x298D, "" },
 //  { 0x298E, "" },
 //  { 0x298F, "" },
 //  { 0x2990, "" },
@@ -16081,7 +16081,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 6157> token_list
     { 0x3812, "arrayinsertion" },
     { 0x3813, "getproperty" },
     { 0x3814, "statusmenu" },
-    { 0x3815, "_statusmenu" },
+    { 0x3815, "_statusmenu" }, // typo by IW
     { 0x3816, "streakshouldchain" },
     { 0x3817, "fixakimbostring" },
     { 0x3818, "rounddecimalplaces" },
@@ -27551,7 +27551,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 6157> token_list
 //  { 0x64E0, "" },
 //  { 0x64E1, "" },
 //  { 0x64E2, "" },
-    { 0x64E3, "_unk_field_id25827" },
+//  { 0x64E3, "" },
 //  { 0x64E4, "" },
 //  { 0x64E5, "" },
 //  { 0x64E6, "" },

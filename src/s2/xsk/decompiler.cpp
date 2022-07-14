@@ -1796,7 +1796,7 @@ void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
 {
     if (stmt->list.size() == 0) return;
 
-    for (std::int32_t i = stmt->list.size() - 1; i >= 0; i--)
+    for (auto i = static_cast<std::int32_t>(stmt->list.size() - 1); i >= 0; i--)
     {
         if (stmt->list.at(i) == ast::kind::asm_jump_back)
         {
@@ -1810,22 +1810,22 @@ void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
             else if (i == static_cast<std::int32_t>(start)) // empty loop
             {
                 decompile_infinite(stmt, start, i);
-                i = stmt->list.size();
+                i = static_cast<std::int32_t>(stmt->list.size());
             }
             else if (stmt->list.at(start).as_node->kind() != ast::kind::asm_jump_cond)
             {
                 decompile_infinite(stmt, start, i);
-                i = stmt->list.size();
+                i = static_cast<std::int32_t>(stmt->list.size());
             }
             else if (stmt->list.at(start).as_cond->value != break_loc) // cond belong to other stmt
             {
                 decompile_infinite(stmt, start, i);
-                i = stmt->list.size();
+                i = static_cast<std::int32_t>(stmt->list.size());
             }
             else if (stmt->list.at(start).as_cond->value == break_loc) // not inf
             {
                 decompile_loop(stmt, start, i);
-                i = stmt->list.size();
+                i = static_cast<std::int32_t>(stmt->list.size());
             }
         }
     }
