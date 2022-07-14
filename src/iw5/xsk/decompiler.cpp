@@ -1781,26 +1781,38 @@ void decompiler::decompile_statements(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
 {
-    for (auto i = stmt->list.size() - 1; i > 0; i--)
+    if (stmt->list.size() == 0) return;
+
+    for (std::int32_t i = stmt->list.size() - 1; i >= 0; i--)
     {
         if (stmt->list.at(i) == ast::kind::asm_jump_back)
         {
             auto break_loc = last_location_index(stmt, i) ? blocks_.back().loc_end : stmt->list.at(i + 1).loc().label();
             auto start = find_location_index(stmt, stmt->list.at(i).as_jump_back->value);
 
-            if (i > 0 && stmt->list.at(i - 1).as_node->kind() == ast::kind::asm_jump_cond)
+            if (i > 0 && stmt->list.at(i - 1).as_node->kind() == ast::kind::asm_jump_cond) // do-while
             {
                 continue;
+            }
+            else if (i == static_cast<std::int32_t>(start)) // empty loop
+            {
+                decompile_infinite(stmt, start, i);
+                i = stmt->list.size();
             }
             else if (stmt->list.at(start).as_node->kind() != ast::kind::asm_jump_cond)
             {
                 decompile_infinite(stmt, start, i);
-                i = start;
+                i = stmt->list.size();
             }
-            else if (stmt->list.at(start).as_cond->value != break_loc)
+            else if (stmt->list.at(start).as_cond->value != break_loc) // cond belong to other stmt
             {
                 decompile_infinite(stmt, start, i);
-                i = start;
+                i = stmt->list.size();
+            }
+            else if (stmt->list.at(start).as_cond->value == break_loc) // not inf
+            {
+                decompile_loop(stmt, start, i);
+                i = stmt->list.size();
             }
         }
     }
@@ -2156,7 +2168,7 @@ void decompiler::decompile_loop(const ast::stmt_list::ptr& block, std::size_t st
 
                 if (find_location_reference(block, start, end, ref))
                 {
-                    // continue is at jumpback, not post-expr
+                    // jump is referenced, not post-expr
                     decompile_while(block, start, end);
                     return;
                 }
@@ -2407,7 +2419,14 @@ void decompiler::decompile_switch(const ast::stmt_list::ptr& stmt, std::size_t s
         }
     }
 
-    end = find_location_index(stmt, end_loc) - 1; // update end;
+    end = find_location_index(stmt, end_loc); // update end
+
+    // fix empty cases at end
+    if (stmt->list.at(end) == ast::kind::asm_endswitch)
+        end--;
+
+    // TODO: fix more than 1 empty case at end
+
     stmt->list.erase(stmt->list.begin() + start); // remove 'switch'
     stmt->list.erase(stmt->list.begin() + end); // remove 'endswitch'
 
