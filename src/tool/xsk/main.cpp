@@ -99,7 +99,7 @@ auto choose_resolver_file_name(uint32_t id, game& game) -> std::string
     switch (game)
     {
         case game::IW5:
-            return iw5::resolver::file_name(static_cast<std::uint16_t>(id));
+            return iw5::resolver::token_name(static_cast<std::uint16_t>(id));
         case game::IW6:
             return iw6::resolver::file_name(static_cast<std::uint16_t>(id));
         case game::IW7:
