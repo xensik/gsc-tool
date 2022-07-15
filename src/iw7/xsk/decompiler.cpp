@@ -1894,6 +1894,18 @@ void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
             }
             else if (stmt->list.at(j) == ast::kind::stmt_return && stmt->list.at(j).as_return->expr == ast::kind::null)
             {
+                if(entry.as_cond->value != blocks_.back().loc_end)
+                {
+                    auto ref = stmt->list.at(j + 1).loc().label();
+
+                    if (find_location_reference(stmt, i + 1, j, ref))
+                    {
+                        // after return is referenced inside the block
+                        decompile_if(stmt, i, j);
+                        continue;
+                    }
+                }
+
                 if (blocks_.back().loc_break != "" || blocks_.back().loc_continue != "")
                 {
                     decompile_if(stmt, i, j); // inside a loop cant be last
@@ -2164,7 +2176,7 @@ void decompiler::decompile_loop(const ast::stmt_list::ptr& block, std::size_t st
             if (block->list.at(start - index) == ast::kind::stmt_assign)
             {
                 auto ref = block->list.at(end).loc().label();
-                auto ref2 = block->list.at(start).loc().label();
+                auto ref2 = block->list.at(start - index + 1).loc().label();
 
                 if (find_location_reference(block, start, end, ref))
                 {
@@ -2174,7 +2186,7 @@ void decompiler::decompile_loop(const ast::stmt_list::ptr& block, std::size_t st
                 }
                 else if (find_location_reference(block, 0, start, ref2))
                 {
-                    // begin is at condition, not pre-expr
+                    // begin is at condition or localVarCreate, not pre-expr
                     decompile_while(block, start, end);
                     return;
                 }

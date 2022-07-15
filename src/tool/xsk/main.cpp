@@ -250,7 +250,7 @@ void disassemble_file(game game, std::string file)
     }
     catch (const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << e.what() << " at " << file << '\n';
     }
 }
 
@@ -394,7 +394,7 @@ void decompile_file(game game, std::string file)
     }
     catch (const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << e.what() << " at " << file << '\n';
     }
 }
 
@@ -471,7 +471,7 @@ void disassemble_file(game game, const std::filesystem::path& file)
     }
     catch (const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << e.what() << " at " << file.string() << '\n';
     }
 }
 
@@ -521,7 +521,7 @@ void decompile_file(game game, const std::filesystem::path& file)
     }
     catch (const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << e.what() << " at " << file.string() << '\n';
     }
 }
 
