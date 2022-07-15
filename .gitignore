@@ -149,6 +149,11 @@ user*.bat
 # VScode
 .vscode/
 
+compiled/
+decompiled/
+assembled/
+disassembled/
+
 data/iw5/
 data/iw6/
 data/iw7/
