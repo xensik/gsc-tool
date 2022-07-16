@@ -1827,11 +1827,16 @@ void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
             auto break_loc = last_location_index(stmt, i) ? blocks_.back().loc_end : stmt->list.at(i + 1).loc().label();
             auto start = find_location_index(stmt, stmt->list.at(i).as_jump_back->value);
 
-            if (i > 0 && stmt->list.at(i - 1).as_node->kind() == ast::kind::asm_jump_cond) // do-while
+            if (i > 0 && stmt->list.at(i - 1).as_node->kind() == ast::kind::asm_jump_cond)
             {
-                continue;
+                if (static_cast<std::size_t>(i) < find_location_index(stmt, stmt->list.at(i - 1).as_cond->loc().label()))
+                {
+                    continue; // do-while
+                }
+                // empty if at loop end
             }
-            else if (i == static_cast<std::int32_t>(start)) // empty loop
+
+            if (i == static_cast<std::int32_t>(start)) // empty loop
             {
                 decompile_infinite(stmt, start, i);
                 i = static_cast<std::int32_t>(stmt->list.size());
@@ -1922,7 +1927,15 @@ void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
                 }
                 else if (stmt->list.at(j).as_jump->value == entry.as_cond->value)
                 {
-                    decompile_if(stmt, i, j); // if block, have a last empty else inside
+                    if (find_location_reference(stmt, i + 1, j, entry.as_cond->value))
+                    {
+                        // if block, have a empty else inside at end
+                        decompile_if(stmt, i, j);
+                    }
+                    else
+                    {
+                        decompile_ifelse(stmt, i, j); // if block with empty else
+                    }
                 }
                 else
                 {
