@@ -2,8 +2,10 @@
 ![license](https://img.shields.io/github/license/xensik/gsc-tool.svg)
 [![GitHub issues](https://img.shields.io/github/issues/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/issues)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/releases)
+
 # GSC Tool
 A utility to compile & decompile IW engine game scripts.
+
 ## Supported Games
 - **IW5** *(Call of Duty: Modern Warfare 3)*
 - **IW6** *(Call of Duty: Ghosts)*
@@ -18,6 +20,7 @@ A utility to compile & decompile IW engine game scripts.
 - **T5** *(Call of Duty: Black Ops)* ***\*WIP\****
 - **T6** *(Call of Duty: Black Ops II)*
 - **T7** *(Call of Duty: Black Ops III)* ***\*WIP\****
+
 ## Usage
 ``./gsc-tool.exe <mode> <game> <path>``
 
@@ -29,6 +32,8 @@ A utility to compile & decompile IW engine game scripts.
 
 for zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zdecomp` modes
 
+Example: ``./gsc-tool.exe comp iw5 ./data/iw5/my_fancy_script.gsc``
+
 | Mode     |Description                | Output      |
 |:---------|:--------------------------|:------------|
 |`asm`     |assemble a `file.gscasm`   |`file.gscbin`|
@@ -39,7 +44,13 @@ for zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zd
 ## File Format
 If you need to extract scripts from fastfiles or game memory, use [Zonetool](https://github.com/ZoneTool/zonetool) or [Jekyll](https://github.com/EthanC/Jekyll).
 
-- gsc-tool ``.gscbin`` format is a serialized ScriptFile struct: ***name***: null-term string, ***compressedLen***: 4 byte uint, ***len***: 4 byte uint, ***bytecodeLen***: 4 byte uint, ***buffer***: byte array[compressedLen], ***bytecode***: byte array[bytecodeLen].
+- gsc-tool ``.gscbin`` format is a serialized ScriptFile struct: <br/>
+***name***: null-terminated string <br/>
+***compressedLen***: 4 byte uint <br/>
+***len***: 4 byte uint <br/>
+***bytecodeLen***: 4 byte uint <br/>
+***buffer***: byte array[compressedLen] <br/>
+***bytecode***: byte array[bytecodeLen] <br/>
 
 - zonetool (IW5) format made of bytecode file ``.cgsc`` and decompressed stack buffer ``.cgsc.stack``.
 
@@ -47,5 +58,6 @@ If you need to extract scripts from fastfiles or game memory, use [Zonetool](htt
 
 ## Credits
 This project is based on  [*RektInator's* gsc-asm](https://github.com/ZoneTool/gsc-asm). Special thanks to **RektInator**, **JTAG** & **Dasfonia**.
+
 ## Disclaimer
 This software has been created purely for the purposes of academic research. Project maintainers are not responsible or liable for misuse of the software. Use responsibly.
