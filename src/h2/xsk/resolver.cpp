@@ -17,12 +17,10 @@ namespace xsk::gsc::h2
 std::unordered_map<std::uint8_t, std::string_view> opcode_map;
 std::unordered_map<std::uint16_t, std::string_view> function_map;
 std::unordered_map<std::uint16_t, std::string_view> method_map;
-std::unordered_map<std::uint16_t, std::string_view> file_map;
 std::unordered_map<std::uint16_t, std::string_view> token_map;
 std::unordered_map<std::string_view, std::uint8_t> opcode_map_rev;
 std::unordered_map<std::string_view, std::uint16_t> function_map_rev;
 std::unordered_map<std::string_view, std::uint16_t> method_map_rev;
-std::unordered_map<std::string_view, std::uint16_t> file_map_rev;
 std::unordered_map<std::string_view, std::uint16_t> token_map_rev;
 std::unordered_map<std::string, std::vector<std::uint8_t>> files;
 read_cb_type read_callback = nullptr;
@@ -118,35 +116,6 @@ auto resolver::method_name(std::uint16_t id) -> std::string
     }
 
     return utils::string::va("_meth_%04X", id);
-}
-
-auto resolver::file_id(const std::string& name) -> std::uint16_t
-{
-    if (name.starts_with("_id_"))
-    {
-        return static_cast<std::uint16_t>(std::stoul(name.substr(4), nullptr, 16));
-    }
-
-    const auto itr = file_map_rev.find(name);
-
-    if (itr != file_map_rev.end())
-    {
-        return itr->second;
-    }
-
-    return 0;
-}
-
-auto resolver::file_name(std::uint16_t id) -> std::string
-{
-    const auto itr = file_map.find(id);
-
-    if (itr != file_map.end())
-    {
-        return std::string(itr->second);
-    }
-
-    return utils::string::va("_id_%04X", id);
 }
 
 auto resolver::token_id(const std::string& name) -> std::uint16_t
@@ -2727,11 +2696,6 @@ const std::array<std::pair<std::uint16_t, const char*>, 1491> method_list
     { 0x85D2, "_meth_85D2" },
 }};
 
-const std::array<std::pair<std::uint16_t, const char*>, 1> file_list
-{{
-    { 0, "null" },
-}};
-
 const std::array<std::pair<std::uint16_t, const char*>, 5> token_list
 {{
     { 0x0000, "" },
@@ -2755,8 +2719,6 @@ struct __init__
         function_map_rev.reserve(function_list.size());
         method_map.reserve(method_list.size());
         method_map_rev.reserve(method_list.size());
-        file_map.reserve(file_list.size());
-        file_map_rev.reserve(file_list.size());
         token_map.reserve(token_list.size());
         token_map_rev.reserve(token_list.size());
 
@@ -2776,12 +2738,6 @@ struct __init__
         {
             method_map.insert({ entry.first, entry.second });
             method_map_rev.insert({ entry.second, entry.first });
-        }
-
-        for (const auto& entry : file_list)
-        {
-            file_map.insert({ entry.first, entry.second });
-            file_map_rev.insert({ entry.second, entry.first });
         }
 
         for (const auto& entry : token_list)

@@ -115,7 +115,7 @@ auto choose_resolver_file_name(uint32_t id, game& game) -> std::string
         case game::H1:
             return h1::resolver::token_name(static_cast<std::uint16_t>(id));
         case game::H2:
-            return h2::resolver::file_name(static_cast<std::uint16_t>(id));
+            return h2::resolver::token_name(static_cast<std::uint16_t>(id));
         default:
             return "";
     }
