@@ -17,12 +17,10 @@ namespace xsk::gsc::h1
 std::unordered_map<std::uint8_t, std::string_view> opcode_map;
 std::unordered_map<std::uint16_t, std::string_view> function_map;
 std::unordered_map<std::uint16_t, std::string_view> method_map;
-std::unordered_map<std::uint16_t, std::string_view> file_map;
 std::unordered_map<std::uint16_t, std::string_view> token_map;
 std::unordered_map<std::string_view, std::uint8_t> opcode_map_rev;
 std::unordered_map<std::string_view, std::uint16_t> function_map_rev;
 std::unordered_map<std::string_view, std::uint16_t> method_map_rev;
-std::unordered_map<std::string_view, std::uint16_t> file_map_rev;
 std::unordered_map<std::string_view, std::uint16_t> token_map_rev;
 std::unordered_map<std::string, std::vector<std::uint8_t>> files;
 read_cb_type read_callback = nullptr;
@@ -118,35 +116,6 @@ auto resolver::method_name(std::uint16_t id) -> std::string
     }
 
     return utils::string::va("_meth_%04X", id);
-}
-
-auto resolver::file_id(const std::string& name) -> std::uint16_t
-{
-    if (name.starts_with("_id_"))
-    {
-        return static_cast<std::uint16_t>(std::stoul(name.substr(4), nullptr, 16));
-    }
-
-    const auto itr = file_map_rev.find(name);
-
-    if (itr != file_map_rev.end())
-    {
-        return itr->second;
-    }
-
-    return 0;
-}
-
-auto resolver::file_name(std::uint16_t id) -> std::string
-{
-    const auto itr = file_map.find(id);
-
-    if (itr != file_map.end())
-    {
-        return std::string(itr->second);
-    }
-
-    return utils::string::va("_id_%04X", id);
 }
 
 auto resolver::token_id(const std::string& name) -> std::uint16_t
@@ -247,15 +216,13 @@ auto resolver::file_data(const std::string& name) -> std::tuple<const std::strin
 
 std::set<std::string_view> paths
 {
+    "animscripts"sv,
+    "animscripts/traverse"sv,
     "character"sv,
     "codescripts"sv,
     "common_scripts"sv,
     "destructible_scripts"sv,
     "maps"sv,
-    "mptype"sv,
-    "soundscripts"sv,
-    "vehicle_scripts"sv,
-    "xmodelalias"sv,
     "maps/animated_models"sv,
     "maps/createart"sv,
     "maps/createfx"sv,
@@ -263,6 +230,10 @@ std::set<std::string_view> paths
     "maps/mp/gametypes"sv,
     "maps/mp/killstreaks"sv,
     "maps/mp/perks"sv,
+    "mptype"sv,
+    "soundscripts"sv,
+    "vehicle_scripts"sv,
+    "xmodelalias"sv,
 };
 
 auto resolver::fs_to_game_path(const std::filesystem::path& file) -> std::filesystem::path
@@ -858,10 +829,10 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x19A, "logstring" },
     { 0x19B, "getent" },
     { 0x19C, "getentarray" },
-    { 0x19D, "_func_19D" },
-    { 0x19E, "_func_19E" },
-    { 0x19F, "_func_19F" },
-    { 0x1A0, "_func_1A0" },
+    { 0x19D, "getspawnarray" },
+    { 0x19E, "spawnplane" },
+    { 0x19F, "spawnstruct" },
+    { 0x1A0, "spawnhelicopter" },
     { 0x1A1, "_func_1A1" },
     { 0x1A2, "_func_1A2" },
     { 0x1A3, "_func_1A3" },
@@ -1406,7 +1377,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1415> method_list
     { 0x80AF, "_meth_80AF" },
     { 0x80B0, "_meth_80B0" },
     { 0x80B1, "_meth_80B1" },
-    { 0x80B2, "_meth_80B2" },
+    { 0x80B2, "delete" },
     { 0x80B3, "_meth_80B3" },
     { 0x80B4, "_meth_80B4" },
     { 0x80B5, "_meth_80B5" },
@@ -2645,27 +2616,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1415> method_list
     { 0x8586, "_meth_8586" },
 }};
 
-const std::array<std::pair<std::uint16_t, const char*>, 16> file_list
-{{
-    { 0x53D, "codescripts/delete" },
-    { 0x53E, "codescripts/struct" },
-    { 0x53F, "codescripts/message" },
-    { 0x540, "maps/mp/gametypes/_callbacksetup" },
-    { 0xA4EF, "codescripts/character" },
-    { 0xA4F0, "common_scripts/_artcommon" },
-    { 0xA4F1, "common_scripts/_bcs_location_trigs" },
-    { 0xA4F2, "common_scripts/_createfx" },
-    { 0xA4F3, "common_scripts/_createfxmenu" },
-    { 0xA4F4, "common_scripts/_destructible" },
-    { 0xA4F5, "common_scripts/_dynamic_world" },
-    { 0xA4F6, "common_scripts/_elevator" },
-    { 0xA4F7, "common_scripts/_exploder" },
-    { 0xA4F8, "common_scripts/_fx" },
-    { 0xA4F9, "common_scripts/_pipes" },
-    { 0xA4FA, "common_scripts/utility" },
-}};
-
-const std::array<std::pair<std::uint16_t, const char*>, 1340> token_list
+const std::array<std::pair<std::uint16_t, const char*>, 433> token_list
 {{
     { 0x0000, "" },
     { 0x0001, "pl#" },
@@ -2864,31 +2815,253 @@ const std::array<std::pair<std::uint16_t, const char*>, 1340> token_list
     { 0x00C2, "codecallback_startgametype" },
     { 0x00C3, "codecallback_vehicledamage" }, // 195
 //
-    { 0x0C4, "color" },
-    { 0x0C5, "color_blind_toggled" },
-    { 0x0C6, "combat" },
-    { 0x0C7, "combatmode" },
-    { 0x0C8, "combatrecord" },
-    { 0x0C9, "commonoption" },
-    { 0x0CA, "confirm_location" },
-    { 0x0CB, "connection_id" },
-    { 0x0CC, "connectionidchunkhigh" },
-    { 0x0CD, "connectionidchunklow" },
-    { 0x0CE, "consolegame" },
-    { 0x0CF, "consoleidchunkhigh" },
-    { 0x0D0, "consoleidchunklow" },
-    { 0x0D1, "constrained" },
-    { 0x0D2, "contact" },
-    { 0x0D3, "contextleanenabled" },
-    { 0x0D4, "convergencetime" },
-    { 0x0D5, "coopactivesquadmember" },
-    { 0x0D6, "coopsquadmembers" },
-    { 0x0D7, "costumes" },
-    { 0x0D8, "count" },
-    { 0x0D9, "cover" },
-    { 0x0DA, "cover_approach" },
-    { 0x0DB, "coversearchinterval" },
-    { 0x0DC, "createstruct" },
+    { 0x00C4, "color" },
+    { 0x00C5, "color_blind_toggled" },
+    { 0x00C6, "combat" },
+    { 0x00C7, "combatmode" },
+    { 0x00C8, "combatrecord" },
+    { 0x00C9, "commonoption" },
+    { 0x00CA, "confirm_location" },
+    { 0x00CB, "connection_id" },
+    { 0x00CC, "connectionidchunkhigh" },
+    { 0x00CD, "connectionidchunklow" },
+    { 0x00CE, "consolegame" },
+    { 0x00CF, "consoleidchunkhigh" },
+    { 0x00D0, "consoleidchunklow" },
+    { 0x00D1, "constrained" },
+    { 0x00D2, "contact" },
+    { 0x00D3, "contextleanenabled" },
+    { 0x00D4, "convergencetime" },
+    { 0x00D5, "coopactivesquadmember" },
+    { 0x00D6, "coopsquadmembers" },
+    { 0x00D7, "costumes" },
+    { 0x00D8, "count" },
+    { 0x00D9, "cover" },
+    { 0x00DA, "cover_approach" },
+    { 0x00DB, "coversearchinterval" },
+    { 0x00DC, "createstruct" },
+
+    { 0x0208, "init" },
+    { 0x0209, "initstructs" },
+
+    { 0x0267, "main" },
+
+    { 0x53D, "codescripts/delete" },
+    { 0x53E, "codescripts/struct" },
+    { 0x53F, "codescripts/message" },
+    { 0x540, "maps/mp/gametypes/_callbacksetup" },
+
+// character
+    { 0xA4EF, "codescripts/character" },
+    { 0xA4F0, "common_scripts/_artcommon" },
+    { 0xA4F1, "common_scripts/_bcs_location_trigs" },
+    { 0xA4F2, "common_scripts/_createfx" },
+    { 0xA4F3, "common_scripts/_createfxmenu" },
+    { 0xA4F4, "common_scripts/_destructible" },
+    { 0xA4F5, "common_scripts/_dynamic_world" },
+    { 0xA4F6, "common_scripts/_elevator" },
+    { 0xA4F7, "common_scripts/_exploder" },
+    { 0xA4F8, "common_scripts/_fx" },
+    { 0xA4F9, "common_scripts/_pipes" },
+    { 0xA4FA, "common_scripts/utility" },
+// sp
+    { 0xA6F9, "maps/createart/mp_vlobby_room_art" },
+    { 0xA6FA, "maps/createart/mp_vlobby_room_fog" },
+    { 0xA6FB, "maps/createart/mp_vlobby_room_fog_hdr" },
+// sp
+    { 0xA720, "maps/mp/_adrenaline" },
+    { 0xA72A, "maps/mp/_aerial_pathnodes" },
+    { 0xA72B, "maps/mp/_animatedmodels" },
+    { 0xA72C, "maps/mp/_areas" },
+    { 0xA72D, "maps/mp/_art" },
+    { 0xA72E, "maps/mp/_audio" },
+    { 0xA72F, "maps/mp/_awards" },
+    { 0xA730, "maps/mp/_braggingrights" },
+    { 0xA731, "maps/mp/_compass" },
+    { 0xA732, "maps/mp/_createfx" },
+    { 0xA733, "maps/mp/_crib" },
+    { 0xA734, "maps/mp/_destructables" },
+    { 0xA735, "maps/mp/_dynamic_events" },
+    { 0xA736, "maps/mp/_empgrenade" },
+    { 0xA737, "maps/mp/_entityheadicons" },
+    { 0xA738, "maps/mp/_events" },
+    { 0xA739, "maps/mp/_exo_battery" },
+    { 0xA73A, "maps/mp/_exo_cloak" },
+    { 0xA73B, "maps/mp/_exo_hover" },
+    { 0xA73C, "maps/mp/_exo_mute" },
+    { 0xA73D, "maps/mp/_exo_ping" },
+    { 0xA73E, "maps/mp/_exo_repulsor" },
+    { 0xA73F, "maps/mp/_exo_shield" },
+    { 0xA740, "maps/mp/_exo_suit" },
+    { 0xA741, "maps/mp/_exocrossbow" },
+    { 0xA742, "maps/mp/_exoknife" },
+    { 0xA743, "maps/mp/_explosive_drone" },
+    { 0xA744, "maps/mp/_explosive_gel" },
+    { 0xA745, "maps/mp/_extrahealth" },
+    { 0xA746, "maps/mp/_fastheal" },
+    { 0xA747, "maps/mp/_flashgrenades" },
+    { 0xA748, "maps/mp/_fx" },
+    { 0xA749, "maps/mp/_global_fx" },
+    { 0xA74A, "maps/mp/_global_fx_code" },
+    { 0xA74B, "maps/mp/_lasersight" },
+    { 0xA74C, "maps/mp/_load" },
+    { 0xA74D, "maps/mp/_lsrmissileguidance" },
+    { 0xA74E, "maps/mp/_matchdata" },
+    { 0xA74F, "maps/mp/_menus" },
+    { 0xA750, "maps/mp/_microdronelauncher" },
+    { 0xA751, "maps/mp/_movers" },
+    { 0xA752, "maps/mp/_mp_lights" },
+    { 0xA753, "maps/mp/_mutebomb" },
+    { 0xA754, "maps/mp/_na45" },
+    { 0xA755, "maps/mp/_opticsthermal" },
+    { 0xA756, "maps/mp/_reinforcements" },
+    { 0xA757, "maps/mp/_riotshield" },
+    { 0xA758, "maps/mp/_scoreboard" },
+    { 0xA759, "maps/mp/_shutter" },
+    { 0xA75A, "maps/mp/_snd_common_mp" },
+    { 0xA75B, "maps/mp/_stinger" },
+    { 0xA75C, "maps/mp/_stingerm7" },
+    { 0xA75D, "maps/mp/_stock" },
+    { 0xA75E, "maps/mp/_target_enhancer" },
+    { 0xA75F, "maps/mp/_teleport" },
+    { 0xA760, "maps/mp/_threatdetection" },
+    { 0xA761, "maps/mp/_tracking_drone" },
+    { 0xA762, "maps/mp/_trackrounds" },
+    { 0xA763, "maps/mp/_tridrone" },
+    { 0xA764, "maps/mp/_utility" },
+    { 0xA765, "maps/mp/_vl_base" },
+    { 0xA766, "maps/mp/_vl_camera" },
+    { 0xA767, "maps/mp/_vl_firingrange" },
+    { 0xA768, "maps/mp/_vl_selfiebooth" },
+    { 0xA769, "maps/mp/_water" },
+    { 0xA76A, "maps/mp/_zipline" },
+    { 0xA76B, "maps/mp/mp_comeback_fx" },
+    { 0xA76C, "maps/mp/mp_comeback_precache" },
+    { 0xA76D, "maps/mp/mp_detroit_fx" },
+    { 0xA76E, "maps/mp/mp_detroit_precache" },
+    { 0xA76D, "maps/mp/mp_greenband_fx" },
+    { 0xA770, "maps/mp/mp_greenband_precache" },
+    { 0xA771, "maps/mp/mp_instinct_fx" },
+    { 0xA772, "maps/mp/mp_instinct_precache" },
+    { 0xA773, "maps/mp/mp_lab2_fx" },
+    { 0xA774, "maps/mp/mp_lab2_precache" },
+    { 0xA775, "maps/mp/mp_laser2_fx" },
+    { 0xA776, "maps/mp/mp_laser2_precache" },
+    { 0xA777, "maps/mp/mp_levity_fx" },
+    { 0xA778, "maps/mp/mp_levity_precache" },
+    { 0xA779, "maps/mp/mp_prison_fx" },
+    { 0xA77A, "maps/mp/mp_prison_precache" },
+    { 0xA77B, "maps/mp/mp_prison_z_fx" },
+    { 0xA77C, "maps/mp/mp_prison_z_precache" },
+    { 0xA77D, "maps/mp/mp_recovery_fx" },
+    { 0xA77E, "maps/mp/mp_recovery_precache" },
+    { 0xA77F, "maps/mp/mp_refraction_fx" },
+    { 0xA780, "maps/mp/mp_refraction_precache" },
+    { 0xA781, "maps/mp/mp_solar_fx" },
+    { 0xA782, "maps/mp/mp_solar_precache" },
+    { 0xA783, "maps/mp/mp_terrace_fx" },
+    { 0xA784, "maps/mp/mp_terrace_precache" },
+    { 0xA785, "maps/mp/mp_venus_fx" },
+    { 0xA786, "maps/mp/mp_venus_precache" },
+    { 0xA787, "maps/mp/mp_vlobby_room_fx" },
+    { 0xA788, "maps/mp/mp_vlobby_room_precache" },
+    { 0xA789, "maps/mp/gametypes/_battlebuddy" },
+    { 0xA78A, "maps/mp/gametypes/_battlechatter_mp" },
+    { 0xA78B, "maps/mp/gametypes/_class" },
+    { 0xA78C, "maps/mp/gametypes/_clientids" },
+    { 0xA78D, "maps/mp/gametypes/_damage" },
+    { 0xA78E, "maps/mp/gametypes/_damagefeedback" },
+    { 0xA78F, "maps/mp/gametypes/_deathicons" },
+    { 0xA790, "maps/mp/gametypes/_dev" },
+    { 0xA791, "maps/mp/gametypes/_equipment" },
+    { 0xA792, "maps/mp/gametypes/_friendicons" },
+    { 0xA793, "maps/mp/gametypes/_gamelogic" },
+    { 0xA794, "maps/mp/gametypes/_gameobjects" },
+    { 0xA795, "maps/mp/gametypes/_gamescores" },
+    { 0xA796, "maps/mp/gametypes/_globalentities" },
+    { 0xA797, "maps/mp/gametypes/_globallogic" },
+	{ 0xA798, "maps/mp/gametypes/_hardpoints" },
+	{ 0xA799, "maps/mp/gametypes/_healthoverlay" },
+    { 0xA79A, "maps/mp/gametypes/_high_jump_mp" },
+    { 0xA79B, "maps/mp/gametypes/_horde_armory" },
+    { 0xA79C, "maps/mp/gametypes/_horde_crates" },
+    { 0xA79D, "maps/mp/gametypes/_horde_dialog" },
+    { 0xA79E, "maps/mp/gametypes/_horde_drones" },
+    { 0xA79F, "maps/mp/gametypes/_horde_laststand" },
+    { 0xA7A0, "maps/mp/gametypes/_horde_sentry" },
+    { 0xA7A1, "maps/mp/gametypes/_horde_smart_grenade" },
+    { 0xA7A2, "maps/mp/gametypes/_horde_util" },
+    { 0xA7A3, "maps/mp/gametypes/_horde_zombies" },
+    { 0xA7A4, "maps/mp/gametypes/_hostmigration" },
+    { 0xA7A5, "maps/mp/gametypes/_hud" },
+    { 0xA7A6, "maps/mp/gametypes/_hud_message" },
+    { 0xA7A7, "maps/mp/gametypes/_hud_util" },
+    { 0xA7A8, "maps/mp/gametypes/_killcam" },
+    { 0xA7A9, "maps/mp/gametypes/_menus" },
+    { 0xA7AA, "maps/mp/gametypes/_misions" },
+    { 0xA7AB, "maps/mp/gametypes/_music_and_dialog" },
+    { 0xA7AC, "maps/mp/gametypes/_objpoints" },
+    { 0xA7AD, "maps/mp/gametypes/_orbital" },
+    { 0xA7AE, "maps/mp/gametypes/_persistence" },
+    { 0xA7AF, "maps/mp/gametypes/_player_boost_jump_mp" },
+    { 0xA7B0, "maps/mp/gametypes/_playercards" },
+    { 0xA7B1, "maps/mp/gametypes/_playerlogic" },
+    { 0xA7B2, "maps/mp/gametypes/_portable_radar" },
+    { 0xA7B3, "maps/mp/gametypes/_quickmessages" },
+    { 0xA7B4, "maps/mp/gametypes/_rank" },
+    { 0xA7B5, "maps/mp/gametypes/_scrambler" },
+    { 0xA7B6, "maps/mp/gametypes/_serversettings" },
+    { 0xA7B7, "maps/mp/gametypes/_shellshock" },
+    { 0xA7B8, "maps/mp/gametypes/_spawnfactor" },
+    { 0xA7B9, "maps/mp/gametypes/_spawnlogic" },
+    { 0xA7BA, "maps/mp/gametypes/_spawnscoring" },
+    { 0xA7BB, "maps/mp/gametypes/_spectating" },
+    { 0xA7BC, "maps/mp/gametypes/_teams" },
+    { 0xA7BD, "maps/mp/gametypes/_tweakables" },
+    { 0xA7BE, "maps/mp/gametypes/_weapons" },
+    { 0xA7BF, "maps/mp/killstreaks/_aerial_utility" },
+    { 0xA7C0, "maps/mp/killstreaks/_agent_killstreak" },
+    { 0xA7C1, "maps/mp/killstreaks/_airdrop" },
+    { 0xA7C2, "maps/mp/killstreaks/_airstrike" },
+    { 0xA7C3, "maps/mp/killstreaks/_assaultdrone_ai" },
+    { 0xA7C4, "maps/mp/killstreaks/_autosentry" },
+    { 0xA7C5, "maps/mp/killstreaks/_coop_util" },
+    { 0xA7C6, "maps/mp/killstreaks/_dog_killstreak" },
+    { 0xA7C7, "maps/mp/killstreaks/_drone_assault" },
+    { 0xA7C8, "maps/mp/killstreaks/_drone_carepackage" },
+    { 0xA7C9, "maps/mp/killstreaks/_drone_common" },
+    { 0xA7CA, "maps/mp/killstreaks/_drone_recon" },
+    { 0xA7CB, "maps/mp/killstreaks/_emp" },
+    { 0xA7CC, "maps/mp/killstreaks/_juggernaut" },
+    { 0xA7CD, "maps/mp/killstreaks/_killstreaks" },
+    { 0xA7CE, "maps/mp/killstreaks/_killstreaks_init" },
+    { 0xA7CF, "maps/mp/killstreaks/_marking_util" },
+    { 0xA7D0, "maps/mp/killstreaks/_missile_strike" },
+    { 0xA7D1, "maps/mp/killstreaks/_nuke" },
+    { 0xA7D2, "maps/mp/killstreaks/_orbital_carepackage" },
+    { 0xA7D3, "maps/mp/killstreaks/_orbital_strike" },
+    { 0xA7D4, "maps/mp/killstreaks/_orbital_util" },
+    { 0xA7D5, "maps/mp/killstreaks/_orbitalsupport" },
+    { 0xA7D6, "maps/mp/killstreaks/_placeable" },
+    { 0xA7D7, "maps/mp/killstreaks/_remoteturret" },
+    { 0xA7D8, "maps/mp/killstreaks/_rippedturret" },
+    { 0xA7D9, "maps/mp/killstreaks/_teamammorefill" },
+    { 0xA7DA, "maps/mp/killstreaks/_uav" },
+    { 0xA7DB, "maps/mp/killstreaks/_warbird" },
+    { 0xA7DC, "maps/mp/killstreaks/streak_mp_comeback" },
+    { 0xA7DD, "maps/mp/killstreaks/streak_mp_detroit" },
+    { 0xA7DE, "maps/mp/killstreaks/streak_mp_instinct" },
+    { 0xA7DF, "maps/mp/killstreaks/streak_mp_laser2" },
+    { 0xA7E0, "maps/mp/killstreaks/streak_mp_prison" },
+    { 0xA7E1, "maps/mp/killstreaks/streak_mp_recovery" },
+    { 0xA7E2, "maps/mp/killstreaks/streak_mp_refraction" },
+    { 0xA7E3, "maps/mp/killstreaks/streak_mp_solar" },
+    { 0xA7E4, "maps/mp/killstreaks/streak_mp_terrace" },
+    { 0xA7E5, "maps/mp/perks/_perkfunctions" },
+    { 0xA7E6, "maps/mp/perks/_perks" },
+    
+/*
+//
     { 0x0DD, "createtime" },
     { 0x0DE, "criticalbulletdamagedist" },
     { 0x0DF, "crouch" },
@@ -4004,12 +4177,8 @@ const std::array<std::pair<std::uint16_t, const char*>, 1340> token_list
     { 0x535, "your_score" },
     { 0x536, "z" },
     { 0x537, "zonly_physics" },
-
+*/
 //
-    { 0x53D, "codescripts/delete" },
-    { 0x53E, "codescripts/struct" },
-    { 0x53F, "codescripts/message" },
-    { 0x540, "maps/mp/gametypes/_callbacksetup" },
 }};
 
 struct __init__
@@ -4026,8 +4195,6 @@ struct __init__
         function_map_rev.reserve(function_list.size());
         method_map.reserve(method_list.size());
         method_map_rev.reserve(method_list.size());
-        file_map.reserve(file_list.size());
-        file_map_rev.reserve(file_list.size());
         token_map.reserve(token_list.size());
         token_map_rev.reserve(token_list.size());
 
@@ -4047,12 +4214,6 @@ struct __init__
         {
             method_map.insert({ entry.first, entry.second });
             method_map_rev.insert({ entry.second, entry.first });
-        }
-
-        for (const auto& entry : file_list)
-        {
-            file_map.insert({ entry.first, entry.second });
-            file_map_rev.insert({ entry.second, entry.first });
         }
 
         for (const auto& entry : token_list)
