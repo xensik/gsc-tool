@@ -464,10 +464,10 @@ const std::array<std::pair<std::uint16_t, const char*>, 735> function_list
     { 0x020, "badplace_cylinder" },
     { 0x021, "badplace_arc" },
     { 0x022, "badplace_brush" },
-    { 0x023, "_func_023" }, // SP 0x140261020
-    { 0x024, "_func_024" }, // SP 0x14027EA80
-    { 0x025, "_func_025" }, // SP 0x14027EB20
-    { 0x026, "_func_026" }, // SP 0x14027E9B0
+    { 0x023, "clearallcorpses" }, // SP 0x140261020
+    { 0x024, "setturretnode" }, // SP 0x14027EA80
+    { 0x025, "unsetturretnode" }, // SP 0x14027EB20
+    { 0x026, "setnodepriority" }, // SP 0x14027E9B0
     { 0x027, "_func_027" }, // SP 0x14027E870
     { 0x028, "_func_028" }, // empty
     { 0x029, "_func_029" }, // empty
@@ -492,7 +492,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 735> function_list
     { 0x03C, "getdvarvector" },
     { 0x03D, "gettime" },
     { 0x03E, "gettimeutc" },
-    { 0x03F, "_func_03F" }, // SP 0x14024B9C0, MP 0x1403156A0
+    { 0x03F, "getradiometricunit" },
     { 0x040, "getentbynum" },
     { 0x041, "getweaponmodel" },
     { 0x042, "getculldist" },
