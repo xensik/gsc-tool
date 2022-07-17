@@ -33,6 +33,7 @@ enum class kind
     expr_size,
     expr_field,
     expr_array,
+    expr_tuple,
     expr_reference,
     expr_istrue,
     expr_isdefined,
@@ -152,6 +153,7 @@ struct expr_paren;
 struct expr_size;
 struct expr_field;
 struct expr_array;
+struct expr_tuple;
 struct expr_reference;
 struct expr_istrue;
 struct expr_isdefined;
@@ -292,6 +294,7 @@ union expr
     std::unique_ptr<expr_size> as_size;
     std::unique_ptr<expr_field> as_field;
     std::unique_ptr<expr_array> as_array;
+    std::unique_ptr<expr_tuple> as_tuple;
     std::unique_ptr<expr_reference> as_reference;
     std::unique_ptr<expr_istrue> as_istrue;
     std::unique_ptr<expr_isdefined> as_isdefined;
@@ -716,6 +719,18 @@ struct expr_array : public node
     expr_array(const location& loc, expr obj, expr key);
     auto print() const -> std::string override;
     friend bool operator==(const expr_array& lhs, const expr_array& rhs);
+};
+
+struct expr_tuple : public node
+{
+    using ptr = std::unique_ptr<expr_tuple>;
+
+    std::vector<expr> list;
+    ast::expr temp;
+
+    expr_tuple();
+    expr_tuple(const location& loc);
+    auto print() const -> std::string override;
 };
 
 struct expr_reference : public node

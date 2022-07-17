@@ -1332,7 +1332,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             auto obj = ast::expr(std::move(stack_.top())); stack_.pop();
             auto event = ast::expr(std::move(stack_.top())); stack_.pop();
             loc = event.as_node->loc();
-            auto stmt = std::make_unique<ast::stmt_endon>(loc, std::move(obj) , std::move(event));
+            auto stmt = std::make_unique<ast::stmt_endon>(loc, std::move(obj), std::move(event));
             func_->stmt->list.push_back(ast::stmt(std::move(stmt)));
         }
             break;
@@ -1601,7 +1601,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             break;
         case opcode::OP_ClearLocalVariableFieldCached0:
         {
-            auto stmt = std::make_unique<ast::asm_clear>(loc,"0");
+            auto stmt = std::make_unique<ast::asm_clear>(loc, "0");
             func_->stmt->list.push_back(ast::stmt(std::move(stmt)));
         }
             break;
@@ -1777,6 +1777,7 @@ void decompiler::decompile_statements(const ast::stmt_list::ptr& stmt)
     decompile_switches(stmt);
     decompile_ifelses(stmt);
     decompile_aborts(stmt);
+    decompile_tuples(stmt);
 }
 
 void decompiler::decompile_infinites(const ast::stmt_list::ptr& stmt)
@@ -1976,6 +1977,67 @@ void decompiler::decompile_aborts(const ast::stmt_list::ptr& block)
                 block->list.erase(block->list.begin() + i);
                 auto stmt = ast::stmt(std::make_unique<ast::stmt_break>(loc));
                 block->list.insert(block->list.begin() + i, std::move(stmt));
+            }
+        }
+    }
+}
+
+void decompiler::decompile_tuples(const ast::stmt_list::ptr& block)
+{
+    for (auto i = 1u; i < block->list.size(); i++)
+    {
+        if (block->list.at(i) == ast::kind::asm_clear)
+        {
+            auto j = i - 1;
+            auto found = false, done = false;
+
+            while (j >= 0 && block->list.at(j) == ast::kind::stmt_assign)
+            {
+                auto& expr = block->list.at(j).as_assign->expr;
+
+                if (expr != ast::kind::expr_assign_equal)
+                    break;
+
+                if (!done)
+                {
+                    if (expr.as_assign_equal->rvalue != ast::kind::expr_array)
+                        break;
+
+                    if (expr.as_assign_equal->rvalue.as_array->key != ast::kind::expr_integer)
+                        break;
+
+                    if (expr.as_assign_equal->rvalue.as_array->key.as_integer->value == "0")
+                        done = true;
+
+                    j--;
+                }
+                else
+                {
+                    if (expr.as_assign_equal->lvalue == ast::kind::asm_create || expr.as_assign_equal->lvalue == ast::kind::asm_access)
+                        found = true;
+
+                    break;
+                }
+            }
+
+            if (found)
+            {
+                auto& stmt = block->list.at(j);  // temp = expr;
+                auto new_expr = std::make_unique<ast::expr_tuple>(stmt.loc());
+                new_expr->temp = std::move(stmt.as_assign->expr.as_assign_equal->lvalue);
+                j++;
+
+                while (j < i)
+                {
+                    new_expr->list.push_back(std::move(block->list.at(j).as_assign->expr.as_assign_equal->lvalue));
+                    block->list.erase(block->list.begin() + j);
+                    i--;
+                }
+
+                block->list.erase(block->list.begin() + j); // clear temp array
+                i--;
+
+                stmt.as_assign->expr.as_assign_equal->lvalue = ast::expr(std::move(new_expr));
             }
         }
     }
@@ -3071,17 +3133,20 @@ void decompiler::process_expr(ast::expr& expr, const block::ptr& blk)
         case ast::kind::expr_add_array:
             process_expr_add_array(expr.as_add_array, blk);
             break;
-        case ast::kind::expr_array:
-            process_array_variable(expr.as_array, blk);
-            break;
-        case ast::kind::expr_field:
-            process_field_variable(expr.as_field, blk);
-            break;
         case ast::kind::expr_size:
             process_expr_size(expr.as_size, blk);
             break;
+        case ast::kind::expr_tuple:
+            process_expr_tuple(expr.as_tuple, blk);
+            break;
+        case ast::kind::expr_array:
+            process_expr_array(expr.as_array, blk);
+            break;
+        case ast::kind::expr_field:
+            process_expr_field(expr.as_field, blk);
+            break;
         case ast::kind::expr_identifier:
-            process_local_variable(expr.as_identifier, blk);
+            process_expr_local(expr.as_identifier, blk);
             break;
         case ast::kind::expr_vector:
             process_expr_vector(expr.as_vector, blk);
@@ -3310,18 +3375,28 @@ void decompiler::process_expr_size(const ast::expr_size::ptr& expr, const block:
     process_expr(expr->obj, blk);
 }
 
-void decompiler::process_array_variable(const ast::expr_array::ptr& expr, const block::ptr& blk)
+void decompiler::process_expr_tuple(const ast::expr_tuple::ptr& expr, const block::ptr& blk)
+{
+    process_expr(expr->temp, blk);
+
+    for (auto& entry : expr->list)
+    {
+        process_expr(entry, blk);
+    }
+}
+
+void decompiler::process_expr_array(const ast::expr_array::ptr& expr, const block::ptr& blk)
 {
     process_expr(expr->key, blk);
     process_expr(expr->obj, blk);
 }
 
-void decompiler::process_field_variable(const ast::expr_field::ptr& expr, const block::ptr& blk)
+void decompiler::process_expr_field(const ast::expr_field::ptr& expr, const block::ptr& blk)
 {
     process_expr(expr->obj, blk);
 }
 
-void decompiler::process_local_variable(const ast::expr_identifier::ptr&, const block::ptr&)
+void decompiler::process_expr_local(const ast::expr_identifier::ptr&, const block::ptr&)
 {
     return;
 }

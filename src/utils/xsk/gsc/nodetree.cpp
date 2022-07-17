@@ -206,6 +206,9 @@ expr_field::expr_field(const location& loc, expr obj, expr_identifier::ptr field
 expr_array::expr_array(expr obj, expr key) : node(kind::expr_array), obj(std::move(obj)), key(std::move(key)) {}
 expr_array::expr_array(const location& loc, expr obj, expr key) : node(kind::expr_array, loc), obj(std::move(obj)), key(std::move(key)) {}
 
+expr_tuple::expr_tuple() : node(kind::expr_tuple) {}
+expr_tuple::expr_tuple(const location& loc) : node(kind::expr_tuple, loc) {}
+
 expr_reference::expr_reference(expr_path::ptr path, expr_identifier::ptr name) : node(kind::expr_reference), path(std::move(path)), name(std::move(name)) {}
 expr_reference::expr_reference(const location& loc, expr_path::ptr path, expr_identifier::ptr name) : node(kind::expr_reference, loc), path(std::move(path)), name(std::move(name)) {}
 
@@ -604,6 +607,19 @@ auto expr_field::print() const -> std::string
 auto expr_array::print() const -> std::string
 {
     return obj.print() + "[" + key.print() + "]";
+}
+
+auto expr_tuple::print() const -> std::string
+{
+    std::string data = "[";
+
+    for (const auto& entry : list)
+    {
+        data += " " + entry.print();
+        data += (&entry != &list.back()) ? "," : " ";
+    }
+
+    return data += "]";
 }
 
 auto expr_reference::print() const -> std::string
@@ -1576,6 +1592,7 @@ expr::~expr()
         case kind::expr_size: as_size.~unique_ptr(); return;
         case kind::expr_field: as_field.~unique_ptr(); return;
         case kind::expr_array: as_array.~unique_ptr(); return;
+        case kind::expr_tuple: as_tuple.~unique_ptr(); return;
         case kind::expr_reference: as_reference.~unique_ptr(); return;
         case kind::expr_arguments: as_arguments.~unique_ptr(); return;
         case kind::expr_parameters: as_parameters.~unique_ptr(); return;

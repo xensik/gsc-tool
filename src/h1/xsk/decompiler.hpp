@@ -34,6 +34,7 @@ private:
     void decompile_switches(const ast::stmt_list::ptr& stmt);
     void decompile_ifelses(const ast::stmt_list::ptr& stmt);
     void decompile_aborts(const ast::stmt_list::ptr& stmt);
+    void decompile_tuples(const ast::stmt_list::ptr& stmt);
     void decompile_if(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
     void decompile_ifelse(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
     void decompile_last_ifelse(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
@@ -89,9 +90,10 @@ private:
     void process_expr_arguments(const ast::expr_arguments::ptr& expr, const block::ptr& blk);
     void process_expr_add_array(const ast::expr_add_array::ptr& expr, const block::ptr& blk);
     void process_expr_size(const ast::expr_size::ptr& expr, const block::ptr& blk);
-    void process_array_variable(const ast::expr_array::ptr& expr, const block::ptr& blk);
-    void process_field_variable(const ast::expr_field::ptr& expr, const block::ptr& blk);
-    void process_local_variable(const ast::expr_identifier::ptr& expr, const block::ptr& blk);
+    void process_expr_tuple(const ast::expr_tuple::ptr& expr, const block::ptr& blk);
+    void process_expr_array(const ast::expr_array::ptr& expr, const block::ptr& blk);
+    void process_expr_field(const ast::expr_field::ptr& expr, const block::ptr& blk);
+    void process_expr_local(const ast::expr_identifier::ptr& expr, const block::ptr& blk);
     void process_expr_vector(const ast::expr_vector::ptr& vec, const block::ptr& blk);
     void process_var_create(ast::expr& expr, const block::ptr& blk, bool fromstmt = false);
     void process_var_access(ast::expr& expr, const block::ptr& blk);
