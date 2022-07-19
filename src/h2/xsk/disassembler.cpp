@@ -450,7 +450,7 @@ auto disassembler::disassemble_offset() -> std::int32_t
 
     auto offset = *reinterpret_cast<std::int32_t*>(bytes.data());
 
-    offset = (offset << 8) >> 10;
+    offset = (offset << 8) >> 8;
 
     return offset;
 }
