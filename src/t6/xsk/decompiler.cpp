@@ -268,7 +268,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
                 auto node = std::make_unique<ast::expr_identifier>(loc, locals_.at(std::stoi(inst->data[0])));
                 stack_.push(std::move(node));
             }
-            catch(const std::exception& e)
+            catch (const std::exception&)
             {
                 auto node = std::make_unique<ast::expr_identifier>(loc, "broken_code!!");
                 stack_.push(std::move(node));
