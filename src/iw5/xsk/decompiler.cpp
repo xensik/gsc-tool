@@ -72,13 +72,6 @@ void decompiler::decompile_function(const function::ptr& func)
     // remove last return
     stmt->list.pop_back();
 
-    // hotfix empty else block at func end
-    if (stmt->list.size() > 0 && stmt->list.back() == ast::kind::asm_jump)
-    {
-        if (stmt->list.back().as_jump->value == blk.loc_end)
-            stmt->list.pop_back();
-    }
-
     blocks_.push_back(blk);
 
     decompile_statements(stmt);
@@ -1878,16 +1871,46 @@ void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
                 // if block is a loop check break, continue
                 if (stmt->list.at(j).as_jump->value == blocks_.back().loc_continue)
                 {
-                    // last if/else inside a loop still trigger this :(
-                    decompile_if(stmt, i, j);
+                    // check for if/else or if/continue
+                    if (j - i > 1 && stmt->list.at(j - 1) == ast::kind::stmt_return)
+                    {
+                        // block ends with a return, so jump belows to if/else
+                        decompile_ifelse(stmt, i, j);
+                    }
+                    else if (j - i > 1 && stmt->list.at(j - 1) == ast::kind::asm_jump)
+                    {
+                        if (stmt->list.at(j - 1).as_jump->value == blocks_.back().loc_break)
+                        {
+                            // block ends with a break, so jump belows to if/else
+                            decompile_ifelse(stmt, i, j);
+                        }
+                        else if (stmt->list.at(j - 1).as_jump->value == blocks_.back().loc_continue)
+                        {
+                            // if { break/return } else { continue } at loop block end
+                            if (j - i > 2 && (stmt->list.at(j - 2) == ast::kind::asm_jump || stmt->list.at(j - 2) == ast::kind::stmt_return))
+                            {
+                                decompile_if(stmt, i, j);
+                            }
+                            else
+                            {
+                                // block ends with a continue, so jump belows to if/else
+                                decompile_ifelse(stmt, i, j);
+                            }
+                        }
+                        else
+                        {
+                            // jump belows to if/continue
+                            decompile_if(stmt, i, j);
+                        }
+                    }
+                    else 
+                    {   // last if/else inside a loop still trigger this :(
+                        decompile_if(stmt, i, j);
+                    }
                 }
                 else if (stmt->list.at(j).as_jump->value == blocks_.back().loc_break)
                 {
                     decompile_if(stmt, i, j);
-                }
-                else if (stmt->list.at(j).as_jump->value == blocks_.back().loc_end)
-                {
-                    decompile_ifelse(stmt, i, j);
                 }
                 else if (stmt->list.at(j).as_jump->value == entry.as_cond->value)
                 {
@@ -1903,7 +1926,7 @@ void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
                 }
                 else
                 {
-                    decompile_ifelse(stmt, i, j); // TODO: if else block is empty, convert it to only if!
+                    decompile_ifelse(stmt, i, j);
                 }
             }
             else if (stmt->list.at(j) == ast::kind::stmt_return && stmt->list.at(j).as_return->expr == ast::kind::null)
@@ -1977,6 +2000,10 @@ void decompiler::decompile_aborts(const ast::stmt_list::ptr& block)
                 block->list.erase(block->list.begin() + i);
                 auto stmt = ast::stmt(std::make_unique<ast::stmt_break>(loc));
                 block->list.insert(block->list.begin() + i, std::move(stmt));
+            }
+            else
+            {
+                printf("WARNING: unresolved jump to '%s', maybe incomplete for loop\n", jump_loc.data());
             }
         }
     }
