@@ -29,7 +29,6 @@ private:
     void decompile_instruction(const instruction::ptr& inst);
     void decompile_expressions(const instruction::ptr& inst);
     void decompile_statements(const ast::stmt_list::ptr& stmt);
-    void decompile_infinites(const ast::stmt_list::ptr& stmt);
     void decompile_loops(const ast::stmt_list::ptr& stmt);
     void decompile_switches(const ast::stmt_list::ptr& stmt);
     void decompile_ifelses(const ast::stmt_list::ptr& stmt);
@@ -37,8 +36,8 @@ private:
     void decompile_tuples(const ast::stmt_list::ptr& stmt);
     void decompile_if(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
     void decompile_ifelse(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
-    void decompile_last_ifelse(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
-    void decompile_infinite(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
+    void decompile_ifelse_end(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
+    void decompile_inf(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
     void decompile_loop(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
     void decompile_while(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
     void decompile_dowhile(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
@@ -93,7 +92,6 @@ private:
     void process_expr_tuple(const ast::expr_tuple::ptr& expr, const block::ptr& blk);
     void process_expr_array(const ast::expr_array::ptr& expr, const block::ptr& blk);
     void process_expr_field(const ast::expr_field::ptr& expr, const block::ptr& blk);
-    void process_expr_local(const ast::expr_identifier::ptr& expr, const block::ptr& blk);
     void process_expr_vector(const ast::expr_vector::ptr& vec, const block::ptr& blk);
     void process_var_create(ast::expr& expr, const block::ptr& blk, bool fromstmt = false);
     void process_var_access(ast::expr& expr, const block::ptr& blk);

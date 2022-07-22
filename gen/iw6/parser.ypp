@@ -199,6 +199,9 @@ xsk::gsc::iw6::parser::symbol_type IW6lex(xsk::gsc::iw6::lexer& lexer);
 %type <ast::expr_arguments::ptr>        expr_arguments
 %type <ast::expr_arguments::ptr>        expr_arguments_no_empty
 %type <ast::expr_reference::ptr>        expr_reference
+%type <ast::expr>                       expr_tuple
+%type <ast::expr_tuple::ptr>            expr_tuple_arguments
+%type <ast::expr>                       expr_tuple_types
 %type <ast::expr_array::ptr>            expr_array
 %type <ast::expr_field::ptr>            expr_field
 %type <ast::expr_size::ptr>             expr_size
@@ -518,7 +521,9 @@ expr_or_empty
     ;
 
 expr_assign
-    : expr_object ASSIGN expr
+    : expr_tuple ASSIGN expr
+        { $$.as_node = std::make_unique<ast::expr_assign_equal>(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN expr
         { $$.as_node = std::make_unique<ast::expr_assign_equal>(@$, std::move($1), std::move($3)); }
     | expr_object ASSIGN_BW_OR expr
         { $$.as_node = std::make_unique<ast::expr_assign_bitwise_or>(@$, std::move($1), std::move($3)); }
@@ -720,6 +725,24 @@ expr_reference
         { $$ = std::make_unique<ast::expr_reference>(@$, std::make_unique<ast::expr_path>(@$), std::move($2)); }
     | expr_path DOUBLECOLON expr_identifier
         { $$ = std::make_unique<ast::expr_reference>(@$, std::move($1), std::move($3)); }
+    ;
+
+expr_tuple
+    : LBRACKET expr_tuple_arguments RBRACKET
+        { $$.as_node = std::move($2); }
+    ;
+
+expr_tuple_arguments
+    : expr_tuple_arguments COMMA expr_tuple_types
+        { $$ = std::move($1); $$->list.push_back(std::move($3)); }
+    | expr_tuple_types
+        { $$ = std::make_unique<ast::expr_tuple>(@$); $$->list.push_back(std::move($1)); }
+    ;
+
+expr_tuple_types
+    : expr_array      { $$.as_node = std::move($1); }
+    | expr_field      { $$.as_node = std::move($1); }
+    | expr_identifier { $$.as_node = std::move($1); }
     ;
 
 expr_array

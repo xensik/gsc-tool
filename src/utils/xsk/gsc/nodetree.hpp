@@ -726,7 +726,7 @@ struct expr_tuple : public node
     using ptr = std::unique_ptr<expr_tuple>;
 
     std::vector<expr> list;
-    ast::expr temp;
+    expr temp;
 
     expr_tuple();
     expr_tuple(const location& loc);

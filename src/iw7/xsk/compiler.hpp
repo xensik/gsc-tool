@@ -95,6 +95,7 @@ private:
     void emit_expr_arguments(const ast::expr_arguments::ptr& expr, const block::ptr& blk);
     void emit_expr_reference(const ast::expr_reference::ptr& expr, const block::ptr& blk);
     void emit_expr_size(const ast::expr_size::ptr& expr, const block::ptr& blk);
+    void emit_expr_tuple(const ast::expr_tuple::ptr& expr, const block::ptr& blk);
     void emit_expr_variable_ref(const ast::expr& expr, const block::ptr& blk, bool set);
     void emit_expr_array_ref(const ast::expr_array::ptr& expr, const block::ptr& blk, bool set);
     void emit_expr_field_ref(const ast::expr_field::ptr& expr, const block::ptr& blk, bool set);
@@ -136,10 +137,11 @@ private:
     void process_stmt_continue(const ast::stmt_continue::ptr& stmt, const block::ptr& blk);
     void process_stmt_return(const ast::stmt_return::ptr& stmt, const block::ptr& blk);
     void process_expr(const ast::expr& expr, const block::ptr& blk);
+    void process_expr_tuple(const ast::expr_tuple::ptr& expr, const block::ptr& blk);
     void process_expr_parameters(const ast::expr_parameters::ptr& decl, const block::ptr& blk);
-    void register_variable(const std::string& name, const block::ptr& blk);
-    void initialize_variable(const ast::expr_identifier::ptr& name, const block::ptr& blk);
-    void create_variable(const ast::expr_identifier::ptr& name, const block::ptr& blk);
+    void variable_register(const std::string& name, const block::ptr& blk);
+    void variable_initialize(const ast::expr_identifier::ptr& name, const block::ptr& blk);
+    void variable_create(const ast::expr_identifier::ptr& name, const block::ptr& blk);
     auto variable_stack_index(const ast::expr_identifier::ptr& name, const block::ptr& blk) -> std::uint8_t;
     auto variable_create_index(const ast::expr_identifier::ptr& name, const block::ptr& blk) -> std::string;
     auto variable_access_index(const ast::expr_identifier::ptr& name, const block::ptr& blk) -> std::string;

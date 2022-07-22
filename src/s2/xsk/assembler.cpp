@@ -386,7 +386,7 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
             assemble_end_switch(inst);
             break;
         default:
-            throw asm_error(utils::string::va("Unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
+            throw asm_error(utils::string::va("unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
     }
 }
 
@@ -493,6 +493,10 @@ void assembler::assemble_end_switch(const instruction::ptr& inst)
 
             index += 3;
         }
+        else
+        {
+            throw asm_error("invalid switch case '" + inst->data[1 + (3 * i)] + "'!");
+        }
     }
 }
 
@@ -556,7 +560,7 @@ auto assembler::resolve_function(const std::string& name) -> std::int32_t
         }
     }
 
-    throw asm_error("Couldn't resolve local function address of '" + name + "'!");
+    throw asm_error("couldn't resolve local function address of '" + name + "'!");
 }
 
 auto assembler::resolve_label(const std::string& name) -> std::int32_t
@@ -569,7 +573,7 @@ auto assembler::resolve_label(const std::string& name) -> std::int32_t
         }
     }
 
-    throw asm_error("Couldn't resolve label address of '" + name + "'!");
+    throw asm_error("couldn't resolve label address of '" + name + "'!");
 }
 
 } // namespace xsk::gsc::s2

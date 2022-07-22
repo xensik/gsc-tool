@@ -45,7 +45,7 @@ auto resolver::opcode_id(const std::string& name) -> std::uint8_t
         return itr->second;
     }
 
-    throw error(utils::string::va("Couldn't resolve opcode id for name '%s'!", name.data()));
+    throw error(utils::string::va("couldn't resolve opcode id for name '%s'!", name.data()));
 }
 
 auto resolver::opcode_name(std::uint8_t id) -> std::string
@@ -57,7 +57,7 @@ auto resolver::opcode_name(std::uint8_t id) -> std::string
         return std::string(itr->second);
     }
 
-    throw error(utils::string::va("Couldn't resolve opcode name for id '0x%hhX'!", id));
+    throw error(utils::string::va("couldn't resolve opcode name for id '0x%hhX'!", id));
 }
 
 auto resolver::function_id(const std::string& name) -> std::uint16_t
@@ -74,7 +74,7 @@ auto resolver::function_id(const std::string& name) -> std::uint16_t
         return itr->second;
     }
 
-    throw error(utils::string::va("Couldn't resolve builtin function id for name '%s'!", name.data()));
+    throw error(utils::string::va("couldn't resolve builtin function id for name '%s'!", name.data()));
 }
 
 auto resolver::function_name(std::uint16_t id) -> std::string
@@ -103,7 +103,7 @@ auto resolver::method_id(const std::string& name) -> std::uint16_t
         return itr->second;
     }
 
-    throw error(utils::string::va("Couldn't resolve builtin method id for name '%s'!", name.data()));
+    throw error(utils::string::va("couldn't resolve builtin method id for name '%s'!", name.data()));
 }
 
 auto resolver::method_name(std::uint16_t id) -> std::string
@@ -3516,8 +3516,8 @@ const std::array<std::pair<std::uint16_t, const char*>, 804> token_list
     { 0xA795, "maps/mp/gametypes/_gamescores" },
     { 0xA796, "maps/mp/gametypes/_globalentities" },
     { 0xA797, "maps/mp/gametypes/_globallogic" },
-	{ 0xA798, "maps/mp/gametypes/_hardpoints" },
-	{ 0xA799, "maps/mp/gametypes/_healthoverlay" },
+    { 0xA798, "maps/mp/gametypes/_hardpoints" },
+    { 0xA799, "maps/mp/gametypes/_healthoverlay" },
     { 0xA79A, "maps/mp/gametypes/_high_jump_mp" },
     { 0xA79B, "maps/mp/gametypes/_horde_armory" },
     { 0xA79C, "maps/mp/gametypes/_horde_crates" },

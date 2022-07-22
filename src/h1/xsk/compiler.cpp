@@ -40,7 +40,7 @@ auto compiler::parse_buffer(const std::string& file, char* data, size_t size) ->
 
     if (parser.parse() || result == nullptr)
     {
-        throw comp_error(location(&file), "An unknown error ocurred while parsing gsc file.");
+        throw comp_error(location(&file), "an unknown error ocurred while parsing gsc file");
     }
 
     return result;
@@ -91,7 +91,7 @@ void compiler::emit_include(const ast::include::ptr& include)
     {
         if (inc.name == path)
         {
-            throw comp_error(include->loc(), "error duplicated include file '" + path + "'.");
+            throw comp_error(include->loc(), "duplicated include file '" + path + "'");
         }
     }
 
@@ -113,7 +113,7 @@ void compiler::emit_include(const ast::include::ptr& include)
 
         if (funcs.size() == 0)
         {
-            throw comp_error(include->loc(), "error empty include file '" + path + "'.");
+            throw comp_error(include->loc(), "empty include file '" + path + "'");
         }
 
         includes_.push_back(include_t(path, funcs));
@@ -151,13 +151,18 @@ void compiler::emit_declaration(const ast::decl& decl)
 void compiler::emit_decl_usingtree(const ast::decl_usingtree::ptr& animtree)
 {
     if (developer_thread_)
-        throw comp_error(animtree->loc(), "cannot put #using_animtree inside /# ... #/ comment");
+        throw comp_error(animtree->loc(), "cannot put #using_animtree inside developer block comment");
 
     animtrees_.push_back({ animtree->name->value, false });
 }
 
 void compiler::emit_decl_constant(const ast::decl_constant::ptr& constant)
 {
+    const auto itr = constants_.find(constant->name->value);
+
+    if (itr != constants_.end())
+        throw comp_error(constant->loc(), "duplicated constant '" + constant->name->value + "'");
+
     constants_.insert({ constant->name->value, std::move(constant->value) });
 }
 
@@ -395,7 +400,7 @@ void compiler::emit_stmt_waittill(const ast::stmt_waittill::ptr& stmt, const blo
 
     for (const auto& entry : stmt->args->list)
     {
-        create_variable(entry.as_identifier, blk);
+        variable_create(entry.as_identifier, blk);
         emit_opcode(opcode::OP_SafeSetWaittillVariableFieldCached, variable_access_index(entry.as_identifier, blk));
     }
 
@@ -1038,11 +1043,18 @@ void compiler::emit_expr_assign(const ast::expr_assign::ptr& expr, const block::
         if (expr->rvalue == ast::kind::expr_undefined)
         {
             emit_expr_clear(expr->lvalue, blk);
-            return;
+        }
+        else if (expr->lvalue == ast::kind::expr_tuple)
+        {
+            emit_expr(expr->rvalue, blk);
+            emit_expr_tuple(expr->lvalue.as_tuple, blk);
+        }
+        else
+        {
+            emit_expr(expr->rvalue, blk);
+            emit_expr_variable_ref(expr->lvalue, blk, true);
         }
 
-        emit_expr(expr->rvalue, blk);
-        emit_expr_variable_ref(expr->lvalue, blk, true);
         return;
     }
 
@@ -1548,7 +1560,7 @@ void compiler::emit_expr_parameters(const ast::expr_parameters::ptr& expr, const
 {
     for (const auto& entry : expr->list)
     {
-        initialize_variable(entry, blk);
+        variable_initialize(entry, blk);
         emit_opcode(opcode::OP_SafeCreateVariableFieldCached, variable_create_index(entry, blk));
     }
 
@@ -1593,6 +1605,29 @@ void compiler::emit_expr_size(const ast::expr_size::ptr& expr, const block::ptr&
     emit_opcode(opcode::OP_size);
 }
 
+void compiler::emit_expr_tuple(const ast::expr_tuple::ptr& expr, const block::ptr& blk)
+{
+    emit_expr_variable_ref(expr->temp, blk, true);
+
+    auto index = 0;
+
+    for (const auto& entry : expr->list)
+    {
+        if (index == 0)
+            emit_opcode(opcode::OP_GetZero);
+        else
+            emit_opcode(opcode::OP_GetByte, utils::string::va("%d", index));
+
+        index++;
+
+        emit_opcode(opcode::OP_EvalLocalArrayCached, variable_access_index(expr->temp.as_identifier, blk));
+
+        emit_expr_variable_ref(entry, blk, true);
+    }
+
+    emit_expr_clear_local(expr->temp.as_identifier, blk);
+}
+
 void compiler::emit_expr_variable_ref(const ast::expr& expr, const block::ptr& blk, bool set)
 {
     switch (expr.kind())
@@ -1632,7 +1667,7 @@ void compiler::emit_expr_array_ref(const ast::expr_array::ptr& expr, const block
         {
             if (!variable_initialized(expr->obj.as_identifier, blk))
             {
-                initialize_variable(expr->obj.as_identifier, blk);
+                variable_initialize(expr->obj.as_identifier, blk);
                 emit_opcode(opcode::OP_EvalNewLocalArrayRefCached0, variable_create_index(expr->obj.as_identifier, blk));
 
                 if (!set) throw comp_error(expr->loc(), "INTERNAL: VAR CREATED BUT NOT SET!");
@@ -1718,7 +1753,7 @@ void compiler::emit_expr_local_ref(const ast::expr_identifier::ptr& expr, const 
     {
         if (!variable_initialized(expr, blk))
         {
-            initialize_variable(expr, blk);
+            variable_initialize(expr, blk);
             emit_opcode(opcode::OP_SetNewLocalVariableFieldCached0, variable_create_index(expr, blk));
         }
         else if (variable_stack_index(expr, blk) == 0)
@@ -2248,7 +2283,7 @@ void compiler::process_stmt_waittill(const ast::stmt_waittill::ptr& stmt, const 
             throw comp_error(entry.loc(), "illegal waittill param, must be a local variable");
         }
 
-        register_variable(entry.as_identifier->value, blk);
+        variable_register(entry.as_identifier->value, blk);
     }
 }
 
@@ -2315,11 +2350,11 @@ void compiler::process_stmt_while(const ast::stmt_while::ptr& stmt, const block:
     continue_blks_.push_back(stmt->blk.get());
 
     for (auto i = 0u; i < continue_blks_.size(); i++)
-        blk->append({continue_blks_.at(i)});
+        blk->append({ continue_blks_.at(i) });
 
     if (const_cond) blk->append(break_blks_);
 
-    blk->merge({stmt->blk.get()});
+    blk->merge({ stmt->blk.get() });
 
     break_blks_ = old_breaks;
     continue_blks_ = old_continues;
@@ -2342,11 +2377,11 @@ void compiler::process_stmt_dowhile(const ast::stmt_dowhile::ptr& stmt, const bl
     continue_blks_.push_back(stmt->blk.get());
 
     for (auto i = 0u; i < continue_blks_.size(); i++)
-        blk->append({continue_blks_.at(i)});
+        blk->append({ continue_blks_.at(i) });
 
     if (const_cond) blk->append(break_blks_);
 
-    blk->merge({stmt->blk.get()});
+    blk->merge({ stmt->blk.get() });
 
     break_blks_ = old_breaks;
     continue_blks_ = old_continues;
@@ -2374,7 +2409,7 @@ void compiler::process_stmt_for(const ast::stmt_for::ptr& stmt, const block::ptr
     continue_blks_.push_back(stmt->blk.get());
 
     for (auto i = 0u; i < continue_blks_.size(); i++)
-        blk->append({continue_blks_.at(i)});
+        blk->append({ continue_blks_.at(i) });
 
     process_stmt(stmt->iter, stmt->blk_iter);
 
@@ -2383,7 +2418,7 @@ void compiler::process_stmt_for(const ast::stmt_for::ptr& stmt, const block::ptr
 
     if (const_cond) blk->append(break_blks_);
 
-    blk->merge({stmt->blk.get()});
+    blk->merge({ stmt->blk.get() });
 
     break_blks_ = old_breaks;
     continue_blks_ = old_continues;
@@ -2391,8 +2426,8 @@ void compiler::process_stmt_for(const ast::stmt_for::ptr& stmt, const block::ptr
 
 void compiler::process_stmt_foreach(const ast::stmt_foreach::ptr& stmt, const block::ptr& blk)
 {
-    auto array_name = utils::string::va("temp_%d", ++label_idx_);
-    auto key_name = utils::string::va("temp_%d", ++label_idx_);
+    auto array_name = utils::string::va("_temp_%d", ++label_idx_);
+    auto key_name = utils::string::va("_temp_%d", ++label_idx_);
 
     stmt->array = ast::expr(std::make_unique<ast::expr_identifier>(stmt->loc(), array_name));
 
@@ -2424,13 +2459,13 @@ void compiler::process_stmt_foreach(const ast::stmt_foreach::ptr& stmt, const bl
     continue_blks_.push_back(stmt->ctx.get());
 
     for (auto i = 0u; i < continue_blks_.size(); i++)
-        blk->append({continue_blks_.at(i)});
+        blk->append({ continue_blks_.at(i) });
 
     process_expr(stmt->key_expr, stmt->ctx_post);
 
     blk->append({ stmt->ctx_post.get() });
     blk->merge({ stmt->ctx_post.get() });
-    blk->merge({stmt->ctx.get()});
+    blk->merge({ stmt->ctx.get() });
 
     break_blks_ = old_breaks;
     continue_blks_ = old_continues;
@@ -2590,11 +2625,28 @@ void compiler::process_expr(const ast::expr& expr, const block::ptr& blk)
 {
     if (expr == ast::kind::expr_identifier)
     {
-        register_variable(expr.as_identifier->value, blk);
+        variable_register(expr.as_identifier->value, blk);
     }
     else if (expr == ast::kind::expr_array)
     {
         process_expr(expr.as_array->obj, blk);
+    }
+    else if (expr == ast::kind::expr_tuple)
+    {
+        process_expr_tuple(expr.as_tuple, blk);
+    }
+}
+
+void compiler::process_expr_tuple(const ast::expr_tuple::ptr& expr, const block::ptr& blk)
+{
+    auto array = utils::string::va("_temp_%d", ++label_idx_);
+    expr->temp = ast::expr(std::make_unique<ast::expr_identifier>(expr->loc(), array));
+
+    process_expr(expr->temp, blk);
+
+    for (const auto& entry : expr->list)
+    {
+        process_expr(entry, blk);
     }
 }
 
@@ -2602,11 +2654,11 @@ void compiler::process_expr_parameters(const ast::expr_parameters::ptr& decl, co
 {
     for (const auto& entry : decl->list)
     {
-        register_variable(entry->value, blk);
+        variable_register(entry->value, blk);
     }
 }
 
-void compiler::register_variable(const std::string& name, const block::ptr& blk)
+void compiler::variable_register(const std::string& name, const block::ptr& blk)
 {
     auto it = std::find_if(blk->local_vars.begin(), blk->local_vars.end(),
             [&](const gsc::local_var& v) { return v.name == name; });
@@ -2633,7 +2685,7 @@ void compiler::register_variable(const std::string& name, const block::ptr& blk)
     }
 }
 
-void compiler::initialize_variable(const ast::expr_identifier::ptr& name, const block::ptr& blk)
+void compiler::variable_initialize(const ast::expr_identifier::ptr& name, const block::ptr& blk)
 {
     for (std::uint32_t i = 0; i < blk->local_vars.size(); i++)
     {
@@ -2647,7 +2699,6 @@ void compiler::initialize_variable(const ast::expr_identifier::ptr& name, const 
                     {
                         emit_opcode(opcode::OP_CreateLocalVariable, utils::string::va("%d", blk->local_vars[j].create));
                         blk->local_vars[j].init = true;
-                        //ctx->local_vars_create_count++;
                     }
                 }
                 blk->local_vars[i].init = true;
@@ -2660,7 +2711,7 @@ void compiler::initialize_variable(const ast::expr_identifier::ptr& name, const 
     throw comp_error(name->loc(), "local variable '" + name->value + "' not found.");
 }
 
-void compiler::create_variable(const ast::expr_identifier::ptr& name, const block::ptr& blk)
+void compiler::variable_create(const ast::expr_identifier::ptr& name, const block::ptr& blk)
 {
     for (std::size_t i = 0; i < blk->local_vars.size(); i++)
     {
@@ -2838,8 +2889,7 @@ auto compiler::is_constant_condition(const ast::expr& expr) -> bool
 auto compiler::create_label() -> std::string
 {
     label_idx_++;
-    auto name = utils::string::va("loc_%d", label_idx_);
-    return name;
+    return utils::string::va("loc_%d", label_idx_);
 }
 
 auto compiler::insert_label() -> std::string
@@ -2854,7 +2904,7 @@ auto compiler::insert_label() -> std::string
     {
         label_idx_++;
         auto name = utils::string::va("loc_%d", label_idx_);
-        function_->labels.insert({index_, name});
+        function_->labels.insert({ index_, name });
         return name;
     }
 }
@@ -2887,7 +2937,7 @@ void compiler::insert_label(const std::string& name)
     }
     else
     {
-        function_->labels.insert({index_, name});
+        function_->labels.insert({ index_, name });
     }
 }
 

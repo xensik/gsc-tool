@@ -174,7 +174,7 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_GetVector:
             return 13;
         default:
-            throw error("Couldn't resolve instruction size for " + std::to_string(id));
+            throw error("couldn't resolve instruction size for " + std::to_string(id));
     }
 }
 

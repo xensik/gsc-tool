@@ -352,7 +352,7 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
             disassemble_far_call(inst, true);
             break;*/
         default:
-            throw disasm_error(utils::string::va("Unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
+            throw disasm_error(utils::string::va("unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
     }
 }
 
@@ -559,7 +559,7 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
             }
         }
 
-        throw disasm_error(utils::string::va("Couldn't resolve function name at index '0x%04X'!", idx));
+        throw disasm_error(utils::string::va("couldn't resolve function name at index '0x%04X'!", idx));
     }
 
     throw disasm_error(utils::string::va("\"%s\" is not valid function address!", index.data()));
@@ -582,7 +582,6 @@ void disassembler::print_function(const function::ptr& func)
         print_instruction(inst);
     }
 
-    output_->write_string("\n");
     output_->write_string(utils::string::va("end_%s\n", func->name.substr(4).data()));
 }
 

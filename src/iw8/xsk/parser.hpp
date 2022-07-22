@@ -446,6 +446,8 @@ namespace xsk { namespace gsc { namespace iw8 {
       // expr_ternary
       // expr_binary
       // expr_primitive
+      // expr_tuple
+      // expr_tuple_types
       // expr_object
       char dummy6[sizeof (ast::expr)];
 
@@ -544,104 +546,107 @@ namespace xsk { namespace gsc { namespace iw8 {
       // expr_true
       char dummy37[sizeof (ast::expr_true::ptr)];
 
+      // expr_tuple_arguments
+      char dummy38[sizeof (ast::expr_tuple::ptr)];
+
       // expr_undefined
-      char dummy38[sizeof (ast::expr_undefined::ptr)];
+      char dummy39[sizeof (ast::expr_undefined::ptr)];
 
       // expr_vector
-      char dummy39[sizeof (ast::expr_vector::ptr)];
+      char dummy40[sizeof (ast::expr_vector::ptr)];
 
       // include
-      char dummy40[sizeof (ast::include::ptr)];
+      char dummy41[sizeof (ast::include::ptr)];
 
       // program
-      char dummy41[sizeof (ast::program::ptr)];
+      char dummy42[sizeof (ast::program::ptr)];
 
       // stmt
       // stmt_or_dev
-      char dummy42[sizeof (ast::stmt)];
+      char dummy43[sizeof (ast::stmt)];
 
       // stmt_assign
-      char dummy43[sizeof (ast::stmt_assign::ptr)];
+      char dummy44[sizeof (ast::stmt_assign::ptr)];
 
       // stmt_break
-      char dummy44[sizeof (ast::stmt_break::ptr)];
+      char dummy45[sizeof (ast::stmt_break::ptr)];
 
       // stmt_breakpoint
-      char dummy45[sizeof (ast::stmt_breakpoint::ptr)];
+      char dummy46[sizeof (ast::stmt_breakpoint::ptr)];
 
       // stmt_call
-      char dummy46[sizeof (ast::stmt_call::ptr)];
+      char dummy47[sizeof (ast::stmt_call::ptr)];
 
       // stmt_case
-      char dummy47[sizeof (ast::stmt_case::ptr)];
+      char dummy48[sizeof (ast::stmt_case::ptr)];
 
       // stmt_continue
-      char dummy48[sizeof (ast::stmt_continue::ptr)];
+      char dummy49[sizeof (ast::stmt_continue::ptr)];
 
       // stmt_default
-      char dummy49[sizeof (ast::stmt_default::ptr)];
+      char dummy50[sizeof (ast::stmt_default::ptr)];
 
       // stmt_dev
-      char dummy50[sizeof (ast::stmt_dev::ptr)];
+      char dummy51[sizeof (ast::stmt_dev::ptr)];
 
       // stmt_dowhile
-      char dummy51[sizeof (ast::stmt_dowhile::ptr)];
+      char dummy52[sizeof (ast::stmt_dowhile::ptr)];
 
       // stmt_endon
-      char dummy52[sizeof (ast::stmt_endon::ptr)];
+      char dummy53[sizeof (ast::stmt_endon::ptr)];
 
       // stmt_expr
-      char dummy53[sizeof (ast::stmt_expr::ptr)];
+      char dummy54[sizeof (ast::stmt_expr::ptr)];
 
       // stmt_for
-      char dummy54[sizeof (ast::stmt_for::ptr)];
+      char dummy55[sizeof (ast::stmt_for::ptr)];
 
       // stmt_foreach
-      char dummy55[sizeof (ast::stmt_foreach::ptr)];
+      char dummy56[sizeof (ast::stmt_foreach::ptr)];
 
       // stmt_if
-      char dummy56[sizeof (ast::stmt_if::ptr)];
+      char dummy57[sizeof (ast::stmt_if::ptr)];
 
       // stmt_ifelse
-      char dummy57[sizeof (ast::stmt_ifelse::ptr)];
+      char dummy58[sizeof (ast::stmt_ifelse::ptr)];
 
       // stmt_list
       // stmt_or_dev_list
       // stmt_block
-      char dummy58[sizeof (ast::stmt_list::ptr)];
+      char dummy59[sizeof (ast::stmt_list::ptr)];
 
       // stmt_notify
-      char dummy59[sizeof (ast::stmt_notify::ptr)];
+      char dummy60[sizeof (ast::stmt_notify::ptr)];
 
       // stmt_prof_begin
-      char dummy60[sizeof (ast::stmt_prof_begin::ptr)];
+      char dummy61[sizeof (ast::stmt_prof_begin::ptr)];
 
       // stmt_prof_end
-      char dummy61[sizeof (ast::stmt_prof_end::ptr)];
+      char dummy62[sizeof (ast::stmt_prof_end::ptr)];
 
       // stmt_return
-      char dummy62[sizeof (ast::stmt_return::ptr)];
+      char dummy63[sizeof (ast::stmt_return::ptr)];
 
       // stmt_switch
-      char dummy63[sizeof (ast::stmt_switch::ptr)];
+      char dummy64[sizeof (ast::stmt_switch::ptr)];
 
       // stmt_wait
-      char dummy64[sizeof (ast::stmt_wait::ptr)];
+      char dummy65[sizeof (ast::stmt_wait::ptr)];
 
       // stmt_waitframe
-      char dummy65[sizeof (ast::stmt_waitframe::ptr)];
+      char dummy66[sizeof (ast::stmt_waitframe::ptr)];
 
       // stmt_waittill
-      char dummy66[sizeof (ast::stmt_waittill::ptr)];
+      char dummy67[sizeof (ast::stmt_waittill::ptr)];
 
       // stmt_waittillframeend
-      char dummy67[sizeof (ast::stmt_waittillframeend::ptr)];
+      char dummy68[sizeof (ast::stmt_waittillframeend::ptr)];
 
       // stmt_waittillmatch
-      char dummy68[sizeof (ast::stmt_waittillmatch::ptr)];
+      char dummy69[sizeof (ast::stmt_waittillmatch::ptr)];
 
       // stmt_while
-      char dummy69[sizeof (ast::stmt_while::ptr)];
+      char dummy70[sizeof (ast::stmt_while::ptr)];
 
       // "path"
       // "identifier"
@@ -649,7 +654,7 @@ namespace xsk { namespace gsc { namespace iw8 {
       // "localized string"
       // "float"
       // "integer"
-      char dummy70[sizeof (std::string)];
+      char dummy71[sizeof (std::string)];
     };
 
     /// The size of the largest semantic type.
@@ -1009,30 +1014,33 @@ namespace xsk { namespace gsc { namespace iw8 {
         S_expr_isdefined = 174,                  // expr_isdefined
         S_expr_istrue = 175,                     // expr_istrue
         S_expr_reference = 176,                  // expr_reference
-        S_expr_array = 177,                      // expr_array
-        S_expr_field = 178,                      // expr_field
-        S_expr_size = 179,                       // expr_size
-        S_expr_paren = 180,                      // expr_paren
-        S_expr_object = 181,                     // expr_object
-        S_expr_thisthread = 182,                 // expr_thisthread
-        S_expr_empty_array = 183,                // expr_empty_array
-        S_expr_undefined = 184,                  // expr_undefined
-        S_expr_game = 185,                       // expr_game
-        S_expr_self = 186,                       // expr_self
-        S_expr_anim = 187,                       // expr_anim
-        S_expr_level = 188,                      // expr_level
-        S_expr_animation = 189,                  // expr_animation
-        S_expr_animtree = 190,                   // expr_animtree
-        S_expr_identifier_nosize = 191,          // expr_identifier_nosize
-        S_expr_identifier = 192,                 // expr_identifier
-        S_expr_path = 193,                       // expr_path
-        S_expr_istring = 194,                    // expr_istring
-        S_expr_string = 195,                     // expr_string
-        S_expr_vector = 196,                     // expr_vector
-        S_expr_float = 197,                      // expr_float
-        S_expr_integer = 198,                    // expr_integer
-        S_expr_false = 199,                      // expr_false
-        S_expr_true = 200                        // expr_true
+        S_expr_tuple = 177,                      // expr_tuple
+        S_expr_tuple_arguments = 178,            // expr_tuple_arguments
+        S_expr_tuple_types = 179,                // expr_tuple_types
+        S_expr_array = 180,                      // expr_array
+        S_expr_field = 181,                      // expr_field
+        S_expr_size = 182,                       // expr_size
+        S_expr_paren = 183,                      // expr_paren
+        S_expr_object = 184,                     // expr_object
+        S_expr_thisthread = 185,                 // expr_thisthread
+        S_expr_empty_array = 186,                // expr_empty_array
+        S_expr_undefined = 187,                  // expr_undefined
+        S_expr_game = 188,                       // expr_game
+        S_expr_self = 189,                       // expr_self
+        S_expr_anim = 190,                       // expr_anim
+        S_expr_level = 191,                      // expr_level
+        S_expr_animation = 192,                  // expr_animation
+        S_expr_animtree = 193,                   // expr_animtree
+        S_expr_identifier_nosize = 194,          // expr_identifier_nosize
+        S_expr_identifier = 195,                 // expr_identifier
+        S_expr_path = 196,                       // expr_path
+        S_expr_istring = 197,                    // expr_istring
+        S_expr_string = 198,                     // expr_string
+        S_expr_vector = 199,                     // expr_vector
+        S_expr_float = 200,                      // expr_float
+        S_expr_integer = 201,                    // expr_integer
+        S_expr_false = 202,                      // expr_false
+        S_expr_true = 203                        // expr_true
       };
     };
 
@@ -1098,6 +1106,8 @@ namespace xsk { namespace gsc { namespace iw8 {
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_tuple: // expr_tuple
+      case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
         value.move< ast::expr > (std::move (that.value));
         break;
@@ -1226,6 +1236,10 @@ namespace xsk { namespace gsc { namespace iw8 {
 
       case symbol_kind::S_expr_true: // expr_true
         value.move< ast::expr_true::ptr > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_expr_tuple_arguments: // expr_tuple_arguments
+        value.move< ast::expr_tuple::ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_expr_undefined: // expr_undefined
@@ -1910,6 +1924,20 @@ namespace xsk { namespace gsc { namespace iw8 {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, ast::expr_tuple::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const ast::expr_tuple::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, ast::expr_undefined::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -2424,6 +2452,8 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_tuple: // expr_tuple
+      case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
         value.template destroy< ast::expr > ();
         break;
@@ -2552,6 +2582,10 @@ switch (yykind)
 
       case symbol_kind::S_expr_true: // expr_true
         value.template destroy< ast::expr_true::ptr > ();
+        break;
+
+      case symbol_kind::S_expr_tuple_arguments: // expr_tuple_arguments
+        value.template destroy< ast::expr_tuple::ptr > ();
         break;
 
       case symbol_kind::S_expr_undefined: // expr_undefined
@@ -4925,8 +4959,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2481,     ///< Last index in yytable_.
-      yynnts_ = 86,  ///< Number of nonterminal symbols.
+      yylast_ = 2542,     ///< Last index in yytable_.
+      yynnts_ = 89,  ///< Number of nonterminal symbols.
       yyfinal_ = 22 ///< Termination state number.
     };
 
@@ -4982,6 +5016,8 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_tuple: // expr_tuple
+      case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
         value.copy< ast::expr > (YY_MOVE (that.value));
         break;
@@ -5110,6 +5146,10 @@ switch (yykind)
 
       case symbol_kind::S_expr_true: // expr_true
         value.copy< ast::expr_true::ptr > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_expr_tuple_arguments: // expr_tuple_arguments
+        value.copy< ast::expr_tuple::ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_expr_undefined: // expr_undefined
@@ -5312,6 +5352,8 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_tuple: // expr_tuple
+      case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
         value.move< ast::expr > (YY_MOVE (s.value));
         break;
@@ -5440,6 +5482,10 @@ switch (yykind)
 
       case symbol_kind::S_expr_true: // expr_true
         value.move< ast::expr_true::ptr > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_expr_tuple_arguments: // expr_tuple_arguments
+        value.move< ast::expr_tuple::ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_expr_undefined: // expr_undefined
@@ -5649,7 +5695,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::gsc::iw8
-#line 5653 "parser.hpp"
+#line 5699 "parser.hpp"
 
 
 
