@@ -2504,12 +2504,13 @@ void decompiler::decompile_switch(const ast::stmt_list::ptr& stmt, std::size_t s
 
     end = find_location_index(stmt, end_loc); // update end
 
-    // fix empty cases at end
-    if (stmt->list.at(end) == ast::kind::asm_endswitch)
-        end--;
+    while (stmt->list.size() > (end + 1) && stmt->list.at(end) != ast::kind::asm_endswitch)
+        end++;
 
-    // TODO: fix more than 1 empty case at end
+    if (stmt->list.at(end) != ast::kind::asm_endswitch)
+        decomp_error("bad empty cases in switch block!");
 
+    end--;
     stmt->list.erase(stmt->list.begin() + start); // remove 'switch'
     stmt->list.erase(stmt->list.begin() + end); // remove 'endswitch'
 
