@@ -17,7 +17,7 @@
 namespace xsk::gsc::iw8
 {
 
-constexpr std::uint32_t max_string_id = 0x13E43;
+constexpr std::uint32_t max_string_id = 0x1472F;
 
 enum class opcode : std::uint8_t
 {
