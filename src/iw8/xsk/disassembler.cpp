@@ -51,7 +51,7 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
         func->index = static_cast<std::uint32_t>(script_->pos());
         func->size = stack_->read<std::uint32_t>();
         func->id = stack_->read<std::uint32_t>();
-        func->name = func->id == 0 ? stack_->read_c_string() : resolver::token_name(func->id);
+        func->name = func->id == 0 ? patch_enc_string(stack_->read_c_string()) : resolver::token_name(func->id);
 
         dissasemble_function(func);
 
@@ -180,10 +180,7 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
             inst->data.push_back(utils::string::va("%i", script_->read<std::int32_t>()));
             break;
         case opcode::OP_GetFloat:
-        {
-            const auto val = script_->read<float>();
-            inst->data.push_back(utils::string::va("%g%s", val, val == int(val) ? ".0" : ""));
-        }
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
             break;
         case opcode::OP_GetVector:
             inst->data.push_back(utils::string::va("%g", script_->read<float>()));
@@ -193,16 +190,16 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
             script_->seek(4);
-            inst->data.push_back(utils::string::to_literal(stack_->read_c_string()));
+            inst->data.push_back(utils::string::to_literal(patch_enc_string(stack_->read_c_string())));
             break;
         case opcode::OP_GetAnimation:
             script_->seek(8);
-            inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
-            inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
+            inst->data.push_back(utils::string::quote(patch_enc_string(stack_->read_c_string()), false));
+            inst->data.push_back(utils::string::quote(patch_enc_string(stack_->read_c_string()), false));
             break;
         case opcode::OP_GetAnimTree:
             script_->seek(1);
-            inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
+            inst->data.push_back(utils::string::quote(patch_enc_string(stack_->read_c_string()), false));
             break;
         case opcode::OP_waittillmatch:
             inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
@@ -390,9 +387,9 @@ void disassembler::disassemble_far_call(const instruction::ptr& inst, bool threa
     }
 
     const auto file_id = stack_->read<std::uint32_t>();
-    const auto file_name = file_id == 0 ? stack_->read_c_string() : resolver::file_name(file_id);
+    const auto file_name = file_id == 0 ? patch_enc_string(stack_->read_c_string()) : resolver::file_name(file_id);
     const auto func_id = stack_->read<std::uint32_t>();
-    const auto func_name = func_id == 0 ? stack_->read_c_string() : resolver::token_name(func_id);
+    const auto func_name = func_id == 0 ? patch_enc_string(stack_->read_c_string()) : resolver::token_name(func_id);
 
     inst->data.emplace(inst->data.begin(), func_name);
     inst->data.emplace(inst->data.begin(), file_name);
@@ -420,10 +417,10 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
         {
             const auto value = script_->read<std::uint32_t>();
 
-            if (value < 0x40000 && value > 0)
+            if (value < 0x100000 && value > 0)
             {
                 inst->data.push_back("case");
-                inst->data.push_back(utils::string::quote(stack_->read_c_string(), false));
+                inst->data.push_back(utils::string::quote(patch_enc_string(stack_->read_c_string()), false));
             }
             else if (value == 0)
             {
@@ -458,7 +455,7 @@ void disassembler::disassemble_field_variable(const instruction::ptr& inst)
     if (id > max_string_id)
     {
         auto temp = stack_->read<std::uint32_t>();
-        name = temp == 0 ? stack_->read_c_string() : std::to_string(temp);
+        name = temp == 0 ? patch_enc_string(stack_->read_c_string()) : std::to_string(temp);
     }
     else
     {
@@ -563,6 +560,23 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
     }
 
     throw disasm_error(utils::string::va("\"%s\" is not valid function address!", index.data()));
+}
+
+auto disassembler::patch_enc_string(const std::string& str) -> std::string
+{
+    if (str.size() > 0 && ((static_cast<std::uint8_t>(str[0]) & 0xC0) == 0x80))
+    {
+        std::string data = "_encstr_";
+
+        for (auto i = 0u; i < str.size(); i++)
+        {
+            data = utils::string::va("%s%02X", data.data(), static_cast<std::uint8_t>(str[i]));
+        }
+
+        return data;
+    }
+
+    return str;
 }
 
 void disassembler::print_function(const function::ptr& func)
