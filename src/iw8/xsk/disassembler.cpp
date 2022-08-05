@@ -425,7 +425,7 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
             else if (value == 0)
             {
                 inst->data.push_back("default");
-                stack_->read<std::uint16_t>();
+                stack_->read_c_string(); // this should be always [0x01 0x00] unencrypted
             }
             else
             {
@@ -596,7 +596,7 @@ void disassembler::print_function(const function::ptr& func)
         print_instruction(inst);
     }
 
-    output_->write_string(utils::string::va("end_%s\n", func->name.substr(4).data()));
+    output_->write_string(utils::string::va("end_%s\n", func->name.data()));
 }
 
 void disassembler::print_instruction(const instruction::ptr& inst)
