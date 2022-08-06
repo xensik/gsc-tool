@@ -364,15 +364,17 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
         {
             const auto value = script_->read<std::uint32_t>();
 
-            if (value < 0x40000 && value > 0)
+            if (value < 0x40000)
             {
-                inst->data.push_back("case");
-                inst->data.push_back(utils::string::quote(stack_->read_c_string(), false));
-            }
-            else if (value == 0)
-            {
-                inst->data.push_back("default");
-                stack_->read_c_string();
+                const auto data = stack_->read_c_string();
+
+                if (data.data()[0] != 0x01)
+                {
+                    inst->data.push_back("case");
+                    inst->data.push_back(utils::string::quote(data, false));
+                }
+                else
+                    inst->data.push_back("default");
             }
             else
             {
