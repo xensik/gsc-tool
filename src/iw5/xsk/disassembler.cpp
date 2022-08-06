@@ -167,15 +167,12 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
             inst->data.push_back(utils::string::va("%i", script_->read<std::int32_t>()));
             break;
         case opcode::OP_GetFloat:
-        {
-            const auto val = script_->read<float>();
-            inst->data.push_back(utils::string::va("%g%s", val, val == int(val) ? ".0" : ""));
-        }
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
             break;
         case opcode::OP_GetVector:
-            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
-            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
-            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
             break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
@@ -184,12 +181,12 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
             break;
         case opcode::OP_GetAnimation:
             script_->seek(4);
-            inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
-            inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
+            inst->data.push_back(utils::string::quote(stack_->read_c_string(), false));
+            inst->data.push_back(utils::string::quote(stack_->read_c_string(), false));
             break;
         case opcode::OP_GetAnimTree:
             script_->seek(1);
-            inst->data.push_back(utils::string::quote(stack_->read_c_string().data(), false));
+            inst->data.push_back(utils::string::quote(stack_->read_c_string(), false));
             break;
         case opcode::OP_waittillmatch:
             inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
@@ -375,7 +372,7 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
             else if (value == 0)
             {
                 inst->data.push_back("default");
-                stack_->read<std::uint16_t>();
+                stack_->read_c_string();
             }
             else
             {
@@ -516,7 +513,7 @@ void disassembler::print_function(const function::ptr& func)
         print_instruction(inst);
     }
 
-    output_->write_string(utils::string::va("end_%s\n", func->name.substr(4).data()));
+    output_->write_string(utils::string::va("end_%s\n", func->name.data()));
 }
 
 void disassembler::print_instruction(const instruction::ptr& inst)

@@ -183,9 +183,9 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
             inst->data.push_back(utils::string::float_string(script_->read<float>()));
             break;
         case opcode::OP_GetVector:
-            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
-            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
-            inst->data.push_back(utils::string::va("%g", script_->read<float>()));
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
+            inst->data.push_back(utils::string::float_string(script_->read<float>()));
             break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
