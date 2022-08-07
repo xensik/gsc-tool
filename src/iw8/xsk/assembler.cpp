@@ -147,7 +147,7 @@ void assembler::assemble_function(const function::ptr& func)
 
     if (func->id == 0)
     {
-        stack_->write_c_string(func->name);
+        stack_->write_c_string(encrypt_string(func->name));
     }
 
     for (const auto& inst : func->instructions)
@@ -272,19 +272,19 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_GetIString:
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint32_t>(0);
-            stack_->write_c_string(inst->data[0]);
+            stack_->write_c_string(encrypt_string(inst->data[0]));
             break;
         case opcode::OP_GetAnimation:
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint32_t>(0);
             script_->write<std::uint32_t>(0);
-            stack_->write_c_string(inst->data[0]);
-            stack_->write_c_string(inst->data[1]);
+            stack_->write_c_string(encrypt_string(inst->data[0]));
+            stack_->write_c_string(encrypt_string(inst->data[1]));
             break;
         case opcode::OP_GetAnimTree:
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(0);
-            stack_->write_c_string(inst->data[0]);
+            stack_->write_c_string(encrypt_string(inst->data[0]));
             break;
         case opcode::OP_waittillmatch:
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
@@ -487,9 +487,9 @@ void assembler::assemble_far_call(const instruction::ptr& inst, bool thread)
     const auto func_id = resolver::token_id(inst->data[1]);
 
     stack_->write<std::uint32_t>(file_id);
-    if (file_id == 0) stack_->write_c_string(inst->data[0]);
+    if (file_id == 0) stack_->write_c_string(encrypt_string(inst->data[0]));
     stack_->write<std::uint32_t>(func_id);
-    if (func_id == 0) stack_->write_c_string(inst->data[1]);
+    if (func_id == 0) stack_->write_c_string(encrypt_string(inst->data[1]));
 }
 
 void assembler::assemble_switch(const instruction::ptr& inst)
@@ -522,7 +522,7 @@ void assembler::assemble_end_switch(const instruction::ptr& inst)
             else
             {
                 script_->write<uint32_t>(i + 1);
-                stack_->write_c_string(inst->data[1 + (3 * i) + 1]);
+                stack_->write_c_string(encrypt_string(inst->data[1 + (3 * i) + 1]));
             }
 
             index += 4;
@@ -566,7 +566,7 @@ void assembler::assemble_field_variable(const instruction::ptr& inst)
     if (id > max_string_id)
     {
         stack_->write<std::uint32_t>(0);
-        stack_->write_c_string(inst->data[0]);
+        stack_->write_c_string(encrypt_string(inst->data[0]));
     }
 }
 
@@ -641,6 +641,23 @@ auto assembler::resolve_label(const std::string& name) -> std::int32_t
     }
 
     throw asm_error("couldn't resolve label address of '" + name + "'!");
+}
+
+auto assembler::encrypt_string(const std::string& str) -> std::string
+{
+    if (str.starts_with("_encstr_") && str.size() % 2 == 0)
+    {
+        std::string data{};
+
+        for (auto i = 8u; i < str.size(); i += 2)
+        {
+            data += static_cast<char>(std::stoul(str.substr(i, 2), 0, 16));
+        }
+
+        return data;
+    }
+
+    return str;
 }
 
 } // namespace xsk::gsc::iw8

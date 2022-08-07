@@ -36,7 +36,7 @@ private:
     auto disassemble_offset() -> std::int32_t;
     void resolve_local_functions();
     auto resolve_function(const std::string& index) -> std::string;
-    auto patch_enc_string(const std::string& str) -> std::string;
+    auto decrypt_string(const std::string& str) -> std::string;
     void print_function(const function::ptr& func);
     void print_instruction(const instruction::ptr& inst);
 };

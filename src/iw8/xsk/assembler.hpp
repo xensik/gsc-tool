@@ -36,6 +36,7 @@ private:
     void assemble_offset(std::int32_t offset);
     auto resolve_function(const std::string& name) -> std::int32_t;
     auto resolve_label(const std::string& name) -> std::int32_t;
+    auto encrypt_string(const std::string& str) -> std::string;
 };
 
 } // namespace xsk::gsc::iw8
