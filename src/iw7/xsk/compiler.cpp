@@ -521,8 +521,16 @@ void compiler::emit_stmt_while(const ast::stmt_while::ptr& stmt, const block::pt
 
     if (!const_cond)
     {
-        emit_expr(stmt->test, blk);
-        emit_opcode(opcode::OP_JumpOnFalse, break_loc);
+        if (stmt->test == ast::kind::expr_not)
+        {
+            emit_expr(stmt->test.as_not->rvalue, blk);
+            emit_opcode(opcode::OP_JumpOnTrue, break_loc);
+        }
+        else
+        {
+            emit_expr(stmt->test, blk);
+            emit_opcode(opcode::OP_JumpOnFalse, break_loc);
+        }
     }
 
     emit_stmt(stmt->stmt, stmt->blk, false);
@@ -579,8 +587,16 @@ void compiler::emit_stmt_dowhile(const ast::stmt_dowhile::ptr& stmt, const block
 
     if (!const_cond)
     {
-        emit_expr(stmt->test, blk);
-        emit_opcode(opcode::OP_JumpOnFalse, break_loc);
+        if (stmt->test == ast::kind::expr_not)
+        {
+            emit_expr(stmt->test.as_not->rvalue, blk);
+            emit_opcode(opcode::OP_JumpOnTrue, break_loc);
+        }
+        else
+        {
+            emit_expr(stmt->test, blk);
+            emit_opcode(opcode::OP_JumpOnFalse, break_loc);
+        }
     }
 
     emit_opcode(opcode::OP_jumpback, begin_loc);
@@ -634,8 +650,16 @@ void compiler::emit_stmt_for(const ast::stmt_for::ptr& stmt, const block::ptr& b
 
     if (!const_cond)
     {
-        emit_expr(stmt->test, blk);
-        emit_opcode(opcode::OP_JumpOnFalse, break_loc);
+        if (stmt->test == ast::kind::expr_not)
+        {
+            emit_expr(stmt->test.as_not->rvalue, blk);
+            emit_opcode(opcode::OP_JumpOnTrue, break_loc);
+        }
+        else
+        {
+            emit_expr(stmt->test, blk);
+            emit_opcode(opcode::OP_JumpOnFalse, break_loc);
+        }
     }
 
     can_break_ = true;
