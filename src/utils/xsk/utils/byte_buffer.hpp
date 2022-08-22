@@ -51,7 +51,7 @@ public:
 
         std::array<std::uint8_t, sizeof(T)> mem;
 
-        for (auto i = 0; i < sizeof(T); i++)
+        for (auto i = 0u; i < sizeof(T); i++)
         {
             mem[i] = reinterpret_cast<std::uint8_t*>(data_.data() + pos_)[sizeof(T) - 1 - i];
         }
@@ -68,7 +68,7 @@ public:
 
         auto* mem = data_.data() + pos_;
 
-        for (auto i = 0; i < sizeof(T); i++)
+        for (auto i = 0u; i < sizeof(T); i++)
         {
             mem[i] = reinterpret_cast<std::uint8_t*>(&data)[sizeof(T) - 1 - i];
         }
