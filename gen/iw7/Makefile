@@ -1,9 +1,9 @@
-generate: IW7
+generate: iw7
 
 clean:
 	rm -rf ./parser.hpp
 	rm -rf ./parser.cpp
 
-IW7: parser.ypp
+iw7: parser.ypp
 	bison parser.ypp -Wcounterexamples
 	mv parser.hpp parser.cpp ../../src/iw7/xsk/
