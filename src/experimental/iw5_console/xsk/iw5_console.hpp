@@ -7,8 +7,17 @@
 
 #include "utils/xsk/utils.hpp"
 
+#include "assembler.hpp"
+#include "disassembler.hpp"
+#include "compiler.hpp"
+#include "decompiler.hpp"
+#include "resolver.hpp"
+#include "context.hpp"
+
 namespace xsk::gsc::iw5_console
 {
+
+constexpr std::uint16_t max_string_id = 0x8250;
 
 enum class opcode : std::uint8_t
 {
@@ -120,7 +129,7 @@ enum class opcode : std::uint8_t
     OP_ScriptFunctionCallPointer = 0x69,
     OP_ScriptMethodCallPointer = 0x6A,
     OP_ScriptThreadCallPointer = 0x6B,
-    OP_ScriptMethodChildThreadCallPointer = 0x6C,
+    OP_ScriptChildThreadCallPointer = 0x6C,
     OP_ScriptMethodThreadCallPointer = 0x6D,
     OP_ScriptMethodChildThreadCallPointer = 0x6E,
     OP_CallBuiltinPointer = 0x6F,
@@ -153,7 +162,7 @@ enum class opcode : std::uint8_t
     OP_plus = 0x8A,
     OP_minus = 0x8B,
     OP_multiply = 0x8C,
-    OP_divide = 0x8F,
+    OP_divide = 0x8D,
     OP_mod = 0x8E,
     OP_size = 0x8F,
     OP_waittillmatch = 0x90,
