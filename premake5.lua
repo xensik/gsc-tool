@@ -51,6 +51,8 @@ project "xsk-gsc-tool"
     targetname "gsc-tool"
 
     dependson "xsk-gsc-utils"
+    dependson "xsk-gsc-h1"
+    dependson "xsk-gsc-h2"
     dependson "xsk-gsc-iw5"
     dependson "xsk-gsc-iw6"
     dependson "xsk-gsc-iw7"
@@ -58,9 +60,8 @@ project "xsk-gsc-tool"
     dependson "xsk-gsc-s1"
     dependson "xsk-gsc-s2"
     dependson "xsk-gsc-s4"
-    dependson "xsk-gsc-h1"
-    dependson "xsk-gsc-h2"
     dependson "xsk-arc-t6"
+    dependson "xsk-gsc-iw5c"
 
     pchheader "stdafx.hpp"
     pchsource "src/tool/stdafx.cpp"
@@ -73,6 +74,8 @@ project "xsk-gsc-tool"
 
     links {
         "xsk-gsc-utils",
+        "xsk-gsc-h1",
+        "xsk-gsc-h2",
         "xsk-gsc-iw5",
         "xsk-gsc-iw6",
         "xsk-gsc-iw7",
@@ -80,9 +83,8 @@ project "xsk-gsc-tool"
         "xsk-gsc-s1",
         "xsk-gsc-s2",
         "xsk-gsc-s4",
-        "xsk-gsc-h1",
-        "xsk-gsc-h2",
-        "xsk-arc-t6"
+        "xsk-arc-t6",
+        "xsk-gsc-iw5c"
     }
 
     includedirs {
@@ -111,6 +113,42 @@ project "xsk-gsc-utils"
     }
 
     zlib:include()
+
+project "xsk-gsc-h1"
+kind "StaticLib"
+language "C++"
+
+pchheader "stdafx.hpp"
+pchsource "src/h1/stdafx.cpp"
+
+files {
+    "./src/h1/**.h",
+    "./src/h1/**.hpp",
+    "./src/h1/**.cpp"
+}
+
+includedirs {
+    "./src/h1",
+    "./src"
+}
+
+project "xsk-gsc-h2"
+kind "StaticLib"
+language "C++"
+
+pchheader "stdafx.hpp"
+pchsource "src/h2/stdafx.cpp"
+
+files {
+    "./src/h2/**.h",
+    "./src/h2/**.hpp",
+    "./src/h2/**.cpp"
+}
+
+includedirs {
+    "./src/h2",
+    "./src"
+}
 
 project "xsk-gsc-iw5"
     kind "StaticLib"
@@ -238,42 +276,6 @@ project "xsk-gsc-s4"
         "./src"
     }
 
-project "xsk-gsc-h1"
-    kind "StaticLib"
-    language "C++"
-
-    pchheader "stdafx.hpp"
-    pchsource "src/h1/stdafx.cpp"
-
-    files {
-        "./src/h1/**.h",
-        "./src/h1/**.hpp",
-        "./src/h1/**.cpp"
-    }
-
-    includedirs {
-        "./src/h1",
-        "./src"
-    }
-
-project "xsk-gsc-h2"
-    kind "StaticLib"
-    language "C++"
-
-    pchheader "stdafx.hpp"
-    pchsource "src/h2/stdafx.cpp"
-
-    files {
-        "./src/h2/**.h",
-        "./src/h2/**.hpp",
-        "./src/h2/**.cpp"
-    }
-
-    includedirs {
-        "./src/h2",
-        "./src"
-    }
-
 project "xsk-arc-t6"
     kind "StaticLib"
     language "C++"
@@ -289,6 +291,24 @@ project "xsk-arc-t6"
 
     includedirs {
         "./src/t6",
+        "./src"
+    }
+
+project "xsk-gsc-iw5c"
+    kind "StaticLib"
+    language "C++"
+
+    pchheader "stdafx.hpp"
+    pchsource "src/experimental/iw5c/stdafx.cpp"
+
+    files {
+        "./src/experimental/iw5c/**.h",
+        "./src/experimental/iw5c/**.hpp",
+        "./src/experimental/iw5c/**.cpp"
+    }
+
+    includedirs {
+        "./src/experimental/iw5c",
         "./src"
     }
 
