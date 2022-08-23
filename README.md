@@ -7,19 +7,19 @@
 A utility to compile & decompile IW engine game scripts.
 
 ## Supported Games
-- **IW5** *(Call of Duty: Modern Warfare 3)* *(PC, PS3, XBOX 360)*
-- **IW6** *(Call of Duty: Ghosts)*
-- **IW7** *(Call of Duty: Infinite Warfare)*
-- **IW8** *(Call of Duty: Modern Warfare (2019))*
-- **S1** *(Call of Duty: Advanced Warfare)*
-- **S2** *(Call of Duty: WWII)*
-- **S4** *(Call of Duty: Vanguard)*
-- **H1** *(Call of Duty: Modern Warfare Remastered)*
-- **H2** *(Call of Duty: Modern Warfare 2 Campaign Remastered)*
-- **T4** *(Call of Duty: World at War)* ***\*WIP\****
-- **T5** *(Call of Duty: Black Ops)* ***\*WIP\****
-- **T6** *(Call of Duty: Black Ops II)*
+- **IW5** *(Call of Duty: Modern Warfare 3)* `PC` `PS3` `Xbox 360`
+- **IW6** *(Call of Duty: Ghosts)* `PC` `PS4` `Xbox One`
+- **IW7** *(Call of Duty: Infinite Warfare)* `PC` `PS4` `Xbox One`
+- **IW8** *(Call of Duty: Modern Warfare (2019) / Warzone)* `PC` `PS4` `PS5` `Xbox One` `Xbox Series X|S`
+- **S1** *(Call of Duty: Advanced Warfare)* `PC` `PS4` `Xbox One`
+- **S2** *(Call of Duty: WWII)* `PC` `PS4` `Xbox One`
+- **S4** *(Call of Duty: Vanguard)* `PC` `PS4` `PS5` `Xbox One` `Xbox Series X|S`
+- **H1** *(Call of Duty: Modern Warfare Remastered)* `PC` `PS4` `Xbox One`
+- **H2** *(Call of Duty: Modern Warfare 2 Campaign Remastered)* `PC` `PS4` `PS5` `Xbox One` `Xbox Series X|S`
+- **T6** *(Call of Duty: Black Ops II)* `PC`
 - **T7** *(Call of Duty: Black Ops III)* ***\*WIP\****
+- **T8** *(Call of Duty: Black Ops 4)* ***\*WIP\****
+- **T9** *(Call of Duty: Black Ops Cold War)* ***\*WIP\****
 
 ## Usage
 ``./gsc-tool.exe <mode> <game> <path>``
