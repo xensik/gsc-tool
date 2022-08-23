@@ -5,6 +5,7 @@
 
 #include "stdafx.hpp"
 #include "utils/xsk/utils.hpp"
+#include "experimental/iw5c/xsk/iw5c.hpp"
 #include "iw5/xsk/iw5.hpp"
 #include "iw6/xsk/iw6.hpp"
 #include "iw7/xsk/iw7.hpp"
@@ -19,46 +20,47 @@
 namespace xsk
 {
 
-enum class encd { __, SOURCE, ASSEMBLY, BINARY };
-enum class mode { __, ASM, DISASM, COMP, DECOMP };
-enum class game { __, IW5, IW6, IW7, IW8, S1, S2, S4, H1, H2, T6 };
+enum class encd { _, source, assembly, binary };
+enum class mode { _, assemble, disassemble, compile, decompile };
+enum class game { _, iw5c, iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2, t6 };
 
 const std::map<std::string, encd> exts =
 {
-    { ".gsc", encd::SOURCE },
-    { ".cgsc", encd::BINARY },
-    { ".gscbin", encd::BINARY },
-    { ".gscasm", encd::ASSEMBLY },
+    { ".gsc", encd::source },
+    { ".cgsc", encd::binary },
+    { ".gscbin", encd::binary },
+    { ".gscasm", encd::assembly },
 };
 
 const std::map<std::string, mode> modes =
 {
-    { "asm", mode::ASM },
-    { "disasm", mode::DISASM },
-    { "comp", mode::COMP },
-    { "decomp", mode::DECOMP },
+    { "asm", mode::assemble },
+    { "disasm", mode::disassemble },
+    { "comp", mode::compile },
+    { "decomp", mode::decompile },
 };
 
 const std::map<std::string, game> games =
 {
-    { "iw5", game::IW5 },
-    { "iw6", game::IW6 },
-    { "iw7", game::IW7 },
-    { "iw8", game::IW8 },
-    { "s1", game::S1 },
-    { "s2", game::S2 },
-    { "s4", game::S4 },
-    { "h1", game::H1 },
-    { "h2", game::H2 },
-    { "t6", game::T6 },
+    { "iw5c", game::iw5c },
+    { "iw5", game::iw5 },
+    { "iw6", game::iw6 },
+    { "iw7", game::iw7 },
+    { "iw8", game::iw8 },
+    { "s1", game::s1 },
+    { "s2", game::s2 },
+    { "s4", game::s4 },
+    { "h1", game::h1 },
+    { "h2", game::h2 },
+    { "t6", game::t6 },
 };
 
 const std::map<mode, encd> encds =
 {
-    { mode::ASM , encd::ASSEMBLY },
-    { mode::DISASM, encd::BINARY },
-    { mode::COMP, encd::SOURCE },
-    { mode::DECOMP, encd::BINARY },
+    { mode::assemble , encd::assembly },
+    { mode::disassemble, encd::binary },
+    { mode::compile, encd::source },
+    { mode::decompile, encd::binary },
 };
 
 auto overwrite_prompt(const std::string& file) -> bool
@@ -98,23 +100,25 @@ auto choose_resolver_file_name(uint32_t id, game& game) -> std::string
 {
     switch (game)
     {
-        case game::IW5:
+        case game::iw5c:
+            return iw5c::resolver::token_name(static_cast<std::uint16_t>(id));
+        case game::iw5:
             return iw5::resolver::token_name(static_cast<std::uint16_t>(id));
-        case game::IW6:
+        case game::iw6:
             return iw6::resolver::file_name(static_cast<std::uint16_t>(id));
-        case game::IW7:
+        case game::iw7:
             return iw7::resolver::file_name(id);
-        case game::IW8:
+        case game::iw8:
             return iw8::resolver::file_name(id);
-        case game::S1:
+        case game::s1:
             return s1::resolver::file_name(static_cast<std::uint16_t>(id));
-        case game::S2:
+        case game::s2:
             return s2::resolver::file_name(static_cast<std::uint16_t>(id));
-        case game::S4:
+        case game::s4:
             return s4::resolver::file_name(id);
-        case game::H1:
+        case game::h1:
             return h1::resolver::token_name(static_cast<std::uint16_t>(id));
-        case game::H2:
+        case game::h2:
             return h2::resolver::token_name(static_cast<std::uint16_t>(id));
         default:
             return "";
@@ -377,7 +381,7 @@ void decompile_file(game game, std::string file)
         }
         else
         {
-            auto filename = choose_resolver_file_name(std::atoi(scriptid.data()), game);
+            auto filename = choose_resolver_file_name(std::atoi(scriptid.data()), game);/*xsk::utils::string::va("%s_%04X", scriptid.data(),  std::atoi(scriptid.data()));*/
             auto count = file.find(scriptid);
 
             if (count != std::string::npos)
@@ -400,29 +404,31 @@ void decompile_file(game game, std::string file)
 
 void init()
 {
-    contexts[game::IW5] = std::make_unique<iw5::context>();
-    contexts[game::IW5]->init(build::prod, utils::file::read);
-    contexts[game::IW6] = std::make_unique<iw6::context>();
-    contexts[game::IW6]->init(build::prod, utils::file::read);
-    contexts[game::IW7] = std::make_unique<iw7::context>();
-    contexts[game::IW7]->init(build::prod, utils::file::read);
-    contexts[game::IW8] = std::make_unique<iw8::context>();
-    contexts[game::IW8]->init(build::prod, utils::file::read);
-    contexts[game::S1] = std::make_unique<s1::context>();
-    contexts[game::S1]->init(build::prod, utils::file::read);
-    contexts[game::S2] = std::make_unique<s2::context>();
-    contexts[game::S2]->init(build::prod, utils::file::read);
-    contexts[game::S4] = std::make_unique<s4::context>();
-    contexts[game::S4]->init(build::prod, utils::file::read);
-    contexts[game::H1] = std::make_unique<h1::context>();
-    contexts[game::H1]->init(build::prod, utils::file::read);
-    contexts[game::H2] = std::make_unique<h2::context>();
-    contexts[game::H2]->init(build::prod, utils::file::read);
+    contexts[game::iw5c] = std::make_unique<iw5c::context>();
+    contexts[game::iw5c]->init(build::prod, utils::file::read);
+    contexts[game::iw5] = std::make_unique<iw5::context>();
+    contexts[game::iw5]->init(build::prod, utils::file::read);
+    contexts[game::iw6] = std::make_unique<iw6::context>();
+    contexts[game::iw6]->init(build::prod, utils::file::read);
+    contexts[game::iw7] = std::make_unique<iw7::context>();
+    contexts[game::iw7]->init(build::prod, utils::file::read);
+    contexts[game::iw8] = std::make_unique<iw8::context>();
+    contexts[game::iw8]->init(build::prod, utils::file::read);
+    contexts[game::s1] = std::make_unique<s1::context>();
+    contexts[game::s1]->init(build::prod, utils::file::read);
+    contexts[game::s2] = std::make_unique<s2::context>();
+    contexts[game::s2]->init(build::prod, utils::file::read);
+    contexts[game::s4] = std::make_unique<s4::context>();
+    contexts[game::s4]->init(build::prod, utils::file::read);
+    contexts[game::h1] = std::make_unique<h1::context>();
+    contexts[game::h1]->init(build::prod, utils::file::read);
+    contexts[game::h2] = std::make_unique<h2::context>();
+    contexts[game::h2]->init(build::prod, utils::file::read);
 
-    funcs[mode::ASM] = assemble_file;
-    funcs[mode::DISASM] = disassemble_file;
-    funcs[mode::COMP] = compile_file;
-    funcs[mode::DECOMP] = decompile_file;
+    funcs[mode::assemble] = assemble_file;
+    funcs[mode::disassemble] = disassemble_file;
+    funcs[mode::compile] = compile_file;
+    funcs[mode::decompile] = decompile_file;
 }
 
 } // namespace xsk::gsc
@@ -527,13 +533,13 @@ void decompile_file(game game, const std::filesystem::path& file)
 
 void init()
 {
-    contexts[game::T6] = std::make_unique<t6::context>();
-    contexts[game::T6]->init(build::prod, utils::file::read);
+    contexts[game::t6] = std::make_unique<t6::context>();
+    contexts[game::t6]->init(build::prod, utils::file::read);
 
-    funcs[mode::ASM] = assemble_file;
-    funcs[mode::DISASM] = disassemble_file;
-    funcs[mode::COMP] = compile_file;
-    funcs[mode::DECOMP] = decompile_file;
+    funcs[mode::assemble] = assemble_file;
+    funcs[mode::disassemble] = disassemble_file;
+    funcs[mode::compile] = compile_file;
+    funcs[mode::decompile] = decompile_file;
 }
 
 } // namespace xsk::arc
@@ -546,7 +552,7 @@ void execute(mode mode, game game, const std::string& path)
         {
             if (entry.is_regular_file())
             {
-                if (game < game::T6)
+                if (game < game::t6)
                     gsc::funcs[mode](game, entry.path().generic_string());
                 else
                     arc::funcs[mode](game, std::filesystem::path(entry.path().generic_string(), std::filesystem::path::format::generic_format));
@@ -555,7 +561,7 @@ void execute(mode mode, game game, const std::string& path)
     }
     else if (std::filesystem::is_regular_file(path))
     {
-        if (game < game::T6)
+        if (game < game::t6)
             gsc::funcs[mode](game, path);
         else
             arc::funcs[mode](game, std::filesystem::path(path, std::filesystem::path::format::generic_format));
@@ -609,7 +615,7 @@ void print_usage()
 {
     std::cout << "usage: gsc-tool.exe <mode> <game> <path>\n";
     std::cout << "\t* modes: asm, disasm, comp, decomp\n";
-    std::cout << "\t* games: iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2, t6\n";
+    std::cout << "\t* games: iw5c, iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2, t6\n";
     std::cout << "\t* paths: file or directory (recursive)\n";
 }
 /*
@@ -708,8 +714,8 @@ void shell()
 void main(std::uint32_t argc, char** argv)
 {
     auto path = ""s;
-    mode mode = mode::__;
-    game game = game::__;
+    mode mode = mode::_;
+    game game = game::_;
 
     gsc::init();
     arc::init();
