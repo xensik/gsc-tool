@@ -4,14 +4,14 @@
 // that can be found in the LICENSE file.
 
 #include "stdafx.hpp"
-#include "iw5_console.hpp"
+#include "iw5c.hpp"
 
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4244)
 #endif
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 std::unordered_map<std::uint8_t, std::string_view> opcode_map;
@@ -1773,7 +1773,7 @@ struct __init__
 
 __init__ _;
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c
 
 #ifdef _MSC_VER
 #pragma warning(pop)

@@ -41,7 +41,7 @@
 #include "parser.hpp"
 #include "lexer.hpp"
 using namespace xsk::gsc;
-xsk::gsc::iw5_console::parser::symbol_type IW5lex(xsk::gsc::iw5_console::lexer& lexer);
+xsk::gsc::iw5c::parser::symbol_type IW5Clex(xsk::gsc::iw5c::lexer& lexer);
 
 #line 47 "parser.cpp"
 
@@ -144,11 +144,11 @@ xsk::gsc::iw5_console::parser::symbol_type IW5lex(xsk::gsc::iw5_console::lexer& 
 #define YYRECOVERING()  (!!yyerrstatus_)
 
 #line 13 "parser.ypp"
-namespace xsk { namespace gsc { namespace iw5_console {
+namespace xsk { namespace gsc { namespace iw5c {
 #line 149 "parser.cpp"
 
   /// Build a parser object.
-  parser::parser (xsk::gsc::iw5_console::lexer& lexer_yyarg, xsk::gsc::ast::program::ptr& ast_yyarg)
+  parser::parser (xsk::gsc::iw5c::lexer& lexer_yyarg, xsk::gsc::ast::program::ptr& ast_yyarg)
 #if IW5CDEBUG
     : yydebug_ (false),
       yycdebug_ (&std::cerr),
@@ -4656,13 +4656,13 @@ namespace xsk { namespace gsc { namespace iw5_console {
 
 
 #line 13 "parser.ypp"
-} } } // xsk::gsc::iw5_console
+} } } // xsk::gsc::iw5c
 #line 4661 "parser.cpp"
 
 #line 883 "parser.ypp"
 
 
-void xsk::gsc::iw5_console::parser::error(const xsk::gsc::location& loc, const std::string& msg)
+void xsk::gsc::iw5c::parser::error(const xsk::gsc::location& loc, const std::string& msg)
 {
     throw xsk::gsc::comp_error(loc, msg);
 }

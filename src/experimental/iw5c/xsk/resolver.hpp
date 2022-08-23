@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 class resolver
@@ -37,4 +37,4 @@ public:
     static auto fs_to_game_path(const std::filesystem::path& file) -> std::filesystem::path;
 };
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

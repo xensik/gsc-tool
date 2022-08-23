@@ -4,11 +4,11 @@
 // that can be found in the LICENSE file.
 
 #include "stdafx.hpp"
-#include "iw5_console.hpp"
+#include "iw5c.hpp"
 #include "parser.hpp"
 #include "lexer.hpp"
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 auto compiler::output() -> std::vector<function::ptr>
@@ -3633,4 +3633,4 @@ void compiler::print_label(const std::string& label)
     printf("  %s\n", label.data());
 }
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

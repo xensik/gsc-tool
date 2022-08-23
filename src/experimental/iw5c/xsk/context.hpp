@@ -5,15 +5,15 @@
 
 #pragma once
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 class context : public gsc::context
 {
-    iw5_console::assembler assembler_;
-    iw5_console::disassembler disassembler_;
-    iw5_console::compiler compiler_;
-    iw5_console::decompiler decompiler_;
+    iw5c::assembler assembler_;
+    iw5c::disassembler disassembler_;
+    iw5c::compiler compiler_;
+    iw5c::decompiler decompiler_;
 
 public:
     void init(build mode, read_cb_type callback);
@@ -25,4 +25,4 @@ public:
     auto decompiler() -> gsc::decompiler& { return decompiler_; }
 };
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 class decompiler : public gsc::decompiler
@@ -98,4 +98,4 @@ private:
     void process_var_remove(const ast::asm_remove::ptr& expr, const block::ptr& blk);
 };
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

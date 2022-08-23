@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 class disassembler : public gsc::disassembler
@@ -39,4 +39,4 @@ private:
     void print_instruction(const instruction::ptr& inst);
 };
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

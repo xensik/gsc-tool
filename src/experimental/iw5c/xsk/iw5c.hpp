@@ -14,7 +14,7 @@
 #include "resolver.hpp"
 #include "context.hpp"
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 constexpr std::uint16_t max_string_id = 0x8250;
@@ -179,4 +179,4 @@ enum class opcode : std::uint8_t
 
 auto opcode_size(std::uint8_t id) -> std::uint32_t;
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 constexpr size_t max_buf_size = 0x2000;
@@ -75,4 +75,4 @@ private:
     void preprocessor_run(parser::token::token_kind_type token);
 };
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

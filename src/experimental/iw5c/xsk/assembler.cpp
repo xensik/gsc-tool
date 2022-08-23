@@ -4,9 +4,9 @@
 // that can be found in the LICENSE file.
 
 #include "stdafx.hpp"
-#include "iw5_console.hpp"
+#include "iw5c.hpp"
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 auto assembler::output_script() -> std::vector<std::uint8_t>
@@ -574,4 +574,4 @@ auto assembler::resolve_label(const std::string& name) -> std::int32_t
     throw asm_error("couldn't resolve label address of '" + name + "'!");
 }
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

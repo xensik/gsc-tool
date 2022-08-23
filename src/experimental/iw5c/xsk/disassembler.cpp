@@ -4,9 +4,9 @@
 // that can be found in the LICENSE file.
 
 #include "stdafx.hpp"
-#include "iw5_console.hpp"
+#include "iw5c.hpp"
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 auto disassembler::output() -> std::vector<function::ptr>
@@ -576,4 +576,4 @@ void disassembler::print_instruction(const instruction::ptr& inst)
     }
 }
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

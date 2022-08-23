@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 enum class opcode : std::uint8_t;
@@ -167,4 +167,4 @@ private:
     void print_label(const std::string& label);
 };
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

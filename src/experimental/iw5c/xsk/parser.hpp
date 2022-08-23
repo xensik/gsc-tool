@@ -33,7 +33,7 @@
 
 /**
  ** \file parser.hpp
- ** Define the xsk::gsc::iw5_console::parser class.
+ ** Define the xsk::gsc::iw5c::parser class.
  */
 
 // C++ LALR(1) parser skeleton written by Akim Demaille.
@@ -51,8 +51,8 @@
 #pragma warning(disable:4065)
 #pragma warning(disable:4127)
 #endif
-#include "iw5_console.hpp"
-namespace xsk::gsc::iw5_console { class lexer; }
+#include "iw5c.hpp"
+namespace xsk::gsc::iw5c { class lexer; }
 
 #line 58 "parser.hpp"
 
@@ -202,7 +202,7 @@ namespace xsk::gsc::iw5_console { class lexer; }
 #endif  /* ! defined IW5CDEBUG */
 
 #line 13 "parser.ypp"
-namespace xsk { namespace gsc { namespace iw5_console {
+namespace xsk { namespace gsc { namespace iw5c {
 #line 207 "parser.hpp"
 
 
@@ -2761,7 +2761,7 @@ switch (yykind)
     };
 
     /// Build a parser object.
-    parser (xsk::gsc::iw5_console::lexer& lexer_yyarg, xsk::gsc::ast::program::ptr& ast_yyarg);
+    parser (xsk::gsc::iw5c::lexer& lexer_yyarg, xsk::gsc::ast::program::ptr& ast_yyarg);
     virtual ~parser ();
 
 #if 201103L <= YY_CPLUSPLUS
@@ -4837,7 +4837,7 @@ switch (yykind)
 
 
     // User arguments.
-    xsk::gsc::iw5_console::lexer& lexer;
+    xsk::gsc::iw5c::lexer& lexer;
     xsk::gsc::ast::program::ptr& ast;
 
   };
@@ -5541,7 +5541,7 @@ switch (yykind)
 
 
 #line 13 "parser.ypp"
-} } } // xsk::gsc::iw5_console
+} } } // xsk::gsc::iw5c
 #line 5546 "parser.hpp"
 
 

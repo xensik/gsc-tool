@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 class assembler : public gsc::assembler
@@ -37,4 +37,4 @@ private:
     auto resolve_label(const std::string& name) -> std::int32_t;
 };
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

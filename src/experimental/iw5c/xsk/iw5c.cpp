@@ -4,9 +4,9 @@
 // that can be found in the LICENSE file.
 
 #include "stdafx.hpp"
-#include "iw5_console.hpp"
+#include "iw5c.hpp"
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 auto opcode_size(std::uint8_t id) -> std::uint32_t
@@ -176,4 +176,4 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
     }
 }
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

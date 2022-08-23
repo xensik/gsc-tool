@@ -4,16 +4,16 @@
 // that can be found in the LICENSE file.
 
 #include "stdafx.hpp"
-#include "iw5_console.hpp"
+#include "iw5c.hpp"
 #include "parser.hpp"
 #include "lexer.hpp"
 
-xsk::gsc::iw5_console::parser::symbol_type IW5Clex(xsk::gsc::iw5_console::lexer& lexer)
+xsk::gsc::iw5c::parser::symbol_type IW5Clex(xsk::gsc::iw5c::lexer& lexer)
 {
     return lexer.lex();
 }
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 const std::unordered_map<std::string_view, parser::token::token_kind_type> keyword_map
@@ -845,4 +845,4 @@ void lexer::preprocessor_run(parser::token::token_kind_type token)
     }
 }
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c

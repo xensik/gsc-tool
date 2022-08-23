@@ -4,9 +4,9 @@
 // that can be found in the LICENSE file.
 
 #include "stdafx.hpp"
-#include "iw5_console.hpp"
+#include "iw5c.hpp"
 
-namespace xsk::gsc::iw5_console
+namespace xsk::gsc::iw5c
 {
 
 auto decompiler::output() -> std::vector<std::uint8_t>
@@ -3433,4 +3433,4 @@ void decompiler::process_var_remove(const ast::asm_remove::ptr& expr, const bloc
     blk->local_vars_public_count = static_cast<std::uint32_t>(blk->local_vars.size() - std::stoi(expr->index));
 }
 
-} // namespace xsk::gsc::iw5_console
+} // namespace xsk::gsc::iw5c
