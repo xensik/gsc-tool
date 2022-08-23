@@ -7,7 +7,7 @@
 A utility to compile & decompile IW engine game scripts.
 
 ## Supported Games
-- **IW5** *(Call of Duty: Modern Warfare 3)*
+- **IW5** *(Call of Duty: Modern Warfare 3)* *(PC, PS3, XBOX 360)*
 - **IW6** *(Call of Duty: Ghosts)*
 - **IW7** *(Call of Duty: Infinite Warfare)*
 - **IW8** *(Call of Duty: Modern Warfare (2019))*
@@ -26,7 +26,7 @@ A utility to compile & decompile IW engine game scripts.
 
 **modes**: `asm`, `disasm`, `comp`, `decomp`
 
-**games**: `iw5`, `iw6`, `iw7`, `iw8`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6`
+**games**: `iw5c`, `iw5`, `iw6`, `iw7`, `iw8`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6`
 
 **paths**: `file`, `directory` (recursive process all files inside dir)
 
