@@ -546,8 +546,8 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x07F, "soundresettimescale" },
     { 0x080, "levelsoundfade" },
     { 0x081, "precachenightvisioncodeassets" },
-    { 0x082, "_func_082" },
-    { 0x083, "precachedigitaldistortcodeassets" },
+    { 0x082, "precachedigitaldistortcodeassets" },
+    { 0x083, "precachesonarvisioncodeassets" },
     { 0x084, "precacheminimapsentrycodeassets" },
     { 0x085, "savegame" },
     { 0x086, "issavesuccessful" },
@@ -570,7 +570,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x097, "weaponfightdist" },
     { 0x098, "weaponmaxdist" },
     { 0x099, "isturretactive" },
-    { 0x09A, "getstarttime" },
+    { 0x09A, "getturretfov" },
     { 0x09B, "target_alloc" },
     { 0x09C, "target_flush" },
     { 0x09D, "target_set" },
@@ -739,9 +739,9 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x140, "issplitscreen" },
     { 0x141, "setmapcenter" },
     { 0x142, "setgameendtime" },
-    { 0x143, "_func_143" },
-    { 0x144, "_func_144" },
-    { 0x145, "visionsetnight" },
+    { 0x143, "visionsetnaked" },
+    { 0x144, "visionsetnight" },
+    { 0x145, "visionsetmissilecam" },
     { 0x146, "ambientstop" },
     { 0x147, "precachemodel" },
     { 0x148, "precacheshellshock" },
@@ -777,7 +777,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x166, "obituary" },
     { 0x167, "positionwouldtelefrag" },
     { 0x168, "canspawn" },
-    { 0x169, "_func_169" },
+    { 0x169, "getstarttime" },
     { 0x16A, "precacheheadicon" },
     { 0x16B, "precacheminimapicon" },
     { 0x16C, "precachempanim" },
@@ -943,8 +943,8 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x20C, "getzonenodesbydist" },
     { 0x20D, "getzonenodeforindex" },
     { 0x20E, "getweaponexplosionradius" },
-    { 0x20F, "_func_20F" },
-    { 0x210, "_func_210" },
+    { 0x20F, "markdangerousnodes" },
+    { 0x210, "markdangerousnodesintrigger" },
     { 0x211, "nodeexposedtosky" },
     { 0x212, "findentrances" },
     { 0x213, "badplace_global" },
@@ -953,8 +953,8 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x216, "disconnectnodepair" },
     { 0x217, "connectnodepair" },
     { 0x218, "gettimesincelastpaused" },
-    { 0x219, "_func_219" },
-    { 0x21A, "_func_21A" },
+    { 0x219, "precachefxontag" },
+    { 0x21A, "precachetag" },
     { 0x21B, "precachesound" },
     { 0x21C, "devsetminimapdvarsettings" },
     { 0x21D, "loadtransient" },
@@ -979,16 +979,16 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x230, "cinematicgettimeinmsec" },
     { 0x231, "cinematicgetframe" },
     { 0x232, "iscinematicloaded" },
-    { 0x233, "_func_233" },
+    { 0x233, "bbprint" },
     { 0x234, "getenemysquaddata" },
-    { 0x235, "_func_235" },
+    { 0x235, "lookupsoundlength" },
     { 0x236, "getscriptablearray" },
     { 0x237, "clearfog" },
     { 0x238, "setleveldopplerpreset" },
     { 0x239, "screenshake" },
     { 0x23A, "isusinghdr" },
     { 0x23B, "isusingssao" },
-    { 0x23C, "_func_23C" },
+    { 0x23C, "grantloot" },
     { 0x23D, "playerphysicstraceinfo" },
     { 0x23E, "_func_23E" },
     { 0x23F, "getminchargetime" },
@@ -1048,7 +1048,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x275, "livestreamingsetmetadata" },
     { 0x276, "livestreamingenablearchiving" },
     { 0x277, "triggerportableradarping" },
-    { 0x278, "_func_278" },
+    { 0x278, "setglaregrimematerial" },
     { 0x279, "botgetteamlimit" },
     { 0x27A, "spawnfxforclient" },
     { 0x27B, "botgetteamdifficulty" },
@@ -1136,10 +1136,10 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x2CD, "isonwifi" },
     { 0x2CE, "getbuttonsconfig" },
     { 0x2CF, "getchallengeid" },
-    { 0x2D0, "_func_2D0" },
-    { 0x2D1, "_func_2D1" },
-    { 0x2D2, "_func_2D2" },
-    { 0x2D3, "_func_2D3" },
+    { 0x2D0, "nodehasremotemissileset" },
+    { 0x2D1, "nodegetremotemissilename" },
+    { 0x2D2, "remotemissileenttracetooriginpassed" },
+    { 0x2D3, "bombingruntracepassed" },
     { 0x2D4, "soundsettraceflags" },
     { 0x2D5, "handlepickupdeployedriotshield" },
     { 0x2D6, "getcodanywherecurrentplatform" },
@@ -1150,7 +1150,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x2DB, "getchallengerewarditem" },
     { 0x2DC, "setentplayerxuidforemblem" },
     { 0x2DD, "resetentplayerxuidforemblems" },
-    { 0x2DE, "_func_2DE" },
+    { 0x2DE, "nodesetremotemissilename" },
     { 0x2DF, "isshipbuild" },
     { 0x2E0, "strinsertnumericdelimiters" },
     { 0x2E1, "isscriptedagent" },
@@ -1160,7 +1160,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 778> function_list
     { 0x2E5, "getdefaultmaxfaceenemydistance" },
     { 0x2E6, "applyaccelerationonentity" },
     { 0x2E7, "applyimpulseonentity" },
-    { 0x2E8, "_func_2E8" },
+    { 0x2E8, "setshaderconstant" },
     { 0x2E9, "getinventoryitemtype" },
     { 0x2EA, "getweaponmodelbounds" },
     { 0x2EB, "weaponitemplayidleanim" },
@@ -1381,8 +1381,8 @@ const std::array<std::pair<std::uint16_t, const char*>, 1415> method_list
     { 0x80B3, "setmodel" },
     { 0x80B4, "laseron" },
     { 0x80B5, "laseroff" },
-    { 0x80B6, "_meth_80B6" },
-    { 0x80B7, "_meth_80B7" },
+    { 0x80B6, "laseraltviewon" },
+    { 0x80B7, "laseraltviewoff" },
     { 0x80B8, "thermalvisionon" },
     { 0x80B9, "thermalvisionoff" },
     { 0x80BA, "thermalvisionfofoverlayon" },
@@ -1390,12 +1390,12 @@ const std::array<std::pair<std::uint16_t, const char*>, 1415> method_list
     { 0x80BC, "autospotoverlayon" },
     { 0x80BD, "autospotoverlayoff" },
     { 0x80BE, "seteyesonuplinkenabled" },
-    { 0x80BF, "_meth_80BF" },
+    { 0x80BF, "setdamagefeedback" },
     { 0x80C0, "setcontents" },
     { 0x80C1, "makeusable" },
     { 0x80C2, "makeunusable" },
-    { 0x80C3, "_meth_80C3" },
-    { 0x80C4, "_meth_80C4" },
+    { 0x80C3, "makeglobalusable" },
+    { 0x80C4, "makeglobalunusable" },
     { 0x80C5, "setwhizbyprobabilities" },
     { 0x80C6, "visionsetnakedforplayer_lerp" },
     { 0x80C7, "setwaitnode" },
@@ -1517,67 +1517,67 @@ const std::array<std::pair<std::uint16_t, const char*>, 1415> method_list
     { 0x813B, "makeentitysentient" },
     { 0x813C, "freeentitysentient" },
     { 0x813D, "isindoor" },
-    { 0x813E, "_meth_813E" },
-    { 0x813F, "_meth_813F" },
-    { 0x8140, "_meth_8140" },
-    { 0x8141, "_meth_8141" },
-    { 0x8142, "_meth_8142" },
-    { 0x8143, "_meth_8143" },
-    { 0x8144, "_meth_8144" },
-    { 0x8145, "_meth_8145" },
-    { 0x8146, "_meth_8146" },
-    { 0x8147, "_meth_8147" },
-    { 0x8148, "_meth_8148" },
-    { 0x8149, "_meth_8149" },
-    { 0x814A, "_meth_814A" },
-    { 0x814B, "_meth_814B" },
-    { 0x814C, "_meth_814C" },
-    { 0x814D, "_meth_814D" },
-    { 0x814E, "_meth_814E" },
-    { 0x814F, "_meth_814F" },
-    { 0x8150, "_meth_8150" },
-    { 0x8151, "_meth_8151" },
-    { 0x8152, "_meth_8152" },
-    { 0x8153, "_meth_8153" },
-    { 0x8154, "_meth_8154" },
-    { 0x8155, "_meth_8155" },
+    { 0x813E, "getdroptofloorposition" },
+    { 0x813F, "isbadguy" },
+    { 0x8140, "animscripted" },
+    { 0x8141, "animscriptedthirdperson" },
+    { 0x8142, "animrelative" },
+    { 0x8143, "stopanimscripted" },
+    { 0x8144, "clearanim" },
+    { 0x8145, "setanimknob" },
+    { 0x8146, "setanimknoblimited" },
+    { 0x8147, "setanimknobrestart" },
+    { 0x8148, "setanimknoblimitedrestart" },
+    { 0x8149, "setanimknoball" },
+    { 0x814A, "setanimknoballlimited" },
+    { 0x814B, "setanimknoballrestart" },
+    { 0x814C, "setanimknoballlimitedrestart" },
+    { 0x814D, "setanim" },
+    { 0x814E, "setanimlimited" },
+    { 0x814F, "setanimrestart" },
+    { 0x8150, "setanimlimitedrestart" },
+    { 0x8151, "getanimtime" },
+    { 0x8152, "getanimweight" },
+    { 0x8153, "getanimassettype" },
+    { 0x8154, "setflaggedanimknob" },
+    { 0x8155, "setflaggedanimknoblimited" },
     { 0x8156, "_meth_8156" },
     { 0x8157, "_meth_8157" },
     { 0x8158, "_meth_8158" },
     { 0x8159, "_meth_8159" },
     { 0x815A, "_meth_815A" },
     { 0x815B, "setautorotationdelay" },
-    { 0x815C, "_meth_815C" },
+    { 0x815C, "setdefaultdroppitch" },
     { 0x815D, "restoredefaultdroppitch" },
     { 0x815E, "turretfiredisable" },
     { 0x815F, "_meth_815F" },
-    { 0x8160, "_meth_8160" },
-    { 0x8161, "_meth_8161" },
-    { 0x8162, "_meth_8162" },
-    { 0x8163, "_meth_8163" },
-    { 0x8164, "_meth_8164" },
-    { 0x8165, "_meth_8165" },
-    { 0x8166, "_meth_8166" },
-    { 0x8167, "_meth_8167" },
-    { 0x8168, "_meth_8168" },
-    { 0x8169, "_meth_8169" },
-    { 0x816A, "_meth_816A" },
-    { 0x816B, "_meth_816B" },
-    { 0x816C, "_meth_816C" },
-    { 0x816D, "_meth_816D" },
-    { 0x816E, "_meth_816E" },
-    { 0x816F, "_meth_816F" },
-    { 0x8170, "_meth_8170" },
-    { 0x8171, "_meth_8171" },
-    { 0x8172, "_meth_8172" },
-    { 0x8173, "_meth_8173" },
-    { 0x8174, "_meth_8174" },
-    { 0x8175, "_meth_8175" },
-    { 0x8176, "_meth_8176" },
-    { 0x8177, "_meth_8177" },
-    { 0x8178, "_meth_8178" },
+    { 0x8160, "clearfixednodesafevolume" },
+    { 0x8161, "isingoal" },
+    { 0x8162, "setruntopos" },
+    { 0x8163, "nearnode" },
+    { 0x8164, "nearclaimnode" },
+    { 0x8165, "nearclaimnodeandangle" },
+    { 0x8166, "atdangerousnode" },
+    { 0x8167, "getisforcedincombat" },
+    { 0x8168, "setisforcedincombat" },
+    { 0x8169, "getenemyinfo" },
+    { 0x816A, "clearenemy" },
+    { 0x816B, "setentitytarget" },
+    { 0x816C, "clearentitytarget" },
+    { 0x816D, "setpotentialthreat" },
+    { 0x816E, "clearpotentialthreat" },
+    { 0x816F, "setflashbanged" },
+    { 0x8170, "setengagementmindist" },
+    { 0x8171, "setengagementmaxdist" },
+    { 0x8172, "isknownenemyinradius" },
+    { 0x8173, "isknownenemyinvolume" },
+    { 0x8174, "settalktospecies" },
+    { 0x8175, "invisiblenotsolid" },
+    { 0x8176, "visiblesolid" },
+    { 0x8177, "setdefaultaimlimits" },
+    { 0x8178, "initriotshieldhealth" },
     { 0x8179, "getenemysqdist" },
-    { 0x817A, "_meth_817A" },
+    { 0x817A, "getclosestenemysqdist" },
     { 0x817B, "setthreatbiasgroup" },
     { 0x817C, "getthreatbiasgroup" },
     { 0x817D, "turretfireenable" },
@@ -1592,46 +1592,46 @@ const std::array<std::pair<std::uint16_t, const char*>, 1415> method_list
     { 0x8186, "shellshock" },
     { 0x8187, "stunplayer" },
     { 0x8188, "stopshellshock" },
-    { 0x8189, "_meth_8189" },
+    { 0x8189, "fadeoutshellshock" },
     { 0x818A, "setdepthoffield" },
     { 0x818B, "setviewmodeldepthoffield" },
-    { 0x818C, "_meth_818C" },
-    { 0x818D, "_meth_818D" },
-    { 0x818E, "_meth_818E" },
-    { 0x818F, "_meth_818F" },
-    { 0x8190, "_meth_8190" },
-    { 0x8191, "_meth_8191" },
-    { 0x8192, "_meth_8192" },
-    { 0x8193, "_meth_8193" },
-    { 0x8194, "_meth_8194" },
-    { 0x8195, "_meth_8195" },
-    { 0x8196, "_meth_8196" },
-    { 0x8197, "_meth_8197" },
-    { 0x8198, "_meth_8198" },
-    { 0x8199, "_meth_8199" },
-    { 0x819A, "_meth_819A" },
-    { 0x819B, "_meth_819B" },
-    { 0x819C, "_meth_819C" },
-    { 0x819D, "_meth_819D" },
-    { 0x819E, "_meth_819E" },
-    { 0x819F, "_meth_819F" },
-    { 0x81A0, "_meth_81A0" },
+    { 0x818C, "throwgrenade" },
+    { 0x818D, "pickupgrenade" },
+    { 0x818E, "useturret" },
+    { 0x818F, "stopuseturret" },
+    { 0x8190, "canuseturret" },
+    { 0x8191, "traversemode" },
+    { 0x8192, "animmode" },
+    { 0x8193, "orientmode" },
+    { 0x8194, "getmotionangle" },
+    { 0x8195, "shouldfacemotion" },
+    { 0x8196, "getanglestolikelyenemypath" },
+    { 0x8197, "setturretanim" },
+    { 0x8198, "getturret" },
+    { 0x8199, "getgroundenttype" },
+    { 0x819A, "forcestartnegotiation" },
+    { 0x819B, "setalienjumpcostscale" },
+    { 0x819C, "setalienruncostscale" },
+    { 0x819D, "setalientraversecostscale" },
+    { 0x819E, "animcustom" },
+    { 0x819F, "isinscriptedstate" },
+    { 0x81A0, "canattackenemynode" },
     { 0x81A1, "getnegotiationstartnode" },
     { 0x81A2, "getnegotiationendnode" },
     { 0x81A3, "getnegotiationnextnode" },
-    { 0x81A4, "_meth_81A4" },
-    { 0x81A5, "_meth_81A5" },
-    { 0x81A6, "_meth_81A6" },
-    { 0x81A7, "_meth_81A7" },
-    { 0x81A8, "_meth_81A8" },
-    { 0x81A9, "_meth_81A9" },
-    { 0x81AA, "_meth_81AA" },
-    { 0x81AB, "_meth_81AB" },
-    { 0x81AC, "_meth_81AC" },
-    { 0x81AD, "_meth_81AD" },
-    { 0x81AE, "_meth_81AE" },
-    { 0x81AF, "_meth_81AF" },
-    { 0x81B0, "_meth_81B0" },
+    { 0x81A4, "getdoorpathnode" },
+    { 0x81A5, "comparenodedirtopathdir" },
+    { 0x81A6, "checkprone" },
+    { 0x81A7, "pushplayer" },
+    { 0x81A8, "checkgrenadethrowpos" },
+    { 0x81A9, "getgoalvolume" },
+    { 0x81AA, "setgoalpos" },
+    { 0x81AB, "setgoalentity" },
+    { 0x81AC, "setgoalvolume" },
+    { 0x81AD, "setgoalvolumeauto" },
+    { 0x81AE, "getgoalvolume" },
+    { 0x81AF, "cleargoalvolume" },
+    { 0x81B0, "setfixednodesafevolume" },
     { 0x81B1, "_meth_81B1" },
     { 0x81B2, "_meth_81B2" },
     { 0x81B3, "viewkick" },
@@ -1640,11 +1640,11 @@ const std::array<std::pair<std::uint16_t, const char*>, 1415> method_list
     { 0x81B6, "getentityvelocity" },
     { 0x81B7, "enablegrenadetouchdamage" },
     { 0x81B8, "disablegrenadetouchdamage" },
-    { 0x81B9, "_meth_81B9" },
-    { 0x81BA, "_meth_81BA" },
+    { 0x81B9, "enableaimassist" },
+    { 0x81BA, "disableaimassist" },
     { 0x81BB, "_meth_81BB" },
-    { 0x81BC, "_meth_81BC" },
-    { 0x81BD, "_meth_81BD" },
+    { 0x81BC, "getmuzzlepos" },
+    { 0x81BD, "getmuzzleangle" },
     { 0x81BE, "_meth_81BE" },
     { 0x81BF, "_meth_81BF" },
     { 0x81C0, "_meth_81C0" },
@@ -10079,762 +10079,6 @@ __init__ _;
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
-
-// ps4 function_list
-
-/*
-"createprintchannel"
-"setprintchannel"
-"print"
-"println"
-"print3d"
-"line"
-"box"
-"orientedbox"
-"sphere"
-"cylinder"
-"precacheturret"
-"getweaponarray"
-"spawnturret"
-"canspawnturret"
-"assert"
-"assertex"
-"assertmsg"
-"isdefined"
-"isvalidmissile"
-"isstring"
-"setomnvar"
-"getomnvar"
-"setdvar"
-"setdynamicdvar"
-"setdvarifuninitialized"
-"setdevdvar"
-"setdevdvarifuninitialized"
-"getdvar"
-"getdvarint"
-"getdvarfloat"
-"getdvarvector"
-"gettime"
-"gettimeutc"
-"getradiometricunit"
-"getentbynum"
-"getweaponmodel"
-"getweapondisplayname"
-"getweaponbasename"
-"getweaponattachments"
-"getweaponattachmentdisplaynames"
-"getweaponcamoname"
-"getweaponreticlename"
-"getanimlength"
-"animhasnotetrack"
-"getnotetracktimes"
-"spawn"
-"spawnloopsound"
-"spawnloopingsound"
-"bullettrace"
-"bullettracepassed"
-"sighttracepassed"
-"physicstrace"
-"playerphysicstrace"
-"getgroundposition"
-"getmovedelta"
-"getangledelta"
-"getnorthyaw"
-"setnorthyaw"
-"setslowmotion"
-"randomint"
-"randomfloat"
-"randomintrange"
-"randomfloatrange"
-"sin"
-"cos"
-"tan"
-"asin"
-"acos"
-"atan"
-"int"
-"float"
-"abs"
-"min"
-"max"
-"floor"
-"ceil"
-"exp"
-"log"
-"sqrt"
-"squared"
-"clamp"
-"angleclamp"
-"angleclamp180"
-"vectorfromlinetopoint"
-"pointonsegmentnearesttopoint"
-"distance"
-"distance2d"
-"distancesquared"
-"length"
-"length2d"
-"lengthsquared"
-"length2dsquared"
-"closer"
-"vectordot"
-"vectorcross"
-"vectornormalize"
-"vectortoangles"
-"vectortoyaw"
-"vectorlerp"
-"axistoangles"
-"anglestoup"
-"anglestoright"
-"anglestoforward"
-"anglesdelta"
-"combineangles"
-"transformmove"
-"rotatevector"
-"rotatepointaroundvector"
-"issubstr"
-"isendstr"
-"getsubstr"
-"tolower"
-"strtok"
-"stricmp"
-"ambientplay"
-"ambientstop"
-"precachemodel"
-"precacheshellshock"
-"precacheitem"
-"precacheshader"
-"precachestring"
-"precachemenu"
-"precacherumble"
-"precachelocationselector"
-"precacheleaderboards"
-"loadfx"
-"playfx"
-"playfxontag"
-"stopfxontag"
-"killfxontag"
-"playloopedfx"
-"spawnfx"
-"triggerfx"
-"playfxontagforclients"
-"setfxkillondelete"
-"playimpactheadfatalfx"
-"physicsexplosionsphere"
-"physicsexplosioncylinder"
-"physicsjolt"
-"physicsjitter"
-"setexpfog"
-"setexpfogext"
-"setexpfogdvarsonly"
-"setexpfogextdvarsonly"
-"setatmosfog"
-"setatmosfogdvarsonly"
-"isexplosivedamagemod"
-"radiusdamage"
-"setplayerignoreradiusdamage"
-"glassradiusdamage"
-"earthquake"
-"getnumparts"
-"getpartname"
-"weaponfiretime"
-"weaponclipsize"
-"weaponisauto"
-"weaponissemiauto"
-"weaponisboltaction"
-"weaponinheritsperks"
-"weaponburstcount"
-"weapontype"
-"weaponclass"
-"weaponinventorytype"
-"weaponstartammo"
-"weaponmaxammo"
-"weaponaltweaponname"
-"isweaponcliponly"
-"isweapondetonationtimed"
-"isweaponmanuallydetonatedbyemptythrow"
-"weaponhasthermalscope"
-"getvehiclenode"
-"getvehiclenodearray"
-"getallvehiclenodes"
-"getnumvehicles"
-"precachevehicle"
-"spawnvehicle"
-"vehicle_getarray"
-"vehicle_getspawnerarray"
-"playrumbleonposition"
-"playrumblelooponposition"
-"stopallrumbles"
-"soundexists"
-"openfile"
-"closefile"
-"fprintln"
-"fprintfields"
-"freadln"
-"fgetarg"
-"setminimap"
-"setthermalbodymaterial"
-"getarraykeys"
-"getfirstarraykey"
-"getnextarraykey"
-"sortbydistance"
-"tablelookup"
-"tablelookupbyrow"
-"tablelookupistring"
-"tablelookupistringbyrow"
-"tablelookuprownum"
-"tableexists"
-"getmissileowner"
-"magicbullet"
-"getweaponflashtagname"
-"averagepoint"
-"averagenormal"
-"getglass"
-"getglassarray"
-"getglassorigin"
-"isglassdestroyed"
-"destroyglass"
-"deleteglass"
-"getdspbuscount"
-"getdspbusname"
-"objective_add"
-"objective_delete"
-"objective_state"
-"objective_icon"
-"objective_indentlevel"
-"objective_position"
-"objective_current"
-"objective_onentity"
-"objective_onentitywithrotation"
-"objective_team"
-"objective_player"
-"objective_playerteam"
-"objective_playerenemyteam"
-"objective_playermask_hidefromall"
-"objective_playermask_hidefrom"
-"objective_playermask_showtoall"
-"objective_playermask_showto"
-"iprintln"
-"iprintlnbold"
-"logstring"
-"getent"
-"getentarray"
-"getspawnarray"
-"spawnplane"
-"spawnstruct"
-"spawnhelicopter"
-"isalive"
-"isspawner"
-"missile_createattractorent"
-"missile_createattractororigin"
-"missile_createrepulsorent"
-"missile_createrepulsororigin"
-"missile_deleteattractor"
-"playsoundatpos"
-"newhudelem"
-"newclienthudelem"
-"newteamhudelem"
-"resettimeout"
-"isplayer"
-"isplayernumber"
-"setwinningteam"
-"announcement"
-"clientannouncement"
-"setteammode"
-"getteamscore"
-"setteamscore"
-"setclientnamemode"
-"updateclientnames"
-"getteamplayersalive"
-"logprint"
-"worldentnumber"
-"obituary"
-"positionwouldtelefrag"
-"canspawn"
-"getstarttime"
-"precacheheadicon"
-"precacheminimapicon"
-"precachempanim"
-"map_restart"
-"exitlevel"
-"addtestclient"
-"addagent"
-"setarchive"
-"allclientsprint"
-"clientprint"
-"mapexists"
-"isvalidgametype"
-"matchend"
-"setplayerteamrank"
-"endparty"
-"setteamradar"
-"getteamradar"
-"setteamradarstrength"
-"getteamradarstrength"
-"getuavstrengthmin"
-"getuavstrengthmax"
-"getuavstrengthlevelneutral"
-"getuavstrengthlevelshowenemyfastsweep"
-"getuavstrengthlevelshowenemydirectional"
-"blockteamradar"
-"unblockteamradar"
-"isteamradarblocked"
-"getassignedteam"
-"setmatchdata"
-"getmatchdata"
-"sendmatchdata"
-"clearmatchdata"
-"setmatchdatadef"
-"setmatchclientip"
-"setmatchdataid"
-"setclientmatchdata"
-"getclientmatchdata"
-"setclientmatchdatadef"
-"sendclientmatchdata"
-"getbuildversion"
-"getbuildnumber"
-"getsystemtime"
-"getmatchrulesdata"
-"isusingmatchrulesdata"
-"kick"
-"issplitscreen"
-"setmapcenter"
-"setgameendtime"
-"visionsetnaked"
-"visionsetnight"
-"visionsetmissilecam"
-"visionsetthermal"
-"visionsetpain"
-"endlobby"
-"setac130ambience"
-"getmapcustom"
-"spawnsighttrace"
-"incrementcounter"
-"getcountertotal"
-"getlevelticks"
-"perlinnoise2d"
-"calcrockingangles"
-"reconevent"
-"reconspatialevent"
-"setsunflareposition"
-"createthreatbiasgroup"
-"threatbiasgroupexists"
-"getthreatbias"
-"setthreatbias"
-"setthreatbiasagainstall"
-"setignoremegroup"
-"isenemyteam"
-"objective_additionalentity"
-"objective_state_nomessage"
-"objective_string"
-"objective_string_nomessage"
-"objective_additionalposition"
-"objective_current_nomessage"
-"objective_additionalcurrent"
-"objective_ring"
-"objective_setpointertextoverride"
-"getnode"
-"getnodearray"
-"getallnodes"
-"getnodesinradius"
-"getnodesinradiussorted"
-"getclosestnodeinsight"
-"getreflectionlocs"
-"getreflectionreferencelocs"
-"getvehicletracksegment"
-"getvehicletracksegmentarray"
-"getallvehicletracksegments"
-"isarray"
-"isai"
-"getindexforluincstring"
-"issentient"
-"isgodmode"
-"getdebugdvar"
-"getdebugdvarint"
-"getdebugdvarfloat"
-"setsaveddvar"
-"getfreeaicount"
-"getaicount"
-"getaiarray"
-"getaispeciesarray"
-"getspawnerarray"
-"getcorpsearray"
-"getspawnerteamarray"
-"getweaponclipmodel"
-"getbrushmodelcenter"
-"getkeybinding"
-"getcommandfromkey"
-"getsticksconfig"
-"weaponfightdist"
-"weaponmaxdist"
-"isturretactive"
-"getturretfov"
-"target_alloc"
-"target_flush"
-"target_set"
-"target_remove"
-"target_setshader"
-"target_setoffscreenshader"
-"target_isinrect"
-"target_isincircle"
-"target_startreticlelockon"
-"target_clearreticlelockon"
-"target_getarray"
-"target_istarget"
-"target_setattackmode"
-"target_setjavelinonly"
-"target_hidefromplayer"
-"target_showtoplayer"
-"target_setscaledrendermode"
-"target_drawcornersonly"
-"target_drawsquare"
-"target_drawsingle"
-"target_setminsize"
-"target_setmaxsize"
-"target_setcolor"
-"target_setdelay"
-"getstartorigin"
-"getstartangles"
-"getcycleoriginoffset"
-"magicgrenade"
-"magicgrenademanual"
-"setblur"
-"musicplay"
-"musicstop"
-"soundfade"
-"addsoundsubmix"
-"clearsoundsubmix"
-"clearallsubmixes"
-"blendsoundsubmix"
-"makesoundsubmixsticky"
-"makesoundsubmixunsticky"
-"soundsettimescalefactor"
-"soundresettimescale"
-"levelsoundfade"
-"precachenightvisioncodeassets"
-"precachedigitaldistortcodeassets"
-"precachesonarvisioncodeassets"
-"precacheminimapsentrycodeassets"
-"savegame"
-"issavesuccessful"
-"issaverecentlyloaded"
-"savegamenocommit"
-"commitsave"
-"commitwouldbevalid"
-"getfxvisibility"
-"setculldist"
-"getculldist"
-"sethalfresparticles"
-"getmapsunlight"
-"setsunlight"
-"resetsunlight"
-"getmapsundirection"
-"getmapsunangles"
-"setsundirection"
-"lerpsundirection"
-"lerpsunangles"
-"resetsundirection"
-"enableforcedsunshadows"
-"enableforcednosunshadows"
-"disableforcedsunshadows"
-"enableouterspacemodellighting"
-"disableouterspacemodellighting"
-"remapstage"
-"changelevel"
-"missionsuccess"
-"missionfailed"
-"cinematic"
-"cinematicingame"
-"cinematicingamesync"
-"cinematicingameloop"
-"cinematicingameloopresident"
-"iscinematicplaying"
-"stopcinematicingame"
-"pausecinematicingame"
-"drawcompassfriendlies"
-"bulletspread"
-"bullettracer"
-"badplace_delete"
-"badplace_cylinder"
-"badplace_arc"
-"badplace_brush"
-"clearallcorpses"
-"setturretnode"
-"unsetturretnode"
-"setnodepriority"
-"isnodeoccupied"
-"setdebugorigin"
-"setdebugangles"
-"updategamerprofile"
-"updategamerprofileall"
-"clearlocalizedstrings"
-"setphysicsgravitydir"
-"gettimescale"
-"settimescale"
-"setslowmotionview"
-"teleportscene"
-"forcesharedammo"
-"refreshhudcompass"
-"refreshhudammocounter"
-"notifyoncommand"
-"pow"
-"atan2"
-"botgetmemoryevents"
-"botautoconnectenabled"
-"botzonegetcount"
-"botzonesetteam"
-"botzonenearestcount"
-"botmemoryflags"
-"botflagmemoryevents"
-"botzonegetindoorpercent"
-"botsentientswap"
-"isbot"
-"isagent"
-"getmaxagents"
-"botdebugdrawtrigger"
-"botgetclosestnavigablepoint"
-"getnodesintrigger"
-"nodesvisible"
-"getnodesonpath"
-"getzonecount"
-"getzonenearest"
-"getzonenodes"
-"getzonepath"
-"getzoneorigin"
-"getnodezone"
-"getzonenodesbydist"
-"getzonenodeforindex"
-"getweaponexplosionradius"
-"markdangerousnodes"
-"markdangerousnodesintrigger"
-"nodeexposedtosky"
-"findentrances"
-"badplace_global"
-"getpathdist"
-"getlinkednodes"
-"disconnectnodepair"
-"connectnodepair"
-"gettimesincelastpaused"
-"precachefxontag"
-"precachetag"
-"precachesound"
-"devsetminimapdvarsettings"
-"loadtransient"
-"unloadtransient"
-"unloadalltransients"
-"synctransients"
-"aretransientsbusy"
-"istransientqueued"
-"istransientloaded"
-"loadstartpointtransient"
-"distance2dsquared"
-"getangledelta3d"
-"activateclientexploder"
-"trajectorycalculateinitialvelocity"
-"trajectorycalculateminimumvelocity"
-"trajectorycalculateexitangle"
-"trajectoryestimatedesiredinairtime"
-"trajectorycomputedeltaheightattime"
-"trajectorycanattemptaccuratejump"
-"adddebugcommand"
-"ispointinvolume"
-"cinematicgettimeinmsec"
-"cinematicgetframe"
-"iscinematicloaded"
-"bbprint"
-"getenemysquaddata"
-"lookupsoundlength"
-"getscriptablearray"
-"clearfog"
-"setleveldopplerpreset"
-"screenshake"
-"isusinghdr"
-"isusingssao"
-"grantloot"
-"playerphysicstraceinfo"
-"getminchargetime"
-"getchargetimepershot"
-"getmaxchargeshots"
-"weaponischargeable"
-"weaponusesheat"
-"lootserviceonendgame"
-"luinotifyevent"
-"lootserviceonstartgame"
-"tournamentreportplayerspm"
-"tournamentreportwinningteam"
-"tournamentreportendofgame"
-"wakeupphysicssphere"
-"wakeupragdollsphere"
-"dopplerpitch"
-"piecewiselinearlookup"
-"anglestoaxis"
-"visionsetwater"
-"sendscriptusageanalysisdata"
-"resetscriptusageanalysisdata"
-"instantlylogusageanalysisdata"
-"invertangles"
-"rotatevectorinverted"
-"calculatestartorientation"
-"droptoground"
-"setdemigodmode"
-"precachelaser"
-"getcsplinecount"
-"getcsplinepointcount"
-"getcsplinelength"
-"getcsplinepointid"
-"getcsplinepointlabel"
-"getcsplinepointtension"
-"getcsplinepointposition"
-"getcsplinepointcorridordims"
-"getcsplinepointtangent"
-"getcsplinepointdisttonextpoint"
-"calccsplineposition"
-"calccsplinetangent"
-"calccsplinecorridor"
-"setnojipscore"
-"setnojiptime"
-"getpredictedentityposition"
-"gamedvrprohibitrecording"
-"gamedvrstartrecording"
-"gamedvrstoprecording"
-"gamedvrsetvideometadata"
-"gamedvrprohibitscreenshots"
-"gamedvrsetscreenshotmetadata"
-"queuedialog"
-"speechenablegrammar"
-"speechenable"
-"livestreamingenable"
-"livestreamingsetbitrate"
-"livestreamingsetmetadata"
-"livestreamingenablearchiving"
-"triggerportableradarping"
-"setglaregrimematerial"
-"botgetteamlimit"
-"spawnfxforclient"
-"botgetteamdifficulty"
-"debugstar"
-"newdebughudelem"
-"printlightsetsettings"
-"lightsetdumpstate"
-"getsquadassaultelo"
-"loadluifile"
-"isdedicatedserver"
-"getplaylistversion"
-"getplaylistid"
-"getactiveclientcount"
-"issquadsmode"
-"getsquadassaultsquadindex"
-"visionsetpostapply"
-"addbot"
-"ishairrunning"
-"getnearbyarrayelements"
-"vectorclamp"
-"isalliedsentient"
-"istestclient"
-"getrandomnodedestination"
-"debuglocalizestring"
-"enablesoundcontextoverride"
-"disablesoundcontextoverride"
-"notifyoncommandremove"
-"getsndaliasvalue"
-"setsndaliasvalue"
-"packedtablelookup"
-"packedtablesectionlookup"
-"packedtablelookupwithrange"
-"grappletrace"
-"stopclientexploder"
-"closestpointstwosegs"
-"isremovedentity"
-"tablegetrowcount"
-"tablegetcolumncount"
-"batteryusepershot"
-"batteryreqtouse"
-"isweaponmanuallydetonatedbydoubletap"
-"grapplegetmagnets"
-"getweaponname"
-"activatepersistentclientexploder"
-"deployriotshield"
-"validatecostume"
-"randomcostume"
-"shootblank"
-"boidflockupdate"
-"debuggetanimname"
-"setspmatchdata"
-"getspmatchdata"
-"sendspmatchdata"
-"clearspmatchdata"
-"setspmatchdatadef"
-"playcinematicforall"
-"preloadcinematicforall"
-"stopcinematicforall"
-"capsuletracepassed"
-"stopfxontagforclient"
-"killfxontagforclient"
-"isvector"
-"notifychallengecomplete"
-"lootservicestarttrackingplaytime"
-"lootservicestoptrackingplaytime"
-"lootservicevalidateplaytime"
-"recordbreadcrumbdataforplayer"
-"getweaponandattachmentmodels"
-"changewhizbyautosimparams"
-"sysprint"
-"objective_mlgspectator"
-"setspcheckpointdata"
-"getspcheckpointdata"
-"isnumber"
-"isonlinegame"
-"issystemlink"
-"setsoundmasteringfadetime"
-"getstanceandmotionstateforplayer"
-"nodeisnotusable"
-"nodesetnotusable"
-"spawnlinkedfx"
-"spawnlinkedfxforclient"
-"getplaylistname"
-"getlocaltimestring"
-"isonwifi"
-"getbuttonsconfig"
-"getchallengeid"
-"nodehasremotemissileset"
-"nodegetremotemissilename"
-"remotemissileenttracetooriginpassed"
-"bombingruntracepassed"
-"soundsettraceflags"
-"handlepickupdeployedriotshield"
-"getcodanywherecurrentplatform"
-"getcostumefromtable"
-"visionsetoverdrive"
-"nodegetsplitgroup"
-"recordbreadcrumbdataforplayersp"
-"getchallengerewarditem"
-"setentplayerxuidforemblem"
-"resetentplayerxuidforemblems"
-"nodesetremotemissilename"
-"isshipbuild"
-"strinsertnumericdelimiters"
-"isscriptedagent"
-"playfxonweapon"
-"stopfxonweapon"
-"killfxonweapon"
-"getdefaultmaxfaceenemydistance"
-"applyaccelerationonentity"
-"applyimpulseonentity"
-"setshaderconstant"
-"getinventoryitemtype"
-"getweaponmodelbounds"
-"weaponitemplayidleanim"
-"getstaticmodelcount"
-"getstaticmodelname"
-"getstaticmodelbounds"
-"findstaticmodelindex"
-"getdynentcount"
-"getdynentmodelname"
-"getdynentmodelbounds"
-"finddynentwithmodelindex"
-"getentitymodelname"
-"getentitymodelbounds"
-"findentitywithmodelindex"
-*/
 
 // ps4 method_list
 
