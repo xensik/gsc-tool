@@ -192,8 +192,8 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_EvalLocalArrayRefCached0:
         case opcode::OP_less:
         case opcode::OP_GetGameRef:
-        case opcode::OP_waitFrame:
         case opcode::OP_waittillFrameEnd:
+        case opcode::OP_waitFrame:
         case opcode::OP_SafeSetVariableFieldCached0:
         case opcode::OP_GetLevel:
         case opcode::OP_notify:

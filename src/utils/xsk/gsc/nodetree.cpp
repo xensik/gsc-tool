@@ -1026,7 +1026,7 @@ auto stmt_waittillframeend::print() const -> std::string
 
 auto stmt_waitframe::print() const -> std::string
 {
-    return "waitframe;";
+    return "waitframe();";
 };
 
 auto stmt_if::print() const -> std::string
