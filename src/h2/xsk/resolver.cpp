@@ -175,6 +175,62 @@ auto resolver::find_method(const std::string& name) -> bool
     return false;
 }
 
+void resolver::add_function(const std::string& name, std::uint16_t id)
+{
+    const auto itr = function_map_rev.find(name);
+
+    if (itr != function_map_rev.end())
+    {
+        throw error(utils::string::va("builtin function '%s' already defined.", name.data()));
+    }
+
+    const auto str = string_map.find(name);
+
+    if (str != string_map.end())
+    {
+        function_map.insert({ id, *str });
+        function_map_rev.insert({ *str, id });
+    }
+    else
+    {
+        auto ins = string_map.insert(name);
+
+        if (ins.second)
+        {
+            function_map.insert({ id, *ins.first });
+            function_map_rev.insert({ *ins.first, id });
+        }
+    }
+}
+
+void resolver::add_method(const std::string& name, std::uint16_t id)
+{
+    const auto itr = method_map_rev.find(name);
+
+    if (itr != method_map_rev.end())
+    {
+        throw error(utils::string::va("builtin method '%s' already defined.", name.data()));
+    }
+
+    const auto str = string_map.find(name);
+
+    if (str != string_map.end())
+    {
+        method_map.insert({ id, *str });
+        method_map_rev.insert({ *str, id });
+    }
+    else
+    {
+        auto ins = string_map.insert(name);
+
+        if (ins.second)
+        {
+            method_map.insert({ id, *ins.first });
+            method_map_rev.insert({ *ins.first, id });
+        }
+    }
+}
+
 auto resolver::make_token(std::string_view str) -> std::string
 {
     if (str.starts_with("_id_") || str.starts_with("_func_") || str.starts_with("_meth_"))
