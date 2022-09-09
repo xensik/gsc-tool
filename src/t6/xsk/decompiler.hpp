@@ -40,7 +40,7 @@ private:
     void decompile_devblocks(const ast::stmt_list::ptr& stmt);
     void decompile_if(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
     void decompile_ifelse(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
-    void decompile_infinite(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
+    void decompile_inf(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
     void decompile_loop(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
     void decompile_while(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);
     void decompile_dowhile(const ast::stmt_list::ptr& stmt, std::size_t begin, std::size_t end);

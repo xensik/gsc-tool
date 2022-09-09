@@ -23,7 +23,7 @@ auto assembler::output() -> std::vector<std::uint8_t>
 
 void assembler::assemble(const std::string&, std::vector<std::uint8_t>&)
 {
-    throw error("assemble from source unimplemented!");
+    throw error("assemble from source not implemented!");
 }
 
 void assembler::assemble(const std::string& file, assembly::ptr& data)
@@ -75,7 +75,7 @@ void assembler::assemble(const std::string& file, assembly::ptr& data)
 
     header_.cseg_size = script_->pos() - header_.cseg_offset;
 
-    header_.source_crc = 0; // calcule_crc();
+    header_.source_crc = 0;
 
     // assemble exports
     header_.exports_offset = script_->pos();
@@ -215,18 +215,20 @@ void assembler::assemble_function(const function::ptr& func)
         assemble_instruction(inst);
     }
 
-    export_ref obj;
-    obj.checksum = 0; // calculate_checksum();
-    obj.offset = func->index;
-    obj.name = func->name;
-    obj.params = func->params;
-    obj.flags = func->flags;
-    exports_.push_back(obj);
+    export_ref entry;
+    entry.checksum = 0;
+    entry.offset = func->index;
+    entry.name = func->name;
+    entry.params = func->params;
+    entry.flags = func->flags;
+    exports_.push_back(entry);
 }
 
 void assembler::assemble_instruction(const instruction::ptr& inst)
 {
-    switch (opcode(inst->opcode))
+    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
+
+    switch (static_cast<opcode>(inst->opcode))
     {
         case opcode::OP_End:
         case opcode::OP_Return:
@@ -310,31 +312,25 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_ThreadObject:
         case opcode::OP_EvalLocalVariable:
         case opcode::OP_EvalLocalVariableRef:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             break;
         case opcode::OP_GetByte:
         case opcode::OP_GetNegByte:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
             break;
         case opcode::OP_GetUnsignedShort:
         case opcode::OP_GetNegUnsignedShort:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->align(2);
             script_->write<std::uint16_t>(static_cast<std::uint16_t>(std::stoi(inst->data[0])));
             break;
         case opcode::OP_GetInteger:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->align(4);
             script_->write<std::int32_t>(std::stoi(inst->data[0]));
             break;
         case opcode::OP_GetFloat:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->align(4);
             script_->write<float>(std::stof(inst->data[0]));
             break;
         case opcode::OP_GetVector:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->align(4);
             script_->write<float>(std::stof(inst->data[0]));
             script_->write<float>(std::stof(inst->data[1]));
@@ -342,25 +338,20 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
             break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->align(2);
             script_->write<std::uint16_t>(0);
             break;
         case opcode::OP_GetAnimation:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->align(4);
             script_->write<std::uint32_t>(0);
             break;
         case opcode::OP_WaitTillMatch:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
             break;
         case opcode::OP_VectorConstant:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
             break;
         case opcode::OP_GetHash:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->align(4);
             script_->write<std::uint32_t>(static_cast<std::uint32_t>(std::stoul(inst->data[0], 0, 16)));
             break;
@@ -372,13 +363,11 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_EvalLocalArrayRefCached:
         case opcode::OP_SafeSetWaittillVariableFieldCached:
         case opcode::OP_EvalLocalVariableRefCached:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
             break;
         case opcode::OP_EvalFieldVariable:
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_ClearFieldVariable:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->align(2);
             script_->write<std::uint16_t>(0);
             break;
@@ -386,11 +375,9 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptMethodCallPointer:
         case opcode::OP_ScriptThreadCallPointer:
         case opcode::OP_ScriptMethodThreadCallPointer:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
             break;
         case opcode::OP_GetFunction:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->align(4);
             script_->write<std::uint32_t>(0);
             break;
@@ -400,7 +387,6 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptMethodCall:
         case opcode::OP_ScriptThreadCall:
         case opcode::OP_ScriptMethodThreadCall:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(0);
             script_->align(4);
             script_->write<std::uint32_t>(0);
@@ -411,6 +397,7 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_JumpOnTrueExpr:
         case opcode::OP_Jump:
         case opcode::OP_JumpBack:
+        case opcode::OP_DevblockBegin:
             assemble_jump(inst);
             break;
         case opcode::OP_Switch:
@@ -419,18 +406,13 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_EndSwitch:
             assemble_end_switch(inst);
             break;
-        case opcode::OP_DevblockBegin:
-        case opcode::OP_DevblockEnd:
-            assemble_devblock(inst);
-            break;
         default:
-            throw asm_error(utils::string::va("Unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
+            throw asm_error(utils::string::va("unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
     }
 }
 
 void assembler::assemble_localvars(const instruction::ptr& inst)
 {
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
     script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->data.size()));
 
     for (auto i = 0u; i < inst->data.size(); i++)
@@ -442,8 +424,6 @@ void assembler::assemble_localvars(const instruction::ptr& inst)
 
 void assembler::assemble_jump(const instruction::ptr& inst)
 {
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
     const auto addr = static_cast<std::int16_t>(resolve_label(inst->data[0]) - inst->index - inst->size);
 
     script_->align(2);
@@ -452,8 +432,6 @@ void assembler::assemble_jump(const instruction::ptr& inst)
 
 void assembler::assemble_switch(const instruction::ptr& inst)
 {
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
     const std::int32_t addr = ((resolve_label(inst->data[0]) + 4) & 0xFFFFFFFC) - inst->index - inst->size;
 
     script_->align(4);
@@ -462,8 +440,6 @@ void assembler::assemble_switch(const instruction::ptr& inst)
 
 void assembler::assemble_end_switch(const instruction::ptr& inst)
 {
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
     const auto count = std::stoul(inst->data[0]);
     const auto numerical = inst->data.back() == "i";
 
@@ -495,17 +471,11 @@ void assembler::assemble_end_switch(const instruction::ptr& inst)
 
             script_->write<int32_t>(addr);
         }
+        else
+        {
+            throw asm_error("invalid switch case '" + inst->data[1 + (3 * i)] + "'!");
+        }
     }
-}
-
-void assembler::assemble_devblock(const instruction::ptr& inst)
-{
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
-    const auto addr = static_cast<std::int16_t>(resolve_label(inst->data[0]) - inst->index - inst->size);
-
-    script_->align(2);
-    script_->write<std::int16_t>(addr);
 }
 
 void assembler::align_instruction(const instruction::ptr& inst)
@@ -513,7 +483,7 @@ void assembler::align_instruction(const instruction::ptr& inst)
     inst->size = opcode_size(inst->opcode);
     script_->seek(1);
 
-    switch (opcode(inst->opcode))
+    switch (static_cast<opcode>(inst->opcode))
     {
         case opcode::OP_End:
         case opcode::OP_Return:
@@ -641,16 +611,18 @@ void assembler::align_instruction(const instruction::ptr& inst)
             script_->seek(4);
             break;
         case opcode::OP_SafeCreateLocalVariables:
+        {
             script_->seek(1);
+
+            for (auto i = 0u; i < inst->data.size(); i++)
             {
-                for (auto i = 0u; i < inst->data.size(); i++)
-                {
-                    inst->size += script_->align(2) + 2;
-                    add_string_reference(inst->data[i], string_type::canonical, script_->pos());
-                    script_->seek(2);
-                }
+                inst->size += script_->align(2) + 2;
+                add_string_reference(inst->data[i], string_type::canonical, script_->pos());
+                script_->seek(2);
             }
+    
             break;
+        }
         case opcode::OP_RemoveLocalVariables:
         case opcode::OP_EvalLocalVariableCached:
         case opcode::OP_EvalLocalArrayRefCached:
@@ -693,6 +665,7 @@ void assembler::align_instruction(const instruction::ptr& inst)
         case opcode::OP_JumpOnTrueExpr:
         case opcode::OP_Jump:
         case opcode::OP_JumpBack:
+        case opcode::OP_DevblockBegin:
             inst->size += script_->align(2);
             script_->seek(2);
             break;
@@ -721,15 +694,11 @@ void assembler::align_instruction(const instruction::ptr& inst)
                 inst->size += 8;
                 script_->seek(8);
             }
+
+            break;
         }
-            break;
-        case opcode::OP_DevblockBegin:
-        case opcode::OP_DevblockEnd:
-            inst->size += script_->align(2);
-            script_->seek(2);
-            break;
         default:
-            throw asm_error(utils::string::va("Unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
+            throw asm_error(utils::string::va("unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
     }
 }
 
@@ -755,7 +724,7 @@ void assembler::process_function(const function::ptr& func)
 
 void assembler::process_instruction(const instruction::ptr& inst)
 {
-    switch (opcode(inst->opcode))
+    switch (static_cast<opcode>(inst->opcode))
     {
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
@@ -771,8 +740,9 @@ void assembler::process_instruction(const instruction::ptr& inst)
             {
                 process_string(entry);
             }
-        }
+
             break;
+        }
         case opcode::OP_EvalFieldVariable:
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_ClearFieldVariable:
@@ -806,8 +776,9 @@ void assembler::process_instruction(const instruction::ptr& inst)
                     }
                 }
             }
-        }
+
             break;
+        }
         default:
             break;
     }
@@ -815,15 +786,15 @@ void assembler::process_instruction(const instruction::ptr& inst)
 
 auto assembler::resolve_label(const std::string& name) -> std::int32_t
 {
-    for (const auto& func : labels_)
+    for (const auto& entry : labels_)
     {
-        if (func.second == name)
+        if (entry.second == name)
         {
-            return func.first;
+            return entry.first;
         }
     }
 
-    throw asm_error("Couldn't resolve label address of '" + name + "'!");
+    throw asm_error("couldn't resolve label address of '" + name + "'!");
 }
 
 auto assembler::string_offset(const std::string& name) -> std::uint16_t
@@ -842,7 +813,7 @@ void assembler::add_string_reference(const std::string& str, string_type type, s
 {
     for (auto& entry : stringtables_)
     {
-        if (entry.name == str && entry.type == std::uint8_t(type))
+        if (entry.name == str && entry.type == static_cast<std::uint8_t>(type))
         {
             entry.refs.push_back(ref);
             return;
@@ -863,13 +834,13 @@ void assembler::add_import_reference(const std::vector<std::string>& data, std::
         }
     }
 
-    import_ref n;
-    n.space = data[0];
-    n.name = data[1];
-    n.params = static_cast<std::uint8_t>(std::stoi(data[2]));
-    n.flags = static_cast<std::uint8_t>(std::stoi(data[3]));
-    n.refs.push_back(ref);
-    imports_.push_back(std::move(n));
+    import_ref new_entry;
+    new_entry.space = data[0];
+    new_entry.name = data[1];
+    new_entry.params = static_cast<std::uint8_t>(std::stoi(data[2]));
+    new_entry.flags = static_cast<std::uint8_t>(std::stoi(data[3]));
+    new_entry.refs.push_back(ref);
+    imports_.push_back(std::move(new_entry));
 }
 
 void assembler::add_anim_reference(const std::vector<std::string>& data, std::uint32_t ref)
@@ -883,10 +854,10 @@ void assembler::add_anim_reference(const std::vector<std::string>& data, std::ui
         }
     }
 
-    animtree_ref n;
-    n.name = data[0];
-    n.anims.push_back({ data[1], ref });
-    animtrees_.push_back(std::move(n));
+    animtree_ref new_entry;
+    new_entry.name = data[0];
+    new_entry.anims.push_back({ data[1], ref });
+    animtrees_.push_back(std::move(new_entry));
 }
 
 } // namespace xsk::arc::t6

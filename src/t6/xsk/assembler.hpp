@@ -33,7 +33,6 @@ private:
     void assemble_jump(const instruction::ptr& inst);
     void assemble_switch(const instruction::ptr& inst);
     void assemble_end_switch(const instruction::ptr& inst);
-    void assemble_devblock(const instruction::ptr& inst);
     void process_string(const std::string& data);
     void process_function(const function::ptr& func);
     void process_instruction(const instruction::ptr& inst);

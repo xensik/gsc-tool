@@ -11,7 +11,7 @@ namespace xsk::arc::t6
 
 auto opcode_size(std::uint8_t id) -> std::uint32_t
 {
-    switch (opcode(id))
+    switch (static_cast<opcode>(id))
     {
         case opcode::OP_End:
         case opcode::OP_Return:
@@ -145,7 +145,7 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_GetVector:
             return 13;
         default:
-            throw std::runtime_error("Couldn't resolve instruction size for " + std::to_string(id));
+            throw error("couldn't resolve instruction size for " + std::to_string(id));
     }
 }
 

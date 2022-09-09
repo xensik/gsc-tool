@@ -230,9 +230,6 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
         func->labels = labels_;
         labels_.clear();
     }
-
-    // fixup list ...
-    // profile list ...
 }
 
 void disassembler::disassemble_function(const function::ptr& func)
@@ -274,7 +271,7 @@ void disassembler::disassemble_function(const function::ptr& func)
 
 void disassembler::disassemble_instruction(const instruction::ptr& inst)
 {
-    switch (opcode(inst->opcode))
+    switch (static_cast<opcode>(inst->opcode))
     {
         case opcode::OP_End:
         case opcode::OP_Return:
@@ -438,6 +435,7 @@ void disassembler::disassemble_instruction(const instruction::ptr& inst)
         case opcode::OP_JumpOnTrueExpr:
         case opcode::OP_Jump:
         case opcode::OP_JumpBack:
+        case opcode::OP_DevblockBegin:
             disassemble_jump(inst);
             break;
         case opcode::OP_Switch:
@@ -446,11 +444,8 @@ void disassembler::disassemble_instruction(const instruction::ptr& inst)
         case opcode::OP_EndSwitch:
             disassemble_end_switch(inst);
             break;
-        case opcode::OP_DevblockBegin:
-            disassemble_devblock(inst);
-            break;
         default:
-            throw disasm_error(utils::string::va("Unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
+            throw disasm_error(utils::string::va("unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
     }
 }
 
@@ -458,10 +453,16 @@ void disassembler::disassemble_string(const instruction::ptr& inst)
 {
     inst->size += script_->align(2);
 
-    const auto& entry = string_refs_.at(script_->pos());
+    const auto& entry = string_refs_.find(script_->pos());
 
-    inst->data.push_back(entry->name);
-    script_->seek(2);
+    if (entry != string_refs_.end())
+    {
+        inst->data.push_back(entry->second->name);
+        script_->seek(2);
+        return;
+    }
+
+    throw disasm_error(utils::string::va("string reference not found at index '%04X'!", inst->index));
 }
 
 void disassembler::disassemble_animation(const instruction::ptr& inst)
@@ -469,20 +470,24 @@ void disassembler::disassemble_animation(const instruction::ptr& inst)
     inst->size += script_->align(4);
 
     const auto ref = script_->pos();
-    const auto& entry = anim_refs_.at(ref);
+    const auto& entry = anim_refs_.find(ref);
 
-    inst->data.push_back(entry->name);
-
-    for (const auto& anim : entry->anims)
+    if (entry != anim_refs_.end())
     {
-        if (anim.ref == ref)
+        inst->data.push_back(entry->second->name);
+
+        for (const auto& anim : entry->second->anims)
         {
-            inst->data.push_back(anim.name);
-            break;
+            if (anim.ref == ref)
+            {
+                inst->data.push_back(anim.name);
+                script_->seek(4);
+                return;
+            }
         }
     }
 
-    script_->seek(4);
+    throw disasm_error(utils::string::va("animation reference not found at index '%04X'!", inst->index));
 }
 
 void disassembler::disassemble_localvars(const instruction::ptr& inst)
@@ -501,17 +506,23 @@ void disassembler::disassemble_import(const instruction::ptr& inst)
     inst->size += script_->align(4);
     script_->seek(4);
 
-    const auto& entry = import_refs_.at(inst->index);
+    const auto& entry = import_refs_.find(inst->index);
 
-    inst->data.push_back(entry->space);
-    inst->data.push_back(entry->name);
+    if (entry != import_refs_.end())
+    {
+        inst->data.push_back(entry->second->space);
+        inst->data.push_back(entry->second->name);
+        return;
+    }
+
+    throw disasm_error(utils::string::va("import reference not found at index '%04X'!", inst->index));
 }
 
 void disassembler::disassemble_jump(const instruction::ptr& inst)
 {
     inst->size += script_->align(2);
 
-    const auto addr = inst->index + inst->size + script_->read<std::int16_t>();
+    const auto addr = script_->read<std::int16_t>() + script_->pos();
     const auto label = utils::string::va("loc_%X", addr);
 
     inst->data.push_back(label);
@@ -595,17 +606,6 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
     }
 
     inst->data.push_back((numerical) ? "i" : "s");
-}
-
-void disassembler::disassemble_devblock(const instruction::ptr& inst)
-{
-    inst->size += script_->align(2);
-
-    const auto addr = inst->index + inst->size + script_->read<std::int16_t>();
-    const auto label = utils::string::va("loc_%X", addr);
-
-    inst->data.push_back(label);
-    labels_.insert({ addr, label });
 }
 
 void disassembler::print_function(const function::ptr& func)

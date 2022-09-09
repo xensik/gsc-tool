@@ -69,9 +69,8 @@ auto compiler::parse_buffer(const std::string& file, char* data, size_t size) ->
 auto compiler::parse_file(const std::string& file) -> ast::program::ptr
 {
     auto data = resolver::file_data(file);
-    auto result = parse_buffer(file, std::get<1>(data), std::get<2>(data));
 
-    return result;
+    return parse_buffer(file, std::get<1>(data), std::get<2>(data));
 }
 
 void compiler::compile_program(const ast::program::ptr& program)
@@ -1250,16 +1249,16 @@ void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr, bool
     emit_expr_arguments(expr->args);
 
     auto argcount = utils::string::va("%d", expr->args->list.size());
-    auto flags = developer_thread_ ? std::uint8_t(import_flags::developer) : 0;
+    auto flags = developer_thread_ ? static_cast<std::uint8_t>(import_flags::developer) : 0;
 
     switch (expr->mode)
     {
         case ast::call::mode::normal:
-            flags |= std::uint8_t(import_flags::func_call);
+            flags |= static_cast<std::uint8_t>(import_flags::func_call);
             emit_opcode(opcode::OP_ScriptFunctionCall, { expr->path->value, expr->name->value, argcount, utils::string::va("%d", flags) });
             break;
         case ast::call::mode::thread:
-            flags |= std::uint8_t(import_flags::func_call_thread);
+            flags |= static_cast<std::uint8_t>(import_flags::func_call_thread);
             emit_opcode(opcode::OP_ScriptThreadCall, { expr->path->value, expr->name->value, argcount, utils::string::va("%d", flags) });
             break;
         default:
@@ -1339,16 +1338,16 @@ void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, co
     emit_expr(obj);
 
     auto argcount = utils::string::va("%d", expr->args->list.size());
-    auto flags = developer_thread_ ? std::uint8_t(import_flags::developer) : 0;
+    auto flags = developer_thread_ ? static_cast<std::uint8_t>(import_flags::developer) : 0;
 
     switch (expr->mode)
     {
         case ast::call::mode::normal:
-            flags |= std::uint8_t(import_flags::meth_call);
+            flags |= static_cast<std::uint8_t>(import_flags::meth_call);
             emit_opcode(opcode::OP_ScriptMethodCall, { expr->path->value, expr->name->value, argcount, utils::string::va("%d", flags) });
             break;
         case ast::call::mode::thread:
-            flags |= std::uint8_t(import_flags::meth_call_thread);
+            flags |= static_cast<std::uint8_t>(import_flags::meth_call_thread);
             emit_opcode(opcode::OP_ScriptMethodThreadCall, { expr->path->value, expr->name->value, argcount, utils::string::va("%d", flags) });
             break;
         default:
@@ -1519,9 +1518,9 @@ void compiler::emit_expr_reference(const ast::expr_reference::ptr& expr)
 
     // TODO: resolve import calls path
 
-    auto flags = developer_thread_ ? std::uint8_t(import_flags::developer) : 0;
+    auto flags = developer_thread_ ? static_cast<std::uint8_t>(import_flags::developer) : 0;
 
-    flags |= std::uint8_t(import_flags::func_reference);
+    flags |= static_cast<std::uint8_t>(import_flags::func_reference);
 
     emit_opcode(opcode::OP_GetFunction, { expr->path->value, expr->name->value, "0", utils::string::va("%d", flags) });
 }
@@ -1633,7 +1632,7 @@ void compiler::emit_expr_field_ref(const ast::expr_field::ptr& expr, bool set)
 
 void compiler::emit_expr_local_ref(const ast::expr_identifier::ptr& expr, bool set)
 {
-    const auto itr = constants_.find(expr->value);
+    const auto& itr = constants_.find(expr->value);
 
     if (itr != constants_.end())
     {
@@ -1724,17 +1723,12 @@ void compiler::emit_expr_field(const ast::expr_field::ptr& expr)
 void compiler::emit_expr_local(const ast::expr_identifier::ptr& expr)
 {
     // is constant ( should only allow: string, loc string, number, vector)
-    const auto itr = constants_.find(expr->value);
+    const auto& itr = constants_.find(expr->value);
 
     if (itr != constants_.end())
-    {
-        const auto& value = itr->second;
-        emit_expr(value);
-        return;
-    }
-
-    // is local var
-    emit_opcode(opcode::OP_EvalLocalVariableCached, variable_access(expr));
+        emit_expr(itr->second);
+    else
+        emit_opcode(opcode::OP_EvalLocalVariableCached, variable_access(expr));
 }
 
 void compiler::emit_expr_object(const ast::expr& expr)
@@ -2277,6 +2271,7 @@ void compiler::process_expr_parameters(const ast::expr_parameters::ptr& expr)
 void compiler::variable_register(const std::string& name)
 {
     auto found = false;
+
     for (std::size_t i = 0; i < local_stack_.size(); i++)
     {
         if (local_stack_[i] == name)
@@ -2286,10 +2281,7 @@ void compiler::variable_register(const std::string& name)
         }
     }
 
-    if (!found)
-    {
-        local_stack_.push_back(name);
-    }
+    if (!found) local_stack_.push_back(name);
 }
 
 auto compiler::variable_access(const ast::expr_identifier::ptr& name) -> std::string
@@ -2332,13 +2324,12 @@ auto compiler::is_constant_condition(const ast::expr& expr) -> bool
 auto compiler::create_label() -> std::string
 {
     label_idx_++;
-    auto name = utils::string::va("loc_%d", label_idx_);
-    return name;
+    return utils::string::va("loc_%d", label_idx_);
 }
 
 auto compiler::insert_label() -> std::string
 {
-    const auto itr = function_->labels.find(index_);
+    const auto& itr = function_->labels.find(index_);
 
     if (itr != function_->labels.end())
     {
@@ -2348,20 +2339,20 @@ auto compiler::insert_label() -> std::string
     {
         label_idx_++;
         auto name = utils::string::va("loc_%d", label_idx_);
-        function_->labels.insert({index_, name});
+        function_->labels.insert({ index_, name });
         return name;
     }
 }
 
 void compiler::insert_label(const std::string& name)
 {
-    const auto itr = function_->labels.find(index_);
+    const auto& itr = function_->labels.find(index_);
 
     if (itr != function_->labels.end())
     {
        for (auto& inst : function_->instructions)
        {
-           switch (opcode(inst->opcode))
+           switch (static_cast<opcode>(inst->opcode))
            {
                 case opcode::OP_JumpOnFalse:
                 case opcode::OP_JumpOnTrue:
@@ -2415,7 +2406,7 @@ void compiler::print_instruction(const instruction::ptr& inst)
 {
     output_->write_string(utils::string::va("\t\t%s(", resolver::opcode_name(inst->opcode).data()));
 
-    switch (opcode(inst->opcode))
+    switch (static_cast<opcode>(inst->opcode))
     {
         case opcode::OP_GetHash:
         case opcode::OP_GetString:

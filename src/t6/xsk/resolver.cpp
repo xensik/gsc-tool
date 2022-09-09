@@ -39,7 +39,7 @@ auto resolver::opcode_id(const std::string& name) -> std::uint8_t
         return itr->second;
     }
 
-    throw error(utils::string::va("Couldn't resolve opcode id for name '%s'!", name.data()));
+    throw error(utils::string::va("couldn't resolve opcode id for name '%s'!", name.data()));
 }
 
 auto resolver::opcode_name(std::uint8_t id) -> std::string
@@ -51,7 +51,7 @@ auto resolver::opcode_name(std::uint8_t id) -> std::string
         return std::string(itr->second);
     }
 
-    throw error(utils::string::va("Couldn't resolve opcode name for id '0x%hhX'!", id));
+    throw error(utils::string::va("couldn't resolve opcode name for id '0x%hhX'!", id));
 }
 
 auto resolver::dvar_name(std::uint32_t id) -> std::string

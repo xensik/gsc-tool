@@ -40,7 +40,6 @@ private:
     void disassemble_jump(const instruction::ptr& inst);
     void disassemble_switch(const instruction::ptr& inst);
     void disassemble_end_switch(const instruction::ptr& inst);
-    void disassemble_devblock(const instruction::ptr& inst);
     void print_function(const function::ptr& func);
     void print_instruction(const instruction::ptr& inst);
 };

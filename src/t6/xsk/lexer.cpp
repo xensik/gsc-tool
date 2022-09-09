@@ -709,7 +709,7 @@ lex_number:
             if (last == '\'' || buffer_.length <= 0)
                 throw comp_error(loc_, "invalid octal literal");
 
-            return parser::make_INTEGER(xsk::utils::string::oct_to_dec(buffer_.data), loc_);
+            return parser::make_INTEGER(utils::string::oct_to_dec(buffer_.data), loc_);
         }
         else if (curr == 'b')
         {
@@ -743,7 +743,7 @@ lex_number:
             if (last == '\'' || buffer_.length < 3)
                 throw comp_error(loc_, "invalid binary literal");
 
-            return parser::make_INTEGER(xsk::utils::string::bin_to_dec(buffer_.data), loc_);
+            return parser::make_INTEGER(utils::string::bin_to_dec(buffer_.data), loc_);
         }
         else if (curr == 'x')
         {
@@ -777,7 +777,7 @@ lex_number:
             if (last == '\'' || buffer_.length < 3)
                 throw comp_error(loc_, "invalid hexadecimal literal");
 
-            return parser::make_INTEGER(xsk::utils::string::hex_to_dec(buffer_.data), loc_);
+            return parser::make_INTEGER(utils::string::hex_to_dec(buffer_.data), loc_);
         }
 
         throw error("UNEXPECTED LEXER INTERNAL ERROR!");
