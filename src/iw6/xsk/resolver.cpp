@@ -3023,7 +3023,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 831> file_list
     // 36631-44, effects?
 }};
 
-const std::array<std::pair<std::uint16_t, const char*>, 13823> token_list
+const std::array<std::pair<std::uint16_t, const char*>, 13827> token_list
 {{
     { 0x0000, "" },
     { 0x0001, "pl#" },
@@ -13149,6 +13149,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 13823> token_list
     { 0x44D3, "informattacking" },
     { 0x44D6, "informreloading" },
     { 0x44DA, "infront" },
+    { 0x44DF, "init" },
     { 0x44E0, "init_a10" },
     { 0x44E2, "init_ai_space_animsets" },
     { 0x44E7, "init_alien_idle" },
@@ -14030,6 +14031,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 13823> token_list
     { 0x4FF6, "main_roof_combat" },
     { 0x4FFA, "main_sp" },
     { 0x4FFB, "main_spot" },
+    { 0x4FFD, "main" },
     { 0x5001, "maingun_fx_override" },
     { 0x5002, "mainloopstart" },
     { 0x5004, "make_array" },
@@ -14686,6 +14688,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 13823> token_list
     { 0x5947, "onkill" },
     { 0x5948, "onkillstreakdisowned" },
     { 0x5949, "onkillstreakkilled" },
+    { 0x594D, "onlinegame" },
     { 0x594F, "only_allowable_tactical_goals" },
     { 0x5954, "onmovingplatformcollision" },
     { 0x5957, "onpickup" },
@@ -15244,6 +15247,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 13823> token_list
     { 0x6341, "randompathstoptime" },
     { 0x6343, "randomvector" },
     { 0x6344, "randomvectorrange" },
+    { 0x634A, "rankedmatch" },
     { 0x6354, "rappel_clear_vertical_limits" },
     { 0x6356, "rappel_combat_two_volume_upstairs" },
     { 0x6357, "rappel_death" },
