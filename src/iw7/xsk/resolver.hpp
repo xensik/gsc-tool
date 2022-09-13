@@ -23,9 +23,6 @@ public:
     static auto method_id(const std::string& name) -> std::uint16_t;
     static auto method_name(std::uint16_t id) -> std::string;
 
-    static auto file_id(const std::string& name) -> std::uint32_t;
-    static auto file_name(std::uint32_t id) -> std::string;
-
     static auto token_id(const std::string& name) -> std::uint32_t;
     static auto token_name(std::uint32_t id) -> std::string;
 

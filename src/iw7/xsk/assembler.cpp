@@ -428,7 +428,7 @@ void assembler::assemble_far_call(const instruction::ptr& inst, bool thread)
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[2])));
     }
 
-    const auto file_id = resolver::file_id(inst->data[0]);
+    const auto file_id = resolver::token_id(inst->data[0]);
     const auto func_id = resolver::token_id(inst->data[1]);
 
     stack_->write<std::uint32_t>(file_id);

@@ -105,17 +105,17 @@ auto choose_resolver_file_name(uint32_t id, game& game) -> std::string
         case game::iw5:
             return iw5::resolver::token_name(static_cast<std::uint16_t>(id));
         case game::iw6:
-            return iw6::resolver::file_name(static_cast<std::uint16_t>(id));
+            return iw6::resolver::token_name(static_cast<std::uint16_t>(id));
         case game::iw7:
-            return iw7::resolver::file_name(id);
+            return iw7::resolver::token_name(id);
         case game::iw8:
-            return iw8::resolver::file_name(id);
+            return iw8::resolver::token_name(id);
         case game::s1:
-            return s1::resolver::file_name(static_cast<std::uint16_t>(id));
+            return s1::resolver::token_name(static_cast<std::uint16_t>(id));
         case game::s2:
-            return s2::resolver::file_name(static_cast<std::uint16_t>(id));
+            return s2::resolver::token_name(static_cast<std::uint16_t>(id));
         case game::s4:
-            return s4::resolver::file_name(id);
+            return s4::resolver::token_name(id);
         case game::h1:
             return h1::resolver::token_name(static_cast<std::uint16_t>(id));
         case game::h2:

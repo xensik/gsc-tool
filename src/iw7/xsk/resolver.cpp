@@ -17,12 +17,10 @@ namespace xsk::gsc::iw7
 std::unordered_map<std::uint8_t, std::string_view> opcode_map;
 std::unordered_map<std::uint16_t, std::string_view> function_map;
 std::unordered_map<std::uint16_t, std::string_view> method_map;
-std::unordered_map<std::uint32_t, std::string_view> file_map;
 std::unordered_map<std::uint32_t, std::string_view> token_map;
 std::unordered_map<std::string_view, std::uint8_t> opcode_map_rev;
 std::unordered_map<std::string_view, std::uint16_t> function_map_rev;
 std::unordered_map<std::string_view, std::uint16_t> method_map_rev;
-std::unordered_map<std::string_view, std::uint32_t> file_map_rev;
 std::unordered_map<std::string_view, std::uint32_t> token_map_rev;
 std::unordered_map<std::string, std::vector<std::uint8_t>> files;
 read_cb_type read_callback = nullptr;
@@ -118,35 +116,6 @@ auto resolver::method_name(std::uint16_t id) -> std::string
     }
 
     return utils::string::va("_meth_%04X", id);
-}
-
-auto resolver::file_id(const std::string& name) -> std::uint32_t
-{
-    if (name.starts_with("_id_"))
-    {
-        return static_cast<std::uint32_t>(std::stoul(name.substr(4), nullptr, 16));
-    }
-
-    const auto itr = file_map_rev.find(name);
-
-    if (itr != file_map_rev.end())
-    {
-        return itr->second;
-    }
-
-    return 0;
-}
-
-auto resolver::file_name(std::uint32_t id) -> std::string
-{
-    const auto itr = file_map.find(id);
-
-    if (itr != file_map.end())
-    {
-        return std::string(itr->second);
-    }
-
-    return utils::string::va("_id_%04X", id);
 }
 
 auto resolver::token_id(const std::string& name) -> std::uint32_t
@@ -328,159 +297,159 @@ auto resolver::fs_to_game_path(const std::filesystem::path& file) -> std::filesy
 
 const std::array<std::pair<std::uint8_t, const char*>, 153> opcode_list
 {{
-    { 0x17, "SET_NEW_LOCAL_VARIABLE_FIELD_CACHED0" },
-    { 0x18, "EVAL_SELF_FIELD_VARIABLE" },
-    { 0x19, "RETN" },
-    { 0x1A, "CALL_BUILTIN_FUNC_0" },
-    { 0x1B, "CALL_BUILTIN_FUNC_1" },
-    { 0x1C, "CALL_BUILTIN_FUNC_2" },
-    { 0x1D, "CALL_BUILTIN_FUNC_3" },
-    { 0x1E, "CALL_BUILTIN_FUNC_4" },
-    { 0x1F, "CALL_BUILTIN_FUNC_5" },
-    { 0x20, "CALL_BUILTIN_FUNC" },
-    { 0x21, "BOOL_NOT" },
-    { 0x22, "CALL_FAR_METHOD_THEAD" },
-    { 0x23, "JMP_EXPR_TRUE" },
-    { 0x24, "SET_LEVEL_FIELD_VARIABLE_FIELD" },
-    { 0x25, "CAST_BOOL" },
-    { 0x26, "EVAL_NEW_LOCAL_ARRAY_REF_CACHED0" },
-    { 0x27, "CALL_BUILTIN_FUNC_POINTER" },
-    { 0x28, "INEQUALITY" },
-    { 0x29, "GET_THISTHREAD" },
-    { 0x2A, "CLEAR_FIELD_VARIABLE" },
-    { 0x2B, "GET_FLOAT" },
-    { 0x2C, "SAFE_CREATE_VARIABLE_FIELD_CACHED" },
-    { 0x2D, "CALL_FAR_FUNC2" },
-    { 0x2E, "CALL_FAR_FUNC" },
-    { 0x2F, "CALL_FAR_FUNC_CHILD_THREAD" },
-    { 0x30, "CLEAR_LOCAL_VARIABLE_FIELD_CACHED0" },
-    { 0x31, "CLEAR_LOCAL_VARIABLE_FIELD_CACHED" },
-    { 0x32, "CHECK_CLEAR_PARAMS" },
-    { 0x33, "CAST_FIELD_OBJ" },
-    { 0x34, "END" },
-    { 0x35, "SIZE" },
-    { 0x36, "EMPTY_ARRAY" },
-    { 0x37, "BIT_AND" },
-    { 0x38, "LESSEQUAL" },
-    { 0x39, "VOIDCODEPOS" },
-    { 0x3A, "CALL_METHOD_THREAD_POINTER" },
-    { 0x3B, "ENDSWITCH" },
-    { 0x3C, "CLEAR_VARIABLE_FIELD" },
-    { 0x3D, "DIV" },
-    { 0x3E, "CALL_FAR_METHOD_CHILD_THEAD" },
-    { 0x3F, "GET_USHORT" },
-    { 0x40, "JMP_TRUE" },
-    { 0x41, "GET_SELF" },
-    { 0x42, "CALL_FAR_FUNC_THREAD" },
-    { 0x43, "CALL_LOCAL_FUNC_THREAD" },
-    { 0x44, "SET_LOCAL_VARIABLE_FIELD_CACHED0" },
-    { 0x45, "SET_LOCAL_VARIABLE_FIELD_CACHED" },
-    { 0x46, "PLUS" },
-    { 0x47, "BOOL_COMPLEMENT" },
-    { 0x48, "CALL_METHOD_POINTER" },
-    { 0x49, "INC" },
-    { 0x4A, "REMOVE_LOCAL_VARIABLES" },
-    { 0x4B, "JMP_EXPR_FALSE" },
-    { 0x4C, "SWITCH" },
-    { 0x4D, "CLEAR_PARAMS" },
-    { 0x4E, "EVAL_LOCAL_VARIABLE_REF_CACHED0" },
-    { 0x4F, "EVAL_LOCAL_VARIABLE_REF_CACHED" },
-    { 0x50, "CALL_LOCAL_METHOD" },
-    { 0x51, "EVAL_FIELD_VARIABLE" },
-    { 0x52, "EVAL_FIELD_VARIABLE_REF" },
-    { 0x53, "GET_STRING" },
-    { 0x54, "CALL_FUNC_POINTER" },
-    { 0x55, "EVAL_LEVEL_FIELD_VARIABLE" },
-    { 0x56, "GET_VECTOR" },
-    { 0x57, "ENDON" },
-    { 0x58, "GREATEREQUAL" },
-    { 0x59, "GET_SELF_OBJ" },
-    { 0x5A, "SET_ANIM_FIELD_VARIABLE_FIELD" },
-    { 0x5B, "SET_VARIABLE_FIELD" },
-    { 0x5C, "CALL_LOCAL_FUNC2" },
-    { 0x5D, "CALL_LOCAL_FUNC" },
-    { 0x5E, "EVAL_LOCAL_ARRAY_REF_CACHED0" },
-    { 0x5F, "EVAL_LOCAL_ARRAY_REF_CACHED" },
-    { 0x60, "GET_FAR_FUNC" },
-    { 0x61, "LESS" },
-    { 0x62, "GET_GAME_REF" },
-    { 0x63, "WAITTILLFRAMEEND" },
-    { 0x64, "SAFE_SET_VARIABLE_FIELD_CACHED0" },
-    { 0x65, "SAFE_SET_VARIABLE_FIELD_CACHED" },
-    { 0x66, "CALL_METHOD_CHILD_THREAD_POINTER" },
-    { 0x67, "GET_LEVEL" },
-    { 0x68, "NOTIFY" },
-    { 0x69, "DEC_TOP" },
-    { 0x6A, "SHIFT_LEFT" },
-    { 0x6B, "CALL_LOCAL_METHOD_THREAD" },
-    { 0x6C, "CALL_LOCAL_METHOD_CHILD_THREAD" },
-    { 0x6D, "GREATER" },
-    { 0x6E, "EVAL_LOCAL_VARIABLE_CACHED0" },
-    { 0x6F, "EVAL_LOCAL_VARIABLE_CACHED1" },
-    { 0x70, "EVAL_LOCAL_VARIABLE_CACHED2" },
-    { 0x71, "EVAL_LOCAL_VARIABLE_CACHED3" },
-    { 0x72, "EVAL_LOCAL_VARIABLE_CACHED4" },
-    { 0x73, "EVAL_LOCAL_VARIABLE_CACHED5" },
-    { 0x74, "EVAL_LOCAL_VARIABLE_CACHED" },
-    { 0x75, "SAFE_SET_WAITTILL_VARIABLE_FIELD_CACHED" },
-    { 0x76, "JMP" },
-    { 0x77, "CALL_FUNC_THREAD_POINTER" },
-    { 0x78, "GET_ZERO" },
-    { 0x79, "WAIT" },
-    { 0x7A, "MINUS" },
-    { 0x7B, "SET_SELF_FIELD_VARIABLE_FIELD" },
-    { 0x7C, "EVAL_NEW_LOCAL_VARIABLE_REF_CACHED0" },
-    { 0x7D, "MULT" },
-    { 0x7E, "CREATE_LOCAL_VARIABLE" },
-    { 0x7F, "CALL_LOCAL_FUNC_CHILD_THREAD" },
-    { 0x80, "GET_INT" },
-    { 0x81, "MOD" },
-    { 0x82, "EVAL_ANIM_FIELD_VARIABLE_REF" },
-    { 0x83, "GET_BUILTIN_FUNC" },
-    { 0x84, "GET_GAME" },
-    { 0x85, "WAITTILL" },
-    { 0x86, "DEC" },
-    { 0x87, "EVAL_LOCAL_VARIABLE_OBJECT_CACHED" },
-    { 0x88, "PRE_CALL" },
-    { 0x89, "GET_ANIM" },
-    { 0x8A, "GET_UNDEFINED" },
-    { 0x8B, "EVAL_LEVEL_FIELD_VARIABLE_REF" },
-    { 0x8C, "GET_ANIM_OBJ" },
-    { 0x8D, "GET_LEVEL_OBJ" },
-    { 0x8E, "BIT_EXOR" },
-    { 0x8F, "EQUALITY" },
-    { 0x90, "CLEAR_ARRAY" },
-    { 0x91, "JMP_BACK" },
-    { 0x92, "GET_ANIMATION" },
-    { 0x93, "EVAL_ANIM_FIELD_VARIABLE" },
-    { 0x94, "GET_ANIMTREE" },
-    { 0x95, "GET_ISTRING" },
-    { 0x96, "EVAL_ARRAY_REF" },
-    { 0x97, "EVAL_SELF_FIELD_VARIABLE_REF" },
-    { 0x98, "GET_NBYTE" },
-    { 0x99, "GET_BUILTIN_METHOD" },
-    { 0x9A, "CALL_BUILTIN_METHOD_POINTER" },
-    { 0x9B, "EVAL_ARRAY" },
-    { 0x9C, "VECTOR" },
-    { 0x9D, "CALL_FAR_METHOD" },
-    { 0x9E, "EVAL_LOCAL_ARRAY_CACHED" },
-    { 0x9F, "GET_BYTE" },
-    { 0xA0, "CALL_FUNC_CHILD_THREAD_POINTER" },
-    { 0xA1, "BIT_OR" },
-    { 0xA2, "ADD_ARRAY" },
-    { 0xA3, "WAITTILLMATCH2" },
-    { 0xA4, "WAITTILLMATCH" },
-    { 0xA5, "GET_LOCAL_FUNC" },
-    { 0xA6, "GET_NUSHORT" },
-    { 0xA7, "SHIFT_RIGHT" },
-    { 0xA8, "CALL_BUILTIN_METHOD_0" },
-    { 0xA9, "CALL_BUILTIN_METHOD_1" },
-    { 0xAA, "CALL_BUILTIN_METHOD_2" },
-    { 0xAB, "CALL_BUILTIN_METHOD_3" },
-    { 0xAC, "CALL_BUILTIN_METHOD_4" },
-    { 0xAD, "CALL_BUILTIN_METHOD_5" },
-    { 0xAE, "CALL_BUILTIN_METHOD" },
-    { 0xAF, "JMP_FALSE" },
+    { 0x17, "OP_SetNewLocalVariableFieldCached0" },
+    { 0x18, "OP_EvalSelfFieldVariable" },
+    { 0x19, "OP_Return" },
+    { 0x1A, "OP_CallBuiltin0" },
+    { 0x1B, "OP_CallBuiltin1" },
+    { 0x1C, "OP_CallBuiltin2" },
+    { 0x1D, "OP_CallBuiltin3" },
+    { 0x1E, "OP_CallBuiltin4" },
+    { 0x1F, "OP_CallBuiltin5" },
+    { 0x20, "OP_CallBuiltin" },
+    { 0x21, "OP_BoolNot" },
+    { 0x22, "OP_ScriptFarMethodThreadCall" },
+    { 0x23, "OP_JumpOnTrueExpr" },
+    { 0x24, "OP_SetLevelFieldVariableField" },
+    { 0x25, "OP_CastBool" },
+    { 0x26, "OP_EvalNewLocalArrayRefCached0" },
+    { 0x27, "OP_CallBuiltinPointer" },
+    { 0x28, "OP_inequality" },
+    { 0x29, "OP_GetThisthread" },
+    { 0x2A, "OP_ClearFieldVariable" },
+    { 0x2B, "OP_GetFloat" },
+    { 0x2C, "OP_SafeCreateVariableFieldCached" },
+    { 0x2D, "OP_ScriptFarFunctionCall2" },
+    { 0x2E, "OP_ScriptFarFunctionCall" },
+    { 0x2F, "OP_ScriptFarChildThreadCall" },
+    { 0x30, "OP_ClearLocalVariableFieldCached0" },
+    { 0x31, "OP_ClearLocalVariableFieldCached" },
+    { 0x32, "OP_checkclearparams" },
+    { 0x33, "OP_CastFieldObject" },
+    { 0x34, "OP_End" },
+    { 0x35, "OP_size" },
+    { 0x36, "OP_EmptyArray" },
+    { 0x37, "OP_bit_and" },
+    { 0x38, "OP_less_equal" },
+    { 0x39, "OP_voidCodepos" },
+    { 0x3A, "OP_ScriptMethodThreadCallPointer" },
+    { 0x3B, "OP_endswitch" },
+    { 0x3C, "OP_ClearVariableField" },
+    { 0x3D, "OP_divide" },
+    { 0x3E, "OP_ScriptFarMethodChildThreadCall" },
+    { 0x3F, "OP_GetUnsignedShort" },
+    { 0x40, "OP_JumpOnTrue" },
+    { 0x41, "OP_GetSelf" },
+    { 0x42, "OP_ScriptFarThreadCall" },
+    { 0x43, "OP_ScriptLocalThreadCall" },
+    { 0x44, "OP_SetLocalVariableFieldCached0" },
+    { 0x45, "OP_SetLocalVariableFieldCached" },
+    { 0x46, "OP_plus" },
+    { 0x47, "OP_BoolComplement" },
+    { 0x48, "OP_ScriptMethodCallPointer" },
+    { 0x49, "OP_inc" },
+    { 0x4A, "OP_RemoveLocalVariables" },
+    { 0x4B, "OP_JumpOnFalseExpr" },
+    { 0x4C, "OP_switch" },
+    { 0x4D, "OP_clearparams" },
+    { 0x4E, "OP_EvalLocalVariableRefCached0" },
+    { 0x4F, "OP_EvalLocalVariableRefCached" },
+    { 0x50, "OP_ScriptLocalMethodCall" },
+    { 0x51, "OP_EvalFieldVariable" },
+    { 0x52, "OP_EvalFieldVariableRef" },
+    { 0x53, "OP_GetString" },
+    { 0x54, "OP_ScriptFunctionCallPointer" },
+    { 0x55, "OP_EvalLevelFieldVariable" },
+    { 0x56, "OP_GetVector" },
+    { 0x57, "OP_endon" },
+    { 0x58, "OP_greater_equal" },
+    { 0x59, "OP_GetSelfObject" },
+    { 0x5A, "OP_SetAnimFieldVariableField" },
+    { 0x5B, "OP_SetVariableField" },
+    { 0x5C, "OP_ScriptLocalFunctionCall2" },
+    { 0x5D, "OP_ScriptLocalFunctionCall" },
+    { 0x5E, "OP_EvalLocalArrayRefCached0" },
+    { 0x5F, "OP_EvalLocalArrayRefCached" },
+    { 0x60, "OP_GetFarFunction" },
+    { 0x61, "OP_less" },
+    { 0x62, "OP_GetGameRef" },
+    { 0x63, "OP_waittillFrameEnd" },
+    { 0x64, "OP_SafeSetVariableFieldCached0" },
+    { 0x65, "OP_SafeSetVariableFieldCached" },
+    { 0x66, "OP_ScriptMethodChildThreadCallPointer" },
+    { 0x67, "OP_GetLevel" },
+    { 0x68, "OP_notify" },
+    { 0x69, "OP_DecTop" },
+    { 0x6A, "OP_shift_left" },
+    { 0x6B, "OP_ScriptLocalMethodThreadCall" },
+    { 0x6C, "OP_ScriptLocalMethodChildThreadCall" },
+    { 0x6D, "OP_greater" },
+    { 0x6E, "OP_EvalLocalVariableCached0" },
+    { 0x6F, "OP_EvalLocalVariableCached1" },
+    { 0x70, "OP_EvalLocalVariableCached2" },
+    { 0x71, "OP_EvalLocalVariableCached3" },
+    { 0x72, "OP_EvalLocalVariableCached4" },
+    { 0x73, "OP_EvalLocalVariableCached5" },
+    { 0x74, "OP_EvalLocalVariableCached" },
+    { 0x75, "OP_SafeSetWaittillVariableFieldCached" },
+    { 0x76, "OP_jump" },
+    { 0x77, "OP_ScriptThreadCallPointer" },
+    { 0x78, "OP_GetZero" },
+    { 0x79, "OP_wait" },
+    { 0x7A, "OP_minus" },
+    { 0x7B, "OP_SetSelfFieldVariableField" },
+    { 0x7C, "OP_EvalNewLocalVariableRefCached0" },
+    { 0x7D, "OP_multiply" },
+    { 0x7E, "OP_CreateLocalVariable" },
+    { 0x7F, "OP_ScriptLocalChildThreadCall" },
+    { 0x80, "OP_GetInteger" },
+    { 0x81, "OP_mod" },
+    { 0x82, "OP_EvalAnimFieldVariableRef" },
+    { 0x83, "OP_GetBuiltinFunction" },
+    { 0x84, "OP_GetGame" },
+    { 0x85, "OP_waittill" },
+    { 0x86, "OP_dec" },
+    { 0x87, "OP_EvalLocalVariableObjectCached" },
+    { 0x88, "OP_PreScriptCall" },
+    { 0x89, "OP_GetAnim" },
+    { 0x8A, "OP_GetUndefined" },
+    { 0x8B, "OP_EvalLevelFieldVariableRef" },
+    { 0x8C, "OP_GetAnimObject" },
+    { 0x8D, "OP_GetLevelObject" },
+    { 0x8E, "OP_bit_ex_or" },
+    { 0x8F, "OP_equality" },
+    { 0x90, "OP_ClearArray" },
+    { 0x91, "OP_jumpback" },
+    { 0x92, "OP_GetAnimation" },
+    { 0x93, "OP_EvalAnimFieldVariable" },
+    { 0x94, "OP_GetAnimTree" },
+    { 0x95, "OP_GetIString" },
+    { 0x96, "OP_EvalArrayRef" },
+    { 0x97, "OP_EvalSelfFieldVariableRef" },
+    { 0x98, "OP_GetNegByte" },
+    { 0x99, "OP_GetBuiltinMethod" },
+    { 0x9A, "OP_CallBuiltinMethodPointer" },
+    { 0x9B, "OP_EvalArray" },
+    { 0x9C, "OP_vector" },
+    { 0x9D, "OP_ScriptFarMethodCall" },
+    { 0x9E, "OP_EvalLocalArrayCached" },
+    { 0x9F, "OP_GetByte" },
+    { 0xA0, "OP_ScriptChildThreadCallPointer" },
+    { 0xA1, "OP_bit_or" },
+    { 0xA2, "OP_AddArray" },
+    { 0xA3, "OP_waittillmatch2" },
+    { 0xA4, "OP_waittillmatch" },
+    { 0xA5, "OP_GetLocalFunction" },
+    { 0xA6, "OP_GetNegUnsignedShort" },
+    { 0xA7, "OP_shift_right" },
+    { 0xA8, "OP_CallBuiltinMethod0" },
+    { 0xA9, "OP_CallBuiltinMethod1" },
+    { 0xAA, "OP_CallBuiltinMethod2" },
+    { 0xAB, "OP_CallBuiltinMethod3" },
+    { 0xAC, "OP_CallBuiltinMethod4" },
+    { 0xAD, "OP_CallBuiltinMethod5" },
+    { 0xAE, "OP_CallBuiltinMethod" },
+    { 0xAF, "OP_JumpOnFalse" },
 }};
 
 const std::array<std::pair<std::uint16_t, const char*>, 807> function_list
@@ -2798,11 +2767,6 @@ const std::array<std::pair<std::uint16_t, const char*>, 1500> method_list
     { 0x85DB, "_meth_85DB" },
 }};
 
-const std::array<std::pair<std::uint32_t, const char*>, 1> file_list
-{{
-    { 0, "null" },
-}};
-
 const std::array<std::pair<std::uint32_t, const char*>, 5> token_list
 {{
     { 0x0000, "" },
@@ -2826,8 +2790,6 @@ struct __init__
         function_map_rev.reserve(function_list.size());
         method_map.reserve(method_list.size());
         method_map_rev.reserve(method_list.size());
-        file_map.reserve(file_list.size());
-        file_map_rev.reserve(file_list.size());
         token_map.reserve(token_list.size());
         token_map_rev.reserve(token_list.size());
 
@@ -2847,12 +2809,6 @@ struct __init__
         {
             method_map.insert({ entry.first, entry.second });
             method_map_rev.insert({ entry.second, entry.first });
-        }
-
-        for (const auto& entry : file_list)
-        {
-            file_map.insert({ entry.first, entry.second });
-            file_map_rev.insert({ entry.second, entry.first });
         }
 
         for (const auto& entry : token_list)

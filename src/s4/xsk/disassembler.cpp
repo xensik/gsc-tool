@@ -387,7 +387,7 @@ void disassembler::disassemble_far_call(const instruction::ptr& inst, bool threa
     }
 
     const auto file_id = stack_->read<std::uint32_t>();
-    const auto file_name = file_id == 0 ? stack_->read_c_string() : resolver::file_name(file_id);
+    const auto file_name = file_id == 0 ? stack_->read_c_string() : resolver::token_name(file_id);
     const auto func_id = stack_->read<std::uint32_t>();
     const auto func_name = func_id == 0 ? stack_->read_c_string() : resolver::token_name(func_id);
 
