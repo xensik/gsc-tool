@@ -1225,36 +1225,36 @@ const std::array<std::pair<std::uint16_t, const char*>, 735> function_list
 
 const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
 {{
-    { 0x8000, "_meth_8000" }, // SP 0x140243FC0, MP 0x140321BF0
+    { 0x8000, "thermaldrawdisable" }, // SP 0x140243FC0, MP 0x140321BF0
     { 0x8001, "_meth_8001" }, // SP 0x14025D290
-    { 0x8002, "_meth_8002" }, // MP 0x140522DA0
-    { 0x8003, "_meth_8003" }, // MP 0x140327D90
-    { 0x8004, "_meth_8004" }, // MP 0x140328150
-    { 0x8005, "_meth_8005" }, // MP 0x14032AC70
-    { 0x8006, "_meth_8006" }, // MP 0x14032ACB0
-    { 0x8007, "_meth_8007" }, // MP 0x14032ADA0
-    { 0x8008, "_meth_8008" }, // MP 0x14032AE00
-    { 0x8009, "_meth_8009" }, // MP 0x14032AE60
-    { 0x800A, "_meth_800A" }, // MP 0x14032CAF0
-    { 0x800B, "_meth_800B" }, // MP 0x14032CB50
-    { 0x800C, "_meth_800C" }, // MP 0x14032CD60
-    { 0x800D, "_meth_800D" }, // MP 0x14032CC80
-    { 0x800E, "_meth_800E" }, // MP 0x14032C2F0
-    { 0x800F, "_meth_800F" }, // MP 0x14032C370
-    { 0x8010, "_meth_8010" }, // MP 0x14032C350
-    { 0x8011, "_meth_8011" }, // MP 0x14032C390
-    { 0x8012, "_meth_8012" }, // MP 0x14032E080
-    { 0x8013, "_meth_8013" }, // MP 0x14032C7A0
-    { 0x8014, "_meth_8014" }, // MP 0x14032C870
-    { 0x8015, "_meth_8015" }, // MP 0x14032C960
-    { 0x8016, "_meth_8016" }, // MP 0x14032CA40
-    { 0x8017, "_meth_8017" }, // MP 0x14032C310
-    { 0x8018, "_meth_8018" }, // MP 0x14032C460
-    { 0x8019, "_meth_8019" }, // MP 0x140328CD0
-    { 0x801A, "_meth_801A" }, // SP 0x14024E140, MP 0x1403167C0
-    { 0x801B, "_meth_801B" }, // MP 0x14032D4E0
-    { 0x801C, "_meth_801C" }, // MP 0x14032DA10
-    { 0x801D, "_meth_801D" }, // SP 0x140247610, MP 0x140311030
+    { 0x8002, "heli_setdamagestage" }, // MP 0x140522DA0
+    { 0x8003, "playsoundtoteam" }, // MP 0x140327D90
+    { 0x8004, "playsoundtoplayer" }, // MP 0x140328150
+    { 0x8005, "playerhide" }, // MP 0x14032AC70
+    { 0x8006, "playershow" }, // MP 0x14032ACB0
+    { 0x8007, "showtoplayer" }, // MP 0x14032ADA0
+    { 0x8008, "threatdetectedtoplayer" }, // MP 0x14032AE00
+    { 0x8009, "clearthreatdetected" }, // MP 0x14032AE60
+    { 0x800A, "enableplayeruse" }, // MP 0x14032CAF0
+    { 0x800B, "disableplayeruse" }, // MP 0x14032CB50
+    { 0x800C, "enableammogeneration" }, // MP 0x14032CD60
+    { 0x800D, "disableammogeneration" }, // MP 0x14032CC80
+    { 0x800E, "makescrambler" }, // MP 0x14032C2F0
+    { 0x800F, "makeportableradar" }, // MP 0x14032C370
+    { 0x8010, "clearscrambler" }, // MP 0x14032C350
+    { 0x8011, "clearportableradar" }, // MP 0x14032C390
+    { 0x8012, "placespawnpoint" }, // MP 0x14032E080
+    { 0x8013, "setteamfortrigger" }, // MP 0x14032C7A0
+    { 0x8014, "clientclaimtrigger" }, // MP 0x14032C870
+    { 0x8015, "clientreleasetrigger" }, // MP 0x14032C960
+    { 0x8016, "releaseclaimedtrigger" }, // MP 0x14032CA40
+    { 0x8017, "isusingonlinedataoffline" }, // MP 0x14032C310
+    { 0x8018, "getrestedtime" }, // MP 0x14032C460
+    { 0x8019, "sendleaderboards" }, // MP 0x140328CD0
+    { 0x801A, "isonladder" }, // SP 0x14024E140, MP 0x1403167C0
+    { 0x801B, "getcorpseanim" }, // MP 0x14032D4E0
+    { 0x801C, "playerforcedeathanim" }, // MP 0x14032DA10
+    { 0x801D, "attach" }, // SP 0x140247610, MP 0x140311030
     { 0x801E, "_meth_801E" }, // SP 0x1402617C0
     { 0x801F, "_meth_801F" }, // SP 0x1402617F0
     { 0x8020, "_meth_8020" }, // SP 0x140261910
@@ -1267,8 +1267,8 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x8027, "_meth_8027" }, // empty
     { 0x8028, "_meth_8028" }, // SP 0x140259D50
     { 0x8029, "_meth_8029" }, // SP 0x140243D30, MP 0x140321AA0
-    { 0x802A, "_meth_802A" }, // SP 0x140248580, MP 0x140311FB0
-    { 0x802B, "_meth_802B" }, // SP 0x140248980, MP 0x140312130
+    { 0x802A, "detach" }, // SP 0x140248580, MP 0x140311FB0
+    { 0x802B, "detachall" }, // SP 0x140248980, MP 0x140312130
     { 0x802C, "_meth_802C" }, // SP 0x14024A5E0, MP 0x1403144E0
     { 0x802D, "_meth_802D" }, // SP 0x14024A7F0, MP 0x1403146A0
     { 0x802E, "_meth_802E" }, // SP 0x14024AAB0, MP 0x140314840
@@ -1308,8 +1308,8 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x8050, "_meth_8050" }, // SP 0x140261820, MP 0x140329690
     { 0x8051, "_meth_8051" }, // SP 0x14024C410, MP 0x140313E60
     { 0x8052, "_meth_8052" }, // SP 0x1402594E0
-    { 0x8053, "_meth_8053" }, // SP 0x140259840, MP 0x14032ABA0
-    { 0x8054, "_meth_8054" }, // SP 0x140259860, MP 0x14032ABF0
+    { 0x8053, "show" }, // SP 0x140259840, MP 0x14032ABA0
+    { 0x8054, "hide" }, // SP 0x140259860, MP 0x14032ABF0
     { 0x8055, "_meth_8055" }, // SP 0x140259880
     { 0x8056, "_meth_8056" }, // SP 0x140259960
     { 0x8057, "_meth_8057" }, // SP 0x140250700, MP 0x14031AD40
@@ -1357,13 +1357,13 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x8081, "_meth_8081" }, // SP 0x140250380, MP 0x14031B520
     { 0x8082, "_meth_8082" }, // SP 0x14021EA10, MP 0x1402EF1F0
     { 0x8083, "_meth_8083" }, // SP 0x14021EA60, MP 0x1402EF240
-    { 0x8084, "_meth_8084" }, // SP 0x14021EE30, MP 0x1402EF5E0
-    { 0x8085, "_meth_8085" }, // SP 0x14021EF70, MP 0x1402EF720
-    { 0x8086, "_meth_8086" }, // SP 0x14021F050, MP 0x1402EF800
-    { 0x8087, "_meth_8087" }, // SP 0x14021F190, MP 0x1402EF8B0
-    { 0x8088, "_meth_8088" }, // SP 0x14021F1D0, MP 0x1402EF980
-    { 0x8089, "_meth_8089" }, // SP 0x14021F300, MP 0x1402EFA60
-    { 0x808A, "_meth_808A" }, // SP 0x14021F240, MP 0x1402EF9D0
+    { 0x8084, "fadeovertime" }, // SP 0x14021EE30, MP 0x1402EF5E0
+    { 0x8085, "scaleovertime" }, // SP 0x14021EF70, MP 0x1402EF720
+    { 0x8086, "moveovertime" }, // SP 0x14021F050, MP 0x1402EF800
+    { 0x8087, "reset" }, // SP 0x14021F190, MP 0x1402EF8B0
+    { 0x8088, "destroy" }, // SP 0x14021F1D0, MP 0x1402EF980
+    { 0x8089, "setpulsefx" }, // SP 0x14021F300, MP 0x1402EFA60
+    { 0x808A, "setplayernamestring" }, // SP 0x14021F240, MP 0x1402EF9D0
     { 0x808B, "_meth_808B" }, // SP 0x14021EED0, MP 0x1402EF680
     { 0x808C, "_meth_808C" }, // SP 0x14025CC00
     { 0x808D, "_meth_808D" }, // SP 0x14025CC20
@@ -1374,12 +1374,12 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x8092, "_meth_8092" }, // SP 0x14024CFF0, MP 0x14031B370
     { 0x8093, "_meth_8093" }, // SP 0x14025F470
     { 0x8094, "_meth_8094" }, // SP 0x14025F510
-    { 0x8095, "_meth_8095" }, // SP 0x14025F5B0, MP 0x14032F8B0
+    { 0x8095, "getorigin" }, // SP 0x14025F5B0, MP 0x14032F8B0
     { 0x8096, "_meth_8096" }, // SP 0x14025F660
     { 0x8097, "_meth_8097" }, // SP 0x14025F750
     { 0x8098, "_meth_8098" }, // SP 0x1402608B0
     { 0x8099, "_meth_8099" }, // SP 0x1402608F0, MP 0x14032FA40
-    { 0x809A, "_meth_809A" }, // SP 0x140261150, MP 0x14032FDA0
+    { 0x809A, "playsound" }, // SP 0x140261150, MP 0x14032FDA0
     { 0x809B, "_meth_809B" }, // empty
     { 0x809C, "_meth_809C" }, // empty
     { 0x809D, "_meth_809D" }, // empty
@@ -1407,17 +1407,17 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x80B3, "_meth_80B3" }, // SP 0x140243250, MP 0x1403211B0
     { 0x80B4, "_meth_80B4" }, // empty
     { 0x80B5, "_meth_80B5" }, // empty
-    { 0x80B6, "_meth_80B6" }, // SP 0x1402434E0, MP 0x1403213B0
-    { 0x80B7, "_meth_80B7" }, // SP 0x140243990, MP 0x1403218A0
-    { 0x80B8, "_meth_80B8" }, // SP 0x140245650, MP 0x14030C6E0
-    { 0x80B9, "_meth_80B9" }, // SP 0x140245A30, MP 0x14030CA30
-    { 0x80BA, "_meth_80BA" }, // MP 0x14030CE40
-    { 0x80BB, "_meth_80BB" }, // MP 0x14030CFB0
-    { 0x80BC, "_meth_80BC" }, // MP 0x14030D220
+    { 0x80B6, "thermalvisionon" }, // SP 0x1402434E0, MP 0x1403213B0
+    { 0x80B7, "thermalvisionoff" }, // SP 0x140243990, MP 0x1403218A0
+    { 0x80B8, "thermalvisionfofoverlayon" }, // SP 0x140245650, MP 0x14030C6E0
+    { 0x80B9, "thermalvisionfofoverlayoff" }, // SP 0x140245A30, MP 0x14030CA30
+    { 0x80BA, "autospotoverlayon" }, // MP 0x14030CE40
+    { 0x80BB, "autospotoverlayoff" }, // MP 0x14030CFB0
+    { 0x80BC, "seteyesonuplinkenabled" }, // MP 0x14030D220
     { 0x80BD, "_meth_80BD" }, // empty
-    { 0x80BE, "_meth_80BE" }, // SP 0x140240E60, MP 0x14031E770
-    { 0x80BF, "_meth_80BF" }, // SP 0x140240F70, MP 0x14031E9D0
-    { 0x80C0, "_meth_80C0" }, // SP 0x140241270, MP 0x14031EBA0
+    { 0x80BE, "setcontents" }, // SP 0x140240E60, MP 0x14031E770
+    { 0x80BF, "makeusable" }, // SP 0x140240F70, MP 0x14031E9D0
+    { 0x80C0, "makeunusable" }, // SP 0x140241270, MP 0x14031EBA0
     { 0x80C1, "_meth_80C1" }, // SP 0x14024E190, MP 0x14031C420
     { 0x80C2, "_meth_80C2" }, // SP 0x14024E8E0, MP 0x14031C9C0
     { 0x80C3, "_meth_80C3" }, // SP 0x140213270
@@ -1427,7 +1427,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x80C7, "_meth_80C7" }, // SP 0x140415A50
     { 0x80C8, "_meth_80C8" }, // SP 0x140415AE0
     { 0x80C9, "_meth_80C9" }, // SP 0x140415390
-    { 0x80CA, "_meth_80CA" }, // SP 0x14021DE70, MP 0x1402EE7C0
+    { 0x80CA, "settext" }, // SP 0x14021DE70, MP 0x1402EE7C0
     { 0x80CB, "_meth_80CB" }, // MP 0x1402EE880
     { 0x80CC, "_meth_80CC" }, // SP 0x14021DF30, MP 0x1402EE890
     { 0x80CD, "_meth_80CD" }, // SP 0x14021E050, MP 0x1402EE990
@@ -1608,12 +1608,12 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x817C, "_meth_817C" }, // SP 0x1402463F0, MP 0x14030D7B0
     { 0x817D, "_meth_817D" }, // SP 0x140246590, MP 0x14030DBC0
     { 0x817E, "_meth_817E" }, // SP 0x140243390, MP 0x140321DC0
-    { 0x817F, "_meth_817F" }, // SP 0x140243890, MP 0x1403222E0
-    { 0x8180, "_meth_8180" }, // SP 0x140247970, MP 0x140310980
-    { 0x8181, "_meth_8181" }, // SP 0x140247B80, MP 0x140310DF0
-    { 0x8182, "_meth_8182" }, // SP 0x14024E6A0, MP 0x140315CD0
-    { 0x8183, "_meth_8183" }, // SP 0x14024EC90, MP 0x1403166C0
-    { 0x8184, "_meth_8184" }, // SP 0x1402456B0, MP 0x14030EA40
+    { 0x817F, "getammocount" }, // SP 0x140243890, MP 0x1403222E0
+    { 0x8180, "gettagorigin" }, // SP 0x140247970, MP 0x140310980
+    { 0x8181, "gettagangles" }, // SP 0x140247B80, MP 0x140310DF0
+    { 0x8182, "shellshock" }, // SP 0x14024E6A0, MP 0x140315CD0
+    { 0x8183, "stunplayer" }, // SP 0x14024EC90, MP 0x1403166C0
+    { 0x8184, "stopshellshock" }, // SP 0x1402456B0, MP 0x14030EA40
     { 0x8185, "_meth_8185" }, // SP 0x140245940, MP 0x14030EDE0
     { 0x8186, "_meth_8186" }, // SP 0x1402485C0, MP 0x140311860
     { 0x8187, "_meth_8187" }, // SP 0x140249170, MP 0x140312070
@@ -1662,7 +1662,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x81B2, "_meth_81B2" }, // SP 0x1402431F0, MP 0x14030C0D0
     { 0x81B3, "_meth_81B3" }, // SP 0x140243540, MP 0x14030C490
     { 0x81B4, "_meth_81B4" }, // SP 0x140243630, MP 0x14030C690
-    { 0x81B5, "_meth_81B5" }, // SP 0x140244720, MP 0x14030D830
+    { 0x81B5, "enableaimassist" }, // SP 0x140244720, MP 0x14030D830
     { 0x81B6, "_meth_81B6" }, // SP 0x1401FBB30
     { 0x81B7, "_meth_81B7" }, // SP 0x1401FBC20
     { 0x81B8, "_meth_81B8" }, // SP 0x1401FBDD0
@@ -1693,9 +1693,9 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x81D1, "_meth_81D1" }, // SP 0x1401F8760
     { 0x81D2, "_meth_81D2" }, // SP 0x1401F8840
     { 0x81D3, "_meth_81D3" }, // SP 0x1401F84A0
-    { 0x81D4, "_meth_81D4" }, // SP 0x140244FB0, MP 0x14030D9F0
-    { 0x81D5, "_meth_81D5" }, // SP 0x14024D100, MP 0x140314A00
-    { 0x81D6, "_meth_81D6" }, // SP 0x14024D910, MP 0x140315900
+    { 0x81D4, "disableaimassist" }, // SP 0x140244FB0, MP 0x14030D9F0
+    { 0x81D5, "entityradiusdamage" }, // SP 0x14024D100, MP 0x140314A00
+    { 0x81D6, "detonate" }, // SP 0x14024D910, MP 0x140315900
     { 0x81D7, "_meth_81D7" }, // SP 0x14024E310, MP 0x140315C70
     { 0x81D8, "_meth_81D8" }, // SP 0x14024E5F0, MP 0x140315CB0
     { 0x81D9, "_meth_81D9" }, // SP 0x140243A40, MP 0x14030CC10
@@ -1766,7 +1766,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x821A, "_meth_821A" }, // SP 0x14024B900
     { 0x821B, "_meth_821B" }, // SP 0x14023FA90, MP 0x140320E80
     { 0x821C, "_meth_821C" }, // SP 0x140240100, MP 0x1403215A0
-    { 0x821D, "_meth_821D" }, // SP 0x140240590, MP 0x140321B00
+    { 0x821D, "setempjammed" }, // SP 0x140240590, MP 0x140321B00
     { 0x821E, "_meth_821E" }, // SP 0x140242D40, MP 0x14030BB10
     { 0x821F, "_meth_821F" }, // SP 0x140242B70, MP 0x14030B880
     { 0x8220, "_meth_8220" }, // SP 0x1402432C0, MP 0x14030C370
@@ -1781,8 +1781,8 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x8229, "_meth_8229" }, // SP 0x1404149B0, MP 0x140528D80
     { 0x822A, "_meth_822A" }, // SP 0x140414B10, MP 0x140528EA0
     { 0x822B, "_meth_822B" }, // SP 0x140414BE0, MP 0x140528F90
-    { 0x822C, "_meth_822C" }, // SP 0x140414C80, MP 0x140529090
-    { 0x822D, "_meth_822D" }, // SP 0x140414DC0, MP 0x1405291B0
+    { 0x822C, "crash" }, // SP 0x140414C80, MP 0x140529090
+    { 0x822D, "launch" }, // SP 0x140414DC0, MP 0x1405291B0
     { 0x822E, "_meth_822E" }, // SP 0x140414F60, MP 0x1405292C0
     { 0x822F, "_meth_822F" }, // SP 0x140414FF0, MP 0x1405293B0
     { 0x8230, "_meth_8230" }, // SP 0x1404150D0, MP 0x140529470
@@ -1846,8 +1846,8 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x826A, "_meth_826A" }, // MP 0x1402E7660
     { 0x826B, "_meth_826B" }, // MP 0x1402E7CC0
     { 0x826C, "_meth_826C" }, // MP 0x1402E7EB0
-    { 0x826D, "_meth_826D" }, // MP 0x1402E7F20
-    { 0x826E, "_meth_826E" }, // MP 0x1402E7F90
+    { 0x826D, "iclientprintln" }, // MP 0x1402E7F20
+    { 0x826E, "iclientprintlnbold" }, // MP 0x1402E7F90
     { 0x826F, "_meth_826F" }, // MP 0x1402E8000
     { 0x8270, "_meth_8270" }, // MP 0x1402E8070
     { 0x8271, "_meth_8271" }, // MP 0x1402E80D0
@@ -1942,7 +1942,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x82CA, "_meth_82CA" }, // MP 0x1402E5EF0
     { 0x82CB, "_meth_82CB" }, // SP 0x140217770, MP 0x1402DF6A0
     { 0x82CC, "_meth_82CC" }, // SP 0x1402177D0, MP 0x1402DF7C0
-    { 0x82CD, "_meth_82CD" }, // MP 0x1402E5F60
+    { 0x82CD, "issplitscreenplayer" }, // MP 0x1402E5F60
     { 0x82CE, "_meth_82CE" }, // SP 0x140216D40, MP 0x1402DEC00
     { 0x82CF, "_meth_82CF" }, // SP 0x140216E90, MP 0x1402DED60
     { 0x82D0, "_meth_82D0" }, // SP 0x140216FE0, MP 0x1402DEEC0
@@ -1954,22 +1954,22 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x82D6, "_meth_82D6" }, // SP 0x1402109A0, MP 0x1402E0210
     { 0x82D7, "_meth_82D7" }, // SP 0x1402109C0, MP 0x1402E02B0
     { 0x82D8, "_meth_82D8" }, // SP 0x1402109E0, MP 0x1402E02D0
-    { 0x82D9, "_meth_82D9" }, // SP 0x140211B40, MP 0x1402E12B0
+    { 0x82D9, "setblurforplayer" }, // SP 0x140211B40, MP 0x1402E12B0
     { 0x82DA, "_meth_82DA" }, // SP 0x14025D320, MP 0x1402E18D0
     { 0x82DB, "_meth_82DB" }, // MP 0x1402E18F0
     { 0x82DC, "_meth_82DC" }, // SP 0x1402605B0
     { 0x82DD, "_meth_82DD" }, // SP 0x1402138F0, MP 0x1402E3560
     { 0x82DE, "_meth_82DE" }, // SP 0x140213C10, MP 0x1402E3B30
-    { 0x82DF, "_meth_82DF" }, // SP 0x140213EA0, MP 0x1402E3CD0
-    { 0x82E0, "_meth_82E0" }, // SP 0x140213FD0, MP 0x1402E3E60
-    { 0x82E1, "_meth_82E1" }, // SP 0x140214610, MP 0x1402E4770
-    { 0x82E2, "_meth_82E2" }, // SP 0x140214830, MP 0x1402E49D0
-    { 0x82E3, "_meth_82E3" }, // SP 0x1402149C0, MP 0x1402E4B20
-    { 0x82E4, "_meth_82E4" }, // SP 0x140214B20, MP 0x1402E4D50
-    { 0x82E5, "_meth_82E5" }, // SP 0x140214C80, MP 0x1402DC9C0
-    { 0x82E6, "_meth_82E6" }, // SP 0x140214F70, MP 0x1402DCD00
-    { 0x82E7, "_meth_82E7" }, // SP 0x1402150D0, MP 0x1402DCE80
-    { 0x82E8, "_meth_82E8" }, // MP 0x1402E5FA0
+    { 0x82DF, "forcemantle" }, // SP 0x140213EA0, MP 0x1402E3CD0
+    { 0x82E0, "ismantling" }, // SP 0x140213FD0, MP 0x1402E3E60
+    { 0x82E1, "playfx" }, // SP 0x140214610, MP 0x1402E4770
+    { 0x82E2, "playerrecoilscaleon" }, // SP 0x140214830, MP 0x1402E49D0
+    { 0x82E3, "playerrecoilscaleoff" }, // SP 0x1402149C0, MP 0x1402E4B20
+    { 0x82E4, "weaponlockstart" }, // SP 0x140214B20, MP 0x1402E4D50
+    { 0x82E5, "weaponlockfinalize" }, // SP 0x140214C80, MP 0x1402DC9C0
+    { 0x82E6, "weaponlockfree" }, // SP 0x140214F70, MP 0x1402DCD00
+    { 0x82E7, "weaponlocktargettooclose" }, // SP 0x1402150D0, MP 0x1402DCE80
+    { 0x82E8, "issplitscreenplayerprimary" }, // MP 0x1402E5FA0
     { 0x82E9, "_meth_82E9" }, // MP 0x1402E6020
     { 0x82EA, "_meth_82EA" }, // MP 0x1402E60A0
     { 0x82EB, "_meth_82EB" }, // MP 0x1402E6270
@@ -1981,8 +1981,8 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x82F1, "_meth_82F1" }, // SP 0x1402144C0, MP 0x1402E4330
     { 0x82F2, "_meth_82F2" }, // SP 0x140214C30, MP 0x1402E4AC0
     { 0x82F3, "_meth_82F3" }, // SP 0x140214FC0, MP 0x1402E4C80
-    { 0x82F4, "_meth_82F4" }, // SP 0x140214080, MP 0x1402E3E40
-    { 0x82F5, "_meth_82F5" }, // SP 0x140214150, MP 0x1402E3FD0
+    { 0x82F4, "playlocalsound" }, // SP 0x140214080, MP 0x1402E3E40
+    { 0x82F5, "stoplocalsound" }, // SP 0x140214150, MP 0x1402E3FD0
     { 0x82F6, "_meth_82F6" }, // SP 0x1402113C0, MP 0x1402E0FA0
     { 0x82F7, "_meth_82F7" }, // SP 0x1402117B0, MP 0x1402E1530
     { 0x82F8, "_meth_82F8" }, // SP 0x140211D60, MP 0x1402E1910
@@ -2034,7 +2034,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x8326, "_meth_8326" }, // SP 0x140217AF0, MP 0x1402DFAC0
     { 0x8327, "_meth_8327" }, // SP 0x140217D90, MP 0x1402DFBE0
     { 0x8328, "_meth_8328" }, // empty
-    { 0x8329, "_meth_8329" }, // SP 0x1402180F0, MP 0x1402E00C0
+    { 0x8329, "freezecontrols" }, // SP 0x1402180F0, MP 0x1402E00C0
     { 0x832A, "_meth_832A" }, // SP 0x1402182E0, MP 0x1402E0230
     { 0x832B, "_meth_832B" }, // SP 0x140210810, MP 0x1402E0310
     { 0x832C, "_meth_832C" }, // SP 0x140213350, MP 0x1402E37B0
@@ -2049,14 +2049,14 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x8335, "_meth_8335" }, // SP 0x1402139C0, MP 0x1402E35E0
     { 0x8336, "_meth_8336" }, // SP 0x140213B20, MP 0x1402E36D0
     { 0x8337, "_meth_8337" }, // SP 0x140213B90, MP 0x1402E3980
-    { 0x8338, "_meth_8338" }, // SP 0x140214250, MP 0x1402E4100
-    { 0x8339, "_meth_8339" }, // SP 0x1402145A0, MP 0x1402E45C0
-    { 0x833A, "_meth_833A" }, // SP 0x140214A20, MP 0x1402E4850
-    { 0x833B, "_meth_833B" }, // SP 0x140214BE0, MP 0x1402E4970
-    { 0x833C, "_meth_833C" }, // SP 0x140215610, MP 0x1402DCDE0
-    { 0x833D, "_meth_833D" }, // SP 0x140215770, MP 0x1402DCF70
-    { 0x833E, "_meth_833E" }, // SP 0x140215B00, MP 0x1402DD0F0
-    { 0x833F, "_meth_833F" }, // SP 0x140215C10, MP 0x1402DD2B0
+    { 0x8338, "setorigin" }, // SP 0x140214250, MP 0x1402E4100
+    { 0x8339, "getvelocity" }, // SP 0x1402145A0, MP 0x1402E45C0
+    { 0x833A, "setangles" }, // SP 0x140214A20, MP 0x1402E4850
+    { 0x833B, "getangles" }, // SP 0x140214BE0, MP 0x1402E4970
+    { 0x833C, "usebuttonpressed" }, // SP 0x140215610, MP 0x1402DCDE0
+    { 0x833D, "attackbuttonpressed" }, // SP 0x140215770, MP 0x1402DCF70
+    { 0x833E, "adsbuttonpressed" }, // SP 0x140215B00, MP 0x1402DD0F0
+    { 0x833F, "meleebuttonpressed" }, // SP 0x140215C10, MP 0x1402DD2B0
     { 0x8340, "_meth_8340" }, // SP 0x140216410, MP 0x1402DDD10
     { 0x8341, "_meth_8341" }, // SP 0x1402164C0, MP 0x1402DDED0
     { 0x8342, "_meth_8342" }, // SP 0x140216660, MP 0x1402DE1A0
@@ -2428,7 +2428,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x84B0, "_meth_84B0" }, // SP 0x1402162A0, MP 0x1402DDA50
     { 0x84B1, "_meth_84B1" }, // SP 0x1404167F0, MP 0x14052AC50
     { 0x84B2, "_meth_84B2" }, // SP 0x1404168F0, MP 0x14052AD50
-    { 0x84B3, "_meth_84B3" }, // MP 0x1402E6C20
+    { 0x84B3, "setdemigod" }, // MP 0x1402E6C20
     { 0x84B4, "_meth_84B4" }, // MP 0x140310840
     { 0x84B5, "_meth_84B5" }, // SP 0x140252CA0, MP 0x14031CBF0
     { 0x84B6, "_meth_84B6" }, // SP 0x140252F80, MP 0x14031CF20
@@ -2451,7 +2451,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x84C7, "_meth_84C7" }, // SP 0x140413650, MP 0x14052C3A0
     { 0x84C8, "_meth_84C8" }, // MP 0x140406E30
     { 0x84C9, "_meth_84C9" }, // MP 0x140406A70
-    { 0x84CA, "_meth_84CA" }, // SP 0x140214970, MP 0x1402E46B0
+    { 0x84CA, "getgravity" }, // SP 0x140214970, MP 0x1402E46B0
     { 0x84CB, "_meth_84CB" }, // SP 0x1402146F0
     { 0x84CC, "_meth_84CC" }, // SP 0x1402147E0
     { 0x84CD, "_meth_84CD" }, // SP 0x140415170, MP 0x140529560
@@ -2616,7 +2616,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x856C, "_meth_856C" }, // MP 0x140333710
 }};
 
-const std::array<std::pair<std::uint16_t, const char*>, 13> file_list
+const std::array<std::pair<std::uint16_t, const char*>, 20> file_list
 {{
     { 0x053D, "codescripts/delete" },
     { 0x053E, "codescripts/struct" },
@@ -2631,9 +2631,16 @@ const std::array<std::pair<std::uint16_t, const char*>, 13> file_list
     { 42735, "maps/createart/mp_vlobby_room_art" },
     { 42736, "maps/createart/mp_vlobby_room_fog" },
     { 42737, "maps/createart/mp_vlobby_room_fog_hdr" },
+    { 42786, "maps/mp/_areas" },
+    { 42815, "maps/mp/_global_fx" },
+    { 42818, "maps/mp/_load" },
+    { 42842, "maps/mp/_utility" },
+    { 42909, "maps/mp/gametypes/_hud_util" },
+    { 42930, "maps/mp/gametypes/_teams" },
+    { 42931, "maps/mp/gametypes/_tweakables" },
 }};
 
-const std::array<std::pair<std::uint16_t, const char*>, 30> token_list
+const std::array<std::pair<std::uint16_t, const char*>, 38> token_list
 {{
     { 0x00, "" },
     { 0x01, "pl#" },
@@ -2656,6 +2663,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 30> token_list
     { 195, "CodeCallback_StartGameType" },
     { 196, "CodeCallback_VehicleDamage" },
     { 221, "CreateStruct" },
+    { 521, "init" },
     { 522, "InitStructs" },
     { 619, "main" },
 
@@ -2663,9 +2671,16 @@ const std::array<std::pair<std::uint16_t, const char*>, 30> token_list
     { 6662, "callbackVoid" },
 
     { 8192, "CodeCallback_GiveKillstreak" },
+    { 25797, "onplayerconnect" },
+    { 25800, "onplayerconnected" },
+    { 25806, "onplayerconnecting" },
+    { 25781, "onlinegame" },
+    { 26242, "parent" },
+    { 28980, "rankedmatch" },
     { 32577, "SetDefaultCallbacks" },
     { 33531, "SetupCallbacks" },
     { 33542, "SetupDamageFlags" },
+    { 34905, "softlanding" },
     { 36698, "struct" },
 }};
 
