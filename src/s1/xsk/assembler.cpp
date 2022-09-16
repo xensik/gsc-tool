@@ -87,12 +87,12 @@ void assembler::assemble(const std::string& file, std::vector<std::uint8_t>& dat
             {
                 auto inst = std::make_unique<instruction>();
                 inst->index = index;
-                inst->opcode = static_cast<std::uint8_t>(resolver::opcode_id(opdata[0]));
+                inst->opcode = resolver::opcode_id(opdata[0]);
                 inst->size = opcode_size(inst->opcode);
                 opdata.erase(opdata.begin());
                 inst->data = std::move(opdata);
 
-                switch (opcode(inst->opcode))
+                switch (static_cast<opcode>(inst->opcode))
                 {
                     case opcode::OP_GetLocalFunction:
                     case opcode::OP_ScriptLocalFunctionCall:
@@ -158,7 +158,9 @@ void assembler::assemble_function(const function::ptr& func)
 
 void assembler::assemble_instruction(const instruction::ptr& inst)
 {
-    switch (opcode(inst->opcode))
+    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
+
+    switch (static_cast<opcode>(inst->opcode))
     {
         case opcode::OP_Return:
         case opcode::OP_BoolNot:
@@ -230,52 +232,42 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_AddArray:
         case opcode::OP_waittillmatch2:
         case opcode::OP_shift_right:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             break;
         case opcode::OP_GetByte:
         case opcode::OP_GetNegByte:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
             break;
         case opcode::OP_GetUnsignedShort:
         case opcode::OP_GetNegUnsignedShort:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint16_t>(static_cast<std::uint16_t>(std::stoi(inst->data[0])));
             break;
         case opcode::OP_GetInteger:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::int32_t>(std::stoi(inst->data[0]));
             break;
         case opcode::OP_GetFloat:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<float>(std::stof(inst->data[0]));
             break;
         case opcode::OP_GetVector:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<float>(std::stof(inst->data[0]));
             script_->write<float>(std::stof(inst->data[1]));
             script_->write<float>(std::stof(inst->data[2]));
             break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint32_t>(0);
             stack_->write_c_string(inst->data[0]);
             break;
         case opcode::OP_GetAnimation:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint32_t>(0);
             script_->write<std::uint32_t>(0);
             stack_->write_c_string(inst->data[0]);
             stack_->write_c_string(inst->data[1]);
             break;
         case opcode::OP_GetAnimTree:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(0);
             stack_->write_c_string(inst->data[0]);
             break;
         case opcode::OP_waittillmatch:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
             break;
         case opcode::OP_SetNewLocalVariableFieldCached0:
@@ -292,7 +284,6 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_CreateLocalVariable:
         case opcode::OP_EvalLocalVariableObjectCached:
         case opcode::OP_EvalLocalArrayCached:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
             break;
         case opcode::OP_EvalSelfFieldVariable:
@@ -315,7 +306,6 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptChildThreadCallPointer:
         case opcode::OP_ScriptMethodThreadCallPointer:
         case opcode::OP_ScriptMethodChildThreadCallPointer:
-            script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
             script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
             break;
         case opcode::OP_GetLocalFunction:
@@ -391,8 +381,6 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
 
 void assembler::assemble_builtin_call(const instruction::ptr& inst, bool method, bool args)
 {
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
     if (args)
     {
         script_->write<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[1])));
@@ -405,8 +393,6 @@ void assembler::assemble_builtin_call(const instruction::ptr& inst, bool method,
 
 void assembler::assemble_local_call(const instruction::ptr& inst, bool thread)
 {
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
     const auto addr = resolve_function(inst->data[0]);
     const auto offset = static_cast<std::int32_t>(addr - inst->index - 1);
 
@@ -420,7 +406,6 @@ void assembler::assemble_local_call(const instruction::ptr& inst, bool thread)
 
 void assembler::assemble_far_call(const instruction::ptr& inst, bool thread)
 {
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
     script_->write<std::uint8_t>(0);
     script_->write<std::uint16_t>(0);
 
@@ -440,8 +425,6 @@ void assembler::assemble_far_call(const instruction::ptr& inst, bool thread)
 
 void assembler::assemble_switch(const instruction::ptr& inst)
 {
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
     const auto addr = resolve_label(inst->data[0]);
 
     script_->write<std::int32_t>(addr - inst->index - 4);
@@ -449,8 +432,6 @@ void assembler::assemble_switch(const instruction::ptr& inst)
 
 void assembler::assemble_end_switch(const instruction::ptr& inst)
 {
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
     const auto count = std::stoul(inst->data[0]);
 
     script_->write<std::uint16_t>(static_cast<std::uint16_t>(count));
@@ -501,8 +482,6 @@ void assembler::assemble_end_switch(const instruction::ptr& inst)
 
 void assembler::assemble_field_variable(const instruction::ptr& inst)
 {
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
     auto id = resolver::token_id(inst->data[0]);
 
     if (id == 0) id = 0xFFFF;
@@ -518,8 +497,6 @@ void assembler::assemble_field_variable(const instruction::ptr& inst)
 
 void assembler::assemble_jump(const instruction::ptr& inst, bool expr, bool back)
 {
-    script_->write<std::uint8_t>(static_cast<std::uint8_t>(inst->opcode));
-
     const auto addr = resolve_label(inst->data[0]);
 
     if (expr)

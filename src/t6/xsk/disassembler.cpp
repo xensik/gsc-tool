@@ -453,7 +453,7 @@ void disassembler::disassemble_string(const instruction::ptr& inst)
 {
     inst->size += script_->align(2);
 
-    const auto& entry = string_refs_.find(script_->pos());
+    const auto entry = string_refs_.find(script_->pos());
 
     if (entry != string_refs_.end())
     {
@@ -470,7 +470,7 @@ void disassembler::disassemble_animation(const instruction::ptr& inst)
     inst->size += script_->align(4);
 
     const auto ref = script_->pos();
-    const auto& entry = anim_refs_.find(ref);
+    const auto entry = anim_refs_.find(ref);
 
     if (entry != anim_refs_.end())
     {
@@ -506,7 +506,7 @@ void disassembler::disassemble_import(const instruction::ptr& inst)
     inst->size += script_->align(4);
     script_->seek(4);
 
-    const auto& entry = import_refs_.find(inst->index);
+    const auto entry = import_refs_.find(inst->index);
 
     if (entry != import_refs_.end())
     {
@@ -544,7 +544,7 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
 {
     inst->size += script_->align(4);
 
-    const auto& itr = labels_.find(script_->pos());
+    const auto itr = labels_.find(script_->pos());
 
     if (itr != labels_.end())
     {
@@ -557,7 +557,7 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
                     labels_.erase(script_->pos());
 
                     const auto label = utils::string::va("loc_%X", inst->index);
-                    const auto& itr2 = labels_.find(inst->index);
+                    const auto itr2 = labels_.find(inst->index);
 
                     if (itr2 == labels_.end())
                     {
@@ -615,7 +615,7 @@ void disassembler::print_function(const function::ptr& func)
 
     for (const auto& inst : func->instructions)
     {
-        const auto& itr = func->labels.find(inst->index);
+        const auto itr = func->labels.find(inst->index);
 
         if (itr != func->labels.end())
         {
@@ -632,7 +632,7 @@ void disassembler::print_instruction(const instruction::ptr& inst)
 {
     output_->write_string(utils::string::va("\t\t%s(", resolver::opcode_name(inst->opcode).data()));
 
-    switch (opcode(inst->opcode))
+    switch (static_cast<opcode>(inst->opcode))
     {
         case opcode::OP_GetHash:
         case opcode::OP_GetString:
@@ -653,9 +653,9 @@ void disassembler::print_instruction(const instruction::ptr& inst)
             output_->write_string(utils::string::va("\"%s\", \"%s\"", inst->data[0].data(), inst->data[1].data()));
             break;
         case opcode::OP_SafeCreateLocalVariables:
-            for (const auto& d : inst->data)
+            for (const auto& data : inst->data)
             {
-                output_->write_string(utils::string::va("\"%s\"%s", d.data(), &d == &inst->data.back() ? "" : ", "));
+                output_->write_string(utils::string::va("\"%s\"%s", data.data(), &data == &inst->data.back() ? "" : ", "));
             }
             break;
         case opcode::OP_EndSwitch:
@@ -681,9 +681,9 @@ void disassembler::print_instruction(const instruction::ptr& inst)
             }
             break;
         default:
-            for (const auto& d : inst->data)
+            for (const auto& data : inst->data)
             {
-                output_->write_string(utils::string::va("%s%s", d.data(), &d == &inst->data.back() ? "" : ", "));
+                output_->write_string(utils::string::va("%s%s", data.data(), &data == &inst->data.back() ? "" : ", "));
             }
             break;
     }

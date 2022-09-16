@@ -77,18 +77,13 @@ void disassembler::dissasemble_function(const function::ptr& func)
 
         dissasemble_instruction(inst);
 
-        if(inst->size > size)
-        {
-            throw disasm_error("aaaaa");
-        }
-
         size -= inst->size;
     }
 }
 
 void disassembler::dissasemble_instruction(const instruction::ptr& inst)
 {
-    switch (opcode(inst->opcode))
+    switch (static_cast<opcode>(inst->opcode))
     {
         case opcode::OP_End:
         case opcode::OP_Return:
@@ -465,20 +460,20 @@ void disassembler::resolve_local_functions()
     {
         for (const auto& inst : func->instructions)
         {
-            switch (opcode(inst->opcode))
+            switch (static_cast<opcode>(inst->opcode))
             {
-            case opcode::OP_GetLocalFunction:
-            case opcode::OP_ScriptLocalFunctionCall:
-            case opcode::OP_ScriptLocalFunctionCall2:
-            case opcode::OP_ScriptLocalMethodCall:
-            case opcode::OP_ScriptLocalThreadCall:
-            case opcode::OP_ScriptLocalChildThreadCall:
-            case opcode::OP_ScriptLocalMethodThreadCall:
-            case opcode::OP_ScriptLocalMethodChildThreadCall:
-                inst->data[0] = resolve_function(inst->data[0]);
-                break;
-            default:
-                break;
+                case opcode::OP_GetLocalFunction:
+                case opcode::OP_ScriptLocalFunctionCall:
+                case opcode::OP_ScriptLocalFunctionCall2:
+                case opcode::OP_ScriptLocalMethodCall:
+                case opcode::OP_ScriptLocalThreadCall:
+                case opcode::OP_ScriptLocalChildThreadCall:
+                case opcode::OP_ScriptLocalMethodThreadCall:
+                case opcode::OP_ScriptLocalMethodChildThreadCall:
+                    inst->data[0] = resolve_function(inst->data[0]);
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -490,14 +485,14 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
     {
         std::uint32_t idx = std::stoul(index, nullptr, 16);
 
-        for (auto& func : functions_)
+        for (const auto& func : functions_)
         {
             if (func->index == idx)
             {
                 return func->name;
             }
         }
-        //return "error";
+
         throw disasm_error(utils::string::va("couldn't resolve function name at index '0x%04X'!", idx));
     }
 
@@ -528,7 +523,7 @@ void disassembler::print_instruction(const instruction::ptr& inst)
 {
     output_->write_string(utils::string::va("\t\t%s", resolver::opcode_name(inst->opcode).data()));
 
-    switch (opcode(inst->opcode))
+    switch (static_cast<opcode>(inst->opcode))
     {
         case opcode::OP_GetLocalFunction:
         case opcode::OP_ScriptLocalFunctionCall:
@@ -540,8 +535,7 @@ void disassembler::print_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptLocalChildThreadCall:
         case opcode::OP_ScriptLocalMethodThreadCall:
         case opcode::OP_ScriptLocalMethodChildThreadCall:
-            output_->write_string(utils::string::va(" sub_%s", inst->data[0].data()));
-            output_->write_string(utils::string::va(" %s\n", inst->data[1].data()));
+            output_->write_string(utils::string::va(" sub_%s %s\n", inst->data[0].data(), inst->data[1].data()));
             break;
         case opcode::OP_endswitch:
             output_->write_string(utils::string::va(" %s\n", inst->data[0].data()));
@@ -566,9 +560,9 @@ void disassembler::print_instruction(const instruction::ptr& inst)
             }
             break;
         default:
-            for (auto& d : inst->data)
+            for (const auto& data : inst->data)
             {
-                output_->write_string(utils::string::va(" %s", d.data()));
+                output_->write_string(utils::string::va(" %s", data.data()));
             }
 
             output_->write_string("\n");

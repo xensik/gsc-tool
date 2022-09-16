@@ -83,7 +83,7 @@ void disassembler::dissasemble_function(const function::ptr& func)
 
 void disassembler::dissasemble_instruction(const instruction::ptr& inst)
 {
-    switch (opcode(inst->opcode))
+    switch (static_cast<opcode>(inst->opcode))
     {
         case opcode::OP_Return:
         case opcode::OP_BoolNot:
@@ -456,11 +456,11 @@ auto disassembler::disassemble_offset() -> std::int32_t
 
 void disassembler::resolve_local_functions()
 {
-    for (auto& func : functions_)
+    for (const auto& func : functions_)
     {
-        for (auto& inst : func->instructions)
+        for (const auto& inst : func->instructions)
         {
-            switch (opcode(inst->opcode))
+            switch (static_cast<opcode>(inst->opcode))
             {
             case opcode::OP_GetLocalFunction:
             case opcode::OP_ScriptLocalFunctionCall:
@@ -485,7 +485,7 @@ auto disassembler::resolve_function(const std::string& index) -> std::string
     {
         std::uint32_t idx = std::stoul(index, nullptr, 16);
 
-        for (auto& func : functions_)
+        for (const auto& func : functions_)
         {
             if (func->index == idx)
             {
@@ -523,7 +523,7 @@ void disassembler::print_instruction(const instruction::ptr& inst)
 {
     output_->write_string(utils::string::va("\t\t%s", resolver::opcode_name(inst->opcode).data()));
 
-    switch (opcode(inst->opcode))
+    switch (static_cast<opcode>(inst->opcode))
     {
         case opcode::OP_GetLocalFunction:
         case opcode::OP_ScriptLocalFunctionCall:
@@ -535,8 +535,7 @@ void disassembler::print_instruction(const instruction::ptr& inst)
         case opcode::OP_ScriptLocalChildThreadCall:
         case opcode::OP_ScriptLocalMethodThreadCall:
         case opcode::OP_ScriptLocalMethodChildThreadCall:
-            output_->write_string(utils::string::va(" sub_%s", inst->data[0].data()));
-            output_->write_string(utils::string::va(" %s", inst->data[1].data()));
+            output_->write_string(utils::string::va(" sub_%s %s\n", inst->data[0].data(), inst->data[1].data()));
             break;
         case opcode::OP_endswitch:
             output_->write_string(utils::string::va(" %s\n", inst->data[0].data()));
@@ -563,9 +562,9 @@ void disassembler::print_instruction(const instruction::ptr& inst)
             }
             break;
         default:
-            for (auto& d : inst->data)
+            for (auto& data : inst->data)
             {
-                output_->write_string(utils::string::va(" %s", d.data()));
+                output_->write_string(utils::string::va(" %s", data.data()));
             }
             break;
     }

@@ -36,7 +36,7 @@ public:
     void mode(build mode);
 
 private:
-    auto parse_buffer(const std::string& file, char* data, size_t size) -> ast::program::ptr;
+    auto parse_buffer(const std::string& file, const char* data, size_t size) -> ast::program::ptr;
     auto parse_file(const std::string& file) -> ast::program::ptr;
     void compile_program(const ast::program::ptr& program);
     void emit_include(const ast::include::ptr& include);

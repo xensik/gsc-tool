@@ -11,7 +11,7 @@ namespace xsk::gsc::iw5
 
 auto opcode_size(std::uint8_t id) -> std::uint32_t
 {
-    switch (opcode(id))
+    switch (static_cast<opcode>(id))
     {
         case opcode::OP_End:
         case opcode::OP_Return:

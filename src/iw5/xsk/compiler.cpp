@@ -20,7 +20,7 @@ void compiler::compile(const std::string& file, std::vector<std::uint8_t>& data)
 {
     filename_ = file;
 
-    auto prog = parse_buffer(filename_, reinterpret_cast<char*>(data.data()), data.size());
+    auto prog = parse_buffer(filename_, reinterpret_cast<const char*>(data.data()), data.size());
 
     compile_program(prog);
 }
@@ -30,7 +30,7 @@ void compiler::mode(build mode)
     mode_ = mode;
 }
 
-auto compiler::parse_buffer(const std::string& file, char* data, size_t size) -> ast::program::ptr
+auto compiler::parse_buffer(const std::string& file, const char* data, size_t size) -> ast::program::ptr
 {
     ast::program::ptr result(nullptr);
 
@@ -49,9 +49,8 @@ auto compiler::parse_buffer(const std::string& file, char* data, size_t size) ->
 auto compiler::parse_file(const std::string& file) -> ast::program::ptr
 {
     auto data = resolver::file_data(file);
-    auto result = parse_buffer(file, std::get<1>(data), std::get<2>(data));
 
-    return result;
+    return parse_buffer(file, std::get<1>(data), std::get<2>(data));
 }
 
 void compiler::compile_program(const ast::program::ptr& program)
@@ -1876,8 +1875,7 @@ void compiler::emit_expr_local(const ast::expr_identifier::ptr& expr, const bloc
 
     if (itr != constants_.end())
     {
-        const auto& value = itr->second;
-        emit_expr(value, blk);
+        emit_expr(itr->second, blk);
         return;
     }
 
@@ -2931,7 +2929,7 @@ void compiler::insert_label(const std::string& name)
     {
        for (auto& inst : function_->instructions)
        {
-           switch (opcode(inst->opcode))
+           switch (static_cast<opcode>(inst->opcode))
            {
                 case opcode::OP_JumpOnFalse:
                 case opcode::OP_JumpOnTrue:
@@ -3541,93 +3539,6 @@ auto compiler::map_known_includes(const std::string& include) -> bool
     }
 
     return false;
-}
-
-void compiler::print_debug_info()
-{
-    printf("----------------------------------\n");
-    printf("files included: %zu\n", includes_.size());
-    printf("animtrees used: %zu\n", animtrees_.size());
-    printf("functions compiled: %zu\n",assembly_.size());
-
-    for (auto& func : assembly_)
-    {
-        print_function(func);
-
-        for (auto& inst : func->instructions)
-        {
-            const auto itr = func->labels.find(inst->index);
-
-            if (itr != func->labels.end())
-            {
-                print_label(itr->second);
-            }
-
-            print_instruction(inst);
-        }
-    }
-
-    printf("----------------------------------\n");
-}
-
-void compiler::print_opcodes(std::uint32_t, std::uint32_t)
-{
-    printf("    ");
-}
-
-void compiler::print_function(const function::ptr& func)
-{
-    printf("\n");
-    printf("%s\n", func->name.data());
-}
-
-void compiler::print_instruction(const instruction::ptr& inst)
-{
-    switch (opcode(inst->opcode))
-    {
-    case opcode::OP_endswitch:
-        print_opcodes(inst->index, 3);
-        printf("%s", resolver::opcode_name(inst->opcode).data());
-        printf(" %s\n", inst->data[0].data());
-        {
-            std::uint32_t totalcase = std::stoul(inst->data[0]);
-            auto index = 0;
-            for (auto casenum = 0u; casenum < totalcase; casenum++)
-            {
-                print_opcodes(inst->index, 7);
-                if (inst->data[1 + index] == "case")
-                {
-                    printf("%s %s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data(), inst->data[1 + index + 2].data());
-                    index += 3;
-                }
-                else if (inst->data[1 + index] == "default")
-                {
-                    printf("%s %s", inst->data[1 + index].data(), inst->data[1 + index + 1].data());
-                    index += 2;
-                }
-                if (casenum != totalcase - 1)
-                {
-                    printf("\n");
-                }
-            }
-        }
-        break;
-    default:
-        print_opcodes(inst->index, inst->size);
-        printf("%s", resolver::opcode_name(inst->opcode).data());
-        for (auto& d : inst->data)
-        {
-            printf(" %s", d.data());
-        }
-        break;
-    }
-
-    printf("\n");
-}
-
-void compiler::print_label(const std::string& label)
-{
-    printf("  %s\n", label.data());
 }
 
 } // namespace xsk::gsc::iw5

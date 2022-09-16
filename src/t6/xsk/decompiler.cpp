@@ -77,7 +77,7 @@ void decompiler::decompile_function(const function::ptr& func)
 
     if (stack_.size() > 0)
     {
-        throw decomp_error("stack isn't emty at function end " + func->name);
+        throw decomp_error("stack isn't empty at function end " + func->name);
     }
 
     const auto& stmt = func_->stmt;
@@ -1184,7 +1184,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
 
 void decompiler::decompile_expressions(const instruction::ptr& inst)
 {
-    const auto& itr = labels_.find(inst->index);
+    const auto itr = labels_.find(inst->index);
 
     if (itr == labels_.end())
         return;
@@ -1347,7 +1347,7 @@ void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
 {
     for (auto i = 0u; i < stmt->list.size(); i++)
     {
-        auto& entry = stmt->list.at(i);
+        const auto& entry = stmt->list.at(i);
 
         if (entry == ast::kind::asm_jump_cond)
         {

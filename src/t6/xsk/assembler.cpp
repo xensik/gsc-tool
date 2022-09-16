@@ -200,7 +200,7 @@ void assembler::assemble_function(const function::ptr& func)
 
         func->size += inst->size;
 
-        const auto& itr = func->labels.find(old_idx);
+        const auto itr = func->labels.find(old_idx);
 
         if (itr != func->labels.end())
         {
@@ -799,7 +799,7 @@ auto assembler::resolve_label(const std::string& name) -> std::int32_t
 
 auto assembler::string_offset(const std::string& name) -> std::uint16_t
 {
-    const auto& itr = stringlist_.find(name);
+    const auto itr = stringlist_.find(name);
 
     if (itr != stringlist_.end())
     {

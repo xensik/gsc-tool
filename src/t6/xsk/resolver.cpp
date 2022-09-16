@@ -32,7 +32,7 @@ void resolver::cleanup()
 
 auto resolver::opcode_id(const std::string& name) -> std::uint8_t
 {
-    const auto& itr = opcode_map_rev.find(name);
+    const auto itr = opcode_map_rev.find(name);
 
     if (itr != opcode_map_rev.end())
     {
@@ -44,7 +44,7 @@ auto resolver::opcode_id(const std::string& name) -> std::uint8_t
 
 auto resolver::opcode_name(std::uint8_t id) -> std::string
 {
-    const auto& itr = opcode_map.find(id);
+    const auto itr = opcode_map.find(id);
 
     if (itr != opcode_map.end())
     {
@@ -56,7 +56,7 @@ auto resolver::opcode_name(std::uint8_t id) -> std::string
 
 auto resolver::dvar_name(std::uint32_t id) -> std::string
 {
-    const auto& itr = dvar_map.find(id);
+    const auto itr = dvar_map.find(id);
 
     if (itr != dvar_map.end())
     {
@@ -84,22 +84,22 @@ auto resolver::make_token(std::string_view str) -> std::string
     return data;
 }
 
-auto resolver::file_data(const std::string& name) -> std::tuple<const std::string*, char*, size_t>
+auto resolver::file_data(const std::string& name) -> std::tuple<const std::string*, const char*, size_t>
 {
-    const auto& itr = files.find(name);
+    const auto itr = files.find(name);
 
     if (itr != files.end())
     {
-        return { &itr->first ,reinterpret_cast<char*>(itr->second.data()), itr->second.size() };
+        return { &itr->first ,reinterpret_cast<const char*>(itr->second.data()), itr->second.size() };
     }
 
     auto data = read_callback(name);
 
-    const auto& res = files.insert({ name, std::move(data) });
+    const auto res = files.insert({ name, std::move(data) });
 
     if (res.second)
     {
-        return { &res.first->first, reinterpret_cast<char*>(res.first->second.data()), res.first->second.size() };
+        return { &res.first->first, reinterpret_cast<const char*>(res.first->second.data()), res.first->second.size() };
     }
 
     throw error("couldn't open gsc file '" + name + "'");

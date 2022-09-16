@@ -20,7 +20,7 @@ void compiler::compile(const std::string& file, std::vector<std::uint8_t>& data)
 {
     filename_ = file;
 
-    auto prog = parse_buffer(filename_, reinterpret_cast<char*>(data.data()), data.size());
+    auto prog = parse_buffer(filename_, reinterpret_cast<const char*>(data.data()), data.size());
 
     compile_program(prog);
 }
@@ -30,7 +30,7 @@ void compiler::mode(build mode)
     mode_ = mode;
 }
 
-auto compiler::parse_buffer(const std::string& file, char* data, size_t size) -> ast::program::ptr
+auto compiler::parse_buffer(const std::string& file, const char* data, size_t size) -> ast::program::ptr
 {
     ast::program::ptr result(nullptr);
 
@@ -49,9 +49,8 @@ auto compiler::parse_buffer(const std::string& file, char* data, size_t size) ->
 auto compiler::parse_file(const std::string& file) -> ast::program::ptr
 {
     auto data = resolver::file_data(file);
-    auto result = parse_buffer(file, std::get<1>(data), std::get<2>(data));
 
-    return result;
+    return parse_buffer(file, std::get<1>(data), std::get<2>(data));
 }
 
 void compiler::compile_program(const ast::program::ptr& program)
@@ -1876,8 +1875,7 @@ void compiler::emit_expr_local(const ast::expr_identifier::ptr& expr, const bloc
 
     if (itr != constants_.end())
     {
-        const auto& value = itr->second;
-        emit_expr(value, blk);
+        emit_expr(itr->second, blk);
         return;
     }
 
@@ -2931,7 +2929,7 @@ void compiler::insert_label(const std::string& name)
     {
        for (auto& inst : function_->instructions)
        {
-           switch (opcode(inst->opcode))
+           switch (static_cast<opcode>(inst->opcode))
            {
                 case opcode::OP_JumpOnFalse:
                 case opcode::OP_JumpOnTrue:

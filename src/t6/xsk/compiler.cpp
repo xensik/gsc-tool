@@ -40,7 +40,7 @@ void compiler::compile(const std::string& file, std::vector<std::uint8_t>& data)
 {
     filename_ = file;
 
-    auto prog = parse_buffer(filename_, reinterpret_cast<char*>(data.data()), data.size());
+    auto prog = parse_buffer(filename_, reinterpret_cast<const char*>(data.data()), data.size());
 
     compile_program(prog);
 }
@@ -50,7 +50,7 @@ void compiler::mode(build mode)
     mode_ = mode;
 }
 
-auto compiler::parse_buffer(const std::string& file, char* data, size_t size) -> ast::program::ptr
+auto compiler::parse_buffer(const std::string& file, const char* data, size_t size) -> ast::program::ptr
 {
     ast::program::ptr result(nullptr);
 
@@ -147,7 +147,7 @@ void compiler::emit_decl_usingtree(const ast::decl_usingtree::ptr& animtree)
 {
     if (developer_thread_)
     {
-        throw comp_error(animtree->loc(), "cannot put #using_animtree inside /# ... #/ comment");
+        throw comp_error(animtree->loc(), "cannot put #using_animtree inside developer block comment");
     }
 
     animtrees_.push_back({ animtree->name->value, false });
@@ -155,10 +155,10 @@ void compiler::emit_decl_usingtree(const ast::decl_usingtree::ptr& animtree)
 
 void compiler::emit_decl_constant(const ast::decl_constant::ptr& constant)
 {
-    if (constants_.contains(constant->name->value))
-    {
-        throw comp_error(constant->loc(), "duplicated constant definition");
-    }
+    const auto itr = constants_.find(constant->name->value);
+
+    if (itr != constants_.end())
+        throw comp_error(constant->loc(), "duplicated constant '" + constant->name->value + "'");
 
     constants_.insert({ constant->name->value, std::move(constant->value) });
 }
@@ -1632,7 +1632,7 @@ void compiler::emit_expr_field_ref(const ast::expr_field::ptr& expr, bool set)
 
 void compiler::emit_expr_local_ref(const ast::expr_identifier::ptr& expr, bool set)
 {
-    const auto& itr = constants_.find(expr->value);
+    const auto itr = constants_.find(expr->value);
 
     if (itr != constants_.end())
     {
@@ -1723,7 +1723,7 @@ void compiler::emit_expr_field(const ast::expr_field::ptr& expr)
 void compiler::emit_expr_local(const ast::expr_identifier::ptr& expr)
 {
     // is constant ( should only allow: string, loc string, number, vector)
-    const auto& itr = constants_.find(expr->value);
+    const auto itr = constants_.find(expr->value);
 
     if (itr != constants_.end())
         emit_expr(itr->second);
@@ -2329,7 +2329,7 @@ auto compiler::create_label() -> std::string
 
 auto compiler::insert_label() -> std::string
 {
-    const auto& itr = function_->labels.find(index_);
+    const auto itr = function_->labels.find(index_);
 
     if (itr != function_->labels.end())
     {
@@ -2346,7 +2346,7 @@ auto compiler::insert_label() -> std::string
 
 void compiler::insert_label(const std::string& name)
 {
-    const auto& itr = function_->labels.find(index_);
+    const auto itr = function_->labels.find(index_);
 
     if (itr != function_->labels.end())
     {
@@ -2387,7 +2387,7 @@ void compiler::print_function(const function::ptr& func)
     output_->write_string("\n");
     output_->write_string(utils::string::va("sub_%s %i %i\n", func->name.data(), func->params, func->flags));
 
-    for (auto& inst : func->instructions)
+    for (const auto& inst : func->instructions)
     {
         const auto itr = func->labels.find(inst->index);
 

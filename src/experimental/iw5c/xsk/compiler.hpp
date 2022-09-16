@@ -36,7 +36,7 @@ public:
     void mode(build mode);
 
 private:
-    auto parse_buffer(const std::string& file, char* data, size_t size) -> ast::program::ptr;
+    auto parse_buffer(const std::string& file, const char* data, size_t size) -> ast::program::ptr;
     auto parse_file(const std::string& file) -> ast::program::ptr;
     void compile_program(const ast::program::ptr& program);
     void emit_include(const ast::include::ptr& include);
@@ -153,18 +153,7 @@ private:
     auto insert_label() -> std::string;
     void insert_label(const std::string& label);
 
-    static gsc::include_t include_maps_mp_utility_;
-    static gsc::include_t include_common_scripts_utility_;
-    static gsc::include_t include_common_scripts_createfx_;
-    static gsc::include_t include_maps_mp_gametypes_hud_util_;
     auto map_known_includes(const std::string& include) -> bool;
-
-    // debug
-    void print_debug_info();
-    void print_opcodes(std::uint32_t index, std::uint32_t size);
-    void print_function(const function::ptr& func);
-    void print_instruction(const instruction::ptr& inst);
-    void print_label(const std::string& label);
 };
 
 } // namespace xsk::gsc::iw5c

@@ -18,7 +18,7 @@ public:
     static auto dvar_name(std::uint32_t id) -> std::string;
 
     static auto make_token(std::string_view str) -> std::string;
-    static auto file_data(const std::string& name) -> std::tuple<const std::string*, char*, size_t>;
+    static auto file_data(const std::string& name) -> std::tuple<const std::string*, const char*, size_t>;
     static auto fs_to_game_path(const std::filesystem::path& file) -> std::filesystem::path;
 };
 

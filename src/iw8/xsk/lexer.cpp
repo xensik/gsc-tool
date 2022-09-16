@@ -569,7 +569,7 @@ lex_name:
 
             if (buffer_.length < 16)
             {
-                const auto& itr = keyword_map.find(std::string_view(buffer_.data, buffer_.length));
+                const auto itr = keyword_map.find(std::string_view(buffer_.data, buffer_.length));
 
                 if (itr != keyword_map.end())
                 {
@@ -600,7 +600,7 @@ lex_name:
 
             if (buffer_.length < 17)
             {
-                const auto& itr = keyword_map.find(std::string_view(buffer_.data, buffer_.length));
+                const auto itr = keyword_map.find(std::string_view(buffer_.data, buffer_.length));
 
                 if (itr != keyword_map.end())
                     return parser::symbol_type(itr->second, loc_);
