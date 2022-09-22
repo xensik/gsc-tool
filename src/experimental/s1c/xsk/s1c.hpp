@@ -7,8 +7,17 @@
 
 #include "utils/xsk/utils.hpp"
 
-namespace xsk::gsc::s1_console
+#include "assembler.hpp"
+#include "disassembler.hpp"
+#include "compiler.hpp"
+#include "decompiler.hpp"
+#include "resolver.hpp"
+#include "context.hpp"
+
+namespace xsk::gsc::s1c
 {
+
+constexpr std::uint16_t max_string_id = 0x0;
 
 enum class opcode : std::uint8_t
 {
@@ -32,7 +41,7 @@ enum class opcode : std::uint8_t
     OP_ClearLocalVariableFieldCached0 = 0x2E,
     OP_notify = 0x2F,
     OP_GetVector = 0x30,
-    OP_ScriptMethodChildThreadCallPointer = 0x31,
+    OP_ScriptChildThreadCallPointer = 0x31,
     OP_PreScriptCall = 0x32,
     OP_GetByte = 0x33,
     OP_ScriptFarMethodThreadCall = 0x34,
@@ -170,4 +179,4 @@ enum class opcode : std::uint8_t
 
 auto opcode_size(std::uint8_t id) -> std::uint32_t;
 
-} // namespace xsk::gsc::s1_console
+} // namespace xsk::gsc::s1c

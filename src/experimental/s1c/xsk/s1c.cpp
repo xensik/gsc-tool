@@ -4,14 +4,14 @@
 // that can be found in the LICENSE file.
 
 #include "stdafx.hpp"
-#include "iw6_console.hpp"
+#include "s1c.hpp"
 
-namespace xsk::gsc::iw6_console
+namespace xsk::gsc::s1c
 {
 
 auto opcode_size(std::uint8_t id) -> std::uint32_t
 {
-    switch (opcode(id))
+    switch (static_cast<opcode>(id))
     {
     case opcode::OP_End:
     case opcode::OP_Return:
@@ -172,8 +172,8 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
     case opcode::OP_GetVector:
         return 13;
     default:
-        throw std::runtime_error("Couldn't resolve instruction size for " + std::to_string(id));
+        throw error("couldn't resolve instruction size for " + std::to_string(id));
     }
 }
 
-} // namespace xsk::gsc::iw6_console
+} // namespace xsk::gsc::s1c

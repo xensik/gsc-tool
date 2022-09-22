@@ -6,6 +6,8 @@
 #include "stdafx.hpp"
 #include "utils/xsk/utils.hpp"
 #include "experimental/iw5c/xsk/iw5c.hpp"
+#include "experimental/iw6c/xsk/iw6c.hpp"
+#include "experimental/s1c/xsk/s1c.hpp"
 #include "iw5/xsk/iw5.hpp"
 #include "iw6/xsk/iw6.hpp"
 #include "iw7/xsk/iw7.hpp"
@@ -22,7 +24,7 @@ namespace xsk
 
 enum class encd { _, source, assembly, binary };
 enum class mode { _, assemble, disassemble, compile, decompile };
-enum class game { _, iw5c, iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2, t6 };
+enum class game { _, iw5c, iw6c, s1c, iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2, t6 };
 
 const std::map<std::string, encd> exts =
 {
@@ -43,6 +45,8 @@ const std::map<std::string, mode> modes =
 const std::map<std::string, game> games =
 {
     { "iw5c", game::iw5c },
+    { "iw6c", game::iw6c },
+    { "s1c", game::s1c },
     { "iw5", game::iw5 },
     { "iw6", game::iw6 },
     { "iw7", game::iw7 },
@@ -102,6 +106,10 @@ auto choose_resolver_file_name(uint32_t id, game& game) -> std::string
     {
         case game::iw5c:
             return iw5c::resolver::token_name(static_cast<std::uint16_t>(id));
+        case game::iw6c:
+            return iw6c::resolver::token_name(static_cast<std::uint16_t>(id));
+        case game::s1c:
+            return s1c::resolver::token_name(static_cast<std::uint16_t>(id));
         case game::iw5:
             return iw5::resolver::token_name(static_cast<std::uint16_t>(id));
         case game::iw6:
@@ -406,6 +414,10 @@ void init()
 {
     contexts[game::iw5c] = std::make_unique<iw5c::context>();
     contexts[game::iw5c]->init(build::prod, utils::file::read);
+    contexts[game::iw6c] = std::make_unique<iw6c::context>();
+    contexts[game::iw6c]->init(build::prod, utils::file::read);
+    contexts[game::s1c] = std::make_unique<s1c::context>();
+    contexts[game::s1c]->init(build::prod, utils::file::read);
     contexts[game::iw5] = std::make_unique<iw5::context>();
     contexts[game::iw5]->init(build::prod, utils::file::read);
     contexts[game::iw6] = std::make_unique<iw6::context>();
