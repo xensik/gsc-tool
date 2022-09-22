@@ -12,6 +12,7 @@
 #include "iw6/xsk/iw6.hpp"
 #include "iw7/xsk/iw7.hpp"
 #include "iw8/xsk/iw8.hpp"
+#include "iw9/xsk/iw9.hpp"
 #include "s1/xsk/s1.hpp"
 #include "s2/xsk/s2.hpp"
 #include "s4/xsk/s4.hpp"
@@ -24,7 +25,7 @@ namespace xsk
 
 enum class encd { _, source, assembly, binary };
 enum class mode { _, assemble, disassemble, compile, decompile };
-enum class game { _, iw5c, iw6c, s1c, iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2, t6 };
+enum class game { _, iw5c, iw6c, s1c, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6 };
 
 const std::map<std::string, encd> exts =
 {
@@ -51,6 +52,7 @@ const std::map<std::string, game> games =
     { "iw6", game::iw6 },
     { "iw7", game::iw7 },
     { "iw8", game::iw8 },
+    { "iw9", game::iw9 },
     { "s1", game::s1 },
     { "s2", game::s2 },
     { "s4", game::s4 },
@@ -118,6 +120,8 @@ auto choose_resolver_file_name(uint32_t id, game& game) -> std::string
             return iw7::resolver::token_name(id);
         case game::iw8:
             return iw8::resolver::token_name(id);
+        case game::iw9:
+            return iw9::resolver::token_name(id);
         case game::s1:
             return s1::resolver::token_name(static_cast<std::uint16_t>(id));
         case game::s2:
@@ -426,6 +430,8 @@ void init()
     contexts[game::iw7]->init(build::prod, utils::file::read);
     contexts[game::iw8] = std::make_unique<iw8::context>();
     contexts[game::iw8]->init(build::prod, utils::file::read);
+    contexts[game::iw9] = std::make_unique<iw9::context>();
+    contexts[game::iw9]->init(build::prod, utils::file::read);
     contexts[game::s1] = std::make_unique<s1::context>();
     contexts[game::s1]->init(build::prod, utils::file::read);
     contexts[game::s2] = std::make_unique<s2::context>();

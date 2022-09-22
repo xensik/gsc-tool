@@ -12,6 +12,7 @@ A utility to compile & decompile IW engine game scripts.
 - **IW6** *(Call of Duty: Ghosts)* `PC` `PS3` `PS4` `Xbox 360` `Xbox One`
 - **IW7** *(Call of Duty: Infinite Warfare)* `PC` `PS4` `Xbox One`
 - **IW8** *(Call of Duty: Modern Warfare (2019) / Warzone)* `PC` `PS4` `PS5` `Xbox One` `Xbox Series X|S`
+- **IW9** *(Call of Duty: Modern Warfare II (2022) / Warzone 2)*  ***\*WIP\****
 - **S1** *(Call of Duty: Advanced Warfare)* `PC` `PS3` `PS4` `Xbox 360` `Xbox One`
 - **S2** *(Call of Duty: WWII)* `PC` `PS4` `Xbox One`
 - **S4** *(Call of Duty: Vanguard)* `PC` `PS4` `PS5` `Xbox One` `Xbox Series X|S`
