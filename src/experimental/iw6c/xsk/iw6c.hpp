@@ -17,7 +17,7 @@
 namespace xsk::gsc::iw6c
 {
 
-constexpr std::uint16_t max_string_id = 0x0;
+constexpr std::uint16_t max_string_id = 0x8EFA;
 
 enum class opcode : std::uint8_t
 {
