@@ -627,7 +627,7 @@ void print_usage()
 {
     std::cout << "usage: gsc-tool.exe <mode> <game> <path>\n";
     std::cout << "\t* modes: asm, disasm, comp, decomp\n";
-    std::cout << "\t* games: iw5c, iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2, t6\n";
+    std::cout << "\t* games: iw5c, iw6c, s1c, iw5, iw6, iw7, iw8, s1, s2, s4, h1, h2, t6\n";
     std::cout << "\t* paths: file or directory (recursive)\n";
 }
 /*

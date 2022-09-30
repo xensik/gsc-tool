@@ -18,6 +18,7 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
     case opcode::OP_GetUndefined:
     case opcode::OP_GetZero:
     case opcode::OP_waittillFrameEnd:
+    case opcode::OP_waitFrame:
     case opcode::OP_EvalLocalVariableCached0:
     case opcode::OP_EvalLocalVariableCached1:
     case opcode::OP_EvalLocalVariableCached2:
@@ -51,7 +52,7 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
     case opcode::OP_less:
     case opcode::OP_greater:
     case opcode::OP_less_equal:
-//  case opcode::OP_waittillmatch2:
+    case opcode::OP_waittillmatch2:
     case opcode::OP_waittill:
     case opcode::OP_notify:
     case opcode::OP_endon:
@@ -92,10 +93,12 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
     case opcode::OP_EvalNewLocalArrayRefCached0:
     case opcode::OP_EvalLocalArrayRefCached:
     case opcode::OP_ScriptThreadCallPointer:
+    case opcode::OP_ScriptChildThreadCallPointer:
     case opcode::OP_ScriptMethodThreadCallPointer:
     case opcode::OP_ScriptMethodChildThreadCallPointer:
     case opcode::OP_CallBuiltinPointer:
     case opcode::OP_CallBuiltinMethodPointer:
+    case opcode::OP_waittillmatch:
     case opcode::OP_SafeCreateVariableFieldCached:
     case opcode::OP_SafeSetVariableFieldCached:
     case opcode::OP_SafeSetWaittillVariableFieldCached:
@@ -118,7 +121,6 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
     case opcode::OP_endswitch:
     case opcode::OP_JumpOnFalse:
     case opcode::OP_JumpOnTrue:
-    case opcode::OP_waittillmatch:
     case opcode::OP_EvalLevelFieldVariable:
     case opcode::OP_EvalAnimFieldVariable:
     case opcode::OP_EvalSelfFieldVariable:

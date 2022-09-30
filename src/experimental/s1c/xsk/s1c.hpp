@@ -18,6 +18,8 @@ namespace xsk::gsc::s1c
 {
 
 constexpr std::uint16_t max_string_id = 0xA51D;
+// ps3 ??
+// 360 0xA51D
 
 enum class opcode : std::uint8_t
 {
@@ -41,10 +43,10 @@ enum class opcode : std::uint8_t
     OP_ClearLocalVariableFieldCached0 = 0x2E,
     OP_notify = 0x2F,
     OP_GetVector = 0x30,
-    OP_ScriptChildThreadCallPointer = 0x31,
+    OP_ScriptMethodChildThreadCallPointer = 0x31,
     OP_PreScriptCall = 0x32,
     OP_GetByte = 0x33,
-    OP_ScriptFarMethodThreadCall = 0x34,
+    OP_ScriptFarThreadCall = 0x34,
     OP_SetSelfFieldVariableField = 0x35,
     OP_JumpOnFalseExpr = 0x36,
     OP_GetUndefined = 0x37,
@@ -62,7 +64,7 @@ enum class opcode : std::uint8_t
     OP_GetLevel = 0x43,
     OP_size = 0x44,
     OP_SafeSetWaittillVariableFieldCached = 0x45,
-    OP_ScriptLocalThreadCall = 0x46,
+    OP_ScriptLocalMethodThreadCall = 0x46,
     OP_AddArray = 0x47,
     OP_endon = 0x48,
     OP_EvalFieldVariable = 0x49,
@@ -71,7 +73,7 @@ enum class opcode : std::uint8_t
     OP_Return = 0x4C,
     OP_CreateLocalVariable = 0x4D,
     OP_SafeSetVariableFieldCached0 = 0x4E,
-    OP_GetBuiltinFunction = 0x4F,
+    OP_GetBuiltinMethod = 0x4F,
     OP_ScriptLocalMethodCall = 0x50,
     OP_CallBuiltinMethodPointer = 0x51,
     OP_ScriptLocalChildThreadCall = 0x52,
@@ -91,14 +93,14 @@ enum class opcode : std::uint8_t
     OP_EvalLocalVariableCached5 = 0x60,
     OP_EvalLocalVariableCached = 0x61,
     OP_EvalNewLocalArrayRefCached0 = 0x62,
-    OP_ScriptMethodChildThreadCallPointer = 0x63,
+    OP_ScriptChildThreadCallPointer = 0x63,
     OP_EvalLocalVariableObjectCached = 0x64,
-    OP_ScriptLocalMethodThreadCall = 0x65,
+    OP_ScriptLocalThreadCall = 0x65,
     OP_GetInteger = 0x66,
     OP_ScriptMethodCallPointer = 0x67,
     OP_checkclearparams = 0x68,
     OP_SetAnimFieldVariableField = 0x69,
-    // ---- = 0x6A,
+    OP_waittillmatch2 = 0x6A,
     OP_minus  = 0x6B,
     OP_ScriptLocalFunctionCall2 = 0x6C,
     OP_GetNegUnsignedShort = 0x6D,
@@ -106,7 +108,7 @@ enum class opcode : std::uint8_t
     OP_SafeCreateVariableFieldCached = 0x6F,
     OP_greater_equal = 0x70,
     OP_vector = 0x71,
-    OP_GetBuiltinMethod = 0x72,
+    OP_GetBuiltinFunction = 0x72,
     OP_endswitch = 0x73,
     OP_ClearArray = 0x74,
     OP_DecTop = 0x75,
@@ -122,7 +124,7 @@ enum class opcode : std::uint8_t
     OP_GetAnimTree = 0x7F,
     OP_EvalLocalArrayCached = 0x80,
     OP_mod = 0x81,
-    OP_ScriptFarThreadCall = 0x82,
+    OP_ScriptFarMethodThreadCall = 0x82,
     OP_GetUnsignedShort = 0x83,
     OP_clearparams = 0x84,
     OP_ScriptMethodThreadCallPointer = 0x85,

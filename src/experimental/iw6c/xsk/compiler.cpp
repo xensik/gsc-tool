@@ -409,8 +409,7 @@ void compiler::emit_stmt_waittillmatch(const ast::stmt_waittillmatch::ptr& stmt,
     emit_expr(stmt->event, blk);
     emit_expr(stmt->obj, blk);
     emit_opcode(opcode::OP_waittillmatch, utils::string::va("%d", stmt->args->list.size()));
-//  emit_opcode(opcode::OP_waittillmatch2);
-// TODOOO!
+    emit_opcode(opcode::OP_waittillmatch2);
     emit_opcode(opcode::OP_clearparams);
 }
 
@@ -1332,8 +1331,7 @@ void compiler::emit_expr_call_pointer(const ast::expr_pointer::ptr& expr, const 
             emit_opcode(opcode::OP_ScriptThreadCallPointer, argcount);
             break;
         case ast::call::mode::childthread:
-            throw comp_error(expr->loc(), "childthread unimplemented!!");
-//          emit_opcode(opcode::OP_ScriptChildThreadCallPointer, argcount);
+            emit_opcode(opcode::OP_ScriptChildThreadCallPointer, argcount);
             break;
         case ast::call::mode::builtin:
             emit_opcode(opcode::OP_CallBuiltinPointer, argcount);

@@ -724,7 +724,6 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             stack_.push(std::move(node));
             break;
         }
-/*
         case opcode::OP_ScriptChildThreadCallPointer:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
@@ -743,7 +742,6 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             stack_.push(std::move(node));
             break;
         }
-*/
         case opcode::OP_ScriptMethodThreadCallPointer:
         {
             auto args = std::make_unique<ast::expr_arguments>(loc);
@@ -1685,7 +1683,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
             expr_labels_.push_back(inst->data[0]);
             break;
         }
-//      case opcode::OP_waittillmatch2:
+        case opcode::OP_waittillmatch2:
         case opcode::OP_checkclearparams:
         case opcode::OP_CastFieldObject:
         case opcode::OP_CastBool:

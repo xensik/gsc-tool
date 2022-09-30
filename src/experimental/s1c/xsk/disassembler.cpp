@@ -153,7 +153,7 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
         case opcode::OP_vector:
         case opcode::OP_bit_or:
         case opcode::OP_AddArray:
-//      case opcode::OP_waittillmatch2:
+        case opcode::OP_waittillmatch2:
         case opcode::OP_shift_right:
             break;
         case opcode::OP_GetByte:
@@ -178,11 +178,11 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
             break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
-            script_->seek(4);
+            script_->seek(2);
             inst->data.push_back(utils::string::to_literal(stack_->read_c_string()));
             break;
         case opcode::OP_GetAnimation:
-            script_->seek(8);
+            script_->seek(4);
             inst->data.push_back(utils::string::quote(stack_->read_c_string(), false));
             inst->data.push_back(utils::string::quote(stack_->read_c_string(), false));
             break;
@@ -226,7 +226,7 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
         case opcode::OP_CallBuiltinPointer:
         case opcode::OP_CallBuiltinMethodPointer:
         case opcode::OP_ScriptThreadCallPointer:
-//      case opcode::OP_ScriptChildThreadCallPointer:
+        case opcode::OP_ScriptChildThreadCallPointer:
         case opcode::OP_ScriptMethodThreadCallPointer:
         case opcode::OP_ScriptMethodChildThreadCallPointer:
             inst->data.push_back(utils::string::va("%i", script_->read_endian<std::uint8_t>()));

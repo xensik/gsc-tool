@@ -230,7 +230,7 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_vector:
         case opcode::OP_bit_or:
         case opcode::OP_AddArray:
-    //  case opcode::OP_waittillmatch2:
+        case opcode::OP_waittillmatch2:
         case opcode::OP_shift_right:
             break;
         case opcode::OP_GetByte:
@@ -255,11 +255,10 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
             break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
-            script_->write_endian<std::uint32_t>(0);
+            script_->write_endian<std::uint16_t>(0);
             stack_->write_c_string(inst->data[0]);
             break;
         case opcode::OP_GetAnimation:
-            script_->write_endian<std::uint32_t>(0);
             script_->write_endian<std::uint32_t>(0);
             stack_->write_c_string(inst->data[0]);
             stack_->write_c_string(inst->data[1]);
@@ -304,7 +303,7 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
         case opcode::OP_CallBuiltinPointer:
         case opcode::OP_CallBuiltinMethodPointer:
         case opcode::OP_ScriptThreadCallPointer:
-//      case opcode::OP_ScriptChildThreadCallPointer:
+        case opcode::OP_ScriptChildThreadCallPointer:
         case opcode::OP_ScriptMethodThreadCallPointer:
         case opcode::OP_ScriptMethodChildThreadCallPointer:
             script_->write_endian<std::uint8_t>(static_cast<std::uint8_t>(std::stoi(inst->data[0])));
