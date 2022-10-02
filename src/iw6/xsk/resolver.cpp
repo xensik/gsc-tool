@@ -33666,7 +33666,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 14982> token_list
 //  { 0x7B13, "" },
 //  { 0x7B14, "" },
 //  { 0x7B15, "" },
-    { 0xstatget, "statget" },
+    { 0x7B16, "statget" },
     { 0x7B17, "statgetbuffered" },
 //  { 0x7B18, "" },
 //  { 0x7B19, "" },
