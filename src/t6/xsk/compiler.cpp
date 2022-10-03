@@ -1772,7 +1772,6 @@ void compiler::emit_expr_object(const ast::expr& expr)
 void compiler::emit_expr_vector(const ast::expr_vector::ptr& expr)
 {
     std::vector<std::string> data;
-    bool isexpr = false;
     bool isconst = true;
     auto flags = 0;
 
@@ -1798,7 +1797,6 @@ void compiler::emit_expr_vector(const ast::expr_vector::ptr& expr)
     }
     else
     {
-        isexpr = true;
         isconst = false;
     }
 
@@ -1824,7 +1822,6 @@ void compiler::emit_expr_vector(const ast::expr_vector::ptr& expr)
     }
     else
     {
-        isexpr = true;
         isconst = false;
     }
 
@@ -1850,7 +1847,6 @@ void compiler::emit_expr_vector(const ast::expr_vector::ptr& expr)
     }
     else
     {
-        isexpr = true;
         isconst = false;
     }
 
@@ -1858,16 +1854,13 @@ void compiler::emit_expr_vector(const ast::expr_vector::ptr& expr)
     {
         emit_opcode(opcode::OP_VectorConstant, utils::string::va("%d", flags));
     }
-    else if (isexpr)
+    else
     {
+        // OP_GetVector seems to be broken, always use OP_Vector
         emit_expr(expr->z);
         emit_expr(expr->y);
         emit_expr(expr->x);
         emit_opcode(opcode::OP_Vector);
-    }
-    else
-    {
-        emit_opcode(opcode::OP_GetVector, data);
     }
 }
 
