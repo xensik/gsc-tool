@@ -2052,7 +2052,7 @@ void compiler::emit_expr_animation(const ast::expr_animation::ptr& expr)
 
     if (tree.loaded)
     {
-        emit_opcode(opcode::OP_GetAnimation, { "''", expr->value });
+        emit_opcode(opcode::OP_GetAnimation, { "", expr->value });
     }
     else
     {
@@ -2072,7 +2072,7 @@ void compiler::emit_expr_animtree(const ast::expr_animtree::ptr& expr)
 
     if (tree.loaded)
     {
-        emit_opcode(opcode::OP_GetAnimTree, "''");
+        emit_opcode(opcode::OP_GetAnimTree, "");
     }
     else
     {

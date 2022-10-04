@@ -1297,12 +1297,7 @@ auto program::print() const -> std::string
 
     for (const auto& entry : declarations)
     {
-        if (entry == kind::decl_thread)
-        {
-            data += "\n";
-        }
-
-        data += entry.print();
+        data += "\n" + entry.print();
     }
 
     return data;
