@@ -34,6 +34,7 @@ private:
     void disassemble_function(const function::ptr& func);
     void disassemble_instruction(const instruction::ptr& inst);
     void disassemble_string(const instruction::ptr& inst);
+    void disassemble_animtree(const instruction::ptr& inst);
     void disassemble_animation(const instruction::ptr& inst);
     void disassemble_localvars(const instruction::ptr& inst);
     void disassemble_import(const instruction::ptr& inst);

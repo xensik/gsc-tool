@@ -914,6 +914,9 @@ void compiler::emit_expr(const ast::expr& expr)
         case ast::kind::expr_animation:
             emit_expr_animation(expr.as_animation);
             break;
+        case ast::kind::expr_animtree:
+            emit_expr_animtree(expr.as_animtree);
+            break;
         case ast::kind::expr_identifier:
             emit_expr_local(expr.as_identifier);
             break;
@@ -1872,6 +1875,16 @@ void compiler::emit_expr_animation(const ast::expr_animation::ptr& expr)
     }
 
     emit_opcode(opcode::OP_GetAnimation, { animtrees_.back(), expr->value });
+}
+
+void compiler::emit_expr_animtree(const ast::expr_animtree::ptr& expr)
+{
+    if (animtrees_.size() == 0)
+    {
+        throw comp_error( expr->loc(), "trying to use animtree without specified using animtree");
+    }
+
+   emit_opcode(opcode::OP_GetInteger, { animtrees_.back(), "-1" });
 }
 
 void compiler::emit_expr_istring(const ast::expr_istring::ptr& expr)

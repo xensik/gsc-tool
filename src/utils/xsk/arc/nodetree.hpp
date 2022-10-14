@@ -21,6 +21,7 @@ enum class kind
     expr_istring,
     expr_path,
     expr_identifier,
+    expr_animtree,
     expr_animation,
     expr_level,
     expr_anim,
@@ -152,6 +153,7 @@ struct expr_string;
 struct expr_istring;
 struct expr_path;
 struct expr_identifier;
+struct expr_animtree;
 struct expr_animation;
 struct expr_level;
 struct expr_anim;
@@ -305,6 +307,7 @@ union expr
     std::unique_ptr<expr_istring> as_istring;
     std::unique_ptr<expr_path> as_path;
     std::unique_ptr<expr_identifier> as_identifier;
+    std::unique_ptr<expr_animtree> as_animtree;
     std::unique_ptr<expr_animation> as_animation;
     std::unique_ptr<expr_level> as_level;
     std::unique_ptr<expr_anim> as_anim;
@@ -625,6 +628,16 @@ struct expr_identifier : public node
     expr_identifier(const location& loc, const std::string& value);
     auto print() const -> std::string override;
     friend bool operator==(const expr_identifier& lhs, const expr_identifier& rhs);
+};
+
+struct expr_animtree : public node
+{
+    using ptr = std::unique_ptr<expr_animtree>;
+
+    expr_animtree();
+    expr_animtree(const location& loc);
+    auto print() const -> std::string override;
+    friend bool operator==(const expr_animtree& lhs, const expr_animtree& rhs);
 };
 
 struct expr_animation : public node

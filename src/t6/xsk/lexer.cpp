@@ -29,6 +29,7 @@ const std::unordered_map<std::string_view, parser::token::token_kind_type> keywo
     { "#inline", parser::token::INLINE },
     { "#include", parser::token::INCLUDE },
     { "#using_animtree", parser::token::USINGTREE },
+    { "#animtree", parser::token::ANIMTREE },
     { "endon", parser::token::ENDON },
     { "notify", parser::token::NOTIFY },
     { "wait", parser::token::WAIT },
