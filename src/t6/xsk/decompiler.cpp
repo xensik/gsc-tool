@@ -145,7 +145,6 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
         }
         case opcode::OP_GetByte:
         case opcode::OP_GetUnsignedShort:
-        case opcode::OP_GetInteger:
         {
             auto node = std::make_unique<ast::expr_integer>(loc, inst->data[0]);
             stack_.push(std::move(node));
@@ -156,6 +155,43 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
         {
             auto node = std::make_unique<ast::expr_integer>(loc, "-" + inst->data[0]);
             stack_.push(std::move(node));
+            break;
+        }
+        case opcode::OP_GetInteger:
+        {
+            if (inst->data.size() == 2)
+            {
+                bool found = false;
+
+                //for (const auto& entry : program_->declarations) TODO: C++20 reverse_view
+                for (auto i = program_->declarations.rbegin(); i != program_->declarations.rend(); ++i)
+                {
+                    if (*i == ast::kind::decl_usingtree)
+                    {
+                        if (i->as_usingtree->name->value == inst->data[0])
+                            found = true;
+                        else
+                            found = false;
+
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    auto tree = std::make_unique<ast::expr_string>(loc, inst->data[0]);
+                    auto decl = std::make_unique<ast::decl_usingtree>(loc, std::move(tree));
+                    program_->declarations.push_back(ast::decl(std::move(decl)));
+                }
+
+                auto node = std::make_unique<ast::expr_animtree>(loc);
+                stack_.push(std::move(node));
+            }
+            else
+            {
+                auto node = std::make_unique<ast::expr_integer>(loc, inst->data[0]);
+                stack_.push(std::move(node));
+            }
             break;
         }
         case opcode::OP_GetFloat:
@@ -217,14 +253,17 @@ void decompiler::decompile_instruction(const instruction::ptr& inst, bool last)
         {
             bool found = false;
 
-            for (const auto& entry : program_->declarations)
+            //for (const auto& entry : program_->declarations) TODO: C++20 reverse_view
+            for (auto i = program_->declarations.rbegin(); i != program_->declarations.rend(); ++i)
             {
-                if (entry == ast::kind::decl_usingtree)
+                if (*i == ast::kind::decl_usingtree)
                 {
-                    if (entry.as_usingtree->name->value == inst->data[0])
+                    if (i->as_usingtree->name->value == inst->data[0])
                         found = true;
                     else
                         found = false;
+
+                    break;
                 }
             }
 
@@ -1426,27 +1465,42 @@ void decompiler::decompile_ifelses(const ast::stmt_list::ptr& stmt)
 
 void decompiler::decompile_aborts(const ast::stmt_list::ptr& stmt)
 {
-    for (auto i = 0u; i < stmt->list.size(); i++)
+    for (auto i = static_cast<std::make_signed_t<std::size_t>>(stmt->list.size() - 1); i >= 0; i--)
+    //for (auto i = 0u; i < stmt->list.size(); i++)
     {
         if (stmt->list.at(i) == ast::kind::asm_jump)
         {
             auto loc = stmt->list.at(i).loc();
             auto jump_loc = stmt->list.at(i).as_jump->value;
 
-            if (jump_loc == blocks_.back().loc_continue)
-            {
-                stmt->list.erase(stmt->list.begin() + i);
-                auto new_stmt = ast::stmt(std::make_unique<ast::stmt_continue>(loc));
-                stmt->list.insert(stmt->list.begin() + i, std::move(new_stmt));
-            }
-            else if (jump_loc == blocks_.back().loc_break)
+            if (jump_loc == blocks_.back().loc_break)
             {
                 stmt->list.erase(stmt->list.begin() + i);
                 auto new_stmt = ast::stmt(std::make_unique<ast::stmt_break>(loc));
                 stmt->list.insert(stmt->list.begin() + i, std::move(new_stmt));
             }
+            else if (jump_loc == blocks_.back().loc_continue)
+            {
+                stmt->list.erase(stmt->list.begin() + i);
+                auto new_stmt = ast::stmt(std::make_unique<ast::stmt_continue>(loc));
+                stmt->list.insert(stmt->list.begin() + i, std::move(new_stmt));
+            }
             else
             {
+                // fix for treyarch compiler bug: nested switch break locs are not preserved
+                if (jump_loc != blocks_.back().loc_end)
+                {
+                    auto j = find_location_index(stmt, jump_loc);
+
+                    if (stmt->list.at(j).as_node->kind() == ast::kind::stmt_break)
+                    {
+                        stmt->list.erase(stmt->list.begin() + i);
+                        auto new_stmt = ast::stmt(std::make_unique<ast::stmt_break>(loc));
+                        stmt->list.insert(stmt->list.begin() + i, std::move(new_stmt));
+
+                        continue;
+                    }
+                }
                 std::cout << "WARNING: unresolved jump to '" + jump_loc + "', maybe incomplete for loop\n";
             }
         }

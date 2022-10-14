@@ -123,6 +123,7 @@ private:
     void emit_expr_object(const ast::expr& expr);
     void emit_expr_vector(const ast::expr_vector::ptr& expr);
     void emit_expr_animation(const ast::expr_animation::ptr& expr);
+    void emit_expr_animtree(const ast::expr_animtree::ptr& expr);
     void emit_expr_istring(const ast::expr_istring::ptr& expr);
     void emit_expr_string(const ast::expr_string::ptr& expr);
     void emit_expr_hash(const ast::expr_hash::ptr& expr);

@@ -108,7 +108,9 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
 
         for (auto j = 0; j < ref_count; j++)
         {
-            entry->refs.push_back(script_->read<std::uint32_t>());
+            auto ref = script_->read<std::uint32_t>();
+            entry->refs.push_back(ref);
+            anim_refs_.insert({ ref, entry });
         }
 
         for (auto k = 0; k < anim_count; k++)
@@ -367,6 +369,7 @@ void disassembler::disassemble_instruction(const instruction::ptr& inst)
             break;
         case opcode::OP_GetInteger:
             inst->size += script_->align(4);
+            disassemble_animtree(inst);
             inst->data.push_back(utils::string::va("%i", script_->read<std::int32_t>()));
             break;
         case opcode::OP_GetFloat:
@@ -463,6 +466,19 @@ void disassembler::disassemble_string(const instruction::ptr& inst)
     }
 
     throw disasm_error(utils::string::va("string reference not found at index '%04X'!", inst->index));
+}
+
+void disassembler::disassemble_animtree(const instruction::ptr& inst)
+{
+    // GetInteger(-1) push animtree name if ref found
+
+    const auto ref = script_->pos();
+    const auto entry = anim_refs_.find(ref);
+
+    if (entry != anim_refs_.end())
+    {
+        inst->data.push_back(entry->second->name);
+    }
 }
 
 void disassembler::disassemble_animation(const instruction::ptr& inst)

@@ -56,6 +56,7 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %token INLINE           "#inline"
 %token INCLUDE          "#include"
 %token USINGTREE        "#using_animtree"
+%token ANIMTREE         "#animtree"
 %token ENDON            "endon"
 %token NOTIFY           "notify"
 %token WAIT             "wait"
@@ -243,6 +244,7 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %type <ast::expr_anim::ptr>              expr_anim
 %type <ast::expr_level::ptr>             expr_level
 %type <ast::expr_animation::ptr>         expr_animation
+%type <ast::expr_animtree::ptr>          expr_animtree
 %type <ast::expr_identifier::ptr>        expr_identifier_nosize
 %type <ast::expr_identifier::ptr>        expr_identifier
 %type <ast::expr_path::ptr>              expr_path
@@ -661,6 +663,7 @@ expr_primitive
     | expr_anim              { $$.as_node = std::move($1); }
     | expr_level             { $$.as_node = std::move($1); }
     | expr_animation         { $$.as_node = std::move($1); }
+    | expr_animtree          { $$.as_node = std::move($1); }
     | expr_identifier        { $$.as_node = std::move($1); }
     | expr_istring           { $$.as_node = std::move($1); }
     | expr_string            { $$.as_node = std::move($1); }
@@ -924,6 +927,11 @@ expr_level
 expr_animation
     : MOD IDENTIFIER %prec ANIMREF
         { $$ = std::make_unique<ast::expr_animation>(@$, $2); };
+    ;
+
+expr_animtree
+    : ANIMTREE
+        { $$ = std::make_unique<ast::expr_animtree>(@$); };
     ;
 
 expr_identifier_nosize

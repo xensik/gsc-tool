@@ -324,7 +324,7 @@ void assembler::assemble_instruction(const instruction::ptr& inst)
             break;
         case opcode::OP_GetInteger:
             script_->align(4);
-            script_->write<std::int32_t>(std::stoi(inst->data[0]));
+            script_->write<std::int32_t>((inst->data.size() == 2) ? -1 : std::stoi(inst->data[0]));
             break;
         case opcode::OP_GetFloat:
             script_->align(4);
@@ -579,6 +579,8 @@ void assembler::align_instruction(const instruction::ptr& inst)
             break;
         case opcode::OP_GetInteger:
             inst->size += script_->align(4);
+            if (inst->data.size() == 2)
+                add_anim_reference(inst->data, script_->pos());
             script_->seek(4);
             break;
         case opcode::OP_GetFloat:
@@ -849,14 +851,28 @@ void assembler::add_anim_reference(const std::vector<std::string>& data, std::ui
     {
         if (entry.name == data[0])
         {
-            entry.anims.push_back({ data[1], ref });
+            if (data[1] == "-1")
+            {
+                entry.refs.push_back(ref);
+            }
+            else
+            {
+                entry.anims.push_back({ data[1], ref });
+            }
             return;
         }
     }
 
     animtree_ref new_entry;
     new_entry.name = data[0];
-    new_entry.anims.push_back({ data[1], ref });
+    if (data[1] == "-1")
+    {
+        new_entry.refs.push_back(ref);
+    }
+    else
+    {
+        new_entry.anims.push_back({ data[1], ref });
+    }
     animtrees_.push_back(std::move(new_entry));
 }
 

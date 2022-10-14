@@ -178,6 +178,9 @@ expr_path::expr_path(const location& loc, const std::string& value) : node(kind:
 expr_identifier::expr_identifier(const std::string& value) : node(kind::expr_identifier), value(value) {}
 expr_identifier::expr_identifier(const location& loc, const std::string& value) : node(kind::expr_identifier, loc), value(value) {}
 
+expr_animtree::expr_animtree() : node(kind::expr_animtree) {}
+expr_animtree::expr_animtree(const location& loc) : node(kind::expr_animtree, loc) {}
+
 expr_animation::expr_animation(const std::string& value) : node(kind::expr_animation), value(value) {}
 expr_animation::expr_animation(const location& loc, const std::string& value) : node(kind::expr_animation, loc), value(value) {}
 
@@ -588,6 +591,11 @@ auto expr_path::print() const -> std::string
 auto expr_identifier::print() const -> std::string
 {
     return value;
+}
+
+auto expr_animtree::print() const -> std::string
+{
+    return "#animtree";
 }
 
 auto expr_animation::print() const -> std::string
@@ -1535,6 +1543,11 @@ bool operator==(const expr_identifier& lhs, const expr_identifier& rhs)
     return lhs.value == rhs.value;
 }
 
+bool operator==(const expr_animtree&, const expr_animtree&)
+{
+    return true;
+}
+
 bool operator==(const expr_animation& lhs, const expr_animation& rhs)
 {
     return lhs.value == rhs.value;
@@ -1664,6 +1677,7 @@ expr::~expr()
         case kind::expr_istring: as_istring.~unique_ptr(); return;
         case kind::expr_path: as_path.~unique_ptr(); return;
         case kind::expr_identifier: as_identifier.~unique_ptr(); return;
+        case kind::expr_animtree: as_animtree.~unique_ptr(); return;
         case kind::expr_animation: as_animation.~unique_ptr(); return;
         case kind::expr_level: as_level.~unique_ptr(); return;
         case kind::expr_anim: as_anim.~unique_ptr(); return;
@@ -1766,6 +1780,7 @@ bool operator==(const expr& lhs, const expr& rhs)
         case kind::expr_istring: return *lhs.as_istring == *rhs.as_istring;
         case kind::expr_path: return *lhs.as_path == *rhs.as_path;
         case kind::expr_identifier: return *lhs.as_identifier == *rhs.as_identifier;
+        case kind::expr_animtree: return *lhs.as_animtree == *rhs.as_animtree;
         case kind::expr_animation: return *lhs.as_animation == *rhs.as_animation;
         case kind::expr_level: return *lhs.as_level == *rhs.as_level;
         case kind::expr_anim: return *lhs.as_anim == *rhs.as_anim;
