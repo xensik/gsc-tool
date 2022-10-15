@@ -55,7 +55,7 @@ void decompiler::decompile(const std::string& file, const assembly::ptr& data)
 
         for (auto i = 0; i < func->params; i++)
         {
-            func_->params->list.push_back(std::make_unique<ast::expr_identifier>(locals_.at(locals_.size() - 1 - i)));
+            func_->params->list.push_back(ast::expr(std::make_unique<ast::expr_identifier>(locals_.at(locals_.size() - 1 - i))));
         }
 
         process_thread(func_);
@@ -2146,6 +2146,7 @@ auto decompiler::resolve_label(const std::string& name) -> std::uint32_t
 void decompiler::process_thread(const ast::decl_thread::ptr& thread)
 {
     process_stmt_list(thread->stmt);
+    process_expr_parameters(thread->params);
 }
 
 void decompiler::process_stmt(const ast::stmt& stmt)
@@ -2790,6 +2791,46 @@ void decompiler::process_expr_vector(const ast::expr_vector::ptr& expr)
     process_expr(expr->z);
     process_expr(expr->y);
     process_expr(expr->x);
+}
+
+void decompiler::process_expr_parameters(const ast::expr_parameters::ptr& expr)
+{
+    if (expr->list.empty()) return;
+
+    while (!func_->stmt->list.empty())
+    {
+        auto& stmt = func_->stmt->list.at(0);
+
+        if (stmt != ast::kind::stmt_if || stmt.as_if->test != ast::kind::expr_not)
+            return;
+
+        auto& test = stmt.as_if->test.as_not->rvalue;
+
+        if (test != ast::kind::expr_isdefined || test.as_isdefined->arg != ast::kind::expr_identifier)
+            return;
+
+        if (stmt.as_if->stmt != ast::kind::stmt_assign || stmt.as_if->stmt.as_assign->expr != ast::kind::expr_assign_equal)
+            return;
+        
+        if (test.as_isdefined->arg != stmt.as_if->stmt.as_assign->expr.as_assign_equal->lvalue)
+            return;
+        
+        auto index = 0u;
+
+        for (auto& entry : expr->list)
+        {
+            if (entry == ast::kind::expr_identifier && entry.as_identifier->value == test.as_isdefined->arg.as_identifier->value)
+            {
+                expr->list.erase(expr->list.begin() + index);
+                expr->list.insert(expr->list.begin() + index, std::move(stmt.as_if->stmt.as_assign->expr));
+                func_->stmt->list.erase(func_->stmt->list.begin());
+                break;
+            }
+            index++;
+        }
+
+        if (index == expr->list.size()) return;
+    }
 }
 
 } // namespace xsk::arc::t6

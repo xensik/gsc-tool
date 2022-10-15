@@ -772,7 +772,7 @@ auto expr_parameters::print() const -> std::string
 
     for (const auto& entry : list)
     {
-        data += " " + entry->print();
+        data += " " + entry.print();
         data += (&entry != &list.back()) ? "," : " ";
     }
 

@@ -446,6 +446,8 @@ namespace xsk { namespace arc { namespace t6 {
       // expr_ternary
       // expr_binary
       // expr_primitive
+      // expr_parameters_default
+      // expr_literal
       // expr_object
       char dummy6[sizeof (ast::expr)];
 
@@ -1068,52 +1070,54 @@ namespace xsk { namespace arc { namespace t6 {
         S_expr_function = 178,                   // expr_function
         S_expr_pointer = 179,                    // expr_pointer
         S_expr_parameters = 180,                 // expr_parameters
-        S_expr_arguments = 181,                  // expr_arguments
-        S_expr_arguments_no_empty = 182,         // expr_arguments_no_empty
-        S_expr_getnextarraykey = 183,            // expr_getnextarraykey
-        S_expr_getfirstarraykey = 184,           // expr_getfirstarraykey
-        S_expr_getdvarcoloralpha = 185,          // expr_getdvarcoloralpha
-        S_expr_getdvarcolorblue = 186,           // expr_getdvarcolorblue
-        S_expr_getdvarcolorgreen = 187,          // expr_getdvarcolorgreen
-        S_expr_getdvarcolorred = 188,            // expr_getdvarcolorred
-        S_expr_getdvarvector = 189,              // expr_getdvarvector
-        S_expr_getdvarfloat = 190,               // expr_getdvarfloat
-        S_expr_getdvarint = 191,                 // expr_getdvarint
-        S_expr_getdvar = 192,                    // expr_getdvar
-        S_expr_gettime = 193,                    // expr_gettime
-        S_expr_abs = 194,                        // expr_abs
-        S_expr_vectortoangles = 195,             // expr_vectortoangles
-        S_expr_angleclamp180 = 196,              // expr_angleclamp180
-        S_expr_anglestoforward = 197,            // expr_anglestoforward
-        S_expr_anglestoright = 198,              // expr_anglestoright
-        S_expr_anglestoup = 199,                 // expr_anglestoup
-        S_expr_vectorscale = 200,                // expr_vectorscale
-        S_expr_isdefined = 201,                  // expr_isdefined
-        S_expr_reference = 202,                  // expr_reference
-        S_expr_array = 203,                      // expr_array
-        S_expr_field = 204,                      // expr_field
-        S_expr_size = 205,                       // expr_size
-        S_expr_paren = 206,                      // expr_paren
-        S_expr_object = 207,                     // expr_object
-        S_expr_empty_array = 208,                // expr_empty_array
-        S_expr_undefined = 209,                  // expr_undefined
-        S_expr_game = 210,                       // expr_game
-        S_expr_self = 211,                       // expr_self
-        S_expr_anim = 212,                       // expr_anim
-        S_expr_level = 213,                      // expr_level
-        S_expr_animation = 214,                  // expr_animation
-        S_expr_animtree = 215,                   // expr_animtree
-        S_expr_identifier_nosize = 216,          // expr_identifier_nosize
-        S_expr_identifier = 217,                 // expr_identifier
-        S_expr_path = 218,                       // expr_path
-        S_expr_istring = 219,                    // expr_istring
-        S_expr_string = 220,                     // expr_string
-        S_expr_vector = 221,                     // expr_vector
-        S_expr_hash = 222,                       // expr_hash
-        S_expr_float = 223,                      // expr_float
-        S_expr_integer = 224,                    // expr_integer
-        S_expr_false = 225,                      // expr_false
-        S_expr_true = 226                        // expr_true
+        S_expr_parameters_default = 181,         // expr_parameters_default
+        S_expr_literal = 182,                    // expr_literal
+        S_expr_arguments = 183,                  // expr_arguments
+        S_expr_arguments_no_empty = 184,         // expr_arguments_no_empty
+        S_expr_getnextarraykey = 185,            // expr_getnextarraykey
+        S_expr_getfirstarraykey = 186,           // expr_getfirstarraykey
+        S_expr_getdvarcoloralpha = 187,          // expr_getdvarcoloralpha
+        S_expr_getdvarcolorblue = 188,           // expr_getdvarcolorblue
+        S_expr_getdvarcolorgreen = 189,          // expr_getdvarcolorgreen
+        S_expr_getdvarcolorred = 190,            // expr_getdvarcolorred
+        S_expr_getdvarvector = 191,              // expr_getdvarvector
+        S_expr_getdvarfloat = 192,               // expr_getdvarfloat
+        S_expr_getdvarint = 193,                 // expr_getdvarint
+        S_expr_getdvar = 194,                    // expr_getdvar
+        S_expr_gettime = 195,                    // expr_gettime
+        S_expr_abs = 196,                        // expr_abs
+        S_expr_vectortoangles = 197,             // expr_vectortoangles
+        S_expr_angleclamp180 = 198,              // expr_angleclamp180
+        S_expr_anglestoforward = 199,            // expr_anglestoforward
+        S_expr_anglestoright = 200,              // expr_anglestoright
+        S_expr_anglestoup = 201,                 // expr_anglestoup
+        S_expr_vectorscale = 202,                // expr_vectorscale
+        S_expr_isdefined = 203,                  // expr_isdefined
+        S_expr_reference = 204,                  // expr_reference
+        S_expr_array = 205,                      // expr_array
+        S_expr_field = 206,                      // expr_field
+        S_expr_size = 207,                       // expr_size
+        S_expr_paren = 208,                      // expr_paren
+        S_expr_object = 209,                     // expr_object
+        S_expr_empty_array = 210,                // expr_empty_array
+        S_expr_undefined = 211,                  // expr_undefined
+        S_expr_game = 212,                       // expr_game
+        S_expr_self = 213,                       // expr_self
+        S_expr_anim = 214,                       // expr_anim
+        S_expr_level = 215,                      // expr_level
+        S_expr_animation = 216,                  // expr_animation
+        S_expr_animtree = 217,                   // expr_animtree
+        S_expr_identifier_nosize = 218,          // expr_identifier_nosize
+        S_expr_identifier = 219,                 // expr_identifier
+        S_expr_path = 220,                       // expr_path
+        S_expr_istring = 221,                    // expr_istring
+        S_expr_string = 222,                     // expr_string
+        S_expr_vector = 223,                     // expr_vector
+        S_expr_hash = 224,                       // expr_hash
+        S_expr_float = 225,                      // expr_float
+        S_expr_integer = 226,                    // expr_integer
+        S_expr_false = 227,                      // expr_false
+        S_expr_true = 228                        // expr_true
       };
     };
 
@@ -1179,6 +1183,8 @@ namespace xsk { namespace arc { namespace t6 {
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_parameters_default: // expr_parameters_default
+      case symbol_kind::S_expr_literal: // expr_literal
       case symbol_kind::S_expr_object: // expr_object
         value.move< ast::expr > (std::move (that.value));
         break;
@@ -2758,6 +2764,8 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_parameters_default: // expr_parameters_default
+      case symbol_kind::S_expr_literal: // expr_literal
       case symbol_kind::S_expr_object: // expr_object
         value.template destroy< ast::expr > ();
         break;
@@ -5496,8 +5504,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 3632,     ///< Last index in yytable_.
-      yynnts_ = 100,  ///< Number of nonterminal symbols.
+      yylast_ = 3634,     ///< Last index in yytable_.
+      yynnts_ = 102,  ///< Number of nonterminal symbols.
       yyfinal_ = 22 ///< Termination state number.
     };
 
@@ -5553,6 +5561,8 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_parameters_default: // expr_parameters_default
+      case symbol_kind::S_expr_literal: // expr_literal
       case symbol_kind::S_expr_object: // expr_object
         value.copy< ast::expr > (YY_MOVE (that.value));
         break;
@@ -5940,6 +5950,8 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_parameters_default: // expr_parameters_default
+      case symbol_kind::S_expr_literal: // expr_literal
       case symbol_kind::S_expr_object: // expr_object
         value.move< ast::expr > (YY_MOVE (s.value));
         break;
@@ -6334,7 +6346,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } } // xsk::arc::t6
-#line 6338 "parser.hpp"
+#line 6350 "parser.hpp"
 
 
 

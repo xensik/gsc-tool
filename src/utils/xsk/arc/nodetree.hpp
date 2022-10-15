@@ -999,7 +999,7 @@ struct expr_parameters : public node
 {
     using ptr = std::unique_ptr<expr_parameters>;
 
-    std::vector<expr_identifier::ptr> list;
+    std::vector<expr> list;
 
     expr_parameters();
     expr_parameters(const location& loc);

@@ -728,6 +728,10 @@ void assembler::process_instruction(const instruction::ptr& inst)
 {
     switch (static_cast<opcode>(inst->opcode))
     {
+        case opcode::OP_GetInteger:
+            if (inst->data.size() == 2)
+                process_string(inst->data[0]);
+            break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
             process_string(inst->data[0]);

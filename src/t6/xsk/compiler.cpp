@@ -1361,7 +1361,7 @@ void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, co
         emit_opcode(opcode::OP_DecTop);
 }
 
-void compiler::emit_expr_parameters(const ast::expr_parameters::ptr&)
+void compiler::emit_expr_parameters(const ast::expr_parameters::ptr& expr)
 {
     if (local_stack_.size() == 0)
     {
@@ -1370,6 +1370,20 @@ void compiler::emit_expr_parameters(const ast::expr_parameters::ptr&)
     else
     {
         emit_opcode(opcode::OP_SafeCreateLocalVariables, local_stack_);
+    }
+
+    for (auto& entry : expr->list)
+    {
+        if (entry == ast::kind::expr_assign_equal)
+        {
+            auto end_loc = create_label();
+            emit_expr_variable(entry.as_assign_equal->lvalue);
+            emit_opcode(opcode::OP_IsDefined);
+            emit_opcode(opcode::OP_JumpOnTrue, end_loc);
+            emit_expr(entry.as_assign_equal->rvalue);
+            emit_expr_variable_ref(entry.as_assign_equal->lvalue, true);
+            insert_label(end_loc);
+        }
     }
 }
 
@@ -2270,7 +2284,14 @@ void compiler::process_expr_parameters(const ast::expr_parameters::ptr& expr)
 {
     for (const auto& entry : expr->list)
     {
-        variable_register(entry->value);
+        if (entry == ast::kind::expr_identifier)
+        {
+            variable_register(entry.as_identifier->value);
+        }
+        else if (entry == ast::kind::expr_assign_equal)
+        {
+            process_expr(entry.as_assign_equal->lvalue);
+        }
     }
 }
 
