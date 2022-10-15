@@ -42,7 +42,8 @@ void decompiler::decompile(const std::string& file, const assembly::ptr& data)
         auto name = std::make_unique<ast::expr_identifier>(func->name);
         auto params = std::make_unique<ast::expr_parameters>();
         auto block = std::make_unique<ast::stmt_list>();
-        func_ = std::make_unique<ast::decl_thread>(std::move(name), std::move(params), std::move(block));
+        auto flags = static_cast<export_flags>(func->flags);
+        func_ = std::make_unique<ast::decl_thread>(std::move(name), std::move(params), std::move(block), flags);
 
         stack_ = std::stack<ast::node::ptr>();
         labels_ = func->labels;

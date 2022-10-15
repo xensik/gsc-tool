@@ -1756,9 +1756,10 @@ struct decl_thread : public node
     expr_identifier::ptr name;
     expr_parameters::ptr params;
     stmt_list::ptr stmt;
+    export_flags flags;
 
-    decl_thread(expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt);
-    decl_thread(const location& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt);
+    decl_thread(expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt, export_flags flags);
+    decl_thread(const location& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt, export_flags flags);
     auto print() const -> std::string override;
 };
 

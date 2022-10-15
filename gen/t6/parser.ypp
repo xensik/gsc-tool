@@ -57,6 +57,8 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %token INCLUDE          "#include"
 %token USINGTREE        "#using_animtree"
 %token ANIMTREE         "#animtree"
+%token AUTOEXEC         "autoexec"
+%token PRIVATE          "private"
 %token ENDON            "endon"
 %token NOTIFY           "notify"
 %token WAIT             "wait"
@@ -337,7 +339,11 @@ decl_constant
 
 decl_thread
     : expr_identifier LPAREN expr_parameters RPAREN stmt_block
-        { lexer.ban_header(@$); $$ = std::make_unique<ast::decl_thread>(@$, std::move($1), std::move($3), std::move($5)); }
+        { lexer.ban_header(@$); $$ = std::make_unique<ast::decl_thread>(@$, std::move($1), std::move($3), std::move($5), export_flags::none); }
+    | AUTOEXEC expr_identifier LPAREN expr_parameters RPAREN stmt_block
+        { lexer.ban_header(@$); $$ = std::make_unique<ast::decl_thread>(@$, std::move($2), std::move($4), std::move($6), export_flags::vis_autoexec); }
+    | PRIVATE expr_identifier LPAREN expr_parameters RPAREN stmt_block
+        { lexer.ban_header(@$); $$ = std::make_unique<ast::decl_thread>(@$, std::move($2), std::move($4), std::move($6), export_flags::vis_private); }
     ;
 
 stmt

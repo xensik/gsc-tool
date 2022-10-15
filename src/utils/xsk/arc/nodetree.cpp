@@ -489,8 +489,8 @@ stmt_prof_begin::stmt_prof_begin(const location& loc, expr_arguments::ptr args) 
 stmt_prof_end::stmt_prof_end(expr_arguments::ptr args) : node(kind::stmt_prof_end), args(std::move(args)) {}
 stmt_prof_end::stmt_prof_end(const location& loc, expr_arguments::ptr args) : node(kind::stmt_prof_end, loc), args(std::move(args)) {}
 
-decl_thread::decl_thread(expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt) : node(kind::decl_thread), name(std::move(name)), params(std::move(params)), stmt(std::move(stmt)) {}
-decl_thread::decl_thread(const location& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt) : node(kind::decl_thread, loc), name(std::move(name)), params(std::move(params)), stmt(std::move(stmt)) {}
+decl_thread::decl_thread(expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt, export_flags flags) : node(kind::decl_thread), name(std::move(name)), params(std::move(params)), stmt(std::move(stmt)), flags(flags) {}
+decl_thread::decl_thread(const location& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt,  export_flags flags) : node(kind::decl_thread, loc), name(std::move(name)), params(std::move(params)), stmt(std::move(stmt)), flags(flags) {}
 
 decl_constant::decl_constant(expr_identifier::ptr name, expr value) : node(kind::decl_constant), name(std::move(name)), value(std::move(value)) {}
 decl_constant::decl_constant(const location& loc, expr_identifier::ptr name, expr value) : node(kind::decl_constant, loc), name(std::move(name)), value(std::move(value)) {}
@@ -1370,7 +1370,16 @@ auto stmt_prof_end::print() const -> std::string
 
 auto decl_thread::print() const -> std::string
 {
-    return name->print() + "(" + params->print() + ")" + "\n" + stmt->print() + "\n";
+    std::string data;
+
+    if (flags == export_flags::vis_autoexec)
+        data += "autoexec ";
+    else if (flags == export_flags::vis_private)
+        data += "private ";
+
+    data += name->print() + "(" + params->print() + ")" + "\n" + stmt->print() + "\n";
+
+    return data;
 }
 
 auto decl_constant::print() const -> std::string

@@ -169,7 +169,7 @@ void compiler::emit_decl_thread(const ast::decl_thread::ptr& thread)
     function_->index = index_;
     function_->name = thread->name->value;
     function_->params = static_cast<std::uint8_t>(thread->params->list.size());
-    function_->flags = 0;
+    function_->flags = static_cast<std::uint8_t>(thread->flags);
 
     stack_idx_ = 0;
     label_idx_ = 0;
@@ -1236,7 +1236,6 @@ void compiler::emit_expr_call_function(const ast::expr_function::ptr& expr, bool
         }
     }
 
-    // TODO: resolve import calls path
     bool as_dev = false;
     std::string end;
 
@@ -1333,8 +1332,6 @@ void compiler::emit_expr_method_function(const ast::expr_function::ptr& expr, co
             assembly_->includes.push_back(expr->path->value);
         }
     }
-
-    // TODO: resolve import calls path
 
     emit_opcode(opcode::OP_PreScriptCall);
     emit_expr_arguments(expr->args);
