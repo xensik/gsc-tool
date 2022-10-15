@@ -231,6 +231,16 @@ void resolver::add_method(const std::string& name, std::uint16_t id)
     }
 }
 
+auto resolver::get_functions() -> std::unordered_map<std::string_view, std::uint16_t>&
+{
+    return function_map_rev;
+}
+
+auto resolver::get_methods() -> std::unordered_map<std::string_view, std::uint16_t>&
+{
+    return method_map_rev;
+}
+
 auto resolver::make_token(std::string_view str) -> std::string
 {
     if (str.starts_with("_id_") || str.starts_with("_func_") || str.starts_with("_meth_"))

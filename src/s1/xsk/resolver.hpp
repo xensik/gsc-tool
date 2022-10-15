@@ -32,6 +32,9 @@ public:
     static void add_function(const std::string& name, std::uint16_t id);
     static void add_method(const std::string& name, std::uint16_t id);
 
+    static auto get_functions() -> std::unordered_map<std::string_view, std::uint16_t>&;
+    static auto get_methods() -> std::unordered_map<std::string_view, std::uint16_t>&;
+
     static auto make_token(std::string_view str) -> std::string;
     static auto file_data(const std::string& name) -> std::tuple<const std::string*, const char*, size_t>;
     static auto fs_to_game_path(const std::filesystem::path& file) -> std::filesystem::path;
