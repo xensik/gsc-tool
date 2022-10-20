@@ -415,6 +415,9 @@ stmt_expr::stmt_expr(const location& loc, ast::expr expr) : node(kind::stmt_expr
 stmt_call::stmt_call(ast::expr expr) : node(kind::stmt_call), expr(std::move(expr)) {}
 stmt_call::stmt_call(const location& loc, ast::expr expr) : node(kind::stmt_call, loc), expr(std::move(expr)) {}
 
+stmt_const::stmt_const(expr_identifier::ptr lvalue, expr rvalue) : node(kind::stmt_const), lvalue(std::move(lvalue)), rvalue(std::move(rvalue)) {}
+stmt_const::stmt_const(const location& loc, expr_identifier::ptr lvalue, expr rvalue) : node(kind::stmt_const, loc), lvalue(std::move(lvalue)), rvalue(std::move(rvalue)) {}
+
 stmt_assign::stmt_assign(ast::expr expr) : node(kind::stmt_assign), expr(std::move(expr)) {}
 stmt_assign::stmt_assign(const location& loc, ast::expr expr) : node(kind::stmt_assign, loc), expr(std::move(expr)) {}
 
@@ -491,9 +494,6 @@ stmt_prof_end::stmt_prof_end(const location& loc, expr_arguments::ptr args) : no
 
 decl_thread::decl_thread(expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt, export_flags flags) : node(kind::decl_thread), name(std::move(name)), params(std::move(params)), stmt(std::move(stmt)), flags(flags) {}
 decl_thread::decl_thread(const location& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt,  export_flags flags) : node(kind::decl_thread, loc), name(std::move(name)), params(std::move(params)), stmt(std::move(stmt)), flags(flags) {}
-
-decl_constant::decl_constant(expr_identifier::ptr name, expr value) : node(kind::decl_constant), name(std::move(name)), value(std::move(value)) {}
-decl_constant::decl_constant(const location& loc, expr_identifier::ptr name, expr value) : node(kind::decl_constant, loc), name(std::move(name)), value(std::move(value)) {}
 
 decl_usingtree::decl_usingtree(expr_string::ptr name) : node(kind::decl_usingtree), name(std::move(name)) {}
 decl_usingtree::decl_usingtree(const location& loc, expr_string::ptr name) : node(kind::decl_usingtree, loc), name(std::move(name)) {}
@@ -1086,6 +1086,11 @@ auto stmt_call::print() const -> std::string
     return expr.print() + ";";
 };
 
+auto stmt_const::print() const -> std::string
+{
+    return "const "s + lvalue->print() + " = " + rvalue.print() + ";";
+};
+
 auto stmt_assign::print() const -> std::string
 {
     return expr.print() + ";";
@@ -1380,11 +1385,6 @@ auto decl_thread::print() const -> std::string
     data += name->print() + "(" + params->print() + ")" + "\n" + stmt->print() + "\n";
 
     return data;
-}
-
-auto decl_constant::print() const -> std::string
-{
-    return name->print() + " = "s + value.print() + ";\n";
 }
 
 auto decl_usingtree::print() const -> std::string
@@ -1846,6 +1846,7 @@ stmt::~stmt()
         case kind::stmt_dev: as_dev.~unique_ptr(); return;
         case kind::stmt_expr: as_expr.~unique_ptr(); return;
         case kind::stmt_call: as_call.~unique_ptr(); return;
+        case kind::stmt_const: as_const.~unique_ptr(); return;
         case kind::stmt_assign: as_assign.~unique_ptr(); return;
         case kind::stmt_endon: as_endon.~unique_ptr(); return;
         case kind::stmt_notify: as_notify.~unique_ptr(); return;
@@ -1929,7 +1930,6 @@ decl::~decl()
         case kind::decl_dev_begin: as_dev_begin.~unique_ptr(); return;
         case kind::decl_dev_end: as_dev_end.~unique_ptr(); return;
         case kind::decl_thread: as_thread.~unique_ptr(); return;
-        case kind::decl_constant: as_constant.~unique_ptr(); return;
         case kind::decl_usingtree: as_usingtree.~unique_ptr(); return;
         default: return;
     }

@@ -43,13 +43,13 @@ private:
     void emit_include(const ast::include::ptr& include);
     void emit_declaration(const ast::decl& decl);
     void emit_decl_usingtree(const ast::decl_usingtree::ptr& animtree);
-    void emit_decl_constant(const ast::decl_constant::ptr& constant);
     void emit_decl_thread(const ast::decl_thread::ptr& thread);
     void emit_stmt(const ast::stmt& stmt);
     void emit_stmt_list(const ast::stmt_list::ptr& stmt);
     void emit_stmt_dev(const ast::stmt_dev::ptr& stmt);
     void emit_stmt_expr(const ast::stmt_expr::ptr& stmt);
     void emit_stmt_call(const ast::stmt_call::ptr& stmt);
+    void emit_stmt_const(const ast::stmt_const::ptr& stmt);
     void emit_stmt_assign(const ast::stmt_assign::ptr& stmt);
     void emit_stmt_endon(const ast::stmt_endon::ptr& stmt);
     void emit_stmt_notify(const ast::stmt_notify::ptr& stmt);

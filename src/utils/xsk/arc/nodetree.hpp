@@ -98,6 +98,7 @@ enum class kind
     stmt_dev,
     stmt_expr,
     stmt_call,
+    stmt_const,
     stmt_assign,
     stmt_endon,
     stmt_notify,
@@ -122,7 +123,6 @@ enum class kind
     stmt_prof_begin,
     stmt_prof_end,
     decl_thread,
-    decl_constant,
     decl_usingtree,
     decl_dev_begin,
     decl_dev_end,
@@ -232,6 +232,7 @@ struct stmt_list;
 struct stmt_dev;
 struct stmt_expr;
 struct stmt_call;
+struct stmt_const;
 struct stmt_assign;
 struct stmt_endon;
 struct stmt_notify;
@@ -256,7 +257,6 @@ struct stmt_breakpoint;
 struct stmt_prof_begin;
 struct stmt_prof_end;
 struct decl_thread;
-struct decl_constant;
 struct decl_usingtree;
 struct decl_dev_begin;
 struct decl_dev_end;
@@ -405,6 +405,7 @@ union stmt
     std::unique_ptr<stmt_dev> as_dev;
     std::unique_ptr<stmt_expr> as_expr;
     std::unique_ptr<stmt_call> as_call;
+    std::unique_ptr<stmt_const> as_const;
     std::unique_ptr<stmt_assign> as_assign;
     std::unique_ptr<stmt_endon> as_endon;
     std::unique_ptr<stmt_notify> as_notify;
@@ -459,7 +460,6 @@ union decl
     std::unique_ptr<decl_dev_begin> as_dev_begin;
     std::unique_ptr<decl_dev_end> as_dev_end;
     std::unique_ptr<decl_usingtree> as_usingtree;
-    std::unique_ptr<decl_constant> as_constant;
     std::unique_ptr<decl_thread> as_thread;
 
     decl();
@@ -1457,6 +1457,18 @@ struct stmt_call : public node
     auto print() const -> std::string override;
 };
 
+struct stmt_const : public node
+{
+    using ptr = std::unique_ptr<stmt_const>;
+
+    expr_identifier::ptr lvalue;
+    expr rvalue;
+
+    stmt_const(expr_identifier::ptr lvalue, expr rvalue);
+    stmt_const(const location& loc, expr_identifier::ptr lvalue, expr rvalue);
+    auto print() const -> std::string override;
+};
+
 struct stmt_assign : public node
 {
     using ptr = std::unique_ptr<stmt_assign>;
@@ -1760,18 +1772,6 @@ struct decl_thread : public node
 
     decl_thread(expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt, export_flags flags);
     decl_thread(const location& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr stmt, export_flags flags);
-    auto print() const -> std::string override;
-};
-
-struct decl_constant : public node
-{
-    using ptr = std::unique_ptr<decl_constant>;
-
-    expr_identifier::ptr name;
-    expr value;
-
-    decl_constant(expr_identifier::ptr name, expr value);
-    decl_constant(const location& loc, expr_identifier::ptr name, expr value);
     auto print() const -> std::string override;
 };
 

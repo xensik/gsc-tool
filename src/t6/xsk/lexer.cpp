@@ -62,6 +62,7 @@ const std::unordered_map<std::string_view, parser::token::token_kind_type> keywo
     { "self", parser::token::SELF },
     { "anim", parser::token::ANIM },
     { "level", parser::token::LEVEL },
+    { "const", parser::token::CONST },
     { "isdefined", parser::token::ISDEFINED },
     { "vectorscale", parser::token::VECTORSCALE },
     { "anglestoup", parser::token::ANGLESTOUP },

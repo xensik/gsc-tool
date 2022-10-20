@@ -89,6 +89,7 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %token SELF             "self"
 %token ANIM             "anim"
 %token LEVEL            "level"
+%token CONST            "const"
 %token GETNEXTARRAYKEY  "getnextarraykey"
 %token GETFIRSTARRAYKEY "getfirstarraykey"
 %token GETDVARCOLORALPHA "getdvarcoloralpha"
@@ -165,7 +166,6 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %type <ast::include::ptr>                include
 %type <ast::decl>                        declaration
 %type <ast::decl_usingtree::ptr>         decl_usingtree
-%type <ast::decl_constant::ptr>          decl_constant
 %type <ast::decl_thread::ptr>            decl_thread
 %type <ast::stmt>                        stmt
 %type <ast::stmt>                        stmt_or_dev
@@ -175,6 +175,7 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %type <ast::stmt_list::ptr>              stmt_block
 %type <ast::stmt_expr::ptr>              stmt_expr
 %type <ast::stmt_call::ptr>              stmt_call
+%type <ast::stmt_const::ptr>             stmt_const
 %type <ast::stmt_assign::ptr>            stmt_assign
 %type <ast::stmt_endon::ptr>             stmt_endon
 %type <ast::stmt_notify::ptr>            stmt_notify
@@ -323,18 +324,12 @@ declaration
     : DEVBEGIN          { $$.as_dev_begin = std::make_unique<ast::decl_dev_begin>(@$); }
     | DEVEND            { $$.as_dev_end = std::make_unique<ast::decl_dev_end>(@$); }
     | decl_usingtree    { $$.as_usingtree = std::move($1); }
-    | decl_constant     { $$.as_constant = std::move($1); }
     | decl_thread       { $$.as_thread = std::move($1); }
     ;
 
 decl_usingtree
     : USINGTREE LPAREN expr_string RPAREN SEMICOLON
         { lexer.ban_header(@$); $$ = std::make_unique<ast::decl_usingtree>(@$, std::move($3)); }
-    ;
-
-decl_constant
-    : expr_identifier ASSIGN expr SEMICOLON
-        { $$ = std::make_unique<ast::decl_constant>(@$, std::move($1), std::move($3)); }
     ;
 
 decl_thread
@@ -349,6 +344,7 @@ decl_thread
 stmt
     : stmt_block             { $$.as_list = std::move($1); }
     | stmt_call              { $$.as_call = std::move($1); }
+    | stmt_const            { $$.as_const = std::move($1); }
     | stmt_assign            { $$.as_assign = std::move($1); }
     | stmt_endon             { $$.as_endon = std::move($1); }
     | stmt_notify            { $$.as_notify = std::move($1); }
@@ -417,6 +413,11 @@ stmt_call
         { $$ = std::make_unique<ast::stmt_call>(@$, ast::expr(std::move($1))); }
     | expr_method SEMICOLON
         { $$ = std::make_unique<ast::stmt_call>(@$, ast::expr(std::move($1))); }
+    ;
+
+stmt_const
+    : CONST expr_identifier ASSIGN expr SEMICOLON
+        { $$ = std::make_unique<ast::stmt_const>(@$, std::move($2), std::move($4)); }
     ;
 
 stmt_assign

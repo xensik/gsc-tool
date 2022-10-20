@@ -78,7 +78,6 @@ void compiler::compile_program(const ast::program::ptr& program)
     assembly_ = std::make_unique<assembly>();
     includes_.clear();
     animtrees_.clear();
-    constants_.clear();
     local_functions_.clear();
     index_ = 0;
     developer_thread_ = false;
@@ -132,9 +131,6 @@ void compiler::emit_declaration(const ast::decl& decl)
         case ast::kind::decl_usingtree:
             emit_decl_usingtree(decl.as_usingtree);
             break;
-        case ast::kind::decl_constant:
-            emit_decl_constant(decl.as_constant);
-            break;
         case ast::kind::decl_thread:
             emit_decl_thread(decl.as_thread);
             break;
@@ -153,16 +149,6 @@ void compiler::emit_decl_usingtree(const ast::decl_usingtree::ptr& animtree)
     animtrees_.push_back({ animtree->name->value, false });
 }
 
-void compiler::emit_decl_constant(const ast::decl_constant::ptr& constant)
-{
-    const auto itr = constants_.find(constant->name->value);
-
-    if (itr != constants_.end())
-        throw comp_error(constant->loc(), "duplicated constant '" + constant->name->value + "'");
-
-    constants_.insert({ constant->name->value, std::move(constant->value) });
-}
-
 void compiler::emit_decl_thread(const ast::decl_thread::ptr& thread)
 {
     function_ = std::make_unique<function>();
@@ -176,6 +162,7 @@ void compiler::emit_decl_thread(const ast::decl_thread::ptr& thread)
     can_break_ = false;
     can_continue_ = false;
     local_stack_.clear();
+    constants_.clear();
     blocks_.clear();
 
     process_thread(thread);
@@ -209,6 +196,9 @@ void compiler::emit_stmt(const ast::stmt& stmt)
             break;
         case ast::kind::stmt_call:
             emit_stmt_call(stmt.as_call);
+            break;
+        case ast::kind::stmt_const:
+            emit_stmt_const(stmt.as_const);
             break;
         case ast::kind::stmt_assign:
             emit_stmt_assign(stmt.as_assign);
@@ -336,6 +326,19 @@ void compiler::emit_stmt_call(const ast::stmt_call::ptr& stmt)
         emit_expr_method(stmt->expr.as_method, true);
     else
         throw comp_error(stmt->loc(), "unknown call statement expression");
+}
+
+void compiler::emit_stmt_const(const ast::stmt_const::ptr& stmt)
+{
+    const auto itr = constants_.find(stmt->lvalue->value);
+
+    if (itr != constants_.end())
+        throw comp_error(stmt->loc(), "duplicated constant '" + stmt->lvalue->value + "'");
+
+    if (std::find(local_stack_.begin(), local_stack_.end(), stmt->lvalue->value) != local_stack_.end())
+        throw comp_error(stmt->loc(), "constant already defined as local variable '" + stmt->lvalue->value + "'");
+
+    constants_.insert({ stmt->lvalue->value, std::move(stmt->rvalue) });
 }
 
 void compiler::emit_stmt_assign(const ast::stmt_assign::ptr& stmt)
@@ -2043,6 +2046,7 @@ void compiler::process_stmt(const ast::stmt& stmt)
             process_stmt_switch(stmt.as_switch);
             break;
         case ast::kind::stmt_call:
+        case ast::kind::stmt_const:
         case ast::kind::stmt_endon:
         case ast::kind::stmt_notify:
         case ast::kind::stmt_wait:
