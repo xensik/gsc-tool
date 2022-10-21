@@ -31,6 +31,7 @@ const std::unordered_map<std::string_view, parser::token::token_kind_type> keywo
     { "#using_animtree", parser::token::USINGTREE },
     { "#animtree", parser::token::ANIMTREE },
     { "autoexec", parser::token::AUTOEXEC },
+    { "codecall", parser::token::CODECALL },
     { "private", parser::token::PRIVATE },
     { "endon", parser::token::ENDON },
     { "notify", parser::token::NOTIFY },

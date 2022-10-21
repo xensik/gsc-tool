@@ -1377,9 +1377,13 @@ auto decl_thread::print() const -> std::string
 {
     std::string data;
 
-    if (flags == export_flags::vis_autoexec)
+    if (static_cast<std::uint8_t>(flags) & static_cast<std::uint8_t>(export_flags::export_autoexec))
         data += "autoexec ";
-    else if (flags == export_flags::vis_private)
+
+    if (static_cast<std::uint8_t>(flags) & static_cast<std::uint8_t>(export_flags::export_codecall))
+        data += "codecall ";
+
+    if (static_cast<std::uint8_t>(flags) & static_cast<std::uint8_t>(export_flags::export_private2))
         data += "private ";
 
     data += name->print() + "(" + params->print() + ")" + "\n" + stmt->print() + "\n";
