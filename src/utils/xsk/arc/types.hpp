@@ -102,9 +102,9 @@ enum class export_flags : std::uint8_t
     none         = 0x00,
     vis_public   = 0x01,
     vis_autoexec = 0x02,
-    vis_private  = 0x04,
-    unk1         = 0x08, // never seen
-    unk2         = 0x10, // inside dev /##/ ?
+    vis_unk      = 0x04,
+    vis_codecall = 0x08,
+    vis_private  = 0x10,
     varargs_may  = 0x20, // T7, T8, T9
 };
 
