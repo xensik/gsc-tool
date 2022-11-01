@@ -2583,7 +2583,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1389> method_list
     { 0x856A, "_meth_856A" },
     { 0x856B, "_meth_856B" },
     { 0x856C, "_meth_856C" },
-} };
+}};
 
 const std::array<std::pair<std::uint16_t, const char*>, 4585> token_list
 {{
@@ -45560,7 +45560,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 4585> token_list
 //  { 0xA7DA, "" },
     { 0xA7DB, "maps/mp/perks/_perkfunctions" },
     { 0xA7DC, "maps/mp/perks/_perks" },
-} };
+}};
 
 struct __init__
 {
