@@ -2164,7 +2164,7 @@ const std::array<std::pair<std::uint16_t, const char*>, 1066> method_list
     { 0x8429, "alienscheckisitempurchased" },
 }};
 
-const std::array<std::pair<std::uint16_t, const char*>, 17806> token_list
+const std::array<std::pair<std::uint16_t, const char*>, 17657> token_list
 {{
     { 0x0000, "" },
     { 0x0001, "pl#" },
