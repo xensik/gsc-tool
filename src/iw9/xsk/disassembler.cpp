@@ -83,12 +83,12 @@ void disassembler::dissasemble_function(const function::ptr& func)
 
 void disassembler::dissasemble_instruction(const instruction::ptr& inst)
 {
-    switch (static_cast<opcode>(inst->opcode))
+    /*switch (static_cast<opcode>(inst->opcode))
     {
 
         default:
             throw disasm_error(utils::string::va("unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
-    }
+    }*/
 }
 
 void disassembler::disassemble_builtin_call(const instruction::ptr& inst, bool method, bool args)
@@ -261,9 +261,9 @@ void disassembler::resolve_local_functions()
     {
         for (const auto& inst : func->instructions)
         {
-            switch (static_cast<opcode>(inst->opcode))
+            /*switch (static_cast<opcode>(inst->opcode))
             {
-            /*case opcode::OP_GetLocalFunction:
+            case opcode::OP_GetLocalFunction:
             case opcode::OP_ScriptLocalFunctionCall:
             case opcode::OP_ScriptLocalFunctionCall2:
             case opcode::OP_ScriptLocalMethodCall:
@@ -272,10 +272,10 @@ void disassembler::resolve_local_functions()
             case opcode::OP_ScriptLocalMethodThreadCall:
             case opcode::OP_ScriptLocalMethodChildThreadCall:
                 inst->data[0] = resolve_function(inst->data[0]);
-                break;*/
+                break;
             default:
                 break;
-            }
+            }*/
         }
     }
 }
@@ -341,9 +341,9 @@ void disassembler::print_instruction(const instruction::ptr& inst)
 {
     output_->write_string(utils::string::va("\t\t%s", resolver::opcode_name(inst->opcode).data()));
 
-    switch (static_cast<opcode>(inst->opcode))
+    /*switch (static_cast<opcode>(inst->opcode))
     {
-        /*case opcode::OP_GetLocalFunction:
+        case opcode::OP_GetLocalFunction:
         case opcode::OP_ScriptLocalFunctionCall:
         case opcode::OP_ScriptLocalFunctionCall2:
         case opcode::OP_ScriptLocalMethodCall:
@@ -378,14 +378,14 @@ void disassembler::print_instruction(const instruction::ptr& inst)
                     }
                 }
             }
-            break;*/
-        default:
+            break;
+        default:*/
             for (auto& data : inst->data)
             {
                 output_->write_string(utils::string::va(" %s", data.data()));
             }
-            break;
-    }
+    //        break;
+    //}
 
     output_->write_string("\n");
 }

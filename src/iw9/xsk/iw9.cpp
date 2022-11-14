@@ -11,12 +11,12 @@ namespace xsk::gsc::iw9
 
 auto opcode_size(std::uint8_t id) -> std::uint32_t
 {
-    switch (static_cast<opcode>(id))
+    /*switch (static_cast<opcode>(id))
     {
 
-        default:
+        default:*/
             throw error("couldn't resolve instruction size for " + std::to_string(id));
-    }
+   // }
 }
 
 } // namespace xsk::gsc::iw9
