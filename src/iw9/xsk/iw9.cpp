@@ -49,6 +49,7 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_EvalLocalVariableCached5:
         case opcode::OP_ScriptMethodCallPointer:
         case opcode::OP_checkclearparams:
+        case opcode::OP_waittillmatch2:
         case opcode::OP_minus:
         case opcode::OP_greater_equal:
         case opcode::OP_vector:
@@ -80,13 +81,13 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_voidCodepos:
         case opcode::OP_inequality:
         case opcode::OP_bit_ex_or:
-        case opcode::OP_unk_139:
         case opcode::OP_BoolNotAfterAnd:
         case opcode::OP_IsDefined:
         case opcode::OP_IsTrue:
             return 1;
         case opcode::OP_SetLocalVariableFieldCached:
         case opcode::OP_RemoveLocalVariables:
+        case opcode::OP_waittillmatch:
         case opcode::OP_ScriptMethodChildThreadCallPointer:
         case opcode::OP_GetByte:
         case opcode::OP_SafeSetWaittillVariableFieldCached:
@@ -108,7 +109,6 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
         case opcode::OP_FormalParams:
         case opcode::OP_FormalParams_Precompiled:
             return 2;
-        case opcode::OP_waittillmatch:
         case opcode::OP_JumpOnTrue:
         case opcode::OP_JumpOnFalseExpr:
         case opcode::OP_jumpback:
@@ -177,9 +177,9 @@ auto opcode_size(std::uint8_t id) -> std::uint32_t
             return 9;
         case opcode::OP_GetVector:
             return 13;
-        case opcode::OP_waittillmatch2:
         case opcode::OP_ClearVariableField:
         case opcode::OP_EvalNewLocalVariableRefCached0:
+        case opcode::OP_unk_139:
         case opcode::OP_unk_140:
         case opcode::OP_unk_141:
         case opcode::OP_unk_142:

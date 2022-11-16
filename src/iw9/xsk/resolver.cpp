@@ -251,8 +251,6 @@ auto resolver::hash_id(const std::string& name) -> std::uint64_t
         {
             byte += 32;
         }
-        
-        printf("%c", byte);
 
         hash = (uint64_t)0x10000000233 * ((uint64_t)byte ^ hash);
     }

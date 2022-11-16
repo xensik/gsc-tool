@@ -1360,6 +1360,17 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
         case opcode::OP_CastFieldObject:
         case opcode::OP_CastBool:
             break;
+        case opcode::OP_unk_134: // eval something
+        case opcode::OP_unk_133: // eval something
+        case opcode::OP_unk_135: // eval something
+        case opcode::OP_unk_136: // OP_GetDvar
+        case opcode::OP_unk_137: // eval something
+        case opcode::OP_unk_138: // eval something
+        {
+            auto node = std::make_unique<ast::expr_string>(loc, utils::string::va("data_%s", inst->data[0].data()));
+            stack_.push(std::move(node));
+            break;
+        }
      // case opcode::OP_ClearVariableField
      // case opcode::OP_EvalNewLocalVariableRefCached0
         default:

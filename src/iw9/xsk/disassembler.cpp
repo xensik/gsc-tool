@@ -130,6 +130,7 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
         case opcode::OP_EvalLocalVariableCached5:
         case opcode::OP_ScriptMethodCallPointer:
         case opcode::OP_checkclearparams:
+        case opcode::OP_waittillmatch2:
         case opcode::OP_minus:
         case opcode::OP_greater_equal:
         case opcode::OP_vector:
@@ -161,7 +162,6 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
         case opcode::OP_voidCodepos:
         case opcode::OP_inequality:
         case opcode::OP_bit_ex_or:
-        case opcode::OP_unk_139:
         case opcode::OP_BoolNotAfterAnd:
         case opcode::OP_IsDefined:
         case opcode::OP_IsTrue:
@@ -200,7 +200,6 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
             inst->data.push_back(utils::string::quote(stack_->read_c_string(), false));
             break;
         case opcode::OP_waittillmatch:
-            inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
             inst->data.push_back(utils::string::va("%i", script_->read<std::uint8_t>()));
             break;
         case opcode::OP_EvalSelfFieldVariableRef:
@@ -294,7 +293,7 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
         case opcode::OP_SetNewLocalVariableFieldCached0_Precompiled:
         case opcode::OP_CreateLocalVariable_Precompiled:
         case opcode::OP_SafeCreateVariableFieldCached_Precompiled:
-            script_->seek(8); // TODO: skipped data
+            inst->data.push_back(resolver::hash_name(script_->read<std::uint64_t>()));
             break;*/
         case opcode::OP_NativeGetFarFunction:
         case opcode::OP_NativeFarFunctionCall:
@@ -311,15 +310,15 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
         case opcode::OP_FormalParams_Precompiled:
             disassemble_formal_params(inst);
             break;
-        case opcode::OP_unk_134:
-        case opcode::OP_unk_137:
-            script_->seek(4);
+        case opcode::OP_unk_134: // eval xhash
+        case opcode::OP_unk_137: // eval something
+            inst->data.push_back(utils::string::va("%08X", script_->read<std::uint32_t>()));
             break;
-        case opcode::OP_unk_133: // eval something
-        case opcode::OP_unk_135:
-        case opcode::OP_unk_136:
-        case opcode::OP_unk_138:
-            inst->data.push_back(resolver::hash_name(script_->read<std::uint64_t>()));
+        case opcode::OP_unk_133: // eval xhash
+        case opcode::OP_unk_135: // eval xhash
+        case opcode::OP_unk_136: // eval xhash OP_GetDvar?
+        case opcode::OP_unk_138: // eval something
+            inst->data.push_back(utils::string::va("%016llX", script_->read<std::uint64_t>()));
             break;
         default:
             throw disasm_error(utils::string::va("unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
@@ -385,14 +384,13 @@ void disassembler::disassemble_far_call(const instruction::ptr& inst, bool threa
 
     if (file == 0)
     {
-
+        inst->data.emplace(inst->data.begin(), utils::string::va("%X", inst->index + 1 + offs));
         inst->data.emplace(inst->data.begin(), "");
-        inst->data.push_back(utils::string::va("%X", offs + inst->index + 1));
     }
     else
     {
-        inst->data.emplace(inst->data.begin(), resolver::hash_name(file));
         inst->data.emplace(inst->data.begin(), resolver::hash_name(name));
+        inst->data.emplace(inst->data.begin(), resolver::hash_name(file));
     }
 }
 
