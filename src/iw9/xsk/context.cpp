@@ -9,9 +9,8 @@
 namespace xsk::gsc::iw9
 {
 
-void context::init(build mode, read_cb_type callback)
+void context::init(build, read_cb_type callback)
 {
-    compiler_.mode(mode);
     resolver::init(callback);
 }
 

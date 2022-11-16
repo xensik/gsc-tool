@@ -11,6 +11,7 @@ namespace xsk::gsc::iw9
 class context : public gsc::context
 {
     iw9::disassembler disassembler_;
+    iw9::decompiler decompiler_;
 
 public:
     void init(build mode, read_cb_type callback);
@@ -19,7 +20,7 @@ public:
     auto assembler() -> gsc::assembler& { throw std::runtime_error("not impl"); }
     auto disassembler() -> gsc::disassembler& { return disassembler_; }
     auto compiler() -> gsc::compiler& { throw std::runtime_error("not impl"); }
-    auto decompiler() -> gsc::decompiler& { throw std::runtime_error("not impl"); }
+    auto decompiler() -> gsc::decompiler& { return decompiler_; }
 };
 
 } // namespace xsk::gsc::iw9
