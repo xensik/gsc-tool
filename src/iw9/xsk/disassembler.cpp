@@ -50,7 +50,7 @@ void disassembler::disassemble(const std::string& file, std::vector<std::uint8_t
 
         func->index = static_cast<std::uint32_t>(script_->pos());
         func->size = stack_->read<std::uint32_t>();
-        func->name = utils::string::va("id_%016llX", stack_->read<std::uint64_t>());
+        func->name = resolver::hash_name(stack_->read<std::uint64_t>());
 
         dissasemble_function(func);
 
@@ -215,13 +215,13 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_EvalLevelFieldVariable:
         case opcode::OP_EvalAnimFieldVariableRef:
-            inst->data.push_back(utils::string::va("id_%016llX", script_->read<std::uint64_t>()));
+            inst->data.push_back(resolver::hash_name(script_->read<std::uint64_t>()));
             break;
         case opcode::OP_CreateLocalVariable:
         case opcode::OP_EvalNewLocalArrayRefCached0:
         case opcode::OP_SafeCreateVariableFieldCached:
         case opcode::OP_SetNewLocalVariableFieldCached0:
-            inst->data.push_back(utils::string::va("%016llX", script_->read<std::uint64_t>()));
+            inst->data.push_back(resolver::hash_name(script_->read<std::uint64_t>()));
             break;
         case opcode::OP_SetLocalVariableFieldCached:
         case opcode::OP_RemoveLocalVariables:
@@ -311,6 +311,16 @@ void disassembler::dissasemble_instruction(const instruction::ptr& inst)
         case opcode::OP_FormalParams_Precompiled:
             disassemble_formal_params(inst);
             break;
+        case opcode::OP_unk_134:
+        case opcode::OP_unk_137:
+            script_->seek(4);
+            break;
+        case opcode::OP_unk_133: // eval something
+        case opcode::OP_unk_135:
+        case opcode::OP_unk_136:
+        case opcode::OP_unk_138:
+            inst->data.push_back(resolver::hash_name(script_->read<std::uint64_t>()));
+            break;
         default:
             throw disasm_error(utils::string::va("unhandled opcode 0x%X at index '%04X'!", inst->opcode, inst->index));
     }
@@ -326,12 +336,24 @@ void disassembler::disassemble_builtin_call(const instruction::ptr& inst, bool m
     if (method) // TODO
     {
         auto str = stack_->read_c_string();
+
+        if (str.starts_with("#xS"))
+        {
+            str = resolver::hash_name(std::stoull(str.substr(3), 0 ,16));
+        }
+
         script_->seek(2);
         inst->data.emplace(inst->data.begin(), str);
     }
     else
     {
         auto str = stack_->read_c_string();
+
+        if (str.starts_with("#xS"))
+        {
+            str = resolver::hash_name(std::stoull(str.substr(3), 0 ,16));
+        }
+            
         script_->seek(2);
         inst->data.emplace(inst->data.begin(), str);
     }
@@ -369,8 +391,8 @@ void disassembler::disassemble_far_call(const instruction::ptr& inst, bool threa
     }
     else
     {
-        inst->data.emplace(inst->data.begin(), utils::string::va("id_%016llX", file));
-        inst->data.emplace(inst->data.begin(), utils::string::va("id_%016llX", name));
+        inst->data.emplace(inst->data.begin(), resolver::hash_name(file));
+        inst->data.emplace(inst->data.begin(), resolver::hash_name(name));
     }
 }
 
@@ -433,7 +455,7 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
 
 void disassembler::disassemble_field_variable(const instruction::ptr& inst)
 {
-    inst->data.push_back(utils::string::va("id_%016llX", script_->read<std::uint64_t>()));
+    inst->data.push_back(resolver::hash_name(script_->read<std::uint64_t>()));
 }
 
 void disassembler::disassemble_formal_params(const instruction::ptr& inst)
@@ -445,7 +467,7 @@ void disassembler::disassemble_formal_params(const instruction::ptr& inst)
 
     for (auto i = 0u; i < count; i++)
     {
-        inst->data.push_back(utils::string::va("%016llX", script_->read<std::uint64_t>()));
+        inst->data.push_back(resolver::hash_name(script_->read<std::uint64_t>()));
     }
 }
 

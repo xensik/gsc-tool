@@ -1330,7 +1330,7 @@ void decompiler::decompile_instruction(const instruction::ptr& inst)
 
             for (auto i = 1; i <= count; i++)
             {
-                func_->params->list.push_back(std::make_unique<ast::expr_identifier>(loc, "var_" + inst->data[i]));
+                func_->params->list.push_back(std::make_unique<ast::expr_identifier>(loc, inst->data[i]));
             }
             break;
         }
@@ -2625,8 +2625,7 @@ void decompiler::process_stmt_for(const ast::stmt_for::ptr& stmt, const block::p
 
     for (const auto& index : stmt->vars)
     {
-        auto var = utils::string::va("var_%d", std::stoi(index));
-        blk->local_vars.push_back({ var, static_cast<uint8_t>(std::stoi(index)), true });
+        blk->local_vars.push_back({ index, static_cast<uint8_t>(blk->local_vars_create_count), true });
         blk->local_vars_create_count++;
     }
 
@@ -2654,8 +2653,7 @@ void decompiler::process_stmt_foreach(const ast::stmt_foreach::ptr& stmt, const 
 
     for (const auto& index : stmt->vars)
     {
-        auto var1 = utils::string::va("var_%d", std::stoi(index));
-        blk->local_vars.push_back({ var1, static_cast<uint8_t>(std::stoi(index)), true });
+        blk->local_vars.push_back({ index, static_cast<uint8_t>(blk->local_vars_create_count), true });
         blk->local_vars_create_count++;
     }
 
@@ -3079,7 +3077,7 @@ void decompiler::process_var_create(ast::expr& expr, const block::ptr& blk, bool
 {
     if (fromstmt)
     {
-        auto var = utils::string::va("var_%s", expr.as_asm_create->index.data());
+        auto var = expr.as_asm_create->index;
         blk->local_vars.push_back({ var, static_cast<uint8_t>(blk->local_vars_create_count), true });
         blk->local_vars_create_count++;
     }
@@ -3087,11 +3085,11 @@ void decompiler::process_var_create(ast::expr& expr, const block::ptr& blk, bool
     {
         for (const auto& entry : expr.as_asm_create->vars)
         {
-            blk->local_vars.push_back({ utils::string::va("var_%s", entry.data()), static_cast<uint8_t>(blk->local_vars_create_count), true });
+            blk->local_vars.push_back({ entry, static_cast<uint8_t>(blk->local_vars_create_count), true });
             blk->local_vars_create_count++;
         }
 
-        auto var = utils::string::va("var_%s", expr.as_asm_create->index.data());
+        auto var = expr.as_asm_create->index;
         blk->local_vars.push_back({ var, static_cast<uint8_t>(blk->local_vars_create_count), true });
         blk->local_vars_create_count++;
 

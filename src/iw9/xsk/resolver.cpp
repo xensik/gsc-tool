@@ -14,14 +14,9 @@
 namespace xsk::gsc::iw9
 {
 
+std::unordered_map<std::uint64_t, std::string_view> hash_map;
 std::unordered_map<std::uint8_t, std::string_view> opcode_map;
-std::unordered_map<std::uint16_t, std::string_view> function_map;
-std::unordered_map<std::uint16_t, std::string_view> method_map;
-std::unordered_map<std::uint32_t, std::string_view> token_map;
 std::unordered_map<std::string_view, std::uint8_t> opcode_map_rev;
-std::unordered_map<std::string_view, std::uint16_t> function_map_rev;
-std::unordered_map<std::string_view, std::uint16_t> method_map_rev;
-std::unordered_map<std::string_view, std::uint32_t> token_map_rev;
 std::unordered_map<std::string, std::vector<std::uint8_t>> files;
 read_cb_type read_callback = nullptr;
 std::set<std::string> string_map;
@@ -62,88 +57,31 @@ auto resolver::opcode_name(std::uint8_t id) -> std::string
 
 auto resolver::function_id(const std::string& name) -> std::uint16_t
 {
-    if (name.starts_with("_func_"))
-    {
-        return static_cast<std::uint16_t>(std::stoul(name.substr(6), nullptr, 16));
-    }
-
-    const auto itr = function_map_rev.find(name);
-
-    if (itr != function_map_rev.end())
-    {
-        return itr->second;
-    }
-
     throw error(utils::string::va("couldn't resolve builtin function id for name '%s'!", name.data()));
 }
 
 auto resolver::function_name(std::uint16_t id) -> std::string
 {
-    const auto itr = function_map.find(id);
-
-    if (itr != function_map.end())
-    {
-        return std::string(itr->second);
-    }
-
     return utils::string::va("_func_%04X", id);
 }
 
 auto resolver::method_id(const std::string& name) -> std::uint16_t
 {
-    if (name.starts_with("_meth_"))
-    {
-        return static_cast<std::uint16_t>(std::stoul(name.substr(6), nullptr, 16));
-    }
-
-    const auto itr = method_map_rev.find(name);
-
-    if (itr != method_map_rev.end())
-    {
-        return itr->second;
-    }
-
     throw error(utils::string::va("couldn't resolve builtin method id for name '%s'!", name.data()));
 }
 
 auto resolver::method_name(std::uint16_t id) -> std::string
 {
-    const auto itr = method_map.find(id);
-
-    if (itr != method_map.end())
-    {
-        return std::string(itr->second);
-    }
-
     return utils::string::va("_meth_%04X", id);
 }
 
-auto resolver::token_id(const std::string& name) -> std::uint32_t
+auto resolver::token_id(const std::string&) -> std::uint32_t
 {
-    if (name.starts_with("_id_"))
-    {
-        return static_cast<std::uint32_t>(std::stoul(name.substr(4), nullptr, 16));
-    }
-
-    const auto itr = token_map_rev.find(name);
-
-    if (itr != token_map_rev.end())
-    {
-        return itr->second;
-    }
-
     return 0;
 }
 
 auto resolver::token_name(std::uint32_t id) -> std::string
 {
-    const auto itr = token_map.find(id);
-
-    if (itr != token_map.end())
-    {
-        return std::string(itr->second);
-    }
-
     return utils::string::va("_id_%04X", id);
 }
 
@@ -151,12 +89,12 @@ auto resolver::find_function(const std::string& name) -> bool
 {
     if (name.starts_with("_func_")) return true;
 
-    const auto itr = function_map_rev.find(name);
+   /* const auto itr = function_map_rev.find(name);
 
     if (itr != function_map_rev.end())
     {
         return true;
-    }
+    }*/
 
     return false;
 }
@@ -165,19 +103,19 @@ auto resolver::find_method(const std::string& name) -> bool
 {
     if (name.starts_with("_meth_")) return true;
 
-    const auto itr = method_map_rev.find(name);
+    /*const auto itr = method_map_rev.find(name);
 
     if (itr != method_map_rev.end())
     {
         return true;
-    }
+    }*/
 
     return false;
 }
 
-void resolver::add_function(const std::string& name, std::uint16_t id)
+void resolver::add_function(const std::string& , std::uint16_t )
 {
-    const auto itr = function_map_rev.find(name);
+    /*const auto itr = function_map_rev.find(name);
 
     if (itr != function_map_rev.end())
     {
@@ -200,12 +138,12 @@ void resolver::add_function(const std::string& name, std::uint16_t id)
             function_map.insert({ id, *ins.first });
             function_map_rev.insert({ *ins.first, id });
         }
-    }
+    }*/
 }
 
-void resolver::add_method(const std::string& name, std::uint16_t id)
+void resolver::add_method(const std::string& , std::uint16_t )
 {
-    const auto itr = method_map_rev.find(name);
+    /*const auto itr = method_map_rev.find(name);
 
     if (itr != method_map_rev.end())
     {
@@ -228,7 +166,7 @@ void resolver::add_method(const std::string& name, std::uint16_t id)
             method_map.insert({ id, *ins.first });
             method_map_rev.insert({ *ins.first, id });
         }
-    }
+    }*/
 }
 
 auto resolver::make_token(std::string_view str) -> std::string
@@ -293,6 +231,45 @@ auto resolver::fs_to_game_path(const std::filesystem::path& file) -> std::filesy
     }
 
     return result.empty() ? file : result;
+}
+
+auto resolver::hash_id(const std::string& name) -> std::uint64_t
+{
+    if (name.starts_with("id_"))
+    {
+        return static_cast<std::uint64_t>(std::stoull(name.substr(3), nullptr, 16));
+    }
+
+    const char* str = name.data();
+    uint64_t hash = 0x79D6530B0BB9B5D1;
+    
+    while ( *str )
+    {
+        uint8_t byte = *str++;
+
+        if (static_cast<uint8_t>(byte - 65) <= 25)
+        {
+            byte += 32;
+        }
+        
+        printf("%c", byte);
+
+        hash = (uint64_t)0x10000000233 * ((uint64_t)byte ^ hash);
+    }
+
+    return hash;
+}
+
+auto resolver::hash_name(std::uint64_t id) -> std::string
+{
+    const auto itr = hash_map.find(id);
+
+    if (itr != hash_map.end())
+    {
+        return std::string(itr->second);
+    }
+
+    return utils::string::va("id_%016llX", id);
 }
 
 const std::array<std::pair<std::uint8_t, const char*>, 167> opcode_list
@@ -466,16 +443,12 @@ const std::array<std::pair<std::uint8_t, const char*>, 167> opcode_list
     { 0xA6, "OP_unk_166" },
 }};
 
-const std::array<std::pair<std::uint16_t, const char*>, 0> function_list
+const std::array<std::pair<std::uint64_t, const char*>, 4> hash_list
 {{
-}};
-
-const std::array<std::pair<std::uint16_t, const char*>, 0> method_list
-{{
-}};
-
-const std::array<std::pair<std::uint32_t, const char*>, 0> token_list
-{{
+    { 0xC92DD50E8E081414, "main" },
+    { 0xAD3D69B62BC6FB2F, "init" },
+    { 0x4CCFEE6F73819653, "getfirstarraykey" },
+    { 0x6DB433AE7304A362, "getnextarraykey" },
 }};
 
 struct __init__
@@ -488,12 +461,7 @@ struct __init__
 
         opcode_map.reserve(opcode_list.size());
         opcode_map_rev.reserve(opcode_list.size());
-        function_map.reserve(function_list.size());
-        function_map_rev.reserve(function_list.size());
-        method_map.reserve(method_list.size());
-        method_map_rev.reserve(method_list.size());
-        token_map.reserve(token_list.size());
-        token_map_rev.reserve(token_list.size());
+        hash_map.reserve(hash_list.size());
 
         for (const auto& entry : opcode_list)
         {
@@ -501,22 +469,9 @@ struct __init__
             opcode_map_rev.insert({ entry.second, entry.first });
         }
 
-        for (const auto& entry : function_list)
+        for (const auto& entry : hash_list)
         {
-            function_map.insert({ entry.first, entry.second });
-            function_map_rev.insert({ entry.second, entry.first });
-        }
-
-        for (const auto& entry : method_list)
-        {
-            method_map.insert({ entry.first, entry.second });
-            method_map_rev.insert({ entry.second, entry.first });
-        }
-
-        for (const auto& entry : token_list)
-        {
-            token_map.insert({ entry.first, entry.second });
-            token_map_rev.insert({ entry.second, entry.first });
+            hash_map.insert({ entry.first, entry.second });
         }
     }
 };
