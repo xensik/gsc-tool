@@ -339,6 +339,11 @@ void disassembler::disassemble_builtin_call(const instruction::ptr& inst, bool m
         if (str.starts_with("#xS"))
         {
             str = resolver::hash_name(std::stoull(str.substr(3), 0 ,16));
+
+            if (str.starts_with("id_"))
+            {
+                str = "builtin_" + str;
+            }
         }
 
         script_->seek(2);
@@ -421,22 +426,18 @@ void disassembler::disassemble_end_switch(const instruction::ptr& inst)
             
             if (byte == 2)
             {
-                auto str = stack_->read_c_string();
-
-                if (str[0] == 1)
-                {
-                    inst->data.push_back("default");
-                }
-                else
-                {
-                    inst->data.push_back("case");
-                    inst->data.push_back(utils::string::quote(str, false));
-                }
+                inst->data.push_back("case");
+                inst->data.push_back(utils::string::quote(stack_->read_c_string(), false));
             }
-            else
+            else if (byte == 1)
             {
                 inst->data.push_back("case");
                 inst->data.push_back(utils::string::va("%i", value));
+            }
+            else // byte == 0
+            {
+                //default = value 0 and byte 0 and i = 1 
+                inst->data.push_back("default");
             }
 
             const auto addr = index + 4 + offs;
