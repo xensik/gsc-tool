@@ -1,0 +1,1 @@
+clang++ -Wall -std=c++20 iw9_hash.cpp -o iw9_hash
