@@ -394,8 +394,15 @@ void disassembler::disassemble_far_call(const instruction::ptr& inst, bool threa
     }
     else
     {
+        auto path = resolver::path_name(file);
+
+        if (!path.starts_with("id_"))
+        {
+            path.resize(path.size() - 4);
+        }
+
         inst->data.emplace(inst->data.begin(), resolver::hash_name(name));
-        inst->data.emplace(inst->data.begin(), resolver::hash_name(file));
+        inst->data.emplace(inst->data.begin(), path);
     }
 }
 

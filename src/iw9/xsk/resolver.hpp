@@ -26,9 +26,6 @@ public:
     static auto token_id(const std::string& name) -> std::uint32_t;
     static auto token_name(std::uint32_t id) -> std::string;
 
-    static auto hash_id(const std::string& name) -> std::uint64_t;
-    static auto hash_name(std::uint64_t id) -> std::string;
-
     static auto find_function(const std::string& name) -> bool;
     static auto find_method(const std::string& name) -> bool;
 
@@ -38,6 +35,12 @@ public:
     static auto make_token(std::string_view str) -> std::string;
     static auto file_data(const std::string& name) -> std::tuple<const std::string*, const char*, size_t>;
     static auto fs_to_game_path(const std::filesystem::path& file) -> std::filesystem::path;
+
+    static auto path_id(const std::string& name) -> std::uint64_t;
+    static auto path_name(std::uint64_t id) -> std::string;
+
+    static auto hash_id(const std::string& name) -> std::uint64_t;
+    static auto hash_name(std::uint64_t id) -> std::string;
 };
 
 } // namespace xsk::gsc::iw9
