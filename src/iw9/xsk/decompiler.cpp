@@ -2090,19 +2090,44 @@ void decompiler::decompile_foreach(const ast::stmt_list::ptr& stmt, std::size_t 
 
     std::reverse(vars.begin(), vars.end());
 
-    auto loc = stmt->list.at(begin - 2).loc();
+    auto use_index = false;
+
+    if (stmt->list[begin-1] == ast::kind::stmt_assign && stmt->list[begin-1].as_assign->expr.as_assign_equal->rvalue == ast::kind::expr_undefined)
+    {
+        use_index = true;
+    }
+
+    auto loc = use_index ? stmt->list.at(begin - 3).loc() : stmt->list.at(begin - 2).loc();
 
     auto init = ast::stmt(std::make_unique<ast::stmt_list>());
+
+    if (use_index)
+    {
+        init.as_list->list.push_back(std::move(stmt->list[begin-3]));
+    }
+
     init.as_list->list.push_back(std::move(stmt->list[begin-2]));
     init.as_list->list.push_back(std::move(stmt->list[begin-1]));
     auto stmt0 = std::move(stmt->list[begin+1]);
 
-    begin -= 2; // move begin from 'test' to 'array'
+    begin -= use_index ? 3 : 2; // move begin from 'test' to 'array'
     stmt->list.erase(stmt->list.begin() + begin); // remove 'array'
-    stmt->list.erase(stmt->list.begin() + begin); // remove 'elem'
+    stmt->list.erase(stmt->list.begin() + begin); // remove 'key'
+
+    if (use_index)
+    {    
+        stmt->list.erase(stmt->list.begin() + begin); // remove 'index'
+    }
+
     stmt->list.erase(stmt->list.begin() + begin); // remove 'test'
-    stmt->list.erase(stmt->list.begin() + begin); // remove 'set'
-    end -= 5; // move end to 'iter' ( minus 'array', 'elem', 'test' & 'set' )
+    stmt->list.erase(stmt->list.begin() + begin); // remove 'setelem'
+
+    if (use_index)
+    {    
+        stmt->list.erase(stmt->list.begin() + begin); // remove 'setindex'
+    }
+
+    end -= use_index ? 7 : 5; // move end to 'iter' ( minus 'array', 'key', 'index?', 'test' & 'setelem', 'setindex?' )
     stmt->list.erase(stmt->list.begin() + end); // remove 'iter'
     stmt->list.erase(stmt->list.begin() + end); // remove 'jumpback
 
@@ -2111,12 +2136,9 @@ void decompiler::decompile_foreach(const ast::stmt_list::ptr& stmt, std::size_t 
         stmt->list.erase(stmt->list.begin() + end); // remove temp var 'array'
     }
 
-    auto use_key = true;
-
     if (stmt->list.size() > end && stmt->list.at(end) == ast::kind::asm_clear)
     {
         stmt->list.erase(stmt->list.begin() + end); // remove temp var 'key'
-        use_key = false;
     }
 
     auto foreach_stmt = std::make_unique<ast::stmt_list>(loc);
@@ -2131,7 +2153,7 @@ void decompiler::decompile_foreach(const ast::stmt_list::ptr& stmt, std::size_t 
     decompile_statements(foreach_stmt);
     blocks_.pop_back();
 
-    auto new_stmt = ast::stmt(std::make_unique<ast::stmt_foreach>(loc, ast::stmt(std::move(foreach_stmt)), use_key));
+    auto new_stmt = ast::stmt(std::make_unique<ast::stmt_foreach>(loc, ast::stmt(std::move(foreach_stmt)), use_index));
     new_stmt.as_foreach->vars = vars;
     new_stmt.as_foreach->pre_expr = std::move(init);
     new_stmt.as_foreach->stmt0 = std::move(stmt0);
@@ -2681,7 +2703,15 @@ void decompiler::process_stmt_foreach(const ast::stmt_foreach::ptr& stmt, const 
 
     stmt->array_expr = std::move(stmt->pre_expr.as_list->list[0].as_assign->expr.as_assign->rvalue);
     stmt->value_expr = std::move(stmt->stmt0.as_assign->expr.as_assign->lvalue);
-    stmt->key_expr = std::move(stmt->pre_expr.as_list->list[1].as_assign->expr.as_assign->lvalue);
+
+    if (stmt->use_key)
+    {
+        stmt->key_expr = std::move(stmt->pre_expr.as_list->list[2].as_assign->expr.as_assign->lvalue);
+    }
+    else
+    {
+        stmt->key_expr = std::move(stmt->pre_expr.as_list->list[1].as_assign->expr.as_assign->lvalue);
+    }
 }
 
 void decompiler::process_stmt_switch(const ast::stmt_switch::ptr& stmt, const block::ptr& blk)
