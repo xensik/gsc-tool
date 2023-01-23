@@ -13,7 +13,7 @@ end
 dependencies.load()
 -------------------------------------------------
 workspace "gsc-tool"
-    startproject "xsk-gsc-tool"
+    startproject "xsk-tool"
     location "./build"
     objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{prj.name}"
     targetdir "%{wks.location}/bin/%{cfg.platform}/%{cfg.buildcfg}"
@@ -77,29 +77,30 @@ workspace "gsc-tool"
         defines { "DEBUG", "_DEBUG" }
     filter {}
 
-project "xsk-gsc-tool"
+project "xsk-tool"
     kind "ConsoleApp"
     language "C++"
     targetname "gsc-tool"
 
-    dependson "xsk-gsc-utils"
-    dependson "xsk-gsc-h1"
-    dependson "xsk-gsc-h2"
-    dependson "xsk-gsc-iw5"
-    dependson "xsk-gsc-iw6"
-    dependson "xsk-gsc-iw7"
-    dependson "xsk-gsc-iw8"
-    dependson "xsk-gsc-iw9"
-    dependson "xsk-gsc-s1"
-    dependson "xsk-gsc-s2"
-    dependson "xsk-gsc-s4"
-    dependson "xsk-arc-t6"
-    dependson "xsk-gsc-iw5c"
-    dependson "xsk-gsc-iw6c"
-    dependson "xsk-gsc-s1c"
-
-    pchheader "stdafx.hpp"
-    pchsource "src/tool/stdafx.cpp"
+    dependson "xsk-utils"
+    dependson "xsk-gsc"
+    dependson "xsk-iw5_pc"
+    dependson "xsk-iw5_ps"
+    dependson "xsk-iw5_xb"
+    dependson "xsk-iw6_pc"
+    dependson "xsk-iw6_ps"
+    dependson "xsk-iw6_xb"
+    dependson "xsk-s1_pc"
+    dependson "xsk-s1_ps"
+    dependson "xsk-s1_xb"
+    dependson "xsk-iw7"
+    dependson "xsk-iw8"
+    dependson "xsk-iw9"
+    dependson "xsk-h1"
+    dependson "xsk-h2"
+    dependson "xsk-s2"
+    dependson "xsk-s4"
+    dependson "xsk-t6"
 
     files {
         "./src/tool/**.h",
@@ -108,21 +109,25 @@ project "xsk-gsc-tool"
     }
 
     links {
-        "xsk-gsc-utils",
-        "xsk-gsc-h1",
-        "xsk-gsc-h2",
-        "xsk-gsc-iw5",
-        "xsk-gsc-iw6",
-        "xsk-gsc-iw7",
-        "xsk-gsc-iw8",
-        "xsk-gsc-iw9",
-        "xsk-gsc-s1",
-        "xsk-gsc-s2",
-        "xsk-gsc-s4",
-        "xsk-arc-t6",
-        "xsk-gsc-iw5c",
-        "xsk-gsc-iw6c",
-        "xsk-gsc-s1c"
+        "xsk-utils",
+        "xsk-gsc",
+        "xsk-iw5_pc",
+        "xsk-iw5_ps",
+        "xsk-iw5_xb",
+        "xsk-iw6_pc",
+        "xsk-iw6_ps",
+        "xsk-iw6_xb",
+        "xsk-s1_pc",
+        "xsk-s1_ps",
+        "xsk-s1_xb",
+        "xsk-iw7",
+        "xsk-iw8",
+        "xsk-iw9",
+        "xsk-h1",
+        "xsk-h2",
+        "xsk-s2",
+        "xsk-s4",
+        "xsk-t6",
     }
 
     includedirs {
@@ -130,14 +135,12 @@ project "xsk-gsc-tool"
         "./src"
     }
 
+    fmt:link()
     zlib:link()
 
-project "xsk-gsc-utils"
+project "xsk-utils"
     kind "StaticLib"
     language "C++"
-
-    pchheader "stdafx.hpp"
-    pchsource "src/utils/stdafx.cpp"
 
     files {
         "./src/utils/**.h",
@@ -150,55 +153,37 @@ project "xsk-gsc-utils"
         "./src"
     }
 
+    fmt:include()
     zlib:include()
 
-project "xsk-gsc-h1"
-kind "StaticLib"
-language "C++"
-
-pchheader "stdafx.hpp"
-pchsource "src/h1/stdafx.cpp"
-
-files {
-    "./src/h1/**.h",
-    "./src/h1/**.hpp",
-    "./src/h1/**.cpp"
-}
-
-includedirs {
-    "./src/h1",
-    "./src"
-}
-
-project "xsk-gsc-h2"
-kind "StaticLib"
-language "C++"
-
-pchheader "stdafx.hpp"
-pchsource "src/h2/stdafx.cpp"
-
-files {
-    "./src/h2/**.h",
-    "./src/h2/**.hpp",
-    "./src/h2/**.cpp"
-}
-
-includedirs {
-    "./src/h2",
-    "./src"
-}
-
-project "xsk-gsc-iw5"
+project "xsk-gsc"
     kind "StaticLib"
     language "C++"
 
-    pchheader "stdafx.hpp"
-    pchsource "src/iw5/stdafx.cpp"
+    files {
+        "./src/gsc/**.h",
+        "./src/gsc/**.hpp",
+        "./src/gsc/**.cpp"
+    }
+
+    includedirs {
+        "./src/gsc",
+        "./src"
+    }
+
+    fmt:include()
+
+project "xsk-iw5_pc"
+    kind "StaticLib"
+    language "C++"
 
     files {
-        "./src/iw5/**.h",
-        "./src/iw5/**.hpp",
-        "./src/iw5/**.cpp"
+        "./src/iw5/iw5_pc.hpp",
+        "./src/iw5/iw5_pc.cpp",
+        "./src/iw5/iw5_pc_code.cpp",
+        "./src/iw5/iw5_pc_func.cpp",
+        "./src/iw5/iw5_pc_meth.cpp",
+        "./src/iw5/iw5_pc_token.cpp"
     }
 
     includedirs {
@@ -206,17 +191,59 @@ project "xsk-gsc-iw5"
         "./src"
     }
 
-project "xsk-gsc-iw6"
+    fmt:include()
+
+project "xsk-iw5_ps"
     kind "StaticLib"
     language "C++"
 
-    pchheader "stdafx.hpp"
-    pchsource "src/iw6/stdafx.cpp"
+    files {
+        "./src/iw5/iw5_ps.hpp",
+        "./src/iw5/iw5_ps.cpp",
+        "./src/iw5/iw5_ps_code.cpp",
+        "./src/iw5/iw5_ps_func.cpp",
+        "./src/iw5/iw5_ps_meth.cpp",
+        "./src/iw5/iw5_ps_token.cpp"
+    }
+
+    includedirs {
+        "./src/iw5",
+        "./src"
+    }
+
+    fmt:include()
+
+project "xsk-iw5_xb"
+    kind "StaticLib"
+    language "C++"
 
     files {
-        "./src/iw6/**.h",
-        "./src/iw6/**.hpp",
-        "./src/iw6/**.cpp"
+        "./src/iw5/iw5_xb.hpp",
+        "./src/iw5/iw5_xb.cpp",
+        "./src/iw5/iw5_xb_code.cpp",
+        "./src/iw5/iw5_xb_func.cpp",
+        "./src/iw5/iw5_xb_meth.cpp",
+        "./src/iw5/iw5_xb_token.cpp"
+    }
+
+    includedirs {
+        "./src/iw5",
+        "./src"
+    }
+
+    fmt:include()
+
+project "xsk-iw6_pc"
+    kind "StaticLib"
+    language "C++"
+
+    files {
+        "./src/iw6/iw6_pc.hpp",
+        "./src/iw6/iw6_pc.cpp",
+        "./src/iw6/iw6_pc_code.cpp",
+        "./src/iw6/iw6_pc_func.cpp",
+        "./src/iw6/iw6_pc_meth.cpp",
+        "./src/iw6/iw6_pc_token.cpp"
     }
 
     includedirs {
@@ -224,12 +251,111 @@ project "xsk-gsc-iw6"
         "./src"
     }
 
-project "xsk-gsc-iw7"
+    fmt:include()
+
+project "xsk-iw6_ps"
     kind "StaticLib"
     language "C++"
 
-    pchheader "stdafx.hpp"
-    pchsource "src/iw7/stdafx.cpp"
+    files {
+        "./src/iw6/iw6_ps.hpp",
+        "./src/iw6/iw6_ps.cpp",
+        "./src/iw6/iw6_ps_code.cpp",
+        "./src/iw6/iw6_ps_func.cpp",
+        "./src/iw6/iw6_ps_meth.cpp",
+        "./src/iw6/iw6_ps_token.cpp"
+    }
+
+    includedirs {
+        "./src/iw6",
+        "./src"
+    }
+
+    fmt:include()
+
+project "xsk-iw6_xb"
+    kind "StaticLib"
+    language "C++"
+
+    files {
+        "./src/iw6/iw6_xb.hpp",
+        "./src/iw6/iw6_xb.cpp",
+        "./src/iw6/iw6_xb_code.cpp",
+        "./src/iw6/iw6_xb_func.cpp",
+        "./src/iw6/iw6_xb_meth.cpp",
+        "./src/iw6/iw6_xb_token.cpp"
+    }
+
+    includedirs {
+        "./src/iw6",
+        "./src"
+    }
+
+    fmt:include()
+
+project "xsk-s1_pc"
+    kind "StaticLib"
+    language "C++"
+
+    files {
+        "./src/s1/s1_pc.hpp",
+        "./src/s1/s1_pc.cpp",
+        "./src/s1/s1_pc_code.cpp",
+        "./src/s1/s1_pc_func.cpp",
+        "./src/s1/s1_pc_meth.cpp",
+        "./src/s1/s1_pc_token.cpp"
+    }
+
+    includedirs {
+        "./src/s1",
+        "./src"
+    }
+
+    fmt:include()
+
+project "xsk-s1_ps"
+    kind "StaticLib"
+    language "C++"
+
+    files {
+        "./src/s1/s1_ps.hpp",
+        "./src/s1/s1_ps.cpp",
+        "./src/s1/s1_ps_code.cpp",
+        "./src/s1/s1_ps_func.cpp",
+        "./src/s1/s1_ps_meth.cpp",
+        "./src/s1/s1_ps_token.cpp"
+    }
+
+    includedirs {
+        "./src/s1",
+        "./src"
+    }
+
+    fmt:include()
+
+project "xsk-s1_xb"
+    kind "StaticLib"
+    language "C++"
+
+    files {
+        "./src/s1/s1_xb.hpp",
+        "./src/s1/s1_xb.cpp",
+        "./src/s1/s1_xb_code.cpp",
+        "./src/s1/s1_xb_func.cpp",
+        "./src/s1/s1_xb_meth.cpp",
+        "./src/s1/s1_xb_token.cpp"
+    }
+
+    includedirs {
+        "./src/s1",
+        "./src"
+    }
+
+    fmt:include()
+
+project "xsk-iw7"
+    kind "StaticLib"
+    language "C++"
 
     files {
         "./src/iw7/**.h",
@@ -242,12 +368,11 @@ project "xsk-gsc-iw7"
         "./src"
     }
 
-project "xsk-gsc-iw8"
+    fmt:include()
+
+project "xsk-iw8"
     kind "StaticLib"
     language "C++"
-
-    pchheader "stdafx.hpp"
-    pchsource "src/iw8/stdafx.cpp"
 
     files {
         "./src/iw8/**.h",
@@ -260,12 +385,11 @@ project "xsk-gsc-iw8"
         "./src"
     }
 
-project "xsk-gsc-iw9"
+    fmt:include()
+
+project "xsk-iw9"
     kind "StaticLib"
     language "C++"
-
-    pchheader "stdafx.hpp"
-    pchsource "src/iw9/stdafx.cpp"
 
     files {
         "./src/iw9/**.h",
@@ -278,30 +402,45 @@ project "xsk-gsc-iw9"
         "./src"
     }
 
-project "xsk-gsc-s1"
+    fmt:include()
+
+project "xsk-h1"
     kind "StaticLib"
     language "C++"
 
-    pchheader "stdafx.hpp"
-    pchsource "src/s1/stdafx.cpp"
-
     files {
-        "./src/s1/**.h",
-        "./src/s1/**.hpp",
-        "./src/s1/**.cpp"
+        "./src/h1/**.h",
+        "./src/h1/**.hpp",
+        "./src/h1/**.cpp"
     }
 
     includedirs {
-        "./src/s1",
+        "./src/h1",
         "./src"
     }
 
-project "xsk-gsc-s2"
+    fmt:include()
+
+project "xsk-h2"
     kind "StaticLib"
     language "C++"
 
-    pchheader "stdafx.hpp"
-    pchsource "src/s2/stdafx.cpp"
+    files {
+        "./src/h2/**.h",
+        "./src/h2/**.hpp",
+        "./src/h2/**.cpp"
+    }
+
+    includedirs {
+        "./src/h2",
+        "./src"
+    }
+
+    fmt:include()
+
+project "xsk-s2"
+    kind "StaticLib"
+    language "C++"
 
     files {
         "./src/s2/**.h",
@@ -314,12 +453,11 @@ project "xsk-gsc-s2"
         "./src"
     }
 
-project "xsk-gsc-s4"
+    fmt:include()
+
+project "xsk-s4"
     kind "StaticLib"
     language "C++"
-
-    pchheader "stdafx.hpp"
-    pchsource "src/s4/stdafx.cpp"
 
     files {
         "./src/s4/**.h",
@@ -332,12 +470,11 @@ project "xsk-gsc-s4"
         "./src"
     }
 
-project "xsk-arc-t6"
+    fmt:include()
+
+project "xsk-t6"
     kind "StaticLib"
     language "C++"
-
-    pchheader "stdafx.hpp"
-    pchsource "src/t6/stdafx.cpp"
 
     files {
         "./src/t6/**.h",
@@ -350,59 +487,8 @@ project "xsk-arc-t6"
         "./src"
     }
 
-project "xsk-gsc-iw5c"
-    kind "StaticLib"
-    language "C++"
-
-    pchheader "stdafx.hpp"
-    pchsource "src/experimental/iw5c/stdafx.cpp"
-
-    files {
-        "./src/experimental/iw5c/**.h",
-        "./src/experimental/iw5c/**.hpp",
-        "./src/experimental/iw5c/**.cpp"
-    }
-
-    includedirs {
-        "./src/experimental/iw5c",
-        "./src"
-    }
-
-project "xsk-gsc-iw6c"
-    kind "StaticLib"
-    language "C++"
-
-    pchheader "stdafx.hpp"
-    pchsource "src/experimental/iw6c/stdafx.cpp"
-
-    files {
-        "./src/experimental/iw6c/**.h",
-        "./src/experimental/iw6c/**.hpp",
-        "./src/experimental/iw6c/**.cpp"
-    }
-
-    includedirs {
-        "./src/experimental/iw6c",
-        "./src"
-    }
-
-project "xsk-gsc-s1c"
-    kind "StaticLib"
-    language "C++"
-
-    pchheader "stdafx.hpp"
-    pchsource "src/experimental/s1c/stdafx.cpp"
-
-    files {
-        "./src/experimental/s1c/**.h",
-        "./src/experimental/s1c/**.hpp",
-        "./src/experimental/s1c/**.cpp"
-    }
-
-    includedirs {
-        "./src/experimental/s1c",
-        "./src"
-    }
+    fmt:include()
 
 group "Dependencies"
+    fmt:project()
     zlib:project()

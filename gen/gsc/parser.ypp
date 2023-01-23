@@ -1,0 +1,982 @@
+/* Copyright 2023 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
+*/
+
+%require "3.7"
+%skeleton "lalr1.cc"
+%language "c++"
+%output "parser.cpp"
+%defines "parser.hpp"
+%define api.prefix {GSC}
+%define api.namespace {xsk::gsc}
+%define api.location.type {xsk::gsc::location}
+%define api.value.type variant
+%define api.token.constructor
+%define api.token.raw
+%define parse.assert
+%define parse.trace
+%define parse.error detailed
+%define parse.lac full
+%locations
+%lex-param   { xsk::gsc::lexer& lexer }
+%parse-param { xsk::gsc::context const* ctx_ }
+%parse-param { xsk::gsc::lexer& lexer }
+%parse-param { xsk::gsc::program::ptr& ast }
+%parse-param { std::uint32_t index }
+
+%code requires
+{
+#ifdef _MSC_VER
+#pragma warning(disable:4065)
+#pragma warning(disable:4127)
+#endif
+#include "context.hpp"
+namespace xsk::gsc { class lexer; }
+}
+
+%code top
+{
+#include "stdinc.hpp"
+#include "parser.hpp"
+#include "lexer.hpp"
+using namespace xsk::gsc;
+namespace xsk::gsc
+{ 
+    auto GSClex(lexer& lexer) -> parser::symbol_type;
+    auto parse_switch(stmt_switch& stm) -> void;
+}
+}
+
+%token SH_DEFINE        "#define"
+%token SH_UNDEF         "#undef"
+%token SH_IFDEF         "#ifdef"
+%token SH_IFNDEF        "#ifndef"
+%token SH_IF            "#if"
+%token SH_ELIF          "#elif"
+%token SH_ELSE          "#else"
+%token SH_ENDIF         "#endif"
+%token DEVBEGIN         "/#"
+%token DEVEND           "#/"
+%token INLINE           "#inline"
+%token INCLUDE          "#include"
+%token USINGTREE        "#using_animtree"
+%token ANIMTREE         "#animtree"
+%token ENDON            "endon"
+%token NOTIFY           "notify"
+%token WAIT             "wait"
+%token WAITTILL         "waittill"
+%token WAITTILLMATCH    "waittillmatch"
+%token WAITTILLFRAMEEND "waittillframeend"
+%token WAITFRAME        "waitframe"
+%token IF               "if"
+%token ELSE             "else"
+%token DO               "do"
+%token WHILE            "while"
+%token FOR              "for"
+%token FOREACH          "foreach"
+%token IN               "in"
+%token SWITCH           "switch"
+%token CASE             "case"
+%token DEFAULT          "default"
+%token BREAK            "break"
+%token CONTINUE         "continue"
+%token RETURN           "return"
+%token BREAKPOINT       "breakpoint"
+%token PROFBEGIN        "prof_begin"
+%token PROFEND          "prof_end"
+%token THREAD           "thread"
+%token CHILDTHREAD      "childthread"
+%token THISTHREAD       "thisthread"
+%token CALL             "call"
+%token TRUE             "true"
+%token FALSE            "false"
+%token UNDEFINED        "undefined"
+%token SIZE             "size"
+%token GAME             "game"
+%token SELF             "self"
+%token ANIM             "anim"
+%token LEVEL            "level"
+%token ISDEFINED        "isdefined"
+%token ISTRUE           "istrue"
+%token LPAREN           "("
+%token RPAREN           ")"
+%token LBRACE           "{"
+%token RBRACE           "}"
+%token LBRACKET         "["
+%token RBRACKET         "]"
+%token COMMA            ","
+%token DOT              "."
+%token DOUBLECOLON      "::"
+%token COLON            ":"
+%token SEMICOLON        ";"
+%token QMARK            "?"
+%token INCREMENT        "++"
+%token DECREMENT        "--"
+%token LSHIFT           "<<"
+%token RSHIFT           ">>"
+%token OR               "||"
+%token AND              "&&"
+%token EQUALITY         "=="
+%token INEQUALITY       "!="
+%token LESS_EQUAL       "<="
+%token GREATER_EQUAL    ">="
+%token LESS             "<"
+%token GREATER          ">"
+%token NOT              "!"
+%token COMPLEMENT       "~"
+%token ASSIGN           "="
+%token ASSIGN_ADD       "+="
+%token ASSIGN_SUB       "-="
+%token ASSIGN_MUL       "*="
+%token ASSIGN_DIV       "/="
+%token ASSIGN_MOD       "%="
+%token ASSIGN_BW_OR     "|="
+%token ASSIGN_BW_AND    "&="
+%token ASSIGN_BW_EXOR   "^="
+%token ASSIGN_RSHIFT    ">>="
+%token ASSIGN_LSHIFT    "<<="
+%token BITWISE_OR       "|"
+%token BITWISE_AND      "&"
+%token BITWISE_EXOR     "^"
+%token ADD              "+"
+%token SUB              "-"
+%token MUL              "*"
+%token DIV              "/"
+%token MOD              "%"
+%token <std::string> PATH       "path"
+%token <std::string> IDENTIFIER "identifier"
+%token <std::string> STRING     "string literal"
+%token <std::string> ISTRING    "localized string"
+%token <std::string> FLOAT      "float"
+%token <std::string> INTEGER    "integer"
+
+%type <program::ptr>               program
+%type <include::ptr>               include
+%type <decl>                       declaration
+%type <decl_usingtree::ptr>        decl_usingtree
+%type <decl_function::ptr>         decl_function
+%type <stmt>                       stmt
+%type <stmt>                       stmt_or_dev
+%type <stmt_list::ptr>             stmt_list
+%type <stmt_list::ptr>             stmt_or_dev_list
+%type <stmt_dev::ptr>              stmt_dev
+%type <stmt_list::ptr>             stmt_block
+%type <stmt_expr::ptr>             stmt_expr
+%type <stmt_call::ptr>             stmt_call
+%type <stmt_assign::ptr>           stmt_assign
+%type <stmt_endon::ptr>            stmt_endon
+%type <stmt_notify::ptr>           stmt_notify
+%type <stmt_wait::ptr>             stmt_wait
+%type <stmt_waittill::ptr>         stmt_waittill
+%type <stmt_waittillmatch::ptr>    stmt_waittillmatch
+%type <stmt_waittillframeend::ptr> stmt_waittillframeend
+%type <stmt_waitframe::ptr>        stmt_waitframe
+%type <stmt_if::ptr>               stmt_if
+%type <stmt_ifelse::ptr>           stmt_ifelse
+%type <stmt_while::ptr>            stmt_while
+%type <stmt_dowhile::ptr>          stmt_dowhile
+%type <stmt_for::ptr>              stmt_for
+%type <stmt_foreach::ptr>          stmt_foreach
+%type <stmt_switch::ptr>           stmt_switch
+%type <stmt_case::ptr>             stmt_case
+%type <stmt_default::ptr>          stmt_default
+%type <stmt_break::ptr>            stmt_break
+%type <stmt_continue::ptr>         stmt_continue
+%type <stmt_return::ptr>           stmt_return
+%type <stmt_breakpoint::ptr>       stmt_breakpoint
+%type <stmt_prof_begin::ptr>       stmt_prof_begin
+%type <stmt_prof_end::ptr>         stmt_prof_end
+%type <expr>                       expr
+%type <expr>                       expr_or_empty
+%type <expr>                       expr_assign
+%type <expr>                       expr_increment
+%type <expr>                       expr_decrement
+%type <expr>                       expr_ternary
+%type <expr>                       expr_binary
+%type <expr>                       expr_primitive
+%type <expr_complement::ptr>       expr_complement
+%type <expr_negate::ptr>           expr_negate
+%type <expr_not::ptr>              expr_not
+%type <expr_call::ptr>             expr_call
+%type <expr_method::ptr>           expr_method
+%type <call>                       expr_function
+%type <call>                       expr_pointer
+%type <expr_add_array::ptr>        expr_add_array
+%type <expr_parameters::ptr>       expr_parameters
+%type <expr_arguments::ptr>        expr_arguments
+%type <expr_arguments::ptr>        expr_arguments_no_empty
+%type <expr_isdefined::ptr>        expr_isdefined
+%type <expr_istrue::ptr>           expr_istrue
+%type <expr_reference::ptr>        expr_reference
+%type <expr>                       expr_tuple
+%type <expr_tuple::ptr>            expr_tuple_arguments
+%type <expr>                       expr_tuple_types
+%type <expr_array::ptr>            expr_array
+%type <expr_field::ptr>            expr_field
+%type <expr_size::ptr>             expr_size
+%type <expr_paren::ptr>            expr_paren
+%type <expr>                       expr_object
+%type <expr_thisthread::ptr>       expr_thisthread
+%type <expr_empty_array::ptr>      expr_empty_array
+%type <expr_undefined::ptr>        expr_undefined
+%type <expr_game::ptr>             expr_game
+%type <expr_self::ptr>             expr_self
+%type <expr_anim::ptr>             expr_anim
+%type <expr_level::ptr>            expr_level
+%type <expr_animation::ptr>        expr_animation
+%type <expr_animtree::ptr>         expr_animtree
+%type <expr_identifier::ptr>       expr_identifier_nosize
+%type <expr_identifier::ptr>       expr_identifier
+%type <expr_path::ptr>             expr_path
+%type <expr_istring::ptr>          expr_istring
+%type <expr_string::ptr>           expr_string
+%type <expr_vector::ptr>           expr_vector
+%type <expr_float::ptr>            expr_float
+%type <expr_integer::ptr>          expr_integer
+%type <expr_false::ptr>            expr_false
+%type <expr_true::ptr>             expr_true
+
+%nonassoc SIZEOF
+%nonassoc ADD_ARRAY
+%nonassoc RBRACKET
+%nonassoc THEN
+%nonassoc ELSE
+%nonassoc INCREMENT DECREMENT
+
+%precedence TERN
+%right QMARK
+%left OR
+%left AND
+%left BITWISE_OR
+%left BITWISE_EXOR
+%left BITWISE_AND
+%left EQUALITY INEQUALITY
+%left LESS GREATER LESS_EQUAL GREATER_EQUAL
+%left LSHIFT RSHIFT
+%left ADD SUB
+%left MUL DIV MOD
+%right NOT COMPLEMENT
+
+%precedence NEG
+%precedence ANIMREF
+%precedence PREINC PREDEC
+%precedence POSTINC POSTDEC
+
+%start root
+
+%%
+
+root
+    : program { ast = std::move($1); }
+    |         { ast = make_program(@$); }
+    ;
+
+program
+    : program inline
+        { $$ = std::move($1); }
+    | program include
+        { $$ = std::move($1); $$->includes.push_back(std::move($2)); }
+    | program declaration
+        { $$ = std::move($1); $$->declarations.push_back(std::move($2)); }
+    | inline
+        { $$ = make_program(@$); }
+    | include
+        { $$ = make_program(@$); $$->includes.push_back(std::move($1)); }
+    | declaration
+        { $$ = make_program(@$); $$->declarations.push_back(std::move($1)); }
+    ;
+
+inline
+    : INLINE expr_path SEMICOLON { lexer.push_header($2->value); }
+    ;
+
+include
+    : INCLUDE expr_path SEMICOLON
+        { $$ = make_include(@$, std::move($2)); }
+    ;
+
+declaration
+    : DEVBEGIN          { $$.as_dev_begin = make_decl_dev_begin(@$); }
+    | DEVEND            { $$.as_dev_end = make_decl_dev_end(@$); }
+    | decl_usingtree    { $$.as_usingtree = std::move($1); }
+    | decl_function     { $$.as_function = std::move($1); }
+    ;
+
+decl_usingtree
+    : USINGTREE LPAREN expr_string RPAREN SEMICOLON
+        { lexer.ban_header(@$); $$ = make_decl_usingtree(@$, std::move($3)); }
+    ;
+
+decl_function
+    : expr_identifier LPAREN expr_parameters RPAREN stmt_block
+        { lexer.ban_header(@$); $$ = make_decl_function(@$, std::move($1), std::move($3), std::move($5)); }
+    ;
+
+stmt
+    : stmt_block             { $$.as_list = std::move($1); }
+    | stmt_call              { $$.as_call = std::move($1); }
+    | stmt_assign            { $$.as_assign = std::move($1); }
+    | stmt_endon             { $$.as_endon = std::move($1); }
+    | stmt_notify            { $$.as_notify = std::move($1); }
+    | stmt_wait              { $$.as_wait = std::move($1); }
+    | stmt_waittill          { $$.as_waittill = std::move($1); }
+    | stmt_waittillmatch     { $$.as_waittillmatch = std::move($1); }
+    | stmt_waittillframeend  { $$.as_waittillframeend = std::move($1); }
+    | stmt_waitframe         { $$.as_waitframe = std::move($1); }
+    | stmt_if                { $$.as_if = std::move($1); }
+    | stmt_ifelse            { $$.as_ifelse = std::move($1); }
+    | stmt_while             { $$.as_while = std::move($1); }
+    | stmt_dowhile           { $$.as_dowhile = std::move($1); }
+    | stmt_for               { $$.as_for = std::move($1); }
+    | stmt_foreach           { $$.as_foreach = std::move($1); }
+    | stmt_switch            { $$.as_switch = std::move($1); }
+    | stmt_case              { $$.as_case = std::move($1); }
+    | stmt_default           { $$.as_default = std::move($1); }
+    | stmt_break             { $$.as_break = std::move($1); }
+    | stmt_continue          { $$.as_continue = std::move($1); }
+    | stmt_return            { $$.as_return = std::move($1); }
+    | stmt_breakpoint        { $$.as_breakpoint = std::move($1); }
+    | stmt_prof_begin        { $$.as_prof_begin = std::move($1); }
+    | stmt_prof_end          { $$.as_prof_end = std::move($1); }
+    ;
+
+stmt_or_dev
+    : stmt     { $$ = std::move($1); }
+    | stmt_dev { $$.as_dev = std::move($1); }
+    ;
+
+stmt_list
+    : stmt_list stmt
+        { $$ = std::move($1); $$->list.push_back(std::move($2)); }
+    | stmt
+        { $$ = make_stmt_list(@$); $$->list.push_back(std::move($1)); }
+    ;
+
+stmt_or_dev_list
+    : stmt_or_dev_list stmt_or_dev
+        { $$ = std::move($1); $$->list.push_back(std::move($2)); }
+    | stmt_or_dev
+        { $$ = make_stmt_list(@$); $$->list.push_back(std::move($1)); }
+    ;
+
+stmt_dev
+    : DEVBEGIN stmt_list DEVEND { $$ = make_stmt_dev(@$, std::move($2)); }
+    | DEVBEGIN DEVEND { $$ = make_stmt_dev(@$, make_stmt_list(@$)); }
+    ;
+
+stmt_block
+    : LBRACE stmt_or_dev_list RBRACE { $$ = std::move($2); }
+    | LBRACE RBRACE { $$ = make_stmt_list(@$); }
+    ;
+
+stmt_expr
+    : expr_assign
+        { $$ = make_stmt_expr(@$, std::move($1)); }
+    | expr_increment
+        { $$ = make_stmt_expr(@$, std::move($1)); }
+    | expr_decrement
+        { $$ = make_stmt_expr(@$, std::move($1)); }
+    |
+        { $$ = make_stmt_expr(@$, make_node(@$)); }
+    ;
+
+stmt_call
+    : expr_call SEMICOLON
+        { $$ = make_stmt_call(@$, expr{ std::move($1) }); }
+    | expr_method SEMICOLON
+        { $$ = make_stmt_call(@$, expr{ std::move($1) }); }
+    ;
+
+stmt_assign
+    : expr_assign SEMICOLON
+        { $$ = make_stmt_assign(@$, std::move($1)); }
+    | expr_increment SEMICOLON
+        { $$ = make_stmt_assign(@$, std::move($1)); }
+    | expr_decrement SEMICOLON
+        { $$ = make_stmt_assign(@$, std::move($1)); }
+    ;
+
+stmt_endon
+    : expr_object ENDON LPAREN expr RPAREN SEMICOLON
+        { $$ = make_stmt_endon(@$, std::move($1), std::move($4)); }
+    ;
+
+stmt_notify
+    : expr_object NOTIFY LPAREN expr COMMA expr_arguments_no_empty RPAREN SEMICOLON
+        { $$ = make_stmt_notify(@$, std::move($1), std::move($4), std::move($6)); }
+    | expr_object NOTIFY LPAREN expr RPAREN SEMICOLON
+        { $$ = make_stmt_notify(@$, std::move($1), std::move($4), make_expr_arguments(@$)); }
+    ;
+
+stmt_wait
+    : WAIT expr SEMICOLON
+        { $$ = make_stmt_wait(@$, std::move($2)); }
+    ;
+
+stmt_waittill
+    : expr_object WAITTILL LPAREN expr COMMA expr_arguments_no_empty RPAREN SEMICOLON
+        { $$ = make_stmt_waittill(@$, std::move($1), std::move($4), std::move($6)); }
+    | expr_object WAITTILL LPAREN expr RPAREN SEMICOLON
+        { $$ = make_stmt_waittill(@$, std::move($1), std::move($4), make_expr_arguments(@$)); }
+    ;
+
+stmt_waittillmatch
+    : expr_object WAITTILLMATCH LPAREN expr COMMA expr_arguments_no_empty RPAREN SEMICOLON
+        { $$ = make_stmt_waittillmatch(@$, std::move($1), std::move($4), std::move($6)); }
+    | expr_object WAITTILLMATCH LPAREN expr RPAREN SEMICOLON
+        { $$ = make_stmt_waittillmatch(@$, std::move($1), std::move($4), make_expr_arguments(@$)); }
+    ;
+
+stmt_waittillframeend
+    : WAITTILLFRAMEEND SEMICOLON
+        { $$ = make_stmt_waittillframeend(@$); }
+    ;
+
+stmt_waitframe
+    : WAITFRAME SEMICOLON
+        { $$ = make_stmt_waitframe(@$); }
+    | WAITFRAME LPAREN RPAREN SEMICOLON
+        { $$ = make_stmt_waitframe(@$); }
+    ;
+
+stmt_if
+    : IF LPAREN expr RPAREN stmt %prec THEN
+        { $$ = make_stmt_if(@$, std::move($3), std::move($5)); }
+    ;
+
+stmt_ifelse
+    : IF LPAREN expr RPAREN stmt ELSE stmt
+        { $$ = make_stmt_ifelse(@$, std::move($3), std::move($5), std::move($7)); }
+    ;
+
+stmt_while
+    : WHILE LPAREN expr RPAREN stmt
+        { $$ = make_stmt_while(@$, std::move($3), std::move($5)); }
+    ;
+
+stmt_dowhile
+    : DO stmt WHILE LPAREN expr RPAREN SEMICOLON
+        { $$ = make_stmt_dowhile(@$, std::move($5), std::move($2)); }
+    ;
+
+stmt_for
+    : FOR LPAREN stmt_expr SEMICOLON expr_or_empty SEMICOLON stmt_expr RPAREN stmt
+        { $$ = make_stmt_for(@$, stmt{ std::move($3) }, std::move($5), stmt{ std::move($7) }, std::move($9)); }
+    ;
+
+stmt_foreach
+    : FOREACH LPAREN expr_identifier IN expr RPAREN stmt
+        {
+            auto array = expr{ make_expr_identifier(@$, fmt::format("_temp_{}", ++index)) };
+            auto key = expr{ make_expr_identifier(@$, fmt::format("_temp_{}", ++index)) };
+            $$ = make_stmt_foreach(@$, std::move($5), expr{ std::move($3) }, expr{ make_node(@$) }, std::move(array), std::move(key), std::move($7), false); }
+    | FOREACH LPAREN expr_identifier COMMA expr_identifier IN expr RPAREN stmt
+        {
+            auto array = expr{ make_expr_identifier(@$, fmt::format("_temp_{}", ++index)) };
+            auto key = (ctx_->props() & props::foreach) ? expr{ make_expr_identifier(@$, fmt::format("_temp_{}", ++index)) } : expr{ std::move($3) };
+            $$ = make_stmt_foreach(@$, std::move($7), expr{ std::move($5) }, (ctx_->props() & props::foreach) ? expr{ std::move($3) } : expr{ make_node(@$) }, std::move(array), std::move(key), std::move($9), true);
+        }
+    ;
+
+stmt_switch
+    : SWITCH LPAREN expr RPAREN stmt_block
+        { $$ = make_stmt_switch(@$, std::move($3), std::move($5)); 
+          parse_switch(*$$);
+        }
+    ;
+
+stmt_case
+    : CASE expr_integer COLON
+        { $$ = make_stmt_case(@$, expr{ std::move($2) }, make_stmt_list(@$)); }
+    | CASE expr_string COLON
+        { $$ = make_stmt_case(@$, expr{ std::move($2) }, make_stmt_list(@$)); }
+    ;
+
+stmt_default
+    : DEFAULT COLON
+        { $$ = make_stmt_default(@$, make_stmt_list(@$)); }
+    ;
+
+stmt_break
+    : BREAK SEMICOLON
+        { $$ = make_stmt_break(@$); }
+    ;
+
+stmt_continue
+    : CONTINUE SEMICOLON
+        { $$ = make_stmt_continue(@$); }
+    ;
+
+stmt_return
+    : RETURN expr SEMICOLON
+        { $$ = make_stmt_return(@$, std::move($2)); }
+    | RETURN SEMICOLON
+        { $$ = make_stmt_return(@$, make_node(@$)); }
+    ;
+
+stmt_breakpoint
+    : BREAKPOINT SEMICOLON
+        { $$ = make_stmt_breakpoint(@$); }
+    ;
+
+stmt_prof_begin
+    : PROFBEGIN LPAREN expr_arguments RPAREN SEMICOLON
+        { $$ = make_stmt_prof_begin(@$, std::move($3)); }
+    ;
+
+stmt_prof_end
+    : PROFEND LPAREN expr_arguments RPAREN SEMICOLON
+        { $$ = make_stmt_prof_end(@$, std::move($3)); }
+    ;
+
+expr
+    : expr_ternary   { $$ = std::move($1); }
+    | expr_binary    { $$ = std::move($1); }
+    | expr_primitive { $$ = std::move($1); }
+    ;
+
+expr_or_empty
+    : expr           { $$ = std::move($1); }
+    |                { $$.as_node = make_node(@$); }
+    ;
+
+expr_assign
+    : expr_tuple ASSIGN expr
+        { $$.as_node = make_expr_assign_equal(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN expr
+        { $$.as_node = make_expr_assign_equal(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_BW_OR expr
+        { $$.as_node = make_expr_assign_bitwise_or(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_BW_AND expr
+        { $$.as_node = make_expr_assign_bitwise_and(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_BW_EXOR expr
+        { $$.as_node = make_expr_assign_bitwise_exor(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_LSHIFT expr
+        { $$.as_node = make_expr_assign_shift_left(@$, std::move($1),std::move( $3)); }
+    | expr_object ASSIGN_RSHIFT expr
+        { $$.as_node = make_expr_assign_shift_right(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_ADD expr
+        { $$.as_node = make_expr_assign_add(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_SUB expr
+        { $$.as_node = make_expr_assign_sub(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_MUL expr
+        { $$.as_node = make_expr_assign_mul(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_DIV expr
+        { $$.as_node = make_expr_assign_div(@$, std::move($1), std::move($3)); }
+    | expr_object ASSIGN_MOD expr
+        { $$.as_node = make_expr_assign_mod(@$, std::move($1), std::move($3)); }
+    ;
+
+expr_increment
+    : INCREMENT expr_object %prec PREINC
+        { $$.as_node = make_expr_increment(@$, std::move($2), true); }
+    | expr_object INCREMENT %prec POSTINC
+        { $$.as_node = make_expr_increment(@$, std::move($1), false); }
+    ;
+
+expr_decrement
+    : DECREMENT expr_object %prec PREDEC
+        { $$.as_node = make_expr_decrement(@$, std::move($2), true); }
+    | expr_object DECREMENT %prec POSTDEC
+        { $$.as_node = make_expr_decrement(@$, std::move($1), false); }
+    ;
+
+expr_ternary
+    : expr QMARK expr COLON expr %prec TERN
+        { $$.as_node = make_expr_ternary(@$, std::move($1), std::move($3), std::move($5)); }
+    ;
+
+expr_binary
+    : expr OR expr
+        { $$.as_node = make_expr_or(@$, std::move($1), std::move($3)); }
+    | expr AND expr
+        { $$.as_node = make_expr_and(@$, std::move($1), std::move($3)); }
+    | expr EQUALITY expr
+        { $$.as_node = make_expr_equality(@$, std::move($1), std::move($3)); }
+    | expr INEQUALITY expr
+        { $$.as_node = make_expr_inequality(@$, std::move($1), std::move($3)); }
+    | expr LESS_EQUAL expr
+        { $$.as_node = make_expr_less_equal(@$, std::move($1), std::move($3)); }
+    | expr GREATER_EQUAL expr
+        { $$.as_node = make_expr_greater_equal(@$, std::move($1), std::move($3)); }
+    | expr LESS expr
+        { $$.as_node = make_expr_less(@$, std::move($1), std::move($3)); }
+    | expr GREATER expr
+        { $$.as_node = make_expr_greater(@$, std::move($1), std::move($3)); }
+    | expr BITWISE_OR expr
+        { $$.as_node = make_expr_bitwise_or(@$, std::move($1), std::move($3)); }
+    | expr BITWISE_AND expr
+        { $$.as_node = make_expr_bitwise_and(@$, std::move($1), std::move($3)); }
+    | expr BITWISE_EXOR expr
+        { $$.as_node = make_expr_bitwise_exor(@$, std::move($1), std::move($3)); }
+    | expr LSHIFT expr
+        { $$.as_node = make_expr_shift_left(@$, std::move($1), std::move($3)); }
+    | expr RSHIFT expr
+        { $$.as_node = make_expr_shift_right(@$, std::move($1), std::move($3)); }
+    | expr ADD expr
+        { $$.as_node = make_expr_add(@$, std::move($1), std::move($3)); }
+    | expr SUB expr
+        { $$.as_node = make_expr_sub(@$, std::move($1), std::move($3)); }
+    | expr MUL expr
+        { $$.as_node = make_expr_mul(@$, std::move($1), std::move($3)); }
+    | expr DIV expr
+        { $$.as_node = make_expr_div(@$, std::move($1), std::move($3)); }
+    | expr MOD expr
+        { $$.as_node = make_expr_mod(@$, std::move($1), std::move($3)); }
+    ;
+
+expr_primitive
+    : expr_complement       { $$.as_node = std::move($1); }
+    | expr_negate           { $$.as_node = std::move($1); }
+    | expr_not              { $$.as_node = std::move($1); }
+    | expr_call             { $$.as_node = std::move($1); }
+    | expr_method           { $$.as_node = std::move($1); }
+    | expr_add_array        { $$.as_node = std::move($1); }
+    | expr_isdefined        { $$.as_node = std::move($1); }
+    | expr_istrue           { $$.as_node = std::move($1); }
+    | expr_reference        { $$.as_node = std::move($1); }
+    | expr_array            { $$.as_node = std::move($1); }
+    | expr_field            { $$.as_node = std::move($1); }
+    | expr_size             { $$.as_node = std::move($1); }
+    | expr_paren            { $$.as_node = std::move($1); }
+    | expr_thisthread       { $$.as_node = std::move($1); }
+    | expr_empty_array      { $$.as_node = std::move($1); }
+    | expr_undefined        { $$.as_node = std::move($1); }
+    | expr_game             { $$.as_node = std::move($1); }
+    | expr_self             { $$.as_node = std::move($1); }
+    | expr_anim             { $$.as_node = std::move($1); }
+    | expr_level            { $$.as_node = std::move($1); }
+    | expr_animation        { $$.as_node = std::move($1); }
+    | expr_animtree         { $$.as_node = std::move($1); }
+    | expr_identifier       { $$.as_node = std::move($1); }
+    | expr_istring          { $$.as_node = std::move($1); }
+    | expr_string           { $$.as_node = std::move($1); }
+    | expr_vector           { $$.as_node = std::move($1); }
+    | expr_float            { $$.as_node = std::move($1); }
+    | expr_integer          { $$.as_node = std::move($1); }
+    | expr_false            { $$.as_node = std::move($1); }
+    | expr_true             { $$.as_node = std::move($1); }
+    ;
+
+expr_complement
+    : COMPLEMENT expr
+        { $$ = make_expr_complement(@$, std::move($2)); }
+    ;
+
+expr_negate
+    : SUB expr_identifier %prec NEG
+        { $$ = make_expr_negate(@$, expr{ std::move($2) }); }
+    | SUB expr_paren %prec NEG
+        { $$ = make_expr_negate(@$, expr{ std::move($2) }); }
+    | SUB expr_array %prec NEG
+        { $$ = make_expr_negate(@$, expr{ std::move($2) }); }
+    | SUB expr_field %prec NEG
+        { $$ = make_expr_negate(@$, expr{ std::move($2) }); }
+    ;
+
+expr_not
+    : NOT expr
+        { $$ = make_expr_not(@$, std::move($2)); }
+    ;
+
+expr_call
+    : expr_function                { $$ = make_expr_call(@$, std::move($1)); }
+    | expr_pointer                 { $$ = make_expr_call(@$, std::move($1)); }
+    ;
+expr_method
+    : expr_object expr_function    { $$ = make_expr_method(@$, std::move($1), std::move($2)); }
+    | expr_object expr_pointer     { $$ = make_expr_method(@$, std::move($1), std::move($2)); }
+    ;
+
+expr_function
+    : expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = make_expr_function(@$, make_expr_path(@$), std::move($1), std::move($3), call::mode::normal); }
+    | expr_path DOUBLECOLON expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = make_expr_function(@$, std::move($1), std::move($3), std::move($5), call::mode::normal); }
+    | THREAD expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = make_expr_function(@$, make_expr_path(@$), std::move($2), std::move($4), call::mode::thread); }
+    | THREAD expr_path DOUBLECOLON expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = make_expr_function(@$, std::move($2), std::move($4), std::move($6), call::mode::thread); }
+    | CHILDTHREAD expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = make_expr_function(@$, make_expr_path(@$), std::move($2), std::move($4), call::mode::childthread); }
+    | CHILDTHREAD expr_path DOUBLECOLON expr_identifier LPAREN expr_arguments RPAREN
+        { $$.as_function = make_expr_function(@$, std::move($2), std::move($4), std::move($6), call::mode::childthread); }
+    ;
+
+expr_pointer
+    : LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
+        { $$.as_pointer = make_expr_pointer(@$, std::move($3), std::move($7), call::mode::normal); }
+    | THREAD LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
+        { $$.as_pointer = make_expr_pointer(@$, std::move($4), std::move($8), call::mode::thread); }
+    | CHILDTHREAD LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
+        { $$.as_pointer = make_expr_pointer(@$, std::move($4), std::move($8), call::mode::childthread); }
+    | CALL LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
+        { $$.as_pointer = make_expr_pointer(@$, std::move($4), std::move($8), call::mode::builtin); }
+    ;
+
+expr_add_array
+    : LBRACKET expr_arguments_no_empty RBRACKET
+        { $$ = make_expr_add_array(@$, std::move($2)); }
+    ;
+
+expr_parameters
+    : expr_parameters COMMA expr_identifier
+        { $$ = std::move($1); $$->list.push_back(std::move($3)); }
+    | expr_identifier
+        { $$ = make_expr_parameters(@$); $$->list.push_back(std::move($1)); }
+    |
+        { $$ = make_expr_parameters(@$); }
+    ;
+
+expr_arguments
+    : expr_arguments_no_empty
+        { $$ = std::move($1); }
+    |
+        { $$ = make_expr_arguments(@$); }
+    ;
+
+expr_arguments_no_empty
+    : expr_arguments COMMA expr
+        { $$ = std::move($1); $$->list.push_back(std::move($3)); }
+    | expr %prec ADD_ARRAY
+        { $$ = make_expr_arguments(@$); $$->list.push_back(std::move($1)); }
+    ;
+
+expr_isdefined
+    : ISDEFINED LPAREN expr RPAREN
+        { $$ = make_expr_isdefined(@$, std::move($3)); }
+    ;
+
+expr_istrue
+    : ISTRUE LPAREN expr RPAREN
+        { $$ = make_expr_istrue(@$, std::move($3)); }
+    ;
+
+expr_reference
+    : DOUBLECOLON expr_identifier
+        { $$ = make_expr_reference(@$, make_expr_path(@$), std::move($2)); }
+    | expr_path DOUBLECOLON expr_identifier
+        { $$ = make_expr_reference(@$, std::move($1), std::move($3)); }
+    ;
+
+expr_tuple
+    : LBRACKET expr_tuple_arguments RBRACKET
+        { $$.as_node = std::move($2);
+          $$.as_tuple->temp = expr{ std::make_unique<expr_identifier>($$.loc(), fmt::format("_temp_{}", ++index)) };
+        }
+    ;
+
+expr_tuple_arguments
+    : expr_tuple_arguments COMMA expr_tuple_types
+        { $$ = std::move($1); $$->list.push_back(std::move($3)); }
+    | expr_tuple_types
+        { $$ = make_expr_tuple(@$); $$->list.push_back(std::move($1)); }
+    ;
+
+expr_tuple_types
+    : expr_array      { $$.as_node = std::move($1); }
+    | expr_field      { $$.as_node = std::move($1); }
+    | expr_identifier { $$.as_node = std::move($1); }
+    ;
+
+expr_array
+    : expr_object LBRACKET expr RBRACKET
+        { $$ = make_expr_array(@$, std::move($1), std::move($3)); }
+    ;
+
+expr_field
+    : expr_object DOT expr_identifier_nosize
+        { $$ = make_expr_field(@$, std::move($1), std::move($3)); }
+    ;
+
+expr_size
+    : expr_object DOT SIZE %prec SIZEOF
+        { $$ = make_expr_size(@$, std::move($1)); }
+    ;
+
+expr_paren
+    : LPAREN expr RPAREN
+        { $$ = make_expr_paren(@$, std::move($2)); }
+    ;
+
+expr_object
+    : expr_call       { $$.as_node = std::move($1); }
+    | expr_method     { $$.as_node = std::move($1); }
+    | expr_array      { $$.as_node = std::move($1); }
+    | expr_field      { $$.as_node = std::move($1); }
+    | expr_game       { $$.as_node = std::move($1); }
+    | expr_self       { $$.as_node = std::move($1); }
+    | expr_anim       { $$.as_node = std::move($1); }
+    | expr_level      { $$.as_node = std::move($1); }
+    | expr_identifier { $$.as_node = std::move($1); }
+    ;
+
+expr_thisthread
+    : THISTHREAD
+        { $$ = make_expr_thisthread(@$); };
+    ;
+
+expr_empty_array
+    : LBRACKET RBRACKET
+        { $$ = make_expr_empty_array(@$); };
+    ;
+
+expr_undefined
+    : UNDEFINED
+        { $$ = make_expr_undefined(@$); };
+    ;
+
+expr_game
+    : GAME
+        { $$ = make_expr_game(@$); };
+    ;
+
+expr_self
+    : SELF
+        { $$ = make_expr_self(@$); };
+    ;
+
+expr_anim
+    : ANIM
+        { $$ = make_expr_anim(@$); };
+    ;
+
+expr_level
+    : LEVEL
+        { $$ = make_expr_level(@$); };
+    ;
+
+expr_animation
+    : MOD IDENTIFIER %prec ANIMREF
+        { $$ = make_expr_animation(@$, $2); };
+    ;
+
+expr_animtree
+    : ANIMTREE
+        { $$ = make_expr_animtree(@$); };
+    ;
+
+expr_identifier_nosize
+    : IDENTIFIER
+        { $$ = make_expr_identifier(@$, $1); };
+    ;
+
+expr_identifier
+    : IDENTIFIER
+        { $$ = make_expr_identifier(@$, $1); };
+    | SIZE
+        { $$ = make_expr_identifier(@$, "size"); };
+    ;
+
+expr_path
+    : PATH DIV IDENTIFIER
+        { $$ = make_expr_path(@$, $1 + "/" + $3); };
+    | IDENTIFIER
+        { $$ = make_expr_path(@$, $1); };
+    | PATH
+        { $$ = make_expr_path(@$, $1); };
+    ;
+
+expr_istring
+    : ISTRING
+        { $$ = make_expr_istring(@$, $1); };
+    ;
+
+expr_string
+    : STRING
+        { $$ = make_expr_string(@$, $1); };
+    ;
+
+expr_vector
+    : LPAREN expr COMMA expr COMMA expr RPAREN
+        { $$ = make_expr_vector(@$, std::move($2), std::move($4), std::move($6)); };
+    ;
+
+expr_float
+    : SUB FLOAT %prec NEG
+        { $$ = make_expr_float(@$, "-" + $2); };
+    | FLOAT
+        { $$ = make_expr_float(@$, $1); };
+    ;
+
+expr_integer
+    : SUB INTEGER %prec NEG
+        { $$ = make_expr_integer(@$, "-" + $2); };
+    | INTEGER
+        { $$ = make_expr_integer(@$, $1); };
+    ;
+
+expr_false
+    : FALSE
+        { $$ = make_expr_false(@$); };
+    ;
+
+expr_true
+    : TRUE
+        { $$ = make_expr_true(@$); };
+    ;
+
+%%
+
+namespace xsk::gsc
+{
+
+void parser::error(location const& loc, std::string const& msg)
+{
+    throw comp_error(loc, msg);
+}
+
+auto parse_switch(stmt_switch& stm) -> void
+{
+    auto body = make_stmt_list(stm.body->loc());
+    auto current_case = stmt{ nullptr };
+
+    auto num = stm.body->list.size();
+
+    for (auto i = 0u; i < num; i++)
+    {
+        auto& entry = stm.body->list[0];
+
+        if (entry == node::stmt_case || entry == node::stmt_default)
+        {
+            if (current_case.as_node != nullptr)
+            {
+                body->list.push_back(std::move(current_case));
+            }
+
+            current_case = std::move(stm.body->list[0]);
+            stm.body->list.erase(stm.body->list.begin());
+        }
+        else
+        {
+            if (current_case.as_node != nullptr)
+            {
+                if (current_case == node::stmt_case)
+                {
+                    current_case.as_case->body->list.push_back(std::move(entry));
+                    stm.body->list.erase(stm.body->list.begin());
+                }
+                else
+                {
+                    current_case.as_default->body->list.push_back(std::move(entry));
+                    stm.body->list.erase(stm.body->list.begin());
+                }
+            }
+            else
+            {
+                throw comp_error(entry.loc(), "missing case statement");
+            }
+        }
+    }
+
+    if (current_case.as_node != nullptr)
+    {
+        body->list.push_back(std::move(current_case));
+    }
+
+    stm.body = std::move(body);
+}
+
+} // namespace xsk::gsc

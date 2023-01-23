@@ -1,9 +1,9 @@
-generate: t6
+generate: gsc
 
 clean:
 	rm -rf ./parser.hpp
 	rm -rf ./parser.cpp
 
-t6: parser.ypp
+gsc: parser.ypp
 	bison parser.ypp -Wcounterexamples
-	mv parser.hpp parser.cpp ../../src/t6/
+	mv parser.hpp parser.cpp ../../src/gsc/

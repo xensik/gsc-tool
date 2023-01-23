@@ -1,4 +1,4 @@
-/* Copyright 2022 xensik. All rights reserved.
+/* Copyright 2023 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -36,7 +36,7 @@ namespace xsk::arc::t6 { class lexer; }
 
 %code top
 {
-#include "stdafx.hpp"
+#include "stdinc.hpp"
 #include "parser.hpp"
 #include "lexer.hpp"
 using namespace xsk::arc;
@@ -215,7 +215,6 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 %type <ast::call>                        expr_pointer
 %type <ast::expr_parameters::ptr>        expr_parameters
 %type <ast::expr>                        expr_parameters_default
-/* %type <ast::expr>                        expr_literal */
 %type <ast::expr_arguments::ptr>         expr_arguments
 %type <ast::expr_arguments::ptr>         expr_arguments_no_empty
 %type <ast::expr_getnextarraykey::ptr>   expr_getnextarraykey
@@ -752,15 +751,6 @@ expr_parameters_default
     : expr_identifier ASSIGN expr
         { $$.as_node = std::make_unique<ast::expr_assign_equal>(@$, ast::expr(std::move($1)), std::move($3)); }
     ;
-
-/* expr_literal
-    : expr_istring  { $$.as_node = std::move($1); }
-    | expr_string   { $$.as_node = std::move($1); }
-    | expr_float    { $$.as_node = std::move($1); }
-    | expr_integer  { $$.as_node = std::move($1); }
-    | expr_false    { $$.as_node = std::move($1); }
-    | expr_true     { $$.as_node = std::move($1); }
-    ; */
 
 expr_arguments
     : expr_arguments_no_empty
