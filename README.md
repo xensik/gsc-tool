@@ -1,4 +1,3 @@
-[![build](https://ci.appveyor.com/api/projects/status/defmhg4753c1ap1o?svg=true)](https://ci.appveyor.com/project/xensik/gsc-tool)
 [![build](https://github.com/xensik/gsc-tool/workflows/Build/badge.svg)](https://github.com/xensik/gsc-tool/actions)
 ![license](https://img.shields.io/github/license/xensik/gsc-tool.svg)
 [![issues](https://img.shields.io/github/issues/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/issues)
@@ -13,7 +12,7 @@ A utility to compile & decompile IW engine game scripts.
 - **IW6** *(Call of Duty: Ghosts)* `PC` `PS3` `PS4` `Xbox 360` `Xbox One`
 - **IW7** *(Call of Duty: Infinite Warfare)* `PC` `PS4` `Xbox One`
 - **IW8** *(Call of Duty: Modern Warfare (2019) / Warzone)* `PC` `PS4` `PS5` `Xbox One` `Xbox Series X|S`
-- **IW9** *(Call of Duty: Modern Warfare II (2022) / Warzone 2.0)* `PC` `PS4` `PS5` `Xbox One` `Xbox Series X|S`
+- **IW9** *(Call of Duty: Modern Warfare II (2022) / Warzone 2)* `PC` `PS4` `PS5` `Xbox One` `Xbox Series X|S`
 - **S1** *(Call of Duty: Advanced Warfare)* `PC` `PS3` `PS4` `Xbox 360` `Xbox One`
 - **S2** *(Call of Duty: WWII)* `PC` `PS4` `Xbox One`
 - **S4** *(Call of Duty: Vanguard)* `PC` `PS4` `PS5` `Xbox One` `Xbox Series X|S`
@@ -30,10 +29,10 @@ A utility to compile & decompile IW engine game scripts.
 **modes**: `asm`, `disasm`, `comp`, `decomp`
 - *note:* zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zdecomp` modes
 
-**games**: `iw5`, `iw6`, `iw7`, `iw8`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6`
-- *note:* PS3 & Xbox 360 use `iw5c`, `iw6c`, `s1c` games
+**games**: `iw5`, `iw6`, `iw7`, `iw8`, `iw9`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6`
+- *note:* PS3 & Xbox 360 use `iw5ps`, `iw5xb`, `iw6ps`, `iw6xb`, `s1ps`, `s1xb` games
 
-**paths**: `file`, `directory` (recursive process all files inside the directory)
+**paths**: `file` or `directory` (recursive process all files inside the directory)
 
 Example: ``./gsc-tool.exe comp iw5 ./data/iw5/my_fancy_script.gsc``
 
