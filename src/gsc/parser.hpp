@@ -585,73 +585,75 @@ namespace xsk { namespace gsc {
       // stmt_case
       char dummy48[sizeof (stmt_case::ptr)];
 
+      // stmt_comp
+      char dummy49[sizeof (stmt_comp::ptr)];
+
       // stmt_continue
-      char dummy49[sizeof (stmt_continue::ptr)];
+      char dummy50[sizeof (stmt_continue::ptr)];
 
       // stmt_default
-      char dummy50[sizeof (stmt_default::ptr)];
+      char dummy51[sizeof (stmt_default::ptr)];
 
       // stmt_dev
-      char dummy51[sizeof (stmt_dev::ptr)];
+      char dummy52[sizeof (stmt_dev::ptr)];
 
       // stmt_dowhile
-      char dummy52[sizeof (stmt_dowhile::ptr)];
+      char dummy53[sizeof (stmt_dowhile::ptr)];
 
       // stmt_endon
-      char dummy53[sizeof (stmt_endon::ptr)];
+      char dummy54[sizeof (stmt_endon::ptr)];
 
       // stmt_expr
-      char dummy54[sizeof (stmt_expr::ptr)];
+      char dummy55[sizeof (stmt_expr::ptr)];
 
       // stmt_for
-      char dummy55[sizeof (stmt_for::ptr)];
+      char dummy56[sizeof (stmt_for::ptr)];
 
       // stmt_foreach
-      char dummy56[sizeof (stmt_foreach::ptr)];
+      char dummy57[sizeof (stmt_foreach::ptr)];
 
       // stmt_if
-      char dummy57[sizeof (stmt_if::ptr)];
+      char dummy58[sizeof (stmt_if::ptr)];
 
       // stmt_ifelse
-      char dummy58[sizeof (stmt_ifelse::ptr)];
+      char dummy59[sizeof (stmt_ifelse::ptr)];
 
       // stmt_list
       // stmt_or_dev_list
-      // stmt_block
-      char dummy59[sizeof (stmt_list::ptr)];
+      char dummy60[sizeof (stmt_list::ptr)];
 
       // stmt_notify
-      char dummy60[sizeof (stmt_notify::ptr)];
+      char dummy61[sizeof (stmt_notify::ptr)];
 
       // stmt_prof_begin
-      char dummy61[sizeof (stmt_prof_begin::ptr)];
+      char dummy62[sizeof (stmt_prof_begin::ptr)];
 
       // stmt_prof_end
-      char dummy62[sizeof (stmt_prof_end::ptr)];
+      char dummy63[sizeof (stmt_prof_end::ptr)];
 
       // stmt_return
-      char dummy63[sizeof (stmt_return::ptr)];
+      char dummy64[sizeof (stmt_return::ptr)];
 
       // stmt_switch
-      char dummy64[sizeof (stmt_switch::ptr)];
+      char dummy65[sizeof (stmt_switch::ptr)];
 
       // stmt_wait
-      char dummy65[sizeof (stmt_wait::ptr)];
+      char dummy66[sizeof (stmt_wait::ptr)];
 
       // stmt_waitframe
-      char dummy66[sizeof (stmt_waitframe::ptr)];
+      char dummy67[sizeof (stmt_waitframe::ptr)];
 
       // stmt_waittill
-      char dummy67[sizeof (stmt_waittill::ptr)];
+      char dummy68[sizeof (stmt_waittill::ptr)];
 
       // stmt_waittillframeend
-      char dummy68[sizeof (stmt_waittillframeend::ptr)];
+      char dummy69[sizeof (stmt_waittillframeend::ptr)];
 
       // stmt_waittillmatch
-      char dummy69[sizeof (stmt_waittillmatch::ptr)];
+      char dummy70[sizeof (stmt_waittillmatch::ptr)];
 
       // stmt_while
-      char dummy70[sizeof (stmt_while::ptr)];
+      char dummy71[sizeof (stmt_while::ptr)];
     };
 
     /// The size of the largest semantic type.
@@ -962,7 +964,7 @@ namespace xsk { namespace gsc {
         S_stmt_list = 125,                       // stmt_list
         S_stmt_or_dev_list = 126,                // stmt_or_dev_list
         S_stmt_dev = 127,                        // stmt_dev
-        S_stmt_block = 128,                      // stmt_block
+        S_stmt_comp = 128,                       // stmt_comp
         S_stmt_expr = 129,                       // stmt_expr
         S_stmt_call = 130,                       // stmt_call
         S_stmt_assign = 131,                     // stmt_assign
@@ -1284,6 +1286,10 @@ namespace xsk { namespace gsc {
         value.move< stmt_case::ptr > (std::move (that.value));
         break;
 
+      case symbol_kind::S_stmt_comp: // stmt_comp
+        value.move< stmt_comp::ptr > (std::move (that.value));
+        break;
+
       case symbol_kind::S_stmt_continue: // stmt_continue
         value.move< stmt_continue::ptr > (std::move (that.value));
         break;
@@ -1326,7 +1332,6 @@ namespace xsk { namespace gsc {
 
       case symbol_kind::S_stmt_list: // stmt_list
       case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
-      case symbol_kind::S_stmt_block: // stmt_block
         value.move< stmt_list::ptr > (std::move (that.value));
         break;
 
@@ -2070,6 +2075,20 @@ namespace xsk { namespace gsc {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, stmt_comp::ptr&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const stmt_comp::ptr& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, stmt_continue::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -2612,6 +2631,10 @@ switch (yykind)
         value.template destroy< stmt_case::ptr > ();
         break;
 
+      case symbol_kind::S_stmt_comp: // stmt_comp
+        value.template destroy< stmt_comp::ptr > ();
+        break;
+
       case symbol_kind::S_stmt_continue: // stmt_continue
         value.template destroy< stmt_continue::ptr > ();
         break;
@@ -2654,7 +2677,6 @@ switch (yykind)
 
       case symbol_kind::S_stmt_list: // stmt_list
       case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
-      case symbol_kind::S_stmt_block: // stmt_block
         value.template destroy< stmt_list::ptr > ();
         break;
 
@@ -5174,6 +5196,10 @@ switch (yykind)
         value.copy< stmt_case::ptr > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_stmt_comp: // stmt_comp
+        value.copy< stmt_comp::ptr > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_stmt_continue: // stmt_continue
         value.copy< stmt_continue::ptr > (YY_MOVE (that.value));
         break;
@@ -5216,7 +5242,6 @@ switch (yykind)
 
       case symbol_kind::S_stmt_list: // stmt_list
       case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
-      case symbol_kind::S_stmt_block: // stmt_block
         value.copy< stmt_list::ptr > (YY_MOVE (that.value));
         break;
 
@@ -5506,6 +5531,10 @@ switch (yykind)
         value.move< stmt_case::ptr > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_stmt_comp: // stmt_comp
+        value.move< stmt_comp::ptr > (YY_MOVE (s.value));
+        break;
+
       case symbol_kind::S_stmt_continue: // stmt_continue
         value.move< stmt_continue::ptr > (YY_MOVE (s.value));
         break;
@@ -5548,7 +5577,6 @@ switch (yykind)
 
       case symbol_kind::S_stmt_list: // stmt_list
       case symbol_kind::S_stmt_or_dev_list: // stmt_or_dev_list
-      case symbol_kind::S_stmt_block: // stmt_block
         value.move< stmt_list::ptr > (YY_MOVE (s.value));
         break;
 
@@ -5663,7 +5691,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } // xsk::gsc
-#line 5667 "parser.hpp"
+#line 5695 "parser.hpp"
 
 
 

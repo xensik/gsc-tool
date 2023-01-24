@@ -39,7 +39,7 @@ auto decompiler::decompile_function(function const& func) -> void
     auto loc = location{ nullptr, static_cast<location::counter_type>(func.index) };
     auto name = make_expr_identifier(loc, func.name);
     auto prms = make_expr_parameters(loc);
-    auto body = make_stmt_list(loc);
+    auto body = make_stmt_comp(loc, make_stmt_list(loc));
     func_ = make_decl_function(loc, std::move(name), std::move(prms), std::move(body));
 
     for (auto const& inst : func.instructions)
@@ -53,10 +53,10 @@ auto decompiler::decompile_function(function const& func) -> void
     }
 
     locs_.last = true;
-    locs_.end = func_->body->list.back().label();
-    func_->body->list.pop_back();
+    locs_.end = func_->body->block->list.back().label();
+    func_->body->block->list.pop_back();
 
-    decompile_statements(*func_->body);
+    decompile_statements(*func_->body->block);
     process_function(*func_);
 
     program_->declarations.push_back(decl{ move(func_) });
@@ -72,13 +72,13 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
     {
         case opcode::OP_End:
         {
-            func_->body->list.push_back(stmt{ make_stmt_return(loc, expr{ make_node(loc) }) });
+            func_->body->block->list.push_back(stmt{ make_stmt_return(loc, expr{ make_node(loc) }) });
             break;
         }
         case opcode::OP_Return:
         {
             auto value = expr{ std::move(stack_.top()) }; stack_.pop();
-            func_->body->list.push_back(stmt{ make_stmt_return(value.loc(), std::move(value)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_return(value.loc(), std::move(value)) });
             break;
         }
         case opcode::OP_GetZero:
@@ -216,13 +216,13 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             }
             else
             {
-                func_->body->list.push_back(stmt{ make_asm_create(loc, inst.data[0]) });
+                func_->body->block->list.push_back(stmt{ make_asm_create(loc, inst.data[0]) });
             }
             break;
         }
         case opcode::OP_RemoveLocalVariables:
         {
-            func_->body->list.push_back(stmt{ make_asm_remove(loc, inst.data[0]) });
+            func_->body->block->list.push_back(stmt{ make_asm_remove(loc, inst.data[0]) });
             break;
         }
         case opcode::OP_EvalLocalVariableCached0:
@@ -310,7 +310,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             auto lvalue = expr{ make_expr_array(loc, std::move(obj), std::move(key)) };
             auto rvalue = expr{ make_expr_undefined(loc) };
             auto exp = expr{ make_expr_assign_equal(loc, std::move(lvalue), std::move(rvalue)) };
-            func_->body->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
             break;
         }
         case opcode::OP_AddArray:
@@ -932,7 +932,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         case opcode::OP_DecTop:
         {
             auto exp = expr{ std::move(stack_.top()) }; stack_.pop();
-            func_->body->list.push_back(stmt{ make_stmt_call(exp.loc(), std::move(exp)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_call(exp.loc(), std::move(exp)) });
             break;
         }
         case opcode::OP_inc:
@@ -1062,17 +1062,17 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         case opcode::OP_wait:
         {
             auto exp = expr{ std::move(stack_.top()) }; stack_.pop();
-            func_->body->list.push_back(stmt{ make_stmt_wait(exp.loc(), std::move(exp)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_wait(exp.loc(), std::move(exp)) });
             break;
         }
         case opcode::OP_waittillFrameEnd:
         {
-            func_->body->list.push_back(stmt{ make_stmt_waittillframeend(loc) });
+            func_->body->block->list.push_back(stmt{ make_stmt_waittillframeend(loc) });
             break;
         }
         case opcode::OP_waitframe:
         {
-            func_->body->list.push_back(stmt{ make_stmt_waitframe(loc) });
+            func_->body->block->list.push_back(stmt{ make_stmt_waitframe(loc) });
             break;
         }
         case opcode::OP_waittill:
@@ -1098,7 +1098,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
                 args->list.push_back(std::move(arg));
             }
 
-            func_->body->list.push_back(stmt{ make_stmt_waittillmatch(loc, std::move(obj), std::move(event), std::move(args)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_waittillmatch(loc, std::move(obj), std::move(event), std::move(args)) });
             break;
         }
         case opcode::OP_clearparams:
@@ -1121,7 +1121,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
                     in_waittill_ = false;
                 }
 
-                func_->body->list.push_back(stmt{ std::move(arg) });
+                func_->body->block->list.push_back(stmt{ std::move(arg) });
             }
             break;
         }
@@ -1140,14 +1140,14 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
                 loc = var->loc();
             }
 
-            func_->body->list.push_back(stmt{ make_stmt_notify(loc, std::move(obj), std::move(event), std::move(args)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_notify(loc, std::move(obj), std::move(event), std::move(args)) });
             break;
         }
         case opcode::OP_endon:
         {
             auto obj = expr{ std::move(stack_.top()) }; stack_.pop();
             auto event = expr{ std::move(stack_.top()) }; stack_.pop();
-            func_->body->list.push_back(stmt{ make_stmt_endon(event.loc(), std::move(obj), std::move(event)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_endon(event.loc(), std::move(obj), std::move(event)) });
             break;
         }
         case opcode::OP_voidCodepos:
@@ -1233,7 +1233,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             auto field = expr{ make_expr_field(loc, std::move(obj), std::move(name)) };
             auto undef = expr{ make_expr_undefined(loc) };
             auto exp = expr{ make_expr_assign_equal(loc, std::move(field), std::move(undef)) };
-            func_->body->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
             break;
         }
         case opcode::OP_SafeCreateVariableFieldCached:
@@ -1278,7 +1278,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             auto field = make_expr_identifier(loc, inst.data[0]);
             auto lvalue = expr{ make_expr_field(loc, std::move(obj), std::move(field)) };
             auto exp = expr{ make_expr_assign_equal(loc, std::move(lvalue), std::move(rvalue)) };
-            func_->body->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
             break;
         }
         case opcode::OP_SetVariableField:
@@ -1288,18 +1288,18 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
 
             if (lvalue == node::expr_increment)
             {
-                func_->body->list.push_back(stmt{ make_stmt_assign(loc, std::move(lvalue)) });
+                func_->body->block->list.push_back(stmt{ make_stmt_assign(loc, std::move(lvalue)) });
             }
             else if (lvalue == node::expr_decrement)
             {
-                func_->body->list.push_back(stmt{ make_stmt_assign(loc, std::move(lvalue)) });
+                func_->body->block->list.push_back(stmt{ make_stmt_assign(loc, std::move(lvalue)) });
             }
             else
             {
                 auto rvalue = expr{ std::move(stack_.top()) }; stack_.pop();
                 loc = rvalue.loc();
                 auto exp = expr{ make_expr_assign_equal(loc, std::move(lvalue), std::move(rvalue)) };
-                func_->body->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
+                func_->body->block->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
             }
             break;
         }
@@ -1311,7 +1311,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             auto field = make_expr_identifier(loc, inst.data[0]);
             auto lvalue = expr{ make_expr_field(loc, std::move(obj), std::move(field)) };
             auto exp = expr{ make_expr_assign_equal(loc, std::move(lvalue), std::move(rvalue)) };
-            func_->body->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
             break;
         }
         case opcode::OP_SetSelfFieldVariableField:
@@ -1322,7 +1322,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             auto field = make_expr_identifier(loc, inst.data[0]);
             auto lvalue = expr{ make_expr_field(loc, std::move(obj), std::move(field)) };
             auto exp = expr{ make_expr_assign_equal(loc, std::move(lvalue), std::move(rvalue)) };
-            func_->body->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
             break;
         }
         case opcode::OP_SetLocalVariableFieldCached0:
@@ -1331,7 +1331,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             auto rvalue = expr{ std::move(stack_.top()) }; stack_.pop();
             loc = rvalue.loc();
             auto exp = expr{ make_expr_assign_equal(loc, std::move(lvalue), std::move(rvalue)) };
-            func_->body->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
             break;
         }
         case opcode::OP_SetNewLocalVariableFieldCached0:
@@ -1340,17 +1340,17 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             auto rvalue = expr{ std::move(stack_.top()) }; stack_.pop();
             loc = rvalue.loc();
 
-            if (func_->body->list.size() > 0)
+            if (func_->body->block->list.size() > 0)
             {
                 std::vector<std::string> vars;
 
-                while (func_->body->list.back() == node::asm_create)
+                while (func_->body->block->list.back() == node::asm_create)
                 {
-                    auto& entry = func_->body->list.back();
+                    auto& entry = func_->body->block->list.back();
                     if (loc.begin.line < entry.loc().begin.line)
                     {
                         vars.push_back(entry.as_asm_create->index);
-                        func_->body->list.pop_back();
+                        func_->body->block->list.pop_back();
                         continue;
                     }
                     break;
@@ -1361,7 +1361,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             }
 
             auto exp = expr{ make_expr_assign_equal(loc, std::move(lvalue), std::move(rvalue)) };
-            func_->body->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
             break;
         }
         case opcode::OP_SetLocalVariableFieldCached:
@@ -1370,17 +1370,17 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             auto rvalue = expr{ std::move(stack_.top()) }; stack_.pop();
             loc = rvalue.loc();
             auto exp = expr{ make_expr_assign_equal(loc, std::move(lvalue), std::move(rvalue)) };
-            func_->body->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
+            func_->body->block->list.push_back(stmt{ make_stmt_assign(loc, std::move(exp)) });
             break;
         }
         case opcode::OP_ClearLocalVariableFieldCached:
         {
-            func_->body->list.push_back(stmt{ make_asm_clear(loc, inst.data[0]) });
+            func_->body->block->list.push_back(stmt{ make_asm_clear(loc, inst.data[0]) });
             break;
         }
         case opcode::OP_ClearLocalVariableFieldCached0:
         {
-            func_->body->list.push_back(stmt{ make_asm_clear(loc, "0") });
+            func_->body->block->list.push_back(stmt{ make_asm_clear(loc, "0") });
             break;
         }
         case opcode::OP_EvalLocalVariableObjectCached:
@@ -1403,23 +1403,23 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         case opcode::OP_switch:
         {
             auto test = expr{ std::move(stack_.top()) }; stack_.pop();
-            func_->body->list.push_back(stmt{ make_asm_switch(test.loc(), std::move(test), inst.data[0]) });
+            func_->body->block->list.push_back(stmt{ make_asm_switch(test.loc(), std::move(test), inst.data[0]) });
             break;
         }
         case opcode::OP_endswitch:
         {
-            func_->body->list.push_back(stmt{ make_asm_endswitch(loc, inst.data) });
+            func_->body->block->list.push_back(stmt{ make_asm_endswitch(loc, inst.data) });
             break;
         }
         case opcode::OP_jump:
         {
-            func_->body->list.push_back(stmt{ make_asm_jmp(loc, inst.data[0]) });
+            func_->body->block->list.push_back(stmt{ make_asm_jmp(loc, inst.data[0]) });
             if (stack_.size() != 0) tern_labels_.push_back(inst.data[0]);
             break;
         }
         case opcode::OP_jumpback:
         {
-            func_->body->list.push_back(stmt{ make_asm_jmp_back(loc, inst.data[0]) });
+            func_->body->block->list.push_back(stmt{ make_asm_jmp_back(loc, inst.data[0]) });
             break;
         }
         case opcode::OP_JumpOnTrue:
@@ -1427,13 +1427,13 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             auto lvalue = expr{ std::move(stack_.top()) }; stack_.pop();
             loc = lvalue.loc();
             auto test = expr{ make_expr_not(loc, std::move(lvalue)) };
-            func_->body->list.push_back(stmt{ make_asm_jmp_cond(loc, std::move(test), inst.data[0]) });
+            func_->body->block->list.push_back(stmt{ make_asm_jmp_cond(loc, std::move(test), inst.data[0]) });
             break;
         }
         case opcode::OP_JumpOnFalse:
         {
             auto test = expr{ std::move(stack_.top()) }; stack_.pop();
-            func_->body->list.push_back(stmt{ make_asm_jmp_cond(test.loc(), std::move(test), inst.data[0]) });
+            func_->body->block->list.push_back(stmt{ make_asm_jmp_cond(test.loc(), std::move(test), inst.data[0]) });
             break;
         }
         case opcode::OP_JumpOnTrueExpr:
@@ -1548,9 +1548,9 @@ auto decompiler::decompile_expressions(instruction const& inst) -> void
             auto rvalue = expr{ std::move(stack_.top()) }; stack_.pop();
             auto lvalue = expr{ std::move(stack_.top()) }; stack_.pop();
 
-            func_->body->list.pop_back();
-            auto stm = std::move(func_->body->list.back());
-            func_->body->list.pop_back();
+            func_->body->block->list.pop_back();
+            auto stm = std::move(func_->body->block->list.back());
+            func_->body->block->list.pop_back();
 
             if (stm == node::asm_jmp_cond)
             {
@@ -1870,7 +1870,7 @@ auto decompiler::decompile_if(stmt_list& stm, usize begin, usize end) -> void
 
     decompile_statements(*body);
     locs_ = save;
-    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_if(loc, std::move(test), stmt{ std::move(body) }) });
+    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_if(loc, std::move(test), stmt{ make_stmt_comp(loc, std::move(body)) }) });
 }
 
 auto decompiler::decompile_ifelse(stmt_list& stm, usize begin, usize end) -> void
@@ -1916,7 +1916,7 @@ auto decompiler::decompile_ifelse(stmt_list& stm, usize begin, usize end) -> voi
 
     decompile_statements(*body_else);
     locs_ = save;
-    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_ifelse(loc, std::move(test), stmt{ std::move(body_if) }, stmt{ std::move(body_else) }) });
+    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_ifelse(loc, std::move(test), stmt{ make_stmt_comp(loc, std::move(body_if)) }, stmt{ make_stmt_comp(loc, std::move(body_else)) }) });
 }
 
 auto decompiler::decompile_ifelse_end(stmt_list& stm, usize begin, usize end) -> void
@@ -1946,7 +1946,7 @@ auto decompiler::decompile_ifelse_end(stmt_list& stm, usize begin, usize end) ->
 
     if (begin == stm.list.size())
     {
-        stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_if(loc, std::move(test), stmt{ std::move(body_if) }) });
+        stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_if(loc, std::move(test), stmt{ make_stmt_comp(loc, std::move(body_if)) }) });
     }
     else
     {
@@ -1967,7 +1967,7 @@ auto decompiler::decompile_ifelse_end(stmt_list& stm, usize begin, usize end) ->
 
         decompile_statements(*body_else);
         locs_ = save;
-        stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_ifelse(loc, std::move(test), stmt{ std::move(body_if) }, stmt{ std::move(body_else) }) });
+        stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_ifelse(loc, std::move(test), stmt{ make_stmt_comp(loc, std::move(body_if)) }, stmt{ make_stmt_comp(loc, std::move(body_else)) }) });
     }
 }
 
@@ -1993,7 +1993,7 @@ auto decompiler::decompile_inf(stmt_list& stm, usize begin, usize end) -> void
 
     decompile_statements(*body);
     locs_ = save;
-    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_for(loc, stmt{ make_node(loc) }, expr{ make_node(loc) }, stmt{ make_node(loc) }, stmt{ std::move(body) }) });
+    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_for(loc, stmt{ make_node(loc) }, expr{ make_node(loc) }, stmt{ make_node(loc) }, stmt{ make_stmt_comp(loc, std::move(body)) }) });
 }
 
 auto decompiler::decompile_loop(stmt_list& stm, usize start, usize end) -> void
@@ -2086,7 +2086,7 @@ auto decompiler::decompile_while(stmt_list& stm, usize begin, usize end) -> void
 
     decompile_statements(*body);
     locs_ = save;
-    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_while(loc, std::move(test), stmt{ std::move(body) }) });
+    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_while(loc, std::move(test), stmt{ make_stmt_comp(loc, std::move(body)) }) });
 }
 
 auto decompiler::decompile_dowhile(stmt_list& stm, usize begin, usize end) -> void
@@ -2115,7 +2115,7 @@ auto decompiler::decompile_dowhile(stmt_list& stm, usize begin, usize end) -> vo
 
     decompile_statements(*body);
     locs_ = save;
-    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_dowhile(loc, std::move(test), stmt{ std::move(body) }) });
+    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_dowhile(loc, std::move(test), stmt{ make_stmt_comp(loc, std::move(body)) }) });
 }
 
 auto decompiler::decompile_for(stmt_list& stm, usize begin, usize end) -> void
@@ -2130,7 +2130,6 @@ auto decompiler::decompile_for(stmt_list& stm, usize begin, usize end) -> void
 
     auto loc = stm.list[begin].loc();
     auto init = make_stmt_list(loc);
-    init->is_expr = true;
 
     while (stm.list[begin] != node::asm_jmp_cond)
     {
@@ -2144,7 +2143,6 @@ auto decompiler::decompile_for(stmt_list& stm, usize begin, usize end) -> void
     end -= 2 + init->list.size();
 
     auto iter = make_stmt_list(loc);
-    iter->is_expr = true;
     iter->list.push_back(std::move(stm.list[end]));
     stm.list.erase(stm.list.begin() + end);
     stm.list.erase(stm.list.begin() + end);
@@ -2159,7 +2157,7 @@ auto decompiler::decompile_for(stmt_list& stm, usize begin, usize end) -> void
 
     decompile_statements(*body);
     locs_ = save;
-    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_for(loc, stmt { std::move(init) }, std::move(test), stmt {std::move(iter) }, stmt{ std::move(body) }) });
+    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_for(loc, stmt { std::move(init) }, std::move(test), stmt { std::move(iter) }, stmt{ make_stmt_comp(loc, std::move(body)) }) });
 }
 
 auto decompiler::decompile_foreach(stmt_list& stm, usize begin, usize end) -> void
@@ -2244,7 +2242,7 @@ auto decompiler::decompile_foreach(stmt_list& stm, usize begin, usize end) -> vo
     decompile_statements(*body);
     locs_ = save;
     body->list.insert(body->list.begin(), stmt{ std::move(init) });
-    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_foreach(loc, std::move(container), std::move(value), std::move(index), std::move(array), std::move(key), stmt{ std::move(body) }, (ctx_->props() & props::foreach) ? use_index : use_key) });
+    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_foreach(loc, std::move(container), std::move(value), std::move(index), std::move(array), std::move(key), stmt{ make_stmt_comp(loc, std::move(body)) }, (ctx_->props() & props::foreach) ? use_index : use_key) });
 }
 
 auto decompiler::decompile_switch(stmt_list& stm, usize begin, usize end) -> void
@@ -2361,7 +2359,7 @@ auto decompiler::decompile_switch(stmt_list& stm, usize begin, usize end) -> voi
         body->list.push_back(std::move(temp));
     }
 
-    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_switch(loc, std::move(test), std::move(body)) });
+    stm.list.insert(stm.list.begin() + begin, stmt{ make_stmt_switch(loc, std::move(test), make_stmt_comp(loc, std::move(body))) });
 }
 
 auto decompiler::find_location_reference(stmt_list const& stm, usize begin, usize end, std::string const& loc) -> bool
@@ -2416,7 +2414,7 @@ auto decompiler::process_function(decl_function& func) -> void
         scp_body->create_count++;
     }
 
-    process_stmt_list(*func.body, *scp_body);
+    process_stmt_comp(*func.body, *scp_body);
 }
 
 auto decompiler::process_stmt(stmt& stm, scope& scp) -> void
@@ -2425,6 +2423,12 @@ auto decompiler::process_stmt(stmt& stm, scope& scp) -> void
     {
         case node::stmt_list:
             process_stmt_list(*stm.as_list, scp);
+            break;
+        case node::stmt_comp:
+            process_stmt_comp(*stm.as_comp, scp);
+            break;
+        case node::stmt_dev:
+            process_stmt_dev(*stm.as_dev, scp);
             break;
         case node::stmt_expr:
             process_stmt_expr(*stm.as_expr, scp);
@@ -2505,6 +2509,16 @@ auto decompiler::process_stmt_list(stmt_list& stm, scope& scp) -> void
         else
             i++;
     }
+}
+
+auto decompiler::process_stmt_comp(stmt_comp& stm, scope& scp) -> void
+{
+    process_stmt_list(*stm.block, scp);
+}
+
+auto decompiler::process_stmt_dev(stmt_dev& stm, scope& scp) -> void
+{
+    process_stmt_list(*stm.block, scp);
 }
 
 auto decompiler::process_stmt_expr(stmt_expr& stm, scope& scp) -> void
@@ -2624,9 +2638,9 @@ auto decompiler::process_stmt_if(stmt_if& stm, scope& scp) -> void
 
     process_stmt(stm.body, *scp_then);
 
-    if (stm.body.as_list->list.size() == 1 && !stm.body.as_list->list[0].as_node->is_special_stmt())
+    if (stm.body.as_comp->block->list.size() == 1 && !stm.body.as_comp->block->list[0].as_node->is_special_stmt())
     {
-        stm.body = std::move(stm.body.as_list->list.back());
+        stm.body = std::move(stm.body.as_comp->block->list.back());
     }
 }
 
@@ -2668,14 +2682,14 @@ auto decompiler::process_stmt_ifelse(stmt_ifelse& stm, scope& scp) -> void
 
     scp.append(childs);
 
-    if (stm.stmt_if.as_list->list.size() == 1 && !stm.stmt_if.as_list->list[0].as_node->is_special_stmt())
+    if (stm.stmt_if.as_comp->block->list.size() == 1 && !stm.stmt_if.as_comp->block->list[0].as_node->is_special_stmt())
     {
-        stm.stmt_if = std::move(stm.stmt_if.as_list->list.back());
+        stm.stmt_if = std::move(stm.stmt_if.as_comp->block->list.back());
     }
 
-    if (stm.stmt_else.as_list->list.size() == 1 && !stm.stmt_else.as_list->list[0].as_node->is_special_stmt_noif())
+    if (stm.stmt_else.as_comp->block->list.size() == 1 && !stm.stmt_else.as_comp->block->list[0].as_node->is_special_stmt_noif())
     {
-        stm.stmt_else = std::move(stm.stmt_else.as_list->list.back());
+        stm.stmt_else = std::move(stm.stmt_else.as_comp->block->list.back());
     }
 }
 
@@ -2692,9 +2706,9 @@ auto decompiler::process_stmt_while(stmt_while& stm, scope& scp) -> void
     if (stm.test == node::null)
         scp.append_dec(scp_body);
 
-    if (stm.body.as_list->list.size() == 1 && !stm.body.as_list->list[0].as_node->is_special_stmt())
+    if (stm.body.as_comp->block->list.size() == 1 && !stm.body.as_comp->block->list[0].as_node->is_special_stmt())
     {
-        stm.body = std::move(stm.body.as_list->list.back());
+        stm.body = std::move(stm.body.as_comp->block->list.back());
     }
 }
 
@@ -2711,9 +2725,9 @@ auto decompiler::process_stmt_dowhile(stmt_dowhile& stm, scope& scp) -> void
     if (stm.test == node::null)
         scp.append_dec(scp_body);
 
-    if (stm.body.as_list->list.size() == 1 && !stm.body.as_list->list[0].as_node->is_special_stmt())
+    if (stm.body.as_comp->block->list.size() == 1 && !stm.body.as_comp->block->list[0].as_node->is_special_stmt())
     {
-        stm.body = std::move(stm.body.as_list->list.back());
+        stm.body = std::move(stm.body.as_comp->block->list.back());
     }
 }
 
@@ -2723,6 +2737,11 @@ auto decompiler::process_stmt_for(stmt_for& stm, scope& scp) -> void
 
     process_stmt(stm.init, scp);
 
+    if (stm.init == node::stmt_list && stm.init.as_list->list[0] == node::stmt_assign)
+    {
+        stm.init = stmt{ make_stmt_expr(stm.init.loc(), std::move(stm.init.as_list->list[0].as_assign->value)) };
+    }
+
     scp.transfer_dec(scp_body);
 
     process_expr(stm.test, scp);
@@ -2731,12 +2750,17 @@ auto decompiler::process_stmt_for(stmt_for& stm, scope& scp) -> void
 
     process_stmt(stm.iter, scp);
 
+    if (stm.iter == node::stmt_list && stm.iter.as_list->list[0] == node::stmt_assign)
+    {
+        stm.iter = stmt{ make_stmt_expr(stm.iter.loc(), std::move(stm.iter.as_list->list[0].as_assign->value)) };
+    }
+
     if (stm.test == node::null)
         scp.append_dec(scp_body);
 
-    if (stm.body.as_list->list.size() == 1 && !stm.body.as_list->list[0].as_node->is_special_stmt())
+    if (stm.body.as_comp->block->list.size() == 1 && !stm.body.as_comp->block->list[0].as_node->is_special_stmt())
     {
-        stm.body = std::move(stm.body.as_list->list.back());
+        stm.body = std::move(stm.body.as_comp->block->list.back());
     }
 }
 
@@ -2753,18 +2777,18 @@ auto decompiler::process_stmt_foreach(stmt_foreach& stm, scope& scp) -> void
         process_expr(stm.index, scp);
     }
 
-    process_stmt(stm.body.as_list->list[0], scp);
+    process_stmt(stm.body.as_comp->block->list[0], scp);
 
-    stm.body.as_list->list.erase(stm.body.as_list->list.begin());
+    stm.body.as_comp->block->list.erase(stm.body.as_comp->block->list.begin());
 
     scp.transfer_dec(scp_body);
 
     process_expr(stm.value, *scp_body);
     process_stmt(stm.body, *scp_body);
 
-    if (stm.body.as_list->list.size() == 1 && !stm.body.as_list->list[0].as_node->is_special_stmt())
+    if (stm.body.as_comp->block->list.size() == 1 && !stm.body.as_comp->block->list[0].as_node->is_special_stmt())
     {
-        stm.body = std::move(stm.body.as_list->list.back());
+        stm.body = std::move(stm.body.as_comp->block->list.back());
     }
 }
 
@@ -2776,11 +2800,10 @@ auto decompiler::process_stmt_switch(stmt_switch& stm, scope& scp) -> void
 
     process_expr(stm.test, scp);
 
-    for (auto& entry : stm.body->list)
+    for (auto& entry : stm.body->block->list)
     {
         if (entry == node::stmt_case)
         {
-            entry.as_case->body->is_case = true;
             auto scp_case = make_scope();
 
             scp.transfer_dec(scp_case);
@@ -2796,7 +2819,6 @@ auto decompiler::process_stmt_switch(stmt_switch& stm, scope& scp) -> void
         else if (entry == node::stmt_default)
         {
             has_default = true;
-            entry.as_default->body->is_case = true;
             auto scp_case = make_scope();
 
             scp.transfer_dec(scp_case);

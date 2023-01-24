@@ -84,6 +84,7 @@ struct node
         expr_assign_bitwise_and,
         expr_assign_bitwise_exor,
         stmt_list,
+        stmt_comp,
         stmt_dev,
         stmt_expr,
         stmt_call,
@@ -228,6 +229,7 @@ struct expr_assign_bitwise_or;
 struct expr_assign_bitwise_and;
 struct expr_assign_bitwise_exor;
 struct stmt_list;
+struct stmt_comp;
 struct stmt_dev;
 struct stmt_expr;
 struct stmt_call;
@@ -390,6 +392,7 @@ union stmt
 {
     std::unique_ptr<node> as_node;
     std::unique_ptr<stmt_list> as_list;
+    std::unique_ptr<stmt_comp> as_comp;
     std::unique_ptr<stmt_dev> as_dev;
     std::unique_ptr<stmt_expr> as_expr;
     std::unique_ptr<stmt_call> as_call;
@@ -1058,19 +1061,26 @@ struct stmt_list : public node
     using ptr = std::unique_ptr<stmt_list>;
 
     std::vector<stmt> list;
-    bool is_case = false;
-    bool is_expr = false;
 
     stmt_list(location const& loc);
+};
+
+struct stmt_comp : public node
+{
+    using ptr = std::unique_ptr<stmt_comp>;
+
+    stmt_list::ptr block;
+
+    stmt_comp(location const& loc, stmt_list::ptr block);
 };
 
 struct stmt_dev : public node
 {
     using ptr = std::unique_ptr<stmt_dev>;
 
-    stmt_list::ptr body;
+    stmt_list::ptr block;
 
-    stmt_dev(location const& loc, stmt_list::ptr body);
+    stmt_dev(location const& loc, stmt_list::ptr block);
 };
 
 struct stmt_expr : public node
@@ -1239,9 +1249,9 @@ struct stmt_switch : public node
     using ptr = std::unique_ptr<stmt_switch>;
 
     expr test;
-    stmt_list::ptr body;
+    stmt_comp::ptr body;
 
-    stmt_switch(location const& loc, expr test, stmt_list::ptr body);
+    stmt_switch(location const& loc, expr test, stmt_comp::ptr body);
 };
 
 struct stmt_case : public node
@@ -1319,9 +1329,9 @@ struct decl_function : public node
 
     expr_identifier::ptr name;
     expr_parameters::ptr params;
-    stmt_list::ptr body;
+    stmt_comp::ptr body;
 
-    decl_function(location const& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr body);
+    decl_function(location const& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_comp::ptr body);
 };
 
 struct decl_usingtree : public node
@@ -1562,6 +1572,7 @@ XSK_GSC_MAKE_GENERIC(expr_assign_bitwise_or)
 XSK_GSC_MAKE_GENERIC(expr_assign_bitwise_and)
 XSK_GSC_MAKE_GENERIC(expr_assign_bitwise_exor)
 XSK_GSC_MAKE_GENERIC(stmt_list)
+XSK_GSC_MAKE_GENERIC(stmt_comp)
 XSK_GSC_MAKE_GENERIC(stmt_dev)
 XSK_GSC_MAKE_GENERIC(stmt_expr)
 XSK_GSC_MAKE_GENERIC(stmt_call)

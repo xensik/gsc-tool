@@ -40,6 +40,7 @@ private:
     auto emit_decl_function(decl_function const& func) -> void;
     auto emit_stmt(stmt const& stm, scope& scp, bool last) -> void;
     auto emit_stmt_list(stmt_list const& stm, scope& scp, bool last) -> void;
+    auto emit_stmt_comp(stmt_comp const& stm, scope& scp, bool last) -> void;
     auto emit_stmt_dev(stmt_dev const& stm, scope& scp, bool last) -> void;
     auto emit_stmt_expr(stmt_expr const& stm, scope& scp) -> void;
     auto emit_stmt_call(stmt_call const& stm, scope& scp) -> void;
@@ -119,6 +120,7 @@ private:
     auto process_function(decl_function const& func) -> void;
     auto process_stmt(stmt const& stm, scope& scp) -> void;
     auto process_stmt_list(stmt_list const& stm, scope& scp) -> void;
+    auto process_stmt_comp(stmt_comp const& stm, scope& scp) -> void;
     auto process_stmt_dev(stmt_dev const& stm, scope& scp) -> void;
     auto process_stmt_expr(stmt_expr const& stm, scope& scp) -> void;
     auto process_stmt_assign(stmt_assign const& stm, scope& scp) -> void;

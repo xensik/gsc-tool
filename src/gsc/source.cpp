@@ -345,7 +345,7 @@ auto source::dump_decl_function(decl_function const& dec) -> void
     fmt::format_to(std::back_inserter(buf_), "(");
     dump_expr_parameters(*dec.params);
     fmt::format_to(std::back_inserter(buf_), ")\n");
-    dump_stmt_list(*dec.body);
+    dump_stmt_comp(*dec.body);
     fmt::format_to(std::back_inserter(buf_), "\n");
 }
 
@@ -355,6 +355,9 @@ auto source::dump_stmt(stmt const& stm) -> void
     {
         case node::stmt_list:
             dump_stmt_list(*stm.as_list);
+            break;
+        case node::stmt_comp:
+            dump_stmt_comp(*stm.as_comp);
             break;
         case node::stmt_dev:
             dump_stmt_dev(*stm.as_dev);
@@ -468,22 +471,7 @@ auto source::dump_stmt(stmt const& stm) -> void
 
 auto source::dump_stmt_list(stmt_list const& stm) -> void
 {
-    if (stm.is_expr)
-    {
-        if (stm.list.size() > 0)
-        {
-            dump_stmt(stm.list[0]);
-            buf_.pop_back();
-        }
-
-        return;
-    }
-
-    bool last_special = false;
-
-    if (!stm.is_case)
-        fmt::format_to(std::back_inserter(buf_), "{: >{}}\n", "{", indent_ + 1);
-    
+    auto last_special = false;
     indent_ += 4;
 
     for (auto const& entry : stm.list)
@@ -511,39 +499,19 @@ auto source::dump_stmt_list(stmt_list const& stm) -> void
     }
 
     indent_ -= 4;
+}
 
-    if (!stm.is_case)
-        fmt::format_to(std::back_inserter(buf_), "\n{: >{}}", "}", indent_ + 1);
+auto source::dump_stmt_comp(stmt_comp const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "{: >{}}\n", "{", indent_ + 1);
+    dump_stmt_list(*stm.block);
+    fmt::format_to(std::back_inserter(buf_), "\n{: >{}}", "}", indent_ + 1);
 }
 
 auto source::dump_stmt_dev(stmt_dev const& stm) -> void
 {
-    bool last_special = false;
-
     fmt::format_to(std::back_inserter(buf_), "/#\n");
-
-    for (auto const& entry : stm.body->list)
-    {
-        if ((&entry != &stm.body->list.front() && entry.as_node->is_special_stmt()) || last_special)
-            fmt::format_to(std::back_inserter(buf_), "\n");
-
-        if (entry == node::stmt_dev)
-            dump_stmt(entry);
-        else
-        {
-            fmt::format_to(std::back_inserter(buf_), "{: >{}}", "", indent_);
-            dump_stmt(entry);
-        }
-
-        if (&entry != &stm.body->list.back())
-            fmt::format_to(std::back_inserter(buf_), "\n");
-
-        if (entry.as_node->is_special_stmt())
-            last_special = true;
-        else
-            last_special = false;
-    }
-
+    dump_stmt_list(*stm.block);
     fmt::format_to(std::back_inserter(buf_), "\n#/");
 }
 
@@ -661,7 +629,7 @@ auto source::dump_stmt_if(stmt_if const& stm) -> void
     dump_expr(stm.test);
     fmt::format_to(std::back_inserter(buf_), " )\n");
 
-    if (stm.body == node::stmt_list)
+    if (stm.body == node::stmt_comp)
     {
         dump_stmt(stm.body);
     }
@@ -680,7 +648,7 @@ auto source::dump_stmt_ifelse(stmt_ifelse const& stm) -> void
     dump_expr(stm.test);
     fmt::format_to(std::back_inserter(buf_), " )\n");
 
-    if (stm.stmt_if == node::stmt_list)
+    if (stm.stmt_if == node::stmt_comp)
     {
         dump_stmt(stm.stmt_if);
     }
@@ -694,7 +662,7 @@ auto source::dump_stmt_ifelse(stmt_ifelse const& stm) -> void
 
     fmt::format_to(std::back_inserter(buf_), "\n{: >{}}else", "", indent_);
 
-    if (stm.stmt_else == node::stmt_list)
+    if (stm.stmt_else == node::stmt_comp)
     {
         fmt::format_to(std::back_inserter(buf_), "\n");
         dump_stmt(stm.stmt_else);
@@ -729,7 +697,7 @@ auto source::dump_stmt_while(stmt_while const& stm) -> void
         fmt::format_to(std::back_inserter(buf_), " )\n");
     }
 
-    if (stm.body == node::stmt_list)
+    if (stm.body == node::stmt_comp)
     {
         dump_stmt(stm.body);
     }
@@ -746,7 +714,7 @@ auto source::dump_stmt_dowhile(stmt_dowhile const& stm) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "do\n");
 
-    if (stm.body == node::stmt_list)
+    if (stm.body == node::stmt_comp)
     {
         dump_stmt(stm.body);
     }
@@ -787,7 +755,7 @@ auto source::dump_stmt_for(stmt_for const& stm) -> void
         fmt::format_to(std::back_inserter(buf_), " )\n");
     }
 
-    if (stm.body == node::stmt_list)
+    if (stm.body == node::stmt_comp)
     {
         dump_stmt(stm.body);
     }
@@ -815,7 +783,7 @@ auto source::dump_stmt_foreach(stmt_foreach const& stm) -> void
     dump_expr(stm.container);
     fmt::format_to(std::back_inserter(buf_), " )\n");
 
-    if (stm.body == node::stmt_list)
+    if (stm.body == node::stmt_comp)
     {
         dump_stmt(stm.body);
     }
@@ -833,7 +801,7 @@ auto source::dump_stmt_switch(stmt_switch const& stm) -> void
     fmt::format_to(std::back_inserter(buf_), "switch ( ");
     dump_expr(stm.test);
     fmt::format_to(std::back_inserter(buf_), " )\n");
-    dump_stmt_list(*stm.body);
+    dump_stmt_comp(*stm.body);
 }
 
 auto source::dump_stmt_case(stmt_case const& stm) -> void

@@ -414,7 +414,11 @@ stmt_list::stmt_list(location const& loc) : node{ type::stmt_list, loc }
 {
 }
 
-stmt_dev::stmt_dev(location const& loc, stmt_list::ptr body) : node{ type::stmt_dev, loc }, body{ std::move(body) }
+stmt_comp::stmt_comp(location const& loc, stmt_list::ptr block) : node{ type::stmt_comp, loc }, block{ std::move(block) }
+{
+}
+
+stmt_dev::stmt_dev(location const& loc, stmt_list::ptr block) : node{ type::stmt_dev, loc }, block{ std::move(block) }
 {
 }
 
@@ -482,7 +486,7 @@ stmt_foreach::stmt_foreach(location const& loc, expr container, expr value, expr
 {
 }
 
-stmt_switch::stmt_switch(location const& loc, expr test, stmt_list::ptr body) : node{ type::stmt_switch, loc }, test{ std::move(test) }, body{ std::move(body) }
+stmt_switch::stmt_switch(location const& loc, expr test, stmt_comp::ptr body) : node{ type::stmt_switch, loc }, test{ std::move(test) }, body{ std::move(body) }
 {
 }
 
@@ -526,7 +530,7 @@ stmt_prof_end::stmt_prof_end(location const& loc, expr_arguments::ptr args) : no
 {
 }
 
-decl_function::decl_function(location const& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_list::ptr body) : node{ type::decl_function, loc }, name{ std::move(name) }, params{ std::move(params) }, body{ std::move(body) }
+decl_function::decl_function(location const& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_comp::ptr body) : node{ type::decl_function, loc }, name{ std::move(name) }, params{ std::move(params) }, body{ std::move(body) }
 {
 }
 
@@ -954,6 +958,7 @@ stmt::~stmt()
     {
         case node::null: as_node.~unique_ptr(); return;
         case node::stmt_list: as_list.~unique_ptr(); return;
+        case node::stmt_comp: as_comp.~unique_ptr(); return;
         case node::stmt_dev: as_dev.~unique_ptr(); return;
         case node::stmt_expr: as_expr.~unique_ptr(); return;
         case node::stmt_call: as_call.~unique_ptr(); return;

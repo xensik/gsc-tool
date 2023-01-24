@@ -162,7 +162,7 @@ namespace xsk::gsc
 %type <stmt_list::ptr>             stmt_list
 %type <stmt_list::ptr>             stmt_or_dev_list
 %type <stmt_dev::ptr>              stmt_dev
-%type <stmt_list::ptr>             stmt_block
+%type <stmt_comp::ptr>             stmt_comp
 %type <stmt_expr::ptr>             stmt_expr
 %type <stmt_call::ptr>             stmt_call
 %type <stmt_assign::ptr>           stmt_assign
@@ -310,12 +310,12 @@ decl_usingtree
     ;
 
 decl_function
-    : expr_identifier LPAREN expr_parameters RPAREN stmt_block
+    : expr_identifier LPAREN expr_parameters RPAREN stmt_comp
         { lexer.ban_header(@$); $$ = make_decl_function(@$, std::move($1), std::move($3), std::move($5)); }
     ;
 
 stmt
-    : stmt_block             { $$.as_list = std::move($1); }
+    : stmt_comp              { $$.as_comp = std::move($1); }
     | stmt_call              { $$.as_call = std::move($1); }
     | stmt_assign            { $$.as_assign = std::move($1); }
     | stmt_endon             { $$.as_endon = std::move($1); }
@@ -366,9 +366,9 @@ stmt_dev
     | DEVBEGIN DEVEND { $$ = make_stmt_dev(@$, make_stmt_list(@$)); }
     ;
 
-stmt_block
-    : LBRACE stmt_or_dev_list RBRACE { $$ = std::move($2); }
-    | LBRACE RBRACE { $$ = make_stmt_list(@$); }
+stmt_comp
+    : LBRACE stmt_or_dev_list RBRACE { $$ = make_stmt_comp(@$, std::move($2)); }
+    | LBRACE RBRACE { $$ = make_stmt_comp(@$, make_stmt_list(@$)); }
     ;
 
 stmt_expr
@@ -481,7 +481,7 @@ stmt_foreach
     ;
 
 stmt_switch
-    : SWITCH LPAREN expr RPAREN stmt_block
+    : SWITCH LPAREN expr RPAREN stmt_comp
         { $$ = make_stmt_switch(@$, std::move($3), std::move($5)); 
           parse_switch(*$$);
         }
@@ -930,14 +930,14 @@ void parser::error(location const& loc, std::string const& msg)
 
 auto parse_switch(stmt_switch& stm) -> void
 {
-    auto body = make_stmt_list(stm.body->loc());
+    auto body = make_stmt_list(stm.body->block->loc());
     auto current_case = stmt{ nullptr };
 
-    auto num = stm.body->list.size();
+    auto num = stm.body->block->list.size();
 
     for (auto i = 0u; i < num; i++)
     {
-        auto& entry = stm.body->list[0];
+        auto& entry = stm.body->block->list[0];
 
         if (entry == node::stmt_case || entry == node::stmt_default)
         {
@@ -946,8 +946,8 @@ auto parse_switch(stmt_switch& stm) -> void
                 body->list.push_back(std::move(current_case));
             }
 
-            current_case = std::move(stm.body->list[0]);
-            stm.body->list.erase(stm.body->list.begin());
+            current_case = std::move(stm.body->block->list[0]);
+            stm.body->block->list.erase(stm.body->block->list.begin());
         }
         else
         {
@@ -956,12 +956,12 @@ auto parse_switch(stmt_switch& stm) -> void
                 if (current_case == node::stmt_case)
                 {
                     current_case.as_case->body->list.push_back(std::move(entry));
-                    stm.body->list.erase(stm.body->list.begin());
+                    stm.body->block->list.erase(stm.body->block->list.begin());
                 }
                 else
                 {
                     current_case.as_default->body->list.push_back(std::move(entry));
-                    stm.body->list.erase(stm.body->list.begin());
+                    stm.body->block->list.erase(stm.body->block->list.begin());
                 }
             }
             else
@@ -976,7 +976,7 @@ auto parse_switch(stmt_switch& stm) -> void
         body->list.push_back(std::move(current_case));
     }
 
-    stm.body = std::move(body);
+    stm.body->block = std::move(body);
 }
 
 } // namespace xsk::gsc

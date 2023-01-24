@@ -52,6 +52,8 @@ private:
     auto process_function(decl_function& func) -> void;
     auto process_stmt(stmt& stm, scope& scp) -> void;
     auto process_stmt_list(stmt_list& stm, scope& scp) -> void;
+    auto process_stmt_comp(stmt_comp& stm, scope& scp) -> void;
+    auto process_stmt_dev(stmt_dev& stm, scope& scp) -> void;
     auto process_stmt_expr(stmt_expr& stm, scope& scp) -> void;
     auto process_stmt_call(stmt_call& stm, scope& scp) -> void;
     auto process_stmt_assign(stmt_assign& stm, scope& scp) -> void;

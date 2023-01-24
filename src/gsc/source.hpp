@@ -40,6 +40,7 @@ private:
     auto dump_decl_function(decl_function const& dec) -> void;
     auto dump_stmt(stmt const& stm) -> void;
     auto dump_stmt_list(stmt_list const& stm) -> void;
+    auto dump_stmt_comp(stmt_comp const& stm) -> void;
     auto dump_stmt_dev(stmt_dev const& stm) -> void;
     auto dump_stmt_expr(stmt_expr const& stm) -> void;
     auto dump_stmt_call(stmt_call const& stm) -> void;

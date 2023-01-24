@@ -123,7 +123,7 @@ auto compiler::emit_decl_function(decl_function const& func) -> void
     auto& scp = scopes_.at(func.body.get());
 
     emit_expr_parameters(*func.params, *scp);
-    emit_stmt_list(*func.body, *scp, true);
+    emit_stmt_comp(*func.body, *scp, true);
     emit_opcode(opcode::OP_End);
 
     function_->size = index_ - function_->index;
@@ -136,6 +136,9 @@ auto compiler::emit_stmt(stmt const& stm, scope& scp, bool last) -> void
     {
         case node::stmt_list:
             emit_stmt_list(*stm.as_list, scp, last);
+            break;
+        case node::stmt_comp:
+            emit_stmt_comp(*stm.as_comp, scp, last);
             break;
         case node::stmt_dev:
             emit_stmt_dev(*stm.as_dev, scp, last);
@@ -228,9 +231,14 @@ auto compiler::emit_stmt_list(stmt_list const& stm, scope& scp, bool last) -> vo
     }
 }
 
+auto compiler::emit_stmt_comp(stmt_comp const& stm, scope& scp, bool last) -> void
+{
+    emit_stmt_list(*stm.block, scp, last);
+}
+
 auto compiler::emit_stmt_dev(stmt_dev const& stm, scope& scp, bool last) -> void
 {
-    emit_stmt_list(*stm.body, scp, last);
+    emit_stmt_list(*stm.block, scp, last);
 }
 
 auto compiler::emit_stmt_expr(stmt_expr const& stm, scope& scp) -> void
@@ -754,16 +762,16 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
     can_break_ = true;
 
     auto data = std::vector<std::string>{};
-    data.push_back(fmt::format("{}", stm.body->list.size()));
+    data.push_back(fmt::format("{}", stm.body->block->list.size()));
 
     auto type = switch_type::none;
     auto loc_default = std::string{};
     auto has_default = false;
     scope* default_ctx = nullptr;
 
-    for (auto i = 0u; i < stm.body->list.size(); i++)
+    for (auto i = 0u; i < stm.body->block->list.size(); i++)
     {
-        auto const& entry = stm.body->list[i];
+        auto const& entry = stm.body->block->list[i];
 
         if (entry == node::stmt_case)
         {
@@ -860,7 +868,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
 
     emit_opcode(opcode::OP_endswitch, data);
 
-    auto offset = static_cast<u32>(((ctx_->engine() == engine::iw9) ? 8 : 7) * stm.body->list.size());
+    auto offset = static_cast<u32>(((ctx_->engine() == engine::iw9) ? 8 : 7) * stm.body->block->list.size());
     function_->instructions.back()->size += offset;
     index_ += offset;
 
@@ -2258,7 +2266,7 @@ auto compiler::process_function(decl_function const& func) -> void
     auto& scp_body = ins.first->second;
 
     process_expr_parameters(*func.params, *scp_body);
-    process_stmt_list(*func.body, *scp_body);
+    process_stmt_comp(*func.body, *scp_body);
 }
 
 auto compiler::process_stmt(stmt const& stm, scope& scp) -> void
@@ -2267,6 +2275,9 @@ auto compiler::process_stmt(stmt const& stm, scope& scp) -> void
     {
         case node::stmt_list:
             process_stmt_list(*stm.as_list, scp);
+            break;
+        case node::stmt_comp:
+            process_stmt_comp(*stm.as_comp, scp);
             break;
         case node::stmt_dev:
             process_stmt_dev(*stm.as_dev, scp);
@@ -2336,9 +2347,14 @@ auto compiler::process_stmt_list(stmt_list const& stm, scope& scp) -> void
     }
 }
 
+auto compiler::process_stmt_comp(stmt_comp const& stm, scope& scp) -> void
+{
+    process_stmt_list(*stm.block, scp);
+}
+
 auto compiler::process_stmt_dev(stmt_dev const& stm, scope& scp) -> void
 {
-    process_stmt_list(*stm.body, scp);
+    process_stmt_list(*stm.block, scp);
 }
 
 auto compiler::process_stmt_expr(stmt_expr const& stm, scope& scp) -> void
@@ -2607,9 +2623,9 @@ auto compiler::process_stmt_switch(stmt_switch const& stm, scope& scp) -> void
     auto old_breaks = break_blks_;
     break_blks_.clear();
 
-    for (auto i = 0u; i < stm.body->list.size(); i++)
+    for (auto i = 0u; i < stm.body->block->list.size(); i++)
     {
-        auto& entry = stm.body->list[i];
+        auto& entry = stm.body->block->list[i];
 
         if (entry == node::stmt_case)
         {
