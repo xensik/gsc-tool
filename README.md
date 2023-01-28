@@ -26,7 +26,7 @@ A utility to compile & decompile IW engine game scripts.
 ## Usage
 ``./gsc-tool.exe <mode> <game> <path>``
 
-**modes**: `asm`, `disasm`, `comp`, `decomp`
+**modes**: `asm`, `disasm`, `comp`, `decomp`, `parse`
 - *note:* zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zdecomp` modes
 
 **games**: `iw5`, `iw6`, `iw7`, `iw8`, `iw9`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6`
@@ -42,6 +42,7 @@ Example: ``./gsc-tool.exe comp iw5 ./data/iw5/my_fancy_script.gsc``
 |`disasm`  |dissasemble a `file.gscbin`|`file.gscasm`|
 |`comp`    |compile a `file.gsc`       |`file.gscbin`|
 |`decomp`  |decompile a `file.gscbin`  |`file.gsc`   |
+|`parse`   |parse a `file.gsc`         |`file.gsc`   |
 
 ## File Format
 If you need to extract scripts from fastfiles or game memory, use [Zonetool](https://github.com/ZoneTool/zonetool) or [Jekyll](https://github.com/EthanC/Jekyll).

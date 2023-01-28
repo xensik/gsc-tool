@@ -6,7 +6,8 @@
 #include "stdinc.hpp"
 #include "source.hpp"
 #include "context.hpp"
-#include "lexer.hpp"
+#include "preprocessor.hpp"
+#include "parser.hpp"
 #include "utils/string.hpp"
 
 namespace xsk::gsc
@@ -143,8 +144,8 @@ auto source::parse_program(std::string const& name, std::vector<u8> const& data)
 auto source::parse_program(std::string const& name, u8 const* data, usize size) -> program::ptr
 {
     auto res = program::ptr{ nullptr };
-    auto lxr = lexer{ ctx_, name, reinterpret_cast<char const*>(data), size };
-    auto psr = parser{ ctx_, lxr, res, 0 };
+    auto ppr = preprocessor{ ctx_, name, reinterpret_cast<char const*>(data), size };
+    auto psr = parser{ ctx_, ppr, res, 0 };
 
     if (!psr.parse() && res != nullptr)
         return res;
@@ -564,6 +565,12 @@ auto source::dump_stmt_wait(stmt_wait const& stm) -> void
     if (stm.time == node::expr_float || stm.time == node::expr_integer)
     {
         fmt::format_to(std::back_inserter(buf_), "wait ");
+        dump_expr(stm.time);
+        fmt::format_to(std::back_inserter(buf_), ";");
+    }
+    else if (stm.time == node::expr_paren)
+    {
+        fmt::format_to(std::back_inserter(buf_), "wait");
         dump_expr(stm.time);
         fmt::format_to(std::back_inserter(buf_), ";");
     }

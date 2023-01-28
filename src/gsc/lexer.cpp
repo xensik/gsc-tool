@@ -11,195 +11,42 @@
 namespace xsk::gsc
 {
 
-std::unordered_map<std::string_view, parser::token::token_kind_type> const keyword_map
-{{
-    { "#define", parser::token::SH_DEFINE },
-    { "#undef", parser::token::SH_UNDEF },
-    { "#ifdef", parser::token::SH_IFDEF },
-    { "#ifndef", parser::token::SH_IFNDEF },
-    { "#if", parser::token::SH_IF },
-    { "#elif", parser::token::SH_ELIF },
-    { "#else", parser::token::SH_ELSE },
-    { "#endif", parser::token::SH_ENDIF },
-    { "#inline", parser::token::INLINE },
-    { "#include", parser::token::INCLUDE },
-    { "#using_animtree", parser::token::USINGTREE },
-    { "#animtree", parser::token::ANIMTREE },
-    { "endon", parser::token::ENDON },
-    { "notify", parser::token::NOTIFY },
-    { "wait", parser::token::WAIT },
-    { "waittill", parser::token::WAITTILL },
-    { "waittillmatch", parser::token::WAITTILLMATCH },
-    { "waittillframeend", parser::token::WAITTILLFRAMEEND },
-    { "waitframe", parser::token::WAITFRAME },
-    { "if", parser::token::IF },
-    { "else", parser::token::ELSE },
-    { "do", parser::token::DO },
-    { "while", parser::token::WHILE },
-    { "for", parser::token::FOR },
-    { "foreach", parser::token::FOREACH },
-    { "in", parser::token::IN },
-    { "switch", parser::token::SWITCH },
-    { "case", parser::token::CASE },
-    { "default", parser::token::DEFAULT },
-    { "break", parser::token::BREAK },
-    { "continue", parser::token::CONTINUE },
-    { "return", parser::token::RETURN },
-    { "breakpoint", parser::token::BREAKPOINT },
-    { "prof_begin", parser::token::PROFBEGIN },
-    { "prof_end", parser::token::PROFEND },
-    { "thread", parser::token::THREAD },
-    { "childthread", parser::token::CHILDTHREAD },
-    { "thisthread", parser::token::THISTHREAD },
-    { "call", parser::token::CALL },
-    { "true", parser::token::TRUE },
-    { "false", parser::token::FALSE },
-    { "undefined", parser::token::UNDEFINED },
-    { "size", parser::token::SIZE },
-    { "game", parser::token::GAME },
-    { "self", parser::token::SELF },
-    { "anim", parser::token::ANIM },
-    { "level", parser::token::LEVEL },
-    { "isdefined", parser::token::ISDEFINED },
-    { "istrue", parser::token::ISTRUE },
-}};
-
-auto GSClex(lexer& lexer) -> parser::symbol_type
-{
-    return lexer.lex();
-}
-
-charbuf::charbuf() : length{ 0 }
-{
-    data = static_cast<char*>(std::malloc(max_buf_size));
-}
-
-charbuf::~charbuf()
-{
-    if (data) std::free(data);
-}
-
-auto charbuf::push(char c) -> bool
-{
-    if (length >= max_buf_size)
-        return false;
-
-    data[length++] = c;
-    return true;
-}
-
-reader::reader() : buffer_pos{ 0 }, bytes_remaining{ 0 }, last_byte{ 0 }, current_byte{ 0 }, state{ reader::end }
+lexer::lexer(context const* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, reader_{ data, size }, loc_{ &name }, buflen_{ 0 }, spacing_{ spacing::null }, state_{ state::start }, indev_{ false }
 {
 }
 
-auto reader::init(char const* data, usize size) -> void
+auto lexer::lex() -> token
 {
-    if (data && size)
-    {
-        state = reader::ok;
-        buffer_pos = data;
-        bytes_remaining = static_cast<u32>(size);
-        last_byte = 0;
-        current_byte = *data;
-    }
-    else
-    {
-        state = reader::end;
-        buffer_pos = 0;
-        bytes_remaining = 0;
-        last_byte = 0;
-        current_byte = 0;
-    }
-}
-
-auto reader::advance() -> void
-{
-    ++buffer_pos;
-
-    if (bytes_remaining-- == 1)
-    {
-        state = reader::end;
-        bytes_remaining = 0;
-        last_byte = current_byte;
-        current_byte = 0;
-    }
-    else
-    {
-        last_byte = current_byte;
-        current_byte = *buffer_pos;
-    }
-}
-
-lexer::lexer(context const* ctx, std::string const& name, char const* data, usize size)
-    : ctx_{ ctx }, loc_{ location{ &name } }, locs_{ std::stack<location>{} }, readers_{ std::stack<reader>{} }, header_top_{ 0 }, indev_{ false }, clean_{ true }
-{
-    reader_.init(data, size);
-}
-
-auto lexer::push_header(std::string const& file) -> void
-{
-    try
-    {
-        if (header_top_++ >= 10)
-            throw comp_error(loc_, "maximum gsh depth exceeded '10'");
-
-        auto data = ctx_->header_file_data(file + ".gsh");
-
-        readers_.push(reader_);
-        locs_.push(loc_);
-        loc_.initialize(std::get<0>(data));
-        reader_.init(std::get<1>(data), std::get<2>(data));
-        clean_ = true;
-    }
-    catch (std::exception const& e)
-    {
-        throw error(fmt::format("parsing header file '{}': {}", file, e.what()));
-    }
-}
-
-auto lexer::pop_header() -> void
-{
-    header_top_--;
-    loc_ = locs_.top();
-    locs_.pop();
-    reader_ = readers_.top();
-    readers_.pop();
-}
-
-auto lexer::ban_header(location const& loc) -> void
-{
-    if (header_top_ > 0)
-    {
-        throw comp_error(loc, "not allowed inside a gsh file");
-    }
-}
-
-auto lexer::lex() -> parser::symbol_type
-{
-    buffer_.length = 0;
+    buflen_ = 0;
     state_ = state::start;
 
     while (true)
     {
-        auto const& state = reader_.state;
         auto& last = reader_.last_byte;
-        auto& curr = reader_.current_byte;
+        auto& curr = reader_.curr_byte;
         auto path = false;
         loc_.step();
 
-        if (state == reader::end)
+        if (reader_.ended())
         {
             if (indev_)
                 throw comp_error(loc_, "unmatched devblock start ('/#')");
 
-            if (header_top_ > 0)
-                pop_header();
+            if (curr == 0 && last != '\n')
+            {
+                curr = -1;
+                return token{ token::tok_newline, spacing_, loc_ };
+            }
             else
-                return parser::make_GSCEOF(loc_);
+                return token{ token::tok_eof, spacing_, loc_ };
         }
 
-        if (clean_ && last != 0 && last != ' ' && last != '\t' && last != '\n')
-            clean_ = false;
+        if (last == 0 || last == '\n')
+            spacing_ = spacing::null;
+        else if (last == ' ' || last == '\t')
+            spacing_ = (spacing_ == spacing::null) ? spacing::empty : spacing::back;
+        else
+            spacing_ = spacing::none;
 
         advance();
 
@@ -213,18 +60,17 @@ auto lexer::lex() -> parser::symbol_type
             case '\n':
                 loc_.lines();
                 loc_.step();
-                clean_ = true;
-                continue;
+                return token{ token::tok_newline, spacing_, loc_ };
             case '\\':
                 throw comp_error(loc_, "invalid token ('\\')");
             case '/':
                 if (curr != '=' && curr != '#' && curr != '@' && curr != '*' && curr != '/')
-                    return parser::make_DIV(loc_);
+                    return token{ token::tok_div, spacing_, loc_ };
 
                 advance();
 
                 if (last == '=')
-                    return parser::make_ASSIGN_DIV(loc_);
+                    return token{ token::tok_assign_div, spacing_, loc_ };
 
                 if (last == '#')
                 {
@@ -234,13 +80,13 @@ auto lexer::lex() -> parser::symbol_type
                     if (ctx_->build() == build::dev)
                     {
                         indev_ = true;
-                        return parser::make_DEVBEGIN(loc_);
+                        return token{ token::tok_devbegin, spacing_, loc_ };
                     }
                     else
                     {
                         while (true)
                         {
-                            if (state == reader::end)
+                            if (reader_.ended())
                                 throw comp_error(loc_, "unmatched devblock start ('/#')");
 
                             if (curr == '\n')
@@ -262,7 +108,7 @@ auto lexer::lex() -> parser::symbol_type
                 {
                     while (true)
                     {
-                        if (state == reader::end)
+                        if (reader_.ended())
                             throw comp_error(loc_, "unmatched script doc comment start ('/@')");
 
                         if (curr == '\n')
@@ -283,7 +129,7 @@ auto lexer::lex() -> parser::symbol_type
                 {
                     while (true)
                     {
-                        if (state == reader::end)
+                        if (reader_.ended())
                             throw comp_error(loc_, "unmatched multiline comment start ('/*')");
 
                         if (curr == '\n')
@@ -304,7 +150,7 @@ auto lexer::lex() -> parser::symbol_type
                 {
                     while (true)
                     {
-                        if (state == reader::end)
+                        if (reader_.ended())
                             break;
 
                         if (curr == '\n')
@@ -322,33 +168,18 @@ auto lexer::lex() -> parser::symbol_type
 
                     advance();
                     indev_ = false;
-                    return parser::make_DEVEND(loc_);
+                    return token{ token::tok_devend, spacing_, loc_ };
                 }
 
-                buffer_.push(last);
-                advance();
-
-                while (state == reader::ok)
-                {
-                    if (last != ' ' || last != '\t')
-                        break;
-
-                    advance();
-                }
-
-                if (state == reader::end || !((last > 64 && last < 91) || (last > 96 && last < 123)))
-                    throw comp_error(loc_, "invalid preprocessor directive ('#')");
-
-                state_ = state::preprocessor;
-                goto lex_name;
+                return token{ token::tok_hash, spacing_, loc_ };
             case '*':
                 if (curr != '=' && curr != '/')
-                    return parser::make_MUL(loc_);
+                    return token{ token::tok_mul, spacing_, loc_ };
 
                 advance();
 
                 if (last == '=')
-                    return parser::make_ASSIGN_MUL(loc_);
+                    return token{ token::tok_assign_mul, spacing_, loc_ };
 
                 throw comp_error(loc_, "unmatched multiline comment end ('*/')");
             case '"':
@@ -356,130 +187,130 @@ auto lexer::lex() -> parser::symbol_type
                 goto lex_string;
             case '.':
                 if (curr < '0' || curr > '9')
-                    return parser::make_DOT(loc_);
+                    return token{ token::tok_dot, spacing_, loc_ };
                 goto lex_number;
             case '(':
-                return parser::make_LPAREN(loc_);
+                return token{ token::tok_lparen, spacing_, loc_ };
             case ')':
-                return parser::make_RPAREN(loc_);
+                return token{ token::tok_rparen, spacing_, loc_ };
             case '{':
-                return parser::make_LBRACE(loc_);
+                return token{ token::tok_lbrace, spacing_, loc_ };
             case '}':
-                return parser::make_RBRACE(loc_);
+                return token{ token::tok_rbrace, spacing_, loc_ };
             case '[':
-                return parser::make_LBRACKET(loc_);
+                return token{ token::tok_lbracket, spacing_, loc_ };
             case ']':
-                return parser::make_RBRACKET(loc_);
+                return token{ token::tok_rbracket, spacing_, loc_ };
             case ',':
-                return parser::make_COMMA(loc_);
+                return token{ token::tok_comma, spacing_, loc_ };
             case ';':
-                return parser::make_SEMICOLON(loc_);
+                return token{ token::tok_semicolon, spacing_, loc_ };
             case ':':
                 if (curr != ':')
-                    return parser::make_COLON(loc_);
+                    return token{ token::tok_colon, spacing_, loc_ };
 
                 advance();
-                return parser::make_DOUBLECOLON(loc_);
+                return token{ token::tok_doublecolon, spacing_, loc_ };
             case '?':
-                return parser::make_QMARK(loc_);
+                return token{ token::tok_qmark, spacing_, loc_ };
             case '=':
                 if (curr != '=')
-                    return parser::make_ASSIGN(loc_);
+                    return token{ token::tok_assign, spacing_, loc_ };
 
                 advance();
-                return parser::make_EQUALITY(loc_);
+                return token{ token::tok_equality, spacing_, loc_ };
             case '+':
                 if (curr != '+' && curr != '=')
-                    return parser::make_ADD(loc_);
+                    return token{ token::tok_add, spacing_, loc_ };
 
                 advance();
 
                 if (last == '+')
-                    return parser::make_INCREMENT(loc_);
+                    return token{ token::tok_increment, spacing_, loc_ };
 
-                return parser::make_ASSIGN_ADD(loc_);
+                return token{ token::tok_assign_add, spacing_, loc_ };
             case '-':
                 if (curr != '-' && curr != '=')
-                    return parser::make_SUB(loc_);
+                    return token{ token::tok_sub, spacing_, loc_ };
 
                 advance();
 
                 if (last == '-')
-                    return parser::make_DECREMENT(loc_);
+                    return token{ token::tok_decrement, spacing_, loc_ };
 
-                return parser::make_ASSIGN_SUB(loc_);
+                return token{ token::tok_assign_sub, spacing_, loc_ };
             case '%':
                 if (curr != '=')
-                    return parser::make_MOD(loc_);
+                    return token{ token::tok_mod, spacing_, loc_ };
 
                 advance();
 
-                return parser::make_ASSIGN_MOD(loc_);
+                return token{ token::tok_assign_mod, spacing_, loc_ };
             case '|':
                 if (curr != '|' && curr != '=')
-                    return parser::make_BITWISE_OR(loc_);
+                    return token{ token::tok_bwor, spacing_, loc_ };
 
                 advance();
 
                 if (last == '|')
-                    return parser::make_OR(loc_);
+                    return token{ token::tok_or, spacing_, loc_ };
 
-                return parser::make_ASSIGN_BW_OR(loc_);
+                return token{ token::tok_assign_bwor, spacing_, loc_ };
             case '&':
                 if (curr != '&' && curr != '=' && curr != '"')
-                    return parser::make_BITWISE_AND(loc_);
+                    return token{ token::tok_bwand, spacing_, loc_ };
 
                 advance();
 
                 if (last == '&')
-                    return parser::make_AND(loc_);
+                    return token{ token::tok_and, spacing_, loc_ };
 
                 if (last == '=')
-                    return parser::make_ASSIGN_BW_AND(loc_);
+                    return token{ token::tok_assign_bwand, spacing_, loc_ };
 
                 state_ = state::localize;
                 goto lex_string;
             case '^':
                 if (curr != '=')
-                    return parser::make_BITWISE_EXOR(loc_);
+                    return token{ token::tok_bwexor, spacing_, loc_ };
 
                 advance();
-                return parser::make_ASSIGN_BW_EXOR(loc_);
+                return token{ token::tok_assign_bwexor, spacing_, loc_ };
             case '!':
                 if (curr != '=')
-                    return parser::make_NOT(loc_);
+                    return token{ token::tok_not, spacing_, loc_ };
 
                 advance();
-                return parser::make_INEQUALITY(loc_);
+                return token{ token::tok_inequality, spacing_, loc_ };
             case '~':
-                return parser::make_COMPLEMENT(loc_);
+                return token{ token::tok_complement, spacing_, loc_ };
             case '<':
                 if (curr != '<' && curr != '=')
-                    return parser::make_LESS(loc_);
+                    return token{ token::tok_less, spacing_, loc_ };
 
                 advance();
                 if (last == '=')
-                    return parser::make_LESS_EQUAL(loc_);
+                    return token{ token::tok_less_equal, spacing_, loc_ };
 
                 if (curr != '=')
-                    return parser::make_LSHIFT(loc_);
+                    return token{ token::tok_lshift, spacing_, loc_ };
 
                 advance();
-                return parser::make_ASSIGN_LSHIFT(loc_);
+                return token{ token::tok_assign_lshift, spacing_, loc_ };
             case '>':
                 if (curr != '>' && curr != '=')
-                    return parser::make_GREATER(loc_);
+                    return token{ token::tok_greater, spacing_, loc_ };
 
                 advance();
 
                 if (last == '=')
-                    return parser::make_GREATER_EQUAL(loc_);
+                    return token{ token::tok_greater_equal, spacing_, loc_ };
 
                 if (curr != '=')
-                    return parser::make_RSHIFT(loc_);
+                    return token{ token::tok_rshift, spacing_, loc_ };
 
                 advance();
-                return parser::make_ASSIGN_RSHIFT(loc_);
+                return token{ token::tok_assign_rshift, spacing_, loc_ };
             default:
                 if (last >= '0' && last <= '9')
                     goto lex_number;
@@ -492,7 +323,7 @@ auto lexer::lex() -> parser::symbol_type
 lex_string:
         while (true)
         {
-            if (state == reader::end)
+            if (reader_.ended())
                 throw comp_error(loc_, "unmatched string start ('\"')");
 
             if (curr == '"')
@@ -508,7 +339,7 @@ lex_string:
             {
                 advance();
 
-                if (state == reader::end)
+                if (reader_.ended())
                     throw comp_error(loc_, "invalid token ('\')");
 
                 char c = curr;
@@ -522,26 +353,25 @@ lex_string:
                     default: break;
                 }
 
-                if (!buffer_.push(c))
-                    throw comp_error(loc_, "max string size exceeded");
+                push(c);
             }
-            else if (!buffer_.push(curr))
-                throw comp_error(loc_, "max string size exceeded");
+            else
+                push(curr);
 
             advance();
         }
 
         if (state_ == state::localize)
-            return parser::make_ISTRING(std::string{ buffer_.data, buffer_.length }, loc_);
+            return token{ token::tok_istring, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
 
-        return parser::make_STRING(std::string{ buffer_.data, buffer_.length }, loc_);
+        return token{ token::tok_string, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
 
 lex_name:
-        buffer_.push(last);
+        push(last);
 
         while (true)
         {
-            if (state == reader::end)
+            if (reader_.ended())
                 break;
 
             if (!(curr == '\\' || curr == '_' || (curr > 64 && curr < 91) || (curr > 96 && curr < 123) || (curr > 47 && curr < 58)))
@@ -553,95 +383,35 @@ lex_name:
                     throw comp_error(loc_, "invalid path '\\\\'");
 
                 path = true;
-                if (!buffer_.push('/'))
-                    throw comp_error(loc_, "max string size exceeded");
+                push('/');
             }
-            else if (!buffer_.push(curr))
-                throw comp_error(loc_, "max string size exceeded");
+            else
+                push(curr);
 
             advance();
         }
 
-        if (state_ == state::preprocessor)
+        if (path)
         {
-            auto token = parser::token::GSCUNDEF;
+            if (buffer_[buflen_ - 1] == '/')
+                throw comp_error(loc_, "invalid path end '\\'");
 
-            if (buffer_.length < 16)
-            {
-                auto const itr = keyword_map.find(std::string_view(buffer_.data, buffer_.length));
-
-                if (itr != keyword_map.end())
-                {
-                    if (itr->second > parser::token::SH_ENDIF)
-                        return parser::symbol_type(itr->second, loc_);
-
-                    token = itr->second;
-                }
-            }
-
-            preprocessor_run(token);
-
-            state_ = state::start;
-            continue;
+            return token{ token::tok_path, spacing_, loc_, ctx_->make_token(std::string_view{ &buffer_[0], buflen_ }) };
         }
-        else
-        {
-            if (buffer_.data[0] != '_')
-            {
-                for (auto i = 0u; i < buffer_.length; i++)
-                {
-                    auto c = buffer_.data[i];
 
-                    if (c > 64 && c < 91)
-                        buffer_.data[i] = c + 32;
-                }
-            }
-
-            if (buffer_.length < 17)
-            {
-                auto const itr = keyword_map.find(std::string_view(buffer_.data, buffer_.length));
-
-                if (itr != keyword_map.end())
-                {
-                    if (itr->second == parser::token::WAITFRAME)
-                    {
-                        if (ctx_->props() & props::waitframe)
-                            return parser::symbol_type(itr->second, loc_);
-                    }
-                    else if (itr->second == parser::token::ISDEFINED || itr->second == parser::token::ISTRUE)
-                    {
-                        if (ctx_->props() & props::boolfuncs)
-                            return parser::symbol_type(itr->second, loc_);
-                    }
-                    else
-                    {
-                        return parser::symbol_type(itr->second, loc_);
-                    }
-                }        
-            }
-
-            if (path)
-            {
-                if (buffer_.data[buffer_.length - 1] == '/')
-                    throw comp_error(loc_, "invalid path end '\\'");
-
-                return parser::make_PATH(ctx_->make_token(std::string_view(buffer_.data, buffer_.length)), loc_);
-            }
-
-            return parser::make_IDENTIFIER(ctx_->make_token(std::string_view(buffer_.data, buffer_.length)), loc_);
-        }
+        return token{ token::tok_identifier, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
 
 lex_number:
         if (last == '.' || last != '0' || (last == '0' && (curr != 'o' && curr != 'b' && curr != 'x')))
         {
-            buffer_.push(last);
+            push(last);
 
             auto dot = last == '.' ? 1 : 0;
             auto flt = 0;
 
             while (true)
             {
-                if (state == reader::end)
+                if (reader_.ended())
                     break;
 
                 if (curr == '\'' && (last == '\'' || last == 'f' || last == '.'))
@@ -663,22 +433,20 @@ lex_number:
                 else if (!(curr > 47 && curr < 58))
                     break;
 
-                if (!buffer_.push(curr))
-                    throw comp_error(loc_, "number literal size exceeded");
-
+                push(curr);
                 advance();
             }
 
             if (last == '\'')
                 throw comp_error(loc_, "invalid number literal");
 
-            if (dot > 1 || flt > 1 || (flt && buffer_.data[buffer_.length - 1] != 'f'))
+            if (dot > 1 || flt > 1 || (flt && buffer_[buflen_ - 1] != 'f'))
                 throw comp_error(loc_, "invalid number literal");
 
             if (dot || flt)
-                return parser::make_FLOAT(std::string{ buffer_.data, buffer_.length }, loc_);
+                return token{ token::tok_float, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
 
-            return parser::make_INTEGER(std::string{ buffer_.data, buffer_.length }, loc_);
+            return token{ token::tok_integer, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
         }
         else if (curr == 'o')
         {
@@ -686,7 +454,7 @@ lex_number:
 
             while (true)
             {
-                if (state == reader::end)
+                if (reader_.ended())
                     break;
 
                 if ((curr == '\'' && (last == '\'' || last == 'o')) || (curr == 'o' && last == '\''))
@@ -701,26 +469,26 @@ lex_number:
                 if (!(curr > 47 && curr < 56))
                     break;
 
-                if (!buffer_.push(curr))
-                    throw error("gsc lexer: out of memory");
-
+                push(curr);
                 advance();
             }
 
-            if (last == '\'' || buffer_.length <= 0)
+            if (last == '\'' || buflen_ <= 0)
                 throw comp_error(loc_, "invalid octal literal");
 
-            return parser::make_INTEGER(utils::string::oct_to_dec(buffer_.data), loc_);
+            push('\0');
+
+            return token{ token::tok_integer, spacing_, loc_, utils::string::oct_to_dec(&buffer_[0]) };
         }
         else if (curr == 'b')
         {
-            buffer_.push(last);
-            buffer_.push(curr);
+            push(last);
+            push(curr);
             advance();
 
             while (true)
             {
-                if (state == reader::end)
+                if (reader_.ended())
                     break;
 
                 if ((curr == '\'' && (last == '\'' || last == 'b')) || (curr == 'b' && last == '\''))
@@ -735,26 +503,26 @@ lex_number:
                 if (curr != '0' && curr != '1')
                     break;
 
-                if (!buffer_.push(curr))
-                    throw comp_error(loc_, "number literal size exceeded");
-
+                push(curr);
                 advance();
             }
 
-            if (last == '\'' || buffer_.length < 3)
+            if (last == '\'' || buflen_ < 3)
                 throw comp_error(loc_, "invalid binary literal");
 
-            return parser::make_INTEGER(utils::string::bin_to_dec(buffer_.data), loc_);
+            push('\0');
+
+            return token{ token::tok_integer, spacing_, loc_, utils::string::bin_to_dec(&buffer_[0]) };
         }
         else if (curr == 'x')
         {
-            buffer_.push(last);
-            buffer_.push(curr);
+            push(last);
+            push(curr);
             advance();
 
             while (true)
             {
-                if (state == reader::end)
+                if (reader_.ended())
                     break;
 
                 if ((curr == '\'' && (last == '\'' || last == 'x')) || (curr == 'x' && last == '\''))
@@ -769,20 +537,28 @@ lex_number:
                 if (!((curr > 47 && curr < 58) || (curr > 64 && curr < 71) || (curr > 96 && curr < 103)))
                     break;
 
-                if (!buffer_.push(curr))
-                    throw error("gsc lexer: out of memory");
-
+                push(curr);
                 advance();
             }
 
-            if (last == '\'' || buffer_.length < 3)
+            if (last == '\'' || buflen_ < 3)
                 throw comp_error(loc_, "invalid hexadecimal literal");
 
-            return parser::make_INTEGER(utils::string::hex_to_dec(buffer_.data), loc_);
+            push('\0');
+
+            return token{ token::tok_integer, spacing_, loc_, utils::string::hex_to_dec(&buffer_[0]) };
         }
 
         throw error("UNEXPECTED LEXER INTERNAL ERROR");
     }
+}
+
+auto lexer::push(char c) -> void
+{
+    if (buflen_ >= 0x1000)
+        throw error("lexer: max literal size exceeded");
+
+    buffer_[buflen_++] = c;
 }
 
 auto lexer::advance() -> void
@@ -790,15 +566,15 @@ auto lexer::advance() -> void
     reader_.advance();
     loc_.end.column++;
 
-    if (reader_.current_byte == '\\') [[unlikely]]
-        preprocessor_wrap();
+    if (reader_.curr_byte == '\\') [[unlikely]]
+        linewrap();
 }
 
-auto lexer::preprocessor_wrap() -> void
+auto lexer::linewrap() -> void
 {
-    while (reader_.current_byte == '\\')
+    while (reader_.curr_byte == '\\')
     {
-        if (reader_.bytes_remaining == 1)
+        if (reader_.available == 1)
             throw comp_error(loc_, "invalid token ('\\')");
 
         if (reader_.buffer_pos[1] != '\r' && reader_.buffer_pos[1] != '\n')
@@ -806,70 +582,34 @@ auto lexer::preprocessor_wrap() -> void
 
         if (reader_.buffer_pos[1] == '\r')
         {
-            if (reader_.bytes_remaining <= 3 || reader_.buffer_pos[2] != '\n')
+            if (reader_.available <= 3 || reader_.buffer_pos[2] != '\n')
                 throw comp_error(loc_, "invalid token ('\\')");
 
             reader_.buffer_pos += 3;
-            reader_.bytes_remaining -= 3;
+            reader_.available -= 3;
         }
 
         if ((reader_.buffer_pos[1] == '\n'))
         {
-            if (reader_.bytes_remaining == 2)
+            if (reader_.available == 2)
                 throw comp_error(loc_, "invalid token ('\\')");
 
             reader_.buffer_pos += 2;
-            reader_.bytes_remaining -= 2;
+            reader_.available -= 2;
         }
 
-        if (reader_.bytes_remaining == 0)
+        if (reader_.available == 0)
         {
-            reader_.state = reader::end;
-            reader_.current_byte = 0;
+            reader_.state = lookahead::end;
+            reader_.curr_byte = 0;
         }
         else
         {
-            reader_.current_byte = *reader_.buffer_pos;
+            reader_.curr_byte = *reader_.buffer_pos;
         }
 
         loc_.lines();
         loc_.step();
-    }
-}
-
-auto lexer::preprocessor_run(parser::token::token_kind_type token) -> void
-{
-    if (!clean_)
-        throw comp_error(loc_, "invalid token ('#')");
-
-    switch (token)
-    {
-        case parser::token::SH_DEFINE:
-            throw comp_error(loc_, "unimplemented preprocessor directive");
-            break;
-        case parser::token::SH_UNDEF:
-            throw comp_error(loc_, "unimplemented preprocessor directive");
-            break;
-        case parser::token::SH_IFDEF:
-            throw comp_error(loc_, "unimplemented preprocessor directive");
-            break;
-        case parser::token::SH_IFNDEF:
-            throw comp_error(loc_, "unimplemented preprocessor directive");
-            break;
-        case parser::token::SH_IF:
-            throw comp_error(loc_, "unimplemented preprocessor directive");
-            break;
-        case parser::token::SH_ELIF:
-            throw comp_error(loc_, "unimplemented preprocessor directive");
-            break;
-        case parser::token::SH_ELSE:
-            throw comp_error(loc_, "unimplemented preprocessor directive");
-            break;
-        case parser::token::SH_ENDIF:
-            throw comp_error(loc_, "unimplemented preprocessor directive");
-            break;
-        default:
-            throw comp_error(loc_, "unknown preprocessor directive");
     }
 }
 

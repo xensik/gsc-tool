@@ -12,8 +12,11 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <list>
 #include <map>
 #include <memory>
+#include <queue>
+#include <deque>
 #include <regex>
 #include <set>
 #include <sstream>
