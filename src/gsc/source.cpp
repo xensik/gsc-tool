@@ -342,6 +342,7 @@ auto source::dump_decl_usingtree(decl_usingtree const& dec) -> void
 
 auto source::dump_decl_function(decl_function const& dec) -> void
 {
+    indent_ = 0;
     dump_expr_identifier(*dec.name);
     fmt::format_to(std::back_inserter(buf_), "(");
     dump_expr_parameters(*dec.params);
