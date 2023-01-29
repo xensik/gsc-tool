@@ -469,7 +469,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x1C9, "_func_1C9" },
     { 0x1CA, "_func_1CA" },
     { 0x1CB, "_func_1CB" },
-    { 0x1CC, "_func_1CC" },
+    { 0x1CC, "setteammode" },
     { 0x1CD, "_func_1CD" },
     { 0x1CE, "_func_1CE" },
     { 0x1CF, "_func_1CF" },
