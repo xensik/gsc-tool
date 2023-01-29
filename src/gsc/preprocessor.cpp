@@ -626,8 +626,6 @@ auto preprocessor::expand(token& tok, define& def) -> void
     }
     else if (def.type == define::object)
     {
-        auto nodes = std::stack<token>{};
-
         tokens_.push_front(token{ token::tok_macroend, tok.space, tok.pos, tok.data });
 
         for (auto it = def.exp.rbegin(); it != def.exp.rend(); ++it)
@@ -709,13 +707,13 @@ auto preprocessor::evaluate() -> bool
 
                 auto const it = defines_.find(tok.data);
 
-                if (it != defines_.end())
+                if (it != defines_.end() && (!expand_ || !reject_.contains(tok.data)))
                 {
                     expand(tok, it->second);
                 }
                 else // macro not defined
                 {
-                    expr_.push_back(token{ token::tok_false , tok.space, tok.pos });
+                    expr_.push_back(token{ token::tok_false, tok.space, tok.pos });
                 }
             }   
         }

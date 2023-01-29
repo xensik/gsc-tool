@@ -13,7 +13,7 @@
 namespace xsk::gsc
 {
 
-source::source(context const* ctx) : ctx_{ ctx }
+source::source(context const* ctx) : ctx_{ ctx }, indent_{ 0 }
 {
 }
 

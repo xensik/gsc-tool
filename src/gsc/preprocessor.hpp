@@ -17,10 +17,10 @@ class preprocessor
     std::stack<lexer> lexer_;
     std::stack<directive> indents_;
     std::vector<std::string> includes_;
-    std::deque<token> tokens_;
     std::unordered_map<std::string_view, directive::id> directives_;
     std::unordered_map<std::string, define> defines_;
     std::set<std::string> reject_;
+    std::deque<token> tokens_;
     std::vector<token> expr_;
     usize curr_expr_;
     u32 expand_;
