@@ -51,7 +51,6 @@ auto source::parse_assembly(u8 const* data, usize size) -> assembly::ptr
             func->index = index;
             func->name = line.substr(4);
             func->id = ctx_->token_id(func->name);
-
         }
         else if (line.substr(0, 4) == "end:")
         {

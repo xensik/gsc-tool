@@ -23,7 +23,8 @@ reader::reader(u8 const* data, u32 size, bool swap) : data_{ data }, size_{ size
 
 template<> auto reader::read() -> i8
 {
-    if (pos_ + 1 > size_) return i8{};
+    if (pos_ + 1 > size_)
+        throw std::runtime_error("reader: out of bounds");
 
     auto value = *reinterpret_cast<i8 const*>(data_ + pos_);
     pos_ += 1;
@@ -32,7 +33,8 @@ template<> auto reader::read() -> i8
 
 template<> auto reader::read() -> u8
 {
-    if (pos_ + 1 > size_) return u8{};
+    if (pos_ + 1 > size_)
+        throw std::runtime_error("reader: out of bounds");
 
     auto value = *reinterpret_cast<u8 const*>(data_ + pos_);
     pos_ += 1;
@@ -41,7 +43,8 @@ template<> auto reader::read() -> u8
 
 template<> auto reader::read() -> i16
 {
-    if (pos_ + 2 > size_) return i16{};
+    if (pos_ + 2 > size_)
+        throw std::runtime_error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -59,7 +62,8 @@ template<> auto reader::read() -> i16
 
 template<> auto reader::read() -> u16
 {
-    if (pos_ + 2 > size_) return u16{};
+    if (pos_ + 2 > size_)
+        throw std::runtime_error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -77,7 +81,8 @@ template<> auto reader::read() -> u16
 
 template<> auto reader::read() -> i32
 {
-    if (pos_ + 4 > size_) return i32{};
+    if (pos_ + 4 > size_)
+        throw std::runtime_error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -97,7 +102,8 @@ template<> auto reader::read() -> i32
 
 template<> auto reader::read() -> u32
 {
-    if (pos_ + 4 > size_) return u32{};
+    if (pos_ + 4 > size_)
+        throw std::runtime_error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -117,7 +123,8 @@ template<> auto reader::read() -> u32
 
 template<> auto reader::read() -> i64
 {
-    if (pos_ + 8 > size_) return i64{};
+    if (pos_ + 8 > size_)
+        throw std::runtime_error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -141,7 +148,8 @@ template<> auto reader::read() -> i64
 
 template<> auto reader::read() -> u64
 {
-    if (pos_ + 8 > size_) return u64{};
+    if (pos_ + 8 > size_)
+        throw std::runtime_error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -165,7 +173,8 @@ template<> auto reader::read() -> u64
 
 template<> auto reader::read() -> f32
 {
-    if (pos_ + 4 > size_) return f32{};
+    if (pos_ + 4 > size_)
+        throw std::runtime_error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -198,7 +207,7 @@ auto reader::read_bytes(u32 pos, u32 count) -> std::string
 
     for (auto i = pos; i < pos + count; i++)
     {
-        data += fmt::format("{:02X} ", *reinterpret_cast<u8 const*>(data_ + i));
+        fmt::format_to(std::back_insert_iterator(data), "{:02X} ", *reinterpret_cast<u8 const*>(data_ + i));
     }
 
     data.pop_back();

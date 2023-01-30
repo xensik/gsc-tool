@@ -12,14 +12,11 @@ namespace xsk::gsc
 
 class lexer
 {
-    enum class state : u8 { start, string, localize };
-
     context const* ctx_;
     lookahead reader_;
     location loc_;
     usize buflen_;
     spacing spacing_;
-    state state_;
     bool indev_;
     std::array<char, 0x1000> buffer_;
 

@@ -10,9 +10,9 @@ namespace xsk::gsc
 
 struct define
 {
-    enum format { builtin, simple, object, function };
+    enum kind { PLAIN, BUILTIN, OBJECT, FUNCTION };
 
-    format type;
+    kind type;
     std::vector<token> args;
     std::vector<token> exp;
 };

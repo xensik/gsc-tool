@@ -33,7 +33,8 @@ auto writer::clear() -> void
 
 template<> auto writer::write(i8 data) -> void
 {
-    if (pos_ + 1 > size_) return;
+    if (pos_ + 1 > size_)
+        throw std::runtime_error("writer: out of bounds");
 
     *reinterpret_cast<i8*>(data_ + pos_) = data;
     pos_ += 1;
@@ -41,7 +42,8 @@ template<> auto writer::write(i8 data) -> void
 
 template<> auto writer::write(u8 data) -> void
 {
-    if (pos_ + 1 > size_) return;
+    if (pos_ + 1 > size_)
+        throw std::runtime_error("writer: out of bounds");
 
     *reinterpret_cast<u8*>(data_ + pos_) = data;
     pos_ += 1;
@@ -49,7 +51,8 @@ template<> auto writer::write(u8 data) -> void
 
 template<> auto writer::write(i16 data) -> void
 {
-    if (pos_ + 2 > size_) return;
+    if (pos_ + 2 > size_)
+        throw std::runtime_error("writer: out of bounds");
 
     if (!swap_)
     {
@@ -66,7 +69,8 @@ template<> auto writer::write(i16 data) -> void
 
 template<> auto writer::write(u16 data) -> void
 {
-    if (pos_ + 2 > size_) return;
+    if (pos_ + 2 > size_)
+        throw std::runtime_error("writer: out of bounds");
 
     if (!swap_)
     {
@@ -83,7 +87,8 @@ template<> auto writer::write(u16 data) -> void
 
 template<> auto writer::write(i32 data) -> void
 {
-    if (pos_ + 4 > size_) return;
+    if (pos_ + 4 > size_)
+        throw std::runtime_error("writer: out of bounds");
 
     if (!swap_)
     {
@@ -102,7 +107,8 @@ template<> auto writer::write(i32 data) -> void
 
 template<> auto writer::write(u32 data) -> void
 {
-    if (pos_ + 4 > size_) return;
+    if (pos_ + 4 > size_)
+        throw std::runtime_error("writer: out of bounds");
 
     if (!swap_)
     {
@@ -121,7 +127,8 @@ template<> auto writer::write(u32 data) -> void
 
 template<> auto writer::write(i64 data) -> void
 {
-    if (pos_ + 8 > size_) return;
+    if (pos_ + 8 > size_)
+        throw std::runtime_error("writer: out of bounds");
 
     if (!swap_)
     {
@@ -144,7 +151,8 @@ template<> auto writer::write(i64 data) -> void
 
 template<> auto writer::write(u64 data) -> void
 {
-    if (pos_ + 8 > size_) return;
+    if (pos_ + 8 > size_)
+        throw std::runtime_error("writer: out of bounds");
 
     if (!swap_)
     {
@@ -167,7 +175,8 @@ template<> auto writer::write(u64 data) -> void
 
 template<> auto writer::write(f32 data) -> void
 {
-    if (pos_ + 4 > size_) return;
+    if (pos_ + 4 > size_)
+        throw std::runtime_error("writer: out of bounds");
 
     if (!swap_)
     {
@@ -186,7 +195,8 @@ template<> auto writer::write(f32 data) -> void
 
 auto writer::write_string(std::string const& data) -> void
 {
-    if (pos_ + data.size() > size_) return;
+    if (pos_ + data.size() > size_)
+        throw std::runtime_error("writer: out of bounds");
 
     std::memcpy(reinterpret_cast<void*>(data_ + pos_), data.data(), data.size());
     pos_ += static_cast<u32>(data.size());
@@ -194,26 +204,11 @@ auto writer::write_string(std::string const& data) -> void
 
 auto writer::write_cstr(std::string const& data) -> void
 {
-    if (pos_ + data.size() >= size_) return;
+    if (pos_ + data.size() >= size_)
+        throw std::runtime_error("writer: out of bounds");
 
     std::memcpy(reinterpret_cast<void*>(data_ + pos_), data.data(), data.size());
     pos_ += static_cast<u32>(data.size() + 1);
-}
-
-auto writer::read_bytes(u32 pos, u32 count) -> std::string
-{
-    auto data = std::string{};
-
-    data.reserve(count * 3);
-
-    for (auto i = pos; i < pos + count; i++)
-    {
-        data += fmt::format("{:02X} ", *reinterpret_cast<const u8*>(data_ + i));
-    }
-
-    data.pop_back();
-
-    return data;
 }
 
 auto writer::is_avail() -> bool

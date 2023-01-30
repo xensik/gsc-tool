@@ -17,7 +17,7 @@ class preprocessor
     std::stack<lexer> lexer_;
     std::stack<directive> indents_;
     std::vector<std::string> includes_;
-    std::unordered_map<std::string_view, directive::id> directives_;
+    std::unordered_map<std::string_view, directive::kind> directives_;
     std::unordered_map<std::string, define> defines_;
     std::set<std::string> reject_;
     std::deque<token> tokens_;
@@ -58,15 +58,15 @@ private:
     auto read_hashtoken(token& hash) -> void;
     auto read_hashtoken_animtree(token& hash, token& name) -> void;
     auto expand(token& tok, define& def) -> void;
-    auto expect(token& tok, token::type expected, spacing space = spacing::none) -> void;
+    auto expect(token& tok, token::kind expected, spacing space = spacing::none) -> void;
     auto evaluate() -> bool;
     auto eval_next() -> token&;
     auto eval_peek() -> token&;
     auto eval_prev() -> token&;
     auto eval_atend() -> bool;
-    auto eval_check(token::type type) -> bool;
-    auto eval_match(token::type type) -> bool;
-    auto eval_consume(token::type type, std::string_view msg);
+    auto eval_check(token::kind type) -> bool;
+    auto eval_match(token::kind type) -> bool;
+    auto eval_consume(token::kind type, std::string_view msg);
     auto eval_expr() -> i32;
     auto eval_expr_or() -> i32;
     auto eval_expr_and() -> i32;

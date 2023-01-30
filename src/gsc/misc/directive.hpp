@@ -10,9 +10,9 @@ namespace xsk::gsc
 
 struct directive
 {
-    enum id : u8 { IF, IFDEF, IFNDEF, ELIF, ELIFDEF, ELIFNDEF, ELSE, ENDIF, DEFINE, UNDEF, PRAGMA, WARNING, ERROR, LINE, INCLUDE, INLINE, INSERT, USINGTREE };
+    enum kind : u8 { IF, IFDEF, IFNDEF, ELIF, ELIFDEF, ELIFNDEF, ELSE, ENDIF, DEFINE, UNDEF, PRAGMA, WARNING, ERROR, LINE, INCLUDE, INLINE, INSERT, USINGTREE };
 
-    id type;
+    kind type;
     bool skip;
 };
 

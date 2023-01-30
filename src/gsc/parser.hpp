@@ -758,59 +758,60 @@ namespace xsk { namespace gsc {
     RBRACKET = 52,                 // "]"
     COMMA = 53,                    // ","
     DOT = 54,                      // "."
-    DOUBLECOLON = 55,              // "::"
-    COLON = 56,                    // ":"
-    SEMICOLON = 57,                // ";"
-    QMARK = 58,                    // "?"
-    INCREMENT = 59,                // "++"
-    DECREMENT = 60,                // "--"
-    LSHIFT = 61,                   // "<<"
-    RSHIFT = 62,                   // ">>"
-    OR = 63,                       // "||"
-    AND = 64,                      // "&&"
-    EQUALITY = 65,                 // "=="
-    INEQUALITY = 66,               // "!="
-    LESS_EQUAL = 67,               // "<="
-    GREATER_EQUAL = 68,            // ">="
-    LESS = 69,                     // "<"
-    GREATER = 70,                  // ">"
-    NOT = 71,                      // "!"
-    COMPLEMENT = 72,               // "~"
-    ASSIGN = 73,                   // "="
-    ASSIGN_ADD = 74,               // "+="
-    ASSIGN_SUB = 75,               // "-="
-    ASSIGN_MUL = 76,               // "*="
-    ASSIGN_DIV = 77,               // "/="
-    ASSIGN_MOD = 78,               // "%="
-    ASSIGN_BW_OR = 79,             // "|="
-    ASSIGN_BW_AND = 80,            // "&="
-    ASSIGN_BW_EXOR = 81,           // "^="
-    ASSIGN_RSHIFT = 82,            // ">>="
-    ASSIGN_LSHIFT = 83,            // "<<="
-    BITWISE_OR = 84,               // "|"
-    BITWISE_AND = 85,              // "&"
-    BITWISE_EXOR = 86,             // "^"
-    ADD = 87,                      // "+"
-    SUB = 88,                      // "-"
-    MUL = 89,                      // "*"
-    DIV = 90,                      // "/"
-    MOD = 91,                      // "%"
-    PATH = 92,                     // "path"
-    IDENTIFIER = 93,               // "identifier"
-    STRING = 94,                   // "string literal"
-    ISTRING = 95,                  // "localized string"
-    FLOAT = 96,                    // "float"
-    INTEGER = 97,                  // "integer"
-    SIZEOF = 98,                   // SIZEOF
-    ADD_ARRAY = 99,                // ADD_ARRAY
-    THEN = 100,                    // THEN
-    TERN = 101,                    // TERN
-    NEG = 102,                     // NEG
-    ANIMREF = 103,                 // ANIMREF
-    PREINC = 104,                  // PREINC
-    PREDEC = 105,                  // PREDEC
-    POSTINC = 106,                 // POSTINC
-    POSTDEC = 107                  // POSTDEC
+    ELLIPSIS = 55,                 // "..."
+    DOUBLECOLON = 56,              // "::"
+    COLON = 57,                    // ":"
+    SEMICOLON = 58,                // ";"
+    QMARK = 59,                    // "?"
+    INCREMENT = 60,                // "++"
+    DECREMENT = 61,                // "--"
+    LSHIFT = 62,                   // "<<"
+    RSHIFT = 63,                   // ">>"
+    OR = 64,                       // "||"
+    AND = 65,                      // "&&"
+    EQUALITY = 66,                 // "=="
+    INEQUALITY = 67,               // "!="
+    LESS_EQUAL = 68,               // "<="
+    GREATER_EQUAL = 69,            // ">="
+    LESS = 70,                     // "<"
+    GREATER = 71,                  // ">"
+    NOT = 72,                      // "!"
+    COMPLEMENT = 73,               // "~"
+    ASSIGN = 74,                   // "="
+    ASSIGN_ADD = 75,               // "+="
+    ASSIGN_SUB = 76,               // "-="
+    ASSIGN_MUL = 77,               // "*="
+    ASSIGN_DIV = 78,               // "/="
+    ASSIGN_MOD = 79,               // "%="
+    ASSIGN_BW_OR = 80,             // "|="
+    ASSIGN_BW_AND = 81,            // "&="
+    ASSIGN_BW_EXOR = 82,           // "^="
+    ASSIGN_RSHIFT = 83,            // ">>="
+    ASSIGN_LSHIFT = 84,            // "<<="
+    BITWISE_OR = 85,               // "|"
+    BITWISE_AND = 86,              // "&"
+    BITWISE_EXOR = 87,             // "^"
+    ADD = 88,                      // "+"
+    SUB = 89,                      // "-"
+    MUL = 90,                      // "*"
+    DIV = 91,                      // "/"
+    MOD = 92,                      // "%"
+    PATH = 93,                     // "path"
+    IDENTIFIER = 94,               // "identifier"
+    STRING = 95,                   // "string literal"
+    ISTRING = 96,                  // "localized string"
+    FLOAT = 97,                    // "float"
+    INTEGER = 98,                  // "integer"
+    SIZEOF = 99,                   // SIZEOF
+    ADD_ARRAY = 100,               // ADD_ARRAY
+    THEN = 101,                    // THEN
+    TERN = 102,                    // TERN
+    NEG = 103,                     // NEG
+    ANIMREF = 104,                 // ANIMREF
+    PREINC = 105,                  // PREINC
+    PREDEC = 106,                  // PREDEC
+    POSTINC = 107,                 // POSTINC
+    POSTDEC = 108                  // POSTDEC
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -827,7 +828,7 @@ namespace xsk { namespace gsc {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 108, ///< Number of tokens.
+        YYNTOKENS = 109, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -884,147 +885,148 @@ namespace xsk { namespace gsc {
         S_RBRACKET = 52,                         // "]"
         S_COMMA = 53,                            // ","
         S_DOT = 54,                              // "."
-        S_DOUBLECOLON = 55,                      // "::"
-        S_COLON = 56,                            // ":"
-        S_SEMICOLON = 57,                        // ";"
-        S_QMARK = 58,                            // "?"
-        S_INCREMENT = 59,                        // "++"
-        S_DECREMENT = 60,                        // "--"
-        S_LSHIFT = 61,                           // "<<"
-        S_RSHIFT = 62,                           // ">>"
-        S_OR = 63,                               // "||"
-        S_AND = 64,                              // "&&"
-        S_EQUALITY = 65,                         // "=="
-        S_INEQUALITY = 66,                       // "!="
-        S_LESS_EQUAL = 67,                       // "<="
-        S_GREATER_EQUAL = 68,                    // ">="
-        S_LESS = 69,                             // "<"
-        S_GREATER = 70,                          // ">"
-        S_NOT = 71,                              // "!"
-        S_COMPLEMENT = 72,                       // "~"
-        S_ASSIGN = 73,                           // "="
-        S_ASSIGN_ADD = 74,                       // "+="
-        S_ASSIGN_SUB = 75,                       // "-="
-        S_ASSIGN_MUL = 76,                       // "*="
-        S_ASSIGN_DIV = 77,                       // "/="
-        S_ASSIGN_MOD = 78,                       // "%="
-        S_ASSIGN_BW_OR = 79,                     // "|="
-        S_ASSIGN_BW_AND = 80,                    // "&="
-        S_ASSIGN_BW_EXOR = 81,                   // "^="
-        S_ASSIGN_RSHIFT = 82,                    // ">>="
-        S_ASSIGN_LSHIFT = 83,                    // "<<="
-        S_BITWISE_OR = 84,                       // "|"
-        S_BITWISE_AND = 85,                      // "&"
-        S_BITWISE_EXOR = 86,                     // "^"
-        S_ADD = 87,                              // "+"
-        S_SUB = 88,                              // "-"
-        S_MUL = 89,                              // "*"
-        S_DIV = 90,                              // "/"
-        S_MOD = 91,                              // "%"
-        S_PATH = 92,                             // "path"
-        S_IDENTIFIER = 93,                       // "identifier"
-        S_STRING = 94,                           // "string literal"
-        S_ISTRING = 95,                          // "localized string"
-        S_FLOAT = 96,                            // "float"
-        S_INTEGER = 97,                          // "integer"
-        S_SIZEOF = 98,                           // SIZEOF
-        S_ADD_ARRAY = 99,                        // ADD_ARRAY
-        S_THEN = 100,                            // THEN
-        S_TERN = 101,                            // TERN
-        S_NEG = 102,                             // NEG
-        S_ANIMREF = 103,                         // ANIMREF
-        S_PREINC = 104,                          // PREINC
-        S_PREDEC = 105,                          // PREDEC
-        S_POSTINC = 106,                         // POSTINC
-        S_POSTDEC = 107,                         // POSTDEC
-        S_YYACCEPT = 108,                        // $accept
-        S_root = 109,                            // root
-        S_program = 110,                         // program
-        S_inline = 111,                          // inline
-        S_include = 112,                         // include
-        S_declaration = 113,                     // declaration
-        S_decl_usingtree = 114,                  // decl_usingtree
-        S_decl_function = 115,                   // decl_function
-        S_stmt = 116,                            // stmt
-        S_stmt_or_dev = 117,                     // stmt_or_dev
-        S_stmt_list = 118,                       // stmt_list
-        S_stmt_or_dev_list = 119,                // stmt_or_dev_list
-        S_stmt_dev = 120,                        // stmt_dev
-        S_stmt_comp = 121,                       // stmt_comp
-        S_stmt_expr = 122,                       // stmt_expr
-        S_stmt_call = 123,                       // stmt_call
-        S_stmt_assign = 124,                     // stmt_assign
-        S_stmt_endon = 125,                      // stmt_endon
-        S_stmt_notify = 126,                     // stmt_notify
-        S_stmt_wait = 127,                       // stmt_wait
-        S_stmt_waittill = 128,                   // stmt_waittill
-        S_stmt_waittillmatch = 129,              // stmt_waittillmatch
-        S_stmt_waittillframeend = 130,           // stmt_waittillframeend
-        S_stmt_waitframe = 131,                  // stmt_waitframe
-        S_stmt_if = 132,                         // stmt_if
-        S_stmt_ifelse = 133,                     // stmt_ifelse
-        S_stmt_while = 134,                      // stmt_while
-        S_stmt_dowhile = 135,                    // stmt_dowhile
-        S_stmt_for = 136,                        // stmt_for
-        S_stmt_foreach = 137,                    // stmt_foreach
-        S_stmt_switch = 138,                     // stmt_switch
-        S_stmt_case = 139,                       // stmt_case
-        S_stmt_default = 140,                    // stmt_default
-        S_stmt_break = 141,                      // stmt_break
-        S_stmt_continue = 142,                   // stmt_continue
-        S_stmt_return = 143,                     // stmt_return
-        S_stmt_breakpoint = 144,                 // stmt_breakpoint
-        S_stmt_prof_begin = 145,                 // stmt_prof_begin
-        S_stmt_prof_end = 146,                   // stmt_prof_end
-        S_expr = 147,                            // expr
-        S_expr_or_empty = 148,                   // expr_or_empty
-        S_expr_assign = 149,                     // expr_assign
-        S_expr_increment = 150,                  // expr_increment
-        S_expr_decrement = 151,                  // expr_decrement
-        S_expr_ternary = 152,                    // expr_ternary
-        S_expr_binary = 153,                     // expr_binary
-        S_expr_primitive = 154,                  // expr_primitive
-        S_expr_complement = 155,                 // expr_complement
-        S_expr_negate = 156,                     // expr_negate
-        S_expr_not = 157,                        // expr_not
-        S_expr_call = 158,                       // expr_call
-        S_expr_method = 159,                     // expr_method
-        S_expr_function = 160,                   // expr_function
-        S_expr_pointer = 161,                    // expr_pointer
-        S_expr_add_array = 162,                  // expr_add_array
-        S_expr_parameters = 163,                 // expr_parameters
-        S_expr_arguments = 164,                  // expr_arguments
-        S_expr_arguments_no_empty = 165,         // expr_arguments_no_empty
-        S_expr_isdefined = 166,                  // expr_isdefined
-        S_expr_istrue = 167,                     // expr_istrue
-        S_expr_reference = 168,                  // expr_reference
-        S_expr_tuple = 169,                      // expr_tuple
-        S_expr_tuple_arguments = 170,            // expr_tuple_arguments
-        S_expr_tuple_types = 171,                // expr_tuple_types
-        S_expr_array = 172,                      // expr_array
-        S_expr_field = 173,                      // expr_field
-        S_expr_size = 174,                       // expr_size
-        S_expr_paren = 175,                      // expr_paren
-        S_expr_object = 176,                     // expr_object
-        S_expr_thisthread = 177,                 // expr_thisthread
-        S_expr_empty_array = 178,                // expr_empty_array
-        S_expr_undefined = 179,                  // expr_undefined
-        S_expr_game = 180,                       // expr_game
-        S_expr_self = 181,                       // expr_self
-        S_expr_anim = 182,                       // expr_anim
-        S_expr_level = 183,                      // expr_level
-        S_expr_animation = 184,                  // expr_animation
-        S_expr_animtree = 185,                   // expr_animtree
-        S_expr_identifier_nosize = 186,          // expr_identifier_nosize
-        S_expr_identifier = 187,                 // expr_identifier
-        S_expr_path = 188,                       // expr_path
-        S_expr_istring = 189,                    // expr_istring
-        S_expr_string = 190,                     // expr_string
-        S_expr_vector = 191,                     // expr_vector
-        S_expr_float = 192,                      // expr_float
-        S_expr_integer = 193,                    // expr_integer
-        S_expr_false = 194,                      // expr_false
-        S_expr_true = 195                        // expr_true
+        S_ELLIPSIS = 55,                         // "..."
+        S_DOUBLECOLON = 56,                      // "::"
+        S_COLON = 57,                            // ":"
+        S_SEMICOLON = 58,                        // ";"
+        S_QMARK = 59,                            // "?"
+        S_INCREMENT = 60,                        // "++"
+        S_DECREMENT = 61,                        // "--"
+        S_LSHIFT = 62,                           // "<<"
+        S_RSHIFT = 63,                           // ">>"
+        S_OR = 64,                               // "||"
+        S_AND = 65,                              // "&&"
+        S_EQUALITY = 66,                         // "=="
+        S_INEQUALITY = 67,                       // "!="
+        S_LESS_EQUAL = 68,                       // "<="
+        S_GREATER_EQUAL = 69,                    // ">="
+        S_LESS = 70,                             // "<"
+        S_GREATER = 71,                          // ">"
+        S_NOT = 72,                              // "!"
+        S_COMPLEMENT = 73,                       // "~"
+        S_ASSIGN = 74,                           // "="
+        S_ASSIGN_ADD = 75,                       // "+="
+        S_ASSIGN_SUB = 76,                       // "-="
+        S_ASSIGN_MUL = 77,                       // "*="
+        S_ASSIGN_DIV = 78,                       // "/="
+        S_ASSIGN_MOD = 79,                       // "%="
+        S_ASSIGN_BW_OR = 80,                     // "|="
+        S_ASSIGN_BW_AND = 81,                    // "&="
+        S_ASSIGN_BW_EXOR = 82,                   // "^="
+        S_ASSIGN_RSHIFT = 83,                    // ">>="
+        S_ASSIGN_LSHIFT = 84,                    // "<<="
+        S_BITWISE_OR = 85,                       // "|"
+        S_BITWISE_AND = 86,                      // "&"
+        S_BITWISE_EXOR = 87,                     // "^"
+        S_ADD = 88,                              // "+"
+        S_SUB = 89,                              // "-"
+        S_MUL = 90,                              // "*"
+        S_DIV = 91,                              // "/"
+        S_MOD = 92,                              // "%"
+        S_PATH = 93,                             // "path"
+        S_IDENTIFIER = 94,                       // "identifier"
+        S_STRING = 95,                           // "string literal"
+        S_ISTRING = 96,                          // "localized string"
+        S_FLOAT = 97,                            // "float"
+        S_INTEGER = 98,                          // "integer"
+        S_SIZEOF = 99,                           // SIZEOF
+        S_ADD_ARRAY = 100,                       // ADD_ARRAY
+        S_THEN = 101,                            // THEN
+        S_TERN = 102,                            // TERN
+        S_NEG = 103,                             // NEG
+        S_ANIMREF = 104,                         // ANIMREF
+        S_PREINC = 105,                          // PREINC
+        S_PREDEC = 106,                          // PREDEC
+        S_POSTINC = 107,                         // POSTINC
+        S_POSTDEC = 108,                         // POSTDEC
+        S_YYACCEPT = 109,                        // $accept
+        S_root = 110,                            // root
+        S_program = 111,                         // program
+        S_inline = 112,                          // inline
+        S_include = 113,                         // include
+        S_declaration = 114,                     // declaration
+        S_decl_usingtree = 115,                  // decl_usingtree
+        S_decl_function = 116,                   // decl_function
+        S_stmt = 117,                            // stmt
+        S_stmt_or_dev = 118,                     // stmt_or_dev
+        S_stmt_list = 119,                       // stmt_list
+        S_stmt_or_dev_list = 120,                // stmt_or_dev_list
+        S_stmt_dev = 121,                        // stmt_dev
+        S_stmt_comp = 122,                       // stmt_comp
+        S_stmt_expr = 123,                       // stmt_expr
+        S_stmt_call = 124,                       // stmt_call
+        S_stmt_assign = 125,                     // stmt_assign
+        S_stmt_endon = 126,                      // stmt_endon
+        S_stmt_notify = 127,                     // stmt_notify
+        S_stmt_wait = 128,                       // stmt_wait
+        S_stmt_waittill = 129,                   // stmt_waittill
+        S_stmt_waittillmatch = 130,              // stmt_waittillmatch
+        S_stmt_waittillframeend = 131,           // stmt_waittillframeend
+        S_stmt_waitframe = 132,                  // stmt_waitframe
+        S_stmt_if = 133,                         // stmt_if
+        S_stmt_ifelse = 134,                     // stmt_ifelse
+        S_stmt_while = 135,                      // stmt_while
+        S_stmt_dowhile = 136,                    // stmt_dowhile
+        S_stmt_for = 137,                        // stmt_for
+        S_stmt_foreach = 138,                    // stmt_foreach
+        S_stmt_switch = 139,                     // stmt_switch
+        S_stmt_case = 140,                       // stmt_case
+        S_stmt_default = 141,                    // stmt_default
+        S_stmt_break = 142,                      // stmt_break
+        S_stmt_continue = 143,                   // stmt_continue
+        S_stmt_return = 144,                     // stmt_return
+        S_stmt_breakpoint = 145,                 // stmt_breakpoint
+        S_stmt_prof_begin = 146,                 // stmt_prof_begin
+        S_stmt_prof_end = 147,                   // stmt_prof_end
+        S_expr = 148,                            // expr
+        S_expr_or_empty = 149,                   // expr_or_empty
+        S_expr_assign = 150,                     // expr_assign
+        S_expr_increment = 151,                  // expr_increment
+        S_expr_decrement = 152,                  // expr_decrement
+        S_expr_ternary = 153,                    // expr_ternary
+        S_expr_binary = 154,                     // expr_binary
+        S_expr_primitive = 155,                  // expr_primitive
+        S_expr_complement = 156,                 // expr_complement
+        S_expr_negate = 157,                     // expr_negate
+        S_expr_not = 158,                        // expr_not
+        S_expr_call = 159,                       // expr_call
+        S_expr_method = 160,                     // expr_method
+        S_expr_function = 161,                   // expr_function
+        S_expr_pointer = 162,                    // expr_pointer
+        S_expr_add_array = 163,                  // expr_add_array
+        S_expr_parameters = 164,                 // expr_parameters
+        S_expr_arguments = 165,                  // expr_arguments
+        S_expr_arguments_no_empty = 166,         // expr_arguments_no_empty
+        S_expr_isdefined = 167,                  // expr_isdefined
+        S_expr_istrue = 168,                     // expr_istrue
+        S_expr_reference = 169,                  // expr_reference
+        S_expr_tuple = 170,                      // expr_tuple
+        S_expr_tuple_arguments = 171,            // expr_tuple_arguments
+        S_expr_tuple_types = 172,                // expr_tuple_types
+        S_expr_array = 173,                      // expr_array
+        S_expr_field = 174,                      // expr_field
+        S_expr_size = 175,                       // expr_size
+        S_expr_paren = 176,                      // expr_paren
+        S_expr_object = 177,                     // expr_object
+        S_expr_thisthread = 178,                 // expr_thisthread
+        S_expr_empty_array = 179,                // expr_empty_array
+        S_expr_undefined = 180,                  // expr_undefined
+        S_expr_game = 181,                       // expr_game
+        S_expr_self = 182,                       // expr_self
+        S_expr_anim = 183,                       // expr_anim
+        S_expr_level = 184,                      // expr_level
+        S_expr_animation = 185,                  // expr_animation
+        S_expr_animtree = 186,                   // expr_animtree
+        S_expr_identifier_nosize = 187,          // expr_identifier_nosize
+        S_expr_identifier = 188,                 // expr_identifier
+        S_expr_path = 189,                       // expr_path
+        S_expr_istring = 190,                    // expr_istring
+        S_expr_string = 191,                     // expr_string
+        S_expr_vector = 192,                     // expr_vector
+        S_expr_float = 193,                      // expr_float
+        S_expr_integer = 194,                    // expr_integer
+        S_expr_false = 195,                      // expr_false
+        S_expr_true = 196                        // expr_true
       };
     };
 
@@ -3700,6 +3702,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_ELLIPSIS (location_type l)
+      {
+        return symbol_type (token::ELLIPSIS, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_ELLIPSIS (const location_type& l)
+      {
+        return symbol_type (token::ELLIPSIS, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_DOUBLECOLON (location_type l)
       {
         return symbol_type (token::DOUBLECOLON, std::move (l));
@@ -4836,7 +4853,7 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2452,     ///< Last index in yytable_.
+      yylast_ = 2289,     ///< Last index in yytable_.
       yynnts_ = 88,  ///< Number of nonterminal symbols.
       yyfinal_ = 21 ///< Termination state number.
     };
@@ -5572,7 +5589,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } // xsk::gsc
-#line 5576 "parser.hpp"
+#line 5593 "parser.hpp"
 
 
 

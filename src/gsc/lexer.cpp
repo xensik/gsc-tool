@@ -11,20 +11,20 @@
 namespace xsk::gsc
 {
 
-lexer::lexer(context const* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, reader_{ data, size }, loc_{ &name }, buflen_{ 0 }, spacing_{ spacing::null }, state_{ state::start }, indev_{ false }
+lexer::lexer(context const* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, reader_{ data, size }, loc_{ &name }, buflen_{ 0 }, spacing_{ spacing::null }, indev_{ false }
 {
 }
 
 auto lexer::lex() -> token
 {
     buflen_ = 0;
-    state_ = state::start;
 
     while (true)
     {
         auto& last = reader_.last_byte;
         auto& curr = reader_.curr_byte;
         auto path = false;
+        auto localize = false;
         loc_.step();
 
         if (reader_.ended())
@@ -35,10 +35,10 @@ auto lexer::lex() -> token
             if (curr == 0 && last != '\n')
             {
                 curr = -1;
-                return token{ token::tok_newline, spacing_, loc_ };
+                return token{ token::NEWLINE, spacing_, loc_ };
             }
             else
-                return token{ token::tok_eof, spacing_, loc_ };
+                return token{ token::EOS, spacing_, loc_ };
         }
 
         if (last == 0 || last == '\n')
@@ -60,17 +60,17 @@ auto lexer::lex() -> token
             case '\n':
                 loc_.lines();
                 loc_.step();
-                return token{ token::tok_newline, spacing_, loc_ };
+                return token{ token::NEWLINE, spacing_, loc_ };
             case '\\':
                 throw comp_error(loc_, "invalid token ('\\')");
             case '/':
                 if (curr != '=' && curr != '#' && curr != '@' && curr != '*' && curr != '/')
-                    return token{ token::tok_div, spacing_, loc_ };
+                    return token{ token::DIV, spacing_, loc_ };
 
                 advance();
 
                 if (last == '=')
-                    return token{ token::tok_assign_div, spacing_, loc_ };
+                    return token{ token::DIVEQ, spacing_, loc_ };
 
                 if (last == '#')
                 {
@@ -80,7 +80,7 @@ auto lexer::lex() -> token
                     if (ctx_->build() == build::dev)
                     {
                         indev_ = true;
-                        return token{ token::tok_devbegin, spacing_, loc_ };
+                        return token{ token::DEVBEGIN, spacing_, loc_ };
                     }
                     else
                     {
@@ -168,149 +168,148 @@ auto lexer::lex() -> token
 
                     advance();
                     indev_ = false;
-                    return token{ token::tok_devend, spacing_, loc_ };
+                    return token{ token::DEVEND, spacing_, loc_ };
                 }
 
-                return token{ token::tok_hash, spacing_, loc_ };
+                return token{ token::SHARP, spacing_, loc_ };
             case '*':
                 if (curr != '=' && curr != '/')
-                    return token{ token::tok_mul, spacing_, loc_ };
+                    return token{ token::STAR, spacing_, loc_ };
 
                 advance();
 
                 if (last == '=')
-                    return token{ token::tok_assign_mul, spacing_, loc_ };
+                    return token{ token::STAREQ, spacing_, loc_ };
 
                 throw comp_error(loc_, "unmatched multiline comment end ('*/')");
             case '"':
-                state_ = state::string;
                 goto lex_string;
             case '.':
                 if (curr < '0' || curr > '9')
-                    return token{ token::tok_dot, spacing_, loc_ };
+                    return token{ token::DOT, spacing_, loc_ };
                 goto lex_number;
             case '(':
-                return token{ token::tok_lparen, spacing_, loc_ };
+                return token{ token::LPAREN, spacing_, loc_ };
             case ')':
-                return token{ token::tok_rparen, spacing_, loc_ };
+                return token{ token::RPAREN, spacing_, loc_ };
             case '{':
-                return token{ token::tok_lbrace, spacing_, loc_ };
+                return token{ token::LBRACE, spacing_, loc_ };
             case '}':
-                return token{ token::tok_rbrace, spacing_, loc_ };
+                return token{ token::RBRACE, spacing_, loc_ };
             case '[':
-                return token{ token::tok_lbracket, spacing_, loc_ };
+                return token{ token::LBRACKET, spacing_, loc_ };
             case ']':
-                return token{ token::tok_rbracket, spacing_, loc_ };
+                return token{ token::RBRACKET, spacing_, loc_ };
             case ',':
-                return token{ token::tok_comma, spacing_, loc_ };
+                return token{ token::COMMA, spacing_, loc_ };
             case ';':
-                return token{ token::tok_semicolon, spacing_, loc_ };
+                return token{ token::SEMICOLON, spacing_, loc_ };
             case ':':
                 if (curr != ':')
-                    return token{ token::tok_colon, spacing_, loc_ };
+                    return token{ token::COLON, spacing_, loc_ };
 
                 advance();
-                return token{ token::tok_doublecolon, spacing_, loc_ };
+                return token{ token::DOUBLECOLON, spacing_, loc_ };
             case '?':
-                return token{ token::tok_qmark, spacing_, loc_ };
+                return token{ token::QMARK, spacing_, loc_ };
             case '=':
                 if (curr != '=')
-                    return token{ token::tok_assign, spacing_, loc_ };
+                    return token{ token::ASSIGN, spacing_, loc_ };
 
                 advance();
-                return token{ token::tok_equality, spacing_, loc_ };
+                return token{ token::EQ, spacing_, loc_ };
             case '+':
                 if (curr != '+' && curr != '=')
-                    return token{ token::tok_add, spacing_, loc_ };
+                    return token{ token::PLUS, spacing_, loc_ };
 
                 advance();
 
                 if (last == '+')
-                    return token{ token::tok_increment, spacing_, loc_ };
+                    return token{ token::INC, spacing_, loc_ };
 
-                return token{ token::tok_assign_add, spacing_, loc_ };
+                return token{ token::PLUSEQ, spacing_, loc_ };
             case '-':
                 if (curr != '-' && curr != '=')
-                    return token{ token::tok_sub, spacing_, loc_ };
+                    return token{ token::MINUS, spacing_, loc_ };
 
                 advance();
 
                 if (last == '-')
-                    return token{ token::tok_decrement, spacing_, loc_ };
+                    return token{ token::DEC, spacing_, loc_ };
 
-                return token{ token::tok_assign_sub, spacing_, loc_ };
+                return token{ token::MINUSEQ, spacing_, loc_ };
             case '%':
                 if (curr != '=')
-                    return token{ token::tok_mod, spacing_, loc_ };
+                    return token{ token::MOD, spacing_, loc_ };
 
                 advance();
 
-                return token{ token::tok_assign_mod, spacing_, loc_ };
+                return token{ token::MODEQ, spacing_, loc_ };
             case '|':
                 if (curr != '|' && curr != '=')
-                    return token{ token::tok_bwor, spacing_, loc_ };
+                    return token{ token::BITOR, spacing_, loc_ };
 
                 advance();
 
                 if (last == '|')
-                    return token{ token::tok_or, spacing_, loc_ };
+                    return token{ token::OR, spacing_, loc_ };
 
-                return token{ token::tok_assign_bwor, spacing_, loc_ };
+                return token{ token::BITOREQ, spacing_, loc_ };
             case '&':
                 if (curr != '&' && curr != '=' && curr != '"')
-                    return token{ token::tok_bwand, spacing_, loc_ };
+                    return token{ token::BITAND, spacing_, loc_ };
 
                 advance();
 
                 if (last == '&')
-                    return token{ token::tok_and, spacing_, loc_ };
+                    return token{ token::AND, spacing_, loc_ };
 
                 if (last == '=')
-                    return token{ token::tok_assign_bwand, spacing_, loc_ };
+                    return token{ token::BITANDEQ, spacing_, loc_ };
 
-                state_ = state::localize;
+                localize = true;
                 goto lex_string;
             case '^':
                 if (curr != '=')
-                    return token{ token::tok_bwexor, spacing_, loc_ };
+                    return token{ token::BITEXOR, spacing_, loc_ };
 
                 advance();
-                return token{ token::tok_assign_bwexor, spacing_, loc_ };
+                return token{ token::BITEXOREQ, spacing_, loc_ };
             case '!':
                 if (curr != '=')
-                    return token{ token::tok_not, spacing_, loc_ };
+                    return token{ token::BANG, spacing_, loc_ };
 
                 advance();
-                return token{ token::tok_inequality, spacing_, loc_ };
+                return token{ token::NE, spacing_, loc_ };
             case '~':
-                return token{ token::tok_complement, spacing_, loc_ };
+                return token{ token::TILDE, spacing_, loc_ };
             case '<':
                 if (curr != '<' && curr != '=')
-                    return token{ token::tok_less, spacing_, loc_ };
+                    return token{ token::LT, spacing_, loc_ };
 
                 advance();
                 if (last == '=')
-                    return token{ token::tok_less_equal, spacing_, loc_ };
+                    return token{ token::LE, spacing_, loc_ };
 
                 if (curr != '=')
-                    return token{ token::tok_lshift, spacing_, loc_ };
+                    return token{ token::SHL, spacing_, loc_ };
 
                 advance();
-                return token{ token::tok_assign_lshift, spacing_, loc_ };
+                return token{ token::SHLEQ, spacing_, loc_ };
             case '>':
                 if (curr != '>' && curr != '=')
-                    return token{ token::tok_greater, spacing_, loc_ };
+                    return token{ token::GT, spacing_, loc_ };
 
                 advance();
 
                 if (last == '=')
-                    return token{ token::tok_greater_equal, spacing_, loc_ };
+                    return token{ token::GE, spacing_, loc_ };
 
                 if (curr != '=')
-                    return token{ token::tok_rshift, spacing_, loc_ };
+                    return token{ token::SHR, spacing_, loc_ };
 
                 advance();
-                return token{ token::tok_assign_rshift, spacing_, loc_ };
+                return token{ token::SHREQ, spacing_, loc_ };
             default:
                 if (last >= '0' && last <= '9')
                     goto lex_number;
@@ -361,10 +360,10 @@ lex_string:
             advance();
         }
 
-        if (state_ == state::localize)
-            return token{ token::tok_istring, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
+        if (localize)
+            return token{ token::ISTRING, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
 
-        return token{ token::tok_string, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
+        return token{ token::STRING, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
 
 lex_name:
         push(last);
@@ -396,10 +395,10 @@ lex_name:
             if (buffer_[buflen_ - 1] == '/')
                 throw comp_error(loc_, "invalid path end '\\'");
 
-            return token{ token::tok_path, spacing_, loc_, ctx_->make_token(std::string_view{ &buffer_[0], buflen_ }) };
+            return token{ token::PATH, spacing_, loc_, ctx_->make_token(std::string_view{ &buffer_[0], buflen_ }) };
         }
 
-        return token{ token::tok_identifier, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
+        return token{ token::NAME, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
 
 lex_number:
         if (last == '.' || last != '0' || (last == '0' && (curr != 'o' && curr != 'b' && curr != 'x')))
@@ -444,9 +443,9 @@ lex_number:
                 throw comp_error(loc_, "invalid number literal");
 
             if (dot || flt)
-                return token{ token::tok_float, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
+                return token{ token::FLT, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
 
-            return token{ token::tok_integer, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
+            return token{ token::INT, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
         }
         else if (curr == 'o')
         {
@@ -478,7 +477,7 @@ lex_number:
 
             push('\0');
 
-            return token{ token::tok_integer, spacing_, loc_, utils::string::oct_to_dec(&buffer_[0]) };
+            return token{ token::INT, spacing_, loc_, utils::string::oct_to_dec(&buffer_[0]) };
         }
         else if (curr == 'b')
         {
@@ -512,7 +511,7 @@ lex_number:
 
             push('\0');
 
-            return token{ token::tok_integer, spacing_, loc_, utils::string::bin_to_dec(&buffer_[0]) };
+            return token{ token::INT, spacing_, loc_, utils::string::bin_to_dec(&buffer_[0]) };
         }
         else if (curr == 'x')
         {
@@ -546,7 +545,7 @@ lex_number:
 
             push('\0');
 
-            return token{ token::tok_integer, spacing_, loc_, utils::string::hex_to_dec(&buffer_[0]) };
+            return token{ token::INT, spacing_, loc_, utils::string::hex_to_dec(&buffer_[0]) };
         }
 
         throw error("UNEXPECTED LEXER INTERNAL ERROR");
@@ -598,15 +597,7 @@ auto lexer::linewrap() -> void
             reader_.available -= 2;
         }
 
-        if (reader_.available == 0)
-        {
-            reader_.state = lookahead::end;
-            reader_.curr_byte = 0;
-        }
-        else
-        {
-            reader_.curr_byte = *reader_.buffer_pos;
-        }
+        reader_.curr_byte = reader_.available ? *reader_.buffer_pos : 0;
 
         loc_.lines();
         loc_.step();

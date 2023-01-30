@@ -47,7 +47,7 @@ auto decompiler::decompile_function(function const& func) -> void
         decompile_instruction(*inst);
     }
 
-    if (stack_.size())
+    if (!stack_.empty())
     {
         throw decomp_error("stack isn't empty at function end");
     }
@@ -59,7 +59,7 @@ auto decompiler::decompile_function(function const& func) -> void
     decompile_statements(*func_->body->block);
     process_function(*func_);
 
-    program_->declarations.push_back(decl{ move(func_) });
+    program_->declarations.push_back(decl{ std::move(func_) });
 }
 
 auto decompiler::decompile_instruction(instruction const& inst) -> void
