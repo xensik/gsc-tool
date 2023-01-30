@@ -14,7 +14,7 @@ namespace xsk::gsc::iw7
 constexpr usize code_count = 153;
 constexpr usize func_count = 807;
 constexpr usize meth_count = 1500;
-constexpr usize token_count = 278;
+constexpr usize token_count = 342;
 constexpr u32 max_string_id = 0x13FCC;
 
 class context : public gsc::context
