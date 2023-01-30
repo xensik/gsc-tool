@@ -20,9 +20,10 @@
 %define parse.error detailed
 %define parse.lac full
 %locations
-%lex-param   { xsk::gsc::lexer& lexer }
+%lex-param   { xsk::gsc::context const* ctx_ }
+%lex-param   { xsk::gsc::preprocessor& ppr }
 %parse-param { xsk::gsc::context const* ctx_ }
-%parse-param { xsk::gsc::lexer& lexer }
+%parse-param { xsk::gsc::preprocessor& ppr }
 %parse-param { xsk::gsc::program::ptr& ast }
 %parse-param { std::uint32_t index }
 
@@ -33,30 +34,23 @@
 #pragma warning(disable:4127)
 #endif
 #include "context.hpp"
-namespace xsk::gsc { class lexer; }
+namespace xsk::gsc { class preprocessor; }
 }
 
 %code top
 {
 #include "stdinc.hpp"
 #include "parser.hpp"
-#include "lexer.hpp"
+#include "preprocessor.hpp"
 using namespace xsk::gsc;
 namespace xsk::gsc
 { 
-    auto GSClex(lexer& lexer) -> parser::symbol_type;
+    auto GSClex(context const* ctx_, preprocessor& ppr) -> parser::symbol_type;
     auto parse_switch(stmt_switch& stm) -> void;
 }
 }
 
-%token SH_DEFINE        "#define"
-%token SH_UNDEF         "#undef"
-%token SH_IFDEF         "#ifdef"
-%token SH_IFNDEF        "#ifndef"
-%token SH_IF            "#if"
-%token SH_ELIF          "#elif"
-%token SH_ELSE          "#else"
-%token SH_ENDIF         "#endif"
+%token HASH             "#"
 %token DEVBEGIN         "/#"
 %token DEVEND           "#/"
 %token INLINE           "#inline"
@@ -108,6 +102,7 @@ namespace xsk::gsc
 %token RBRACKET         "]"
 %token COMMA            ","
 %token DOT              "."
+%token ELLIPSIS         "..."
 %token DOUBLECOLON      "::"
 %token COLON            ":"
 %token SEMICOLON        ";"
@@ -289,7 +284,7 @@ program
     ;
 
 inline
-    : INLINE expr_path SEMICOLON { lexer.push_header($2->value); }
+    : INLINE expr_path SEMICOLON { ppr.push_header($2->value); }
     ;
 
 include
@@ -306,12 +301,12 @@ declaration
 
 decl_usingtree
     : USINGTREE LPAREN expr_string RPAREN SEMICOLON
-        { lexer.ban_header(@$); $$ = make_decl_usingtree(@$, std::move($3)); }
+        { ppr.ban_header(@$); $$ = make_decl_usingtree(@$, std::move($3)); }
     ;
 
 decl_function
     : expr_identifier LPAREN expr_parameters RPAREN stmt_comp
-        { lexer.ban_header(@$); $$ = make_decl_function(@$, std::move($1), std::move($3), std::move($5)); }
+        { ppr.ban_header(@$); $$ = make_decl_function(@$, std::move($1), std::move($3), std::move($5)); }
     ;
 
 stmt
@@ -352,6 +347,10 @@ stmt_list
         { $$ = std::move($1); $$->list.push_back(std::move($2)); }
     | stmt
         { $$ = make_stmt_list(@$); $$->list.push_back(std::move($1)); }
+    | stmt_list SEMICOLON
+        { $$ = std::move($1); }
+    | SEMICOLON
+        { $$ = make_stmt_list(@$); }
     ;
 
 stmt_or_dev_list
@@ -359,6 +358,10 @@ stmt_or_dev_list
         { $$ = std::move($1); $$->list.push_back(std::move($2)); }
     | stmt_or_dev
         { $$ = make_stmt_list(@$); $$->list.push_back(std::move($1)); }
+    | stmt_or_dev_list SEMICOLON
+        { $$ = std::move($1); }
+    | SEMICOLON
+        { $$ = make_stmt_list(@$); }
     ;
 
 stmt_dev
@@ -978,5 +981,208 @@ auto parse_switch(stmt_switch& stm) -> void
 
     stm.body->block = std::move(body);
 }
+
+extern std::unordered_map<token::kind, parser::token::token_kind_type> const tok_to_parser;
+extern std::unordered_map<std::string_view, parser::token::token_kind_type> const keyword_map;
+
+auto map_token(context const* ctx_, token& tok) -> parser::symbol_type
+{
+    if (tok.type == token::NAME)
+    {
+        tok.data = ctx_->make_token(tok.data);
+
+        auto const it = keyword_map.find(tok.data);
+
+        if (it != keyword_map.end())
+        {
+            if (it->second == parser::token::WAITFRAME)
+            {
+                if (ctx_->props() & props::waitframe)
+                    return parser::symbol_type(it->second, tok.pos);
+            }
+            else if (it->second == parser::token::ISDEFINED || it->second == parser::token::ISTRUE)
+            {
+                if (ctx_->props() & props::boolfuncs)
+                {
+                    parser::symbol_type(it->second, tok.pos);
+                }
+            }
+            else
+            {
+                return parser::symbol_type(it->second, tok.pos);
+            }
+        }
+
+        return parser::symbol_type(parser::token::IDENTIFIER, std::move(tok.data), tok.pos);
+    }
+    else if (tok.type == token::PATH ||tok.type == token::STRING ||tok.type == token::ISTRING || tok.type == token::INT ||tok.type == token::FLT)
+    {
+        auto it = tok_to_parser.find(tok.type);
+
+        if (it != tok_to_parser.end())
+        {
+            return parser::symbol_type(it->second, std::move(tok.data), tok.pos);
+        }
+    }
+    else
+    {
+        auto it = tok_to_parser.find(tok.type);
+
+        if (it != tok_to_parser.end())
+        {
+            return parser::symbol_type(it->second, tok.pos);
+        }
+    }
+
+    throw error(fmt::format("unmapped token! {}", (u8)tok.type));
+}
+
+auto GSClex(context const* ctx_, preprocessor& ppr) -> parser::symbol_type
+{
+    auto tok = ppr.process();
+    return map_token(ctx_, tok);
+}
+
+std::unordered_map<token::kind, parser::token::token_kind_type> const tok_to_parser
+{{
+    { token::NAME, parser::token::IDENTIFIER },
+    { token::PATH, parser::token::PATH },
+    { token::STRING, parser::token::STRING },
+    { token::ISTRING, parser::token::ISTRING },
+    { token::INT, parser::token::INTEGER },
+    { token::FLT, parser::token::FLOAT },
+    { token::PLUS, parser::token::ADD },
+    { token::MINUS, parser::token::SUB },
+    { token::STAR, parser::token::MUL },
+    { token::DIV, parser::token::DIV },
+    { token::MOD, parser::token::MOD },
+    { token::BITOR, parser::token::BITWISE_OR },
+    { token::BITAND, parser::token::BITWISE_AND },
+    { token::BITEXOR, parser::token::BITWISE_EXOR },
+    { token::ASSIGN, parser::token::ASSIGN },
+    { token::PLUSEQ, parser::token::ASSIGN_ADD },
+    { token::MINUSEQ, parser::token::ASSIGN_SUB },
+    { token::STAREQ, parser::token::ASSIGN_MUL },
+    { token::DIVEQ, parser::token::ASSIGN_DIV },
+    { token::MODEQ, parser::token::ASSIGN_MOD },
+    { token::BITOREQ, parser::token::ASSIGN_BW_OR },
+    { token::BITANDEQ, parser::token::ASSIGN_BW_AND },
+    { token::BITEXOREQ, parser::token::ASSIGN_BW_EXOR },
+    { token::SHLEQ, parser::token::ASSIGN_LSHIFT },
+    { token::SHREQ, parser::token::ASSIGN_RSHIFT },
+    { token::TILDE, parser::token::COMPLEMENT },
+    { token::BANG, parser::token::NOT },
+    { token::GT, parser::token::GREATER },
+    { token::LT, parser::token::LESS },
+    { token::GE, parser::token::GREATER_EQUAL },
+    { token::LE, parser::token::LESS_EQUAL },
+    { token::NE, parser::token::INEQUALITY },
+    { token::EQ, parser::token::EQUALITY },
+    { token::OR, parser::token::OR },
+    { token::AND, parser::token::AND },
+    { token::SHL, parser::token::LSHIFT },
+    { token::SHR, parser::token::RSHIFT },
+    { token::INC, parser::token::INCREMENT },
+    { token::DEC, parser::token::DECREMENT },
+    { token::QMARK, parser::token::QMARK },
+    { token::DOT, parser::token::DOT },
+    { token::ELLIPSIS, parser::token::ELLIPSIS },
+    { token::COMMA, parser::token::COMMA },
+    { token::COLON, parser::token::COLON },
+    { token::SEMICOLON, parser::token::SEMICOLON },
+    { token::DOUBLECOLON, parser::token::DOUBLECOLON },
+    { token::LBRACKET, parser::token::LBRACKET },
+    { token::RBRACKET, parser::token::RBRACKET },
+    { token::LBRACE, parser::token::LBRACE },
+    { token::RBRACE, parser::token::RBRACE },
+    { token::LPAREN, parser::token::LPAREN },
+    { token::RPAREN, parser::token::RPAREN },
+    { token::DEVBEGIN, parser::token::DEVBEGIN },
+    { token::DEVEND, parser::token::DEVEND },
+    { token::INLINE, parser::token::INLINE },
+    { token::INCLUDE, parser::token::INCLUDE },
+    { token::USINGTREE, parser::token::USINGTREE },
+    { token::ANIMTREE, parser::token::ANIMTREE },
+    { token::ENDON, parser::token::ENDON },
+    { token::NOTIFY, parser::token::NOTIFY },
+    { token::WAIT, parser::token::WAIT },
+    { token::WAITTILL, parser::token::WAITTILL },
+    { token::WAITTILLMATCH, parser::token::WAITTILLMATCH },
+    { token::WAITTILLFRAMEEND, parser::token::WAITTILLFRAMEEND },
+    { token::WAITFRAME, parser::token::WAITFRAME },
+    { token::IF, parser::token::IF },
+    { token::ELSE, parser::token::ELSE },
+    { token::DO, parser::token::DO },
+    { token::WHILE, parser::token::WHILE },
+    { token::FOR, parser::token::FOR },
+    { token::FOREACH, parser::token::FOREACH },
+    { token::IN, parser::token::IN },
+    { token::SWITCH, parser::token::SWITCH },
+    { token::CASE, parser::token::CASE },
+    { token::DEFAULT, parser::token::DEFAULT },
+    { token::BREAK, parser::token::BREAK },
+    { token::CONTINUE, parser::token::CONTINUE },
+    { token::RETURN, parser::token::RETURN },
+    { token::BREAKPOINT, parser::token::BREAKPOINT },
+    { token::PROFBEGIN, parser::token::PROFBEGIN },
+    { token::PROFEND, parser::token::PROFEND },
+    { token::THREAD, parser::token::THREAD },
+    { token::CHILDTHREAD, parser::token::CHILDTHREAD },
+    { token::THISTHREAD, parser::token::THISTHREAD },
+    { token::CALL, parser::token::CALL },
+    { token::TRUE, parser::token::TRUE },
+    { token::FALSE, parser::token::FALSE },
+    { token::UNDEFINED, parser::token::UNDEFINED },
+    { token::SIZE, parser::token::SIZE },
+    { token::GAME, parser::token::GAME },
+    { token::SELF, parser::token::SELF },
+    { token::ANIM, parser::token::ANIM },
+    { token::LEVEL, parser::token::LEVEL },
+    { token::ISDEFINED, parser::token::ISDEFINED },
+    { token::ISTRUE, parser::token::ISTRUE },
+    { token::EOS, parser::token::GSCEOF },
+    { token::HASH, parser::token::HASH }
+}};
+
+std::unordered_map<std::string_view, parser::token::token_kind_type> const keyword_map
+{{
+    { "endon", parser::token::ENDON },
+    { "notify", parser::token::NOTIFY },
+    { "wait", parser::token::WAIT },
+    { "waittill", parser::token::WAITTILL },
+    { "waittillmatch", parser::token::WAITTILLMATCH },
+    { "waittillframeend", parser::token::WAITTILLFRAMEEND },
+    { "waitframe", parser::token::WAITFRAME },
+    { "if", parser::token::IF },
+    { "else", parser::token::ELSE },
+    { "do", parser::token::DO },
+    { "while", parser::token::WHILE },
+    { "for", parser::token::FOR },
+    { "foreach", parser::token::FOREACH },
+    { "in", parser::token::IN },
+    { "switch", parser::token::SWITCH },
+    { "case", parser::token::CASE },
+    { "default", parser::token::DEFAULT },
+    { "break", parser::token::BREAK },
+    { "continue", parser::token::CONTINUE },
+    { "return", parser::token::RETURN },
+    { "breakpoint", parser::token::BREAKPOINT },
+    { "prof_begin", parser::token::PROFBEGIN },
+    { "prof_end", parser::token::PROFEND },
+    { "thread", parser::token::THREAD },
+    { "childthread", parser::token::CHILDTHREAD },
+    { "thisthread", parser::token::THISTHREAD },
+    { "call", parser::token::CALL },
+    { "true", parser::token::TRUE },
+    { "false", parser::token::FALSE },
+    { "undefined", parser::token::UNDEFINED },
+    { "size", parser::token::SIZE },
+    { "game", parser::token::GAME },
+    { "self", parser::token::SELF },
+    { "anim", parser::token::ANIM },
+    { "level", parser::token::LEVEL },
+    { "isdefined", parser::token::ISDEFINED },
+    { "istrue", parser::token::ISTRUE },
+}};
 
 } // namespace xsk::gsc

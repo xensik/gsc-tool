@@ -22,6 +22,10 @@ disasm_error::disasm_error(std::string const& what) : std::runtime_error(fmt::fo
 {
 }
 
+ppr_error::ppr_error(location const& loc, std::string const& what) : std::runtime_error(fmt::format("[ERROR]:preprocessor:{}: {}", loc.print(), what))
+{
+}
+
 comp_error::comp_error(location const& loc, std::string const& what) : std::runtime_error(fmt::format("[ERROR]:compiler:{}: {}", loc.print(), what))
 {
 }

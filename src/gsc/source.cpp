@@ -6,13 +6,14 @@
 #include "stdinc.hpp"
 #include "source.hpp"
 #include "context.hpp"
-#include "lexer.hpp"
+#include "preprocessor.hpp"
+#include "parser.hpp"
 #include "utils/string.hpp"
 
 namespace xsk::gsc
 {
 
-source::source(context const* ctx) : ctx_{ ctx }
+source::source(context const* ctx) : ctx_{ ctx }, indent_{ 0 }
 {
 }
 
@@ -50,7 +51,6 @@ auto source::parse_assembly(u8 const* data, usize size) -> assembly::ptr
             func->index = index;
             func->name = line.substr(4);
             func->id = ctx_->token_id(func->name);
-
         }
         else if (line.substr(0, 4) == "end:")
         {
@@ -143,8 +143,8 @@ auto source::parse_program(std::string const& name, std::vector<u8> const& data)
 auto source::parse_program(std::string const& name, u8 const* data, usize size) -> program::ptr
 {
     auto res = program::ptr{ nullptr };
-    auto lxr = lexer{ ctx_, name, reinterpret_cast<char const*>(data), size };
-    auto psr = parser{ ctx_, lxr, res, 0 };
+    auto ppr = preprocessor{ ctx_, name, reinterpret_cast<char const*>(data), size };
+    auto psr = parser{ ctx_, ppr, res, 0 };
 
     if (!psr.parse() && res != nullptr)
         return res;
@@ -341,6 +341,7 @@ auto source::dump_decl_usingtree(decl_usingtree const& dec) -> void
 
 auto source::dump_decl_function(decl_function const& dec) -> void
 {
+    indent_ = 0;
     dump_expr_identifier(*dec.name);
     fmt::format_to(std::back_inserter(buf_), "(");
     dump_expr_parameters(*dec.params);
@@ -564,6 +565,12 @@ auto source::dump_stmt_wait(stmt_wait const& stm) -> void
     if (stm.time == node::expr_float || stm.time == node::expr_integer)
     {
         fmt::format_to(std::back_inserter(buf_), "wait ");
+        dump_expr(stm.time);
+        fmt::format_to(std::back_inserter(buf_), ";");
+    }
+    else if (stm.time == node::expr_paren)
+    {
+        fmt::format_to(std::back_inserter(buf_), "wait");
         dump_expr(stm.time);
         fmt::format_to(std::back_inserter(buf_), ";");
     }

@@ -28,7 +28,6 @@ public:
     auto write(T data) -> void;
     auto write_string(std::string const& data) -> void;
     auto write_cstr(std::string const& data) -> void;
-    auto read_bytes(u32 pos, u32 count) -> std::string;
     auto is_avail() -> bool;
     auto seek(u32 size) -> void;
     auto seek_neg(u32 size) -> void;

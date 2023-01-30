@@ -31,7 +31,7 @@ namespace xsk
 {
 
 enum class encd { _, source, assembly, binary };
-enum class mode { _, assemble, disassemble, compile, decompile };
+enum class mode { _, assemble, disassemble, compile, decompile, parse };
 enum class game { _, iw5ps, iw5xb, iw6ps, iw6xb, s1ps, s1xb, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6 };
 
 std::unordered_map<std::string_view, encd> const exts =
@@ -48,6 +48,7 @@ std::unordered_map<std::string_view, mode> const modes =
     { "disasm", mode::disassemble },
     { "comp", mode::compile },
     { "decomp", mode::decompile },
+    { "parse", mode::parse },
 };
 
 std::unordered_map<std::string_view, game> const games =
@@ -359,6 +360,27 @@ auto decompile_file(game game, fs::path file, fs::path rel) -> void
     }
 }
 
+auto parse_file(game game, fs::path file, fs::path rel) -> void
+{
+    try
+    {
+        if (file.extension() != ".gsc")
+            throw std::runtime_error("expected .gsc file");
+
+        rel = fs::path{ games_rev.at(game) } / rel / file.filename();
+
+        auto data = utils::file::read(file);
+
+        auto prog = contexts[game]->source().parse_program(file.string(), data);
+        utils::file::save(fs::path{ "parsed" } / rel, contexts[game]->source().dump(*prog));
+        fmt::print("parsed {}\n", rel.generic_string());
+    }
+    catch (std::exception const& e)
+    {
+        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+    }
+}
+
 std::unordered_map<std::string, std::vector<std::uint8_t>> files;
 
 auto read_file_cb(std::string const& name) -> std::pair<buffer, buffer>
@@ -541,6 +563,7 @@ auto init(game game) -> void
     funcs[mode::disassemble] = disassemble_file;
     funcs[mode::compile] = compile_file;
     funcs[mode::decompile] = decompile_file;
+    funcs[mode::parse] = parse_file;
 
     switch (game)
     {
@@ -676,6 +699,11 @@ void decompile_file(game game, fs::path const& file, fs::path rel)
     }
 }
 
+void parse_file(game, fs::path const&, fs::path)
+{
+    std::cerr << fmt::format("not implemented for t6\n");
+}
+
 auto init_t6() -> void
 {
     if (!contexts.contains(game::t6))
@@ -691,6 +719,7 @@ auto init(game game) -> void
     funcs[mode::disassemble] = disassemble_file;
     funcs[mode::compile] = compile_file;
     funcs[mode::decompile] = decompile_file;
+    funcs[mode::parse] = parse_file;
 
     switch (game)
     {
@@ -780,7 +809,7 @@ auto parse_flags(u32 argc, char** argv, game& game, mode& mode, fs::path& path) 
 auto print_usage() -> void
 {
     std::cout << "usage: gsc-tool <mode> <game> <path>\n";
-    std::cout << "\t* modes: asm, disasm, comp, decomp\n";
+    std::cout << "\t* modes: asm, disasm, comp, decomp, parse\n";
     std::cout << "\t* games: iw5ps, iw5xb, iw6ps, iw6xb, s1ps, s1xb, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6\n";
     std::cout << "\t* paths: file or directory (recursive)\n";
     std::cin.get();
