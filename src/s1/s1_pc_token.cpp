@@ -450,7 +450,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x01B3, "gamertag" },
     { 0x01B4, "gamesplayed" },
     { 0x01B5, "gametype" },
-    { 0x01B6, "__pad1B6" },
+    { 0x01B6, "gear" },
     { 0x01B7, "gender" },
     { 0x01B8, "ghostsprestige" },
     { 0x01B9, "ghostsrank" },
