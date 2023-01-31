@@ -42,6 +42,9 @@ public:
 
     auto decompiler() -> decompiler& { return decompiler_; }
 
+    auto func_map() const -> std::unordered_map<std::string_view, u16> const& { return func_map_rev_; }
+    auto meth_map() const -> std::unordered_map<std::string_view, u16> const& { return meth_map_rev_; }
+
     auto init(gsc::build build, read_cb_type callback) -> void;
 
     auto cleanup() -> void;
