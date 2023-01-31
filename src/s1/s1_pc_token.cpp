@@ -41957,6 +41957,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0xA3F3, "zoominsound" },
     { 0xA3F4, "zoomout" },
     { 0xA3F5, "zoomslam" },
+    // TODO: label missing gsc names (0xA3F6 - 0xA452)
     { 0xA453, "character/character_civ_seoul_male_a" },
     { 0xA454, "character/character_civ_seoul_male_b" },
     { 0xA455, "character/character_civ_seoul_male_d" },
