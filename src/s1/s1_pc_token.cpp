@@ -373,7 +373,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x0168, "extracustomclassesprestige" },
     { 0x0169, "extrascore0" },
     { 0x016A, "extrascore1" },
-    { 0x016B, "eyeware" },
+    { 0x016B, "eyewear" },
     { 0x016C, "face_angle" },
     { 0x016D, "face_angle_3d" },
     { 0x016E, "face_angle_abs" },
