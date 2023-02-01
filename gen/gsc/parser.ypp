@@ -80,6 +80,9 @@ namespace xsk::gsc
 %token BREAKPOINT       "breakpoint"
 %token PROFBEGIN        "prof_begin"
 %token PROFEND          "prof_end"
+%token ASSERT           "assert"
+%token ASSERTEX         "assertex"
+%token ASSERTMSG        "assertmsg"
 %token THREAD           "thread"
 %token CHILDTHREAD      "childthread"
 %token THISTHREAD       "thisthread"
@@ -151,6 +154,7 @@ namespace xsk::gsc
 %type <include::ptr>               include
 %type <decl>                       declaration
 %type <decl_usingtree::ptr>        decl_usingtree
+%type <decl_constant::ptr>         decl_constant
 %type <decl_function::ptr>         decl_function
 %type <stmt>                       stmt
 %type <stmt>                       stmt_or_dev
@@ -183,6 +187,9 @@ namespace xsk::gsc
 %type <stmt_breakpoint::ptr>       stmt_breakpoint
 %type <stmt_prof_begin::ptr>       stmt_prof_begin
 %type <stmt_prof_end::ptr>         stmt_prof_end
+%type <stmt_assert::ptr>           stmt_assert
+%type <stmt_assertex::ptr>         stmt_assertex
+%type <stmt_assertmsg::ptr>        stmt_assertmsg
 %type <expr>                       expr
 %type <expr>                       expr_or_empty
 %type <expr>                       expr_assign
@@ -296,12 +303,21 @@ declaration
     : DEVBEGIN          { $$.as_dev_begin = make_decl_dev_begin(@$); }
     | DEVEND            { $$.as_dev_end = make_decl_dev_end(@$); }
     | decl_usingtree    { $$.as_usingtree = std::move($1); }
+    | decl_constant     { $$.as_constant = std::move($1); }
     | decl_function     { $$.as_function = std::move($1); }
     ;
 
 decl_usingtree
     : USINGTREE LPAREN expr_string RPAREN SEMICOLON
         { ppr.ban_header(@$); $$ = make_decl_usingtree(@$, std::move($3)); }
+    ;
+
+decl_constant
+    : expr_identifier ASSIGN expr SEMICOLON
+        {
+            ppr.ban_header(@$); $$ = make_decl_constant(@$, std::move($1), std::move($3)); 
+            printf("%s" , fmt::format("{}: constants deprecated, use #define instead\n", @$.print()).data());
+        }
     ;
 
 decl_function
@@ -335,6 +351,9 @@ stmt
     | stmt_breakpoint        { $$.as_breakpoint = std::move($1); }
     | stmt_prof_begin        { $$.as_prof_begin = std::move($1); }
     | stmt_prof_end          { $$.as_prof_end = std::move($1); }
+    | stmt_assert            { $$.as_assert = std::move($1); }
+    | stmt_assertex          { $$.as_assertex = std::move($1); }
+    | stmt_assertmsg         { $$.as_assertmsg = std::move($1); }
     ;
 
 stmt_or_dev
@@ -532,6 +551,21 @@ stmt_prof_begin
 stmt_prof_end
     : PROFEND LPAREN expr_arguments RPAREN SEMICOLON
         { $$ = make_stmt_prof_end(@$, std::move($3)); }
+    ;
+
+stmt_assert
+    : ASSERT LPAREN expr_arguments RPAREN SEMICOLON
+        { $$ = make_stmt_assert(@$, std::move($3)); }
+    ;
+
+stmt_assertex
+    : ASSERTEX LPAREN expr_arguments RPAREN SEMICOLON
+        { $$ = make_stmt_assertex(@$, std::move($3)); }
+    ;
+
+stmt_assertmsg
+    : ASSERTMSG LPAREN expr_arguments RPAREN SEMICOLON
+        { $$ = make_stmt_assertmsg(@$, std::move($3)); }
     ;
 
 expr
@@ -1126,6 +1160,9 @@ std::unordered_map<token::kind, parser::token::token_kind_type> const tok_to_par
     { token::BREAKPOINT, parser::token::BREAKPOINT },
     { token::PROFBEGIN, parser::token::PROFBEGIN },
     { token::PROFEND, parser::token::PROFEND },
+    { token::ASSERT, parser::token::ASSERT },
+    { token::ASSERTEX, parser::token::ASSERTEX },
+    { token::ASSERTMSG, parser::token::ASSERTMSG },
     { token::THREAD, parser::token::THREAD },
     { token::CHILDTHREAD, parser::token::CHILDTHREAD },
     { token::THISTHREAD, parser::token::THISTHREAD },
@@ -1169,6 +1206,9 @@ std::unordered_map<std::string_view, parser::token::token_kind_type> const keywo
     { "breakpoint", parser::token::BREAKPOINT },
     { "prof_begin", parser::token::PROFBEGIN },
     { "prof_end", parser::token::PROFEND },
+    { "assert", parser::token::ASSERT },
+    { "assertex", parser::token::ASSERTEX },
+    { "assertmsg", parser::token::ASSERTMSG },
     { "thread", parser::token::THREAD },
     { "childthread", parser::token::CHILDTHREAD },
     { "thisthread", parser::token::THISTHREAD },

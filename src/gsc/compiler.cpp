@@ -30,6 +30,7 @@ auto compiler::emit_program(program const& prog) -> void
 {
     assembly_ = make_assembly();
     localfuncs_.clear();
+    constants_.clear();
     developer_thread_ = false;
     animload_ = false;
     animname_ = {};
@@ -87,6 +88,9 @@ auto compiler::emit_decl(decl const& dec) -> void
         case node::decl_usingtree:
             emit_decl_usingtree(*dec.as_usingtree);
             break;
+        case node::decl_constant:
+            emit_decl_constant(*dec.as_constant);
+            break;
         case node::decl_function:
             emit_decl_function(*dec.as_function);
             break;
@@ -102,6 +106,16 @@ auto compiler::emit_decl_usingtree(decl_usingtree const& animtree) -> void
 
     animname_ = animtree.name->value;
     animload_ = false;
+}
+
+auto compiler::emit_decl_constant(decl_constant const& constant) -> void
+{
+    auto const it = constants_.find(constant.name->value);
+
+    if (it != constants_.end())
+        throw comp_error(constant.loc(), fmt::format("duplicated constant '{}'", constant.name->value));
+
+    constants_.insert({ constant.name->value, &constant.value });
 }
 
 auto compiler::emit_decl_function(decl_function const& func) -> void
@@ -217,6 +231,15 @@ auto compiler::emit_stmt(stmt const& stm, scope& scp, bool last) -> void
             break;
         case node::stmt_prof_end:
             emit_stmt_prof_end(*stm.as_prof_end, scp);
+            break;
+        case node::stmt_assert:
+            emit_stmt_assert(*stm.as_assert, scp);
+            break;
+        case node::stmt_assertex:
+            emit_stmt_assertex(*stm.as_assertex, scp);
+            break;
+        case node::stmt_assertmsg:
+            emit_stmt_assertmsg(*stm.as_assertmsg, scp);
             break;
         default:
             throw comp_error(stm.loc(), "unknown statement");
@@ -939,6 +962,21 @@ auto compiler::emit_stmt_prof_end(stmt_prof_end const&, scope&) -> void
     // TODO:
 }
 
+auto compiler::emit_stmt_assert(stmt_assert const&, scope&) -> void
+{
+    // TODO:
+}
+
+auto compiler::emit_stmt_assertex(stmt_assertex const&, scope&) -> void
+{
+    // TODO:
+}
+
+auto compiler::emit_stmt_assertmsg(stmt_assertmsg const&, scope&) -> void
+{
+    // TODO:
+}
+
 auto compiler::emit_expr(expr const& exp, scope& scp) -> void
 {
     switch (exp.kind())
@@ -1378,12 +1416,6 @@ auto compiler::emit_expr_call_pointer(expr_pointer const& exp, scope& scp, bool 
 
 auto compiler::emit_expr_call_function(expr_function const& exp, scope& scp, bool is_stmt) -> void
 {
-    if (is_stmt && ctx_->build() == build::prod)
-    {
-        auto const& name = exp.name->value;
-        if (name == "assert" || name == "assertex" || name == "assertmsg") return;
-    }
-
     auto path = std::string{};
     auto type = resolve_function_type(exp, path);
 
@@ -1869,6 +1901,13 @@ auto compiler::emit_expr_field_ref(expr_field const& exp, scope& scp, bool set) 
 
 auto compiler::emit_expr_local_ref(expr_identifier const& exp, scope& scp, bool set) -> void
 {
+    auto const it = constants_.find(exp.value);
+
+    if (it != constants_.end())
+    {
+        throw comp_error(exp.loc(), fmt::format("variable name already defined as constant '{}'", exp.value));
+    }
+
     if (set)
     {
         if (!variable_initialized(exp, scp))
@@ -1976,6 +2015,15 @@ auto compiler::emit_expr_field(expr_field const& exp, scope& scp) -> void
 
 auto compiler::emit_expr_local(expr_identifier const& exp, scope& scp) -> void
 {
+    auto const it = constants_.find(exp.value);
+
+    if (it != constants_.end())
+    {
+        // should only allow: string, loc string, number, vector
+        emit_expr(*it->second, scp);
+        return;
+    }
+
     auto index = variable_access(exp, scp);
 
     switch (index)
@@ -2333,6 +2381,9 @@ auto compiler::process_stmt(stmt const& stm, scope& scp) -> void
         case node::stmt_breakpoint:
         case node::stmt_prof_begin:
         case node::stmt_prof_end:
+        case node::stmt_assert:
+        case node::stmt_assertex:
+        case node::stmt_assertmsg:
             break;
         default:
             throw comp_error(stm.loc(), "unknown statement");

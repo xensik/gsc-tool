@@ -530,7 +530,23 @@ stmt_prof_end::stmt_prof_end(location const& loc, expr_arguments::ptr args) : no
 {
 }
 
+stmt_assert::stmt_assert(location const& loc, expr_arguments::ptr args) : node{ type::stmt_assert, loc }, args{ std::move(args) }
+{
+}
+
+stmt_assertex::stmt_assertex(location const& loc, expr_arguments::ptr args) : node{ type::stmt_assertex, loc }, args{ std::move(args) }
+{
+}
+
+stmt_assertmsg::stmt_assertmsg(location const& loc, expr_arguments::ptr args) : node{ type::stmt_assertmsg, loc }, args{ std::move(args) }
+{
+}
+
 decl_function::decl_function(location const& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_comp::ptr body) : node{ type::decl_function, loc }, name{ std::move(name) }, params{ std::move(params) }, body{ std::move(body) }
+{
+}
+
+decl_constant::decl_constant(location const& loc, expr_identifier::ptr name, expr value) : node{ type::decl_constant, loc }, name{ std::move(name) }, value{ std::move(value) }
 {
 }
 
@@ -985,6 +1001,9 @@ stmt::~stmt()
         case node::stmt_breakpoint: as_breakpoint.~unique_ptr(); return;
         case node::stmt_prof_begin: as_prof_begin.~unique_ptr(); return;
         case node::stmt_prof_end: as_prof_end.~unique_ptr(); return;
+        case node::stmt_assert: as_assert.~unique_ptr(); return;
+        case node::stmt_assertex: as_assertex.~unique_ptr(); return;
+        case node::stmt_assertmsg: as_assertmsg.~unique_ptr(); return;
         case node::asm_jmp: as_jump.~unique_ptr(); return;
         case node::asm_jmp_back: as_jump_back.~unique_ptr(); return;
         case node::asm_jmp_cond: as_cond.~unique_ptr(); return;
@@ -1047,6 +1066,7 @@ decl::~decl()
         case node::decl_dev_begin: as_dev_begin.~unique_ptr(); return;
         case node::decl_dev_end: as_dev_end.~unique_ptr(); return;
         case node::decl_function: as_function.~unique_ptr(); return;
+        case node::decl_constant: as_constant.~unique_ptr(); return;
         case node::decl_usingtree: as_usingtree.~unique_ptr(); return;
         default: return;
     }

@@ -37,6 +37,7 @@ private:
     auto dump_decl_dev_begin(decl_dev_begin const& dec) -> void;
     auto dump_decl_dev_end(decl_dev_end const& dec) -> void;
     auto dump_decl_usingtree(decl_usingtree const& dec) -> void;
+    auto dump_decl_constant(decl_constant const& dec) -> void;
     auto dump_decl_function(decl_function const& dec) -> void;
     auto dump_stmt(stmt const& stm) -> void;
     auto dump_stmt_list(stmt_list const& stm) -> void;
@@ -67,6 +68,9 @@ private:
     auto dump_stmt_breakpoint(stmt_breakpoint const& stm) -> void;
     auto dump_stmt_prof_begin(stmt_prof_begin const& stm) -> void;
     auto dump_stmt_prof_end(stmt_prof_end const& stm) -> void;
+    auto dump_stmt_assert(stmt_assert const& stm) -> void;
+    auto dump_stmt_assertex(stmt_assertex const& stm) -> void;
+    auto dump_stmt_assertmsg(stmt_assertmsg const& stm) -> void;
     auto dump_expr(expr const& exp) -> void;
     auto dump_expr_increment(expr_increment const& exp) -> void;
     auto dump_expr_decrement(expr_decrement const& exp) -> void;
