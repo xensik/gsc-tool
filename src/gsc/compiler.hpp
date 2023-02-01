@@ -17,6 +17,7 @@ class compiler
     function::ptr function_;
     std::vector<std::string> stackframe_;
     std::vector<std::string> localfuncs_;
+    std::unordered_map<std::string, expr const*> constants_;
     std::unordered_map<node*, scope::ptr> scopes_;
     std::vector<scope*> break_blks_;
     std::vector<scope*> continue_blks_;
@@ -37,6 +38,7 @@ private:
     auto emit_program(program const& prog) -> void;
     auto emit_decl(decl const& dec) -> void;
     auto emit_decl_usingtree(decl_usingtree const& animtree) -> void;
+    auto emit_decl_constant(decl_constant const& constant) -> void;
     auto emit_decl_function(decl_function const& func) -> void;
     auto emit_stmt(stmt const& stm, scope& scp, bool last) -> void;
     auto emit_stmt_list(stmt_list const& stm, scope& scp, bool last) -> void;
@@ -67,6 +69,9 @@ private:
     auto emit_stmt_breakpoint(stmt_breakpoint const& stm, scope& scp) -> void;
     auto emit_stmt_prof_begin(stmt_prof_begin const& stm, scope& scp) -> void;
     auto emit_stmt_prof_end(stmt_prof_end const& stm, scope& scp) -> void;
+    auto emit_stmt_assert(stmt_assert const& stm, scope& scp) -> void;
+    auto emit_stmt_assertex(stmt_assertex const& stm, scope& scp) -> void;
+    auto emit_stmt_assertmsg(stmt_assertmsg const& stm, scope& scp) -> void;
     auto emit_expr(expr const& exp, scope& scp) -> void;
     auto emit_expr_assign(expr_assign const& exp, scope& scp) -> void;
     auto emit_expr_clear(expr const& exp, scope& scp) -> void;

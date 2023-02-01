@@ -111,7 +111,11 @@ struct node
         stmt_breakpoint,
         stmt_prof_begin,
         stmt_prof_end,
+        stmt_assert,
+        stmt_assertex,
+        stmt_assertmsg,
         decl_function,
+        decl_constant,
         decl_usingtree,
         decl_dev_begin,
         decl_dev_end,
@@ -256,7 +260,11 @@ struct stmt_return;
 struct stmt_breakpoint;
 struct stmt_prof_begin;
 struct stmt_prof_end;
+struct stmt_assert;
+struct stmt_assertex;
+struct stmt_assertmsg;
 struct decl_function;
+struct decl_constant;
 struct decl_usingtree;
 struct decl_dev_begin;
 struct decl_dev_end;
@@ -419,6 +427,9 @@ union stmt
     std::unique_ptr<stmt_breakpoint> as_breakpoint;
     std::unique_ptr<stmt_prof_begin> as_prof_begin;
     std::unique_ptr<stmt_prof_end> as_prof_end;
+    std::unique_ptr<stmt_assert> as_assert;
+    std::unique_ptr<stmt_assertex> as_assertex;
+    std::unique_ptr<stmt_assertmsg> as_assertmsg;
     std::unique_ptr<asm_jmp_cond> as_cond;
     std::unique_ptr<asm_jmp> as_jump;
     std::unique_ptr<asm_jmp_back> as_jump_back;
@@ -448,6 +459,7 @@ union decl
     std::unique_ptr<decl_dev_begin> as_dev_begin;
     std::unique_ptr<decl_dev_end> as_dev_end;
     std::unique_ptr<decl_usingtree> as_usingtree;
+    std::unique_ptr<decl_constant> as_constant;
     std::unique_ptr<decl_function> as_function;
 
     decl();
@@ -1323,6 +1335,33 @@ struct stmt_prof_end : public node
     stmt_prof_end(location const& loc, expr_arguments::ptr args);
 };
 
+struct stmt_assert : public node
+{
+    using ptr = std::unique_ptr<stmt_assert>;
+
+    expr_arguments::ptr args;
+
+    stmt_assert(location const& loc, expr_arguments::ptr args);
+};
+
+struct stmt_assertex : public node
+{
+    using ptr = std::unique_ptr<stmt_assertex>;
+
+    expr_arguments::ptr args;
+
+    stmt_assertex(location const& loc, expr_arguments::ptr args);
+};
+
+struct stmt_assertmsg : public node
+{
+    using ptr = std::unique_ptr<stmt_assertmsg>;
+
+    expr_arguments::ptr args;
+
+    stmt_assertmsg(location const& loc, expr_arguments::ptr args);
+};
+
 struct decl_function : public node
 {
     using ptr = std::unique_ptr<decl_function>;
@@ -1332,6 +1371,16 @@ struct decl_function : public node
     stmt_comp::ptr body;
 
     decl_function(location const& loc, expr_identifier::ptr name, expr_parameters::ptr params, stmt_comp::ptr body);
+};
+
+struct decl_constant : public node
+{
+    using ptr = std::unique_ptr<decl_constant>;
+
+    expr_identifier::ptr name;
+    expr value;
+
+    decl_constant(location const& loc, expr_identifier::ptr name, expr value);
 };
 
 struct decl_usingtree : public node
@@ -1599,7 +1648,11 @@ XSK_GSC_MAKE_GENERIC(stmt_return)
 XSK_GSC_MAKE_GENERIC(stmt_breakpoint)
 XSK_GSC_MAKE_GENERIC(stmt_prof_begin)
 XSK_GSC_MAKE_GENERIC(stmt_prof_end)
+XSK_GSC_MAKE_GENERIC(stmt_assert)
+XSK_GSC_MAKE_GENERIC(stmt_assertex)
+XSK_GSC_MAKE_GENERIC(stmt_assertmsg)
 XSK_GSC_MAKE_GENERIC(decl_function)
+XSK_GSC_MAKE_GENERIC(decl_constant)
 XSK_GSC_MAKE_GENERIC(decl_usingtree)
 XSK_GSC_MAKE_GENERIC(decl_dev_begin)
 XSK_GSC_MAKE_GENERIC(decl_dev_end)

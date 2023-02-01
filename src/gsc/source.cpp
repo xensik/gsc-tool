@@ -314,6 +314,9 @@ auto source::dump_decl(decl const& dec) -> void
         case node::decl_usingtree:
             dump_decl_usingtree(*dec.as_usingtree);
             break;
+        case node::decl_constant:
+            dump_decl_constant(*dec.as_constant);
+            break;
         case node::decl_function:
             dump_decl_function(*dec.as_function);
             break;
@@ -337,6 +340,14 @@ auto source::dump_decl_usingtree(decl_usingtree const& dec) -> void
     fmt::format_to(std::back_inserter(buf_), "#using_animtree(");
     dump_expr_string(*dec.name);
     fmt::format_to(std::back_inserter(buf_), ");\n");
+}
+
+auto source::dump_decl_constant(decl_constant const& dec) -> void
+{
+    dump_expr_identifier(*dec.name);
+    fmt::format_to(std::back_inserter(buf_), " = ");
+    dump_expr(dec.value);
+    fmt::format_to(std::back_inserter(buf_), ";\n");
 }
 
 auto source::dump_decl_function(decl_function const& dec) -> void
@@ -437,6 +448,15 @@ auto source::dump_stmt(stmt const& stm) -> void
             break;
         case node::stmt_prof_end:
             dump_stmt_prof_end(*stm.as_prof_end);
+            break;
+        case node::stmt_assert:
+            dump_stmt_assert(*stm.as_assert);
+            break;
+        case node::stmt_assertex:
+            dump_stmt_assertex(*stm.as_assertex);
+            break;
+        case node::stmt_assertmsg:
+            dump_stmt_assertmsg(*stm.as_assertmsg);
             break;
         case node::asm_jmp:
             dump_asm_jmp(*stm.as_jump);
@@ -868,14 +888,35 @@ auto source::dump_stmt_prof_begin(stmt_prof_begin const& stm) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "prof_begin(");
     dump_expr_arguments(*stm.args);
-    fmt::format_to(std::back_inserter(buf_), ")");
+    fmt::format_to(std::back_inserter(buf_), ");");
 }
 
 auto source::dump_stmt_prof_end(stmt_prof_end const& stm) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "prof_end(");
     dump_expr_arguments(*stm.args);
-    fmt::format_to(std::back_inserter(buf_), ")");
+    fmt::format_to(std::back_inserter(buf_), ");");
+}
+
+auto source::dump_stmt_assert(stmt_assert const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "assert(");
+    dump_expr_arguments(*stm.args);
+    fmt::format_to(std::back_inserter(buf_), ");");
+}
+
+auto source::dump_stmt_assertex(stmt_assertex const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "assertex(");
+    dump_expr_arguments(*stm.args);
+    fmt::format_to(std::back_inserter(buf_), ");");
+}
+
+auto source::dump_stmt_assertmsg(stmt_assertmsg const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "assertmsg(");
+    dump_expr_arguments(*stm.args);
+    fmt::format_to(std::back_inserter(buf_), ");");
 }
 
 auto source::dump_expr(expr const& exp) -> void
