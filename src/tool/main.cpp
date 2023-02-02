@@ -31,7 +31,7 @@ namespace xsk
 {
 
 enum class encd { _, source, assembly, binary };
-enum class mode { _, assemble, disassemble, compile, decompile, parse };
+enum class mode { _, assemble, disassemble, compile, decompile, parse, rename };
 enum class game { _, iw5ps, iw5xb, iw6ps, iw6xb, s1ps, s1xb, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6 };
 
 std::unordered_map<std::string_view, encd> const exts =
@@ -49,6 +49,7 @@ std::unordered_map<std::string_view, mode> const modes =
     { "comp", mode::compile },
     { "decomp", mode::decompile },
     { "parse", mode::parse },
+    { "rename", mode::rename },
 };
 
 std::unordered_map<std::string_view, game> const games =
@@ -381,6 +382,61 @@ auto parse_file(game game, fs::path file, fs::path rel) -> void
     }
 }
 
+auto rename_file(game game, fs::path file, fs::path rel) -> void
+{
+    try
+    {
+        if (file.extension() != ".cgsc" && file.extension() != ".gsc" && file.extension() != ".csc" && file.extension() != ".gscbin" && file.extension() != ".cscbin")
+            return;
+
+        auto ext = file.extension();
+        auto zt = file.extension() == ".cgsc";
+
+        if (game == game::iw9)
+        {
+            return;
+        }
+        else
+        {
+            auto name = file.filename().replace_extension().string();
+
+            if (utils::string::is_number(name))
+            {
+                name = contexts[game]->token_name(std::stoul(name));
+            }
+            else if (utils::string::is_hex_number(name))
+            {
+                name = contexts[game]->token_name(std::stoul(name, nullptr, 16));
+            }
+            
+            if (!name.starts_with("_id_"))
+            {
+                rel = fs::path{ games_rev.at(game) } / rel / name;
+                rel.replace_extension(ext);
+            }
+            else
+            {
+                rel = fs::path{ games_rev.at(game) } / rel / file.filename();
+            }
+        }
+
+        auto data = utils::file::read(file);
+        utils::file::save(fs::path{ "renamed" } / rel, data);
+        fmt::print("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
+
+        if (zt)
+        {
+            auto stack = utils::file::read(file.replace_extension(".cgsc.stack"));
+            utils::file::save(fs::path{ "renamed" } / rel.replace_extension(".cgsc.stack"), stack);
+            fmt::print("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
+        }
+    }
+    catch (std::exception const& e)
+    {
+        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+    }
+}
+
 std::unordered_map<std::string, std::vector<std::uint8_t>> files;
 
 auto read_file_cb(std::string const& name) -> std::pair<buffer, buffer>
@@ -564,6 +620,7 @@ auto init(game game) -> void
     funcs[mode::compile] = compile_file;
     funcs[mode::decompile] = decompile_file;
     funcs[mode::parse] = parse_file;
+    funcs[mode::rename] = rename_file;
 
     switch (game)
     {
@@ -704,6 +761,11 @@ void parse_file(game, fs::path const&, fs::path)
     std::cerr << fmt::format("not implemented for t6\n");
 }
 
+void rename_file(game, fs::path const&, fs::path)
+{
+    std::cerr << fmt::format("not implemented for t6\n");
+}
+
 auto init_t6() -> void
 {
     if (!contexts.contains(game::t6))
@@ -720,6 +782,7 @@ auto init(game game) -> void
     funcs[mode::compile] = compile_file;
     funcs[mode::decompile] = decompile_file;
     funcs[mode::parse] = parse_file;
+    funcs[mode::rename] = rename_file;
 
     switch (game)
     {
@@ -739,7 +802,7 @@ auto execute(mode mode, game game, fs::path const& path) -> void
     {
         for (auto const& entry : fs::recursive_directory_iterator(path))
         {
-            if (entry.is_regular_file())
+            if (entry.is_regular_file() && entry.path().extension() != ".stack")
             {
                 auto rel = fs::relative(entry, path).remove_filename();
 
