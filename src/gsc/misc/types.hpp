@@ -10,6 +10,11 @@
 #include "assembly.hpp"
 #include "location.hpp"
 #include "exception.hpp"
+#include "lookahead.hpp"
+#include "directive.hpp"
+#include "space.hpp"
+#include "token.hpp"
+#include "define.hpp"
 #include "ast.hpp"
 
 namespace xsk::gsc

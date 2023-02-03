@@ -26,6 +26,12 @@ public:
     disasm_error(std::string const& what);
 };
 
+class ppr_error : public std::runtime_error
+{
+public:
+    ppr_error(location const& loc, std::string const& what);
+};
+
 class comp_error : public std::runtime_error
 {
 public:

@@ -149,6 +149,8 @@ user*.bat
 # VScode
 .vscode/
 
+renamed/
+parsed/
 compiled/
 decompiled/
 assembled/

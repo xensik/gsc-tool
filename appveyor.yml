@@ -11,7 +11,7 @@ build:
   verbosity: minimal
 test: false
 artifacts:
-- path: build/bin/release/gsc-tool.exe
+- path: build/bin/x64/release/gsc-tool.exe
 deploy:
 - provider: GitHub
   auth_token:
