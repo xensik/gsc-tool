@@ -334,7 +334,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x142, "ambientstop" },
     { 0x143, "precachemodel" },
     { 0x144, "precacheshellshock" },
-    { 0x145, "precacheshellshock" },
+    { 0x145, "precacheitem" },
     { 0x146, "precacheshader" },
     { 0x147, "precachestring" },
     { 0x148, "precachemenu" },
