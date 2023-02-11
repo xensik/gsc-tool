@@ -29,6 +29,7 @@ writer::~writer()
 auto writer::clear() -> void
 {
     std::memset(data_, 0, size_);
+    pos_ = 0;
 }
 
 template<> auto writer::write(i8 data) -> void
