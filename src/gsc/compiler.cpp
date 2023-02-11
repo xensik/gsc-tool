@@ -123,6 +123,7 @@ auto compiler::emit_decl_function(decl_function const& func) -> void
     label_idx_ = 0;
     can_break_ = false;
     can_continue_ = false;
+    scopes_.clear();
     stackframe_.clear();
     break_blks_.clear();
     continue_blks_.clear();
