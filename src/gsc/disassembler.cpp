@@ -313,7 +313,7 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
             disassemble_formal_params(inst);
             break;
         default:
-            throw disasm_error(fmt::format("unhandled opcode {} at index {:04X}", opcode_name(inst.opcode), inst.index));
+            throw disasm_error(fmt::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
 }
 

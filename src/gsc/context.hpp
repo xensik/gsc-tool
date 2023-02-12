@@ -18,6 +18,8 @@ namespace xsk::gsc
 class context
 {
 public:
+    using fs_callback = std::function<std::pair<buffer, std::vector<u8>>(std::string const&)>;
+
     context(props props, engine engine, endian endian, system system, u32 str_count);
 
     auto props() const -> props { return props_; }
@@ -45,13 +47,19 @@ public:
     auto func_map() const -> std::unordered_map<std::string_view, u16> const& { return func_map_rev_; }
     auto meth_map() const -> std::unordered_map<std::string_view, u16> const& { return meth_map_rev_; }
 
-    auto init(gsc::build build, read_cb_type callback) -> void;
+    auto init(gsc::build build, fs_callback callback) -> void;
 
     auto cleanup() -> void;
+
+    auto engine_name() const -> std::string_view;
 
     auto opcode_size(opcode op) const -> u32;
 
     auto opcode_id(opcode op) const -> u8;
+
+    auto opcode_name(opcode op) const -> std::string;
+
+    auto opcode_enum(std::string const& name) const -> opcode;
 
     auto opcode_enum(u8 id) const -> opcode;
 
@@ -85,9 +93,7 @@ public:
 
     auto make_token(std::string_view str) const -> std::string;
 
-    auto header_file_data(std::string const& name) const -> std::tuple<std::string const*, char const*, usize>;
-
-    auto fs_to_game_path(std::filesystem::path const& file) const -> std::filesystem::path;
+    auto load_header(std::string const& name) -> std::tuple<std::string const*, char const*, usize>;
 
     auto load_include(std::string const& name) -> bool;
 
@@ -107,6 +113,9 @@ protected:
     gsc::disassembler disassembler_;
     gsc::compiler compiler_;
     gsc::decompiler decompiler_;
+    fs_callback fs_callback_;
+    std::unordered_map<opcode, std::string_view> opcode_map_;
+    std::unordered_map<std::string_view, opcode> opcode_map_rev_;
     std::unordered_map<u8, opcode> code_map_;
     std::unordered_map<opcode, u8> code_map_rev_;
     std::unordered_map<u16, std::string_view> func_map_;
@@ -117,6 +126,11 @@ protected:
     std::unordered_map<std::string_view, u32> token_map_rev_;
     std::unordered_map<u64, std::string_view> path_map_;
     std::unordered_map<u64, std::string_view> hash_map_;
+    std::unordered_map<std::string, buffer> header_files_;
+    std::unordered_set<std::string_view> includes_;
+    std::unordered_map<std::string, std::vector<std::string>> include_cache_;
+    std::unordered_set<std::string> new_func_map_;
+    std::unordered_set<std::string> new_meth_map_;
 };
 
 } // namespace xsk::gsc

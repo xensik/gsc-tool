@@ -9,30 +9,57 @@
 namespace xsk::gsc
 {
 
-read_cb_type read_callback = nullptr;
-std::unordered_map<std::string, buffer> header_files;
-std::set<std::string_view> includes;
-std::unordered_map<std::string, std::vector<std::string>> include_cache;
-std::set<std::string> new_func_map;
-std::set<std::string> new_meth_map;
+extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcode_list;
 
 context::context(gsc::props props, gsc::engine engine, gsc::endian endian, gsc::system system, u32 str_count)
     : props_{ props }, engine_{ engine }, endian_{ endian }, system_{ system }, str_count_{ str_count },
       source_{ this }, assembler_{ this }, disassembler_{ this }, compiler_{ this }, decompiler_{ this }
 {
+    opcode_map_.reserve(opcode_list.size());
+    opcode_map_rev_.reserve(opcode_list.size());
+
+    for (auto const& entry : opcode_list)
+    {
+        opcode_map_.insert({ entry.first, entry.second });
+        opcode_map_rev_.insert({ entry.second, entry.first });
+    }
 }
 
-auto context::init(gsc::build build, read_cb_type callback) -> void
+auto context::init(gsc::build build, fs_callback callback) -> void
 {
     build_ = build;
-    read_callback = callback;
+    fs_callback_ = callback;
 }
 
 auto context::cleanup() -> void
 {
-    header_files.clear();
-    include_cache.clear();
-    includes.clear();
+    source_ = gsc::source{ this };
+    assembler_ = gsc::assembler{ this };
+    disassembler_ = gsc::disassembler{ this };
+    compiler_ = gsc::compiler{ this };
+    decompiler_ = gsc::decompiler{ this };
+    header_files_.clear();
+    include_cache_.clear();
+    includes_.clear();
+}
+
+auto context::engine_name() const -> std::string_view
+{
+    switch (engine_)
+    {
+        case engine::iw5: return "IW5";
+        case engine::iw6: return "IW6";
+        case engine::iw7: return "IW7";
+        case engine::iw8: return "IW8";
+        case engine::iw9: return "IW9";
+        case engine::s1: return "S1";
+        case engine::s2: return "S2";
+        case engine::s4: return "S4";
+        case engine::h1: return "H1";
+        case engine::h2: return "H2";
+    }
+
+    return "";
 }
 
 auto context::opcode_size(opcode op) const -> u32
@@ -273,6 +300,30 @@ auto context::opcode_id(opcode op) const -> u8
     throw error(fmt::format("couldn't resolve opcode id for '{}'", opcode_name(op)));
 }
 
+auto context::opcode_name(opcode op) const -> std::string
+{
+    auto const itr = opcode_map_.find(op);
+
+    if (itr != opcode_map_.end())
+    {
+        return std::string{ itr->second };
+    }
+
+    throw std::runtime_error(fmt::format("couldn't resolve opcode string for enum '{}'", static_cast<std::underlying_type_t<opcode>>(op)));
+}
+
+auto context::opcode_enum(std::string const& name) const -> opcode
+{
+    auto const itr = opcode_map_rev_.find(name);
+
+    if (itr != opcode_map_rev_.end())
+    {
+        return itr->second;
+    }
+
+    throw std::runtime_error(fmt::format("couldn't resolve opcode enum for name '{}'", name));
+}
+
 auto context::opcode_enum(u8 id) const -> opcode
 {
     auto const itr = code_map_.find(id);
@@ -337,16 +388,16 @@ auto context::func_add(std::string const& name, u16 id) -> void
         throw error(fmt::format("builtin function '{}' already defined", name));
     }
 
-    auto const str = new_func_map.find(name);
+    auto const str = new_func_map_.find(name);
 
-    if (str != new_func_map.end())
+    if (str != new_func_map_.end())
     {
         func_map_.insert({ id, *str });
         func_map_rev_.insert({ *str, id });
     }
     else
     {
-        auto ins = new_func_map.insert(name);
+        auto ins = new_func_map_.insert(name);
 
         if (ins.second)
         {
@@ -408,16 +459,16 @@ auto context::meth_add(std::string const& name, u16 id) -> void
         throw error(fmt::format("builtin method '{}' already defined", name));
     }
 
-    auto const str = new_meth_map.find(name);
+    auto const str = new_meth_map_.find(name);
 
-    if (str != new_meth_map.end())
+    if (str != new_meth_map_.end())
     {
         meth_map_.insert({ id, *str });
         meth_map_rev_.insert({ *str, id });
     }
     else
     {
-        auto ins = new_meth_map.insert(name);
+        auto ins = new_meth_map_.insert(name);
 
         if (ins.second)
         {
@@ -552,20 +603,21 @@ auto context::make_token(std::string_view str) const -> std::string
     return data;
 }
 
-auto context::header_file_data(std::string const& name) const -> std::tuple<std::string const*, char const*, usize>
+auto context::load_header(std::string const& name) -> std::tuple<std::string const*, char const*, usize>
 {
-    auto const itr = header_files.find(name);
+    // todo: remove cache to prevent use after free if files are read from fs by the game
+    auto const itr = header_files_.find(name);
 
-    if (itr != header_files.end())
+    if (itr != header_files_.end())
     {
         return { &itr->first, reinterpret_cast<char const*>(itr->second.data), itr->second.size };
     }
 
-    auto data = read_callback(name);
+    auto data = fs_callback_(name);
 
-    if (data.first.data != nullptr && data.first.size != 0 && data.second.data == nullptr && data.second.size == 0)
+    if (data.first.data != nullptr && data.first.size != 0 && data.second.size() == 0)
     {
-        auto const res = header_files.insert({ name, data.first });
+        auto const res = header_files_.insert({ name, data.first });
 
         if (res.second)
         {
@@ -580,22 +632,22 @@ auto context::load_include(std::string const& name) -> bool
 {
     try
     { 
-        if (includes.contains(name))
+        if (includes_.contains(name))
         {
             return false;
         }
 
-        includes.insert(name);
+        includes_.insert(name);
 
-        if (include_cache.contains(name))
+        if (include_cache_.contains(name))
             return true;
 
-        auto file = read_callback(name);
+        auto file = fs_callback_(name);
 
         if (file.first.data == nullptr && file.first.size == 0)
             throw std::runtime_error("empty file");
 
-        if (file.second.data == nullptr && file.second.size == 0)
+        if (file.second.size() == 0)
         {
             // process RawFile
             auto prog = source_.parse_program(name, file.first);
@@ -610,12 +662,12 @@ auto context::load_include(std::string const& name) -> bool
                 }
             }
 
-            include_cache.insert({ name, std::move(funcs) });
+            include_cache_.insert({ name, std::move(funcs) });
         }
         else
         {
             // process ScriptFile
-            auto data = disassembler_.disassemble(file.first, file.second);
+            auto data = disassembler_.disassemble(file.first, buffer{ file.second.data(), file.second.size() });
 
             auto funcs = std::vector<std::string>{};
 
@@ -624,7 +676,7 @@ auto context::load_include(std::string const& name) -> bool
                 funcs.push_back(fun->name);
             }
 
-            include_cache.insert({ name, std::move(funcs) });
+            include_cache_.insert({ name, std::move(funcs) });
         }
 
         return true;
@@ -637,14 +689,14 @@ auto context::load_include(std::string const& name) -> bool
 
 auto context::init_includes() -> void
 {
-    includes.clear();
+    includes_.clear();
 }
 
 auto context::is_includecall(std::string const& name, std::string& path) -> bool
 {
-    for (auto const& inc : includes)
+    for (auto const& inc : includes_)
     {
-        for (auto const& fun : include_cache.at(std::string{ inc }))
+        for (auto const& fun : include_cache_.at(std::string{ inc }))
         {
             if (name == fun)
             {
@@ -656,5 +708,214 @@ auto context::is_includecall(std::string const& name, std::string& path) -> bool
 
     return false;
 }
+
+extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcode_list
+{{
+    { opcode::vm_invalid, "vm_invalid" },
+    { opcode::OP_CastFieldObject, "OP_CastFieldObject" },
+    { opcode::OP_SetLocalVariableFieldCached, "OP_SetLocalVariableFieldCached" },
+    { opcode::OP_plus, "OP_plus" },
+    { opcode::OP_RemoveLocalVariables, "OP_RemoveLocalVariables" },
+    { opcode::OP_EvalSelfFieldVariableRef, "OP_EvalSelfFieldVariableRef" },
+    { opcode::OP_ScriptFarMethodChildThreadCall, "OP_ScriptFarMethodChildThreadCall" },
+    { opcode::OP_GetGameRef, "OP_GetGameRef" },
+    { opcode::OP_EvalAnimFieldVariable, "OP_EvalAnimFieldVariable" },
+    { opcode::OP_EvalLevelFieldVariableRef, "OP_EvalLevelFieldVariableRef" },
+    { opcode::OP_GetThisthread, "OP_GetThisthread" },
+    { opcode::OP_greater, "OP_greater" },
+    { opcode::OP_waittillmatch, "OP_waittillmatch" },
+    { opcode::OP_shift_right, "OP_shift_right" },
+    { opcode::OP_dec, "OP_dec" },
+    { opcode::OP_JumpOnTrue, "OP_JumpOnTrue" },
+    { opcode::OP_bit_or, "OP_bit_or" },
+    { opcode::OP_equality, "OP_equality" },
+    { opcode::OP_ClearLocalVariableFieldCached0, "OP_ClearLocalVariableFieldCached0" },
+    { opcode::OP_notify, "OP_notify" },
+    { opcode::OP_GetVector, "OP_GetVector" },
+    { opcode::OP_ScriptMethodChildThreadCallPointer, "OP_ScriptMethodChildThreadCallPointer" },
+    { opcode::OP_PreScriptCall, "OP_PreScriptCall" },
+    { opcode::OP_GetByte, "OP_GetByte" },
+    { opcode::OP_ScriptFarThreadCall, "OP_ScriptFarThreadCall" },
+    { opcode::OP_SetSelfFieldVariableField, "OP_SetSelfFieldVariableField" },
+    { opcode::OP_JumpOnFalseExpr, "OP_JumpOnFalseExpr" },
+    { opcode::OP_GetUndefined, "OP_GetUndefined" },
+    { opcode::OP_jumpback, "OP_jumpback" },
+    { opcode::OP_JumpOnTrueExpr, "OP_JumpOnTrueExpr" },
+    { opcode::OP_CallBuiltin0, "OP_CallBuiltin0" },
+    { opcode::OP_CallBuiltin1, "OP_CallBuiltin1" },
+    { opcode::OP_CallBuiltin2, "OP_CallBuiltin2" },
+    { opcode::OP_CallBuiltin3, "OP_CallBuiltin3" },
+    { opcode::OP_CallBuiltin4, "OP_CallBuiltin4" },
+    { opcode::OP_CallBuiltin5, "OP_CallBuiltin5" },
+    { opcode::OP_CallBuiltin, "OP_CallBuiltin" },
+    { opcode::OP_SetLocalVariableFieldCached0, "OP_SetLocalVariableFieldCached0" },
+    { opcode::OP_ClearFieldVariable, "OP_ClearFieldVariable" },
+    { opcode::OP_GetLevel, "OP_GetLevel" },
+    { opcode::OP_size, "OP_size" },
+    { opcode::OP_SafeSetWaittillVariableFieldCached, "OP_SafeSetWaittillVariableFieldCached" },
+    { opcode::OP_ScriptLocalMethodThreadCall, "OP_ScriptLocalMethodThreadCall" },
+    { opcode::OP_AddArray, "OP_AddArray" },
+    { opcode::OP_endon, "OP_endon" },
+    { opcode::OP_EvalFieldVariable, "OP_EvalFieldVariable" },
+    { opcode::OP_shift_left, "OP_shift_left" },
+    { opcode::OP_EvalLocalArrayRefCached0, "OP_EvalLocalArrayRefCached0" },
+    { opcode::OP_Return, "OP_Return" },
+    { opcode::OP_CreateLocalVariable, "OP_CreateLocalVariable" },
+    { opcode::OP_SafeSetVariableFieldCached0, "OP_SafeSetVariableFieldCached0" },
+    { opcode::OP_GetBuiltinFunction, "OP_GetBuiltinFunction" },
+    { opcode::OP_ScriptLocalMethodCall, "OP_ScriptLocalMethodCall" },
+    { opcode::OP_CallBuiltinMethodPointer, "OP_CallBuiltinMethodPointer" },
+    { opcode::OP_ScriptLocalChildThreadCall, "OP_ScriptLocalChildThreadCall" },
+    { opcode::OP_GetSelfObject, "OP_GetSelfObject" },
+    { opcode::OP_GetGame, "OP_GetGame" },
+    { opcode::OP_SetLevelFieldVariableField, "OP_SetLevelFieldVariableField" },
+    { opcode::OP_EvalArray, "OP_EvalArray" },
+    { opcode::OP_GetSelf, "OP_GetSelf" },
+    { opcode::OP_End, "OP_End" },
+    { opcode::OP_EvalSelfFieldVariable, "OP_EvalSelfFieldVariable" },
+    { opcode::OP_less_equal, "OP_less_equal" },
+    { opcode::OP_EvalLocalVariableCached0, "OP_EvalLocalVariableCached0" },
+    { opcode::OP_EvalLocalVariableCached1, "OP_EvalLocalVariableCached1" },
+    { opcode::OP_EvalLocalVariableCached2, "OP_EvalLocalVariableCached2" },
+    { opcode::OP_EvalLocalVariableCached3, "OP_EvalLocalVariableCached3" },
+    { opcode::OP_EvalLocalVariableCached4, "OP_EvalLocalVariableCached4" },
+    { opcode::OP_EvalLocalVariableCached5, "OP_EvalLocalVariableCached5" },
+    { opcode::OP_EvalLocalVariableCached, "OP_EvalLocalVariableCached" },
+    { opcode::OP_EvalNewLocalArrayRefCached0, "OP_EvalNewLocalArrayRefCached0" },
+    { opcode::OP_ScriptChildThreadCallPointer, "OP_ScriptChildThreadCallPointer" },
+    { opcode::OP_EvalLocalVariableObjectCached, "OP_EvalLocalVariableObjectCached" },
+    { opcode::OP_ScriptLocalThreadCall, "OP_ScriptLocalThreadCall" },
+    { opcode::OP_GetInteger, "OP_GetInteger" },
+    { opcode::OP_ScriptMethodCallPointer, "OP_ScriptMethodCallPointer" },
+    { opcode::OP_checkclearparams, "OP_checkclearparams" },
+    { opcode::OP_SetAnimFieldVariableField, "OP_SetAnimFieldVariableField" },
+    { opcode::OP_waittillmatch2, "OP_waittillmatch2" },
+    { opcode::OP_minus, "OP_minus" },
+    { opcode::OP_ScriptLocalFunctionCall2, "OP_ScriptLocalFunctionCall2" },
+    { opcode::OP_GetNegUnsignedShort, "OP_GetNegUnsignedShort" },
+    { opcode::OP_GetNegByte, "OP_GetNegByte" },
+    { opcode::OP_SafeCreateVariableFieldCached, "OP_SafeCreateVariableFieldCached" },
+    { opcode::OP_greater_equal, "OP_greater_equal" },
+    { opcode::OP_vector, "OP_vector" },
+    { opcode::OP_GetBuiltinMethod, "OP_GetBuiltinMethod" },
+    { opcode::OP_endswitch, "OP_endswitch" },
+    { opcode::OP_ClearArray, "OP_ClearArray" },
+    { opcode::OP_DecTop, "OP_DecTop" },
+    { opcode::OP_CastBool, "OP_CastBool" },
+    { opcode::OP_EvalArrayRef, "OP_EvalArrayRef" },
+    { opcode::OP_SetNewLocalVariableFieldCached0, "OP_SetNewLocalVariableFieldCached0" },
+    { opcode::OP_GetZero, "OP_GetZero" },
+    { opcode::OP_wait, "OP_wait" },
+    { opcode::OP_waittill, "OP_waittill" },
+    { opcode::OP_GetIString, "OP_GetIString" },
+    { opcode::OP_ScriptFarFunctionCall, "OP_ScriptFarFunctionCall" },
+    { opcode::OP_GetAnimObject, "OP_GetAnimObject" },
+    { opcode::OP_GetAnimTree, "OP_GetAnimTree" },
+    { opcode::OP_EvalLocalArrayCached, "OP_EvalLocalArrayCached" },
+    { opcode::OP_mod, "OP_mod" },
+    { opcode::OP_ScriptFarMethodThreadCall, "OP_ScriptFarMethodThreadCall" },
+    { opcode::OP_GetUnsignedShort, "OP_GetUnsignedShort" },
+    { opcode::OP_clearparams, "OP_clearparams" },
+    { opcode::OP_ScriptMethodThreadCallPointer, "OP_ScriptMethodThreadCallPointer" },
+    { opcode::OP_ScriptFunctionCallPointer, "OP_ScriptFunctionCallPointer" },
+    { opcode::OP_EmptyArray, "OP_EmptyArray" },
+    { opcode::OP_SafeSetVariableFieldCached, "OP_SafeSetVariableFieldCached" },
+    { opcode::OP_ClearVariableField, "OP_ClearVariableField" },
+    { opcode::OP_EvalFieldVariableRef, "OP_EvalFieldVariableRef" },
+    { opcode::OP_ScriptLocalMethodChildThreadCall, "OP_ScriptLocalMethodChildThreadCall" },
+    { opcode::OP_EvalNewLocalVariableRefCached0, "OP_EvalNewLocalVariableRefCached0" },
+    { opcode::OP_GetFloat, "OP_GetFloat" },
+    { opcode::OP_EvalLocalVariableRefCached, "OP_EvalLocalVariableRefCached" },
+    { opcode::OP_JumpOnFalse, "OP_JumpOnFalse" },
+    { opcode::OP_BoolComplement, "OP_BoolComplement" },
+    { opcode::OP_ScriptThreadCallPointer, "OP_ScriptThreadCallPointer" },
+    { opcode::OP_ScriptFarFunctionCall2, "OP_ScriptFarFunctionCall2" },
+    { opcode::OP_less, "OP_less" },
+    { opcode::OP_BoolNot, "OP_BoolNot" },
+    { opcode::OP_waittillFrameEnd, "OP_waittillFrameEnd" },
+    { opcode::OP_waitframe, "OP_waitframe" },
+    { opcode::OP_GetString, "OP_GetString" },
+    { opcode::OP_EvalLevelFieldVariable, "OP_EvalLevelFieldVariable" },
+    { opcode::OP_GetLevelObject, "OP_GetLevelObject" },
+    { opcode::OP_inc, "OP_inc" },
+    { opcode::OP_CallBuiltinMethod0, "OP_CallBuiltinMethod0" },
+    { opcode::OP_CallBuiltinMethod1, "OP_CallBuiltinMethod1" },
+    { opcode::OP_CallBuiltinMethod2, "OP_CallBuiltinMethod2" },
+    { opcode::OP_CallBuiltinMethod3, "OP_CallBuiltinMethod3" },
+    { opcode::OP_CallBuiltinMethod4, "OP_CallBuiltinMethod4" },
+    { opcode::OP_CallBuiltinMethod5, "OP_CallBuiltinMethod5" },
+    { opcode::OP_CallBuiltinMethod, "OP_CallBuiltinMethod" },
+    { opcode::OP_GetAnim, "OP_GetAnim" },
+    { opcode::OP_switch, "OP_switch" },
+    { opcode::OP_SetVariableField, "OP_SetVariableField" },
+    { opcode::OP_divide, "OP_divide" },
+    { opcode::OP_GetLocalFunction, "OP_GetLocalFunction" },
+    { opcode::OP_ScriptFarChildThreadCall, "OP_ScriptFarChildThreadCall" },
+    { opcode::OP_multiply, "OP_multiply" },
+    { opcode::OP_ClearLocalVariableFieldCached, "OP_ClearLocalVariableFieldCached" },
+    { opcode::OP_EvalAnimFieldVariableRef, "OP_EvalAnimFieldVariableRef" },
+    { opcode::OP_EvalLocalArrayRefCached, "OP_EvalLocalArrayRefCached" },
+    { opcode::OP_EvalLocalVariableRefCached0, "OP_EvalLocalVariableRefCached0" },
+    { opcode::OP_bit_and, "OP_bit_and" },
+    { opcode::OP_GetAnimation, "OP_GetAnimation" },
+    { opcode::OP_GetFarFunction, "OP_GetFarFunction" },
+    { opcode::OP_CallBuiltinPointer, "OP_CallBuiltinPointer" },
+    { opcode::OP_jump, "OP_jump" },
+    { opcode::OP_voidCodepos, "OP_voidCodepos" },
+    { opcode::OP_ScriptFarMethodCall, "OP_ScriptFarMethodCall" },
+    { opcode::OP_inequality, "OP_inequality" },
+    { opcode::OP_ScriptLocalFunctionCall, "OP_ScriptLocalFunctionCall" },
+    { opcode::OP_bit_ex_or, "OP_bit_ex_or" },
+    { opcode::OP_NOP, "OP_NOP" },
+    { opcode::OP_abort, "OP_abort" },
+    { opcode::OP_object, "OP_object" },
+    { opcode::OP_thread_object, "OP_thread_object" },
+    { opcode::OP_EvalLocalVariable, "OP_EvalLocalVariable" },
+    { opcode::OP_EvalLocalVariableRef, "OP_EvalLocalVariableRef" },
+    { opcode::OP_prof_begin, "OP_prof_begin" },
+    { opcode::OP_prof_end, "OP_prof_end" },
+    { opcode::OP_breakpoint, "OP_breakpoint" },
+    { opcode::OP_assignmentBreakpoint, "OP_assignmentBreakpoint" },
+    { opcode::OP_manualAndAssignmentBreakpoint, "OP_manualAndAssignmentBreakpoint" },
+    { opcode::OP_BoolNotAfterAnd, "OP_BoolNotAfterAnd" },
+    { opcode::OP_FormalParams, "OP_FormalParams" },
+    { opcode::OP_IsDefined, "OP_IsDefined" },
+    { opcode::OP_IsTrue, "OP_IsTrue" },
+    { opcode::OP_NativeGetLocalFunction, "OP_NativeGetLocalFunction" },
+    { opcode::OP_NativeLocalFunctionCall, "OP_NativeLocalFunctionCall" },
+    { opcode::OP_NativeLocalFunctionCall2, "OP_NativeLocalFunctionCall2" },
+    { opcode::OP_NativeLocalMethodCall, "OP_NativeLocalMethodCall" },
+    { opcode::OP_NativeLocalFunctionThreadCall, "OP_NativeLocalFunctionThreadCall" },
+    { opcode::OP_NativeLocalMethodThreadCall, "OP_NativeLocalMethodThreadCall" },
+    { opcode::OP_NativeLocalFunctionChildThreadCall, "OP_NativeLocalFunctionChildThreadCall" },
+    { opcode::OP_NativeLocalMethodChildThreadCall, "OP_NativeLocalMethodChildThreadCall" },
+    { opcode::OP_NativeGetFarFunction, "OP_NativeGetFarFunction" },
+    { opcode::OP_NativeFarFunctionCall, "OP_NativeFarFunctionCall" },
+    { opcode::OP_NativeFarFunctionCall2, "OP_NativeFarFunctionCall2" },
+    { opcode::OP_NativeFarMethodCall, "OP_NativeFarMethodCall" },
+    { opcode::OP_NativeFarFunctionThreadCall, "OP_NativeFarFunctionThreadCall" },
+    { opcode::OP_NativeFarMethodThreadCall, "OP_NativeFarMethodThreadCall" },
+    { opcode::OP_NativeFarFunctionChildThreadCall, "OP_NativeFarFunctionChildThreadCall" },
+    { opcode::OP_NativeFarMethodChildThreadCall, "OP_NativeFarMethodChildThreadCall" },
+    { opcode::OP_EvalNewLocalArrayRefCached0_Precompiled, "OP_EvalNewLocalArrayRefCached0_Precompiled" },
+    { opcode::OP_SetNewLocalVariableFieldCached0_Precompiled, "OP_SetNewLocalVariableFieldCached0_Precompiled" },
+    { opcode::OP_CreateLocalVariable_Precompiled, "OP_CreateLocalVariable_Precompiled" },
+    { opcode::OP_SafeCreateVariableFieldCached_Precompiled, "OP_SafeCreateVariableFieldCached_Precompiled" },
+    { opcode::OP_FormalParams_Precompiled, "OP_FormalParams_Precompiled" },
+    { opcode::OP_GetStatHash, "OP_GetStatHash" },
+    { opcode::OP_GetUnkxHash, "OP_GetUnkxHash" },
+    { opcode::OP_GetEnumHash, "OP_GetEnumHash" },
+    { opcode::OP_GetDvarHash, "OP_GetDvarHash" },
+    { opcode::OP_GetUnsignedInt, "OP_GetUnsignedInt" },
+    { opcode::OP_GetNegUnsignedInt, "OP_GetNegUnsignedInt" },
+    { opcode::OP_GetInteger64, "OP_GetInteger64" },
+    { opcode::OP_iw9_139, "OP_iw9_139" },
+    { opcode::OP_iw9_140, "OP_iw9_140" },
+    { opcode::OP_iw9_141, "OP_iw9_141" },
+    { opcode::OP_iw9_142, "OP_iw9_142" },
+    { opcode::OP_iw9_143, "OP_iw9_143" },
+    { opcode::OP_iw9_144, "OP_iw9_144" },
+    { opcode::OP_iw9_166, "OP_iw9_166" },
+}};
 
 } // namespace xsk::gsc

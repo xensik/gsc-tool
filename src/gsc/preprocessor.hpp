@@ -13,7 +13,7 @@ namespace xsk::gsc
 
 class preprocessor
 {
-    context const* ctx_;
+    context* ctx_;
     std::stack<lexer> lexer_;
     std::stack<directive> indents_;
     std::vector<std::string> includes_;
@@ -27,7 +27,7 @@ class preprocessor
     u32 skip_;
 
 public:
-    preprocessor(context const* ctx, std::string const& name, char const* data, usize size);
+    preprocessor(context* ctx, std::string const& name, char const* data, usize size);
     auto process() -> token;
     auto push_header(std::string const& file) -> void;
     auto pop_header() -> void;

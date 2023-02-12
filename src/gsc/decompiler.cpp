@@ -1505,7 +1505,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         case opcode::OP_CastBool:
             break;
         default:
-            throw decomp_error(fmt::format("unhandled opcode {}", opcode_name(inst.opcode)));
+            throw decomp_error(fmt::format("unhandled opcode {}", ctx_->opcode_name(inst.opcode)));
     }
 }
 

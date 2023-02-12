@@ -13,7 +13,7 @@
 namespace xsk::gsc
 {
 
-source::source(context const* ctx) : ctx_{ ctx }, indent_{ 0 }
+source::source(context* ctx) : ctx_{ ctx }, indent_{ 0 }
 {
 }
 
@@ -86,7 +86,7 @@ auto source::parse_assembly(u8 const* data, usize size) -> assembly::ptr
             {
                 auto inst = make_instruction();
                 inst->index = index;
-                inst->opcode = opcode_enum(opdata[0]);
+                inst->opcode = ctx_->opcode_enum(opdata[0]);
                 inst->size = ctx_->opcode_size(inst->opcode);
                 opdata.erase(opdata.begin());
                 inst->data = std::move(opdata);
@@ -157,7 +157,7 @@ auto source::dump(assembly const& data) -> std::vector<u8>
     buf_ = std::vector<u8>{};
     buf_.reserve(0x10000);
 
-    fmt::format_to(std::back_inserter(buf_), "// {} GSC ASSEMBLY\n", engine_name(ctx_->engine()));
+    fmt::format_to(std::back_inserter(buf_), "// {} GSC ASSEMBLY\n", ctx_->engine_name());
     fmt::format_to(std::back_inserter(buf_), "// Dumped by https://github.com/xensik/gsc-tool\n");
 
     dump_assembly(data);
@@ -170,7 +170,7 @@ auto source::dump(program const& data) -> std::vector<u8>
     buf_ = std::vector<u8>{};
     buf_.reserve(0x10000);
 
-    fmt::format_to(std::back_inserter(buf_), "// {} GSC SOURCE\n", engine_name(ctx_->engine()));
+    fmt::format_to(std::back_inserter(buf_), "// {} GSC SOURCE\n", ctx_->engine_name());
     fmt::format_to(std::back_inserter(buf_), "// Dumped by https://github.com/xensik/gsc-tool\n");
     
     dump_program(data);
@@ -207,7 +207,7 @@ auto source::dump_function(function const& func) -> void
 
 auto source::dump_instruction(instruction const& inst) -> void
 {
-    fmt::format_to(std::back_inserter(buf_), "\t\t{}", opcode_name(inst.opcode));
+    fmt::format_to(std::back_inserter(buf_), "\t\t{}", ctx_->opcode_name(inst.opcode));
 
     switch (inst.opcode)
     {

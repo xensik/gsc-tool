@@ -7,6 +7,7 @@
 
 #include "asset.hpp"
 #include "scope.hpp"
+#include "buffer.hpp"
 #include "assembly.hpp"
 #include "location.hpp"
 #include "exception.hpp"
@@ -97,19 +98,6 @@ enum class switch_type
     integer,
     string,
 };
-
-struct buffer
-{
-    u8 const* data;
-    usize const size;
-
-    buffer() : data{ nullptr }, size{ 0 } {}
-    buffer(u8 const* data, usize size) : data{ data }, size{ size } {}
-};
-
-using read_cb_type = std::function<std::pair<buffer, buffer>(std::string const&)>;
-
-auto engine_name(engine engine) -> std::string_view;
 
 // fordward decl for modules ref
 class context;
