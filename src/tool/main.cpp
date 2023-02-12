@@ -457,12 +457,7 @@ auto fs_callback(std::string const& name) -> std::pair<buffer, std::vector<u8>>
     }
     else
     {
-        auto res = files.insert({ name, std::move(data) });
-
-        if(res.second)
-        {
-            return { {res.first->second.data(), res.first->second.size() }, {} };
-        }
+        return { {}, std::move(data) };
     }
 
     throw std::runtime_error("file read error");
