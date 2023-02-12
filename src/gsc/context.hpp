@@ -126,7 +126,7 @@ protected:
     std::unordered_map<std::string_view, u32> token_map_rev_;
     std::unordered_map<u64, std::string_view> path_map_;
     std::unordered_map<u64, std::string_view> hash_map_;
-    std::unordered_map<std::string, buffer> header_files_;
+    std::unordered_map<std::string, std::vector<u8>> header_files_;
     std::unordered_set<std::string_view> includes_;
     std::unordered_map<std::string, std::vector<std::string>> include_cache_;
     std::unordered_set<std::string> new_func_map_;
