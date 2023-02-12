@@ -605,23 +605,22 @@ auto context::make_token(std::string_view str) const -> std::string
 
 auto context::load_header(std::string const& name) -> std::tuple<std::string const*, char const*, usize>
 {
-    // todo: remove cache to prevent use after free if files are read from fs by the game
     auto const itr = header_files_.find(name);
 
     if (itr != header_files_.end())
     {
-        return { &itr->first, reinterpret_cast<char const*>(itr->second.data), itr->second.size };
+        return { &itr->first, reinterpret_cast<char const*>(itr->second.data()), itr->second.size() };
     }
 
     auto data = fs_callback_(name);
 
-    if (data.first.data != nullptr && data.first.size != 0 && data.second.size() == 0)
+    if (data.first.data == nullptr && data.first.size == 0 && !data.second.empty())
     {
-        auto const res = header_files_.insert({ name, data.first });
+        auto const res = header_files_.insert({ name, std::move(data.second) });
 
         if (res.second)
         {
-            return { &res.first->first, reinterpret_cast<char const*>(res.first->second.data), res.first->second.size };
+            return { &res.first->first, reinterpret_cast<char const*>(res.first->second.data()), res.first->second.size() };
         }
     }
 
@@ -644,13 +643,13 @@ auto context::load_include(std::string const& name) -> bool
 
         auto file = fs_callback_(name);
 
-        if (file.first.data == nullptr && file.first.size == 0)
+        if ((file.first.data == nullptr || file.first.size == 0) && file.second.empty())
             throw std::runtime_error("empty file");
 
-        if (file.second.size() == 0)
+        if (file.first.data == nullptr && file.first.size == 0 && !file.second.empty())
         {
             // process RawFile
-            auto prog = source_.parse_program(name, file.first);
+            auto prog = source_.parse_program(name, file.second);
 
             auto funcs = std::vector<std::string>{};
 
