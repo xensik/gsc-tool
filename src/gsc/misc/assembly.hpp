@@ -264,7 +264,4 @@ inline auto make_assembly() -> std::unique_ptr<assembly>
     return std::unique_ptr<assembly>(new assembly);
 }
 
-auto opcode_name(opcode op) -> std::string;
-auto opcode_enum(std::string const& name) -> opcode;
-
 } // namespace xsk::gsc

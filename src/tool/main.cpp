@@ -439,7 +439,7 @@ auto rename_file(game game, fs::path file, fs::path rel) -> void
 
 std::unordered_map<std::string, std::vector<std::uint8_t>> files;
 
-auto read_file_cb(std::string const& name) -> std::pair<buffer, buffer>
+auto fs_callback(std::string const& name) -> std::pair<buffer, std::vector<u8>>
 {
     auto data = utils::file::read(fs::path{ name });
     
@@ -448,12 +448,11 @@ auto read_file_cb(std::string const& name) -> std::pair<buffer, buffer>
         asset s;
         s.deserialize(data);
         auto stk = utils::zlib::decompress(s.buffer, s.len);
-        auto res1 = files.insert({ name + "1", std::move(s.bytecode) });
-        auto res2 = files.insert({ name + "2", std::move(stk) });
+        auto res = files.insert({ name, std::move(s.bytecode) });
 
-        if(res1.second && res2.second)
+        if (res.second)
         {
-            return { {res1.first->second.data(), res1.first->second.size() }, {res2.first->second.data(), res2.first->second.size() } };
+            return { {res.first->second.data(), res.first->second.size() }, std::move(stk) };
         }
     }
     else
@@ -474,7 +473,7 @@ auto init_iw5() -> void
     if (!contexts.contains(game::iw5))
     {
         contexts[game::iw5] = std::make_unique<iw5_pc::context>();
-        contexts[game::iw5]->init(build::prod, read_file_cb);
+        contexts[game::iw5]->init(build::prod, fs_callback);
     }
 }
 
@@ -483,7 +482,7 @@ auto init_iw5_ps() -> void
     if (!contexts.contains(game::iw5ps))
     {
         contexts[game::iw5ps] = std::make_unique<iw5_ps::context>();
-        contexts[game::iw5ps]->init(build::prod, read_file_cb);
+        contexts[game::iw5ps]->init(build::prod, fs_callback);
     }
 }
 
@@ -492,7 +491,7 @@ auto init_iw5_xb() -> void
     if (!contexts.contains(game::iw5xb))
     {
         contexts[game::iw5xb] = std::make_unique<iw5_xb::context>();
-        contexts[game::iw5xb]->init(build::prod, read_file_cb);
+        contexts[game::iw5xb]->init(build::prod, fs_callback);
     }
 }
 
@@ -501,7 +500,7 @@ auto init_iw6() -> void
     if (!contexts.contains(game::iw6))
     {
         contexts[game::iw6] = std::make_unique<iw6_pc::context>();
-        contexts[game::iw6]->init(build::prod, read_file_cb);
+        contexts[game::iw6]->init(build::prod, fs_callback);
     }
 }
 
@@ -510,7 +509,7 @@ auto init_iw6_ps() -> void
     if (!contexts.contains(game::iw6ps))
     {
         contexts[game::iw6ps] = std::make_unique<iw6_ps::context>();
-        contexts[game::iw6ps]->init(build::prod, read_file_cb);
+        contexts[game::iw6ps]->init(build::prod, fs_callback);
     }
 }
 
@@ -519,7 +518,7 @@ auto init_iw6_xb() -> void
     if (!contexts.contains(game::iw6xb))
     {
         contexts[game::iw6xb] = std::make_unique<iw6_xb::context>();
-        contexts[game::iw6xb]->init(build::prod, read_file_cb);
+        contexts[game::iw6xb]->init(build::prod, fs_callback);
     }
 }
 
@@ -528,7 +527,7 @@ auto init_iw7() -> void
     if (!contexts.contains(game::iw7))
     {
         contexts[game::iw7] = std::make_unique<iw7::context>();
-        contexts[game::iw7]->init(build::prod, read_file_cb);
+        contexts[game::iw7]->init(build::prod, fs_callback);
     }
 }
 
@@ -537,7 +536,7 @@ auto init_iw8() -> void
     if (!contexts.contains(game::iw8))
     {
         contexts[game::iw8] = std::make_unique<iw8::context>();
-        contexts[game::iw8]->init(build::prod, read_file_cb);
+        contexts[game::iw8]->init(build::prod, fs_callback);
     }
 }
 
@@ -546,7 +545,7 @@ auto init_iw9() -> void
     if (!contexts.contains(game::iw9))
     {
         contexts[game::iw9] = std::make_unique<iw9::context>();
-        contexts[game::iw9]->init(build::prod, read_file_cb);
+        contexts[game::iw9]->init(build::prod, fs_callback);
     }
 }
 
@@ -555,7 +554,7 @@ auto init_s1() -> void
     if (!contexts.contains(game::s1))
     {
         contexts[game::s1] = std::make_unique<s1_pc::context>();
-        contexts[game::s1]->init(build::prod, read_file_cb);
+        contexts[game::s1]->init(build::prod, fs_callback);
     }
 }
 
@@ -564,7 +563,7 @@ auto init_s1_ps() -> void
     if (!contexts.contains(game::s1ps))
     {
         contexts[game::s1ps] = std::make_unique<s1_ps::context>();
-        contexts[game::s1ps]->init(build::prod, read_file_cb);
+        contexts[game::s1ps]->init(build::prod, fs_callback);
     }
 }
 
@@ -573,7 +572,7 @@ auto init_s1_xb() -> void
     if (!contexts.contains(game::s1xb))
     {
         contexts[game::s1xb] = std::make_unique<s1_xb::context>();
-        contexts[game::s1xb]->init(build::prod, read_file_cb);
+        contexts[game::s1xb]->init(build::prod, fs_callback);
     }
 }
 
@@ -582,7 +581,7 @@ auto init_s2() -> void
     if (!contexts.contains(game::s2))
     {
         contexts[game::s2] = std::make_unique<s2::context>();
-        contexts[game::s2]->init(build::prod, read_file_cb);
+        contexts[game::s2]->init(build::prod, fs_callback);
     }
 }
 
@@ -591,7 +590,7 @@ auto init_s4() -> void
     if (!contexts.contains(game::s4))
     {
         contexts[game::s4] = std::make_unique<s4::context>();
-        contexts[game::s4]->init(build::prod, read_file_cb);
+        contexts[game::s4]->init(build::prod, fs_callback);
     }
 }
 
@@ -600,7 +599,7 @@ auto init_h1() -> void
     if (!contexts.contains(game::h1))
     {
         contexts[game::h1] = std::make_unique<h1::context>();
-        contexts[game::h1]->init(build::prod, read_file_cb);
+        contexts[game::h1]->init(build::prod, fs_callback);
     }
 }
 
@@ -609,7 +608,7 @@ auto init_h2() -> void
     if (!contexts.contains(game::h2))
     {
         contexts[game::h2] = std::make_unique<h2::context>();
-        contexts[game::h2]->init(build::prod, read_file_cb);
+        contexts[game::h2]->init(build::prod, fs_callback);
     }
 }
 

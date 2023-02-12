@@ -11,7 +11,7 @@
 namespace xsk::gsc
 {
 
-preprocessor::preprocessor(context const* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, curr_expr_{ 0 }, expand_{ 0 }, skip_{ false }
+preprocessor::preprocessor(context* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, curr_expr_{ 0 }, expand_{ 0 }, skip_{ false }
 {
     lexer_.push(lexer{ ctx, name, data, size });
     defines_.reserve(4);
@@ -100,7 +100,7 @@ auto preprocessor::push_header(std::string const& file) -> void
                 throw ppr_error(location{}, fmt::format("recursive header inclusion {} at {}", name, includes_.back()));
         }
 
-        auto data = ctx_->header_file_data(name);
+        auto data = ctx_->load_header(name);
 
         includes_.push_back(*std::get<0>(data));
         lexer_.push(lexer{ ctx_, *std::get<0>(data), std::get<1>(data), std::get<2>(data) });
