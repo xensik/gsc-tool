@@ -162,7 +162,7 @@ auto source::dump(assembly const& data) -> std::vector<u8>
 
     dump_assembly(data);
 
-    return buf_;
+    return std::move(buf_);
 }
 
 auto source::dump(program const& data) -> std::vector<u8>
@@ -175,7 +175,7 @@ auto source::dump(program const& data) -> std::vector<u8>
     
     dump_program(data);
 
-    return buf_;
+    return std::move(buf_);
 }
 
 auto source::dump_assembly(assembly const& data) -> void

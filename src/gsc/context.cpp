@@ -33,11 +33,6 @@ auto context::init(gsc::build build, fs_callback callback) -> void
 
 auto context::cleanup() -> void
 {
-    source_ = gsc::source{ this };
-    assembler_ = gsc::assembler{ this };
-    disassembler_ = gsc::disassembler{ this };
-    compiler_ = gsc::compiler{ this };
-    decompiler_ = gsc::decompiler{ this };
     header_files_.clear();
     include_cache_.clear();
     includes_.clear();
