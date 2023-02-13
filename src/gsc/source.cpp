@@ -596,9 +596,9 @@ auto source::dump_stmt_wait(stmt_wait const& stm) -> void
     }
     else
     {
-        fmt::format_to(std::back_inserter(buf_), "wait(");
+        fmt::format_to(std::back_inserter(buf_), "wait( ");
         dump_expr(stm.time);
-        fmt::format_to(std::back_inserter(buf_), ");");
+        fmt::format_to(std::back_inserter(buf_), " );");
     }
 }
 
