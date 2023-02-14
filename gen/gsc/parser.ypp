@@ -276,12 +276,16 @@ root
     ;
 
 program
-    : program inline
+    : program SEMICOLON
+        { $$ = std::move($1); }
+    | program inline
         { $$ = std::move($1); }
     | program include
         { $$ = std::move($1); $$->includes.push_back(std::move($2)); }
     | program declaration
         { $$ = std::move($1); $$->declarations.push_back(std::move($2)); }
+    | SEMICOLON
+        { $$ = make_program(@$); }
     | inline
         { $$ = make_program(@$); }
     | include
