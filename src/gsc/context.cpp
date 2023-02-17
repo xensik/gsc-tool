@@ -360,15 +360,54 @@ auto context::func_name(u16 id) const -> std::string
     return fmt::format("_func_{:04X}", id);
 }
 
+auto context::func2_id(std::string const& name) const -> u64
+{
+    if (name.starts_with("_func_"))
+    {
+        return static_cast<u64>(std::stoull(name.substr(6), nullptr, 16));
+    }
+
+    char const* str = name.data();
+    u64 hash = 0x79D6530B0BB9B5D1;
+    
+    while ( *str )
+    {
+        u8 byte = *str++;
+
+        if (static_cast<u8>(byte - 65) <= 25)
+        {
+            byte += 32;
+        }
+
+        hash = (u64)0x10000000233 * ((u64)byte ^ hash);
+    }
+
+    return hash;
+}
+
+auto context::func2_name(u64 id) const -> std::string
+{
+    auto const itr = func_map2_.find(id);
+
+    if (itr != func_map2_.end())
+    {
+        return std::string{ itr->second };
+    }
+
+    return fmt::format("_func_{:16X}", id);
+}
+
 auto context::func_exists(std::string const& name) const -> bool
 {
     if (name.starts_with("_func_")) return true;
 
-    auto const itr = func_map_rev_.find(name);
-
-    if (itr != func_map_rev_.end())
+    if (props_ & props::hash)
     {
-        return true;
+        return func_map2_.contains(func2_id(name));
+    }
+    else
+    {
+        return func_map_rev_.contains(name);
     }
 
     return false;
@@ -431,15 +470,55 @@ auto context::meth_name(u16 id) const -> std::string
     return fmt::format("_meth_{:04X}", id);
 }
 
+auto context::meth2_id(std::string const& name) const -> u64
+{
+    if (name.starts_with("_meth_"))
+    {
+        return static_cast<u64>(std::stoull(name.substr(6), nullptr, 16));
+    }
+
+    char const* str = name.data();
+    u64 hash = 0x79D6530B0BB9B5D1;
+    
+    while ( *str )
+    {
+        u8 byte = *str++;
+
+        if (static_cast<u8>(byte - 65) <= 25)
+        {
+            byte += 32;
+        }
+
+        hash = (u64)0x10000000233 * ((u64)byte ^ hash);
+    }
+
+    return hash;
+}
+
+auto context::meth2_name(u64 id) const -> std::string
+{
+    auto const itr = meth_map2_.find(id);
+
+    if (itr != meth_map2_.end())
+    {
+        return std::string{ itr->second };
+    }
+
+    return fmt::format("_meth_{:16X}", id);
+}
+
+
 auto context::meth_exists(std::string const& name) const -> bool
 {
     if (name.starts_with("_meth_")) return true;
 
-    auto const itr = meth_map_rev_.find(name);
-
-    if (itr != meth_map_rev_.end())
+    if (props_ & props::hash)
     {
-        return true;
+        return meth_map2_.contains(meth2_id(name));
+    }
+    else
+    {
+        return meth_map_rev_.contains(name);
     }
 
     return false;

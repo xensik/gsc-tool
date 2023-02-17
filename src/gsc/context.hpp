@@ -67,6 +67,10 @@ public:
 
     auto func_name(u16 id) const -> std::string;
 
+    auto func2_id(std::string const& name) const -> u64;
+
+    auto func2_name(u64 id) const -> std::string;
+
     auto func_exists(std::string const& name) const -> bool;
 
     auto func_add(std::string const& name, u16 id) -> void;
@@ -74,6 +78,10 @@ public:
     auto meth_id(std::string const& name) const -> u16;
 
     auto meth_name(u16 id) const -> std::string;
+
+    auto meth2_id(std::string const& name) const -> u64;
+
+    auto meth2_name(u64 id) const -> std::string;
 
     auto meth_exists(std::string const& name) const -> bool;
 
@@ -124,6 +132,8 @@ protected:
     std::unordered_map<std::string_view, u16> meth_map_rev_;
     std::unordered_map<u32, std::string_view> token_map_;
     std::unordered_map<std::string_view, u32> token_map_rev_;
+    std::unordered_map<u64, std::string_view> func_map2_;
+    std::unordered_map<u64, std::string_view> meth_map2_;
     std::unordered_map<u64, std::string_view> path_map_;
     std::unordered_map<u64, std::string_view> hash_map_;
     std::unordered_map<std::string, std::vector<u8>> header_files_;
