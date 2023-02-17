@@ -1043,7 +1043,7 @@ auto map_token(context const* ctx_, token& tok) -> parser::symbol_type
             {
                 if (ctx_->props() & props::boolfuncs)
                 {
-                    parser::symbol_type(it->second, tok.pos);
+                    return parser::symbol_type(it->second, tok.pos);
                 }
             }
             else

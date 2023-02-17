@@ -330,7 +330,8 @@ auto disassembler::disassemble_builtin_call(instruction& inst, bool method, bool
 
         if (name.starts_with("#xS"))
         {
-            name = ctx_->hash_name(std::stoull(name.substr(3), 0, 16));
+            auto const id = std::stoull(name.substr(3), 0, 16);
+            name = method ? ctx_->meth2_name(id) : ctx_->func2_name(id);
         }
 
         script_.seek(2);
@@ -380,7 +381,7 @@ auto disassembler::disassemble_far_call(instruction& inst, bool thread) -> void
         {
             auto path = ctx_->path_name(file);
 
-            if (!path.starts_with("id_"))
+            if (!path.starts_with("_id_"))
             {
                 path.resize(path.size() - 4);
             }

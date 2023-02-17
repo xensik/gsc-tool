@@ -19,10 +19,8 @@ context::context() : gsc::context(props::str4| props::waitframe | props::params 
 {
     code_map_.reserve(code_list.size());
     code_map_rev_.reserve(code_list.size());
-    // func_map_.reserve(func_list.size());
-    // func_map_rev_.reserve(func_list.size());
-    // meth_map_.reserve(meth_list.size());
-    // meth_map_rev_.reserve(meth_list.size());
+    func_map2_.reserve(func_list.size());
+    meth_map2_.reserve(meth_list.size());
     path_map_.reserve(path_list.size());
     hash_map_.reserve(hash_list.size());
 
@@ -32,17 +30,15 @@ context::context() : gsc::context(props::str4| props::waitframe | props::params 
         code_map_rev_.insert({ entry.second, entry.first });
     }
 
-    // for (auto const& entry : func_list)
-    // {
-    //     func_map_.insert({ entry.first, entry.second });
-    //     func_map_rev_.insert({ entry.second, entry.first });
-    // }
+    for (auto const& entry : func_list)
+    {
+        func_map2_.insert({ entry.first, entry.second });
+    }
 
-    // for (auto const& entry : meth_list)
-    // {
-    //     meth_map_.insert({ entry.first, entry.second });
-    //     meth_map_rev_.insert({ entry.second, entry.first });
-    // }
+    for (auto const& entry : meth_list)
+    {
+        meth_map2_.insert({ entry.first, entry.second });
+    }
 
     for (auto const& entry : path_list)
     {
