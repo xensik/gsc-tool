@@ -775,7 +775,6 @@ auto preprocessor::expand(token& tok, define& def) -> void
 
         auto exp = std::vector<token>{};
         exp.reserve(def.exp.size());
-        auto empty_arg = false;
 
         for (auto i = 0u; i < def.exp.size(); i++)
         {
