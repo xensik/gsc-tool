@@ -14,8 +14,8 @@ struct token
     {
         PLUS, MINUS, STAR, DIV, MOD, BITOR, BITAND, BITEXOR, SHL, SHR,
         ASSIGN, PLUSEQ, MINUSEQ, STAREQ, DIVEQ, MODEQ, BITOREQ, BITANDEQ, BITEXOREQ, SHLEQ, SHREQ,
-        INC, DEC, GT, LT, GE, LE, NE, EQ, OR, AND, TILDE, BANG, QMARK, COLON, SHARP, COMMA,
-        DOT, ELLIPSIS, SEMICOLON, DOUBLECOLON, LBRACKET, RBRACKET, LBRACE, RBRACE, LPAREN, RPAREN,
+        INC, DEC, GT, LT, GE, LE, NE, EQ, OR, AND, TILDE, BANG, QMARK, COLON, SHARP, COMMA, DOT,
+        DOUBLEDOT, ELLIPSIS, SEMICOLON, DOUBLECOLON, LBRACKET, RBRACKET, LBRACE, RBRACE, LPAREN, RPAREN,
 
         NAME, PATH, STRING, ISTRING, INT, FLT,
         
@@ -25,7 +25,7 @@ struct token
         PROFBEGIN, PROFEND, ASSERT, ASSERTEX, ASSERTMSG, THREAD, CHILDTHREAD, THISTHREAD,
         CALL, TRUE, FALSE, UNDEFINED, SIZE, GAME, SELF, ANIM, LEVEL, ISDEFINED, ISTRUE,
 
-        HASH, NEWLINE, EOS, DEFINED, MACROBEGIN, MACROEND,
+        HASH, NEWLINE, EOS, DEFINED, MACROBEGIN, MACROEND, MACROARG, MACROVAOPT, MACROVAARGS, STRINGIZE, PASTE
     };
 
     kind type;
@@ -35,6 +35,7 @@ struct token
 
     token(kind type, spacing space, location pos) : type{ type }, space{ space },  pos{ pos }, data{} {}
     token(kind type, spacing space, location pos, std::string data) : type{ type }, space{ space },  pos{ pos }, data{ std::move(data) } {}
+    auto to_string() -> std::string;
 };
 
 } // namespace xsk::gsc

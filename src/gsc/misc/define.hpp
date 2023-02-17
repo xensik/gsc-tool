@@ -10,9 +10,10 @@ namespace xsk::gsc
 
 struct define
 {
-    enum kind { PLAIN, BUILTIN, OBJECT, FUNCTION };
+    enum kind : u8 { PLAIN, BUILTIN, OBJECT, FUNCTION };
 
     kind type;
+//  bool vararg;
     std::vector<token> args;
     std::vector<token> exp;
 };

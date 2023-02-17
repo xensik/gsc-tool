@@ -105,6 +105,7 @@ namespace xsk::gsc
 %token RBRACKET         "]"
 %token COMMA            ","
 %token DOT              "."
+%token DOUBLEDOT        ".."
 %token ELLIPSIS         "..."
 %token DOUBLECOLON      "::"
 %token COLON            ":"
@@ -1124,6 +1125,7 @@ std::unordered_map<token::kind, parser::token::token_kind_type> const tok_to_par
     { token::DEC, parser::token::DECREMENT },
     { token::QMARK, parser::token::QMARK },
     { token::DOT, parser::token::DOT },
+    { token::DOUBLEDOT, parser::token::DOUBLEDOT },
     { token::ELLIPSIS, parser::token::ELLIPSIS },
     { token::COMMA, parser::token::COMMA },
     { token::COLON, parser::token::COLON },
