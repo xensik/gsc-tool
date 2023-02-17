@@ -185,6 +185,17 @@ auto lexer::lex() -> token
             case '"':
                 goto lex_string;
             case '.':
+                if (curr == '.')
+                {
+                    advance();
+
+                    if (curr != '.')
+                        return token{ token::DOUBLECOLON, spacing_, loc_ };
+ 
+                    advance();
+                    return token{ token::ELLIPSIS, spacing_, loc_ };
+                }
+
                 if (curr < '0' || curr > '9')
                     return token{ token::DOT, spacing_, loc_ };
                 goto lex_number;

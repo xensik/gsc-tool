@@ -15,10 +15,10 @@ preprocessor::preprocessor(context* ctx, std::string const& name, char const* da
 {
     lexer_.push(lexer{ ctx, name, data, size });
     defines_.reserve(4);
-    defines_.insert({ "__FILE__", { define::BUILTIN, {}, {} }});
-    defines_.insert({ "__LINE__", { define::BUILTIN, {}, {} }});
-    defines_.insert({ "__DATE__", { define::BUILTIN, {}, {} }});
-    defines_.insert({ "__TIME__", { define::BUILTIN, {}, {} }});
+    defines_.insert({ "__FILE__", { define::BUILTIN,/* false,*/ {}, {} }});
+    defines_.insert({ "__LINE__", { define::BUILTIN,/* false,*/ {}, {} }});
+    defines_.insert({ "__DATE__", { define::BUILTIN,/* false,*/ {}, {} }});
+    defines_.insert({ "__TIME__", { define::BUILTIN,/* false,*/ {}, {} }});
     directives_.reserve(15);
     directives_.insert({ "if", directive::IF });
     directives_.insert({ "ifdef", directive::IFDEF });
@@ -464,12 +464,140 @@ auto preprocessor::read_directive_define(token&) -> void
     switch (next.type)
     {
         case token::NEWLINE:
-            defines_.insert({ name, define{ define::PLAIN, {}, {} }});
+            defines_.insert({ name, define{ define::PLAIN,/* false,*/ {}, {} }});
             break;
         case token::LPAREN:
             if (next.space == spacing::none)
             {
-                throw ppr_error(next.pos, "function-like macros not supported");
+                auto params = std::vector<token>{};
+                auto last_comma = true;
+                auto last_elips = false;
+
+                while (true)
+                {
+                    next = read_token();
+
+                    if (next.type == token::RPAREN)
+                    {
+                        if (last_comma && !params.empty())
+                            throw ppr_error(next.pos, "misplaced comma in macro param list");
+
+                        break;
+                    }
+                    else if (next.type == token::NAME)
+                    {
+                        if (last_elips)
+                            throw ppr_error(next.pos, "elipsis must be last in macro param list");
+                        else if (!last_comma)
+                            throw ppr_error(next.pos, "misplaced name in macro param list");
+                        else
+                        {
+                            auto it = std::find_if(params.begin(), params.end(), [&next](token const& v) { return v.data == next.data; });
+
+                            if (it != params.end())
+                            {
+                                throw ppr_error(next.pos, "duplicate macro parameter name");
+                            }
+
+                            params.push_back(next);
+                            last_comma = false;
+                        }
+                    }
+                    else if (next.type == token::ELLIPSIS)
+                    {
+                        // TODO: disabled
+                        throw ppr_error(next.pos, "variadic macros not supported");
+                        //
+
+                        if (!last_comma || last_elips)
+                            throw ppr_error(next.pos, "misplaced elipsis in macro param list");
+
+                        last_elips = true; 
+                        last_comma = false;
+                    }
+                    else if (next.type == token::COMMA)
+                    {
+                        if (last_elips)
+                             throw ppr_error(next.pos, "elipsis must be last in macro param list");
+                        if (last_comma)
+                            throw ppr_error(next.pos, "misplaced comma in macro param list");
+                        else
+                            last_comma = true;
+                    }
+                    else
+                        throw ppr_error(next.pos, "unexpected token in macro param list");
+                }
+
+                auto exp = std::vector<token>{};
+                auto last_sharp = false;
+                next = read_token();
+
+                while (next.type != token::NEWLINE)
+                {
+                    if (next.type == token::NAME)
+                    {
+                        auto it = std::find_if(params.begin(), params.end(), [&next](token const& v) { return v.data == next.data; });
+
+                        if (it != params.end())
+                        {
+                            if (last_sharp)
+                                exp.back().type = token::STRINGIZE;
+
+                            next.type = token::MACROARG;
+                            exp.push_back(std::move(next));
+                        }
+                        else
+                        {
+                            // check for #animtree ??
+                            if (last_sharp)
+                                throw ppr_error(next.pos, "'#' is not followed by a macro parameter");
+
+                            exp.push_back(std::move(next));
+                        }
+                        // TODO: VAARGS, VAOPT
+                    }
+                    else if (next.type == token::SHARP)
+                    {
+                        if (!last_sharp)
+                        {
+                            last_sharp = true;
+                            exp.push_back(std::move(next));
+                        }
+                        else if (next.space == spacing::none)
+                        {
+                            exp.back().type = token::PASTE;
+                        }
+                        else
+                        {
+                            throw ppr_error(next.pos, "'#' is not followed by a macro parameter");
+                        }
+                    }
+                    else
+                    {
+                        exp.push_back(std::move(next));
+                    }
+
+                    if (exp.back().type != token::SHARP)
+                        last_sharp = false;
+
+                    next = read_token();
+                }
+
+                expect(next, token::NEWLINE);
+
+                if (!exp.empty())
+                {
+                    if (exp.front().type == token::PASTE)
+                        throw ppr_error(next.pos, "'##' cannot appear at start of macro expansion");
+
+                    if (exp.back().type == token::PASTE)
+                        throw ppr_error(next.pos, "'##' cannot appear at end of macro expansion");
+                    
+                    if (exp.back().type == token::SHARP)
+                        throw ppr_error(next.pos, "'#' is not followed by a macro parameter");
+                }
+
+                defines_.insert({ name, define{ define::FUNCTION, /*last_elips,*/ params, exp }});
                 break;
             }
         default:
@@ -487,7 +615,7 @@ auto preprocessor::read_directive_define(token&) -> void
 
                 expect(next, token::NEWLINE);
 
-                defines_.insert({ name, define{ define::OBJECT, {}, exp }});
+                defines_.insert({ name, define{ define::OBJECT,/* false,*/ {}, exp }});
             }
             else
             {
@@ -627,18 +755,165 @@ auto preprocessor::expand(token& tok, define& def) -> void
     else if (def.type == define::OBJECT)
     {
         tokens_.push_front(token{ token::MACROEND, tok.space, tok.pos, tok.data });
-
-        for (auto it = def.exp.rbegin(); it != def.exp.rend(); ++it)
-        {
-            tokens_.push_front(*it);
-        }
-
+        for (auto it = def.exp.rbegin(); it != def.exp.rend(); ++it) tokens_.push_front(*it);
         tokens_.push_front(token{ token::MACROBEGIN, tok.space, tok.pos, tok.data });
     }
     else if (def.type == define::FUNCTION)
     {
-        // TODO!
+        auto next = next_token();
+
+        if (next.type != token::LPAREN)
+        {
+            tokens_.push_front(next);
+            tokens_.push_front(token{ token::MACROEND, tok.space, tok.pos, tok.data });
+            tokens_.push_front(tok);
+            tokens_.push_front(token{ token::MACROBEGIN, tok.space, tok.pos, tok.data });
+            return;
+        }
+
+        auto args = expand_params(tok, def);
+
+        auto exp = std::vector<token>{};
+        exp.reserve(def.exp.size());
+
+        for (auto i = 0u; i < def.exp.size(); i++)
+        {
+            if (def.exp[i].type == token::MACROARG)
+            {
+                auto const& name = def.exp[i].data;
+
+                for (auto n = 0u; n < def.args.size(); n++)
+                {
+                    if (def.args[n].data == name)
+                    {
+                        for (auto t : args.at(n)) exp.push_back(t);
+                        break;
+                    }
+                }
+            }
+            else if (def.exp[i].type == token::MACROVAARGS)
+            {
+                // TODO:
+                // if (!def.vararg)
+                //     throw ppr_error(def.exp[i].pos, "__VA_ARGS__ can only appear in the expansion of a variadic macro");
+
+                // for (auto t : args.back()) exp.push_back(t);
+            }
+            else if (def.exp[i].type == token::MACROVAOPT)
+            {
+                // TODO:
+                // if (!def.vararg)
+                //     throw ppr_error(def.exp[i].pos, "__VA_OPT__ can only appear in the expansion of a variadic macro");
+
+                //
+                // if (!args.back().empty())
+                // {
+                //     // paste opt 
+                // }
+            }
+            else if (def.exp[i].type == token::STRINGIZE)
+            {
+                auto name = def.exp[i + 1].data;
+                auto str = std::string{};
+
+                for (auto n = 0u; n < def.args.size(); n++)
+                {
+                    if (def.args[n].data == name)
+                    {
+                        for (size_t idx = 0; auto t : args.at(n))
+                        {
+                            if (idx != 0 && t.space == spacing::back)
+                                str.append(" ");
+                            str.append(t.to_string());
+                            idx++;
+                        }
+                        break;
+                    }
+                }
+
+                exp.push_back(token{ token::STRING, def.exp[i].space, def.exp[i].pos, str });
+                i++;
+            }
+            else if (def.exp[i].type == token::PASTE)
+            {
+                if (exp.back().type == token::NAME && def.exp[i+1].type == token::NAME)
+                {
+                    exp.back().data.append(def.exp[i+1].data);
+                }
+                else
+                {
+                    throw ppr_error(def.exp[i].pos, "paste can only be applied to identifiers");
+                }
+                i++;
+            }
+            else
+            {
+                exp.push_back(def.exp[i]);
+            }
+        }
+
+        tokens_.push_front(token{ token::MACROEND, tok.space, tok.pos, tok.data });
+        for (auto it = exp.rbegin(); it != exp.rend(); ++it) tokens_.push_front(*it);
+        tokens_.push_front(token{ token::MACROBEGIN, tok.space, tok.pos, tok.data });
     }
+}
+
+auto preprocessor::expand_params(token& tok, define& def) -> std::vector<std::vector<token>>
+{
+    auto nest_paren = 0;
+    auto args = std::vector<std::vector<token>>{};
+    args.push_back({});
+
+    while (true)
+    {
+        auto next = next_token();
+
+        if (next.type == token::EOS)
+        {
+            throw ppr_error(tok.pos, "unterminated function-like macro invocation");
+        }
+        else if (next.type == token::LPAREN)
+        {
+            nest_paren++;
+            args.back().push_back(next);
+        }
+        else if (next.type == token::RPAREN)
+        {
+            if (nest_paren == 0)
+                break;
+            else
+            {
+                nest_paren--;
+                args.back().push_back(next);
+            }       
+        }
+        else if (next.type == token::COMMA && nest_paren == 0 /*&& !(def.vararg && args.size() > def.args.size())*/)
+        {
+            args.push_back({});
+        }
+        else
+        {
+            args.back().push_back(next);
+        }
+    }
+
+    if (def.args.empty() && args.size() == 1 && args[0].empty())
+    {
+        args.pop_back();
+    }
+
+    if (args.size() < def.args.size())
+    {
+        throw ppr_error(tok.pos, "too few arguments provided to function-like macro invocation");
+    }
+
+    if (/*!def.vararg &&*/ args.size() > def.args.size())
+    {
+        throw ppr_error(tok.pos, "too many arguments provided to function-like macro invocation");
+    }
+
+    // TODO: expand args
+    return args;
 }
 
 auto preprocessor::expect(token& tok, token::kind expected, spacing) -> void
