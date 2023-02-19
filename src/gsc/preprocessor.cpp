@@ -509,11 +509,11 @@ auto preprocessor::read_directive_define(token&) -> void
                         throw ppr_error(next.pos, "variadic macros not supported");
                         //
 
-                        if (!last_comma || last_elips)
-                            throw ppr_error(next.pos, "misplaced elipsis in macro param list");
+                        // if (!last_comma || last_elips)
+                        //     throw ppr_error(next.pos, "misplaced elipsis in macro param list");
 
-                        last_elips = true; 
-                        last_comma = false;
+                        // last_elips = true; 
+                        // last_comma = false;
                     }
                     else if (next.type == token::COMMA)
                     {

@@ -12,7 +12,7 @@ namespace xsk::gsc
 extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcode_list;
 
 context::context(gsc::props props, gsc::engine engine, gsc::endian endian, gsc::system system, u32 str_count)
-    : props_{ props }, engine_{ engine }, endian_{ endian }, system_{ system }, str_count_{ str_count },
+    : props_{ props }, engine_{ engine }, endian_{ endian }, system_{ system }, instance_{ gsc::instance::server }, str_count_{ str_count },
       source_{ this }, assembler_{ this }, disassembler_{ this }, compiler_{ this }, decompiler_{ this }
 {
     opcode_map_.reserve(opcode_list.size());
@@ -409,8 +409,6 @@ auto context::func_exists(std::string const& name) const -> bool
     {
         return func_map_rev_.contains(name);
     }
-
-    return false;
 }
 
 auto context::func_add(std::string const& name, u16 id) -> void
@@ -520,8 +518,6 @@ auto context::meth_exists(std::string const& name) const -> bool
     {
         return meth_map_rev_.contains(name);
     }
-
-    return false;
 }
 
 auto context::meth_add(std::string const& name, u16 id) -> void

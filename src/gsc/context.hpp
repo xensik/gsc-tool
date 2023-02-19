@@ -32,6 +32,8 @@ public:
 
     auto system() const -> system { return system_; }
 
+    auto instance() const -> instance { return instance_; }
+
     auto str_count() const -> u32 { return str_count_; }
 
     auto source() -> source& { return source_; }
@@ -115,6 +117,7 @@ protected:
     gsc::engine engine_;
     gsc::endian endian_;
     gsc::system system_;
+    gsc::instance instance_;
     u32 str_count_;
     gsc::source source_;
     gsc::assembler assembler_;

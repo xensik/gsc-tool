@@ -362,8 +362,12 @@ auto assembler::assemble_far_call(instruction const& inst, bool thread) -> void
         }
         else
         {
+            auto path = inst.data[0];
+            if (!path.starts_with("_id_"))
+                path.append(ctx_->instance() == instance::server ? ".gsc" : ".csc");
+
             script_.write<u32>(0);
-            stack_.write<u64>(ctx_->hash_id(inst.data[0]));
+            stack_.write<u64>(ctx_->path_id(path));
             stack_.write<u64>(ctx_->hash_id(inst.data[1]));
         }
 
