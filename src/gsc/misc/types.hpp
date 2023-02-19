@@ -21,6 +21,12 @@
 namespace xsk::gsc
 {
 
+enum class instance : u8
+{
+    server,
+    client,
+};
+
 enum class build : u8
 {
     dev,
