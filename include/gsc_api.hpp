@@ -5,7 +5,7 @@
 
 #pragma once
 
-#ifdef MSVC
+#ifdef _WINDOWS_
     #undef ERROR
     #undef IN
     #undef TRUE
