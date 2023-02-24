@@ -6,19 +6,19 @@
 #pragma once
 
 #ifdef _WINDOWS_
-    #undef ERROR
-    #undef IN
-    #undef TRUE
-    #undef FALSE
-    #undef far
+#undef ERROR
+#undef IN
+#undef TRUE
+#undef FALSE
+#undef far
 #endif
 
-#include <src/stdinc.hpp>
+#include "../src/stdinc.hpp"
 
 #ifdef XSK_GSC_IW5_PC
-#include <src/iw5/iw5_pc.hpp>
+#include "../src/iw5/iw5_pc.hpp"
 #endif
 
 #ifdef XSK_GSC_T6_PC
-#include <src/t6/t6.hpp>
+#include "../src/t6/t6.hpp"
 #endif
