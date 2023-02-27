@@ -1782,7 +1782,7 @@ auto decompiler::decompile_aborts(stmt_list& stm) -> void
             }
             else
             {
-                fmt::print("WARNING: unresolved jump to '{}', maybe incomplete for loop\n", jmp);
+                std::cout << fmt::format("WARNING: unresolved jump to '{}', maybe incomplete for loop\n", jmp);
             }
         }
     }
@@ -3221,7 +3221,7 @@ auto decompiler::process_expr_asm_access(expr& exp, scope& scp) -> void
 
     if (scp.vars.size() <= index)
     {
-        fmt::print("WARNING: bad local var access\n");
+        std::cout << fmt::format("WARNING: bad local var access\n");
     }
     else
     {

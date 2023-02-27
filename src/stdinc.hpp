@@ -27,9 +27,14 @@
 #include <unordered_set>
 #include <vector>
 
-using namespace std::literals;
-
+#if _WIN32
+#include <format>
+namespace fmt = std;
+#else
 #include "fmt/core.h"
+#endif
+
+using namespace std::literals;
 
 namespace xsk
 {

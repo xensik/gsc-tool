@@ -188,7 +188,7 @@ auto assemble_file(game game, fs::path file, fs::path rel) -> void
                 auto path = fs::path{ "compiled" } / rel;
                 utils::file::save(path, outbin.first.data, outbin.first.size);
                 utils::file::save(path.replace_extension(".cgsc.stack"), outbin.second.data, outbin.second.size);
-                fmt::print("compiled {}\n", rel.generic_string());
+                std::cout << fmt::format("compiled {}\n", rel.generic_string());
             }
             else
             {
@@ -208,7 +208,7 @@ auto assemble_file(game game, fs::path file, fs::path rel) -> void
 
                 auto result = script.serialize();
                 utils::file::save(fs::path{ "compiled" } / rel, result);
-                fmt::print("compiled {}\n", rel.generic_string());
+                std::cout << fmt::format("compiled {}\n", rel.generic_string());
             }
         }
     }
@@ -256,7 +256,7 @@ auto disassemble_file(game game, fs::path file, fs::path rel) -> void
         auto outsrc = contexts[game]->source().dump(*outasm);
 
         utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
-        fmt::print("disassembled {}\n", rel.generic_string());
+        std::cout << fmt::format("disassembled {}\n", rel.generic_string());
     }
     catch (std::exception const& e)
     {
@@ -284,7 +284,7 @@ auto compile_file(game game, fs::path file, fs::path rel) -> void
                 auto path = fs::path{ "compiled" } / rel;
                 utils::file::save(path, outbin.first.data, outbin.first.size);
                 utils::file::save(path.replace_extension(".cgsc.stack"), outbin.second.data, outbin.second.size);
-                fmt::print("compiled {}\n", rel.generic_string());
+                std::cout << fmt::format("compiled {}\n", rel.generic_string());
             }
             else
             {
@@ -304,7 +304,7 @@ auto compile_file(game game, fs::path file, fs::path rel) -> void
 
                 auto result = script.serialize();
                 utils::file::save(fs::path{ "compiled" } / rel, result);
-                fmt::print("compiled {}\n", rel.generic_string());
+                std::cout << fmt::format("compiled {}\n", rel.generic_string());
             }
         }
     }
@@ -353,7 +353,7 @@ auto decompile_file(game game, fs::path file, fs::path rel) -> void
         auto outsrc = contexts[game]->source().dump(*outast);
 
         utils::file::save(fs::path{ "decompiled" } / rel, outsrc);
-        fmt::print("decompiled {}\n", rel.generic_string());
+        std::cout << fmt::format("decompiled {}\n", rel.generic_string());
     }
     catch (std::exception const& e)
     {
@@ -374,7 +374,7 @@ auto parse_file(game game, fs::path file, fs::path rel) -> void
 
         auto prog = contexts[game]->source().parse_program(file.string(), data);
         utils::file::save(fs::path{ "parsed" } / rel, contexts[game]->source().dump(*prog));
-        fmt::print("parsed {}\n", rel.generic_string());
+        std::cout << fmt::format("parsed {}\n", rel.generic_string());
     }
     catch (std::exception const& e)
     {
@@ -422,13 +422,13 @@ auto rename_file(game game, fs::path file, fs::path rel) -> void
 
         auto data = utils::file::read(file);
         utils::file::save(fs::path{ "renamed" } / rel, data);
-        fmt::print("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
+        std::cout << fmt::format("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
 
         if (zt)
         {
             auto stack = utils::file::read(file.replace_extension(".cgsc.stack"));
             utils::file::save(fs::path{ "renamed" } / rel.replace_extension(".cgsc.stack"), stack);
-            fmt::print("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
+            std::cout << fmt::format("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
         }
     }
     catch (std::exception const& e)
@@ -661,7 +661,7 @@ void assemble_file(game game, fs::path const& file, fs::path rel)
         assembler.assemble(file.string(), data);
 
         utils::file::save(fs::path{ "assembled" } / rel, assembler.output());
-        fmt::print("assembled {}\n", rel.generic_string());
+        std::cout << fmt::format("assembled {}\n", rel.generic_string());
     }
     catch (std::exception const& e)
     {
@@ -684,7 +684,7 @@ void disassemble_file(game game, fs::path const& file, fs::path rel)
         disassembler.disassemble(file.string(), data);
 
         utils::file::save(fs::path{ "disassembled" } / rel, disassembler.output_raw());
-        fmt::print("disassembled {}\n", rel.generic_string());
+        std::cout << fmt::format("disassembled {}\n", rel.generic_string());
     }
     catch (std::exception const& e)
     {
@@ -713,7 +713,7 @@ void compile_file(game game, fs::path const& file, fs::path rel)
         assembler.assemble(file.string(), assembly);
 
         utils::file::save(fs::path{ "compiled" } / rel, assembler.output());
-        fmt::print("compiled {}\n", rel.generic_string());
+        std::cout << fmt::format("compiled {}\n", rel.generic_string());
     }
     catch (std::exception const& e)
     {
@@ -742,7 +742,7 @@ void decompile_file(game game, fs::path const& file, fs::path rel)
         decompiler.decompile(file.string(), output);
 
         utils::file::save(fs::path{ "decompiled" } / rel, decompiler.output());
-        fmt::print("decompiled {}\n", rel.generic_string());
+        std::cout << fmt::format("decompiled {}\n", rel.generic_string());
     }
     catch (std::exception const& e)
     {
