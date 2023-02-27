@@ -29,7 +29,7 @@
 
 #if _WIN32
 #include <format>
-using fmt = std;
+namespace fmt = std;
 #else
 #include "fmt/core.h"
 #endif
