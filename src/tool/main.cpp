@@ -3,27 +3,27 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include "stdinc.hpp"
-#include "utils/zlib.hpp"
-#include "utils/file.hpp"
-#include "utils/string.hpp"
-#include "iw5/iw5_pc.hpp"
-#include "iw5/iw5_ps.hpp"
-#include "iw5/iw5_xb.hpp"
-#include "iw6/iw6_pc.hpp"
-#include "iw6/iw6_ps.hpp"
-#include "iw6/iw6_xb.hpp"
-#include "iw7/iw7.hpp"
-#include "iw8/iw8.hpp"
-#include "iw9/iw9.hpp"
-#include "s1/s1_pc.hpp"
-#include "s1/s1_ps.hpp"
-#include "s1/s1_xb.hpp"
-#include "s2/s2.hpp"
-#include "s4/s4.hpp"
-#include "h1/h1.hpp"
-#include "h2/h2.hpp"
-#include "t6/t6.hpp"
+#include <stdinc.hpp>
+#include <utils/zlib.hpp>
+#include <utils/file.hpp>
+#include <utils/string.hpp>
+#include <iw5/iw5_pc.hpp>
+#include <iw5/iw5_ps.hpp>
+#include <iw5/iw5_xb.hpp>
+#include <iw6/iw6_pc.hpp>
+#include <iw6/iw6_ps.hpp>
+#include <iw6/iw6_xb.hpp>
+#include <iw7/iw7.hpp>
+#include <iw8/iw8.hpp>
+#include <iw9/iw9.hpp>
+#include <s1/s1_pc.hpp>
+#include <s1/s1_ps.hpp>
+#include <s1/s1_xb.hpp>
+#include <s2/s2.hpp>
+#include <s4/s4.hpp>
+#include <h1/h1.hpp>
+#include <h2/h2.hpp>
+#include <t6/t6.hpp>
 
 namespace fs = std::filesystem;
 

@@ -6,7 +6,7 @@
 #pragma once
 
 #include "misc/types.hpp"
-#include "utils/writer.hpp"
+#include <utils/writer.hpp>
 
 namespace xsk::gsc
 {

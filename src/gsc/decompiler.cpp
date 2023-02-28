@@ -3,10 +3,10 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include "stdinc.hpp"
+#include <stdinc.hpp>
 #include "decompiler.hpp"
 #include "context.hpp"
-#include "utils/string.hpp"
+#include <utils/string.hpp>
 
 namespace xsk::gsc
 {

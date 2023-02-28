@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <stdinc.hpp>
 #include "utils/string.hpp"
 #include "utils/reader.hpp"
 #include "utils/writer.hpp"

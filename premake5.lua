@@ -44,7 +44,6 @@ workspace "gsc-tool"
     filter {}
 
     filter "toolset:msc*"
-        buildoptions "/bigobj"
         buildoptions "/Zc:__cplusplus"
         buildoptions "/std:c++20"
     filter {}
@@ -131,7 +130,6 @@ project "xsk-tool"
     }
 
     includedirs {
-        "./src/tool",
         "./src"
     }
 
@@ -149,7 +147,6 @@ project "xsk-utils"
     }
 
     includedirs {
-        "./src/utils",
         "./src"
     }
 
@@ -167,7 +164,6 @@ project "xsk-gsc"
     }
 
     includedirs {
-        "./src/gsc",
         "./src"
     }
 
@@ -187,7 +183,6 @@ project "xsk-iw5_pc"
     }
 
     includedirs {
-        "./src/iw5",
         "./src"
     }
 
@@ -207,7 +202,6 @@ project "xsk-iw5_ps"
     }
 
     includedirs {
-        "./src/iw5",
         "./src"
     }
 
@@ -227,7 +221,6 @@ project "xsk-iw5_xb"
     }
 
     includedirs {
-        "./src/iw5",
         "./src"
     }
 
@@ -247,7 +240,6 @@ project "xsk-iw6_pc"
     }
 
     includedirs {
-        "./src/iw6",
         "./src"
     }
 
@@ -267,7 +259,6 @@ project "xsk-iw6_ps"
     }
 
     includedirs {
-        "./src/iw6",
         "./src"
     }
 
@@ -287,7 +278,6 @@ project "xsk-iw6_xb"
     }
 
     includedirs {
-        "./src/iw6",
         "./src"
     }
 
@@ -307,7 +297,6 @@ project "xsk-s1_pc"
     }
 
     includedirs {
-        "./src/s1",
         "./src"
     }
 
@@ -327,7 +316,6 @@ project "xsk-s1_ps"
     }
 
     includedirs {
-        "./src/s1",
         "./src"
     }
 
@@ -347,7 +335,6 @@ project "xsk-s1_xb"
     }
 
     includedirs {
-        "./src/s1",
         "./src"
     }
 
@@ -364,7 +351,6 @@ project "xsk-iw7"
     }
 
     includedirs {
-        "./src/iw7",
         "./src"
     }
 
@@ -381,7 +367,6 @@ project "xsk-iw8"
     }
 
     includedirs {
-        "./src/iw8",
         "./src"
     }
 
@@ -398,7 +383,6 @@ project "xsk-iw9"
     }
 
     includedirs {
-        "./src/iw9",
         "./src"
     }
 
@@ -415,7 +399,6 @@ project "xsk-h1"
     }
 
     includedirs {
-        "./src/h1",
         "./src"
     }
 
@@ -432,7 +415,6 @@ project "xsk-h2"
     }
 
     includedirs {
-        "./src/h2",
         "./src"
     }
 
@@ -449,7 +431,6 @@ project "xsk-s2"
     }
 
     includedirs {
-        "./src/s2",
         "./src"
     }
 
@@ -466,7 +447,6 @@ project "xsk-s4"
     }
 
     includedirs {
-        "./src/s4",
         "./src"
     }
 
@@ -483,7 +463,6 @@ project "xsk-t6"
     }
 
     includedirs {
-        "./src/t6",
         "./src"
     }
 
