@@ -19,6 +19,14 @@
 #include "../src/iw5/iw5_pc.hpp"
 #endif
 
+#ifdef XSK_GSC_IW6_PC
+#include "../src/iw6/iw6_pc.hpp"
+#endif
+
+#ifdef XSK_GSC_S1_PC
+#include "../src/s1/s1_pc.hpp"
+#endif
+
 #ifdef XSK_GSC_T6_PC
 #include "../src/t6/t6.hpp"
 #endif
