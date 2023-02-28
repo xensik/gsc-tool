@@ -44,6 +44,7 @@ workspace "gsc-tool"
     filter {}
 
     filter "toolset:msc*"
+        buildoptions "/bigobj"
         buildoptions "/Zc:__cplusplus"
         buildoptions "/std:c++20"
     filter {}
