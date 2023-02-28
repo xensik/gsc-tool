@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "stdinc.hpp"
-#include "gsc/context.hpp"
+#include <stdinc.hpp>
+#include <gsc/context.hpp>
 
 namespace xsk::gsc::h1
 {

@@ -31,7 +31,15 @@
 #include <format>
 namespace fmt = std;
 #else
-#include "fmt/core.h"
+#include <fmt/core.h>
+#endif
+
+#ifdef _WINDOWS_
+#undef ERROR
+#undef IN
+#undef TRUE
+#undef FALSE
+#undef far
 #endif
 
 using namespace std::literals;
