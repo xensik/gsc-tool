@@ -1,0 +1,755 @@
+// Copyright 2023 xensik. All rights reserved.
+//
+// Use of this source code is governed by a GNU GPLv3 license
+// that can be found in the LICENSE file.
+
+#include "stdinc.hpp"
+#include "disassembler.hpp"
+#include "context.hpp"
+#include "utils/string.hpp"
+
+namespace xsk::arc
+{
+
+disassembler::disassembler(context const* ctx) : ctx_{ ctx }
+{
+}
+
+auto disassembler::disassemble(buffer const& data) -> assembly::ptr
+{
+    return disassemble(data.data, data.size);
+}
+
+auto disassembler::disassemble(std::vector<u8> const& data) -> assembly::ptr
+{
+    return disassemble(data.data(), data.size());
+}
+
+auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
+{
+    script_ = utils::reader{ data, static_cast<u32>(data_size), ctx_->endian() == endian::big };
+    assembly_ = make_assembly();
+    import_refs_.clear();
+    string_refs_.clear();
+    anim_refs_.clear();
+
+    auto header_ = header{};
+    header_.magic = script_.read<u64>();
+
+    if (header_.magic != ctx_->magic())
+        throw disasm_error("invalid binary script file!");
+
+    header_.source_crc = script_.read<u32>();
+    header_.include_offset = script_.read<u32>();
+    header_.animtree_offset = script_.read<u32>();
+    header_.cseg_offset = script_.read<u32>();
+    header_.stringtablefixup_offset = script_.read<u32>();
+
+    if (ctx_->props() & props::version2)
+        header_.devblock_stringtablefixup_offset = script_.read<u32>();
+
+    header_.exports_offset = script_.read<u32>();
+    header_.imports_offset = script_.read<u32>();
+    header_.fixup_offset = script_.read<u32>();
+    header_.profile_offset = script_.read<u32>();
+    header_.cseg_size = script_.read<u32>();
+
+    if (ctx_->props() & props::version2)
+        header_.name = script_.read<u32>();
+    else
+        header_.name = script_.read<u16>();
+
+    header_.stringtablefixup_count = script_.read<u16>();
+    header_.exports_count = script_.read<u16>();
+    header_.imports_count = script_.read<u16>();
+    header_.fixup_count = script_.read<u16>();
+    header_.profile_count = script_.read<u16>();
+
+    if (ctx_->props() & props::version2)
+        header_.devblock_stringtablefixup_count = script_.read<u16>();
+
+    header_.include_count = script_.read<u8>();
+    header_.animtree_count = script_.read<u8>();
+    header_.flags = script_.read<u8>();
+
+    auto string_pool = std::map<u32, std::string>{};
+    script_.pos((ctx_->props() & props::version2) ? 72 : 64);
+
+    while (script_.pos() < header_.include_offset)
+    {
+        auto pos = script_.pos();
+        string_pool.insert({ pos, script_.read_cstr() });
+    }
+
+    script_.pos(header_.include_offset);
+
+    for (auto i = 0u; i < header_.include_count; i++)
+    {
+        assembly_->includes.push_back(string_pool.at(script_.read<u32>()));
+    }
+
+    script_.pos(header_.animtree_offset);
+
+    for (auto i = 0u; i < header_.animtree_count; i++)
+    {
+        auto entry = std::make_shared<animtree_ref>();
+        entry->name = string_pool.at(script_.read<u16>());
+        auto ref_count = script_.read<u16>();
+        auto anim_count = script_.read<u16>();
+        script_.seek(2);
+
+        for (auto j = 0u; j < ref_count; j++)
+        {
+            auto ref = script_.read<u32>();
+            entry->refs.push_back(ref);
+            anim_refs_.insert({ ref, entry });
+        }
+
+        for (auto j = 0u; j < anim_count; j++)
+        {
+            auto name = ctx_->hash_name(script_.read<u32>());
+
+            if (ctx_->props() & props::version2)
+                script_.seek(4);
+        
+            auto ref = script_.read<u32>();
+
+            if (ctx_->props() & props::version2)
+                script_.seek(4);
+
+            entry->anims.push_back({ name, ref });
+            anim_refs_.insert({ ref, entry });
+        }
+    }
+
+    script_.pos(header_.stringtablefixup_offset);
+
+    for (auto i = 0u; i < header_.stringtablefixup_count; i++)
+    {
+        auto entry = std::make_shared<string_ref>();
+        entry->name = string_pool.at((ctx_->props() & props::version2) ? script_.read<u32>() : script_.read<u16>());
+        auto count = script_.read<u8>();
+        entry->type = script_.read<u8>();
+
+        if (ctx_->props() & props::version2)
+            script_.seek(2);
+
+        for (auto j = 0u; j < count; j++)
+        {
+            auto ref = script_.read<u32>();
+            string_refs_.insert({ ref, entry });
+        }
+    }
+
+    if (ctx_->props() & props::version2)
+    {
+        script_.pos(header_.devblock_stringtablefixup_offset);
+
+        for (auto i = 0u; i < header_.devblock_stringtablefixup_count; i++)
+        {
+            auto entry = std::make_shared<string_ref>();
+            entry->name = "DEVSTR";
+            script_.seek(4);
+            auto count = script_.read<u8>();
+            entry->type = script_.read<u8>();
+            script_.seek(2);
+
+            for (auto j = 0; j < count; j++)
+            {
+                auto ref = script_.read<u32>();
+                string_refs_.insert({ ref, entry });
+            }
+        }
+    }
+
+    script_.pos(header_.imports_offset);
+
+    for (auto i = 0u; i < header_.imports_count; i++)
+    {
+        auto entry = std::make_shared<import_ref>();
+
+        if (ctx_->props() & props::version2)
+        {
+            entry->name = ctx_->hash_name(script_.read<u32>());
+            entry->space = ctx_->hash_name(script_.read<u32>());
+        }
+        else
+        {
+            entry->name = string_pool.at(script_.read<u16>());
+            entry->space = string_pool.at(script_.read<u16>());
+        }
+
+        auto count = script_.read<u16>();
+        entry->params = script_.read<u8>();
+        entry->flags = script_.read<u8>();
+
+        for (auto j = 0; j < count; j++)
+        {
+            import_refs_.insert({ script_.read<u32>(), entry });
+        }
+    }
+
+    auto exports_ = std::vector<export_ref::ptr>{};
+    script_.pos(header_.exports_offset);
+
+    for (auto i = 0u; i < header_.exports_count; i++)
+    {
+        auto entry = std::make_shared<export_ref>();
+        entry->checksum = script_.read<u32>();
+        entry->offset = script_.read<u32>();
+
+        if (ctx_->props() & props::version2)
+        {
+            entry->name = ctx_->hash_name(script_.read<u32>());
+            entry->space = ctx_->hash_name(script_.read<u32>());
+        }
+        else
+        {
+            entry->name = string_pool.at(script_.read<u16>());
+            entry->space = "";
+        }
+
+        entry->params = script_.read<u8>();
+        entry->flags = script_.read<u8>();
+        
+        if (ctx_->props() & props::version2)
+            script_.seek(2);
+
+        exports_.push_back(entry);
+    }
+
+    for (auto i = 0u; i < exports_.size(); i++)
+    {
+        auto& entry = exports_[i];
+
+        if (i < exports_.size() - 1)
+        {
+            entry->size = (exports_[i + 1]->offset - entry->offset);
+
+            auto pad_size = (ctx_->props() & props::version2) ? 8 : 4;
+            auto end_pos = entry->offset + entry->size - pad_size;
+
+            script_.pos(end_pos);
+
+            if ((ctx_->props() & props::version2) && script_.read<u64>() == 0)
+                entry->size -= pad_size;
+            else if (script_.read<u32>() == 0)
+                entry->size -= pad_size;
+        }
+        else
+        {
+            entry->size = (header_.cseg_offset + header_.cseg_size) - entry->offset;
+        }
+
+        script_.pos(entry->offset);
+
+        func_ = make_function();
+        func_->index = entry->offset;
+        func_->size = entry->size;
+        func_->params = entry->params;
+        func_->flags = entry->flags;
+        func_->name = entry->name;
+        func_->space = entry->space;
+
+        disassemble_function(*func_);
+
+        assembly_->functions.push_back(std::move(func_));
+    }
+
+    return std::move(assembly_);
+}
+
+auto disassembler::disassemble_function(function& func) -> void
+{
+    auto size = static_cast<i32>(func.size);
+
+    while (size > 0)
+    {
+        auto inst = make_instruction();
+        inst->index = script_.pos();
+
+        if (ctx_->props() & props::version2)
+        {
+            auto index = script_.read<u16>();
+
+            if (size < 8 && (index >= 0x2000 || ctx_->opcode_enum(index) == opcode::OP_Invalid))
+                break;
+
+            if ((index & 0x2000) == 0)
+                inst->opcode = ctx_->opcode_enum(index);
+            else
+                throw disasm_error(utils::string::va("invalid opcode index 0x%X at pos '%04X'!", index, inst->index));
+        }
+        else
+        {
+            auto index = script_.read<u8>();
+
+            if (size < 4 && ctx_->opcode_enum(index) == opcode::OP_Invalid)
+                break;
+
+            inst->opcode = ctx_->opcode_enum(index);
+        }
+        
+        inst->size = ctx_->opcode_size(inst->opcode);
+
+        disassemble_instruction(*inst);
+
+        if (ctx_->props() & props::version2)
+            inst->size += script_.align(2);
+
+        size -= inst->size;
+
+        func.instructions.push_back(std::move(inst));
+    }
+
+    for (auto i = func.instructions.size() - 1; i >= 1; i--)
+    {
+        auto& inst = func.instructions.at(i);
+        auto& last = func.instructions.at(i-1);
+
+        if (func.labels.contains(inst->index))
+            break;
+
+        if ((inst->opcode == opcode::OP_End ||  inst->opcode == opcode::OP_Return)
+            && (last->opcode != opcode::OP_End && last->opcode != opcode::OP_Return))
+            break;
+
+        func.instructions.pop_back();
+    }
+}
+
+auto disassembler::disassemble_instruction(instruction& inst) -> void
+{
+    switch (inst.opcode)
+    {
+        case opcode::OP_End:
+        case opcode::OP_Return:
+        case opcode::OP_GetUndefined:
+        case opcode::OP_GetZero:
+        case opcode::OP_GetLevelObject:
+        case opcode::OP_GetAnimObject:
+        case opcode::OP_GetSelf:
+        case opcode::OP_GetLevel:
+        case opcode::OP_GetGame:
+        case opcode::OP_GetAnim:
+        case opcode::OP_GetGameRef:
+        case opcode::OP_CreateLocalVariable:
+        case opcode::OP_EvalArray:
+        case opcode::OP_EvalArrayRef:
+        case opcode::OP_ClearArray:
+        case opcode::OP_EmptyArray:
+        case opcode::OP_GetSelfObject:
+        case opcode::OP_SafeSetVariableFieldCached:
+        case opcode::OP_ClearParams:
+        case opcode::OP_CheckClearParams:
+        case opcode::OP_SetVariableField:
+        case opcode::OP_Wait:
+        case opcode::OP_WaitTillFrameEnd:
+        case opcode::OP_PreScriptCall:
+        case opcode::OP_DecTop:
+        case opcode::OP_CastFieldObject:
+        case opcode::OP_CastBool:
+        case opcode::OP_BoolNot:
+        case opcode::OP_BoolComplement:
+        case opcode::OP_Inc:
+        case opcode::OP_Dec:
+        case opcode::OP_Bit_Or:
+        case opcode::OP_Bit_Xor:
+        case opcode::OP_Bit_And:
+        case opcode::OP_Equal:
+        case opcode::OP_NotEqual:
+        case opcode::OP_LessThan:
+        case opcode::OP_GreaterThan:
+        case opcode::OP_LessThanOrEqualTo:
+        case opcode::OP_GreaterThanOrEqualTo:
+        case opcode::OP_ShiftLeft:
+        case opcode::OP_ShiftRight:
+        case opcode::OP_Plus:
+        case opcode::OP_Minus:
+        case opcode::OP_Multiply:
+        case opcode::OP_Divide:
+        case opcode::OP_Modulus:
+        case opcode::OP_SizeOf:
+        case opcode::OP_WaitTill:
+        case opcode::OP_Notify:
+        case opcode::OP_EndOn:
+        case opcode::OP_VoidCodePos:
+        case opcode::OP_Vector:
+        case opcode::OP_RealWait:
+        case opcode::OP_IsDefined:
+        case opcode::OP_VectorScale:
+        case opcode::OP_AnglesToUp:
+        case opcode::OP_AnglesToRight:
+        case opcode::OP_AnglesToForward:
+        case opcode::OP_AngleClamp180:
+        case opcode::OP_VectorToAngles:
+        case opcode::OP_Abs:
+        case opcode::OP_GetTime:
+        case opcode::OP_GetDvar:
+        case opcode::OP_GetDvarInt:
+        case opcode::OP_GetDvarFloat:
+        case opcode::OP_GetDvarVector:
+        case opcode::OP_GetDvarColorRed:
+        case opcode::OP_GetDvarColorGreen:
+        case opcode::OP_GetDvarColorBlue:
+        case opcode::OP_GetDvarColorAlpha:
+        case opcode::OP_FirstArrayKey:
+        case opcode::OP_NextArrayKey:
+        //case opcode::OP_ProfileStart:
+        case opcode::OP_ProfileStop:
+        case opcode::OP_SafeDecTop:
+        case opcode::OP_Nop:
+        case opcode::OP_Abort:
+        case opcode::OP_Object:
+        case opcode::OP_ThreadObject:
+        case opcode::OP_EvalLocalVariable:
+        case opcode::OP_EvalLocalVariableRef:
+        case opcode::OP_GetClassesObject:
+        case opcode::OP_GetClasses:
+        case opcode::OP_GetWorldObject:
+        case opcode::OP_GetWorld:
+        case opcode::OP_SuperEqual:
+        case opcode::OP_SuperNotEqual:
+            break;
+        case opcode::OP_GetByte:
+        case opcode::OP_GetNegByte:
+            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            break;
+        case opcode::OP_GetUnsignedShort:
+        case opcode::OP_GetNegUnsignedShort:
+            inst.size += script_.align(2);
+            inst.data.push_back(fmt::format("{}", script_.read<u16>()));
+            break;
+        case opcode::OP_GetInteger:
+            inst.size += script_.align(4);
+            disassemble_animtree(inst);
+            inst.data.push_back(fmt::format("{}", script_.read<i32>()));
+            break;
+        case opcode::OP_GetFloat:
+            inst.size += script_.align(4);
+            inst.data.push_back(utils::string::float_string(script_.read<f32>()));
+            break;
+        case opcode::OP_GetUintptr:
+        //case opcode::OP_ProfileStart:
+        case opcode::OP_GetAPIFunction:
+            inst.size += script_.align(8);
+            inst.data.push_back(fmt::format("0x{:016X}", script_.read<u64>()));
+            break;
+        case opcode::OP_GetVector:
+            inst.size += script_.align(4);
+            inst.data.push_back(utils::string::float_string(script_.read<f32>()));
+            inst.data.push_back(utils::string::float_string(script_.read<f32>()));
+            inst.data.push_back(utils::string::float_string(script_.read<f32>()));
+            break;
+        case opcode::OP_GetString:
+        case opcode::OP_GetIString:
+            disassemble_string(inst);
+            break;
+        case opcode::OP_GetAnimation:
+            disassemble_animation(inst);
+            break;
+        case opcode::OP_WaitTillMatch:
+            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            break;
+        case opcode::OP_VectorConstant:
+            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            break;
+        case opcode::OP_GetHash:
+            inst.size += script_.align(4);
+            inst.data.push_back(ctx_->dvar_name(script_.read<u32>()));
+            break;
+        case opcode::OP_ScriptFunctionCallClass:
+        case opcode::OP_ScriptThreadCallClass:
+            script_.seek(1);
+            inst.size += script_.align(4);
+            inst.data.push_back(ctx_->hash_name(script_.read<u32>()));
+            break;
+        case opcode::OP_SafeCreateLocalVariables:
+            disassemble_params(inst);
+            break;
+        case opcode::OP_RemoveLocalVariables:
+        case opcode::OP_EvalLocalVariableCached:
+        case opcode::OP_EvalLocalArrayRefCached:
+        case opcode::OP_SafeSetWaittillVariableFieldCached:
+        case opcode::OP_EvalLocalVariableRefCached:
+            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            break;
+        case opcode::OP_EvalFieldVariable:
+        case opcode::OP_EvalFieldVariableRef:
+        case opcode::OP_ClearFieldVariable:
+        case opcode::OP_EvalLocalVariableCachedDebug:
+        case opcode::OP_EvalLocalVariableRefCachedDebug:
+        case opcode::OP_LevelEvalFieldVariableRef:
+        case opcode::OP_LevelEvalFieldVariable:
+        case opcode::OP_SelfEvalFieldVariableRef:
+        case opcode::OP_SelfEvalFieldVariable:
+        case opcode::OP_New:
+            disassemble_name(inst);
+            break;
+        case opcode::OP_ScriptFunctionCallPointer:
+        case opcode::OP_ScriptMethodCallPointer:
+        case opcode::OP_ScriptThreadCallPointer:
+        case opcode::OP_ScriptMethodThreadCallPointer:
+            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            break;
+        case opcode::OP_GetFunction:
+            disassemble_import(inst);
+            break;
+        case opcode::OP_CallBuiltin:
+        case opcode::OP_CallBuiltinMethod:
+        case opcode::OP_ScriptFunctionCall:
+        case opcode::OP_ScriptMethodCall:
+        case opcode::OP_ScriptThreadCall:
+        case opcode::OP_ScriptMethodThreadCall:
+            script_.seek(1);
+            disassemble_import(inst);
+            break;
+        case opcode::OP_JumpOnFalse:
+        case opcode::OP_JumpOnTrue:
+        case opcode::OP_JumpOnFalseExpr:
+        case opcode::OP_JumpOnTrueExpr:
+        case opcode::OP_Jump:
+        case opcode::OP_JumpBack:
+        case opcode::OP_DevblockBegin:
+            disassemble_jump(inst);
+            break;
+        case opcode::OP_Switch:
+            disassemble_switch(inst);
+            break;
+        case opcode::OP_EndSwitch:
+            disassemble_end_switch(inst);
+            break;
+        default:
+            throw disasm_error(fmt::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
+    }
+}
+
+auto disassembler::disassemble_name(instruction& inst) -> void
+{
+    inst.size += script_.align((ctx_->props() & props::version2) ? 4 : 2);
+
+    if (ctx_->props() & props::version2)
+    {
+        inst.data.push_back(ctx_->hash_name(script_.read<u32>()));
+    }
+    else
+    {
+        auto const itr = string_refs_.find(script_.pos());
+
+        if (itr != string_refs_.end())
+        {
+            inst.data.push_back(itr->second->name);
+            script_.seek(2);
+            return;
+        }
+
+        throw disasm_error(fmt::format("string reference not found at index {:04X}", inst.index));
+    }
+}
+
+auto disassembler::disassemble_params(instruction& inst) -> void
+{
+    auto const count = script_.read<u8>();
+
+    for (auto i = 0u; i < count; i++)
+    {
+        if (ctx_->props() & props::version2)
+        {
+            inst.size += script_.align(4) + 5;
+            inst.data.push_back(ctx_->hash_name(script_.read<u32>()));
+            script_.seek(1);
+        }
+        else
+        {
+            disassemble_string(inst);
+            inst.size += 2;
+        }
+    }
+}
+
+auto disassembler::disassemble_import(instruction& inst) -> void
+{
+    inst.size += script_.align((ctx_->props() & props::version2) ? 8 : 4);
+    script_.seek((ctx_->props() & props::version2) ? 8 : 4);
+
+    auto const itr = import_refs_.find(inst.index);
+
+    if (itr != import_refs_.end())
+    {
+        inst.data.push_back(itr->second->space);
+        inst.data.push_back(itr->second->name);
+        return;
+    }
+
+    throw disasm_error(fmt::format("import reference not found at index {:04X}", inst.index));
+}
+
+auto disassembler::disassemble_string(instruction& inst) -> void
+{
+    inst.size += script_.align((ctx_->props() & props::version2) ? 4 : 2);
+
+    auto const itr = string_refs_.find(script_.pos());
+
+    if (itr != string_refs_.end())
+    {
+        inst.data.push_back(itr->second->name);
+        script_.seek((ctx_->props() & props::version2) ? 4 : 2);
+        return;
+    }
+
+    throw disasm_error(fmt::format("string reference not found at index {:04X}", inst.index));
+}
+
+auto disassembler::disassemble_animtree(instruction& inst) -> void
+{
+    auto const itr = anim_refs_.find(script_.pos());
+
+    if (itr != anim_refs_.end())
+    {
+        inst.data.push_back(itr->second->name);
+    }
+}
+
+auto disassembler::disassemble_animation(instruction& inst) -> void
+{
+    inst.size += script_.align((ctx_->props() & props::version2) ? 8 : 4);
+
+    auto const ref = script_.pos();
+    auto const itr = anim_refs_.find(ref);
+
+    if (itr != anim_refs_.end())
+    {
+        inst.data.push_back(itr->second->name);
+
+        for (auto const& anim : itr->second->anims)
+        {
+            if (anim.ref == ref)
+            {
+                inst.data.push_back(anim.name);
+                script_.seek((ctx_->props() & props::version2) ? 8 : 4);
+                return;
+            }
+        }
+    }
+
+    throw disasm_error(fmt::format("animation reference not found at index {:04X}", inst.index));
+}
+
+auto disassembler::disassemble_jump(instruction& inst) -> void
+{
+    inst.size += script_.align(2);
+
+    auto addr = u32{};
+
+    if (ctx_->props() & props::version2)
+        addr = ((script_.read<i16>() + 1) & ~(1)) + script_.pos();
+    else
+        addr = script_.read<i16>() + script_.pos();
+
+    auto const label = fmt::format("loc_{:X}", addr);
+
+    inst.data.push_back(label);
+    func_->labels.insert({ addr, label });
+}
+
+auto disassembler::disassemble_switch(instruction& inst) -> void
+{
+    inst.size += script_.align(4);
+
+    auto const addr = script_.read<i32>() + script_.pos();
+    auto const label = fmt::format("loc_{:X}", addr);
+
+    inst.data.push_back(label);
+    func_->labels.insert({ addr, label });
+}
+
+auto disassembler::disassemble_end_switch(instruction& inst) -> void
+{
+    inst.size += script_.align(4);
+
+    auto const itr = func_->labels.find(script_.pos());
+
+    if (itr != func_->labels.end())
+    {
+        for (auto const& entry : func_->instructions)
+        {
+            if (entry->opcode == opcode::OP_Switch && entry->data[0] == itr->second)
+            {
+                auto const label = fmt::format("loc_{:X}", inst.index);
+                entry->data[0] = label;
+                func_->labels.erase(script_.pos());
+
+                if (!func_->labels.contains(inst.index))
+                {
+                    func_->labels.insert({ inst.index, label });
+                }
+
+                break;
+            }
+        }
+    }
+
+    auto type = switch_type::none;
+    auto const count = script_.read<u32>();
+    inst.data.push_back(fmt::format("{}", count));
+
+    for (auto i = 0u; i < count; i++)
+    {
+        if (ctx_->props() & props::version2)
+        {
+            const auto value = script_.read<u32>();
+
+            const auto itr = string_refs_.find(script_.pos() - 4);
+
+            if (itr != string_refs_.end())
+            {
+                type = switch_type::string;
+                inst.data.push_back("case");
+                inst.data.push_back(itr->second->name);
+            }
+            else if (value == 0 && i == count - 1)
+            {
+                inst.data.push_back("default");
+            }
+            else
+            {
+                type = switch_type::integer;
+                inst.data.push_back("case");
+                inst.data.push_back(fmt::format("{}", value));
+            }
+        }
+        else
+        {
+            auto const value = script_.read<u32>();
+
+            if (value == 0)
+            {
+                inst.data.push_back("default");
+            }
+            else if (value < 0x40000)
+            {
+                type = switch_type::string;
+                inst.data.push_back("case");
+                inst.data.push_back(string_refs_.at(script_.pos() - 2)->name);
+            }
+            else
+            {
+                type = switch_type::integer;
+                inst.data.push_back("case");
+                inst.data.push_back(fmt::format("{}", (value - 0x800000) & 0xFFFFFF));
+            }
+        }
+
+        auto const addr = script_.read<i32>() + script_.pos();
+        auto const label = fmt::format("loc_{:X}", addr);
+
+        inst.data.push_back(label);
+        func_->labels.insert({ addr, label });
+
+        inst.size += 8;
+    }
+
+    inst.data.push_back(fmt::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
+}
+
+} // namespace xsk::arc

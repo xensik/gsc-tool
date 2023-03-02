@@ -842,6 +842,8 @@ expr::~expr()
         case node::expr_array: as_array.~unique_ptr(); return;
         case node::expr_tuple: as_tuple.~unique_ptr(); return;
         case node::expr_reference: as_reference.~unique_ptr(); return;
+        case node::expr_istrue: as_istrue.~unique_ptr(); return;
+        case node::expr_isdefined: as_isdefined.~unique_ptr(); return;
         case node::expr_arguments: as_arguments.~unique_ptr(); return;
         case node::expr_parameters: as_parameters.~unique_ptr(); return;
         case node::expr_add_array: as_add_array.~unique_ptr(); return;

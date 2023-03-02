@@ -83,6 +83,7 @@ project "xsk-tool"
     targetname "gsc-tool"
 
     dependson "xsk-utils"
+    dependson "xsk-arc"
     dependson "xsk-gsc"
     dependson "xsk-iw5_pc"
     dependson "xsk-iw5_ps"
@@ -100,7 +101,9 @@ project "xsk-tool"
     dependson "xsk-h2"
     dependson "xsk-s2"
     dependson "xsk-s4"
+    dependson "xsk-t6_new"
     dependson "xsk-t6"
+    dependson "xsk-t7"
 
     files {
         "./src/tool/**.h",
@@ -110,6 +113,7 @@ project "xsk-tool"
 
     links {
         "xsk-utils",
+        "xsk-arc",
         "xsk-gsc",
         "xsk-iw5_pc",
         "xsk-iw5_ps",
@@ -127,7 +131,9 @@ project "xsk-tool"
         "xsk-h2",
         "xsk-s2",
         "xsk-s4",
+        "xsk-t6_new",
         "xsk-t6",
+        "xsk-t7",
     }
 
     includedirs {
@@ -153,6 +159,23 @@ project "xsk-utils"
 
     fmt:include()
     zlib:include()
+
+project "xsk-arc"
+    kind "StaticLib"
+    language "C++"
+
+    files {
+        "./src/arc/**.h",
+        "./src/arc/**.hpp",
+        "./src/arc/**.cpp"
+    }
+
+    includedirs {
+        "./src/arc",
+        "./src"
+    }
+
+    fmt:include()
 
 project "xsk-gsc"
     kind "StaticLib"
@@ -453,6 +476,23 @@ project "xsk-s4"
 
     fmt:include()
 
+project "xsk-t6_new"
+    kind "StaticLib"
+    language "C++"
+
+    files {
+        "./src/t6_new/**.h",
+        "./src/t6_new/**.hpp",
+        "./src/t6_new/**.cpp"
+    }
+
+    includedirs {
+        "./src/t6_new",
+        "./src"
+    }
+
+    fmt:include()
+
 project "xsk-t6"
     kind "StaticLib"
     language "C++"
@@ -464,6 +504,23 @@ project "xsk-t6"
     }
 
     includedirs {
+        "./src"
+    }
+
+    fmt:include()
+
+project "xsk-t7"
+    kind "StaticLib"
+    language "C++"
+
+    files {
+        "./src/t7/**.h",
+        "./src/t7/**.hpp",
+        "./src/t7/**.cpp"
+    }
+
+    includedirs {
+        "./src/t7",
         "./src"
     }
 
