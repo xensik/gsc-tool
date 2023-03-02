@@ -39,9 +39,9 @@ namespace xsk::gsc { class preprocessor; }
 
 %code top
 {
-#include "stdinc.hpp"
-#include "parser.hpp"
-#include "preprocessor.hpp"
+#include "xsk/stdinc.hpp"
+#include "xsk/gsc/parser.hpp"
+#include "xsk/gsc/preprocessor.hpp"
 using namespace xsk::gsc;
 namespace xsk::gsc
 { 

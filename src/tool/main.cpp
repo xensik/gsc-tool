@@ -3,27 +3,31 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include <stdinc.hpp>
-#include <utils/zlib.hpp>
-#include <utils/file.hpp>
-#include <utils/string.hpp>
-#include <iw5/iw5_pc.hpp>
-#include <iw5/iw5_ps.hpp>
-#include <iw5/iw5_xb.hpp>
-#include <iw6/iw6_pc.hpp>
-#include <iw6/iw6_ps.hpp>
-#include <iw6/iw6_xb.hpp>
-#include <iw7/iw7.hpp>
-#include <iw8/iw8.hpp>
-#include <iw9/iw9.hpp>
-#include <s1/s1_pc.hpp>
-#include <s1/s1_ps.hpp>
-#include <s1/s1_xb.hpp>
-#include <s2/s2.hpp>
-#include <s4/s4.hpp>
-#include <h1/h1.hpp>
-#include <h2/h2.hpp>
-#include <t6/t6.hpp>
+#include "xsk/stdinc.hpp"
+#include "xsk/utils/zlib.hpp"
+#include "xsk/utils/file.hpp"
+#include "xsk/utils/string.hpp"
+#include "xsk/gsc/engine/iw5_pc.hpp"
+#include "xsk/gsc/engine/iw5_ps.hpp"
+#include "xsk/gsc/engine/iw5_xb.hpp"
+#include "xsk/gsc/engine/iw6_pc.hpp"
+#include "xsk/gsc/engine/iw6_ps.hpp"
+#include "xsk/gsc/engine/iw6_xb.hpp"
+#include "xsk/gsc/engine/iw7.hpp"
+#include "xsk/gsc/engine/iw8.hpp"
+#include "xsk/gsc/engine/iw9.hpp"
+#include "xsk/gsc/engine/s1_pc.hpp"
+#include "xsk/gsc/engine/s1_ps.hpp"
+#include "xsk/gsc/engine/s1_xb.hpp"
+#include "xsk/gsc/engine/s2.hpp"
+#include "xsk/gsc/engine/s4.hpp"
+#include "xsk/gsc/engine/h1.hpp"
+#include "xsk/gsc/engine/h2.hpp"
+#include "xsk/t6/t6.hpp"
+// #include "xsk/arc/engine/t6.hpp"
+// #include "xsk/arc/engine/t7.hpp"
+// #include "xsk/arc/engine/t8.hpp"
+// #include "xsk/arc/engine/t9.hpp"
 
 namespace fs = std::filesystem;
 
@@ -32,7 +36,7 @@ namespace xsk
 
 enum class encd { _, source, assembly, binary };
 enum class mode { _, assemble, disassemble, compile, decompile, parse, rename };
-enum class game { _, iw5ps, iw5xb, iw6ps, iw6xb, s1ps, s1xb, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6 };
+enum class game { _, iw5ps, iw5xb, iw6ps, iw6xb, s1ps, s1xb, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9 };
 
 std::unordered_map<std::string_view, encd> const exts =
 {
@@ -71,6 +75,9 @@ std::unordered_map<std::string_view, game> const games =
     { "h1", game::h1 },
     { "h2", game::h2 },
     { "t6", game::t6 },
+    { "t7", game::t7 },
+    { "t8", game::t8 },
+    { "t9", game::t9 },
 };
 
 std::map<game, std::string_view> const games_rev =
@@ -92,6 +99,9 @@ std::map<game, std::string_view> const games_rev =
     { game::h1, "h1" },
     { game::h2, "h2" },
     { game::t6, "t6" },
+    { game::t7, "t7" },
+    { game::t8, "t8" },
+    { game::t9, "t9" },
 };
 
 std::map<mode, encd> const encds =
@@ -185,10 +195,10 @@ auto assemble_file(game game, fs::path file, fs::path rel) -> void
         {
             if (zonetool)
             {
-                auto path = fs::path{ "compiled" } / rel;
+                auto path = fs::path{ "assembled" } / rel;
                 utils::file::save(path, outbin.first.data, outbin.first.size);
                 utils::file::save(path.replace_extension(".cgsc.stack"), outbin.second.data, outbin.second.size);
-                std::cout << fmt::format("compiled {}\n", rel.generic_string());
+                std::cout << fmt::format("assembled {}\n", rel.generic_string());
             }
             else
             {
@@ -207,8 +217,8 @@ auto assemble_file(game game, fs::path file, fs::path rel) -> void
                 script.bytecodeLen = static_cast<std::uint32_t>(script.bytecode.size());
 
                 auto result = script.serialize();
-                utils::file::save(fs::path{ "compiled" } / rel, result);
-                std::cout << fmt::format("compiled {}\n", rel.generic_string());
+                utils::file::save(fs::path{ "assembled" } / rel, result);
+                std::cout << fmt::format("assembled {}\n", rel.generic_string());
             }
         }
     }
@@ -643,7 +653,7 @@ auto init(game game) -> void
 namespace arc
 {
 
-std::map<game, context::ptr> contexts;
+std::map<game, std::unique_ptr<context>> contexts;
 std::map<mode, std::function<void(game game, fs::path const& file, fs::path rel)>> funcs;
 
 void assemble_file(game game, fs::path const& file, fs::path rel)
@@ -690,6 +700,24 @@ void disassemble_file(game game, fs::path const& file, fs::path rel)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
     }
+    //try
+    // {
+    //     if (file.extension() != ".gsc" && file.extension() != ".csc" && file.extension() != ".gscc" && file.extension() != ".cscc")
+    //         throw std::runtime_error("expected .gsc or .csc file");
+
+    //     rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((file.extension() == ".gsc" ? ".gscasm" : ".cscasm"));
+
+    //     auto data = utils::file::read(file.string());
+    //     auto outasm = contexts[game]->disassembler().disassemble(data);
+    //     auto outsrc = contexts[game]->source().dump(*outasm);
+
+    //     utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
+    //     std::cout << fmt::format("disassembled {}\n", rel.generic_string());
+    // }
+    // catch (std::exception const& e)
+    // {
+    //     std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+    // }
 }
 
 void compile_file(game game, fs::path const& file, fs::path rel)
@@ -748,6 +776,26 @@ void decompile_file(game game, fs::path const& file, fs::path rel)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
     }
+    // try
+    // {
+    //     if (file.extension() != ".gsc" && file.extension() != ".csc" && file.extension() != ".gscc" && file.extension() != ".cscc")
+    //         throw std::runtime_error("expected .gsc or .csc file");
+
+    //     rel = fs::path{ games_rev.at(game) } / rel / file.filename();
+
+    //     auto data = utils::file::read(file);
+
+    //     auto outasm = contexts[game]->disassembler().disassemble(data);
+    //     auto outsrc = contexts[game]->decompiler().decompile(*outasm);
+    //     auto output = contexts[game]->source().dump(*outsrc);
+
+    //     utils::file::save(fs::path{ "decompiled" } / rel, output);
+    //     std::cout << fmt::format("decompiled {}\n", rel.generic_string());
+    // }
+    // catch (std::exception const& e)
+    // {
+    //     std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+    // }
 }
 
 void parse_file(game, fs::path const&, fs::path)
@@ -765,8 +813,35 @@ auto init_t6() -> void
     if (!contexts.contains(game::t6))
     {
         contexts[game::t6] = std::make_unique<t6::context>();
-        contexts[game::t6]->init(build::prod, utils::file::read);
+        contexts[game::t6]->init(build::prod, nullptr/*utils::file::read*/);
     }
+}
+
+auto init_t7() -> void
+{
+    // if (!contexts.contains(game::t7))
+    // {
+    //     contexts[game::t7] = std::make_unique<t7::context>();
+    //     contexts[game::t7]->init(build::prod, nullptr);
+    // }
+}
+
+auto init_t8() -> void
+{
+    // if (!contexts.contains(game::t8))
+    // {
+    //     contexts[game::t8] = std::make_unique<t8::context>();
+    //     contexts[game::t8]->init(build::prod, nullptr/*utils::file::read*/);
+    // }
+}
+
+auto init_t9() -> void
+{
+    // if (!contexts.contains(game::t9))
+    // {
+    //     contexts[game::t9] = std::make_unique<t9::context>();
+    //     contexts[game::t9]->init(build::prod, nullptr/*utils::file::read*/);
+    // }
 }
 
 auto init(game game) -> void
@@ -781,6 +856,9 @@ auto init(game game) -> void
     switch (game)
     {
         case game::t6: init_t6(); break;
+        case game::t7: init_t7(); break;
+        case game::t8: init_t8(); break;
+        case game::t9: init_t9(); break;
         default: break;
     }
 }

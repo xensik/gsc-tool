@@ -6,4 +6,5 @@ clean:
 
 t6: parser.ypp
 	bison parser.ypp -Wcounterexamples
-	mv parser.hpp parser.cpp ../../src/t6/
+	mv parser.hpp ../../include/xsk/t6/
+	mv parser.cpp ../../src/t6/

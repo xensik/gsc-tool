@@ -3,9 +3,9 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include <stdinc.hpp>
-#include "zlib.hpp"
-#include <zlib.h>
+#include "xsk/stdinc.hpp"
+#include "xsk/utils/zlib.hpp"
+#include "zlib.h"
 
 namespace xsk::utils
 {

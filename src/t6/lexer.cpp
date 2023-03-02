@@ -3,10 +3,10 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include "stdinc.hpp"
-#include "t6.hpp"
-#include "parser.hpp"
-#include "lexer.hpp"
+#include "xsk/stdinc.hpp"
+#include "xsk/t6/t6.hpp"
+#include "xsk/t6/parser.hpp"
+#include "xsk/t6/lexer.hpp"
 
 xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer)
 {
