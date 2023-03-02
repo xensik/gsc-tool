@@ -3,8 +3,8 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include <stdinc.hpp>
-#include "reader.hpp"
+#include "xsk/stdinc.hpp"
+#include "xsk/utils/reader.hpp"
 
 namespace xsk::utils
 {

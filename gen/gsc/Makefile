@@ -6,4 +6,5 @@ clean:
 
 gsc: parser.ypp
 	bison parser.ypp -Wcounterexamples
-	mv parser.hpp parser.cpp ../../src/gsc/
+	mv parser.hpp ../../include/xsk/gsc/
+	mv parser.cpp ../../src/gsc/

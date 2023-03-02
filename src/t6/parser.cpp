@@ -37,9 +37,9 @@
 // "%code top" blocks.
 #line 38 "parser.ypp"
 
-#include "stdinc.hpp"
-#include "parser.hpp"
-#include "lexer.hpp"
+#include "xsk/stdinc.hpp"
+#include "xsk/t6/parser.hpp"
+#include "xsk/t6/lexer.hpp"
 using namespace xsk::arc;
 xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 
@@ -48,9 +48,6 @@ xsk::arc::t6::parser::symbol_type T6lex(xsk::arc::t6::lexer& lexer);
 // Take the name prefix into account.
 #define yylex   T6lex
 
-
-
-#include "parser.hpp"
 
 
 

@@ -3,9 +3,9 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include <stdinc.hpp>
-#include "compiler.hpp"
-#include "context.hpp"
+#include "xsk/stdinc.hpp"
+#include "xsk/gsc/compiler.hpp"
+#include "xsk/gsc/context.hpp"
 
 namespace xsk::gsc
 {

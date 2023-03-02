@@ -3,12 +3,12 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-#include <stdinc.hpp>
-#include "source.hpp"
-#include "context.hpp"
-#include "preprocessor.hpp"
-#include "parser.hpp"
-#include <utils/string.hpp>
+#include "xsk/stdinc.hpp"
+#include "xsk/utils/string.hpp"
+#include "xsk/gsc/source.hpp"
+#include "xsk/gsc/context.hpp"
+#include "xsk/gsc/preprocessor.hpp"
+#include "xsk/gsc/parser.hpp"
 
 namespace xsk::gsc
 {

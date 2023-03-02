@@ -37,9 +37,9 @@
 // "%code top" blocks.
 #line 41 "parser.ypp"
 
-#include "stdinc.hpp"
-#include "parser.hpp"
-#include "preprocessor.hpp"
+#include "xsk/stdinc.hpp"
+#include "xsk/gsc/parser.hpp"
+#include "xsk/gsc/preprocessor.hpp"
 using namespace xsk::gsc;
 namespace xsk::gsc
 { 
@@ -52,9 +52,6 @@ namespace xsk::gsc
 // Take the name prefix into account.
 #define yylex   GSClex
 
-
-
-#include "parser.hpp"
 
 
 
