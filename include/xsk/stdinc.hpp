@@ -5,9 +5,10 @@
 
 #pragma once
 
-#include <cstdio>
 #include <algorithm>
 #include <array>
+#include <cstdio>
+#include <deque>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -16,7 +17,6 @@
 #include <map>
 #include <memory>
 #include <queue>
-#include <deque>
 #include <regex>
 #include <set>
 #include <sstream>
@@ -26,8 +26,9 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <version>
 
-#if _WIN32
+#ifdef __cpp_lib_format
 #include <format>
 namespace fmt = std;
 #else
