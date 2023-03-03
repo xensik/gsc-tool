@@ -5,9 +5,10 @@
 
 #pragma once
 
+#include <cstdio>
+
 #include <algorithm>
 #include <array>
-#include <cstdio>
 #include <deque>
 #include <filesystem>
 #include <fstream>
