@@ -9,13 +9,13 @@ namespace xsk::arc::t6
 {
 
 extern std::array<std::pair<u8, opcode>, code_count> const code_list;
-extern std::array<std::pair<u32, char const*>, dvar_count> const dvar_list;
+extern std::array<std::pair<u32, char const*>, hash_count> const hash_list;
 
 context::context() : arc::context(props::none, engine::t6, endian::little, system::pc, header_magic)
 {
     code_map_.reserve(code_list.size());
     code_map_rev_.reserve(code_list.size());
-    dvar_map_.reserve(dvar_list.size());
+    hash_map_.reserve(hash_list.size());
 
     for (auto const& entry : code_list)
     {
@@ -23,9 +23,9 @@ context::context() : arc::context(props::none, engine::t6, endian::little, syste
         code_map_rev_.insert({ entry.second, entry.first });
     }
 
-    for (auto const& entry : dvar_list)
+    for (auto const& entry : hash_list)
     {
-        dvar_map_.insert({ entry.first, entry.second });
+        hash_map_.insert({ entry.first, entry.second });
     }
 }
 

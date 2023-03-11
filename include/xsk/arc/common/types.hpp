@@ -52,8 +52,9 @@ struct props
 {
     enum values : u32
     {
-        none       = 0 << 0,
-        version2   = 1 << 0,
+        none = 0 << 0,
+        v2   = 1 << 0,
+        v3   = 1 << 1,
     };
 
     props(values value) : value_(value) {}

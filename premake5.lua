@@ -83,7 +83,7 @@ project "xsk-tool"
     targetname "gsc-tool"
 
     dependson "xsk-utils"
-    -- dependson "xsk-arc"
+    dependson "xsk-arc"
     dependson "xsk-gsc"
     dependson "xsk-t6"
 
@@ -95,7 +95,7 @@ project "xsk-tool"
 
     links {
         "xsk-utils",
-        -- "xsk-arc",
+        "xsk-arc",
         "xsk-gsc",
         "xsk-t6",
     }
@@ -124,21 +124,21 @@ project "xsk-utils"
     fmt:include()
     zlib:include()
 
--- project "xsk-arc"
---     kind "StaticLib"
---     language "C++"
+project "xsk-arc"
+    kind "StaticLib"
+    language "C++"
 
---     files {
---         "./src/arc/**.h",
---         "./src/arc/**.hpp",
---         "./src/arc/**.cpp"
---     }
+    files {
+        "./src/arc/**.h",
+        "./src/arc/**.hpp",
+        "./src/arc/**.cpp"
+    }
 
---     includedirs {
---         "./include",
---     }
+    includedirs {
+        "./include",
+    }
 
---     fmt:include()
+    fmt:include()
 
 project "xsk-gsc"
     kind "StaticLib"
@@ -173,5 +173,5 @@ project "xsk-t6"
     fmt:include()
 
 group "Dependencies"
-    fmt:project()
     zlib:project()
+    fmt:project()

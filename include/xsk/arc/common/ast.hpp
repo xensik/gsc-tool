@@ -35,6 +35,7 @@ struct node
         expr_game,
         expr_undefined,
         expr_empty_array,
+        expr_ellipsis,
         expr_paren,
         expr_size,
         expr_field,
@@ -200,6 +201,7 @@ struct expr_self;
 struct expr_game;
 struct expr_undefined;
 struct expr_empty_array;
+struct expr_ellipsis;
 struct expr_paren;
 struct expr_size;
 struct expr_field;
@@ -363,6 +365,7 @@ union expr
     std::unique_ptr<expr_game> as_game;
     std::unique_ptr<expr_undefined> as_undefined;
     std::unique_ptr<expr_empty_array> as_empty_array;
+    std::unique_ptr<expr_ellipsis> as_ellipsis;
     std::unique_ptr<expr_paren> as_paren;
     std::unique_ptr<expr_size> as_size;
     std::unique_ptr<expr_field> as_field;
@@ -704,6 +707,14 @@ struct expr_empty_array : public node
 
     expr_empty_array(location const& loc);
     friend auto operator==(expr_empty_array const& lhs, expr_empty_array const& rhs) -> bool;
+};
+
+struct expr_ellipsis : public node
+{
+    using ptr = std::unique_ptr<expr_ellipsis>;
+
+    expr_ellipsis(location const& loc);
+    friend auto operator==(expr_ellipsis const& lhs, expr_ellipsis const& rhs) -> bool;
 };
 
 struct expr_paren : public node
@@ -1777,6 +1788,7 @@ XSK_ARC_MAKE_GENERIC(expr_self)
 XSK_ARC_MAKE_GENERIC(expr_game)
 XSK_ARC_MAKE_GENERIC(expr_undefined)
 XSK_ARC_MAKE_GENERIC(expr_empty_array)
+XSK_ARC_MAKE_GENERIC(expr_ellipsis)
 XSK_ARC_MAKE_GENERIC(expr_paren)
 XSK_ARC_MAKE_GENERIC(expr_size)
 XSK_ARC_MAKE_GENERIC(expr_field)

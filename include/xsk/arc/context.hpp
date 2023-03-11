@@ -40,8 +40,6 @@ public:
     auto opcode_name(opcode op) const -> std::string;
     auto opcode_enum(std::string const& name) const -> opcode;
     auto opcode_enum(u16 id) const -> opcode;
-    auto dvar_id(std::string const& name) const -> u32;
-    auto dvar_name(u32 id) const -> std::string;
     auto hash_id(std::string const& name) const -> u32;
     auto hash_name(u32 id) const -> std::string;
 
@@ -62,7 +60,6 @@ protected:
     std::unordered_map<std::string_view, opcode> opcode_map_rev_;
     std::unordered_map<u16, opcode> code_map_;
     std::unordered_map<opcode, u8> code_map_rev_;
-    std::unordered_map<u32, std::string_view> dvar_map_;
     std::unordered_map<u32, std::string_view> hash_map_;
 };
 

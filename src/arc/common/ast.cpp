@@ -243,6 +243,10 @@ expr_empty_array::expr_empty_array(location const& loc) : node{ type::expr_empty
 {
 }
 
+expr_ellipsis::expr_ellipsis(location const& loc) : node{ type::expr_ellipsis, loc }
+{
+}
+
 expr_paren::expr_paren(location const& loc, expr value) : node{ type::expr_paren, loc }, value{ std::move(value) }
 {
 }
@@ -837,6 +841,11 @@ auto operator==(expr_empty_array const&, expr_empty_array const&) -> bool
     return true;
 }
 
+auto operator==(expr_ellipsis const&, expr_ellipsis const&) -> bool
+{
+    return true;
+}
+
 auto operator==(expr_paren const& lhs, expr_paren const& rhs) -> bool
 {
     return lhs.value == rhs.value;
@@ -949,6 +958,7 @@ expr::~expr()
         case node::expr_game: as_game.~unique_ptr(); return;
         case node::expr_undefined: as_undefined.~unique_ptr(); return;
         case node::expr_empty_array: as_empty_array.~unique_ptr(); return;
+        case node::expr_ellipsis: as_ellipsis.~unique_ptr(); return;
         case node::expr_paren: as_paren.~unique_ptr(); return;
         case node::expr_size: as_size.~unique_ptr(); return;
         case node::expr_field: as_field.~unique_ptr(); return;
@@ -1058,6 +1068,7 @@ auto operator==(expr const& lhs, expr const& rhs)  -> bool
         case node::expr_game: return *lhs.as_game == *rhs.as_game;
         case node::expr_undefined: return *lhs.as_undefined == *rhs.as_undefined;
         case node::expr_empty_array: return *lhs.as_empty_array == *rhs.as_empty_array;
+        case node::expr_ellipsis: return *lhs.as_ellipsis == *rhs.as_ellipsis;
         case node::expr_paren: return *lhs.as_paren == *rhs.as_paren;
         case node::expr_size: return *lhs.as_size == *rhs.as_size;
         case node::expr_field: return *lhs.as_field == *rhs.as_field;

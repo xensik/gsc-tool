@@ -20,6 +20,7 @@ class decompiler
     std::vector<std::string> expr_labels_;
     std::vector<std::string> tern_labels_;
     std::vector<std::string> locals_;
+    std::vector<param_type> params_;
     std::stack<node::ptr> stack_;
     locjmp locs_;
     bool in_waittill_;

@@ -134,6 +134,7 @@ private:
     auto dump_expr_field(expr_field const& exp) -> void;
     auto dump_expr_size(expr_size const& exp) -> void;
     auto dump_expr_paren(expr_paren const& exp) -> void;
+    auto dump_expr_ellipsis(expr_ellipsis const& exp) -> void;
     auto dump_expr_empty_array(expr_empty_array const& exp) -> void;
     auto dump_expr_undefined(expr_undefined const& exp) -> void;
     auto dump_expr_game(expr_game const& exp) -> void;

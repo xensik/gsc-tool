@@ -8,8 +8,9 @@
 namespace xsk::arc
 {
 
-constexpr usize header_size_32 = 64;
-constexpr usize header_size_64 = 72;
+constexpr usize header_size_v1 = 64;
+constexpr usize header_size_v2 = 72;
+constexpr usize header_size_v3 = 0;
 
 struct header
 {
@@ -23,6 +24,7 @@ struct header
     u32 exports_offset;
     u32 imports_offset;
     u32 fixup_offset;
+    u32 globalvar_offset;
     u32 profile_offset;
     u32 cseg_size;
     u32 name;
@@ -30,6 +32,7 @@ struct header
     u16 exports_count;
     u16 imports_count;
     u16 fixup_count;
+    u16 globalvar_count;
     u16 profile_count;
     u16 devblock_stringtablefixup_count;
     u8 include_count;
@@ -114,6 +117,13 @@ struct animtree_ref
     std::string name;
     std::vector<u32> refs;
     std::vector<animation_ref> anims;
+};
+
+enum class param_type : u8
+{
+    value = 0,
+    reference = 1,
+    vararg = 2,
 };
 
 } // namespace xsk::arc
