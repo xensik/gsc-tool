@@ -34,6 +34,9 @@ public:
     auto ban_header(location const& loc) -> void;
 
 private:
+    std::string date_;
+    std::string time_;
+
     auto skip_line() -> void;
     auto next_token() -> token;
     auto read_token() -> token;
@@ -81,6 +84,8 @@ private:
     auto eval_expr_factor() -> i32;
     auto eval_expr_unary() -> i32;
     auto eval_expr_primary() -> i32;
+    auto get_date_define(std::tm* time_p) -> std::string;
+    auto get_time_define(std::tm* time_p) -> std::string;
 };
 
 } // namespace xsk::gsc

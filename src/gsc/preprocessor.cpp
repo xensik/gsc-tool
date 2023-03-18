@@ -38,6 +38,10 @@ preprocessor::preprocessor(context* ctx, std::string const& name, char const* da
     directives_.insert({ "include", directive::INCLUDE });
     directives_.insert({ "inline", directive::INLINE });
     directives_.insert({ "using_animtree", directive::USINGTREE });
+
+    std::tm l_time = {};
+    date_ = get_date_define(&l_time);
+    time_ = get_time_define(&l_time);
 }
 
 auto preprocessor::process() -> token
@@ -746,11 +750,11 @@ auto preprocessor::expand(token& tok, define& def) -> void
         }
         else if (tok.data == "__DATE__")
         {
-             tokens_.push_front(token{ token::STRING, tok.space, tok.pos, tok.data }); // TODO!
+             tokens_.push_front(token{ token::STRING, tok.space, tok.pos, date_ });
         }
         else if (tok.data == "__TIME__")
         {
-            tokens_.push_front(token{ token::STRING, tok.space, tok.pos, tok.data }); // TODO!
+            tokens_.push_front(token{ token::STRING, tok.space, tok.pos, time_ });
         }
     }
     else if (def.type == define::OBJECT)
@@ -1320,7 +1324,7 @@ auto preprocessor::eval_expr_primary() -> i32
     if (eval_match(token::INT))
         return static_cast<i32>(std::stoi(eval_prev().data));
     
-    if  (eval_match(token::LPAREN))
+    if (eval_match(token::LPAREN))
     {
         auto val = eval_expr();
         eval_consume(token::RPAREN, "expect ')' after expression.");
@@ -1351,6 +1355,20 @@ auto preprocessor::eval_expr_primary() -> i32
     }
 
     throw ppr_error(eval_peek().pos, "invalid preprocessor expression");
+}
+
+auto preprocessor::get_date_define(std::tm* time_p) -> std::string
+{
+    char buf[] = "??? ?? ????";
+    strftime(buf, sizeof(buf), "%b %d %Y", time_p);
+    return std::string("\"").append(buf).append("\"");
+}
+
+auto preprocessor::get_time_define(std::tm* time_p) -> std::string
+{
+    char buf[] = "??:??:??";
+    strftime(buf, sizeof(buf), "%T", time_p);
+    return std::string("\"").append(buf).append("\"");
 }
 
 } // namespace xsk::gsc
