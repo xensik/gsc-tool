@@ -1360,14 +1360,14 @@ auto preprocessor::eval_expr_primary() -> i32
 auto preprocessor::get_date_define(std::tm* time_p) -> std::string
 {
     char buf[] = "??? ?? ????";
-    strftime(buf, sizeof(buf), "%b %d %Y", time_p);
+    std::strftime(buf, sizeof(buf), "%b %d %Y", time_p);
     return std::string("\"").append(buf).append("\"");
 }
 
 auto preprocessor::get_time_define(std::tm* time_p) -> std::string
 {
     char buf[] = "??:??:??";
-    strftime(buf, sizeof(buf), "%T", time_p);
+    std::strftime(buf, sizeof(buf), "%T", time_p);
     return std::string("\"").append(buf).append("\"");
 }
 
