@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <array>
+#include <ctime>
 #include <deque>
 #include <filesystem>
 #include <fstream>
