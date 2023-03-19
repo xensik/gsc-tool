@@ -84,8 +84,9 @@ private:
     auto eval_expr_factor() -> i32;
     auto eval_expr_unary() -> i32;
     auto eval_expr_primary() -> i32;
-    auto get_date_define(std::tm* time_p) -> std::string;
-    auto get_time_define(std::tm* time_p) -> std::string;
+
+    static auto get_date_define(std::tm* time_p) -> std::string;
+    static auto get_time_define(std::tm* time_p) -> std::string;
 };
 
 } // namespace xsk::gsc
