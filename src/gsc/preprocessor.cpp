@@ -40,8 +40,8 @@ preprocessor::preprocessor(context* ctx, std::string const& name, char const* da
     directives_.insert({ "using_animtree", directive::USINGTREE });
 
     std::tm l_time = {};
-    date_ = get_date_define(&l_time);
-    time_ = get_time_define(&l_time);
+    get_date_define(&l_time);
+    get_time_define(&l_time);
 }
 
 auto preprocessor::process() -> token
@@ -1357,18 +1357,18 @@ auto preprocessor::eval_expr_primary() -> i32
     throw ppr_error(eval_peek().pos, "invalid preprocessor expression");
 }
 
-auto preprocessor::get_date_define(std::tm* time_p) -> std::string
+auto preprocessor::get_date_define(std::tm* time_p) -> void
 {
     char buf[] = "??? ?? ????";
     std::strftime(buf, sizeof(buf), "%b %d %Y", time_p);
-    return std::string("\"").append(buf).append("\"");
+    date_ = std::string("\"").append(buf).append("\"");
 }
 
-auto preprocessor::get_time_define(std::tm* time_p) -> std::string
+auto preprocessor::get_time_define(std::tm* time_p) -> void
 {
     char buf[] = "??:??:??";
     std::strftime(buf, sizeof(buf), "%T", time_p);
-    return std::string("\"").append(buf).append("\"");
+    time_ = std::string("\"").append(buf).append("\"");
 }
 
 } // namespace xsk::gsc
