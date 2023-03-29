@@ -22,6 +22,8 @@ class preprocessor
     std::set<std::string> reject_;
     std::deque<token> tokens_;
     std::vector<token> expr_;
+    std::string date_;
+    std::string time_;
     usize curr_expr_;
     u32 expand_;
     u32 skip_;
@@ -34,9 +36,6 @@ public:
     auto ban_header(location const& loc) -> void;
 
 private:
-    std::string date_;
-    std::string time_;
-
     auto skip_line() -> void;
     auto next_token() -> token;
     auto read_token() -> token;
