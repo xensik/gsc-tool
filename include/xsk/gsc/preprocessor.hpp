@@ -22,6 +22,8 @@ class preprocessor
     std::set<std::string> reject_;
     std::deque<token> tokens_;
     std::vector<token> expr_;
+    std::string date_;
+    std::string time_;
     usize curr_expr_;
     u32 expand_;
     u32 skip_;
@@ -81,6 +83,8 @@ private:
     auto eval_expr_factor() -> i32;
     auto eval_expr_unary() -> i32;
     auto eval_expr_primary() -> i32;
+    auto get_date_define(std::tm* time_p) -> void;
+    auto get_time_define(std::tm* time_p) -> void;
 };
 
 } // namespace xsk::gsc
