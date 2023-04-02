@@ -40,6 +40,7 @@ preprocessor::preprocessor(context* ctx, std::string const& name, char const* da
     directives_.insert({ "using_animtree", directive::USINGTREE });
 
     std::tm l_time = {};
+    get_local_time(l_time);
     get_date_define(&l_time);
     get_time_define(&l_time);
 }
@@ -1355,6 +1356,17 @@ auto preprocessor::eval_expr_primary() -> i32
     }
 
     throw ppr_error(eval_peek().pos, "invalid preprocessor expression");
+}
+
+auto preprocessor::get_local_time(std::tm& l_time) -> void
+{
+    std::time_t t;
+    time(&t);
+#ifndef _WIN32
+    localtime_r(&t, &l_time);
+#else
+    localtime_s(&l_time, &t);
+#endif
 }
 
 auto preprocessor::get_date_define(std::tm* time_p) -> void
