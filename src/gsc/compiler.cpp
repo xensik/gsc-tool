@@ -50,28 +50,28 @@ auto compiler::emit_program(program const& prog) -> void
 
     for (auto const& dec : prog.declarations)
     {
-        if (dec == node::decl_function)
+        if (dec->is<decl_function>())
         {
-            auto const& name = dec.as_function->name->value;
+            auto const& name = dec->as<decl_function>().name->value;
 
             if (ctx_->func_exists(name) || ctx_->meth_exists(name))
             {
-                throw comp_error(dec.loc(), fmt::format("function name '{}' already defined as builtin", name));
+                throw comp_error(dec->loc(), fmt::format("function name '{}' already defined as builtin", name));
             }
 
             for (auto const& entry : localfuncs_)
             {
                 if (entry == name)
-                    throw comp_error(dec.loc(), fmt::format("function name '{}' already defined as local function", name));
+                    throw comp_error(dec->loc(), fmt::format("function name '{}' already defined as local function", name));
             }
 
-            localfuncs_.push_back(dec.as_function->name->value);
+            localfuncs_.push_back(dec->as<decl_function>().name->value);
         }
     }
 
     for (auto const& dec : prog.declarations)
     {
-        emit_decl(dec);
+        emit_decl(*dec);
     }
 }
 
@@ -86,13 +86,13 @@ auto compiler::emit_decl(decl const& dec) -> void
             developer_thread_ = false;
             break;
         case node::decl_usingtree:
-            emit_decl_usingtree(*dec.as_usingtree);
+            emit_decl_usingtree(dec.as<decl_usingtree>());
             break;
         case node::decl_constant:
-            emit_decl_constant(*dec.as_constant);
+            emit_decl_constant(dec.as<decl_constant>());
             break;
         case node::decl_function:
-            emit_decl_function(*dec.as_function);
+            emit_decl_function(dec.as<decl_function>());
             break;
         default:
             throw comp_error(dec.loc(), "unknown declaration");
@@ -115,7 +115,7 @@ auto compiler::emit_decl_constant(decl_constant const& constant) -> void
     if (it != constants_.end())
         throw comp_error(constant.loc(), fmt::format("duplicated constant '{}'", constant.name->value));
 
-    constants_.insert({ constant.name->value, &constant.value });
+    constants_.insert({ constant.name->value, constant.value.get() });
 }
 
 auto compiler::emit_decl_function(decl_function const& func) -> void
@@ -150,97 +150,91 @@ auto compiler::emit_stmt(stmt const& stm, scope& scp, bool last) -> void
     switch (stm.kind())
     {
         case node::stmt_list:
-            emit_stmt_list(*stm.as_list, scp, last);
+            emit_stmt_list(stm.as<stmt_list>(), scp, last);
             break;
         case node::stmt_comp:
-            emit_stmt_comp(*stm.as_comp, scp, last);
+            emit_stmt_comp(stm.as<stmt_comp>(), scp, last);
             break;
         case node::stmt_dev:
-            emit_stmt_dev(*stm.as_dev, scp, last);
+            emit_stmt_dev(stm.as<stmt_dev>(), scp, last);
             break;
         case node::stmt_expr:
-            emit_stmt_expr(*stm.as_expr, scp);
-            break;
-        case node::stmt_call:
-            emit_stmt_call(*stm.as_call, scp);
-            break;
-        case node::stmt_assign:
-            emit_stmt_assign(*stm.as_assign, scp);
+            emit_stmt_expr(stm.as<stmt_expr>(), scp);
             break;
         case node::stmt_endon:
-            emit_stmt_endon(*stm.as_endon, scp);
+            emit_stmt_endon(stm.as<stmt_endon>(), scp);
             break;
         case node::stmt_notify:
-            emit_stmt_notify(*stm.as_notify, scp);
+            emit_stmt_notify(stm.as<stmt_notify>(), scp);
             break;
         case node::stmt_wait:
-            emit_stmt_wait(*stm.as_wait, scp);
+            emit_stmt_wait(stm.as<stmt_wait>(), scp);
             break;
         case node::stmt_waittill:
-            emit_stmt_waittill(*stm.as_waittill, scp);
+            emit_stmt_waittill(stm.as<stmt_waittill>(), scp);
             break;
         case node::stmt_waittillmatch:
-            emit_stmt_waittillmatch(*stm.as_waittillmatch, scp);
+            emit_stmt_waittillmatch(stm.as<stmt_waittillmatch>(), scp);
             break;
         case node::stmt_waittillframeend:
-            emit_stmt_waittillframeend(*stm.as_waittillframeend, scp);
+            emit_stmt_waittillframeend(stm.as<stmt_waittillframeend>(), scp);
             break;
         case node::stmt_waitframe:
-            emit_stmt_waitframe(*stm.as_waitframe, scp);
+            emit_stmt_waitframe(stm.as<stmt_waitframe>(), scp);
             break;
         case node::stmt_if:
-            emit_stmt_if(*stm.as_if, scp, last);
+            emit_stmt_if(stm.as<stmt_if>(), scp, last);
             break;
         case node::stmt_ifelse:
-            emit_stmt_ifelse(*stm.as_ifelse, scp, last);
+            emit_stmt_ifelse(stm.as<stmt_ifelse>(), scp, last);
             break;
         case node::stmt_while:
-            emit_stmt_while(*stm.as_while, scp);
+            emit_stmt_while(stm.as<stmt_while>(), scp);
             break;
         case node::stmt_dowhile:
-            emit_stmt_dowhile(*stm.as_dowhile, scp);
+            emit_stmt_dowhile(stm.as<stmt_dowhile>(), scp);
             break;
         case node::stmt_for:
-            emit_stmt_for(*stm.as_for, scp);
+            emit_stmt_for(stm.as<stmt_for>(), scp);
             break;
         case node::stmt_foreach:
-            emit_stmt_foreach(*stm.as_foreach, scp);
+            emit_stmt_foreach(stm.as<stmt_foreach>(), scp);
             break;
         case node::stmt_switch:
-            emit_stmt_switch(*stm.as_switch, scp);
+            emit_stmt_switch(stm.as<stmt_switch>(), scp);
             break;
         case node::stmt_case:
-            emit_stmt_case(*stm.as_case, scp);
+            emit_stmt_case(stm.as<stmt_case>(), scp);
             break;
         case node::stmt_default:
-            emit_stmt_default(*stm.as_default, scp);
+            emit_stmt_default(stm.as<stmt_default>(), scp);
             break;
         case node::stmt_break:
-            emit_stmt_break(*stm.as_break, scp);
+            emit_stmt_break(stm.as<stmt_break>(), scp);
             break;
         case node::stmt_continue:
-            emit_stmt_continue(*stm.as_continue, scp);
+            emit_stmt_continue(stm.as<stmt_continue>(), scp);
             break;
         case node::stmt_return:
-            emit_stmt_return(*stm.as_return, scp);
+            emit_stmt_return(stm.as<stmt_return>(), scp);
             break;
         case node::stmt_breakpoint:
-            emit_stmt_breakpoint(*stm.as_breakpoint, scp);
+            emit_stmt_breakpoint(stm.as<stmt_breakpoint>(), scp);
             break;
         case node::stmt_prof_begin:
-            emit_stmt_prof_begin(*stm.as_prof_begin, scp);
+            emit_stmt_prof_begin(stm.as<stmt_prof_begin>(), scp);
             break;
         case node::stmt_prof_end:
-            emit_stmt_prof_end(*stm.as_prof_end, scp);
+            emit_stmt_prof_end(stm.as<stmt_prof_end>(), scp);
             break;
         case node::stmt_assert:
-            emit_stmt_assert(*stm.as_assert, scp);
+            emit_stmt_assert(stm.as<stmt_assert>(), scp);
             break;
         case node::stmt_assertex:
-            emit_stmt_assertex(*stm.as_assertex, scp);
+            emit_stmt_assertex(stm.as<stmt_assertex>(), scp);
             break;
         case node::stmt_assertmsg:
-            emit_stmt_assertmsg(*stm.as_assertmsg, scp);
+            emit_stmt_assertmsg(stm.as<stmt_assertmsg>(), scp);
             break;
         default:
             throw comp_error(stm.loc(), "unknown statement");
@@ -251,7 +245,7 @@ auto compiler::emit_stmt_list(stmt_list const& stm, scope& scp, bool last) -> vo
 {
     for (auto const& entry : stm.list)
     {
-        emit_stmt(entry, scp, (&entry == &stm.list.back() && last) ? true : false);
+        emit_stmt(*entry, scp, (&entry == &stm.list.back() && last) ? true : false);
     }
 }
 
@@ -267,76 +261,34 @@ auto compiler::emit_stmt_dev(stmt_dev const& stm, scope& scp, bool last) -> void
 
 auto compiler::emit_stmt_expr(stmt_expr const& stm, scope& scp) -> void
 {
-    switch (stm.value.kind())
+    switch (stm.value->kind())
     {
         case node::expr_increment:
-            emit_expr_increment(*stm.value.as_increment, scp, true);
+            emit_expr_increment(stm.value->as<expr_increment>(), scp, true);
             break;
         case node::expr_decrement:
-            emit_expr_decrement(*stm.value.as_decrement, scp, true);
+            emit_expr_decrement(stm.value->as<expr_decrement>(), scp, true);
             break;
-        case node::expr_assign_equal:
-        case node::expr_assign_add:
-        case node::expr_assign_sub:
-        case node::expr_assign_mul:
-        case node::expr_assign_div:
-        case node::expr_assign_mod:
-        case node::expr_assign_shift_left:
-        case node::expr_assign_shift_right:
-        case node::expr_assign_bitwise_or:
-        case node::expr_assign_bitwise_and:
-        case node::expr_assign_bitwise_exor:
-            emit_expr_assign(*stm.value.as_assign, scp);
+        case node::expr_assign:
+            emit_expr_assign(stm.value->as<expr_assign>(), scp);
             break;
-        case node::null:
+        case node::expr_call:
+            emit_expr_call(stm.value->as<expr_call>(), scp, true);
+            break;
+        case node::expr_method:
+            emit_expr_method(stm.value->as<expr_method>(), scp, true);
+            break;
+        case node::expr_empty:
             break;
         default:
             throw comp_error(stm.loc(), "unknown expr statement expression");
     }
 }
 
-auto compiler::emit_stmt_call(stmt_call const& stm, scope& scp) -> void
-{
-    if (stm.value == node::expr_call)
-        emit_expr_call(*stm.value.as_call, scp, true);
-    else if (stm.value == node::expr_method)
-        emit_expr_method(*stm.value.as_method, scp, true);
-    else
-        throw comp_error(stm.loc(), "unknown call statement expression");
-}
-
-auto compiler::emit_stmt_assign(stmt_assign const& stm, scope& scp) -> void
-{
-    switch (stm.value.kind())
-    {
-        case node::expr_increment:
-            emit_expr_increment(*stm.value.as_increment, scp, true);
-            break;
-        case node::expr_decrement:
-            emit_expr_decrement(*stm.value.as_decrement, scp, true);
-            break;
-        case node::expr_assign_equal:
-        case node::expr_assign_add:
-        case node::expr_assign_sub:
-        case node::expr_assign_mul:
-        case node::expr_assign_div:
-        case node::expr_assign_mod:
-        case node::expr_assign_shift_left:
-        case node::expr_assign_shift_right:
-        case node::expr_assign_bitwise_or:
-        case node::expr_assign_bitwise_and:
-        case node::expr_assign_bitwise_exor:
-            emit_expr_assign(*stm.value.as_assign, scp);
-            break;
-        default:
-            throw comp_error(stm.loc(), "unknown assign statement expression");
-    }
-}
-
 auto compiler::emit_stmt_endon(stmt_endon const& stm, scope& scp) -> void
 {
-    emit_expr(stm.event, scp);
-    emit_expr(stm.obj, scp);
+    emit_expr(*stm.event, scp);
+    emit_expr(*stm.obj, scp);
     emit_opcode(opcode::OP_endon);
 }
 
@@ -344,38 +296,31 @@ auto compiler::emit_stmt_notify(stmt_notify const& stm, scope& scp) -> void
 {
     emit_opcode(opcode::OP_voidCodepos);
 
-    // std::reverse(stm.args->list.begin(), stm.args->list.end());
-
-    // for (auto const& arg : stm.args->list) // use reverse range later!!
-    // {
-    //     emit_expr(arg, scp);
-    // }
-
-    for (auto it = stm.args->list.rbegin(); it != stm.args->list.rend(); ++it)
+    for (auto it = stm.args->list.rbegin(); it != stm.args->list.rend(); it++)
     {
-        emit_expr(*it, scp);
+        emit_expr(**it, scp);
     }
 
-    emit_expr(stm.event, scp);
-    emit_expr(stm.obj, scp);
+    emit_expr(*stm.event, scp);
+    emit_expr(*stm.obj, scp);
     emit_opcode(opcode::OP_notify);
 }
 
 auto compiler::emit_stmt_wait(stmt_wait const& stm, scope& scp) -> void
 {
-    emit_expr(stm.time, scp);
+    emit_expr(*stm.time, scp);
     emit_opcode(opcode::OP_wait);
 }
 
 auto compiler::emit_stmt_waittill(stmt_waittill const& stm, scope& scp) -> void
 {
-    emit_expr(stm.event, scp);
-    emit_expr(stm.obj, scp);
+    emit_expr(*stm.event, scp);
+    emit_expr(*stm.obj, scp);
     emit_opcode(opcode::OP_waittill);
 
     for (auto const& entry : stm.args->list)
     {
-        emit_opcode(opcode::OP_SafeSetWaittillVariableFieldCached, fmt::format("{}", variable_create(*entry.as_identifier, scp)));
+        emit_opcode(opcode::OP_SafeSetWaittillVariableFieldCached, fmt::format("{}", variable_create(entry->as<expr_identifier>(), scp)));
     }
 
     emit_opcode(opcode::OP_clearparams);
@@ -384,8 +329,8 @@ auto compiler::emit_stmt_waittill(stmt_waittill const& stm, scope& scp) -> void
 auto compiler::emit_stmt_waittillmatch(stmt_waittillmatch const& stm, scope& scp) -> void
 {
     emit_expr_arguments(*stm.args, scp);
-    emit_expr(stm.event, scp);
-    emit_expr(stm.obj, scp);
+    emit_expr(*stm.event, scp);
+    emit_expr(*stm.obj, scp);
     emit_opcode(opcode::OP_waittillmatch, fmt::format("{}", stm.args->list.size()));
     emit_opcode(opcode::OP_waittillmatch2);
     emit_opcode(opcode::OP_clearparams);
@@ -405,22 +350,22 @@ auto compiler::emit_stmt_if(stmt_if const& stm, scope& scp, bool last) -> void
 {
     auto end_loc = create_label();
 
-    if (stm.test == node::expr_not)
+    if (stm.test->is<expr_not>())
     {
-        emit_expr(stm.test.as_not->rvalue, scp);
+        emit_expr(*stm.test->as<expr_not>().rvalue, scp);
         emit_opcode(opcode::OP_JumpOnTrue, end_loc);
     }
     else
     {
-        emit_expr(stm.test, scp);
+        emit_expr(*stm.test, scp);
         emit_opcode(opcode::OP_JumpOnFalse, end_loc);
     }
 
-    auto& scp_body = scopes_.at(stm.body.as_node.get());
+    auto& scp_body = scopes_.at(stm.body.get());
 
     scp.transfer(scp_body);
 
-    emit_stmt(stm.body, *scp_body, last);
+    emit_stmt(*stm.body, *scp_body, last);
 
     last ? emit_opcode(opcode::OP_End) : emit_remove_local_vars(*scp_body);
 
@@ -433,22 +378,22 @@ auto compiler::emit_stmt_ifelse(stmt_ifelse const& stm, scope& scp, bool last) -
     auto else_loc = create_label();
     auto end_loc = create_label();
 
-    if (stm.test == node::expr_not)
+    if (stm.test->is<expr_not>())
     {
-        emit_expr(stm.test.as_not->rvalue, scp);
+        emit_expr(*stm.test->as<expr_not>().rvalue, scp);
         emit_opcode(opcode::OP_JumpOnTrue, else_loc);
     }
     else
     {
-        emit_expr(stm.test, scp);
+        emit_expr(*stm.test, scp);
         emit_opcode(opcode::OP_JumpOnFalse, else_loc);
     }
 
-    auto& scp_then = scopes_.at(stm.stmt_if.as_node.get());
+    auto& scp_then = scopes_.at(stm.stmt_if.get());
 
     scp.transfer(scp_then);
 
-    emit_stmt(stm.stmt_if, *scp_then, last);
+    emit_stmt(*stm.stmt_if, *scp_then, last);
 
     emit_remove_local_vars(*scp_then);
 
@@ -459,11 +404,11 @@ auto compiler::emit_stmt_ifelse(stmt_ifelse const& stm, scope& scp, bool last) -
 
     insert_label(else_loc);
 
-    auto& scp_else = scopes_.at(stm.stmt_else.as_node.get());
+    auto& scp_else = scopes_.at(stm.stmt_else.get());
 
     scp.transfer(scp_else);
 
-    emit_stmt(stm.stmt_else, *scp_else, last);
+    emit_stmt(*stm.stmt_else, *scp_else, last);
 
     last ? emit_opcode(opcode::OP_End) : emit_remove_local_vars(*scp_else);
 
@@ -489,7 +434,7 @@ auto compiler::emit_stmt_while(stmt_while const& stm, scope& scp) -> void
     auto break_loc = create_label();
     auto continue_loc = create_label();
 
-    auto& scp_body = scopes_.at(stm.body.as_node.get());
+    auto& scp_body = scopes_.at(stm.body.get());
 
     scp.transfer(scp_body);
     scp_body->loc_break = break_loc;
@@ -501,23 +446,23 @@ auto compiler::emit_stmt_while(stmt_while const& stm, scope& scp) -> void
 
     auto begin_loc = insert_label();
 
-    bool const_cond = is_constant_condition(stm.test);
+    bool const_cond = is_constant_condition(*stm.test);
 
     if (!const_cond)
     {
-        if (stm.test == node::expr_not)
+        if (stm.test->is<expr_not>())
         {
-            emit_expr(stm.test.as_not->rvalue, scp);
+            emit_expr(*stm.test->as<expr_not>().rvalue, scp);
             emit_opcode(opcode::OP_JumpOnTrue, break_loc);
         }
         else
         {
-            emit_expr(stm.test, scp);
+            emit_expr(*stm.test, scp);
             emit_opcode(opcode::OP_JumpOnFalse, break_loc);
         }
     }
 
-    emit_stmt(stm.body, *scp_body, false);
+    emit_stmt(*stm.body, *scp_body, false);
 
     insert_label(continue_loc);
     emit_opcode(opcode::OP_jumpback, begin_loc);
@@ -547,7 +492,7 @@ auto compiler::emit_stmt_dowhile(stmt_dowhile const& stm, scope& scp) -> void
     auto break_loc = create_label();
     auto continue_loc = create_label();
 
-    auto& scp_body = scopes_.at(stm.body.as_node.get());
+    auto& scp_body = scopes_.at(stm.body.get());
 
     scp.transfer(scp_body);
     scp_body->loc_break = break_loc;
@@ -559,22 +504,22 @@ auto compiler::emit_stmt_dowhile(stmt_dowhile const& stm, scope& scp) -> void
 
     auto begin_loc = insert_label();
 
-    emit_stmt(stm.body, *scp_body, false);
+    emit_stmt(*stm.body, *scp_body, false);
 
     insert_label(continue_loc);
 
-    bool const_cond = is_constant_condition(stm.test);
+    bool const_cond = is_constant_condition(*stm.test);
 
     if (!const_cond)
     {
-        if (stm.test == node::expr_not)
+        if (stm.test->is<expr_not>())
         {
-            emit_expr(stm.test.as_not->rvalue, scp);
+            emit_expr(*stm.test->as<expr_not>().rvalue, scp);
             emit_opcode(opcode::OP_JumpOnTrue, break_loc);
         }
         else
         {
-            emit_expr(stm.test, scp);
+            emit_expr(*stm.test, scp);
             emit_opcode(opcode::OP_JumpOnFalse, break_loc);
         }
     }
@@ -606,9 +551,9 @@ auto compiler::emit_stmt_for(stmt_for const& stm, scope& scp) -> void
     auto break_loc = create_label();
     auto continue_loc = create_label();
 
-    emit_stmt(stm.init, scp, false);
+    emit_stmt(*stm.init, scp, false);
 
-    auto& scp_body = scopes_.at(stm.body.as_node.get());
+    auto& scp_body = scopes_.at(stm.body.get());
 
     scp.transfer(scp_body);
     scp_body->loc_break = break_loc;
@@ -618,24 +563,24 @@ auto compiler::emit_stmt_for(stmt_for const& stm, scope& scp) -> void
 
     scp.init(scp_body);
 
-    auto& scp_iter = scopes_.at(stm.iter.as_node.get());
+    auto& scp_iter = scopes_.at(stm.iter.get());
 
     scp.transfer(scp_iter);
 
     auto begin_loc = insert_label();
 
-    bool const_cond = is_constant_condition(stm.test);
+    bool const_cond = is_constant_condition(*stm.test);
 
     if (!const_cond)
     {
-        if (stm.test == node::expr_not)
+        if (stm.test->is<expr_not>())
         {
-            emit_expr(stm.test.as_not->rvalue, scp);
+            emit_expr(*stm.test->as<expr_not>().rvalue, scp);
             emit_opcode(opcode::OP_JumpOnTrue, break_loc);
         }
         else
         {
-            emit_expr(stm.test, scp);
+            emit_expr(*stm.test, scp);
             emit_opcode(opcode::OP_JumpOnFalse, break_loc);
         }
     }
@@ -643,7 +588,7 @@ auto compiler::emit_stmt_for(stmt_for const& stm, scope& scp) -> void
     can_break_ = true;
     can_continue_ = true;
 
-    emit_stmt(stm.body, *scp_body, false);
+    emit_stmt(*stm.body, *scp_body, false);
 
     if (scp_body->abort == scope::abort_none)
         continue_blks_.push_back(scp_body.get());
@@ -655,7 +600,7 @@ auto compiler::emit_stmt_for(stmt_for const& stm, scope& scp) -> void
 
     scp_iter->init(continue_blks_);
 
-    emit_stmt(stm.iter, *scp_iter, false);
+    emit_stmt(*stm.iter, *scp_iter, false);
     emit_opcode(opcode::OP_jumpback, begin_loc);
 
     insert_label(break_loc);
@@ -683,25 +628,25 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
     auto break_loc = create_label();
     auto continue_loc = create_label();
 
-    emit_expr(stm.container, scp);
-    emit_expr_variable_ref(stm.array, scp, true);
-    emit_expr_variable(stm.array, scp);
+    emit_expr(*stm.container, scp);
+    emit_expr_variable_ref(*stm.array, scp, true);
+    emit_expr_variable(*stm.array, scp);
 
     if (ctx_->props() & props::farcall)
         emit_opcode(opcode::OP_CallBuiltin, { "getfirstarraykey"s, "1"s });
     else
         emit_opcode(opcode::OP_CallBuiltin1, "getfirstarraykey");
     
-    emit_expr_variable_ref(stm.key, scp, true);
+    emit_expr_variable_ref(*stm.key, scp, true);
 
     if (ctx_->props() & props::foreach && stm.use_key)
     {
         emit_opcode(opcode::OP_GetUndefined);
-        emit_expr_variable_ref(stm.index, scp, true);
+        emit_expr_variable_ref(*stm.index, scp, true);
     }
 
-    auto& scp_body = scopes_.at(stm.body.as_node.get());
-    auto& scp_iter = scopes_.at(stm.key.as_node.get());
+    auto& scp_body = scopes_.at(stm.body.get());
+    auto& scp_iter = scopes_.at(stm.key.get());
 
     scp.transfer(scp_body);
     scp_body->loc_break = break_loc;
@@ -715,7 +660,7 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
 
     auto begin_loc = insert_label();
 
-    emit_expr_variable(stm.key, scp);
+    emit_expr_variable(*stm.key, scp);
 
     if (ctx_->props() & props::boolfuncs)
         emit_opcode(opcode::OP_IsDefined);
@@ -727,17 +672,17 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
     can_break_ = true;
     can_continue_ = true;
 
-    emit_expr_variable(stm.key, *scp_body);
-    emit_opcode(opcode::OP_EvalLocalArrayCached, fmt::format("{}", variable_access(*stm.array.as_identifier, *scp_body)));
-    emit_expr_variable_ref(stm.value, *scp_body, true);
+    emit_expr_variable(*stm.key, *scp_body);
+    emit_opcode(opcode::OP_EvalLocalArrayCached, fmt::format("{}", variable_access(stm.array->as<expr_identifier>(), *scp_body)));
+    emit_expr_variable_ref(*stm.value, *scp_body, true);
 
     if (ctx_->props() & props::foreach && stm.use_key)
     {
-        emit_expr_variable(stm.key, *scp_body);
-        emit_expr_variable_ref(stm.index, *scp_body, true);
+        emit_expr_variable(*stm.key, *scp_body);
+        emit_expr_variable_ref(*stm.index, *scp_body, true);
     }
 
-    emit_stmt(stm.body, *scp_body, false);
+    emit_stmt(*stm.body, *scp_body, false);
 
     if (scp_body->abort == scope::abort_none)
         continue_blks_.push_back(scp_body.get());
@@ -749,20 +694,20 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
 
     scp_iter->init(continue_blks_);
 
-    emit_expr_variable(stm.key, *scp_iter);
-    emit_expr_variable(stm.array, *scp_iter);
+    emit_expr_variable(*stm.key, *scp_iter);
+    emit_expr_variable(*stm.array, *scp_iter);
 
     if (ctx_->props() & props::farcall)
         emit_opcode(opcode::OP_CallBuiltin, { "getnextarraykey"s, "2"s });
     else
         emit_opcode(opcode::OP_CallBuiltin2, "getnextarraykey");
 
-    emit_expr_variable_ref(stm.key, *scp_iter, true);
+    emit_expr_variable_ref(*stm.key, *scp_iter, true);
     emit_opcode(opcode::OP_jumpback, begin_loc);
 
     insert_label(break_loc);
-    emit_expr_clear_local(*stm.array.as_identifier, scp);
-    if (ctx_->props() & props::foreach || !stm.use_key) emit_expr_clear_local(*stm.key.as_identifier, scp);
+    emit_expr_clear_local(stm.array->as<expr_identifier>(), scp);
+    if (ctx_->props() & props::foreach || !stm.use_key) emit_expr_clear_local(stm.key->as<expr_identifier>(), scp);
 
     can_break_ = old_break;
     can_continue_ = old_continue;
@@ -780,7 +725,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
     auto table_loc = create_label();
     auto break_loc = create_label();
 
-    emit_expr(stm.test, scp);
+    emit_expr(*stm.test, scp);
     emit_opcode(opcode::OP_switch, table_loc);
 
     can_break_ = true;
@@ -797,11 +742,11 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
     {
         auto const& entry = stm.body->block->list[i];
 
-        if (entry == node::stmt_case)
+        if (entry->is<stmt_case>())
         {
             data.push_back("case");
 
-            if (entry.as_case->value == node::expr_integer)
+            if (entry->as<stmt_case>().value->is<expr_integer>())
             {
                 if (ctx_->engine() == engine::iw9)
                 {
@@ -811,16 +756,16 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
                 {
                     if (type == switch_type::string)
                     {
-                        throw comp_error(entry.loc(), "switch cases with different types");
+                        throw comp_error(entry->loc(), "switch cases with different types");
                     }
 
                     type = switch_type::integer;
                 }
                 
-                data.push_back(entry.as_case->value.as_integer->value);
+                data.push_back(entry->as<stmt_case>().value->as<expr_integer>().value);
                 data.push_back(insert_label());
             }
-            else if (entry.as_case->value == node::expr_string)
+            else if (entry->as<stmt_case>().value->is<expr_string>())
             {
                 if (ctx_->engine() == engine::iw9)
                 {
@@ -830,48 +775,48 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
                 {
                     if (type == switch_type::integer)
                     {
-                        throw comp_error(entry.loc(), "switch cases with different types");
+                        throw comp_error(entry->loc(), "switch cases with different types");
                     }
 
                     type = switch_type::string;
                 }
 
-                data.push_back(entry.as_case->value.as_string->value);
+                data.push_back(entry->as<stmt_case>().value->as<expr_string>().value);
                 data.push_back(insert_label());
             }
             else
             {
-                throw comp_error(entry.loc(), "case type must be int or string");
+                throw comp_error(entry->loc(), "case type must be int or string");
             }
 
-            auto& scp_body = scopes_.at(entry.as_case->body.get());
+            auto& scp_body = scopes_.at(entry->as<stmt_case>().body.get());
 
             scp.transfer(scp_body);
             scp_body->loc_break = break_loc;
-            emit_stmt_list(*entry.as_case->body, *scp_body, false);
+            emit_stmt_list(*entry->as<stmt_case>().body, *scp_body, false);
 
-            if (entry.as_case->body->list.size() > 0)
+            if (entry->as<stmt_case>().body->list.size() > 0)
                 emit_remove_local_vars(*scp_body);
         }
-        else if (entry == node::stmt_default)
+        else if (entry->is<stmt_default>())
         {
             loc_default = insert_label();
             has_default = true;
 
-            auto& scp_body = scopes_.at(entry.as_default->body.get());
+            auto& scp_body = scopes_.at(entry->as<stmt_default>().body.get());
 
             default_ctx = scp_body.get();
 
             scp.transfer(scp_body);
             scp_body->loc_break = break_loc;
-            emit_stmt_list(*entry.as_default->body, *scp_body, false);
+            emit_stmt_list(*entry->as<stmt_default>().body, *scp_body, false);
 
-            if (entry.as_default->body->list.size() > 0)
+            if (entry->as<stmt_default>().body->list.size() > 0)
                 emit_remove_local_vars(*scp_body);
         }
         else
         {
-            throw comp_error(entry.loc(), "missing case statement");
+            throw comp_error(entry->loc(), "missing case statement");
         }
     }
 
@@ -939,9 +884,9 @@ auto compiler::emit_stmt_return(stmt_return const& stm, scope& scp) -> void
     if (scp.abort == scope::abort_none)
         scp.abort = scope::abort_return;
 
-    if (stm.value != node::null)
+    if (!stm.value->is<expr_empty>())
     {
-        emit_expr(stm.value, scp);
+        emit_expr(*stm.value, scp);
         emit_opcode(opcode::OP_Return);
     }
     else
@@ -983,70 +928,49 @@ auto compiler::emit_expr(expr const& exp, scope& scp) -> void
     switch (exp.kind())
     {
         case node::expr_paren:
-            emit_expr(exp.as_paren->value, scp);
+            emit_expr(*exp.as<expr_paren>().value, scp);
             break;
         case node::expr_ternary:
-            emit_expr_ternary(*exp.as_ternary, scp);
+            emit_expr_ternary(exp.as<expr_ternary>(), scp);
             break;
-        case node::expr_and:
-            emit_expr_and(*exp.as_and, scp);
-            break;
-        case node::expr_or:
-            emit_expr_or(*exp.as_or, scp);
-            break;
-        case node::expr_equality:
-        case node::expr_inequality:
-        case node::expr_less:
-        case node::expr_greater:
-        case node::expr_less_equal:
-        case node::expr_greater_equal:
-        case node::expr_bitwise_or:
-        case node::expr_bitwise_and:
-        case node::expr_bitwise_exor:
-        case node::expr_shift_left:
-        case node::expr_shift_right:
-        case node::expr_add:
-        case node::expr_sub:
-        case node::expr_mul:
-        case node::expr_div:
-        case node::expr_mod:
-            emit_expr_binary(*exp.as_binary, scp);
+        case node::expr_binary:
+            emit_expr_binary(exp.as<expr_binary>(), scp);
             break;
         case node::expr_complement:
-            emit_expr_complement(*exp.as_complement, scp);
+            emit_expr_complement(exp.as<expr_complement>(), scp);
             break;
         case node::expr_negate:
-            emit_expr_negate(*exp.as_negate, scp);
+            emit_expr_negate(exp.as<expr_negate>(), scp);
             break;
         case node::expr_not:
-            emit_expr_not(*exp.as_not, scp);
+            emit_expr_not(exp.as<expr_not>(), scp);
             break;
         case node::expr_call:
-            emit_expr_call(*exp.as_call, scp, false);
+            emit_expr_call(exp.as<expr_call>(), scp, false);
             break;
         case node::expr_method:
-            emit_expr_method(*exp.as_method, scp, false);
+            emit_expr_method(exp.as<expr_method>(), scp, false);
             break;
         case node::expr_isdefined:
-            emit_expr_isdefined(*exp.as_isdefined, scp);
+            emit_expr_isdefined(exp.as<expr_isdefined>(), scp);
             break;
         case node::expr_istrue:
-            emit_expr_istrue(*exp.as_istrue, scp);
+            emit_expr_istrue(exp.as<expr_istrue>(), scp);
             break;
         case node::expr_reference:
-            emit_expr_reference(*exp.as_reference, scp);
+            emit_expr_reference(exp.as<expr_reference>(), scp);
             break;
         case node::expr_add_array:
-            emit_expr_add_array(*exp.as_add_array, scp);
+            emit_expr_add_array(exp.as<expr_add_array>(), scp);
             break;
         case node::expr_array:
-            emit_expr_array(*exp.as_array, scp);
+            emit_expr_array(exp.as<expr_array>(), scp);
             break;
         case node::expr_field:
-            emit_expr_field(*exp.as_field, scp);
+            emit_expr_field(exp.as<expr_field>(), scp);
             break;
         case node::expr_size:
-            emit_expr_size(*exp.as_size, scp);
+            emit_expr_size(exp.as<expr_size>(), scp);
             break;
         case node::expr_thisthread:
             emit_opcode(opcode::OP_GetThisthread);
@@ -1070,36 +994,36 @@ auto compiler::emit_expr(expr const& exp, scope& scp) -> void
             emit_opcode(opcode::OP_GetLevel);
             break;
         case node::expr_animation:
-            emit_expr_animation(*exp.as_animation);
+            emit_expr_animation(exp.as<expr_animation>());
             break;
         case node::expr_animtree:
-            emit_expr_animtree(*exp.as_animtree);
+            emit_expr_animtree(exp.as<expr_animtree>());
             break;
         case node::expr_identifier:
-            emit_expr_local(*exp.as_identifier, scp);
+            emit_expr_local(exp.as<expr_identifier>(), scp);
             break;
         case node::expr_istring:
-            emit_expr_istring(*exp.as_istring);
+            emit_expr_istring(exp.as<expr_istring>());
             break;
         case node::expr_string:
-            emit_expr_string(*exp.as_string);
+            emit_expr_string(exp.as<expr_string>());
             break;
         case node::expr_vector:
-            emit_expr_vector(*exp.as_vector, scp);
+            emit_expr_vector(exp.as<expr_vector>(), scp);
             break;
         case node::expr_float:
-            emit_expr_float(*exp.as_float);
+            emit_expr_float(exp.as<expr_float>());
             break;
         case node::expr_integer:
-            emit_expr_integer(*exp.as_integer);
+            emit_expr_integer(exp.as<expr_integer>());
             break;
         case node::expr_false:
-            emit_expr_false(*exp.as_false);
+            emit_expr_false(exp.as<expr_false>());
             break;
         case node::expr_true:
-            emit_expr_true(*exp.as_true);
+            emit_expr_true(exp.as<expr_true>());
             break;
-        case node::null:
+        case node::expr_empty:
             break;
         default:
             throw comp_error(exp.loc(), "unknown expression");
@@ -1108,66 +1032,66 @@ auto compiler::emit_expr(expr const& exp, scope& scp) -> void
 
 auto compiler::emit_expr_assign(expr_assign const& exp, scope& scp) -> void
 {
-    if (exp.kind() == node::expr_assign_equal)
+    if (exp.oper == expr_assign::op::eq)
     {
-        if (exp.rvalue == node::expr_undefined)
+        if (exp.rvalue->is<expr_undefined>())
         {
-            emit_expr_clear(exp.lvalue, scp);
+            emit_expr_clear(*exp.lvalue, scp);
         }
-        else if (exp.lvalue == node::expr_tuple)
+        else if (exp.lvalue->is<expr_tuple>())
         {
-            emit_expr(exp.rvalue, scp);
-            emit_expr_tuple(*exp.lvalue.as_tuple, scp);
+            emit_expr(*exp.rvalue, scp);
+            emit_expr_tuple(exp.lvalue->as<expr_tuple>(), scp);
         }
         else
         {
-            emit_expr(exp.rvalue, scp);
-            emit_expr_variable_ref(exp.lvalue, scp, true);
+            emit_expr(*exp.rvalue, scp);
+            emit_expr_variable_ref(*exp.lvalue, scp, true);
         }
 
         return;
     }
 
-    emit_expr(exp.lvalue, scp);
-    emit_expr(exp.rvalue, scp);
+    emit_expr(*exp.lvalue, scp);
+    emit_expr(*exp.rvalue, scp);
 
-    switch (exp.kind())
+    switch (exp.oper)
     {
-        case node::expr_assign_add:
+        case expr_assign::op::add:
             emit_opcode(opcode::OP_plus);
             break;
-        case node::expr_assign_sub:
+        case expr_assign::op::sub:
             emit_opcode(opcode::OP_minus);
             break;
-        case node::expr_assign_mul:
+        case expr_assign::op::mul:
             emit_opcode(opcode::OP_multiply);
             break;
-        case node::expr_assign_div:
+        case expr_assign::op::div:
             emit_opcode(opcode::OP_divide);
             break;
-        case node::expr_assign_mod:
+        case expr_assign::op::mod:
             emit_opcode(opcode::OP_mod);
             break;
-        case node::expr_assign_shift_left:
+        case expr_assign::op::shl:
             emit_opcode(opcode::OP_shift_left);
             break;
-        case node::expr_assign_shift_right:
+        case expr_assign::op::shr:
             emit_opcode(opcode::OP_shift_right);
             break;
-        case node::expr_assign_bitwise_or:
+        case expr_assign::op::bwor:
             emit_opcode(opcode::OP_bit_or);
             break;
-        case node::expr_assign_bitwise_and:
+        case expr_assign::op::bwand:
             emit_opcode(opcode::OP_bit_and);
             break;
-        case node::expr_assign_bitwise_exor:
+        case expr_assign::op::bwexor:
             emit_opcode(opcode::OP_bit_ex_or);
             break;
         default:
             throw comp_error(exp.loc(), "unknown assign operation");
     }
 
-    emit_expr_variable_ref(exp.lvalue, scp, true);
+    emit_expr_variable_ref(*exp.lvalue, scp, true);
 }
 
 auto compiler::emit_expr_clear(expr const& exp, scope& scp) -> void
@@ -1175,17 +1099,17 @@ auto compiler::emit_expr_clear(expr const& exp, scope& scp) -> void
     switch (exp.kind())
     {
         case node::expr_array:
-            emit_expr(exp.as_array->key, scp);
-            exp.as_array->obj == node::expr_game ? emit_opcode(opcode::OP_GetGameRef) : emit_expr_variable_ref(exp.as_array->obj, scp, false);
+            emit_expr(*exp.as<expr_array>().key, scp);
+            exp.as<expr_array>().obj->is<expr_game>() ? emit_opcode(opcode::OP_GetGameRef) : emit_expr_variable_ref(*exp.as<expr_array>().obj, scp, false);
             emit_opcode(opcode::OP_ClearArray);
             break;
         case node::expr_field:
-            emit_expr_object(exp.as_field->obj, scp);
-            emit_opcode(opcode::OP_ClearFieldVariable, exp.as_field->field->value);
+            emit_expr_object(*exp.as<expr_field>().obj, scp);
+            emit_opcode(opcode::OP_ClearFieldVariable, exp.as<expr_field>().field->value);
             break;
         case node::expr_identifier:
             emit_opcode(opcode::OP_GetUndefined);
-            emit_expr_local_ref(*exp.as_identifier, scp, true);
+            emit_expr_local_ref(exp.as<expr_identifier>(), scp, true);
             break;
         default:
             throw comp_error(exp.loc(), "unknown clear variable lvalue");
@@ -1206,7 +1130,7 @@ auto compiler::emit_expr_increment(expr_increment const& exp, scope& scp, bool i
 {
     if (is_stmt)
     {
-        emit_expr_variable_ref(exp.lvalue, scp, false);
+        emit_expr_variable_ref(*exp.lvalue, scp, false);
         emit_opcode(opcode::OP_inc);
         emit_opcode(opcode::OP_SetVariableField);
     }
@@ -1220,7 +1144,7 @@ auto compiler::emit_expr_decrement(expr_decrement const& exp, scope& scp, bool i
 {
     if (is_stmt)
     {
-        emit_expr_variable_ref(exp.lvalue, scp, false);
+        emit_expr_variable_ref(*exp.lvalue, scp, false);
         emit_opcode(opcode::OP_dec);
         emit_opcode(opcode::OP_SetVariableField);
     }
@@ -1235,152 +1159,153 @@ auto compiler::emit_expr_ternary(expr_ternary const& exp, scope& scp) -> void
     auto else_loc = create_label();
     auto end_loc = create_label();
 
-    if (exp.test == node::expr_not)
+    if (exp.test->is<expr_not>())
     {
-        emit_expr(exp.test.as_not->rvalue, scp);
+        emit_expr(*exp.test->as<expr_not>().rvalue, scp);
         emit_opcode(opcode::OP_JumpOnTrue, else_loc);
     }
     else
     {
-        emit_expr(exp.test, scp);
+        emit_expr(*exp.test, scp);
         emit_opcode(opcode::OP_JumpOnFalse, else_loc);
     }
 
-    emit_expr(exp.true_expr, scp);
+    emit_expr(*exp.true_expr, scp);
     emit_opcode(opcode::OP_jump, end_loc);
 
     insert_label(else_loc);
-    emit_expr(exp.false_expr, scp);
+    emit_expr(*exp.false_expr, scp);
     insert_label(end_loc);
 }
 
 auto compiler::emit_expr_binary(expr_binary const& exp, scope& scp) -> void
 {
-    emit_expr(exp.lvalue, scp);
-    emit_expr(exp.rvalue, scp);
-
-    switch (exp.kind())
+    if (exp.oper == expr_binary::op::bool_and)
     {
-        case node::expr_equality:
-            emit_opcode(opcode::OP_equality);
-            break;
-        case node::expr_inequality:
-            emit_opcode(opcode::OP_inequality);
-            break;
-        case node::expr_less:
-            emit_opcode(opcode::OP_less);
-            break;
-        case node::expr_greater:
-            emit_opcode(opcode::OP_greater);
-            break;
-        case node::expr_less_equal:
-            emit_opcode(opcode::OP_less_equal);
-            break;
-        case node::expr_greater_equal:
-            emit_opcode(opcode::OP_greater_equal);
-            break;
-        case node::expr_bitwise_or:
-            emit_opcode(opcode::OP_bit_or);
-            break;
-        case node::expr_bitwise_and:
-            emit_opcode(opcode::OP_bit_and);
-            break;
-        case node::expr_bitwise_exor:
-            emit_opcode(opcode::OP_bit_ex_or);
-            break;
-        case node::expr_shift_left:
-            emit_opcode(opcode::OP_shift_left);
-            break;
-        case node::expr_shift_right:
-            emit_opcode(opcode::OP_shift_right);
-            break;
-        case node::expr_add:
-            emit_opcode(opcode::OP_plus);
-            break;
-        case node::expr_sub:
-            emit_opcode(opcode::OP_minus);
-            break;
-        case node::expr_mul:
-            emit_opcode(opcode::OP_multiply);
-            break;
-        case node::expr_div:
-            emit_opcode(opcode::OP_divide);
-            break;
-        case node::expr_mod:
-            emit_opcode(opcode::OP_mod);
-            break;
-        default:
-            throw comp_error(exp.loc(), "unknown binary expression");
+        auto label = create_label();
+
+        emit_expr(*exp.lvalue, scp);
+        emit_opcode(opcode::OP_JumpOnFalseExpr, label);
+
+        if (exp.rvalue->is<expr_not>() && (ctx_->props() & props::boolnotand))
+        {
+            emit_expr(*exp.rvalue->as<expr_not>().rvalue, scp);
+            emit_opcode(opcode::OP_BoolNotAfterAnd);
+        }
+        else
+        {
+            emit_expr(*exp.rvalue, scp);
+            emit_opcode(opcode::OP_CastBool);
+        }
+
+        insert_label(label);
     }
-}
-
-auto compiler::emit_expr_and(expr_and const& exp, scope& scp) -> void
-{
-    auto label = create_label();
-
-    emit_expr(exp.lvalue, scp);
-    emit_opcode(opcode::OP_JumpOnFalseExpr, label);
-
-    if (exp.rvalue == node::expr_not && (ctx_->props() & props::boolnotand))
+    else if (exp.oper == expr_binary::op::bool_or)
     {
-        emit_expr(exp.rvalue.as_not->rvalue, scp);
-        emit_opcode(opcode::OP_BoolNotAfterAnd);
+        auto label = create_label();
+
+        emit_expr(*exp.lvalue, scp);
+        emit_opcode(opcode::OP_JumpOnTrueExpr, label);
+
+        if (exp.rvalue->is<expr_not>() && (ctx_->props() & props::boolnotand))
+        {
+            emit_expr(*exp.rvalue->as<expr_not>().rvalue, scp);
+            emit_opcode(opcode::OP_BoolNotAfterAnd);
+        }
+        else
+        {
+            emit_expr(*exp.rvalue, scp);
+            emit_opcode(opcode::OP_CastBool);
+        }
+
+        insert_label(label);
     }
     else
     {
-        emit_expr(exp.rvalue, scp);
-        emit_opcode(opcode::OP_CastBool);
+        emit_expr(*exp.lvalue, scp);
+        emit_expr(*exp.rvalue, scp);
+
+        switch (exp.oper)
+        {
+            case expr_binary::op::eq:
+                emit_opcode(opcode::OP_equality);
+                break;
+            case expr_binary::op::ne:
+                emit_opcode(opcode::OP_inequality);
+                break;
+            case expr_binary::op::lt:
+                emit_opcode(opcode::OP_less);
+                break;
+            case expr_binary::op::gt:
+                emit_opcode(opcode::OP_greater);
+                break;
+            case expr_binary::op::le:
+                emit_opcode(opcode::OP_less_equal);
+                break;
+            case expr_binary::op::ge:
+                emit_opcode(opcode::OP_greater_equal);
+                break;
+            case expr_binary::op::bwor:
+                emit_opcode(opcode::OP_bit_or);
+                break;
+            case expr_binary::op::bwand:
+                emit_opcode(opcode::OP_bit_and);
+                break;
+            case expr_binary::op::bwexor:
+                emit_opcode(opcode::OP_bit_ex_or);
+                break;
+            case expr_binary::op::shl:
+                emit_opcode(opcode::OP_shift_left);
+                break;
+            case expr_binary::op::shr:
+                emit_opcode(opcode::OP_shift_right);
+                break;
+            case expr_binary::op::add:
+                emit_opcode(opcode::OP_plus);
+                break;
+            case expr_binary::op::sub:
+                emit_opcode(opcode::OP_minus);
+                break;
+            case expr_binary::op::mul:
+                emit_opcode(opcode::OP_multiply);
+                break;
+            case expr_binary::op::div:
+                emit_opcode(opcode::OP_divide);
+                break;
+            case expr_binary::op::mod:
+                emit_opcode(opcode::OP_mod);
+                break;
+            default:
+                throw comp_error(exp.loc(), "unknown binary expression");
+        }       
     }
-
-    insert_label(label);
-}
-
-auto compiler::emit_expr_or(expr_or const& exp, scope& scp) -> void
-{
-    auto label = create_label();
-
-    emit_expr(exp.lvalue, scp);
-    emit_opcode(opcode::OP_JumpOnTrueExpr, label);
-
-    if (exp.rvalue == node::expr_not && (ctx_->props() & props::boolnotand))
-    {
-        emit_expr(exp.rvalue.as_not->rvalue, scp);
-        emit_opcode(opcode::OP_BoolNotAfterAnd);
-    }
-    else
-    {
-        emit_expr(exp.rvalue, scp);
-        emit_opcode(opcode::OP_CastBool);
-    }
-
-    insert_label(label);
 }
 
 auto compiler::emit_expr_complement(expr_complement const& exp, scope& scp) -> void
 {
-    emit_expr(exp.rvalue, scp);
+    emit_expr(*exp.rvalue, scp);
     emit_opcode(opcode::OP_BoolComplement);
 }
 
 auto compiler::emit_expr_negate(expr_negate const& exp, scope& scp) -> void
 {
     emit_opcode(opcode::OP_GetZero);
-    emit_expr(exp.rvalue, scp);
+    emit_expr(*exp.rvalue, scp);
     emit_opcode(opcode::OP_minus);
 }
 
 auto compiler::emit_expr_not(expr_not const& exp, scope& scp) -> void
 {
-    emit_expr(exp.rvalue, scp);
+    emit_expr(*exp.rvalue, scp);
     emit_opcode(opcode::OP_BoolNot);
 }
 
 auto compiler::emit_expr_call(expr_call const& exp, scope& scp, bool is_stmt) -> void
 {
-    if (exp.value == node::expr_pointer)
-        emit_expr_call_pointer(*exp.value.as_pointer, scp, is_stmt);
-    else if (exp.value == node::expr_function)
-        emit_expr_call_function(*exp.value.as_function, scp, is_stmt);
+    if (exp.value->is<expr_pointer>())
+        emit_expr_call_pointer(exp.value->as<expr_pointer>(), scp, is_stmt);
+    else if (exp.value->is<expr_function>())
+        emit_expr_call_function(exp.value->as<expr_function>(), scp, is_stmt);
     else
         throw comp_error(exp.loc(), "unknown function call expression");
 }
@@ -1391,7 +1316,7 @@ auto compiler::emit_expr_call_pointer(expr_pointer const& exp, scope& scp, bool 
         emit_opcode(opcode::OP_PreScriptCall);
 
     emit_expr_arguments(*exp.args, scp);
-    emit_expr(exp.func, scp);
+    emit_expr(*exp.func, scp);
 
     auto argcount = fmt::format("{}", exp.args->list.size());
 
@@ -1518,10 +1443,10 @@ auto compiler::emit_expr_call_function(expr_function const& exp, scope& scp, boo
 
 auto compiler::emit_expr_method(expr_method const& exp, scope& scp, bool is_stmt) -> void
 {
-    if (exp.value == node::expr_pointer)
-        emit_expr_method_pointer(*exp.value.as_pointer, exp.obj, scp, is_stmt);
-    else if (exp.value == node::expr_function)
-        emit_expr_method_function(*exp.value.as_function, exp.obj, scp, is_stmt);
+    if (exp.value->is<expr_pointer>())
+        emit_expr_method_pointer(exp.value->as<expr_pointer>(), *exp.obj, scp, is_stmt);
+    else if (exp.value->is<expr_function>())
+        emit_expr_method_function(exp.value->as<expr_function>(), *exp.obj, scp, is_stmt);
     else
         throw comp_error(exp.loc(), "unknown method call expression");
 }
@@ -1533,7 +1458,7 @@ auto compiler::emit_expr_method_pointer(expr_pointer const& exp, expr const& obj
 
     emit_expr_arguments(*exp.args, scp);
     emit_expr(obj, scp);
-    emit_expr(exp.func, scp);
+    emit_expr(*exp.func, scp);
 
     auto argcount = fmt::format("{}", exp.args->list.size());
 
@@ -1659,7 +1584,7 @@ auto compiler::emit_expr_add_array(expr_add_array const& exp, scope& scp) -> voi
 
     for (auto const& arg : exp.args->list)
     {
-        emit_expr(arg, scp);
+        emit_expr(*arg, scp);
         emit_opcode(opcode::OP_AddArray);
     }
 }
@@ -1705,28 +1630,21 @@ auto compiler::emit_expr_parameters(expr_parameters const& exp, scope& scp) -> v
 
 auto compiler::emit_expr_arguments(expr_arguments const& exp, scope& scp) -> void
 {
-    //std::reverse(exp.list.begin(), exp.list.end()); // use reverse range
-
-    // for (auto const& entry : exp.list)
-    // {
-    //     emit_expr(entry, scp);
-    // }
-
     for (auto it = exp.list.rbegin(); it != exp.list.rend(); ++it)
     {
-        emit_expr(*it, scp);
+        emit_expr(**it, scp);
     }
 }
 
 auto compiler::emit_expr_isdefined(expr_isdefined const& exp, scope& scp) -> void
 {
-    emit_expr(exp.value, scp);
+    emit_expr(*exp.value, scp);
     emit_opcode(opcode::OP_IsDefined);
 }
 
 auto compiler::emit_expr_istrue(expr_istrue const& exp, scope& scp) -> void
 {
-    emit_expr(exp.value, scp);
+    emit_expr(*exp.value, scp);
     emit_opcode(opcode::OP_IsTrue);
 }
 
@@ -1760,13 +1678,13 @@ auto compiler::emit_expr_reference(expr_reference const& exp, scope&) -> void
 
 auto compiler::emit_expr_size(expr_size const& exp, scope& scp) -> void
 {
-    emit_expr(exp.obj, scp);
+    emit_expr(*exp.obj, scp);
     emit_opcode(opcode::OP_size);
 }
 
 auto compiler::emit_expr_tuple(expr_tuple const& exp, scope& scp) -> void
 {
-    emit_expr_variable_ref(exp.temp, scp, true);
+    emit_expr_variable_ref(*exp.temp, scp, true);
 
     auto index = 0u;
 
@@ -1779,12 +1697,12 @@ auto compiler::emit_expr_tuple(expr_tuple const& exp, scope& scp) -> void
 
         index++;
 
-        emit_opcode(opcode::OP_EvalLocalArrayCached, fmt::format("{}", variable_access(*exp.temp.as_identifier, scp)));
+        emit_opcode(opcode::OP_EvalLocalArrayCached, fmt::format("{}", variable_access(exp.temp->as<expr_identifier>(), scp)));
 
-        emit_expr_variable_ref(entry, scp, true);
+        emit_expr_variable_ref(*entry, scp, true);
     }
 
-    emit_expr_clear_local(*exp.temp.as_identifier, scp);
+    emit_expr_clear_local(exp.temp->as<expr_identifier>(), scp);
 }
 
 auto compiler::emit_expr_variable_ref(expr const& exp, scope& scp, bool set) -> void
@@ -1792,13 +1710,13 @@ auto compiler::emit_expr_variable_ref(expr const& exp, scope& scp, bool set) -> 
     switch (exp.kind())
     {
         case node::expr_array:
-            emit_expr_array_ref(*exp.as_array, scp, set);
+            emit_expr_array_ref(exp.as<expr_array>(), scp, set);
             break;
         case node::expr_field:
-            emit_expr_field_ref(*exp.as_field, scp, set);
+            emit_expr_field_ref(exp.as<expr_field>(), scp, set);
             break;
         case node::expr_identifier:
-            emit_expr_local_ref(*exp.as_identifier, scp, set);
+            emit_expr_local_ref(exp.as<expr_identifier>(), scp, set);
             break;
         default:
             throw comp_error(exp.loc(), "invalid lvalue");
@@ -1807,9 +1725,9 @@ auto compiler::emit_expr_variable_ref(expr const& exp, scope& scp, bool set) -> 
 
 auto compiler::emit_expr_array_ref(expr_array const& exp, scope& scp, bool set) -> void
 {
-    emit_expr(exp.key, scp);
+    emit_expr(*exp.key, scp);
 
-    switch (exp.obj.kind())
+    switch (exp.obj->kind())
     {
         case node::expr_game:
             emit_opcode(opcode::OP_GetGameRef);
@@ -1818,22 +1736,22 @@ auto compiler::emit_expr_array_ref(expr_array const& exp, scope& scp, bool set) 
             break;
         case node::expr_array:
         case node::expr_field:
-            emit_expr_variable_ref(exp.obj, scp, false);
+            emit_expr_variable_ref(*exp.obj, scp, false);
             emit_opcode(opcode::OP_EvalArrayRef);
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case node::expr_identifier:
         {
-            if (!variable_initialized(*exp.obj.as_identifier, scp))
+            if (!variable_initialized(exp.obj->as<expr_identifier>(), scp))
             {
-                auto index = variable_initialize(*exp.obj.as_identifier, scp);
-                emit_opcode(opcode::OP_EvalNewLocalArrayRefCached0, (ctx_->props() & props::hash) ? exp.obj.as_identifier->value : fmt::format("{}", index));
+                auto index = variable_initialize(exp.obj->as<expr_identifier>(), scp);
+                emit_opcode(opcode::OP_EvalNewLocalArrayRefCached0, (ctx_->props() & props::hash) ? exp.obj->as<expr_identifier>().value : fmt::format("{}", index));
 
                 if (!set) throw comp_error(exp.loc(), "INTERNAL: VAR CREATED BUT NOT SET");
             }
             else
             {
-                auto index = variable_access(*exp.obj.as_identifier, scp);
+                auto index = variable_access(exp.obj->as<expr_identifier>(), scp);
 
                 if (index == 0)
                     emit_opcode(opcode::OP_EvalLocalArrayRefCached0);
@@ -1855,7 +1773,7 @@ auto compiler::emit_expr_field_ref(expr_field const& exp, scope& scp, bool set) 
 {
     auto const& field = exp.field->value;
 
-    switch (exp.obj.kind())
+    switch (exp.obj->kind())
     {
         case node::expr_level:
             set ? emit_opcode(opcode::OP_SetLevelFieldVariableField, field) : emit_opcode(opcode::OP_EvalLevelFieldVariableRef, field);
@@ -1867,36 +1785,36 @@ auto compiler::emit_expr_field_ref(expr_field const& exp, scope& scp, bool set) 
             set ? emit_opcode(opcode::OP_SetSelfFieldVariableField, field) : emit_opcode(opcode::OP_EvalSelfFieldVariableRef, field);
             break;
         case node::expr_array:
-            emit_expr_array(*exp.obj.as_array, scp);
+            emit_expr_array(exp.obj->as<expr_array>(), scp);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case node::expr_field:
-            emit_expr_field(*exp.obj.as_field, scp);
+            emit_expr_field(exp.obj->as<expr_field>(), scp);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, fmt::format("{}", variable_access(*exp.obj.as_identifier, scp)));
+            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, fmt::format("{}", variable_access(exp.obj->as<expr_identifier>(), scp)));
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case node::expr_call:
-            emit_expr_call(*exp.obj.as_call, scp, false);
+            emit_expr_call(exp.obj->as<expr_call>(), scp, false);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case node::expr_method:
-            emit_expr_method(*exp.obj.as_method, scp, false);
+            emit_expr_method(exp.obj->as<expr_method>(), scp, false);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         default:
-            throw comp_error(exp.obj.loc(), "not an object");
+            throw comp_error(exp.obj->loc(), "not an object");
     }
 }
 
@@ -1942,13 +1860,13 @@ auto compiler::emit_expr_variable(expr const& exp, scope& scp) -> void
     switch (exp.kind())
     {
         case node::expr_array:
-            emit_expr_array(*exp.as_array, scp);
+            emit_expr_array(exp.as<expr_array>(), scp);
             break;
         case node::expr_field:
-            emit_expr_field(*exp.as_field, scp);
+            emit_expr_field(exp.as<expr_field>(), scp);
             break;
         case node::expr_identifier:
-            emit_expr_local(*exp.as_identifier, scp);
+            emit_expr_local(exp.as<expr_identifier>(), scp);
             break;
         default:
             throw comp_error(exp.loc(), "invalid variable type.");
@@ -1957,15 +1875,15 @@ auto compiler::emit_expr_variable(expr const& exp, scope& scp) -> void
 
 auto compiler::emit_expr_array(expr_array const& exp, scope& scp) -> void
 {
-    emit_expr(exp.key, scp);
+    emit_expr(*exp.key, scp);
 
-    if (exp.obj == node::expr_identifier)
+    if (exp.obj->is<expr_identifier>())
     {
-        emit_opcode(opcode::OP_EvalLocalArrayCached, fmt::format("{}", variable_access(*exp.obj.as_identifier, scp)));
+        emit_opcode(opcode::OP_EvalLocalArrayCached, fmt::format("{}", variable_access(exp.obj->as<expr_identifier>(), scp)));
     }
     else
     {
-        emit_expr(exp.obj, scp);
+        emit_expr(*exp.obj, scp);
         emit_opcode(opcode::OP_EvalArray);
     }
 }
@@ -1974,7 +1892,7 @@ auto compiler::emit_expr_field(expr_field const& exp, scope& scp) -> void
 {
     auto const& field = exp.field->value;
 
-    switch (exp.obj.kind())
+    switch (exp.obj->kind())
     {
         case node::expr_level:
             emit_opcode(opcode::OP_EvalLevelFieldVariable, field);
@@ -1986,27 +1904,27 @@ auto compiler::emit_expr_field(expr_field const& exp, scope& scp) -> void
             emit_opcode(opcode::OP_EvalSelfFieldVariable, field);
             break;
         case node::expr_array:
-            emit_expr_array(*exp.obj.as_array, scp);
+            emit_expr_array(exp.obj->as<expr_array>(), scp);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         case node::expr_field:
-            emit_expr_field(*exp.obj.as_field, scp);
+            emit_expr_field(exp.obj->as<expr_field>(), scp);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         case node::expr_call:
-            emit_expr_call(*exp.obj.as_call, scp, false);
+            emit_expr_call(exp.obj->as<expr_call>(), scp, false);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         case node::expr_method:
-            emit_expr_method(*exp.obj.as_method, scp, false);
+            emit_expr_method(exp.obj->as<expr_method>(), scp, false);
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, fmt::format("{}", variable_access(*exp.obj.as_identifier, scp)));
+            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, fmt::format("{}", variable_access(exp.obj->as<expr_identifier>(), scp)));
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         default:
@@ -2067,23 +1985,23 @@ auto compiler::emit_expr_object(expr const& exp, scope& scp) -> void
             emit_opcode(opcode::OP_GetSelfObject);
             break;
         case node::expr_array:
-            emit_expr_array(*exp.as_array, scp);
+            emit_expr_array(exp.as<expr_array>(), scp);
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         case node::expr_field:
-            emit_expr_field(*exp.as_field, scp);
+            emit_expr_field(exp.as<expr_field>(), scp);
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         case node::expr_call:
-            emit_expr_call(*exp.as_call, scp, false);
+            emit_expr_call(exp.as<expr_call>(), scp, false);
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         case node::expr_method:
-            emit_expr_method(*exp.as_method, scp, false);
+            emit_expr_method(exp.as<expr_method>(), scp, false);
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, fmt::format("{}", variable_access(*exp.as_identifier, scp)));
+            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, fmt::format("{}", variable_access(exp.as<expr_identifier>(), scp)));
             break;
         default:
             throw comp_error(exp.loc(), "not an object");
@@ -2095,22 +2013,22 @@ auto compiler::emit_expr_vector(expr_vector const& exp, scope& scp) -> void
     auto data = std::vector<std::string>{};
     auto isexpr = false;
 
-    if (exp.x == node::expr_integer)
-        data.push_back(exp.x.as_integer->value);
-    else if (exp.x == node::expr_float)
-        data.push_back(exp.x.as_float->value);
+    if (exp.x->is<expr_integer>())
+        data.push_back(exp.x->as<expr_integer>().value);
+    else if (exp.x->is<expr_float>())
+        data.push_back(exp.x->as<expr_float>().value);
     else isexpr = true;
 
-    if (exp.y == node::expr_integer)
-        data.push_back(exp.y.as_integer->value);
-    else if (exp.y == node::expr_float)
-        data.push_back(exp.y.as_float->value);
+    if (exp.y->is<expr_integer>())
+        data.push_back(exp.y->as<expr_integer>().value);
+    else if (exp.y->is<expr_float>())
+        data.push_back(exp.y->as<expr_float>().value);
     else isexpr = true;
 
-    if (exp.z == node::expr_integer)
-        data.push_back(exp.z.as_integer->value);
-    else if (exp.z == node::expr_float)
-        data.push_back(exp.z.as_float->value);
+    if (exp.z->is<expr_integer>())
+        data.push_back(exp.z->as<expr_integer>().value);
+    else if (exp.z->is<expr_float>())
+        data.push_back(exp.z->as<expr_float>().value);
     else isexpr = true;
 
     if (!isexpr)
@@ -2128,9 +2046,9 @@ auto compiler::emit_expr_vector(expr_vector const& exp, scope& scp) -> void
     }
     else
     {
-        emit_expr(exp.z, scp);
-        emit_expr(exp.y, scp);
-        emit_expr(exp.x, scp);
+        emit_expr(*exp.z, scp);
+        emit_expr(*exp.y, scp);
+        emit_expr(*exp.x, scp);
         emit_opcode(opcode::OP_vector);
     }
 }
@@ -2323,54 +2241,50 @@ auto compiler::process_stmt(stmt const& stm, scope& scp) -> void
     switch (stm.kind())
     {
         case node::stmt_list:
-            process_stmt_list(*stm.as_list, scp);
+            process_stmt_list(stm.as<stmt_list>(), scp);
             break;
         case node::stmt_comp:
-            process_stmt_comp(*stm.as_comp, scp);
+            process_stmt_comp(stm.as<stmt_comp>(), scp);
             break;
         case node::stmt_dev:
-            process_stmt_dev(*stm.as_dev, scp);
+            process_stmt_dev(stm.as<stmt_dev>(), scp);
             break;
         case node::stmt_expr:
-            process_stmt_expr(*stm.as_expr, scp);
-            break;
-        case node::stmt_assign:
-            process_stmt_assign(*stm.as_assign, scp);
+            process_stmt_expr(stm.as<stmt_expr>(), scp);
             break;
         case node::stmt_waittill:
-            process_stmt_waittill(*stm.as_waittill, scp);
+            process_stmt_waittill(stm.as<stmt_waittill>(), scp);
             break;
         case node::stmt_if:
-            process_stmt_if(*stm.as_if, scp);
+            process_stmt_if(stm.as<stmt_if>(), scp);
             break;
         case node::stmt_ifelse:
-            process_stmt_ifelse(*stm.as_ifelse, scp);
+            process_stmt_ifelse(stm.as<stmt_ifelse>(), scp);
             break;
         case node::stmt_while:
-            process_stmt_while(*stm.as_while, scp);
+            process_stmt_while(stm.as<stmt_while>(), scp);
             break;
         case node::stmt_dowhile:
-            process_stmt_dowhile(*stm.as_dowhile, scp);
+            process_stmt_dowhile(stm.as<stmt_dowhile>(), scp);
             break;
         case node::stmt_for:
-            process_stmt_for(*stm.as_for, scp);
+            process_stmt_for(stm.as<stmt_for>(), scp);
             break;
         case node::stmt_foreach:
-            process_stmt_foreach(*stm.as_foreach, scp);
+            process_stmt_foreach(stm.as<stmt_foreach>(), scp);
             break;
         case node::stmt_switch:
-            process_stmt_switch(*stm.as_switch, scp);
+            process_stmt_switch(stm.as<stmt_switch>(), scp);
             break;
         case node::stmt_break:
-            process_stmt_break(*stm.as_break, scp);
+            process_stmt_break(stm.as<stmt_break>(), scp);
             break;
         case node::stmt_continue:
-            process_stmt_continue(*stm.as_continue, scp);
+            process_stmt_continue(stm.as<stmt_continue>(), scp);
             break;
         case node::stmt_return:
-            process_stmt_return(*stm.as_return, scp);
+            process_stmt_return(stm.as<stmt_return>(), scp);
             break;
-        case node::stmt_call:
         case node::stmt_endon:
         case node::stmt_notify:
         case node::stmt_wait:
@@ -2395,7 +2309,7 @@ auto compiler::process_stmt_list(stmt_list const& stm, scope& scp) -> void
 {
     for (auto const& entry : stm.list)
     {
-        process_stmt(entry, scp);
+        process_stmt(*entry, scp);
     }
 }
 
@@ -2411,59 +2325,23 @@ auto compiler::process_stmt_dev(stmt_dev const& stm, scope& scp) -> void
 
 auto compiler::process_stmt_expr(stmt_expr const& stm, scope& scp) -> void
 {
-    switch (stm.value.kind())
+    switch (stm.value->kind())
     {
         case node::expr_increment:
-            process_expr(stm.value.as_increment->lvalue, scp);
+            process_expr(*stm.value->as<expr_increment>().lvalue, scp);
             break;
         case node::expr_decrement:
-            process_expr(stm.value.as_decrement->lvalue, scp);
+            process_expr(*stm.value->as<expr_decrement>().lvalue, scp);
             break;
-        case node::expr_assign_equal:
-        case node::expr_assign_add:
-        case node::expr_assign_sub:
-        case node::expr_assign_mul:
-        case node::expr_assign_div:
-        case node::expr_assign_mod:
-        case node::expr_assign_shift_left:
-        case node::expr_assign_shift_right:
-        case node::expr_assign_bitwise_or:
-        case node::expr_assign_bitwise_and:
-        case node::expr_assign_bitwise_exor:
-            process_expr(stm.value.as_assign->lvalue, scp);
+        case node::expr_assign:
+            process_expr(*stm.value->as<expr_assign>().lvalue, scp);
             break;
-        case node::null:
+        case node::expr_call:
+        case node::expr_method:
+        case node::expr_empty:
             break;
         default:
             throw comp_error(stm.loc(), "unknown expr statement expression");
-    }
-}
-
-auto compiler::process_stmt_assign(stmt_assign const& stm, scope& scp) -> void
-{
-    switch (stm.value.kind())
-    {
-        case node::expr_increment:
-            process_expr(stm.value.as_increment->lvalue, scp);
-            break;
-        case node::expr_decrement:
-            process_expr(stm.value.as_decrement->lvalue, scp);
-            break;
-        case node::expr_assign_equal:
-        case node::expr_assign_add:
-        case node::expr_assign_sub:
-        case node::expr_assign_mul:
-        case node::expr_assign_div:
-        case node::expr_assign_mod:
-        case node::expr_assign_shift_left:
-        case node::expr_assign_shift_right:
-        case node::expr_assign_bitwise_or:
-        case node::expr_assign_bitwise_and:
-        case node::expr_assign_bitwise_exor:
-            process_expr(stm.value.as_assign->lvalue, scp);
-            break;
-        default:
-            throw comp_error(stm.loc(), "unknown assign statement expression");
     }
 }
 
@@ -2471,22 +2349,22 @@ auto compiler::process_stmt_waittill(stmt_waittill const& stm, scope& scp) -> vo
 {
     for (auto const& entry : stm.args->list)
     {
-        if (entry != node::expr_identifier)
+        if (!entry->is<expr_identifier>())
         {
-            throw comp_error(entry.loc(), "illegal waittill param, must be a local variable");
+            throw comp_error(entry->loc(), "illegal waittill param, must be a local variable");
         }
 
-        variable_register(*entry.as_identifier, scp);
+        variable_register(entry->as<expr_identifier>(), scp);
     }
 }
 
 auto compiler::process_stmt_if(stmt_if const& stm, scope& scp) -> void
 {
-    auto ins = scopes_.insert({ stm.body.as_node.get(), make_scope() });
+    auto ins = scopes_.insert({ stm.body.get(), make_scope() });
     auto& scp_then = ins.first->second;
 
     scp.copy(scp_then);
-    process_stmt(stm.body, *scp_then);
+    process_stmt(*stm.body, *scp_then);
 
     std::vector<scope*> childs({ scp_then.get() });
     scp.merge(childs);
@@ -2497,13 +2375,13 @@ auto compiler::process_stmt_ifelse(stmt_ifelse const& stm, scope& scp) -> void
     auto childs = std::vector<scope*>{};
     auto abort = scope::abort_return;
 
-    auto ins1 = scopes_.insert({ stm.stmt_if.as_node.get(), make_scope() });
-    auto ins2 = scopes_.insert({ stm.stmt_else.as_node.get(), make_scope() });
+    auto ins1 = scopes_.insert({ stm.stmt_if.get(), make_scope() });
+    auto ins2 = scopes_.insert({ stm.stmt_else.get(), make_scope() });
     auto& scp_then = ins1.first->second;
     auto& scp_else = ins2.first->second;
 
     scp.copy(scp_then);
-    process_stmt(stm.stmt_if, *scp_then);
+    process_stmt(*stm.stmt_if, *scp_then);
 
     if (scp_then->abort <= scope::abort_return)
     {
@@ -2513,7 +2391,7 @@ auto compiler::process_stmt_ifelse(stmt_ifelse const& stm, scope& scp) -> void
     }
 
     scp.copy(scp_else);
-    process_stmt(stm.stmt_else, *scp_else);
+    process_stmt(*stm.stmt_else, *scp_else);
 
     if (scp_else->abort <= abort)
     {
@@ -2531,18 +2409,18 @@ auto compiler::process_stmt_ifelse(stmt_ifelse const& stm, scope& scp) -> void
 
 auto compiler::process_stmt_while(stmt_while const& stm, scope& scp) -> void
 {
-    bool const_cond = is_constant_condition(stm.test);
+    bool const_cond = is_constant_condition(*stm.test);
 
     auto old_breaks = break_blks_;
     auto old_continues = continue_blks_;
     break_blks_.clear();
     continue_blks_.clear();
 
-    auto ins = scopes_.insert({ stm.body.as_node.get(), make_scope() });
+    auto ins = scopes_.insert({ stm.body.get(), make_scope() });
     auto& scp_body = ins.first->second;
 
     scp.copy(scp_body);
-    process_stmt(stm.body, *scp_body);
+    process_stmt(*stm.body, *scp_body);
 
     continue_blks_.push_back(scp_body.get());
 
@@ -2559,18 +2437,18 @@ auto compiler::process_stmt_while(stmt_while const& stm, scope& scp) -> void
 
 auto compiler::process_stmt_dowhile(stmt_dowhile const& stm, scope& scp) -> void
 {
-    bool const_cond = is_constant_condition(stm.test);
+    bool const_cond = is_constant_condition(*stm.test);
 
     auto old_breaks = break_blks_;
     auto old_continues = continue_blks_;
     break_blks_.clear();
     continue_blks_.clear();
 
-    auto ins = scopes_.insert({ stm.body.as_node.get(), make_scope() });
+    auto ins = scopes_.insert({ stm.body.get(), make_scope() });
     auto& scp_body = ins.first->second;
 
     scp.copy(scp_body);
-    process_stmt(stm.body, *scp_body);
+    process_stmt(*stm.body, *scp_body);
 
     continue_blks_.push_back(scp_body.get());
 
@@ -2587,14 +2465,14 @@ auto compiler::process_stmt_dowhile(stmt_dowhile const& stm, scope& scp) -> void
 
 auto compiler::process_stmt_for(stmt_for const& stm, scope& scp) -> void
 {
-    bool const_cond = is_constant_condition(stm.test);
+    bool const_cond = is_constant_condition(*stm.test);
 
-    auto ins1 = scopes_.insert({ stm.body.as_node.get(), make_scope() });
-    auto ins2 = scopes_.insert({ stm.iter.as_node.get(), make_scope() });
+    auto ins1 = scopes_.insert({ stm.body.get(), make_scope() });
+    auto ins2 = scopes_.insert({ stm.iter.get(), make_scope() });
     auto& scp_body = ins1.first->second;
     auto& scp_iter = ins2.first->second;
 
-    process_stmt(stm.init, scp);
+    process_stmt(*stm.init, scp);
 
     auto old_breaks = break_blks_;
     auto old_continues = continue_blks_;
@@ -2604,14 +2482,14 @@ auto compiler::process_stmt_for(stmt_for const& stm, scope& scp) -> void
     scp.copy(scp_body);
     scp.copy(scp_iter);
 
-    process_stmt(stm.body, *scp_body);
+    process_stmt(*stm.body, *scp_body);
 
     continue_blks_.push_back(scp_body.get());
 
     for (auto i = 0u; i < continue_blks_.size(); i++)
         scp.append({ continue_blks_.at(i) });
 
-    process_stmt(stm.iter, *scp_iter);
+    process_stmt(*stm.iter, *scp_iter);
 
     scp.append({ scp_iter.get() });
     scp.merge({ scp_iter.get() });
@@ -2626,18 +2504,18 @@ auto compiler::process_stmt_for(stmt_for const& stm, scope& scp) -> void
 
 auto compiler::process_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
 {
-    auto ins1 = scopes_.insert({ stm.body.as_node.get(), make_scope() });
-    auto ins2 = scopes_.insert({ stm.key.as_node.get(), make_scope() });
+    auto ins1 = scopes_.insert({ stm.body.get(), make_scope() });
+    auto ins2 = scopes_.insert({ stm.key.get(), make_scope() });
     auto& scp_body = ins1.first->second;
     auto& scp_iter = ins2.first->second;
 
-    process_expr(stm.array, scp);
+    process_expr(*stm.array, scp);
 
     if (ctx_->props() & props::foreach)
-        process_expr(stm.key, scp);
+        process_expr(*stm.key, scp);
 
     if (ctx_->props() & props::foreach && stm.use_key)
-        process_expr(stm.index, scp);
+        process_expr(*stm.index, scp);
 
     auto old_breaks = break_blks_;
     auto old_continues = continue_blks_;
@@ -2647,8 +2525,8 @@ auto compiler::process_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
     scp.copy(scp_body);
     scp.copy(scp_iter);
 
-    process_expr(stm.value, *scp_body);
-    process_stmt(stm.body, *scp_body);
+    process_expr(*stm.value, *scp_body);
+    process_stmt(*stm.body, *scp_body);
 
     continue_blks_.push_back(scp_body.get());
 
@@ -2656,7 +2534,7 @@ auto compiler::process_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
         scp.append({ continue_blks_.at(i) });
 
     if (!(ctx_->props() & props::foreach))
-        process_expr(stm.key, *scp_iter);
+        process_expr(*stm.key, *scp_iter);
 
     scp.append({ scp_iter.get() });
     scp.merge({ scp_iter.get() });
@@ -2679,13 +2557,13 @@ auto compiler::process_stmt_switch(stmt_switch const& stm, scope& scp) -> void
     {
         auto& entry = stm.body->block->list[i];
 
-        if (entry == node::stmt_case)
+        if (entry->is<stmt_case>())
         {
-            auto ins = scopes_.insert({ entry.as_case->body.get(), make_scope() });
+            auto ins = scopes_.insert({ entry->as<stmt_case>().body.get(), make_scope() });
             auto& scp_body = ins.first->second;
 
             scp.copy(scp_body);
-            process_stmt_list(*entry.as_case->body, *scp_body);
+            process_stmt_list(*entry->as<stmt_case>().body, *scp_body);
 
             if (scp_body->abort != scope::abort_none)
             {
@@ -2701,13 +2579,13 @@ auto compiler::process_stmt_switch(stmt_switch const& stm, scope& scp) -> void
                 }
             }
         }
-        else if (entry == node::stmt_default)
+        else if (entry->is<stmt_default>())
         {
-            auto ins = scopes_.insert({ entry.as_default->body.get(), make_scope() });
+            auto ins = scopes_.insert({ entry->as<stmt_default>().body.get(), make_scope() });
             auto& scp_body = ins.first->second;
     
             scp.copy(scp_body);
-            process_stmt_list(*entry.as_default->body, *scp_body);
+            process_stmt_list(*entry->as<stmt_default>().body, *scp_body);
             has_default = true;
             default_ctx = scp_body.get();
 
@@ -2772,27 +2650,27 @@ auto compiler::process_stmt_return(stmt_return const&, scope& scp) -> void
 
 auto compiler::process_expr(expr const& exp, scope& scp) -> void
 {
-    if (exp == node::expr_identifier)
+    if (exp.is<expr_identifier>())
     {
-        variable_register(*exp.as_identifier, scp);
+        variable_register(exp.as<expr_identifier>(), scp);
     }
-    else if (exp == node::expr_array)
+    else if (exp.is<expr_array>())
     {
-        process_expr(exp.as_array->obj, scp);
+        process_expr(*exp.as<expr_array>().obj, scp);
     }
-    else if (exp == node::expr_tuple)
+    else if (exp.is<expr_tuple>())
     {
-        process_expr_tuple(*exp.as_tuple, scp);
+        process_expr_tuple(exp.as<expr_tuple>(), scp);
     }
 }
 
 auto compiler::process_expr_tuple(expr_tuple const& exp, scope& scp) -> void
 {
-    process_expr(exp.temp, scp);
+    process_expr(*exp.temp, scp);
 
     for (auto const& entry : exp.list)
     {
-        process_expr(entry, scp);
+        process_expr(*entry, scp);
     }
 }
 
@@ -2973,14 +2851,14 @@ auto compiler::is_constant_condition(expr const& exp) -> bool
 {
     switch (exp.kind())
     {
-        case node::null:
+        case node::expr_empty:
         case node::expr_true:
             return true;
         case node::expr_false:
             throw comp_error(exp.loc(), "condition can't be always false");
         case node::expr_integer:
         {
-            auto num = std::stoi(exp.as_integer->value);
+            auto num = std::stoi(exp.as<expr_integer>().value);
             if (num != 0)
                 return true;
             else

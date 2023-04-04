@@ -290,7 +290,7 @@ auto source::dump_program(program const& data) -> void
     for (auto const& dec : data.declarations)
     {
         fmt::format_to(std::back_inserter(buf_), "\n");
-        dump_decl(dec);
+        dump_decl(*dec);
     }
 }
 
@@ -306,19 +306,22 @@ auto source::dump_decl(decl const& dec) -> void
     switch (dec.kind())
     {
         case node::decl_dev_begin:
-            dump_decl_dev_begin(*dec.as_dev_begin);
+            dump_decl_dev_begin(dec.as<decl_dev_begin>());
             break;
         case node::decl_dev_end:
-            dump_decl_dev_end(*dec.as_dev_end);
+            dump_decl_dev_end(dec.as<decl_dev_end>());
             break;
         case node::decl_usingtree:
-            dump_decl_usingtree(*dec.as_usingtree);
+            dump_decl_usingtree(dec.as<decl_usingtree>());
             break;
         case node::decl_constant:
-            dump_decl_constant(*dec.as_constant);
+            dump_decl_constant(dec.as<decl_constant>());
             break;
         case node::decl_function:
-            dump_decl_function(*dec.as_function);
+            dump_decl_function(dec.as<decl_function>());
+            break;
+        case node::decl_empty:
+            dump_decl_empty(dec.as<decl_empty>());
             break;
         default:
             break;
@@ -346,7 +349,7 @@ auto source::dump_decl_constant(decl_constant const& dec) -> void
 {
     dump_expr_identifier(*dec.name);
     fmt::format_to(std::back_inserter(buf_), " = ");
-    dump_expr(dec.value);
+    dump_expr(*dec.value);
     fmt::format_to(std::back_inserter(buf_), ";\n");
 }
 
@@ -361,133 +364,134 @@ auto source::dump_decl_function(decl_function const& dec) -> void
     fmt::format_to(std::back_inserter(buf_), "\n");
 }
 
+auto source::dump_decl_empty(decl_empty const&) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), ";");
+}
+
 auto source::dump_stmt(stmt const& stm) -> void
 {
     switch (stm.kind())
     {
         case node::stmt_list:
-            dump_stmt_list(*stm.as_list);
+            dump_stmt_list(stm.as<stmt_list>());
             break;
         case node::stmt_comp:
-            dump_stmt_comp(*stm.as_comp);
+            dump_stmt_comp(stm.as<stmt_comp>());
             break;
         case node::stmt_dev:
-            dump_stmt_dev(*stm.as_dev);
+            dump_stmt_dev(stm.as<stmt_dev>());
             break;
         case node::stmt_expr:
-            dump_stmt_expr(*stm.as_expr);
-            break;
-        case node::stmt_call:
-            dump_stmt_call(*stm.as_call);
-            break;
-        case node::stmt_assign:
-            dump_stmt_assign(*stm.as_assign);
+            dump_stmt_expr(stm.as<stmt_expr>());
             break;
         case node::stmt_endon:
-            dump_stmt_endon(*stm.as_endon);
+            dump_stmt_endon(stm.as<stmt_endon>());
             break;
         case node::stmt_notify:
-            dump_stmt_notify(*stm.as_notify);
+            dump_stmt_notify(stm.as<stmt_notify>());
             break;
         case node::stmt_wait:
-            dump_stmt_wait(*stm.as_wait);
+            dump_stmt_wait(stm.as<stmt_wait>());
             break;
         case node::stmt_waittill:
-            dump_stmt_waittill(*stm.as_waittill);
+            dump_stmt_waittill(stm.as<stmt_waittill>());
             break;
         case node::stmt_waittillmatch:
-            dump_stmt_waittillmatch(*stm.as_waittillmatch);
+            dump_stmt_waittillmatch(stm.as<stmt_waittillmatch>());
             break;
         case node::stmt_waittillframeend:
-            dump_stmt_waittillframeend(*stm.as_waittillframeend);
+            dump_stmt_waittillframeend(stm.as<stmt_waittillframeend>());
             break;
         case node::stmt_waitframe:
-            dump_stmt_waitframe(*stm.as_waitframe);
+            dump_stmt_waitframe(stm.as<stmt_waitframe>());
             break;
         case node::stmt_if:
-            dump_stmt_if(*stm.as_if);
+            dump_stmt_if(stm.as<stmt_if>());
             break;
         case node::stmt_ifelse:
-            dump_stmt_ifelse(*stm.as_ifelse);
+            dump_stmt_ifelse(stm.as<stmt_ifelse>());
             break;
         case node::stmt_while:
-            dump_stmt_while(*stm.as_while);
+            dump_stmt_while(stm.as<stmt_while>());
             break;
         case node::stmt_dowhile:
-            dump_stmt_dowhile(*stm.as_dowhile);
+            dump_stmt_dowhile(stm.as<stmt_dowhile>());
             break;
         case node::stmt_for:
-            dump_stmt_for(*stm.as_for);
+            dump_stmt_for(stm.as<stmt_for>());
             break;
         case node::stmt_foreach:
-            dump_stmt_foreach(*stm.as_foreach);
+            dump_stmt_foreach(stm.as<stmt_foreach>());
             break;
         case node::stmt_switch:
-            dump_stmt_switch(*stm.as_switch);
+            dump_stmt_switch(stm.as<stmt_switch>());
             break;
         case node::stmt_case:
-            dump_stmt_case(*stm.as_case);
+            dump_stmt_case(stm.as<stmt_case>());
             break;
         case node::stmt_default:
-            dump_stmt_default(*stm.as_default);
+            dump_stmt_default(stm.as<stmt_default>());
             break;
         case node::stmt_break:
-            dump_stmt_break(*stm.as_break);
+            dump_stmt_break(stm.as<stmt_break>());
             break;
         case node::stmt_continue:
-            dump_stmt_continue(*stm.as_continue);
+            dump_stmt_continue(stm.as<stmt_continue>());
             break;
         case node::stmt_return:
-            dump_stmt_return(*stm.as_return);
+            dump_stmt_return(stm.as<stmt_return>());
             break;
         case node::stmt_breakpoint:
-            dump_stmt_breakpoint(*stm.as_breakpoint);
+            dump_stmt_breakpoint(stm.as<stmt_breakpoint>());
             break;
         case node::stmt_prof_begin:
-            dump_stmt_prof_begin(*stm.as_prof_begin);
+            dump_stmt_prof_begin(stm.as<stmt_prof_begin>());
             break;
         case node::stmt_prof_end:
-            dump_stmt_prof_end(*stm.as_prof_end);
+            dump_stmt_prof_end(stm.as<stmt_prof_end>());
             break;
         case node::stmt_assert:
-            dump_stmt_assert(*stm.as_assert);
+            dump_stmt_assert(stm.as<stmt_assert>());
             break;
         case node::stmt_assertex:
-            dump_stmt_assertex(*stm.as_assertex);
+            dump_stmt_assertex(stm.as<stmt_assertex>());
             break;
         case node::stmt_assertmsg:
-            dump_stmt_assertmsg(*stm.as_assertmsg);
+            dump_stmt_assertmsg(stm.as<stmt_assertmsg>());
             break;
-        case node::asm_jmp:
-            dump_asm_jmp(*stm.as_jump);
+        case node::stmt_create:
+            dump_stmt_create(stm.as<stmt_create>());
             break;
-        case node::asm_jmp_back:
-            dump_asm_jmp_back(*stm.as_jump_back);
+        case node::stmt_remove:
+            dump_stmt_remove(stm.as<stmt_remove>());
             break;
-        case node::asm_jmp_cond:
-            dump_asm_jmp_cond(*stm.as_cond);
+        case node::stmt_clear:
+            dump_stmt_clear(stm.as<stmt_clear>());
             break;
-        case node::asm_switch:
-            dump_asm_switch(*stm.as_asm_switch);
+        case node::stmt_jmp:
+            dump_stmt_jmp(stm.as<stmt_jmp>());
             break;
-        case node::asm_endswitch:
-            dump_asm_endswitch(*stm.as_asm_endswitch);
+        case node::stmt_jmp_back:
+            dump_stmt_jmp_back(stm.as<stmt_jmp_back>());
             break;
-        case node::asm_create:
-            dump_asm_create(*stm.as_asm_create);
+        case node::stmt_jmp_cond:
+            dump_stmt_jmp_cond(stm.as<stmt_jmp_cond>());
             break;
-        case node::asm_access:
-            dump_asm_access(*stm.as_asm_access);
+        case node::stmt_jmp_switch:
+            dump_stmt_jmp_switch(stm.as<stmt_jmp_switch>());
             break;
-        case node::asm_remove:
-            dump_asm_remove(*stm.as_asm_remove);
-            break;
-        case node::asm_clear:
-            dump_asm_clear(*stm.as_asm_clear);
+        case node::stmt_jmp_endswitch:
+            dump_stmt_jmp_endswitch(stm.as<stmt_jmp_endswitch>());
             break;
         default:
             break;
     }
+}
+
+auto source::dump_stmt_empty(stmt_empty const&) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), ";");
 }
 
 auto source::dump_stmt_list(stmt_list const& stm) -> void
@@ -497,23 +501,23 @@ auto source::dump_stmt_list(stmt_list const& stm) -> void
 
     for (auto const& entry : stm.list)
     {
-        if ((&entry != &stm.list.front() && entry.as_node->is_special_stmt()) || last_special)
+        if ((&entry != &stm.list.front() && entry->is_special_stmt()) || last_special)
             fmt::format_to(std::back_inserter(buf_), "\n");
 
-        if (entry == node::stmt_dev)
+        if (entry->is<stmt_dev>())
         {
-            dump_stmt(entry);
+            dump_stmt(*entry);
         }
         else
         {
             fmt::format_to(std::back_inserter(buf_), "{: >{}}", "", indent_);
-            dump_stmt(entry);
+            dump_stmt(*entry);
         }
 
         if (&entry != &stm.list.back())
             fmt::format_to(std::back_inserter(buf_), "\n");
 
-        if (entry.as_node->is_special_stmt())
+        if (entry->is_special_stmt())
             last_special = true;
         else
             last_special = false;
@@ -538,34 +542,44 @@ auto source::dump_stmt_dev(stmt_dev const& stm) -> void
 
 auto source::dump_stmt_expr(stmt_expr const& stm) -> void
 {
-    dump_expr(stm.value);
-}
+    switch (stm.value->kind())
+    {
+        case node::expr_increment:
+            dump_expr_increment(stm.value->as<expr_increment>());
+            break;
+        case node::expr_decrement:
+            dump_expr_decrement(stm.value->as<expr_decrement>());
+            break;
+        case node::expr_assign:
+            dump_expr_assign(stm.value->as<expr_assign>());
+            break;
+        case node::expr_call:
+            dump_expr_call(stm.value->as<expr_call>());
+            break;
+        case node::expr_method:
+            dump_expr_method(stm.value->as<expr_method>());
+            break;
+        case node::expr_empty:
+        default:
+            break;
+    }
 
-auto source::dump_stmt_call(stmt_call const& stm) -> void
-{
-    dump_expr(stm.value);
-    fmt::format_to(std::back_inserter(buf_), ";");
-}
-
-auto source::dump_stmt_assign(stmt_assign const& stm) -> void
-{
-    dump_expr(stm.value);
     fmt::format_to(std::back_inserter(buf_), ";");
 }
 
 auto source::dump_stmt_endon(stmt_endon const& stm) -> void
 {
-    dump_expr(stm.obj);
+    dump_expr(*stm.obj);
     fmt::format_to(std::back_inserter(buf_), " endon( ");
-    dump_expr(stm.event);
+    dump_expr(*stm.event);
     fmt::format_to(std::back_inserter(buf_), " );");
 }
 
 auto source::dump_stmt_notify(stmt_notify const& stm) -> void
 {
-    dump_expr(stm.obj);
+    dump_expr(*stm.obj);
     fmt::format_to(std::back_inserter(buf_), " notify( ");
-    dump_expr(stm.event);
+    dump_expr(*stm.event);
 
     if (stm.args->list.size() > 0)
     {
@@ -582,31 +596,31 @@ auto source::dump_stmt_notify(stmt_notify const& stm) -> void
 
 auto source::dump_stmt_wait(stmt_wait const& stm) -> void
 {
-    if (stm.time == node::expr_float || stm.time == node::expr_integer)
+    if (stm.time->is<expr_float>() || stm.time->is<expr_integer>())
     {
         fmt::format_to(std::back_inserter(buf_), "wait ");
-        dump_expr(stm.time);
+        dump_expr(*stm.time);
         fmt::format_to(std::back_inserter(buf_), ";");
     }
-    else if (stm.time == node::expr_paren)
+    else if (stm.time->is<expr_paren>())
     {
         fmt::format_to(std::back_inserter(buf_), "wait");
-        dump_expr(stm.time);
+        dump_expr(*stm.time);
         fmt::format_to(std::back_inserter(buf_), ";");
     }
     else
     {
         fmt::format_to(std::back_inserter(buf_), "wait( ");
-        dump_expr(stm.time);
+        dump_expr(*stm.time);
         fmt::format_to(std::back_inserter(buf_), " );");
     }
 }
 
 auto source::dump_stmt_waittill(stmt_waittill const& stm) -> void
 {
-    dump_expr(stm.obj);
+    dump_expr(*stm.obj);
     fmt::format_to(std::back_inserter(buf_), " waittill( ");
-    dump_expr(stm.event);
+    dump_expr(*stm.event);
 
     if (stm.args->list.size() > 0)
     {
@@ -623,9 +637,9 @@ auto source::dump_stmt_waittill(stmt_waittill const& stm) -> void
 
 auto source::dump_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void
 {
-    dump_expr(stm.obj);
+    dump_expr(*stm.obj);
     fmt::format_to(std::back_inserter(buf_), " waittillmatch( ");
-    dump_expr(stm.event);
+    dump_expr(*stm.event);
 
     if (stm.args->list.size() > 0)
     {
@@ -653,18 +667,18 @@ auto source::dump_stmt_waitframe(stmt_waitframe const&) -> void
 auto source::dump_stmt_if(stmt_if const& stm) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "if ( ");
-    dump_expr(stm.test);
+    dump_expr(*stm.test);
     fmt::format_to(std::back_inserter(buf_), " )\n");
 
-    if (stm.body == node::stmt_comp)
+    if (stm.body->is<stmt_comp>())
     {
-        dump_stmt(stm.body);
+        dump_stmt(*stm.body);
     }
     else
     {
         indent_ += 4;
         fmt::format_to(std::back_inserter(buf_), "{: >{}}", "", indent_);
-        dump_stmt(stm.body);
+        dump_stmt(*stm.body);
         indent_ -= 4;
     }
 }
@@ -672,40 +686,40 @@ auto source::dump_stmt_if(stmt_if const& stm) -> void
 auto source::dump_stmt_ifelse(stmt_ifelse const& stm) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "if ( ");
-    dump_expr(stm.test);
+    dump_expr(*stm.test);
     fmt::format_to(std::back_inserter(buf_), " )\n");
 
-    if (stm.stmt_if == node::stmt_comp)
+    if (stm.stmt_if->is<stmt_comp>())
     {
-        dump_stmt(stm.stmt_if);
+        dump_stmt(*stm.stmt_if);
     }
     else
     {
         indent_ += 4;
         fmt::format_to(std::back_inserter(buf_), "{: >{}}", "", indent_);
-        dump_stmt(stm.stmt_if);
+        dump_stmt(*stm.stmt_if);
         indent_ -= 4;
     }
 
     fmt::format_to(std::back_inserter(buf_), "\n{: >{}}else", "", indent_);
 
-    if (stm.stmt_else == node::stmt_comp)
+    if (stm.stmt_else->is<stmt_comp>())
     {
         fmt::format_to(std::back_inserter(buf_), "\n");
-        dump_stmt(stm.stmt_else);
+        dump_stmt(*stm.stmt_else);
     }
     else
     {
-        if (stm.stmt_else == node::stmt_if || stm.stmt_else == node::stmt_ifelse)
+        if (stm.stmt_else->is<stmt_if>() || stm.stmt_else ->is<stmt_ifelse>())
         {
             fmt::format_to(std::back_inserter(buf_), " ");
-            dump_stmt(stm.stmt_else);
+            dump_stmt(*stm.stmt_else);
         }
         else
         {
             indent_ += 4;
             fmt::format_to(std::back_inserter(buf_), "\n{: >{}}", "", indent_);
-            dump_stmt(stm.stmt_else);
+            dump_stmt(*stm.stmt_else);
             indent_ -= 4;
         }
     }
@@ -713,26 +727,26 @@ auto source::dump_stmt_ifelse(stmt_ifelse const& stm) -> void
 
 auto source::dump_stmt_while(stmt_while const& stm) -> void
 {
-    if (stm.test == node::null)
+    if (stm.test->is<expr_empty>())
     {
         fmt::format_to(std::back_inserter(buf_), "while ( true )\n");
     }
     else
     {
         fmt::format_to(std::back_inserter(buf_), "while ( ");
-        dump_expr(stm.test);
+        dump_expr(*stm.test);
         fmt::format_to(std::back_inserter(buf_), " )\n");
     }
 
-    if (stm.body == node::stmt_comp)
+    if (stm.body->is<stmt_comp>())
     {
-        dump_stmt(stm.body);
+        dump_stmt(*stm.body);
     }
     else
     {
         indent_ += 4;
         fmt::format_to(std::back_inserter(buf_), "{: >{}}", "", indent_);
-        dump_stmt(stm.body);
+        dump_stmt(*stm.body);
         indent_ -= 4;
     }
 }
@@ -741,56 +755,58 @@ auto source::dump_stmt_dowhile(stmt_dowhile const& stm) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "do\n");
 
-    if (stm.body == node::stmt_comp)
+    if (stm.body->is<stmt_comp>())
     {
-        dump_stmt(stm.body);
+        dump_stmt(*stm.body);
     }
     else
     {
         indent_ += 4;
         fmt::format_to(std::back_inserter(buf_), "{: >{}}", "", indent_);
-        dump_stmt(stm.body);
+        dump_stmt(*stm.body);
         indent_ -= 4;
     }
 
-    if (stm.test == node::null)
+    if (stm.test->is<expr_empty>())
     {
         fmt::format_to(std::back_inserter(buf_), "\n{: >{}}while ( true )", "", indent_);
     }
     else
     {
         fmt::format_to(std::back_inserter(buf_), "\n{: >{}}while (", "", indent_);
-        dump_expr(stm.test);
+        dump_expr(*stm.test);
         fmt::format_to(std::back_inserter(buf_), " );");
     }
 }
 
 auto source::dump_stmt_for(stmt_for const& stm) -> void
 {
-    if (stm.test == node::null)
+    if (stm.test->is<expr_empty>())
     {
         fmt::format_to(std::back_inserter(buf_), "for (;;)\n");
     }
     else
     {
         fmt::format_to(std::back_inserter(buf_), "for ( ");
-        dump_stmt(stm.init);
+        dump_stmt(*stm.init);
+        buf_.pop_back();
         fmt::format_to(std::back_inserter(buf_), "; ");
-        dump_expr(stm.test);
+        dump_expr(*stm.test);
         fmt::format_to(std::back_inserter(buf_), "; ");
-        dump_stmt(stm.iter);
+        dump_stmt(*stm.iter);
+        buf_.pop_back();
         fmt::format_to(std::back_inserter(buf_), " )\n");
     }
 
-    if (stm.body == node::stmt_comp)
+    if (stm.body->is<stmt_comp>())
     {
-        dump_stmt(stm.body);
+        dump_stmt(*stm.body);
     }
     else
     {
         indent_ += 4;
         fmt::format_to(std::back_inserter(buf_), "{: >{}}", "", indent_);
-        dump_stmt(stm.body);
+        dump_stmt(*stm.body);
         indent_ -= 4;
     }
 }
@@ -801,24 +817,24 @@ auto source::dump_stmt_foreach(stmt_foreach const& stm) -> void
 
     if (stm.use_key)
     {
-        dump_expr((ctx_->props() & props::foreach) ? stm.index : stm.key);
+        dump_expr((ctx_->props() & props::foreach) ? *stm.index : *stm.key);
         fmt::format_to(std::back_inserter(buf_), ", ");
     }
 
-    dump_expr(stm.value);
+    dump_expr(*stm.value);
     fmt::format_to(std::back_inserter(buf_), " in ");
-    dump_expr(stm.container);
+    dump_expr(*stm.container);
     fmt::format_to(std::back_inserter(buf_), " )\n");
 
-    if (stm.body == node::stmt_comp)
+    if (stm.body->is<stmt_comp>())
     {
-        dump_stmt(stm.body);
+        dump_stmt(*stm.body);
     }
     else
     {
         indent_ += 4;
         fmt::format_to(std::back_inserter(buf_), "{: >{}}", "", indent_);
-        dump_stmt(stm.body);
+        dump_stmt(*stm.body);
         indent_ -= 4;
     }
 }
@@ -826,7 +842,7 @@ auto source::dump_stmt_foreach(stmt_foreach const& stm) -> void
 auto source::dump_stmt_switch(stmt_switch const& stm) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "switch ( ");
-    dump_expr(stm.test);
+    dump_expr(*stm.test);
     fmt::format_to(std::back_inserter(buf_), " )\n");
     dump_stmt_comp(*stm.body);
 }
@@ -834,7 +850,7 @@ auto source::dump_stmt_switch(stmt_switch const& stm) -> void
 auto source::dump_stmt_case(stmt_case const& stm) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "case ");
-    dump_expr(stm.value);
+    dump_expr(*stm.value);
     fmt::format_to(std::back_inserter(buf_), ":");
 
     if (stm.body != nullptr && stm.body->list.size() > 0)
@@ -867,14 +883,14 @@ auto source::dump_stmt_continue(stmt_continue const&) -> void
 
 auto source::dump_stmt_return(stmt_return const& stm) -> void
 {
-    if (stm.value == node::null)
+    if (stm.value->is<expr_empty>())
     {
         fmt::format_to(std::back_inserter(buf_), "return;");
     }
     else
     {
         fmt::format_to(std::back_inserter(buf_), "return ");
-        dump_expr(stm.value);
+        dump_expr(*stm.value);
         fmt::format_to(std::back_inserter(buf_), ";");
     }
 }
@@ -919,213 +935,179 @@ auto source::dump_stmt_assertmsg(stmt_assertmsg const& stm) -> void
     fmt::format_to(std::back_inserter(buf_), ");");
 }
 
+auto source::dump_stmt_create(stmt_create const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "__asm_var_create( {} )", stm.index);
+}
+
+auto source::dump_stmt_remove(stmt_remove const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "__asm_var_remove( {} )", stm.index);
+}
+
+auto source::dump_stmt_clear(stmt_clear const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "__asm_var_clear( {} )", stm.index);
+}
+
+auto source::dump_stmt_jmp(stmt_jmp const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "__asm_jmp( {} )", stm.value);
+}
+
+auto source::dump_stmt_jmp_back(stmt_jmp_back const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "__asm_jmp_back( {} )", stm.value);
+}
+
+auto source::dump_stmt_jmp_cond(stmt_jmp_cond const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "__asm_jmp_cond( {} )", stm.value);
+}
+
+auto source::dump_stmt_jmp_true(stmt_jmp_true const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "__asm_jmp_expr_true( {} )", stm.value);
+}
+
+auto source::dump_stmt_jmp_false(stmt_jmp_false const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "__asm_jmp_expr_false( {} )", stm.value);
+}
+
+auto source::dump_stmt_jmp_switch(stmt_jmp_switch const& stm) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "__asm_switch( {} )", stm.value);
+}
+
+auto source::dump_stmt_jmp_endswitch(stmt_jmp_endswitch const&) -> void
+{
+    fmt::format_to(std::back_inserter(buf_), "__asm_endswitch()");
+}
+
 auto source::dump_expr(expr const& exp) -> void
 {
-    switch (exp.as_node->kind())
+    switch (exp.kind())
     {
-        case node::expr_increment:
-            dump_expr_increment(*exp.as_increment);
-            break;
-        case node::expr_decrement:
-            dump_expr_decrement(*exp.as_decrement);
-            break;
-        case node::expr_assign_equal:
-            dump_expr_assign_equal(*exp.as_assign_equal);
-            break;
-        case node::expr_assign_add:
-            dump_expr_assign_add(*exp.as_assign_add);
-            break;
-        case node::expr_assign_sub:
-            dump_expr_assign_sub(*exp.as_assign_sub);
-            break;
-        case node::expr_assign_mul:
-            dump_expr_assign_mul(*exp.as_assign_mul);
-            break;
-        case node::expr_assign_div:
-            dump_expr_assign_div(*exp.as_assign_div);
-            break;
-        case node::expr_assign_mod:
-            dump_expr_assign_mod(*exp.as_assign_mod);
-            break;
-        case node::expr_assign_shift_left:
-            dump_expr_assign_shift_left(*exp.as_assign_shift_left);
-            break;
-        case node::expr_assign_shift_right:
-            dump_expr_assign_shift_right(*exp.as_assign_shift_right);
-            break;
-        case node::expr_assign_bitwise_or:
-            dump_expr_assign_bitwise_or(*exp.as_assign_bw_or);
-            break;
-        case node::expr_assign_bitwise_and:
-            dump_expr_assign_bitwise_and(*exp.as_assign_bw_and);
-            break;
-        case node::expr_assign_bitwise_exor:
-            dump_expr_assign_bitwise_exor(*exp.as_assign_bw_exor);
-            break;
         case node::expr_ternary:
-            dump_expr_ternary(*exp.as_ternary);
+            dump_expr_ternary(exp.as<expr_ternary>());
             break;
-        case node::expr_and:
-            dump_expr_and(*exp.as_and);
-            break;
-        case node::expr_or:
-            dump_expr_or(*exp.as_or);
-            break;
-        case node::expr_equality:
-            dump_expr_equality(*exp.as_equality);
-            break;
-        case node::expr_inequality:
-            dump_expr_inequality(*exp.as_inequality);
-            break;
-        case node::expr_less_equal:
-            dump_expr_less_equal(*exp.as_less_equal);
-            break;
-        case node::expr_greater_equal:
-            dump_expr_greater_equal(*exp.as_greater_equal);
-            break;
-        case node::expr_less:
-            dump_expr_less(*exp.as_less);
-            break;
-        case node::expr_greater:
-            dump_expr_greater(*exp.as_greater);
-            break;
-        case node::expr_add:
-            dump_expr_add(*exp.as_add);
-            break;
-        case node::expr_sub:
-            dump_expr_sub(*exp.as_sub);
-            break;
-        case node::expr_mul:
-            dump_expr_mul(*exp.as_mul);
-            break;
-        case node::expr_div:
-            dump_expr_div(*exp.as_div);
-            break;
-        case node::expr_mod:
-            dump_expr_mod(*exp.as_mod);
-            break;
-        case node::expr_shift_left:
-            dump_expr_shift_left(*exp.as_shift_left);
-            break;
-        case node::expr_shift_right:
-            dump_expr_shift_right(*exp.as_shift_right);
-            break;
-        case node::expr_bitwise_or:
-            dump_expr_bitwise_or(*exp.as_bitwise_or);
-            break;
-        case node::expr_bitwise_and:
-            dump_expr_bitwise_and(*exp.as_bitwise_and);
-            break;
-        case node::expr_bitwise_exor:
-            dump_expr_bitwise_exor(*exp.as_bitwise_exor);
+        case node::expr_binary:
+            dump_expr_binary(exp.as<expr_binary>());
             break;
         case node::expr_complement:
-            dump_expr_complement(*exp.as_complement);
+            dump_expr_complement(exp.as<expr_complement>());
             break;
         case node::expr_negate:
-            dump_expr_negate(*exp.as_negate);
+            dump_expr_negate(exp.as<expr_negate>());
             break;
         case node::expr_not:
-            dump_expr_not(*exp.as_not);
+            dump_expr_not(exp.as<expr_not>());
             break;
         case node::expr_call:
-            dump_expr_call(*exp.as_call);
+            dump_expr_call(exp.as<expr_call>());
             break;
         case node::expr_method:
-            dump_expr_method(*exp.as_method);
+            dump_expr_method(exp.as<expr_method>());
             break;
         case node::expr_function:
-            dump_expr_function(*exp.as_function);
+            dump_expr_function(exp.as<expr_function>());
             break;
         case node::expr_pointer:
-            dump_expr_pointer(*exp.as_pointer);
+            dump_expr_pointer(exp.as<expr_pointer>());
             break;
         case node::expr_add_array:
-            dump_expr_add_array(*exp.as_add_array);
+            dump_expr_add_array(exp.as<expr_add_array>());
             break;
         case node::expr_parameters:
-            dump_expr_parameters(*exp.as_parameters);
+            dump_expr_parameters(exp.as<expr_parameters>());
             break;
         case node::expr_arguments:
-            dump_expr_arguments(*exp.as_arguments);
+            dump_expr_arguments(exp.as<expr_arguments>());
             break;
         case node::expr_isdefined:
-            dump_expr_isdefined(*exp.as_isdefined);
+            dump_expr_isdefined(exp.as<expr_isdefined>());
             break;
         case node::expr_istrue:
-            dump_expr_istrue(*exp.as_istrue);
+            dump_expr_istrue(exp.as<expr_istrue>());
             break;
         case node::expr_reference:
-            dump_expr_reference(*exp.as_reference);
+            dump_expr_reference(exp.as<expr_reference>());
             break;
         case node::expr_tuple:
-            dump_expr_tuple(*exp.as_tuple);
+            dump_expr_tuple(exp.as<expr_tuple>());
             break;
         case node::expr_array:
-            dump_expr_array(*exp.as_array);
+            dump_expr_array(exp.as<expr_array>());
             break;
         case node::expr_field:
-            dump_expr_field(*exp.as_field);
+            dump_expr_field(exp.as<expr_field>());
             break;
         case node::expr_size:
-            dump_expr_size(*exp.as_size);
+            dump_expr_size(exp.as<expr_size>());
             break;
         case node::expr_paren:
-            dump_expr_paren(*exp.as_paren);
+            dump_expr_paren(exp.as<expr_paren>());
             break;
         case node::expr_thisthread:
-            dump_expr_thisthread(*exp.as_thisthread);
+            dump_expr_thisthread(exp.as<expr_thisthread>());
             break;
         case node::expr_empty_array:
-            dump_expr_empty_array(*exp.as_empty_array);
+            dump_expr_empty_array(exp.as<expr_empty_array>());
             break;
         case node::expr_undefined:
-            dump_expr_undefined(*exp.as_undefined);
+            dump_expr_undefined(exp.as<expr_undefined>());
             break;
         case node::expr_game:
-            dump_expr_game(*exp.as_game);
+            dump_expr_game(exp.as<expr_game>());
             break;
         case node::expr_self:
-            dump_expr_self(*exp.as_self);
+            dump_expr_self(exp.as<expr_self>());
             break;
         case node::expr_anim:
-            dump_expr_anim(*exp.as_anim);
+            dump_expr_anim(exp.as<expr_anim>());
             break;
         case node::expr_level:
-            dump_expr_level(*exp.as_level);
+            dump_expr_level(exp.as<expr_level>());
             break;
         case node::expr_animation:
-            dump_expr_animation(*exp.as_animation);
+            dump_expr_animation(exp.as<expr_animation>());
             break;
         case node::expr_animtree:
-            dump_expr_animtree(*exp.as_animtree);
+            dump_expr_animtree(exp.as<expr_animtree>());
             break;
         case node::expr_identifier:
-            dump_expr_identifier(*exp.as_identifier);
+            dump_expr_identifier(exp.as<expr_identifier>());
             break;
         case node::expr_path:
-            dump_expr_path(*exp.as_path);
+            dump_expr_path(exp.as<expr_path>());
             break;
         case node::expr_istring:
-            dump_expr_istring(*exp.as_istring);
+            dump_expr_istring(exp.as<expr_istring>());
             break;
         case node::expr_string:
-            dump_expr_string(*exp.as_string);
+            dump_expr_string(exp.as<expr_string>());
             break;
         case node::expr_vector:
-            dump_expr_vector(*exp.as_vector);
+            dump_expr_vector(exp.as<expr_vector>());
             break;
         case node::expr_float:
-            dump_expr_float(*exp.as_float);
+            dump_expr_float(exp.as<expr_float>());
             break;
         case node::expr_integer:
-            dump_expr_integer(*exp.as_integer);
+            dump_expr_integer(exp.as<expr_integer>());
             break;
         case node::expr_false:
-            dump_expr_false(*exp.as_false);
+            dump_expr_false(exp.as<expr_false>());
             break;
         case node::expr_true:
-            dump_expr_true(*exp.as_true);
+            dump_expr_true(exp.as<expr_true>());
+            break;
+        case node::expr_var_create:
+            dump_expr_var_create(exp.as<expr_var_create>());
+            break;
+        case node::expr_var_access:
+            dump_expr_var_access(exp.as<expr_var_access>());
             break;
         default:
             break;
@@ -1137,11 +1119,11 @@ auto source::dump_expr_increment(expr_increment const& exp) -> void
     if (exp.prefix)
     {
         fmt::format_to(std::back_inserter(buf_), "++");
-        dump_expr(exp.lvalue);
+        dump_expr(*exp.lvalue);
     }
     else
     {
-        dump_expr(exp.lvalue);
+        dump_expr(*exp.lvalue);
         fmt::format_to(std::back_inserter(buf_), "++");
     }
 }
@@ -1151,266 +1133,172 @@ auto source::dump_expr_decrement(expr_decrement const& exp) -> void
     if (exp.prefix)
     {
         fmt::format_to(std::back_inserter(buf_), "--");
-        dump_expr(exp.lvalue);
+        dump_expr(*exp.lvalue);
     }
     else
     {
-        dump_expr(exp.lvalue);
+        dump_expr(*exp.lvalue);
         fmt::format_to(std::back_inserter(buf_), "--");
     }
 }
 
-auto source::dump_expr_assign_equal(expr_assign_equal const& exp) -> void
+auto source::dump_expr_assign(expr_assign const& exp) -> void
 {
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " = ");
-    dump_expr(exp.rvalue);
-}
+    dump_expr(*exp.lvalue);
 
-auto source::dump_expr_assign_add(expr_assign_add const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " += ");
-    dump_expr(exp.rvalue);
-}
+    switch (exp.oper)
+    {
+        case expr_assign::op::eq:
+            fmt::format_to(std::back_inserter(buf_), " = ");
+            break;
+        case expr_assign::op::add:
+            fmt::format_to(std::back_inserter(buf_), " += ");
+            break;
+        case expr_assign::op::sub:
+            fmt::format_to(std::back_inserter(buf_), " -= ");
+            break;
+        case expr_assign::op::mul:
+            fmt::format_to(std::back_inserter(buf_), " *= ");
+            break;
+        case expr_assign::op::div:
+            fmt::format_to(std::back_inserter(buf_), " /= ");
+            break;
+        case expr_assign::op::mod:
+            fmt::format_to(std::back_inserter(buf_), " %= ");
+            break;
+        case expr_assign::op::shl:
+            fmt::format_to(std::back_inserter(buf_), " <<= ");
+            break;
+        case expr_assign::op::shr:
+            fmt::format_to(std::back_inserter(buf_), " >>= ");
+            break;
+        case expr_assign::op::bwor:
+            fmt::format_to(std::back_inserter(buf_), " |= ");
+            break;
+        case expr_assign::op::bwand:
+            fmt::format_to(std::back_inserter(buf_), " &= ");
+            break;
+        case expr_assign::op::bwexor:
+            fmt::format_to(std::back_inserter(buf_), " ^= ");
+            break;
+    }
 
-auto source::dump_expr_assign_sub(expr_assign_sub const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " -= ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_assign_mul(expr_assign_mul const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " *= ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_assign_div(expr_assign_div const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " /= ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_assign_mod(expr_assign_mod const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " %= ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_assign_shift_left(expr_assign_shift_left const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " <<= ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_assign_shift_right(expr_assign_shift_right const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " >>= ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_assign_bitwise_or(expr_assign_bitwise_or const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " |= ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_assign_bitwise_and(expr_assign_bitwise_and const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " &= ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_assign_bitwise_exor(expr_assign_bitwise_exor const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " ^= ");
-    dump_expr(exp.rvalue);
+    dump_expr(*exp.rvalue);
 }
 
 auto source::dump_expr_ternary(expr_ternary const& exp) -> void
 {
-    dump_expr(exp.test);
+    dump_expr(*exp.test);
     fmt::format_to(std::back_inserter(buf_), " ? ");
-    dump_expr(exp.true_expr);
+    dump_expr(*exp.true_expr);
     fmt::format_to(std::back_inserter(buf_), " : ");
-    dump_expr(exp.false_expr);
+    dump_expr(*exp.false_expr);
 }
 
-auto source::dump_expr_or(expr_or const& exp) -> void
+auto source::dump_expr_binary(expr_binary const& exp) -> void
 {
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " || ");
-    dump_expr(exp.rvalue);
-}
+    dump_expr(*exp.lvalue);
 
-auto source::dump_expr_and(expr_and const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " && ");
-    dump_expr(exp.rvalue);
-}
+    switch (exp.oper)
+    {
+        case expr_binary::op::bool_or:
+            fmt::format_to(std::back_inserter(buf_), " || ");
+            break;
+        case expr_binary::op::bool_and:
+            fmt::format_to(std::back_inserter(buf_), " && ");
+            break;
+        case expr_binary::op::eq:
+            fmt::format_to(std::back_inserter(buf_), " == ");
+            break;
+        case expr_binary::op::ne:
+            fmt::format_to(std::back_inserter(buf_), " != ");
+            break;
+        case expr_binary::op::le:
+            fmt::format_to(std::back_inserter(buf_), " <= ");
+            break;
+        case expr_binary::op::ge:
+            fmt::format_to(std::back_inserter(buf_), " >= ");
+            break;
+        case expr_binary::op::lt:
+            fmt::format_to(std::back_inserter(buf_), " < ");
+            break;
+        case expr_binary::op::gt:
+            fmt::format_to(std::back_inserter(buf_), " > ");
+            break;
+        case expr_binary::op::add:
+            fmt::format_to(std::back_inserter(buf_), " + ");
+            break;
+        case expr_binary::op::sub:
+            fmt::format_to(std::back_inserter(buf_), " - ");
+            break;
+        case expr_binary::op::mul:
+            fmt::format_to(std::back_inserter(buf_), " * ");
+            break;
+        case expr_binary::op::div:
+            fmt::format_to(std::back_inserter(buf_), " / ");
+            break;
+        case expr_binary::op::mod:
+            fmt::format_to(std::back_inserter(buf_), " % ");
+            break;
+        case expr_binary::op::shl:
+            fmt::format_to(std::back_inserter(buf_), " << ");
+            break;
+        case expr_binary::op::shr:
+            fmt::format_to(std::back_inserter(buf_), " >> ");
+            break;
+        case expr_binary::op::bwor:
+            fmt::format_to(std::back_inserter(buf_), " | ");
+            break;
+        case expr_binary::op::bwand:
+            fmt::format_to(std::back_inserter(buf_), " & ");
+            break;
+        case expr_binary::op::bwexor:
+            fmt::format_to(std::back_inserter(buf_), " ^ ");
+            break;
+    }
 
-auto source::dump_expr_equality(expr_equality const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " == ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_inequality(expr_inequality const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " != ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_less_equal(expr_less_equal const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " <= ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_greater_equal(expr_greater_equal const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " >= ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_less(expr_less const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " < ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_greater(expr_greater const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " > ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_add(expr_add const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " + ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_sub(expr_sub const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " - ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_mul(expr_mul const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " * ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_div(expr_div const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " / ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_mod(expr_mod const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " % ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_shift_left(expr_shift_left const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " << ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_shift_right(expr_shift_right const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " >> ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_bitwise_or(expr_bitwise_or const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " | ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_bitwise_and(expr_bitwise_and const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " & ");
-    dump_expr(exp.rvalue);
-}
-
-auto source::dump_expr_bitwise_exor(expr_bitwise_exor const& exp) -> void
-{
-    dump_expr(exp.lvalue);
-    fmt::format_to(std::back_inserter(buf_), " ^ ");
-    dump_expr(exp.rvalue);
+    dump_expr(*exp.rvalue);
 }
 
 auto source::dump_expr_not(expr_not const& exp) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "!");
-    dump_expr(exp.rvalue);
+    dump_expr(*exp.rvalue);
 }
 
 auto source::dump_expr_negate(expr_negate const& exp) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "-");
-    dump_expr(exp.rvalue);
+    dump_expr(*exp.rvalue);
 }
 
 auto source::dump_expr_complement(expr_complement const& exp) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "~");
-    dump_expr(exp.rvalue);
+    dump_expr(*exp.rvalue);
 }
 
 auto source::dump_expr_call(expr_call const& exp) -> void
 {
-    dump_call(exp.value);
+    dump_call(*exp.value);
 }
 
 auto source::dump_expr_method(expr_method const& exp) -> void
 {
-    dump_expr(exp.obj);
+    dump_expr(*exp.obj);
     fmt::format_to(std::back_inserter(buf_), " ");
-    dump_call(exp.value);
+    dump_call(*exp.value);
 }
 
 auto source::dump_call(call const& exp) -> void
 {
-    switch (exp.as_node->kind())
+    switch (exp.kind())
     {
         case node::expr_function:
-            dump_expr_function(*exp.as_function);
+            dump_expr_function(exp.as<expr_function>());
             break;
         case node::expr_pointer:
-            dump_expr_pointer(*exp.as_pointer);
+            dump_expr_pointer(exp.as<expr_pointer>());
             break;
         default:
             break;
@@ -1446,7 +1334,7 @@ auto source::dump_expr_pointer(expr_pointer const& exp) -> void
         fmt::format_to(std::back_inserter(buf_), "childthread ");
 
     fmt::format_to(std::back_inserter(buf_), "[[ ");
-    dump_expr(exp.func);
+    dump_expr(*exp.func);
     fmt::format_to(std::back_inserter(buf_), " ]](");
     dump_expr_arguments(*exp.args);
     fmt::format_to(std::back_inserter(buf_), ")");
@@ -1478,7 +1366,7 @@ auto source::dump_expr_arguments(expr_arguments const& exp) -> void
     for (auto const& entry : exp.list)
     {
         fmt::format_to(std::back_inserter(buf_), " ");
-        dump_expr(entry);
+        dump_expr(*entry);
 
         if (&entry != &exp.list.back())
             fmt::format_to(std::back_inserter(buf_), ",");
@@ -1490,14 +1378,14 @@ auto source::dump_expr_arguments(expr_arguments const& exp) -> void
 auto source::dump_expr_isdefined(expr_isdefined const& exp) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "isdefined( ");
-    dump_expr(exp.value);
+    dump_expr(*exp.value);
     fmt::format_to(std::back_inserter(buf_), " )");
 }
 
 auto source::dump_expr_istrue(expr_istrue const& exp) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "istrue( ");
-    dump_expr(exp.value);
+    dump_expr(*exp.value);
     fmt::format_to(std::back_inserter(buf_), " )");
 }
 
@@ -1514,7 +1402,7 @@ auto source::dump_expr_tuple(expr_tuple const& exp) -> void
 
     for (auto const& entry : exp.list)
     {
-        dump_expr(entry);
+        dump_expr(*entry);
 
         if (&entry != &exp.list.back())
             fmt::format_to(std::back_inserter(buf_), ", ");
@@ -1525,29 +1413,29 @@ auto source::dump_expr_tuple(expr_tuple const& exp) -> void
 
 auto source::dump_expr_array(expr_array const& exp) -> void
 {
-    dump_expr(exp.obj);
+    dump_expr(*exp.obj);
     fmt::format_to(std::back_inserter(buf_), "[");
-    dump_expr(exp.key);
+    dump_expr(*exp.key);
     fmt::format_to(std::back_inserter(buf_), "]");
 }
 
 auto source::dump_expr_field(expr_field const& exp) -> void
 {
-    dump_expr(exp.obj);
+    dump_expr(*exp.obj);
     fmt::format_to(std::back_inserter(buf_), ".");
     dump_expr_identifier(*exp.field);
 }
 
 auto source::dump_expr_size(expr_size const& exp) -> void
 {
-    dump_expr(exp.obj);
+    dump_expr(*exp.obj);
     fmt::format_to(std::back_inserter(buf_), ".size");
 }
 
 auto source::dump_expr_paren(expr_paren const& exp) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "( ");
-    dump_expr(exp.value);
+    dump_expr(*exp.value);
     fmt::format_to(std::back_inserter(buf_), " )");
 }
 
@@ -1619,11 +1507,11 @@ auto source::dump_expr_string(expr_string const& exp) -> void
 auto source::dump_expr_vector(expr_vector const& exp) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "( ");
-    dump_expr(exp.x);
+    dump_expr(*exp.x);
     fmt::format_to(std::back_inserter(buf_), ", ");
-    dump_expr(exp.y);
+    dump_expr(*exp.y);
     fmt::format_to(std::back_inserter(buf_), ", ");
-    dump_expr(exp.z);
+    dump_expr(*exp.z);
     fmt::format_to(std::back_inserter(buf_), " )");
 }
 
@@ -1647,69 +1535,14 @@ auto source::dump_expr_true(expr_true const&) -> void
     fmt::format_to(std::back_inserter(buf_), "true");
 }
 
-auto source::dump_asm_jmp(asm_jmp const& exp) -> void
-{
-    fmt::format_to(std::back_inserter(buf_), "__asm_jmp( {} )", exp.value);
-}
-
-auto source::dump_asm_jmp_back(asm_jmp_back const& exp) -> void
-{
-    fmt::format_to(std::back_inserter(buf_), "__asm_jmp_back( {} )", exp.value);
-}
-
-auto source::dump_asm_jmp_cond(asm_jmp_cond const& exp) -> void
-{
-    fmt::format_to(std::back_inserter(buf_), "__asm_jmp_cond( {} )", exp.value);
-}
-
-auto source::dump_asm_jmp_true(asm_jmp_true const& exp) -> void
-{
-    fmt::format_to(std::back_inserter(buf_), "__asm_jmp_expr_true( {} )", exp.value);
-}
-
-auto source::dump_asm_jmp_false(asm_jmp_false const& exp) -> void
-{
-    fmt::format_to(std::back_inserter(buf_), "__asm_jmp_expr_false( {} )", exp.value);
-}
-
-auto source::dump_asm_switch(asm_switch const& exp) -> void
-{
-    fmt::format_to(std::back_inserter(buf_), "__asm_switch( {} )", exp.value);
-}
-
-auto source::dump_asm_endswitch(asm_endswitch const&) -> void
-{
-    fmt::format_to(std::back_inserter(buf_), "__asm_endswitch()");
-}
-
-auto source::dump_asm_prescriptcall(asm_prescriptcall const&) -> void
-{
-    fmt::format_to(std::back_inserter(buf_), "__asm_prescriptcall()");
-}
-
-auto source::dump_asm_voidcodepos(asm_voidcodepos const&) -> void
-{
-    fmt::format_to(std::back_inserter(buf_), "__asm_voidcodepos()");
-}
-
-auto source::dump_asm_create(asm_create const& exp) -> void
+auto source::dump_expr_var_create(expr_var_create const& exp) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "__asm_var_create( {} )", exp.index);
 }
 
-auto source::dump_asm_access(asm_access const& exp) -> void
+auto source::dump_expr_var_access(expr_var_access const& exp) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "__asm_var_access( {} )", exp.index);
-}
-
-auto source::dump_asm_remove(asm_remove const& exp) -> void
-{
-    fmt::format_to(std::back_inserter(buf_), "__asm_var_remove( {} )", exp.index);
-}
-
-auto source::dump_asm_clear(asm_clear const& exp) -> void
-{
-    fmt::format_to(std::back_inserter(buf_), "__asm_var_clear( {} )", exp.index);
 }
 
 } // namespace xsk::gsc

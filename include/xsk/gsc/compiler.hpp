@@ -45,8 +45,6 @@ private:
     auto emit_stmt_comp(stmt_comp const& stm, scope& scp, bool last) -> void;
     auto emit_stmt_dev(stmt_dev const& stm, scope& scp, bool last) -> void;
     auto emit_stmt_expr(stmt_expr const& stm, scope& scp) -> void;
-    auto emit_stmt_call(stmt_call const& stm, scope& scp) -> void;
-    auto emit_stmt_assign(stmt_assign const& stm, scope& scp) -> void;
     auto emit_stmt_endon(stmt_endon const& stm, scope& scp) -> void;
     auto emit_stmt_notify(stmt_notify const& stm, scope& scp) -> void;
     auto emit_stmt_wait(stmt_wait const& stm, scope& scp) -> void;
@@ -80,8 +78,6 @@ private:
     auto emit_expr_decrement(expr_decrement const& exp, scope& scp, bool is_stmt) -> void;
     auto emit_expr_ternary(expr_ternary const& exp, scope& scp) -> void;
     auto emit_expr_binary(expr_binary const& exp, scope& scp) -> void;
-    auto emit_expr_and(expr_and const& exp, scope& scp) -> void;
-    auto emit_expr_or(expr_or const& exp, scope& scp) -> void;
     auto emit_expr_complement(expr_complement const& exp, scope& scp) -> void;
     auto emit_expr_negate(expr_negate const& exp, scope& scp) -> void;
     auto emit_expr_not(expr_not const& exp, scope& scp) -> void;
@@ -128,7 +124,6 @@ private:
     auto process_stmt_comp(stmt_comp const& stm, scope& scp) -> void;
     auto process_stmt_dev(stmt_dev const& stm, scope& scp) -> void;
     auto process_stmt_expr(stmt_expr const& stm, scope& scp) -> void;
-    auto process_stmt_assign(stmt_assign const& stm, scope& scp) -> void;
     auto process_stmt_waittill(stmt_waittill const& stm, scope& scp) -> void;
     auto process_stmt_if(stmt_if const& stm, scope& scp) -> void;
     auto process_stmt_ifelse(stmt_ifelse const& stm, scope& scp) -> void;
