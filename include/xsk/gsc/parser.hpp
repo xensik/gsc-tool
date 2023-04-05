@@ -424,10 +424,10 @@ namespace xsk { namespace gsc {
     {
       // expr_function
       // expr_pointer
-      char dummy1[sizeof (call)];
+      char dummy1[sizeof (call::ptr)];
 
       // declaration
-      char dummy2[sizeof (decl)];
+      char dummy2[sizeof (decl::ptr)];
 
       // decl_constant
       char dummy3[sizeof (decl_constant::ptr)];
@@ -440,16 +440,16 @@ namespace xsk { namespace gsc {
 
       // expr
       // expr_or_empty
-      // expr_assign
       // expr_increment
       // expr_decrement
+      // expr_assign
       // expr_ternary
       // expr_binary
       // expr_primitive
       // expr_tuple
       // expr_tuple_types
       // expr_object
-      char dummy6[sizeof (expr)];
+      char dummy6[sizeof (expr::ptr)];
 
       // expr_add_array
       char dummy7[sizeof (expr_add_array::ptr)];
@@ -571,7 +571,7 @@ namespace xsk { namespace gsc {
 
       // stmt
       // stmt_or_dev
-      char dummy44[sizeof (stmt)];
+      char dummy44[sizeof (stmt::ptr)];
 
       // stmt_assert
       char dummy45[sizeof (stmt_assert::ptr)];
@@ -582,90 +582,86 @@ namespace xsk { namespace gsc {
       // stmt_assertmsg
       char dummy47[sizeof (stmt_assertmsg::ptr)];
 
-      // stmt_assign
-      char dummy48[sizeof (stmt_assign::ptr)];
-
       // stmt_break
-      char dummy49[sizeof (stmt_break::ptr)];
+      char dummy48[sizeof (stmt_break::ptr)];
 
       // stmt_breakpoint
-      char dummy50[sizeof (stmt_breakpoint::ptr)];
-
-      // stmt_call
-      char dummy51[sizeof (stmt_call::ptr)];
+      char dummy49[sizeof (stmt_breakpoint::ptr)];
 
       // stmt_case
-      char dummy52[sizeof (stmt_case::ptr)];
+      char dummy50[sizeof (stmt_case::ptr)];
 
       // stmt_comp
-      char dummy53[sizeof (stmt_comp::ptr)];
+      char dummy51[sizeof (stmt_comp::ptr)];
 
       // stmt_continue
-      char dummy54[sizeof (stmt_continue::ptr)];
+      char dummy52[sizeof (stmt_continue::ptr)];
 
       // stmt_default
-      char dummy55[sizeof (stmt_default::ptr)];
+      char dummy53[sizeof (stmt_default::ptr)];
 
       // stmt_dev
-      char dummy56[sizeof (stmt_dev::ptr)];
+      char dummy54[sizeof (stmt_dev::ptr)];
 
       // stmt_dowhile
-      char dummy57[sizeof (stmt_dowhile::ptr)];
+      char dummy55[sizeof (stmt_dowhile::ptr)];
 
       // stmt_endon
-      char dummy58[sizeof (stmt_endon::ptr)];
+      char dummy56[sizeof (stmt_endon::ptr)];
 
       // stmt_expr
-      char dummy59[sizeof (stmt_expr::ptr)];
+      // stmt_call
+      // stmt_assign
+      char dummy57[sizeof (stmt_expr::ptr)];
 
       // stmt_for
-      char dummy60[sizeof (stmt_for::ptr)];
+      char dummy58[sizeof (stmt_for::ptr)];
 
       // stmt_foreach
-      char dummy61[sizeof (stmt_foreach::ptr)];
+      char dummy59[sizeof (stmt_foreach::ptr)];
 
       // stmt_if
-      char dummy62[sizeof (stmt_if::ptr)];
+      char dummy60[sizeof (stmt_if::ptr)];
 
       // stmt_ifelse
-      char dummy63[sizeof (stmt_ifelse::ptr)];
+      char dummy61[sizeof (stmt_ifelse::ptr)];
 
       // stmt_list
       // stmt_or_dev_list
-      char dummy64[sizeof (stmt_list::ptr)];
+      char dummy62[sizeof (stmt_list::ptr)];
 
       // stmt_notify
-      char dummy65[sizeof (stmt_notify::ptr)];
+      char dummy63[sizeof (stmt_notify::ptr)];
 
       // stmt_prof_begin
-      char dummy66[sizeof (stmt_prof_begin::ptr)];
+      char dummy64[sizeof (stmt_prof_begin::ptr)];
 
       // stmt_prof_end
-      char dummy67[sizeof (stmt_prof_end::ptr)];
+      char dummy65[sizeof (stmt_prof_end::ptr)];
 
       // stmt_return
-      char dummy68[sizeof (stmt_return::ptr)];
+      char dummy66[sizeof (stmt_return::ptr)];
 
       // stmt_switch
-      char dummy69[sizeof (stmt_switch::ptr)];
+      char dummy67[sizeof (stmt_switch::ptr)];
 
       // stmt_wait
-      char dummy70[sizeof (stmt_wait::ptr)];
+      char dummy68[sizeof (stmt_wait::ptr)];
 
       // stmt_waitframe
-      char dummy71[sizeof (stmt_waitframe::ptr)];
+      char dummy69[sizeof (stmt_waitframe::ptr)];
 
       // stmt_waittill
-      char dummy72[sizeof (stmt_waittill::ptr)];
+      char dummy70[sizeof (stmt_waittill::ptr)];
 
       // stmt_waittillframeend
-      char dummy73[sizeof (stmt_waittillframeend::ptr)];
+      char dummy71[sizeof (stmt_waittillframeend::ptr)];
 
       // stmt_waittillmatch
-      char dummy74[sizeof (stmt_waittillmatch::ptr)];
+      char dummy72[sizeof (stmt_waittillmatch::ptr)];
 
       // stmt_while
-      char dummy75[sizeof (stmt_while::ptr)];
+      char dummy73[sizeof (stmt_while::ptr)];
     };
 
     /// The size of the largest semantic type.
@@ -1004,9 +1000,9 @@ namespace xsk { namespace gsc {
         S_stmt_assertmsg = 155,                  // stmt_assertmsg
         S_expr = 156,                            // expr
         S_expr_or_empty = 157,                   // expr_or_empty
-        S_expr_assign = 158,                     // expr_assign
-        S_expr_increment = 159,                  // expr_increment
-        S_expr_decrement = 160,                  // expr_decrement
+        S_expr_increment = 158,                  // expr_increment
+        S_expr_decrement = 159,                  // expr_decrement
+        S_expr_assign = 160,                     // expr_assign
         S_expr_ternary = 161,                    // expr_ternary
         S_expr_binary = 162,                     // expr_binary
         S_expr_primitive = 163,                  // expr_primitive
@@ -1089,11 +1085,11 @@ namespace xsk { namespace gsc {
     {
       case symbol_kind::S_expr_function: // expr_function
       case symbol_kind::S_expr_pointer: // expr_pointer
-        value.move< call > (std::move (that.value));
+        value.move< call::ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_declaration: // declaration
-        value.move< decl > (std::move (that.value));
+        value.move< decl::ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_decl_constant: // decl_constant
@@ -1110,16 +1106,16 @@ namespace xsk { namespace gsc {
 
       case symbol_kind::S_expr: // expr
       case symbol_kind::S_expr_or_empty: // expr_or_empty
-      case symbol_kind::S_expr_assign: // expr_assign
       case symbol_kind::S_expr_increment: // expr_increment
       case symbol_kind::S_expr_decrement: // expr_decrement
+      case symbol_kind::S_expr_assign: // expr_assign
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_tuple: // expr_tuple
       case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
-        value.move< expr > (std::move (that.value));
+        value.move< expr::ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_expr_add_array: // expr_add_array
@@ -1279,7 +1275,7 @@ namespace xsk { namespace gsc {
 
       case symbol_kind::S_stmt: // stmt
       case symbol_kind::S_stmt_or_dev: // stmt_or_dev
-        value.move< stmt > (std::move (that.value));
+        value.move< stmt::ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_stmt_assert: // stmt_assert
@@ -1294,20 +1290,12 @@ namespace xsk { namespace gsc {
         value.move< stmt_assertmsg::ptr > (std::move (that.value));
         break;
 
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.move< stmt_assign::ptr > (std::move (that.value));
-        break;
-
       case symbol_kind::S_stmt_break: // stmt_break
         value.move< stmt_break::ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
         value.move< stmt_breakpoint::ptr > (std::move (that.value));
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.move< stmt_call::ptr > (std::move (that.value));
         break;
 
       case symbol_kind::S_stmt_case: // stmt_case
@@ -1339,6 +1327,8 @@ namespace xsk { namespace gsc {
         break;
 
       case symbol_kind::S_stmt_expr: // stmt_expr
+      case symbol_kind::S_stmt_call: // stmt_call
+      case symbol_kind::S_stmt_assign: // stmt_assign
         value.move< stmt_expr::ptr > (std::move (that.value));
         break;
 
@@ -1431,13 +1421,13 @@ namespace xsk { namespace gsc {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, call&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, call::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const call& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const call::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1445,13 +1435,13 @@ namespace xsk { namespace gsc {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, decl&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, decl::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const decl& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const decl::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1501,13 +1491,13 @@ namespace xsk { namespace gsc {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, expr&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, expr::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const expr& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const expr::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -2033,13 +2023,13 @@ namespace xsk { namespace gsc {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, stmt::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const stmt& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const stmt::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -2089,20 +2079,6 @@ namespace xsk { namespace gsc {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_assign::ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_assign::ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, stmt_break::ptr&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -2124,20 +2100,6 @@ namespace xsk { namespace gsc {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const stmt_breakpoint::ptr& v, const location_type& l)
-        : Base (t)
-        , value (v)
-        , location (l)
-      {}
-#endif
-
-#if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, stmt_call::ptr&& v, location_type&& l)
-        : Base (t)
-        , value (std::move (v))
-        , location (std::move (l))
-      {}
-#else
-      basic_symbol (typename Base::kind_type t, const stmt_call::ptr& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -2506,11 +2468,11 @@ switch (yykind)
     {
       case symbol_kind::S_expr_function: // expr_function
       case symbol_kind::S_expr_pointer: // expr_pointer
-        value.template destroy< call > ();
+        value.template destroy< call::ptr > ();
         break;
 
       case symbol_kind::S_declaration: // declaration
-        value.template destroy< decl > ();
+        value.template destroy< decl::ptr > ();
         break;
 
       case symbol_kind::S_decl_constant: // decl_constant
@@ -2527,16 +2489,16 @@ switch (yykind)
 
       case symbol_kind::S_expr: // expr
       case symbol_kind::S_expr_or_empty: // expr_or_empty
-      case symbol_kind::S_expr_assign: // expr_assign
       case symbol_kind::S_expr_increment: // expr_increment
       case symbol_kind::S_expr_decrement: // expr_decrement
+      case symbol_kind::S_expr_assign: // expr_assign
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_tuple: // expr_tuple
       case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
-        value.template destroy< expr > ();
+        value.template destroy< expr::ptr > ();
         break;
 
       case symbol_kind::S_expr_add_array: // expr_add_array
@@ -2696,7 +2658,7 @@ switch (yykind)
 
       case symbol_kind::S_stmt: // stmt
       case symbol_kind::S_stmt_or_dev: // stmt_or_dev
-        value.template destroy< stmt > ();
+        value.template destroy< stmt::ptr > ();
         break;
 
       case symbol_kind::S_stmt_assert: // stmt_assert
@@ -2711,20 +2673,12 @@ switch (yykind)
         value.template destroy< stmt_assertmsg::ptr > ();
         break;
 
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.template destroy< stmt_assign::ptr > ();
-        break;
-
       case symbol_kind::S_stmt_break: // stmt_break
         value.template destroy< stmt_break::ptr > ();
         break;
 
       case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
         value.template destroy< stmt_breakpoint::ptr > ();
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.template destroy< stmt_call::ptr > ();
         break;
 
       case symbol_kind::S_stmt_case: // stmt_case
@@ -2756,6 +2710,8 @@ switch (yykind)
         break;
 
       case symbol_kind::S_stmt_expr: // stmt_expr
+      case symbol_kind::S_stmt_call: // stmt_call
+      case symbol_kind::S_stmt_assign: // stmt_assign
         value.template destroy< stmt_expr::ptr > ();
         break;
 
@@ -5057,11 +5013,11 @@ switch (yykind)
     {
       case symbol_kind::S_expr_function: // expr_function
       case symbol_kind::S_expr_pointer: // expr_pointer
-        value.copy< call > (YY_MOVE (that.value));
+        value.copy< call::ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_declaration: // declaration
-        value.copy< decl > (YY_MOVE (that.value));
+        value.copy< decl::ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_decl_constant: // decl_constant
@@ -5078,16 +5034,16 @@ switch (yykind)
 
       case symbol_kind::S_expr: // expr
       case symbol_kind::S_expr_or_empty: // expr_or_empty
-      case symbol_kind::S_expr_assign: // expr_assign
       case symbol_kind::S_expr_increment: // expr_increment
       case symbol_kind::S_expr_decrement: // expr_decrement
+      case symbol_kind::S_expr_assign: // expr_assign
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_tuple: // expr_tuple
       case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
-        value.copy< expr > (YY_MOVE (that.value));
+        value.copy< expr::ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_expr_add_array: // expr_add_array
@@ -5247,7 +5203,7 @@ switch (yykind)
 
       case symbol_kind::S_stmt: // stmt
       case symbol_kind::S_stmt_or_dev: // stmt_or_dev
-        value.copy< stmt > (YY_MOVE (that.value));
+        value.copy< stmt::ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_stmt_assert: // stmt_assert
@@ -5262,20 +5218,12 @@ switch (yykind)
         value.copy< stmt_assertmsg::ptr > (YY_MOVE (that.value));
         break;
 
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.copy< stmt_assign::ptr > (YY_MOVE (that.value));
-        break;
-
       case symbol_kind::S_stmt_break: // stmt_break
         value.copy< stmt_break::ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
         value.copy< stmt_breakpoint::ptr > (YY_MOVE (that.value));
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.copy< stmt_call::ptr > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_stmt_case: // stmt_case
@@ -5307,6 +5255,8 @@ switch (yykind)
         break;
 
       case symbol_kind::S_stmt_expr: // stmt_expr
+      case symbol_kind::S_stmt_call: // stmt_call
+      case symbol_kind::S_stmt_assign: // stmt_assign
         value.copy< stmt_expr::ptr > (YY_MOVE (that.value));
         break;
 
@@ -5408,11 +5358,11 @@ switch (yykind)
     {
       case symbol_kind::S_expr_function: // expr_function
       case symbol_kind::S_expr_pointer: // expr_pointer
-        value.move< call > (YY_MOVE (s.value));
+        value.move< call::ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_declaration: // declaration
-        value.move< decl > (YY_MOVE (s.value));
+        value.move< decl::ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_decl_constant: // decl_constant
@@ -5429,16 +5379,16 @@ switch (yykind)
 
       case symbol_kind::S_expr: // expr
       case symbol_kind::S_expr_or_empty: // expr_or_empty
-      case symbol_kind::S_expr_assign: // expr_assign
       case symbol_kind::S_expr_increment: // expr_increment
       case symbol_kind::S_expr_decrement: // expr_decrement
+      case symbol_kind::S_expr_assign: // expr_assign
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
       case symbol_kind::S_expr_tuple: // expr_tuple
       case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
-        value.move< expr > (YY_MOVE (s.value));
+        value.move< expr::ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_expr_add_array: // expr_add_array
@@ -5598,7 +5548,7 @@ switch (yykind)
 
       case symbol_kind::S_stmt: // stmt
       case symbol_kind::S_stmt_or_dev: // stmt_or_dev
-        value.move< stmt > (YY_MOVE (s.value));
+        value.move< stmt::ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_stmt_assert: // stmt_assert
@@ -5613,20 +5563,12 @@ switch (yykind)
         value.move< stmt_assertmsg::ptr > (YY_MOVE (s.value));
         break;
 
-      case symbol_kind::S_stmt_assign: // stmt_assign
-        value.move< stmt_assign::ptr > (YY_MOVE (s.value));
-        break;
-
       case symbol_kind::S_stmt_break: // stmt_break
         value.move< stmt_break::ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_stmt_breakpoint: // stmt_breakpoint
         value.move< stmt_breakpoint::ptr > (YY_MOVE (s.value));
-        break;
-
-      case symbol_kind::S_stmt_call: // stmt_call
-        value.move< stmt_call::ptr > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_stmt_case: // stmt_case
@@ -5658,6 +5600,8 @@ switch (yykind)
         break;
 
       case symbol_kind::S_stmt_expr: // stmt_expr
+      case symbol_kind::S_stmt_call: // stmt_call
+      case symbol_kind::S_stmt_assign: // stmt_assign
         value.move< stmt_expr::ptr > (YY_MOVE (s.value));
         break;
 
@@ -5793,7 +5737,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } // xsk::gsc
-#line 5797 "parser.hpp"
+#line 5741 "parser.hpp"
 
 
 

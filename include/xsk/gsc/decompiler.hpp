@@ -55,8 +55,6 @@ private:
     auto process_stmt_comp(stmt_comp& stm, scope& scp) -> void;
     auto process_stmt_dev(stmt_dev& stm, scope& scp) -> void;
     auto process_stmt_expr(stmt_expr& stm, scope& scp) -> void;
-    auto process_stmt_call(stmt_call& stm, scope& scp) -> void;
-    auto process_stmt_assign(stmt_assign& stm, scope& scp) -> void;
     auto process_stmt_endon(stmt_endon& stm, scope& scp) -> void;
     auto process_stmt_notify(stmt_notify& stm, scope& scp) -> void;
     auto process_stmt_wait(stmt_wait& stm, scope& scp) -> void;
@@ -72,24 +70,22 @@ private:
     auto process_stmt_break(stmt_break& stm, scope& scp) -> void;
     auto process_stmt_continue(stmt_continue& stm, scope& scp) -> void;
     auto process_stmt_return(stmt_return& stm, scope& scp) -> void;
-    auto process_stmt_asm_create(asm_create& stm, scope& scp) -> void;
-    auto process_stmt_asm_remove(asm_remove& stm, scope& scp) -> void;
-    auto process_expr(expr& exp, scope& scp) -> void;
-    auto process_expr_assign(expr_assign::ptr& exp, scope& scp) -> void;
+    auto process_stmt_create(stmt_create& stm, scope& scp) -> void;
+    auto process_stmt_remove(stmt_remove& stm, scope& scp) -> void;
+    auto process_expr(expr::ptr& exp, scope& scp) -> void;
     auto process_expr_increment(expr_increment& exp, scope& scp) -> void;
     auto process_expr_decrement(expr_decrement& exp, scope& scp) -> void;
+    auto process_expr_assign(expr_assign::ptr& exp, scope& scp) -> void;
     auto process_expr_ternary(expr_ternary& exp, scope& scp) -> void;
     auto process_expr_binary(expr_binary& exp, scope& scp) -> void;
-    auto process_expr_and(expr_and& exp, scope& scp) -> void;
-    auto process_expr_or(expr_or& exp, scope& scp) -> void;
     auto process_expr_complement(expr_complement& exp, scope& scp) -> void;
     auto process_expr_not(expr_not& exp, scope& scp) -> void;
     auto process_expr_call(expr_call& exp, scope& scp) -> void;
     auto process_expr_method(expr_method& exp, scope& scp) -> void;
     auto process_expr_call_pointer(expr_pointer& exp, scope& scp) -> void;
     auto process_expr_call_function(expr_function& exp, scope& scp) -> void;
-    auto process_expr_method_pointer(expr_pointer& exp, expr& obj, scope& scp) -> void;
-    auto process_expr_method_function(expr_function& exp, expr& obj, scope& scp) -> void;
+    auto process_expr_method_pointer(expr_pointer& exp, expr::ptr& obj, scope& scp) -> void;
+    auto process_expr_method_function(expr_function& exp, expr::ptr& obj, scope& scp) -> void;
     auto process_expr_arguments(expr_arguments& exp, scope& scp) -> void;
     auto process_expr_add_array(expr_add_array& exp, scope& scp) -> void;
     auto process_expr_size(expr_size& exp, scope& scp) -> void;
@@ -97,8 +93,8 @@ private:
     auto process_expr_array(expr_array& exp, scope& scp) -> void;
     auto process_expr_field(expr_field& exp, scope& scp) -> void;
     auto process_expr_vector(expr_vector& exp, scope& scp) -> void;
-    auto process_expr_asm_create(expr& exp, scope& scp) -> void;
-    auto process_expr_asm_access(expr& exp, scope& scp) -> void;
+    auto process_expr_var_create(expr::ptr& exp, scope& scp) -> void;
+    auto process_expr_var_access(expr::ptr& exp, scope& scp) -> void;
 };
 
 } // namespace xsk::gsc

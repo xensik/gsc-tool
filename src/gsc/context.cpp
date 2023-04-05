@@ -725,9 +725,9 @@ auto context::load_include(std::string const& name) -> bool
 
             for (auto const& dec : prog->declarations)
             {
-                if (dec == node::decl_function)
+                if (dec->is<decl_function>())
                 {
-                    funcs.push_back(dec.as_function->name->value);
+                    funcs.push_back(dec->as<decl_function>().name->value);
                 }
             }
 
