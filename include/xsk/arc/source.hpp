@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "common/types.hpp"
+#include "xsk/arc/common/types.hpp"
 
 namespace xsk::arc
 {
@@ -18,6 +18,12 @@ class source
 
 public:
     source(context* ctx);
+    auto parse_assembly(buffer const& data) -> assembly::ptr;
+    auto parse_assembly(std::vector<u8> const& data) -> assembly::ptr;
+    auto parse_assembly(u8 const* data, usize size) -> assembly::ptr;
+    auto parse_program(std::string const& name, buffer const& data) -> program::ptr;
+    auto parse_program(std::string const& name, std::vector<u8> const& data) -> program::ptr;
+    auto parse_program(std::string const& name, u8 const* data, usize size) -> program::ptr;
     auto dump(assembly const& data) -> std::vector<u8>;
     auto dump(program const& data) -> std::vector<u8>;
 
@@ -33,14 +39,13 @@ private:
     auto dump_decl_namespace(decl_namespace const& dec) -> void;
     auto dump_decl_usingtree(decl_usingtree const& dec) -> void;
     auto dump_decl_function(decl_function const& dec) -> void;
+    auto dump_decl_empty(decl_empty const& dec) -> void;
     auto dump_stmt(stmt const& stm) -> void;
+    auto dump_stmt_empty(stmt_empty const& stm) -> void;
     auto dump_stmt_list(stmt_list const& stm) -> void;
     auto dump_stmt_comp(stmt_comp const& stm) -> void;
     auto dump_stmt_dev(stmt_dev const& stm) -> void;
     auto dump_stmt_expr(stmt_expr const& stm) -> void;
-    auto dump_stmt_call(stmt_call const& stm) -> void;
-    auto dump_stmt_const(stmt_const const& stm) -> void;
-    auto dump_stmt_assign(stmt_assign const& stm) -> void;
     auto dump_stmt_endon(stmt_endon const& stm) -> void;
     auto dump_stmt_notify(stmt_notify const& stm) -> void;
     auto dump_stmt_realwait(stmt_realwait const& stm) -> void;
@@ -63,41 +68,21 @@ private:
     auto dump_stmt_breakpoint(stmt_breakpoint const& stm) -> void;
     auto dump_stmt_prof_begin(stmt_prof_begin const& stm) -> void;
     auto dump_stmt_prof_end(stmt_prof_end const& stm) -> void;
+    auto dump_stmt_jmp(stmt_jmp const& stm) -> void;
+    auto dump_stmt_jmp_back(stmt_jmp_back const& stm) -> void;
+    auto dump_stmt_jmp_cond(stmt_jmp_cond const& stm) -> void;
+    auto dump_stmt_jmp_true(stmt_jmp_true const& stm) -> void;
+    auto dump_stmt_jmp_false(stmt_jmp_false const& stm) -> void;
+    auto dump_stmt_jmp_switch(stmt_jmp_switch const& stm) -> void;
+    auto dump_stmt_jmp_endswitch(stmt_jmp_endswitch const& stm) -> void;
+    auto dump_stmt_jmp_dev(stmt_jmp_dev const& stm) -> void;
     auto dump_expr(expr const& exp) -> void;
     auto dump_expr_increment(expr_increment const& exp) -> void;
     auto dump_expr_decrement(expr_decrement const& exp) -> void;
-    auto dump_expr_assign_equal(expr_assign_equal const& exp) -> void;
-    auto dump_expr_assign_add(expr_assign_add const& exp) -> void;
-    auto dump_expr_assign_sub(expr_assign_sub const& exp) -> void;
-    auto dump_expr_assign_mul(expr_assign_mul const& exp) -> void;
-    auto dump_expr_assign_div(expr_assign_div const& exp) -> void;
-    auto dump_expr_assign_mod(expr_assign_mod const& exp) -> void;
-    auto dump_expr_assign_shift_left(expr_assign_shift_left const& exp) -> void;
-    auto dump_expr_assign_shift_right(expr_assign_shift_right const& exp) -> void;
-    auto dump_expr_assign_bitwise_or(expr_assign_bitwise_or const& exp) -> void;
-    auto dump_expr_assign_bitwise_and(expr_assign_bitwise_and const& exp) -> void;
-    auto dump_expr_assign_bitwise_exor(expr_assign_bitwise_exor const& exp) -> void;
+    auto dump_expr_assign(expr_assign const& exp) -> void;
+    auto dump_expr_const(expr_const const& exp) -> void;
     auto dump_expr_ternary(expr_ternary const& exp) -> void;
-    auto dump_expr_or(expr_or const& exp) -> void;
-    auto dump_expr_and(expr_and const& exp) -> void;
-    auto dump_expr_super_equal(expr_super_equal const& exp) -> void;
-    auto dump_expr_super_not_equal(expr_super_not_equal const& exp) -> void;
-    auto dump_expr_equality(expr_equality const& exp) -> void;
-    auto dump_expr_inequality(expr_inequality const& exp) -> void;
-    auto dump_expr_less_equal(expr_less_equal const& exp) -> void;
-    auto dump_expr_greater_equal(expr_greater_equal const& exp) -> void;
-    auto dump_expr_less(expr_less const& exp) -> void;
-    auto dump_expr_greater(expr_greater const& exp) -> void;
-    auto dump_expr_add(expr_add const& exp) -> void;
-    auto dump_expr_sub(expr_sub const& exp) -> void;
-    auto dump_expr_mul(expr_mul const& exp) -> void;
-    auto dump_expr_div(expr_div const& exp) -> void;
-    auto dump_expr_mod(expr_mod const& exp) -> void;
-    auto dump_expr_shift_left(expr_shift_left const& exp) -> void;
-    auto dump_expr_shift_right(expr_shift_right const& exp) -> void;
-    auto dump_expr_bitwise_or(expr_bitwise_or const& exp) -> void;
-    auto dump_expr_bitwise_and(expr_bitwise_and const& exp) -> void;
-    auto dump_expr_bitwise_exor(expr_bitwise_exor const& exp) -> void;
+    auto dump_expr_binary(expr_binary const& exp) -> void;
     auto dump_expr_not(expr_not const& exp) -> void;
     auto dump_expr_negate(expr_negate const& exp) -> void;
     auto dump_expr_complement(expr_complement const& exp) -> void;
@@ -155,17 +140,6 @@ private:
     auto dump_expr_integer(expr_integer const& exp) -> void;
     auto dump_expr_false(expr_false const& exp) -> void;
     auto dump_expr_true(expr_true const& exp) -> void;
-    auto dump_asm_loc(asm_loc const& exp) -> void;
-    auto dump_asm_jmp(asm_jmp const& exp) -> void;
-    auto dump_asm_jmp_back(asm_jmp_back const& exp) -> void;
-    auto dump_asm_jmp_cond(asm_jmp_cond const& exp) -> void;
-    auto dump_asm_jmp_true(asm_jmp_true const& exp) -> void;
-    auto dump_asm_jmp_false(asm_jmp_false const& exp) -> void;
-    auto dump_asm_switch(asm_switch const& exp) -> void;
-    auto dump_asm_endswitch(asm_endswitch const& exp) -> void;
-    auto dump_asm_prescriptcall(asm_prescriptcall const& exp) -> void;
-    auto dump_asm_voidcodepos(asm_voidcodepos const& exp) -> void;
-    auto dump_asm_dev(asm_dev const& exp) -> void;
 };
 
 } // namespace xsk::arc

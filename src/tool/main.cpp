@@ -657,25 +657,24 @@ std::map<mode, std::function<void(game game, fs::path const& file, fs::path rel)
 
 void assemble_file(game game, fs::path const& file, fs::path rel)
 {
-    // try
-    // {
-    //     if (file.extension() != ".gscasm" && file.extension() != ".cscasm")
-    //         throw std::runtime_error("expected .gscasm or .cscasm file");
+    try
+    {
+        if (file.extension() != ".gscasm" && file.extension() != ".cscasm")
+            throw std::runtime_error("expected .gscasm or .cscasm file");
 
-    //     rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((file.extension() == ".gscasm" ? ".gsc" : ".csc"));
+        rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((file.extension() == ".gscasm" ? ".gsc" : ".csc"));
 
-    //     auto& assembler = contexts[game]->assembler();
+        auto data = utils::file::read(file);
+        auto outasm = contexts[game]->source().parse_assembly(data);
+        auto outbin = contexts[game]->assembler().assemble(*outasm);
 
-    //     auto data = utils::file::read(file);
-    //     assembler.assemble(file.string(), data);
-
-    //     utils::file::save(fs::path{ "assembled" } / rel, assembler.output());
-    //     std::cout << fmt::format("assembled {}\n", rel.generic_string());
-    // }
-    // catch (std::exception const& e)
-    // {
-    //     std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
-    // }
+        utils::file::save(fs::path{ "assembled" } / rel, outbin.data, outbin.size);
+        std::cout << fmt::format("assembled {}\n", rel.generic_string());
+    }
+    catch (std::exception const& e)
+    {
+        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+    }
 }
 
 void disassemble_file(game game, fs::path const& file, fs::path rel)
@@ -702,31 +701,24 @@ void disassemble_file(game game, fs::path const& file, fs::path rel)
 
 void compile_file(game game, fs::path const& file, fs::path rel)
 {
-    // try
-    // {
-    //     if (file.extension() != ".gsc" && file.extension() != ".csc")
-    //         throw std::runtime_error("expected .gsc or .csc file");
+    try
+    {
+        if (file.extension() != ".gsc" && file.extension() != ".csc")
+            throw std::runtime_error("expected .gsc or .csc file");
 
-    //     rel = fs::path{ games_rev.at(game) } / rel / file.filename();
+        rel = fs::path{ games_rev.at(game) } / rel / file.filename();
 
-    //     auto& assembler = contexts[game]->assembler();
-    //     auto& compiler = contexts[game]->compiler();
+        auto data = utils::file::read(file);
+        auto outasm = contexts[game]->compiler().compile(file.string(), data);
+        auto outbin = contexts[game]->assembler().assemble(*outasm);
 
-    //     auto data = utils::file::read(file);
-
-    //     compiler.compile(file.string(), data);
-
-    //     auto assembly = compiler.output();
-
-    //     assembler.assemble(file.string(), assembly);
-
-    //     utils::file::save(fs::path{ "compiled" } / rel, assembler.output());
-    //     std::cout << fmt::format("compiled {}\n", rel.generic_string());
-    // }
-    // catch (std::exception const& e)
-    // {
-    //     std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
-    // }
+        utils::file::save(fs::path{ "compiled" } / rel, outbin.data, outbin.size);
+        std::cout << fmt::format("compiled {}\n", rel.generic_string());
+    }
+    catch (std::exception const& e)
+    {
+        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+    }
 }
 
 void decompile_file(game game, fs::path const& file, fs::path rel)

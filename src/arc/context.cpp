@@ -13,7 +13,7 @@ extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcod
 
 context::context(arc::props props, arc::engine engine, arc::endian endian, arc::system system, u64 magic)
     : props_{ props }, engine_{ engine }, endian_{ endian }, system_{ system }, instance_{ arc::instance::server }, magic_{ magic },
-      source_{ this },/* assembler_{ this },*/ disassembler_{ this }/*, compiler_{ this }*/, decompiler_{ this }
+      source_{ this }, assembler_{ this }, disassembler_{ this }, compiler_{ this }, decompiler_{ this }
 {
     opcode_map_.reserve(opcode_list.size());
     opcode_map_rev_.reserve(opcode_list.size());
@@ -275,6 +275,48 @@ auto context::hash_name(u32 id) const -> std::string
     }
 
     return fmt::format("_id_{:08X}", id);
+}
+
+auto context::make_token(std::string_view str) const -> std::string
+{
+    if (str.starts_with("_id_") || str.starts_with("_func_") || str.starts_with("_meth_"))
+    {
+        return std::string{ str };
+    }
+
+    auto data = std::string{ str.begin(), str.end() };
+
+    for (auto i = 0u; i < data.size(); i++)
+    {
+        data[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(str[i])));
+        if (data[i] == '\\') data[i] = '/';
+    }
+
+    return data;
+}
+
+auto context::load_header(std::string const& name) -> std::tuple<std::string const*, char const*, usize>
+{
+    auto const itr = header_files_.find(name);
+
+    if (itr != header_files_.end())
+    {
+        return { &itr->first, reinterpret_cast<char const*>(itr->second.data()), itr->second.size() };
+    }
+
+    auto data = fs_callback_(name);
+
+    if (!data.empty())
+    {
+        auto const res = header_files_.insert({ name, std::move(data) });
+
+        if (res.second)
+        {
+            return { &res.first->first, reinterpret_cast<char const*>(res.first->second.data()), res.first->second.size() };
+        }
+    }
+
+    throw error(fmt::format("couldn't open gsh file '{}'", name));
 }
 
 extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcode_list

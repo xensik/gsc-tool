@@ -5,10 +5,10 @@
 
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/string.hpp"
-#include "xsk/gsc/lexer.hpp"
-#include "xsk/gsc/context.hpp"
+#include "xsk/arc/lexer.hpp"
+#include "xsk/arc/context.hpp"
 
-namespace xsk::gsc
+namespace xsk::arc
 {
 
 lexer::lexer(context const* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, reader_{ data, size }, loc_{ &name }, buflen_{ 0 }, spacing_{ spacing::null }, indev_{ false }
@@ -615,4 +615,4 @@ auto lexer::linewrap() -> void
     }
 }
 
-} // namespace xsk::gsc
+} // namespace xsk::arc

@@ -4,10 +4,10 @@
 // that can be found in the LICENSE file.
 
 #include "xsk/stdinc.hpp"
-#include "xsk/gsc/preprocessor.hpp"
-#include "xsk/gsc/context.hpp"
+#include "xsk/arc/preprocessor.hpp"
+#include "xsk/arc/context.hpp"
 
-namespace xsk::gsc
+namespace xsk::arc
 {
 
 preprocessor::preprocessor(context* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, curr_expr_{ 0 }, expand_{ 0 }, skip_{ false }
@@ -1381,4 +1381,4 @@ auto preprocessor::get_time_define(std::tm* time_p) -> void
     time_ = std::string("\"").append(buf).append("\"");
 }
 
-} // namespace xsk::gsc
+} // namespace xsk::arc

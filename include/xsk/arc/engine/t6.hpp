@@ -21,4 +21,4 @@ public:
     context();
 };
 
-} // namespace xsk::gsc::t6
+} // namespace xsk::arc::t6

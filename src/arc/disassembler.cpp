@@ -4,9 +4,9 @@
 // that can be found in the LICENSE file.
 
 #include "xsk/stdinc.hpp"
+#include "xsk/utils/string.hpp"
 #include "xsk/arc/disassembler.hpp"
 #include "xsk/arc/context.hpp"
-#include "xsk/utils/string.hpp"
 
 namespace xsk::arc
 {
