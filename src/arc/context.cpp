@@ -210,7 +210,7 @@ auto context::opcode_size(opcode op) const -> u32
     }
 }
 
-auto context::opcode_id(opcode op) const -> u8
+auto context::opcode_id(opcode op) const -> u16
 {
     auto const itr = code_map_rev_.find(op);
 

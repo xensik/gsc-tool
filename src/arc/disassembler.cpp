@@ -769,13 +769,13 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
         {
             const auto value = script_.read<u32>();
 
-            const auto itr = string_refs_.find(script_.pos() - 4);
+            const auto str = string_refs_.find(script_.pos() - 4);
 
-            if (itr != string_refs_.end())
+            if (str != string_refs_.end())
             {
                 type = switch_type::string;
                 inst.data.push_back("case");
-                inst.data.push_back(itr->second->name);
+                inst.data.push_back(str->second->name);
             }
             else if (value == 0 && i == count - 1)
             {

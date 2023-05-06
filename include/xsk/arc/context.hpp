@@ -40,7 +40,7 @@ public:
     auto engine_name() const -> std::string_view;
 
     auto opcode_size(opcode op) const -> u32;
-    auto opcode_id(opcode op) const -> u8;
+    auto opcode_id(opcode op) const -> u16;
     auto opcode_name(opcode op) const -> std::string;
     auto opcode_enum(std::string const& name) const -> opcode;
     auto opcode_enum(u16 id) const -> opcode;
@@ -67,7 +67,7 @@ protected:
     std::unordered_map<opcode, std::string_view> opcode_map_;
     std::unordered_map<std::string_view, opcode> opcode_map_rev_;
     std::unordered_map<u16, opcode> code_map_;
-    std::unordered_map<opcode, u8> code_map_rev_;
+    std::unordered_map<opcode, u16> code_map_rev_;
     std::unordered_map<u32, std::string_view> hash_map_;
     std::unordered_map<std::string, std::vector<u8>> header_files_;
 };

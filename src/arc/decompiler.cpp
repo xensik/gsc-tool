@@ -60,22 +60,22 @@ auto decompiler::decompile_function(function const& func) -> void
 
     for (auto i = 0u; i < func.params; i++)
     {
-        auto const& name = locals_.at(locals_.size() - 1 - i);
+        auto const& param = locals_.at(locals_.size() - 1 - i);
 
         if (ctx_->props() & props::v2)
         {
             auto const& type = params_.at(params_.size() - 1 - i);
 
             if (type == param_type::reference)
-                func_->params->list.push_back(expr_reference::make(loc, expr_path::make(loc), expr_identifier::make(loc, name)));
+                func_->params->list.push_back(expr_reference::make(loc, expr_path::make(loc), expr_identifier::make(loc, param)));
             else if (type == param_type::vararg)
                 func_->params->list.push_back(expr_ellipsis::make(loc));
             else
-                func_->params->list.push_back(expr_identifier::make(loc, name));
+                func_->params->list.push_back(expr_identifier::make(loc, param));
         }
         else
         {
-            func_->params->list.push_back(expr_identifier::make(loc, name));
+            func_->params->list.push_back(expr_identifier::make(loc, param));
         }
     }
 
@@ -1231,17 +1231,17 @@ auto decompiler::decompile_infinites(stmt_list& stm) -> void
             else if (!stm.list.at(start)->is<stmt_jmp_cond>())
             {
                 decompile_inf(stm, start, i);
-                i = stm.list.size();
+                i = static_cast<i32>(stm.list.size());
             }
             else if (stm.list.at(start)->as<stmt_jmp_cond>().value != break_loc)
             {
                 decompile_inf(stm, start, i);
-                i = stm.list.size();
+                i = static_cast<i32>(stm.list.size());
             }
             else if (stm.list.at(start)->as<stmt_jmp_cond>().value == break_loc)
             {
                 decompile_loop(stm, start, i);
-                i = stm.list.size();
+                i = static_cast<i32>(stm.list.size());
             }
         }
     } 
