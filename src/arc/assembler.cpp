@@ -143,7 +143,7 @@ auto assembler::assemble(assembly const& data) -> buffer
             else
             {
                 script_.write<u32>(resolve_string(anim.name));
-                script_.write<std::uint32_t>(anim.ref);
+                script_.write<u32>(anim.ref);
             }
         }
     }

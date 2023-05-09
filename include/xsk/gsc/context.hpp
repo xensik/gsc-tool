@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include "common/types.hpp"
-#include "source.hpp"
-#include "assembler.hpp"
-#include "disassembler.hpp"
-#include "compiler.hpp"
-#include "decompiler.hpp"
+#include "xsk/gsc/common/types.hpp"
+#include "xsk/gsc/source.hpp"
+#include "xsk/gsc/assembler.hpp"
+#include "xsk/gsc/disassembler.hpp"
+#include "xsk/gsc/compiler.hpp"
+#include "xsk/gsc/decompiler.hpp"
 
 namespace xsk::gsc
 {

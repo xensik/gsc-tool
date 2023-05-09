@@ -85,7 +85,6 @@ project "xsk-tool"
     dependson "xsk-utils"
     dependson "xsk-arc"
     dependson "xsk-gsc"
-    dependson "xsk-t6"
 
     files {
         "./src/tool/**.h",
@@ -97,7 +96,6 @@ project "xsk-tool"
         "xsk-utils",
         "xsk-arc",
         "xsk-gsc",
-        "xsk-t6",
     }
 
     includedirs {
@@ -148,22 +146,6 @@ project "xsk-gsc"
         "./src/gsc/**.h",
         "./src/gsc/**.hpp",
         "./src/gsc/**.cpp"
-    }
-
-    includedirs {
-        "./include",
-    }
-
-    fmt:include()
-
-project "xsk-t6"
-    kind "StaticLib"
-    language "C++"
-
-    files {
-        "./src/t6/**.h",
-        "./src/t6/**.hpp",
-        "./src/t6/**.cpp"
     }
 
     includedirs {

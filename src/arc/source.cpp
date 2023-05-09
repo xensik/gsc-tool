@@ -250,16 +250,16 @@ auto source::dump_decl_function(decl_function const& dec) -> void
     if (ctx_->props() & props::v2)
         fmt::format_to(std::back_inserter(buf_), "function ");
 
-    if (static_cast<std::uint8_t>(dec.flags) & static_cast<std::uint8_t>(export_flags::export_private))
+    if (static_cast<u8>(dec.flags) & static_cast<u8>(export_flags::export_private))
         fmt::format_to(std::back_inserter(buf_), "private ");
 
-    if (static_cast<std::uint8_t>(dec.flags) & static_cast<std::uint8_t>(export_flags::export_private2))
+    if (static_cast<u8>(dec.flags) & static_cast<u8>(export_flags::export_private2))
         fmt::format_to(std::back_inserter(buf_), "private ");
 
-    if (static_cast<std::uint8_t>(dec.flags) & static_cast<std::uint8_t>(export_flags::export_autoexec))
+    if (static_cast<u8>(dec.flags) & static_cast<u8>(export_flags::export_autoexec))
         fmt::format_to(std::back_inserter(buf_), "autoexec ");
 
-    if (static_cast<std::uint8_t>(dec.flags) & static_cast<std::uint8_t>(export_flags::export_codecall))
+    if (static_cast<u8>(dec.flags) & static_cast<u8>(export_flags::export_codecall))
         fmt::format_to(std::back_inserter(buf_), "codecall ");
 
     if ((ctx_->props() & props::v2) && !dec.space->value.empty())

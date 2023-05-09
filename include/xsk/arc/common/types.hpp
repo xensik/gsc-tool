@@ -12,6 +12,7 @@
 #include "xsk/arc/common/exception.hpp"
 #include "xsk/arc/common/lookahead.hpp"
 #include "xsk/arc/common/directive.hpp"
+#include "xsk/arc/common/scope.hpp"
 #include "xsk/arc/common/space.hpp"
 #include "xsk/arc/common/token.hpp"
 #include "xsk/arc/common/define.hpp"

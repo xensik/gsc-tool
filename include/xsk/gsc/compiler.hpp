@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "common/types.hpp"
+#include "xsk/gsc/common/types.hpp"
 
 namespace xsk::gsc
 {
@@ -15,8 +15,8 @@ class compiler
     context* ctx_;
     assembly::ptr assembly_;
     function::ptr function_;
-    std::vector<std::string> stackframe_;
     std::vector<std::string> localfuncs_;
+    std::vector<std::string> stackframe_;
     std::unordered_map<std::string, expr const*> constants_;
     std::unordered_map<node*, scope::ptr> scopes_;
     std::vector<scope*> break_blks_;

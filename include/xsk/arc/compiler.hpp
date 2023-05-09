@@ -15,19 +15,16 @@ class compiler
     context* ctx_;
     assembly::ptr assembly_;
     function::ptr function_;
-    std::vector<std::string> stackframe_;
     std::vector<std::string> localfuncs_;
-    // std::unordered_map<std::string, expr const*> constants_;
-    // std::unordered_map<node*, scope::ptr> scopes_;
-    // std::vector<scope*> break_blks_;
-    // std::vector<scope*> continue_blks_;
-    std::string animname_;
+    std::vector<std::string> stackframe_;
+    std::vector<scope> scopes_;
+    std::unordered_map<std::string, expr const*> constants_;
+    std::string animtree_;
     u32 index_;
     u32 label_idx_;
     bool can_break_;
     bool can_continue_;
     bool developer_thread_;
-    bool animload_;
 
 public:
     compiler(context* ctx);
@@ -36,13 +33,14 @@ public:
 
 private:
     auto emit_program(program const& prog) -> void;
+    auto emit_include(include const& inc) -> void;
     auto emit_decl(decl const& dec) -> void;
     auto emit_decl_usingtree(decl_usingtree const& animtree) -> void;
     auto emit_decl_function(decl_function const& func) -> void;
-    auto emit_stmt(stmt const& stm, bool last) -> void;
-    auto emit_stmt_list(stmt_list const& stm, bool last) -> void;
-    auto emit_stmt_comp(stmt_comp const& stm, bool last) -> void;
-    auto emit_stmt_dev(stmt_dev const& stm, bool last) -> void;
+    auto emit_stmt(stmt const& stm) -> void;
+    auto emit_stmt_list(stmt_list const& stm) -> void;
+    auto emit_stmt_comp(stmt_comp const& stm) -> void;
+    auto emit_stmt_dev(stmt_dev const& stm) -> void;
     auto emit_stmt_expr(stmt_expr const& stm) -> void;
     auto emit_stmt_endon(stmt_endon const& stm) -> void;
     auto emit_stmt_notify(stmt_notify const& stm) -> void;
@@ -50,8 +48,8 @@ private:
     auto emit_stmt_waittill(stmt_waittill const& stm) -> void;
     auto emit_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void;
     auto emit_stmt_waittillframeend(stmt_waittillframeend const& stm) -> void;
-    auto emit_stmt_if(stmt_if const& stm, bool last) -> void;
-    auto emit_stmt_ifelse(stmt_ifelse const& stm, bool last) -> void;
+    auto emit_stmt_if(stmt_if const& stm) -> void;
+    auto emit_stmt_ifelse(stmt_ifelse const& stm) -> void;
     auto emit_stmt_while(stmt_while const& stm) -> void;
     auto emit_stmt_dowhile(stmt_dowhile const& stm) -> void;
     auto emit_stmt_for(stmt_for const& stm) -> void;
@@ -66,6 +64,7 @@ private:
     auto emit_stmt_prof_begin(stmt_prof_begin const& stm) -> void;
     auto emit_stmt_prof_end(stmt_prof_end const& stm) -> void;
     auto emit_expr(expr const& exp) -> void;
+    auto emit_expr_const(expr_const const& exp) -> void;
     auto emit_expr_assign(expr_assign const& exp) -> void;
     auto emit_expr_clear(expr const& exp) -> void;
     auto emit_expr_clear_local(expr_identifier const& exp) -> void;
@@ -85,6 +84,24 @@ private:
     auto emit_expr_parameters(expr_parameters const& exp) -> void;
     auto emit_expr_arguments(expr_arguments const& exp) -> void;
     auto emit_expr_isdefined(expr_isdefined const& exp) -> void;
+    auto emit_expr_vectorscale(expr_vectorscale const& exp) -> void;
+    auto emit_expr_anglestoup(expr_anglestoup const& exp) -> void;
+    auto emit_expr_anglestoright(expr_anglestoright const& exp) -> void;
+    auto emit_expr_anglestoforward(expr_anglestoforward const& exp) -> void;
+    auto emit_expr_angleclamp180(expr_angleclamp180 const& exp) -> void;
+    auto emit_expr_vectortoangles(expr_vectortoangles const& exp) -> void;
+    auto emit_expr_abs(expr_abs const& exp) -> void;
+    auto emit_expr_gettime(expr_gettime const& exp) -> void;
+    auto emit_expr_getdvar(expr_getdvar const& exp) -> void;
+    auto emit_expr_getdvarint(expr_getdvarint const& exp) -> void;
+    auto emit_expr_getdvarfloat(expr_getdvarfloat const& exp) -> void;
+    auto emit_expr_getdvarvector(expr_getdvarvector const& exp) -> void;
+    auto emit_expr_getdvarcolorred(expr_getdvarcolorred const& exp) -> void;
+    auto emit_expr_getdvarcolorgreen(expr_getdvarcolorgreen const& exp) -> void;
+    auto emit_expr_getdvarcolorblue(expr_getdvarcolorblue const& exp) -> void;
+    auto emit_expr_getdvarcoloralpha(expr_getdvarcoloralpha const& exp) -> void;
+    auto emit_expr_getfirstarraykey(expr_getfirstarraykey const& exp) -> void;
+    auto emit_expr_getnextarraykey(expr_getnextarraykey const& exp) -> void;
     auto emit_expr_reference(expr_reference const& exp) -> void;
     auto emit_expr_size(expr_size const& exp) -> void;
     auto emit_expr_variable_ref(expr const& exp, bool set) -> void;
@@ -101,12 +118,11 @@ private:
     auto emit_expr_animtree(expr_animtree const& exp) -> void;
     auto emit_expr_istring(expr_istring const& exp) -> void;
     auto emit_expr_string(expr_string const& exp) -> void;
+    auto emit_expr_hash(expr_hash const& exp) -> void;
     auto emit_expr_float(expr_float const& exp) -> void;
     auto emit_expr_integer(expr_integer const& exp) -> void;
     auto emit_expr_false(expr_false const& exp) -> void;
     auto emit_expr_true(expr_true const& exp) -> void;
-    // auto emit_create_local_vars(scope& scp) -> void;
-    // auto emit_remove_local_vars(scope& scp) -> void;
     auto emit_opcode(opcode op) -> void;
     auto emit_opcode(opcode op, std::string const& data) -> void;
     auto emit_opcode(opcode op, std::vector<std::string> const& data) -> void;
@@ -124,22 +140,14 @@ private:
     auto process_stmt_for(stmt_for const& stm) -> void;
     auto process_stmt_foreach(stmt_foreach const& stm) -> void;
     auto process_stmt_switch(stmt_switch const& stm) -> void;
-    auto process_stmt_break(stmt_break const& stm) -> void;
-    auto process_stmt_continue(stmt_continue const& stm) -> void;
-    auto process_stmt_return(stmt_return const& stm) -> void;
     auto process_expr(expr const& exp) -> void;
     auto process_expr_parameters(expr_parameters const& exp) -> void;
     auto variable_register(expr_identifier const& exp) -> void;
-    auto variable_initialized(expr_identifier const& exp) -> bool;
-    auto variable_initialize(expr_identifier const& exp) -> u8;
-    auto variable_create(expr_identifier const& exp) -> u8;
     auto variable_access(expr_identifier const& exp) -> u8;
-    auto resolve_function_type(expr_function const& exp, std::string& path) -> call::type;
-    auto resolve_reference_type(expr_reference const& exp, std::string& path, bool& method) -> call::type;
     auto is_constant_condition(expr const& exp) -> bool;
     auto insert_label(std::string const& label) -> void;
-    auto create_label() -> std::string;
     auto insert_label() -> std::string;
+    auto create_label() -> std::string;
 };
 
 } // namespace xsk::arc
