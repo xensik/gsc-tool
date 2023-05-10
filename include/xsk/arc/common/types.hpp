@@ -67,6 +67,10 @@ struct props
         size64   = 1 << 5,
         hashids  = 1 << 6,
         devstr   = 1 << 7,
+        spaces   = 1 << 8,
+        globals  = 1 << 9,
+        refvarg  = 1 << 10,
+        foreach  = 1 << 11,
     };
 
     props(values value) : value_(value) {}

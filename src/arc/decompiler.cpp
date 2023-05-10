@@ -62,7 +62,7 @@ auto decompiler::decompile_function(function const& func) -> void
     {
         auto const& param = locals_.at(locals_.size() - 1 - i);
 
-        if (ctx_->props() & props::v2)
+        if (ctx_->props() & props::refvarg)
         {
             auto const& type = params_.at(params_.size() - 1 - i);
 
@@ -267,7 +267,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_SafeCreateLocalVariables:
         {
-            if (ctx_->props() & props::v2)
+            if (ctx_->props() & props::refvarg)
             {
                 for (auto i = 0u; i < inst.data.size(); i += 2)
                 {
@@ -861,7 +861,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             auto var = std::move(stack_.top()); stack_.pop();
             loc = var->loc();
 
-            while (var->kind() != ((ctx_->props() & props::v2) ? node::node_prescriptcall : node::node_voidcodepos))
+            while (var->kind() != ((ctx_->props() & props::size64) ? node::node_prescriptcall : node::node_voidcodepos))
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
                 var = std::move(stack_.top()); stack_.pop();
@@ -1568,7 +1568,7 @@ auto decompiler::decompile_inf(stmt_list& stm, usize begin, usize end) -> void
 
 auto decompiler::decompile_loop(stmt_list& stm, usize begin, usize end) -> void
 {
-    if (ctx_->props() & props::v2 && (begin + 2 < end))
+    if (ctx_->props() & props::foreach && (begin + 2 < end))
     {
         auto& last = stm.list.at(begin + 2);
 
@@ -1766,9 +1766,9 @@ auto decompiler::decompile_foreach(stmt_list& stm, usize begin, usize end) -> vo
     auto value = std::move(stm.list[begin]->as<stmt_expr>().value->as<expr_assign>().lvalue);
     stm.list.erase(stm.list.begin() + begin);
 
-    end -= (ctx_->props() & props::v2) ? 6 : 5;
+    end -= (ctx_->props() & props::foreach) ? 6 : 5;
 
-    if (ctx_->props() & props::v2)
+    if (ctx_->props() & props::foreach)
         stm.list.erase(stm.list.begin() + begin);
     
     stm.list.erase(stm.list.begin() + end);
@@ -1776,7 +1776,7 @@ auto decompiler::decompile_foreach(stmt_list& stm, usize begin, usize end) -> vo
 
     auto use_key = !key->as<expr_identifier>().value.starts_with("_k");
 
-    if ((ctx_->props() & props::v2) && key->as<expr_identifier>().value.starts_with("_id_"))
+    if ((ctx_->props() & props::foreach) && key->as<expr_identifier>().value.starts_with("_id_"))
         use_key = false;
 
     auto body = stmt_list::make(loc);
@@ -2227,12 +2227,12 @@ auto decompiler::process_stmt_foreach(stmt_foreach& stm) -> void
     process_expr(stm.key);
     process_expr(stm.value);
 
-    if ((ctx_->props() & props::v2) && !stm.use_key)
+    if ((ctx_->props() & props::foreach) && !stm.use_key)
         vars_.insert(stm.key->as<expr_identifier>().value);
 
     process_stmt(*stm.body);
 
-    if ((ctx_->props() & props::v2) && !stm.use_key)
+    if ((ctx_->props() & props::foreach) && !stm.use_key)
     {
         auto const it = vars_.find(stm.key->as<expr_identifier>().value);
 

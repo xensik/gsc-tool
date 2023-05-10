@@ -137,9 +137,9 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_GetClasses:
         case opcode::OP_SuperEqual:
         case opcode::OP_SuperNotEqual:
-            return (props_ & props::v2) ? 2 : 1;
+            return (props_ & props::size64) ? 2 : 1;
         case opcode::OP_SafeSetVariableFieldCached:
-            return (props_ & props::v2) ? 3 : 1;
+            return (props_ & props::size64) ? 3 : 1;
         case opcode::OP_GetByte:
         case opcode::OP_GetNegByte:
         case opcode::OP_SafeCreateLocalVariables:
@@ -154,7 +154,7 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_ScriptMethodThreadCallPointer:
         case opcode::OP_WaitTillMatch:
         case opcode::OP_VectorConstant:
-            return (props_ & props::v2) ? 3 : 2;
+            return (props_ & props::size64) ? 3 : 2;
         case opcode::OP_GetUnsignedShort:
         case opcode::OP_GetNegUnsignedShort:
         case opcode::OP_JumpOnFalse:
@@ -165,13 +165,13 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_JumpBack:
         case opcode::OP_DevblockBegin:
         case opcode::OP_DevblockEnd:
-            return (props_ & props::v2) ? 4 : 3;
+            return (props_ & props::size64) ? 4 : 3;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
         case opcode::OP_EvalFieldVariable:
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_ClearFieldVariable:
-            return (props_ & props::v2) ? 6 : 3;
+            return (props_ & props::size64) ? 6 : 3;
         case opcode::OP_EvalLocalVariableCachedDebug:
         case opcode::OP_EvalLocalVariableRefCachedDebug:
         case opcode::OP_LevelEvalFieldVariableRef:
@@ -185,26 +185,26 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_Switch:
         case opcode::OP_EndSwitch:
         case opcode::OP_GetHash:
-            return (props_ & props::v2) ? 6 : 5;
+            return (props_ & props::size64) ? 6 : 5;
         case opcode::OP_ScriptFunctionCallClass:
         case opcode::OP_ScriptThreadCallClass:
             return 7;
         case opcode::OP_GetAPIFunction:
             return 10;
         case opcode::OP_ProfileStart:
-            return (props_ & props::v2) ? 10 : 1;
+            return (props_ & props::size64) ? 10 : 1;
         case opcode::OP_GetAnimation:
         case opcode::OP_GetFunction:
-            return (props_ & props::v2) ? 10 : 5;
+            return (props_ & props::size64) ? 10 : 5;
         case opcode::OP_CallBuiltin:
         case opcode::OP_CallBuiltinMethod:
         case opcode::OP_ScriptFunctionCall:
         case opcode::OP_ScriptMethodCall:
         case opcode::OP_ScriptThreadCall:
         case opcode::OP_ScriptMethodThreadCall:
-            return (props_ & props::v2) ? 11 : 6;
+            return (props_ & props::size64) ? 11 : 6;
         case opcode::OP_GetVector:
-            return (props_ & props::v2) ? 14 : 13;
+            return (props_ & props::size64) ? 14 : 13;
         default:
             throw error(fmt::format("couldn't resolve instruction size for '{}'", opcode_name(op)));
     }
@@ -256,13 +256,36 @@ auto context::opcode_enum(u16 id) const -> opcode
     }
 
     return opcode::OP_Invalid;
-    //throw error(fmt::format("couldn't resolve opcode enum for '{:02X}'", id));
 }
 
-auto context::hash_id(std::string const& /*name*/) const -> u32
+auto context::hash_id(std::string const& name) const -> u32
 {
-    // todo hash func
-    return 0;
+    if (props_ & props::hashids)
+    {
+		auto* str = name.data();
+		auto hash = 16777619u * (std::tolower(static_cast<u8>(*str)) ^ 1268436527u);
+
+		while (*str++)
+		{
+			hash = 16777619u * (std::tolower(static_cast<u8>(*str)) ^ hash);
+		}
+
+		return hash;
+    }
+    else
+    {
+        if (name.empty())
+            return 0;
+
+        auto hash = 5381u;
+
+        for (auto i = 0u; i < name.size(); i++)
+        {
+            hash = std::tolower(static_cast<u8>(name[i])) + 33 * hash;
+        }
+
+        return hash;
+    }
 }
 
 auto context::hash_name(u32 id) const -> std::string

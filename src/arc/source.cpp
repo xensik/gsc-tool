@@ -247,7 +247,7 @@ auto source::dump_decl_function(decl_function const& dec) -> void
 {
     indent_ = 0;
 
-    if (ctx_->props() & props::v2)
+    if (ctx_->props() & props::spaces)
         fmt::format_to(std::back_inserter(buf_), "function ");
 
     if (static_cast<u8>(dec.flags) & static_cast<u8>(export_flags::export_private))
@@ -262,7 +262,7 @@ auto source::dump_decl_function(decl_function const& dec) -> void
     if (static_cast<u8>(dec.flags) & static_cast<u8>(export_flags::export_codecall))
         fmt::format_to(std::back_inserter(buf_), "codecall ");
 
-    if ((ctx_->props() & props::v2) && !dec.space->value.empty())
+    if ((ctx_->props() & props::spaces) && !dec.space->value.empty())
     {
         fmt::format_to(std::back_inserter(buf_), "{}::", dec.space->value);
     }
@@ -735,7 +735,7 @@ auto source::dump_stmt_foreach(stmt_foreach const& stm) -> void
 
     if (stm.use_key)
     {
-        dump_expr(/*(ctx_->props() & props::foreach) ? stm.index :*/ *stm.key);
+        dump_expr(*stm.key);
         fmt::format_to(std::back_inserter(buf_), ", ");
     }
 
@@ -1470,7 +1470,7 @@ auto source::dump_expr_getnextarraykey(expr_getnextarraykey const& exp) -> void
 
 auto source::dump_expr_reference(expr_reference const& exp) -> void
 {
-    if (ctx_->props() & props::v2)
+    if (ctx_->props() & props::refvarg)
     {
         fmt::format_to(std::back_inserter(buf_), "&");
 
