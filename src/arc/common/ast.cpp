@@ -410,11 +410,11 @@ XSK_ARC_STMT_IS(stmt_dev)
 XSK_ARC_STMT_IS(stmt_expr)
 XSK_ARC_STMT_IS(stmt_endon)
 XSK_ARC_STMT_IS(stmt_notify)
-XSK_ARC_STMT_IS(stmt_realwait)
 XSK_ARC_STMT_IS(stmt_wait)
 XSK_ARC_STMT_IS(stmt_waittill)
 XSK_ARC_STMT_IS(stmt_waittillmatch)
 XSK_ARC_STMT_IS(stmt_waittillframeend)
+XSK_ARC_STMT_IS(stmt_waitrealtime)
 XSK_ARC_STMT_IS(stmt_if)
 XSK_ARC_STMT_IS(stmt_ifelse)
 XSK_ARC_STMT_IS(stmt_while)
@@ -738,10 +738,6 @@ stmt_notify::stmt_notify(location const& loc, expr::ptr obj, expr::ptr event, ex
 {
 }
 
-stmt_realwait::stmt_realwait(location const& loc, expr::ptr time) : stmt{ type::stmt_realwait, loc }, time{ std::move(time) }
-{
-}
-
 stmt_wait::stmt_wait(location const& loc, expr::ptr time) : stmt{ type::stmt_wait, loc }, time{ std::move(time) }
 {
 }
@@ -755,6 +751,10 @@ stmt_waittillmatch::stmt_waittillmatch(location const& loc, expr::ptr obj, expr:
 }
 
 stmt_waittillframeend::stmt_waittillframeend(location const& loc) : stmt{ type::stmt_waittillframeend, loc }
+{
+}
+
+stmt_waitrealtime::stmt_waitrealtime(location const& loc, expr::ptr time) : stmt{ type::stmt_waitrealtime, loc }, time{ std::move(time) }
 {
 }
 

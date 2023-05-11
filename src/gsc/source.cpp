@@ -34,7 +34,7 @@ auto source::parse_assembly(u8 const* data, usize size) -> assembly::ptr
     std::memcpy(buffer.data(), data, buffer.size());
 
     auto lines = utils::string::clean_buffer_lines(buffer);
-    auto assembly = make_assembly();
+    auto assembly = assembly::make();
     auto func = function::ptr{ nullptr };
     u32 index = 1;
     u16 switchnum = 0;
@@ -47,7 +47,7 @@ auto source::parse_assembly(u8 const* data, usize size) -> assembly::ptr
         }
         else if (line.substr(0, 4) == "sub:")
         {
-            func = make_function();
+            func = function::make();
             func->index = index;
             func->name = line.substr(4);
             func->id = ctx_->token_id(func->name);
@@ -84,7 +84,7 @@ auto source::parse_assembly(u8 const* data, usize size) -> assembly::ptr
             }
             else
             {
-                auto inst = make_instruction();
+                auto inst = instruction::make();
                 inst->index = index;
                 inst->opcode = ctx_->opcode_enum(opdata[0]);
                 inst->size = ctx_->opcode_size(inst->opcode);

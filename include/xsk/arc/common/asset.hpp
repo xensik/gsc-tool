@@ -12,6 +12,42 @@ constexpr usize header_size_v1 = 64;
 constexpr usize header_size_v2 = 72;
 constexpr usize header_size_v3 = 0;
 
+enum class string_type : u8
+{
+    literal = 0,
+    canonical = 1,
+};
+
+enum class param_type : u8
+{
+    value = 0,
+    reference = 1,
+    vararg = 2,
+};
+
+enum class export_flags : u8
+{
+    export_none     = 0x00,
+    export_public   = 0x01,
+    export_autoexec = 0x02,
+    export_private  = 0x04,
+    export_codecall = 0x08,
+    export_private2 = 0x10,
+    export_varargs  = 0x20,
+};
+
+enum class import_flags : u8
+{
+    none             = 0,
+    func_reference   = 1,
+    func_call        = 2,
+    func_call_thread = 3,
+    meth_call        = 4,
+    meth_call_thread = 5,
+    developer        = 0x10,
+    unk              = 0x20, // T7, T8, T9
+};
+
 struct header
 {
     u64 magic;
@@ -40,72 +76,8 @@ struct header
     u8 flags;
 };
 
-enum class import_flags : u8
-{
-    none             = 0,
-    func_reference   = 1,
-    func_call        = 2,
-    func_call_thread = 3,
-    meth_call        = 4,
-    meth_call_thread = 5,
-    developer        = 0x10,
-    unk              = 0x20, // T7, T8, T9
-};
-
-struct import_ref
-{
-    using ptr = std::shared_ptr<import_ref>;
-
-    std::string space;
-    std::string name;
-    u8 params;
-    u8 flags;
-    std::vector<u32> refs;
-};
-
-enum class export_flags : u8
-{
-    export_none     = 0x00,
-    export_public   = 0x01,
-    export_autoexec = 0x02,
-    export_private  = 0x04,
-    export_codecall = 0x08,
-    export_private2 = 0x10,
-    export_varargs  = 0x20,
-};
-
-struct export_ref
-{
-    using ptr = std::shared_ptr<export_ref>;
-
-    std::string space;
-    std::string name;
-    u32 checksum;
-    u32 offset;
-    u32 size;
-    u8 params;
-    u8 flags;
-};
-
-enum class string_type : u8
-{
-    literal = 0,
-    canonical = 1,
-};
-
-struct string_ref
-{
-    using ptr = std::shared_ptr<string_ref>;
-
-    std::string name;
-    u8 type;
-    std::vector<u32> refs;
-};
-
 struct animation_ref
 {
-    using ptr = std::shared_ptr<animation_ref>;
-
     std::string name;
     u32 ref;
 };
@@ -119,11 +91,37 @@ struct animtree_ref
     std::vector<animation_ref> anims;
 };
 
-enum class param_type : u8
+struct string_ref
 {
-    value = 0,
-    reference = 1,
-    vararg = 2,
+    using ptr = std::shared_ptr<string_ref>;
+
+    std::string name;
+    u8 type;
+    std::vector<u32> refs;
+};
+
+struct import_ref
+{
+    using ptr = std::shared_ptr<import_ref>;
+
+    std::string space;
+    std::string name;
+    u8 params;
+    u8 flags;
+    std::vector<u32> refs;
+};
+
+struct export_ref
+{
+    using ptr = std::shared_ptr<export_ref>;
+
+    std::string space;
+    std::string name;
+    u32 checksum;
+    u32 offset;
+    u32 size;
+    u8 params;
+    u8 flags;
 };
 
 } // namespace xsk::arc

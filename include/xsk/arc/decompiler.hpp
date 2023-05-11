@@ -63,10 +63,10 @@ private:
     auto process_stmt_expr(stmt_expr& stm) -> void;
     auto process_stmt_endon(stmt_endon& stm) -> void;
     auto process_stmt_notify(stmt_notify& stm) -> void;
-    auto process_stmt_realwait(stmt_realwait& stm) -> void;
     auto process_stmt_wait(stmt_wait& stm) -> void;
     auto process_stmt_waittill(stmt_waittill& stm) -> void;
     auto process_stmt_waittillmatch(stmt_waittillmatch& stm) -> void;
+    auto process_stmt_waitrealtime(stmt_waitrealtime& stm) -> void;
     auto process_stmt_if(stmt_if& stm) -> void;
     auto process_stmt_ifelse(stmt_ifelse& stm) -> void;
     auto process_stmt_while(stmt_while& stm) -> void;

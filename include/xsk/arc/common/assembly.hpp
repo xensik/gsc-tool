@@ -166,6 +166,11 @@ struct instruction
     u32 size;
     opcode opcode;
     std::vector<std::string> data;
+
+    static auto make() -> instruction::ptr
+    {
+        return std::unique_ptr<instruction>(new instruction);
+    }
 };
 
 struct function
@@ -180,6 +185,11 @@ struct function
     std::string space;
     std::vector<instruction::ptr> instructions;
     std::unordered_map<u32, std::string> labels;
+
+    static auto make() -> function::ptr
+    {
+        return std::unique_ptr<function>(new function);
+    }
 };
 
 struct assembly
@@ -188,21 +198,11 @@ struct assembly
 
     std::vector<std::string> includes;
     std::vector<function::ptr> functions;
+
+    static auto make() -> assembly::ptr
+    {
+        return std::unique_ptr<assembly>(new assembly);
+    }
 };
-
-inline auto make_instruction() -> std::unique_ptr<instruction>
-{
-    return std::unique_ptr<instruction>(new instruction);
-}
-
-inline auto make_function() -> std::unique_ptr<function>
-{
-    return std::unique_ptr<function>(new function);
-}
-
-inline auto make_assembly() -> std::unique_ptr<assembly>
-{
-    return std::unique_ptr<assembly>(new assembly);
-}
 
 } // namespace xsk::arc

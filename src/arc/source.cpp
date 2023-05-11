@@ -29,7 +29,7 @@ auto source::parse_assembly(std::vector<u8> const& data) -> assembly::ptr
 
 auto source::parse_assembly(u8 const* /*data*/, usize /*size*/) -> assembly::ptr
 {
-    return make_assembly();
+    return assembly::make();
 }
 
 auto source::parse_program(std::string const& name, buffer const& data) -> program::ptr
@@ -302,9 +302,6 @@ auto source::dump_stmt(stmt const& stm) -> void
         case node::stmt_notify:
             dump_stmt_notify(stm.as<stmt_notify>());
             break;
-        case node::stmt_realwait:
-            dump_stmt_realwait(stm.as<stmt_realwait>());
-            break;
         case node::stmt_wait:
             dump_stmt_wait(stm.as<stmt_wait>());
             break;
@@ -316,6 +313,9 @@ auto source::dump_stmt(stmt const& stm) -> void
             break;
         case node::stmt_waittillframeend:
             dump_stmt_waittillframeend(stm.as<stmt_waittillframeend>());
+            break;
+        case node::stmt_waitrealtime:
+            dump_stmt_waitrealtime(stm.as<stmt_waitrealtime>());
             break;
         case node::stmt_if:
             dump_stmt_if(stm.as<stmt_if>());
@@ -495,28 +495,6 @@ auto source::dump_stmt_notify(stmt_notify const& stm) -> void
     fmt::format_to(std::back_inserter(buf_), ");");
 }
 
-auto source::dump_stmt_realwait(stmt_realwait const& stm) -> void
-{
-    if (stm.time->is<expr_float>() || stm.time->is<expr_integer>())
-    {
-        fmt::format_to(std::back_inserter(buf_), "wait ");
-        dump_expr(*stm.time);
-        fmt::format_to(std::back_inserter(buf_), ";");
-    }
-    else if (stm.time->is<expr_paren>())
-    {
-        fmt::format_to(std::back_inserter(buf_), "wait");
-        dump_expr(*stm.time);
-        fmt::format_to(std::back_inserter(buf_), ";");
-    }
-    else
-    {
-        fmt::format_to(std::back_inserter(buf_), "wait( ");
-        dump_expr(*stm.time);
-        fmt::format_to(std::back_inserter(buf_), " );");
-    }
-}
-
 auto source::dump_stmt_wait(stmt_wait const& stm) -> void
 {
     if (stm.time->is<expr_float>() || stm.time->is<expr_integer>())
@@ -580,6 +558,28 @@ auto source::dump_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void
 auto source::dump_stmt_waittillframeend(stmt_waittillframeend const&) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "waittillframeend;");
+}
+
+auto source::dump_stmt_waitrealtime(stmt_waitrealtime const& stm) -> void
+{
+    if (stm.time->is<expr_float>() || stm.time->is<expr_integer>())
+    {
+        fmt::format_to(std::back_inserter(buf_), "waitrealtime ");
+        dump_expr(*stm.time);
+        fmt::format_to(std::back_inserter(buf_), ";");
+    }
+    else if (stm.time->is<expr_paren>())
+    {
+        fmt::format_to(std::back_inserter(buf_), "waitrealtime");
+        dump_expr(*stm.time);
+        fmt::format_to(std::back_inserter(buf_), ";");
+    }
+    else
+    {
+        fmt::format_to(std::back_inserter(buf_), "waitrealtime( ");
+        dump_expr(*stm.time);
+        fmt::format_to(std::back_inserter(buf_), " );");
+    }
 }
 
 auto source::dump_stmt_if(stmt_if const& stm) -> void

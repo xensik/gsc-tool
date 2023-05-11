@@ -30,9 +30,4 @@ struct scope
     scope(std::string const& brk, std::string const& cnt) : cnt{ cnt }, brk{ brk }, abort(abort_type::abort_none), is_dev(false) {}
 };
 
-inline auto make_scope() -> std::unique_ptr<scope>
-{
-    return std::unique_ptr<scope>(new scope);
-}
-
 } // namespace xsk::arc

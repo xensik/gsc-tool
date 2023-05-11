@@ -28,7 +28,7 @@ auto compiler::compile(std::string const& file, std::vector<u8>& data) -> assemb
 
 auto compiler::emit_program(program const& prog) -> void
 {
-    assembly_ = make_assembly();
+    assembly_ = assembly::make();
     localfuncs_.clear();
     developer_thread_ = false;
     animtree_ = {};
@@ -114,7 +114,7 @@ auto compiler::emit_decl_function(decl_function const& func) -> void
     constants_.clear();
     stackframe_.clear();
 
-    function_ = make_function();
+    function_ = function::make();
     function_->index = index_;
     function_->name = func.name->value;
     function_->params = static_cast<u8>(func.params->list.size());
@@ -1858,7 +1858,7 @@ auto compiler::emit_expr_true(expr_true const&) -> void
 
 auto compiler::emit_opcode(opcode op) -> void
 {
-    function_->instructions.push_back(make_instruction());
+    function_->instructions.push_back(instruction::make());
 
     auto& inst = function_->instructions.back();
     inst->opcode = op;
@@ -1870,7 +1870,7 @@ auto compiler::emit_opcode(opcode op) -> void
 
 auto compiler::emit_opcode(opcode op, std::string const& data) -> void
 {
-    function_->instructions.push_back(make_instruction());
+    function_->instructions.push_back(instruction::make());
 
     auto& inst = function_->instructions.back();
     inst->opcode = op;
@@ -1883,7 +1883,7 @@ auto compiler::emit_opcode(opcode op, std::string const& data) -> void
 
 auto compiler::emit_opcode(opcode op, std::vector<std::string> const& data) -> void
 {
-    function_->instructions.push_back(make_instruction());
+    function_->instructions.push_back(instruction::make());
 
     auto& inst = function_->instructions.back();
     inst->opcode = op;

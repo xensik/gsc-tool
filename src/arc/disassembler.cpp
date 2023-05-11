@@ -28,7 +28,7 @@ auto disassembler::disassemble(std::vector<u8> const& data) -> assembly::ptr
 auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
 {
     script_ = utils::reader{ data, static_cast<u32>(data_size), ctx_->endian() == endian::big };
-    assembly_ = make_assembly();
+    assembly_ = assembly::make();
     import_refs_.clear();
     string_refs_.clear();
     anim_refs_.clear();
@@ -303,7 +303,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
 
         script_.pos(entry->offset);
 
-        func_ = make_function();
+        func_ = function::make();
         func_->index = entry->offset;
         func_->size = entry->size;
         func_->params = entry->params;
@@ -325,7 +325,7 @@ auto disassembler::disassemble_function(function& func) -> void
 
     while (size > 0)
     {
-        auto inst = make_instruction();
+        auto inst = instruction::make();
         inst->index = script_.pos();
 
         if (ctx_->props() & props::size64)

@@ -144,39 +144,6 @@ std::map<game, std::unique_ptr<context>> contexts;
 std::map<mode, std::function<void(game game, fs::path file, fs::path rel)>> funcs;
 bool zonetool = false;
 
-/*auto choose_resolver_file_name(uint32_t id, game& game) -> std::string
-{
-    switch (game)
-    {
-        // case game::iw5c:
-        //     return iw5c::resolver::token_name(static_cast<std::uint16_t>(id));
-        // case game::iw6c:
-        //     return iw6c::resolver::token_name(static_cast<std::uint16_t>(id));
-        // case game::s1c:
-        //     return s1c::resolver::token_name(static_cast<std::uint16_t>(id));
-        // case game::iw5:
-        //     return iw5::resolver::token_name(static_cast<std::uint16_t>(id));
-        // case game::iw6:
-        //     return iw6::resolver::token_name(static_cast<std::uint16_t>(id));
-        // case game::iw7:
-        //     return iw7::resolver::token_name(id);
-        // case game::iw8:
-        //     return iw8::resolver::token_name(id);
-        // case game::s1:
-        //     return s1::resolver::token_name(static_cast<std::uint16_t>(id));
-        // case game::s2:
-        //     return s2::resolver::token_name(static_cast<std::uint16_t>(id));
-        // case game::s4:
-        //     return s4::resolver::token_name(id);
-        // case game::h1:
-        //     return h1::resolver::token_name(static_cast<std::uint16_t>(id));
-        // case game::h2:
-        //     return h2::resolver::token_name(static_cast<std::uint16_t>(id));
-        default:
-            return "";
-    }
-}*/
-
 auto assemble_file(game game, fs::path file, fs::path rel) -> void
 {
     try
@@ -659,6 +626,9 @@ void assemble_file(game game, fs::path const& file, fs::path rel)
 {
     try
     {
+        if (game != game::t6)
+            throw std::runtime_error("not implemented");
+
         if (file.extension() != ".gscasm" && file.extension() != ".cscasm")
             throw std::runtime_error("expected .gscasm or .cscasm file");
 
@@ -703,6 +673,9 @@ void compile_file(game game, fs::path const& file, fs::path rel)
 {
     try
     {
+        if (game != game::t6)
+            throw std::runtime_error("not implemented");
+
         if (file.extension() != ".gsc" && file.extension() != ".csc")
             throw std::runtime_error("expected .gsc or .csc file");
 
@@ -755,12 +728,17 @@ void rename_file(game, fs::path const&, fs::path)
     std::cerr << fmt::format("not implemented for t6\n");
 }
 
+auto fs_read(std::string const& name) -> std::vector<u8>
+{
+    return utils::file::read(fs::path{ name });
+}
+
 auto init_t6() -> void
 {
     if (!contexts.contains(game::t6))
     {
         contexts[game::t6] = std::make_unique<t6::context>();
-        contexts[game::t6]->init(build::prod, nullptr);
+        contexts[game::t6]->init(build::prod, fs_read);
     }
 }
 
@@ -769,25 +747,29 @@ auto init_t7() -> void
     if (!contexts.contains(game::t7))
     {
         contexts[game::t7] = std::make_unique<t7::context>();
-        contexts[game::t7]->init(build::prod, nullptr);
+        contexts[game::t7]->init(build::prod, fs_read);
     }
 }
 
 auto init_t8() -> void
 {
+    throw std::runtime_error("not implemented");
+
     if (!contexts.contains(game::t8))
     {
         contexts[game::t8] = std::make_unique<t8::context>();
-        contexts[game::t8]->init(build::prod, nullptr);
+        contexts[game::t8]->init(build::prod, fs_read);
     }
 }
 
 auto init_t9() -> void
 {
+    throw std::runtime_error("not implemented");
+
     if (!contexts.contains(game::t9))
     {
         contexts[game::t9] = std::make_unique<t9::context>();
-        contexts[game::t9]->init(build::prod, nullptr);
+        contexts[game::t9]->init(build::prod, fs_read);
     }
 }
 

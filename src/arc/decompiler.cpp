@@ -910,7 +910,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_RealWait:
         {
             auto exp = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            func_->body->block->list.push_back(stmt_realwait::make(exp->loc(), std::move(exp)));
+            func_->body->block->list.push_back(stmt_waitrealtime::make(exp->loc(), std::move(exp)));
             break;
         }
         case opcode::OP_VectorConstant:
@@ -2022,9 +2022,6 @@ auto decompiler::process_stmt(stmt& stm) -> void
         case node::stmt_notify:
             process_stmt_notify(stm.as<stmt_notify>());
             break;
-        case node::stmt_realwait:
-            process_stmt_realwait(stm.as<stmt_realwait>());
-            break;
         case node::stmt_wait:
             process_stmt_wait(stm.as<stmt_wait>());
             break;
@@ -2033,6 +2030,9 @@ auto decompiler::process_stmt(stmt& stm) -> void
             break;
         case node::stmt_waittillmatch:
             process_stmt_waittillmatch(stm.as<stmt_waittillmatch>());
+            break;
+        case node::stmt_waitrealtime:
+            process_stmt_waitrealtime(stm.as<stmt_waitrealtime>());
             break;
         case node::stmt_if:
             process_stmt_if(stm.as<stmt_if>());
@@ -2118,11 +2118,6 @@ void decompiler::process_stmt_notify(stmt_notify& stm)
     process_expr(stm.obj);
 }
 
-auto decompiler::process_stmt_realwait(stmt_realwait& stm) -> void
-{
-    process_expr(stm.time);
-}
-
 auto decompiler::process_stmt_wait(stmt_wait& stm) -> void
 {
     process_expr(stm.time);
@@ -2144,6 +2139,11 @@ auto decompiler::process_stmt_waittillmatch(stmt_waittillmatch& stm) -> void
     process_expr_arguments(*stm.args);
     process_expr(stm.event);
     process_expr(stm.obj);
+}
+
+auto decompiler::process_stmt_waitrealtime(stmt_waitrealtime& stm) -> void
+{
+    process_expr(stm.time);
 }
 
 auto decompiler::process_stmt_if(stmt_if& stm) -> void
