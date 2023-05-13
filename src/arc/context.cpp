@@ -13,7 +13,7 @@ extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcod
 
 context::context(arc::props props, arc::engine engine, arc::endian endian, arc::system system, u64 magic)
     : props_{ props }, engine_{ engine }, endian_{ endian }, system_{ system }, instance_{ arc::instance::server }, magic_{ magic },
-      source_{ this },/* assembler_{ this },*/ disassembler_{ this }/*, compiler_{ this }*/, decompiler_{ this }
+      source_{ this }, assembler_{ this }, disassembler_{ this }, compiler_{ this }, decompiler_{ this }
 {
     opcode_map_.reserve(opcode_list.size());
     opcode_map_rev_.reserve(opcode_list.size());
@@ -137,9 +137,9 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_GetClasses:
         case opcode::OP_SuperEqual:
         case opcode::OP_SuperNotEqual:
-            return (props_ & props::version2) ? 2 : 1;
+            return (props_ & props::size64) ? 2 : 1;
         case opcode::OP_SafeSetVariableFieldCached:
-            return (props_ & props::version2) ? 3 : 1;
+            return (props_ & props::size64) ? 3 : 1;
         case opcode::OP_GetByte:
         case opcode::OP_GetNegByte:
         case opcode::OP_SafeCreateLocalVariables:
@@ -154,7 +154,7 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_ScriptMethodThreadCallPointer:
         case opcode::OP_WaitTillMatch:
         case opcode::OP_VectorConstant:
-            return (props_ & props::version2) ? 3 : 2;
+            return (props_ & props::size64) ? 3 : 2;
         case opcode::OP_GetUnsignedShort:
         case opcode::OP_GetNegUnsignedShort:
         case opcode::OP_JumpOnFalse:
@@ -165,13 +165,13 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_JumpBack:
         case opcode::OP_DevblockBegin:
         case opcode::OP_DevblockEnd:
-            return (props_ & props::version2) ? 4 : 3;
+            return (props_ & props::size64) ? 4 : 3;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
         case opcode::OP_EvalFieldVariable:
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_ClearFieldVariable:
-            return (props_ & props::version2) ? 6 : 3;
+            return (props_ & props::size64) ? 6 : 3;
         case opcode::OP_EvalLocalVariableCachedDebug:
         case opcode::OP_EvalLocalVariableRefCachedDebug:
         case opcode::OP_LevelEvalFieldVariableRef:
@@ -185,32 +185,32 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_Switch:
         case opcode::OP_EndSwitch:
         case opcode::OP_GetHash:
-            return (props_ & props::version2) ? 6 : 5;
+            return (props_ & props::size64) ? 6 : 5;
         case opcode::OP_ScriptFunctionCallClass:
         case opcode::OP_ScriptThreadCallClass:
             return 7;
         case opcode::OP_GetAPIFunction:
             return 10;
         case opcode::OP_ProfileStart:
-            return (props_ & props::version2) ? 10 : 1;
+            return (props_ & props::size64) ? 10 : 1;
         case opcode::OP_GetAnimation:
         case opcode::OP_GetFunction:
-            return (props_ & props::version2) ? 10 : 5;
+            return (props_ & props::size64) ? 10 : 5;
         case opcode::OP_CallBuiltin:
         case opcode::OP_CallBuiltinMethod:
         case opcode::OP_ScriptFunctionCall:
         case opcode::OP_ScriptMethodCall:
         case opcode::OP_ScriptThreadCall:
         case opcode::OP_ScriptMethodThreadCall:
-            return (props_ & props::version2) ? 11 : 6;
+            return (props_ & props::size64) ? 11 : 6;
         case opcode::OP_GetVector:
-            return (props_ & props::version2) ? 14 : 13;
+            return (props_ & props::size64) ? 14 : 13;
         default:
             throw error(fmt::format("couldn't resolve instruction size for '{}'", opcode_name(op)));
     }
 }
 
-auto context::opcode_id(opcode op) const -> u8
+auto context::opcode_id(opcode op) const -> u16
 {
     auto const itr = code_map_rev_.find(op);
 
@@ -256,31 +256,36 @@ auto context::opcode_enum(u16 id) const -> opcode
     }
 
     return opcode::OP_Invalid;
-    //throw error(fmt::format("couldn't resolve opcode enum for '{:02X}'", id));
 }
 
-auto context::dvar_id(std::string const& /*name*/) const -> u32
+auto context::hash_id(std::string const& name) const -> u32
 {
-    // todo hash func
-    return 0;
-}
-
-auto context::dvar_name(u32 id) const -> std::string
-{
-    auto const itr = dvar_map_.find(id);
-
-    if (itr != dvar_map_.end())
+    if (props_ & props::hashids)
     {
-        return std::string(itr->second);
+		auto* str = name.data();
+		auto hash = 16777619u * (std::tolower(static_cast<u8>(*str)) ^ 1268436527u);
+
+		while (*str++)
+		{
+			hash = 16777619u * (std::tolower(static_cast<u8>(*str)) ^ hash);
+		}
+
+		return hash;
     }
+    else
+    {
+        if (name.empty())
+            return 0;
 
-    return fmt::format("_hash_{:08X}", id);
-}
+        auto hash = 5381u;
 
-auto context::hash_id(std::string const& /*name*/) const -> u32
-{
-    // todo hash func
-    return 0;
+        for (auto i = 0u; i < name.size(); i++)
+        {
+            hash = std::tolower(static_cast<u8>(name[i])) + 33 * hash;
+        }
+
+        return hash;
+    }
 }
 
 auto context::hash_name(u32 id) const -> std::string
@@ -293,6 +298,48 @@ auto context::hash_name(u32 id) const -> std::string
     }
 
     return fmt::format("_id_{:08X}", id);
+}
+
+auto context::make_token(std::string_view str) const -> std::string
+{
+    if (str.starts_with("_id_") || str.starts_with("_func_") || str.starts_with("_meth_"))
+    {
+        return std::string{ str };
+    }
+
+    auto data = std::string{ str.begin(), str.end() };
+
+    for (auto i = 0u; i < data.size(); i++)
+    {
+        data[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(str[i])));
+        if (data[i] == '\\') data[i] = '/';
+    }
+
+    return data;
+}
+
+auto context::load_header(std::string const& name) -> std::tuple<std::string const*, char const*, usize>
+{
+    auto const itr = header_files_.find(name);
+
+    if (itr != header_files_.end())
+    {
+        return { &itr->first, reinterpret_cast<char const*>(itr->second.data()), itr->second.size() };
+    }
+
+    auto data = fs_callback_(name);
+
+    if (!data.empty())
+    {
+        auto const res = header_files_.insert({ name, std::move(data) });
+
+        if (res.second)
+        {
+            return { &res.first->first, reinterpret_cast<char const*>(res.first->second.data()), res.first->second.size() };
+        }
+    }
+
+    throw error(fmt::format("couldn't open gsh file '{}'", name));
 }
 
 extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcode_list

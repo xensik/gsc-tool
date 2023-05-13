@@ -12,9 +12,8 @@ namespace xsk::arc::t9
 {
 
 constexpr usize code_count = 0;
-constexpr usize dvar_count = 0;
 constexpr usize hash_count = 0;
-constexpr u64 header_magic = 0;
+constexpr u64 header_magic = 0x38000A0D43534780;
 
 class context : public arc::context
 {

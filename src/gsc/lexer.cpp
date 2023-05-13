@@ -3,7 +3,6 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/string.hpp"
 #include "xsk/gsc/lexer.hpp"
@@ -191,7 +190,7 @@ auto lexer::lex() -> token
                     advance();
 
                     if (curr != '.')
-                        return token{ token::DOUBLECOLON, spacing_, loc_ };
+                        return token{ token::DOUBLEDOT, spacing_, loc_ };
  
                     advance();
                     return token{ token::ELLIPSIS, spacing_, loc_ };

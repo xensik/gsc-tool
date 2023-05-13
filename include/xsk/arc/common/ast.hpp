@@ -14,7 +14,10 @@ struct node
 
     enum type
     {
-        null,
+        node_null,
+        node_prescriptcall,
+        node_voidcodepos,
+        expr_empty,
         expr_true,
         expr_false,
         expr_integer,
@@ -35,6 +38,7 @@ struct node
         expr_game,
         expr_undefined,
         expr_empty_array,
+        expr_ellipsis,
         expr_paren,
         expr_size,
         expr_field,
@@ -70,54 +74,24 @@ struct node
         expr_complement,
         expr_negate,
         expr_not,
-        expr_add,
-        expr_sub,
-        expr_mul,
-        expr_div,
-        expr_mod,
-        expr_shift_left,
-        expr_shift_right,
-        expr_bitwise_or,
-        expr_bitwise_and,
-        expr_bitwise_exor,
-        expr_super_equal,
-        expr_super_not_equal,
-        expr_equality,
-        expr_inequality,
-        expr_less_equal,
-        expr_greater_equal,
-        expr_less,
-        expr_greater,
-        expr_or,
-        expr_and,
+        expr_binary,
         expr_ternary,
+        expr_const,
+        expr_assign,
         expr_increment,
         expr_decrement,
-        expr_assign_equal,
-        expr_assign_add,
-        expr_assign_sub,
-        expr_assign_mul,
-        expr_assign_div,
-        expr_assign_mod,
-        expr_assign_shift_left,
-        expr_assign_shift_right,
-        expr_assign_bitwise_or,
-        expr_assign_bitwise_and,
-        expr_assign_bitwise_exor,
+        stmt_empty,
         stmt_list,
         stmt_comp,
         stmt_dev,
         stmt_expr,
-        stmt_call,
-        stmt_const,
-        stmt_assign,
         stmt_endon,
         stmt_notify,
-        stmt_realwait,
         stmt_wait,
         stmt_waittill,
         stmt_waittillmatch,
         stmt_waittillframeend,
+        stmt_waitrealtime,
         stmt_if,
         stmt_ifelse,
         stmt_while,
@@ -133,6 +107,15 @@ struct node
         stmt_breakpoint,
         stmt_prof_begin,
         stmt_prof_end,
+        stmt_jmp,
+        stmt_jmp_back,
+        stmt_jmp_cond,
+        stmt_jmp_true,
+        stmt_jmp_false,
+        stmt_jmp_switch,
+        stmt_jmp_endswitch,
+        stmt_jmp_dev,
+        decl_empty,
         decl_function,
         decl_usingtree,
         decl_namespace,
@@ -140,28 +123,9 @@ struct node
         decl_dev_end,
         include,
         program,
-        asm_loc,
-        asm_jmp,
-        asm_jmp_back,
-        asm_jmp_cond,
-        asm_jmp_true,
-        asm_jmp_false,
-        asm_switch,
-        asm_endswitch,
-        asm_prescriptcall,
-        asm_voidcodepos,
-        asm_dev,
     };
 
-public:
-    node() : kind_(type::null) {}
-    node(location const& loc) : kind_(type::null), loc_(loc) {}
-    node(type t) : kind_(t) {}
-    node(type t, location const& loc) : kind_(t), loc_(loc) {}
-
     virtual ~node() = default;
-    friend bool operator==(node const& n, type t);
-    friend bool operator==(node const& lhs, node const& rhs);
 
     auto kind() const -> type { return kind_; }
     auto loc() const -> location const& { return loc_; }
@@ -173,375 +137,157 @@ public:
     auto is_special_stmt_dev_noif() -> bool;
     auto is_boolean() -> bool;
     auto is_binary() -> bool;
-    auto precedence() -> u8;
+    auto is_assign() -> bool;
+
+    virtual auto precedence() -> u8;
+
+    template<typename T>
+    static auto as(node::ptr) -> std::unique_ptr<T>;
+
+protected:
+    node(type t) : kind_(t) {}
+    node(type t, location const& loc) : kind_(t), loc_(loc) {}
 
 private:
     type kind_;
     location loc_;
 };
 
-struct expr_true;
-struct expr_false;
-struct expr_integer;
-struct expr_float;
-struct expr_vector;
-struct expr_hash;
-struct expr_string;
-struct expr_istring;
-struct expr_path;
-struct expr_identifier;
-struct expr_animtree;
-struct expr_animation;
-struct expr_classes;
-struct expr_world;
-struct expr_level;
-struct expr_anim;
-struct expr_self;
-struct expr_game;
-struct expr_undefined;
-struct expr_empty_array;
-struct expr_paren;
-struct expr_size;
-struct expr_field;
-struct expr_array;
-struct expr_reference;
-struct expr_getnextarraykey;
-struct expr_getfirstarraykey;
-struct expr_getdvarcoloralpha;
-struct expr_getdvarcolorblue;
-struct expr_getdvarcolorgreen;
-struct expr_getdvarcolorred;
-struct expr_getdvarvector;
-struct expr_getdvarfloat;
-struct expr_getdvarint;
-struct expr_getdvar;
-struct expr_gettime;
-struct expr_abs;
-struct expr_vectortoangles;
-struct expr_angleclamp180;
-struct expr_anglestoforward;
-struct expr_anglestoright;
-struct expr_anglestoup;
-struct expr_vectorscale;
-struct expr_isdefined;
-struct expr_arguments;
-struct expr_parameters;
-struct expr_member;
-struct expr_pointer;
-struct expr_function;
-struct expr_method;
-struct expr_call;
-struct expr_new;
-struct expr_complement;
-struct expr_negate;
-struct expr_not;
-struct expr_binary;
-struct expr_add;
-struct expr_sub;
-struct expr_mul;
-struct expr_div;
-struct expr_mod;
-struct expr_shift_left;
-struct expr_shift_right;
-struct expr_bitwise_or;
-struct expr_bitwise_and;
-struct expr_bitwise_exor;
-struct expr_super_equal;
-struct expr_super_not_equal;
-struct expr_equality;
-struct expr_inequality;
-struct expr_less_equal;
-struct expr_greater_equal;
-struct expr_less;
-struct expr_greater;
-struct expr_or;
-struct expr_and;
-struct expr_ternary;
-struct expr_increment;
-struct expr_decrement;
-struct expr_assign;
-struct expr_assign_equal;
-struct expr_assign_add;
-struct expr_assign_sub;
-struct expr_assign_mul;
-struct expr_assign_div;
-struct expr_assign_mod;
-struct expr_assign_shift_left;
-struct expr_assign_shift_right;
-struct expr_assign_bitwise_or;
-struct expr_assign_bitwise_and;
-struct expr_assign_bitwise_exor;
-struct stmt_list;
-struct stmt_comp;
-struct stmt_dev;
-struct stmt_expr;
-struct stmt_call;
-struct stmt_const;
-struct stmt_assign;
-struct stmt_endon;
-struct stmt_notify;
-struct stmt_realwait;
-struct stmt_wait;
-struct stmt_waittill;
-struct stmt_waittillmatch;
-struct stmt_waittillframeend;
-struct stmt_if;
-struct stmt_ifelse;
-struct stmt_while;
-struct stmt_dowhile;
-struct stmt_for;
-struct stmt_foreach;
-struct stmt_switch;
-struct stmt_case;
-struct stmt_default;
-struct stmt_break;
-struct stmt_continue;
-struct stmt_return;
-struct stmt_breakpoint;
-struct stmt_prof_begin;
-struct stmt_prof_end;
-struct decl_function;
-struct decl_usingtree;
-struct decl_namespace;
-struct decl_dev_begin;
-struct decl_dev_end;
-struct include;
-struct program;
-struct asm_loc;
-struct asm_jmp;
-struct asm_jmp_back;
-struct asm_jmp_cond;
-struct asm_jmp_false;
-struct asm_jmp_true;
-struct asm_switch;
-struct asm_endswitch;
-struct asm_prescriptcall;
-struct asm_voidcodepos;
-struct asm_dev;
-
-union call
+struct expr : node
 {
-    enum class mode { normal, thread };
+    using ptr = std::unique_ptr<expr>;
 
-    std::unique_ptr<node> as_node;
-    std::unique_ptr<expr_member> as_member;
-    std::unique_ptr<expr_pointer> as_pointer;
-    std::unique_ptr<expr_function> as_function;
+    virtual ~expr() = default;
 
-    call();
-    call(std::unique_ptr<node> value);
-    call(call&& value);
-    call(call const&) = delete;
-    call& operator=(call const&) = delete;
-    ~call();
-    friend auto operator==(call const& lhs, node::type rhs) -> bool;
-    auto loc() const -> location;
-    auto kind() const -> node::type;
-    auto label() const -> std::string;
-};
-
-union expr
-{
-    std::unique_ptr<node> as_node;
-    std::unique_ptr<expr_true> as_true;
-    std::unique_ptr<expr_false> as_false;
-    std::unique_ptr<expr_integer> as_integer;
-    std::unique_ptr<expr_float> as_float;
-    std::unique_ptr<expr_vector> as_vector;
-    std::unique_ptr<expr_hash> as_hash;
-    std::unique_ptr<expr_string> as_string;
-    std::unique_ptr<expr_istring> as_istring;
-    std::unique_ptr<expr_path> as_path;
-    std::unique_ptr<expr_identifier> as_identifier;
-    std::unique_ptr<expr_animtree> as_animtree;
-    std::unique_ptr<expr_animation> as_animation;
-    std::unique_ptr<expr_classes> as_classes;
-    std::unique_ptr<expr_world> as_world;
-    std::unique_ptr<expr_level> as_level;
-    std::unique_ptr<expr_anim> as_anim;
-    std::unique_ptr<expr_self> as_self;
-    std::unique_ptr<expr_game> as_game;
-    std::unique_ptr<expr_undefined> as_undefined;
-    std::unique_ptr<expr_empty_array> as_empty_array;
-    std::unique_ptr<expr_paren> as_paren;
-    std::unique_ptr<expr_size> as_size;
-    std::unique_ptr<expr_field> as_field;
-    std::unique_ptr<expr_array> as_array;
-    std::unique_ptr<expr_reference> as_reference;
-    std::unique_ptr<expr_getnextarraykey> as_getnextarraykey;
-    std::unique_ptr<expr_getfirstarraykey> as_getfirstarraykey;
-    std::unique_ptr<expr_getdvarcoloralpha> as_getdvarcoloralpha;
-    std::unique_ptr<expr_getdvarcolorblue> as_getdvarcolorblue;
-    std::unique_ptr<expr_getdvarcolorgreen> as_getdvarcolorgreen;
-    std::unique_ptr<expr_getdvarcolorred> as_getdvarcolorred;
-    std::unique_ptr<expr_getdvarvector> as_getdvarvector;
-    std::unique_ptr<expr_getdvarfloat> as_getdvarfloat;
-    std::unique_ptr<expr_getdvarint> as_getdvarint;
-    std::unique_ptr<expr_getdvar> as_getdvar;
-    std::unique_ptr<expr_gettime> as_gettime;
-    std::unique_ptr<expr_abs> as_abs;
-    std::unique_ptr<expr_vectortoangles> as_vectortoangles;
-    std::unique_ptr<expr_angleclamp180> as_angleclamp180;
-    std::unique_ptr<expr_anglestoforward> as_anglestoforward;
-    std::unique_ptr<expr_anglestoright> as_anglestoright;
-    std::unique_ptr<expr_anglestoup> as_anglestoup;
-    std::unique_ptr<expr_vectorscale> as_vectorscale;
-    std::unique_ptr<expr_isdefined> as_isdefined;
-    std::unique_ptr<expr_arguments> as_arguments;
-    std::unique_ptr<expr_parameters> as_parameters;
-    std::unique_ptr<expr_member> as_member;
-    std::unique_ptr<expr_pointer> as_pointer;
-    std::unique_ptr<expr_function> as_function;
-    std::unique_ptr<expr_method> as_method;
-    std::unique_ptr<expr_call> as_call;
-    std::unique_ptr<expr_new> as_new;
-    std::unique_ptr<expr_complement> as_complement;
-    std::unique_ptr<expr_negate> as_negate;
-    std::unique_ptr<expr_not> as_not;
-    std::unique_ptr<expr_binary> as_binary;
-    std::unique_ptr<expr_add> as_add;
-    std::unique_ptr<expr_sub> as_sub;
-    std::unique_ptr<expr_mul> as_mul;
-    std::unique_ptr<expr_div> as_div;
-    std::unique_ptr<expr_mod> as_mod;
-    std::unique_ptr<expr_shift_left> as_shift_left;
-    std::unique_ptr<expr_shift_right> as_shift_right;
-    std::unique_ptr<expr_bitwise_or> as_bitwise_or;
-    std::unique_ptr<expr_bitwise_and> as_bitwise_and;
-    std::unique_ptr<expr_bitwise_exor> as_bitwise_exor;
-    std::unique_ptr<expr_super_equal> as_super_equal;
-    std::unique_ptr<expr_super_not_equal> as_super_not_equal;
-    std::unique_ptr<expr_equality> as_equality;
-    std::unique_ptr<expr_inequality> as_inequality;
-    std::unique_ptr<expr_less_equal> as_less_equal;
-    std::unique_ptr<expr_greater_equal> as_greater_equal;
-    std::unique_ptr<expr_less> as_less;
-    std::unique_ptr<expr_greater> as_greater;
-    std::unique_ptr<expr_or> as_or;
-    std::unique_ptr<expr_and> as_and;
-    std::unique_ptr<expr_ternary> as_ternary;
-    std::unique_ptr<expr_increment> as_increment;
-    std::unique_ptr<expr_decrement> as_decrement;
-    std::unique_ptr<expr_assign> as_assign;
-    std::unique_ptr<expr_assign_equal> as_assign_equal;
-    std::unique_ptr<expr_assign_add> as_assign_add;
-    std::unique_ptr<expr_assign_sub> as_assign_sub;
-    std::unique_ptr<expr_assign_mul> as_assign_mul;
-    std::unique_ptr<expr_assign_div> as_assign_div;
-    std::unique_ptr<expr_assign_mod> as_assign_mod;
-    std::unique_ptr<expr_assign_shift_left> as_assign_shift_left;
-    std::unique_ptr<expr_assign_shift_right> as_assign_shift_right;
-    std::unique_ptr<expr_assign_bitwise_or> as_assign_bw_or;
-    std::unique_ptr<expr_assign_bitwise_and> as_assign_bw_and;
-    std::unique_ptr<expr_assign_bitwise_exor> as_assign_bw_exor;
-
-    expr();
-    expr(std::unique_ptr<node> value);
-    expr(expr&& value);
-    expr& operator=(expr&& value);
-    expr(expr const&) = delete;
-    expr& operator=(expr const&) = delete;
-    ~expr();
-    friend auto operator!=(expr const& lhs, node::type rhs) -> bool;
-    friend auto operator==(expr const& lhs, node::type rhs) -> bool;
     friend auto operator==(expr const& lhs, expr const& rhs) -> bool;
-    auto loc() const -> location;
-    auto kind() const -> node::type;
-    auto label() const -> std::string;
+
+    template<typename T>
+    auto is() const -> bool;
+
+    template<typename T>
+    auto as() const -> T const&;
+
+    template<typename T>
+    auto as() -> T&;
+
+protected:
+    expr(type t);
+    expr(type t, location const& loc);
 };
 
-union stmt
+struct call : expr
 {
-    std::unique_ptr<node> as_node;
-    std::unique_ptr<stmt_list> as_list;
-    std::unique_ptr<stmt_comp> as_comp;
-    std::unique_ptr<stmt_dev> as_dev;
-    std::unique_ptr<stmt_expr> as_expr;
-    std::unique_ptr<stmt_call> as_call;
-    std::unique_ptr<stmt_const> as_const;
-    std::unique_ptr<stmt_assign> as_assign;
-    std::unique_ptr<stmt_endon> as_endon;
-    std::unique_ptr<stmt_notify> as_notify;
-    std::unique_ptr<stmt_realwait> as_realwait;
-    std::unique_ptr<stmt_wait> as_wait;
-    std::unique_ptr<stmt_waittill> as_waittill;
-    std::unique_ptr<stmt_waittillmatch> as_waittillmatch;
-    std::unique_ptr<stmt_waittillframeend> as_waittillframeend;
-    std::unique_ptr<stmt_if> as_if;
-    std::unique_ptr<stmt_ifelse> as_ifelse;
-    std::unique_ptr<stmt_while> as_while;
-    std::unique_ptr<stmt_dowhile> as_dowhile;
-    std::unique_ptr<stmt_for> as_for;
-    std::unique_ptr<stmt_foreach> as_foreach;
-    std::unique_ptr<stmt_switch> as_switch;
-    std::unique_ptr<stmt_case> as_case;
-    std::unique_ptr<stmt_default> as_default;
-    std::unique_ptr<stmt_break> as_break;
-    std::unique_ptr<stmt_continue> as_continue;
-    std::unique_ptr<stmt_return> as_return;
-    std::unique_ptr<stmt_breakpoint> as_breakpoint;
-    std::unique_ptr<stmt_prof_begin> as_prof_begin;
-    std::unique_ptr<stmt_prof_end> as_prof_end;
-    std::unique_ptr<asm_loc> as_loc;
-    std::unique_ptr<asm_jmp> as_jump;
-    std::unique_ptr<asm_jmp_cond> as_cond;
-    std::unique_ptr<asm_jmp_back> as_jump_back;
-    std::unique_ptr<asm_switch> as_asm_switch;
-    std::unique_ptr<asm_endswitch> as_asm_endswitch;
-    std::unique_ptr<asm_dev> as_asm_dev;
+    using ptr = std::unique_ptr<call>;
 
-    stmt();
-    stmt(std::unique_ptr<node> value);
-    stmt(stmt&& value);
-    stmt& operator=(stmt&& value);
-    stmt(stmt const&) = delete;
-    stmt& operator=(stmt const&) = delete;
-    ~stmt();
-    friend auto operator==(stmt const& lhs, node::type rhs) -> bool;
-    auto loc() const -> location;
-    auto kind() const -> node::type;
-    auto label() const -> std::string;
+    enum class mode { normal, thread, };
+
+    virtual ~call() = default;
+
+    template<typename T>
+    auto is() const -> bool;
+
+    template<typename T>
+    auto as() const -> T const&;
+
+    template<typename T>
+    auto as() -> T&;
+
+protected:
+    call(node::type t);
+    call(node::type t, location const& loc);
 };
 
-union decl
+struct stmt : node
 {
-    std::unique_ptr<node> as_node;
-    std::unique_ptr<decl_dev_begin> as_dev_begin;
-    std::unique_ptr<decl_dev_end> as_dev_end;
-    std::unique_ptr<decl_namespace> as_namespace;
-    std::unique_ptr<decl_usingtree> as_usingtree;
-    std::unique_ptr<decl_function> as_function;
+    using ptr = std::unique_ptr<stmt>;
 
-    decl();
-    decl(std::unique_ptr<node> value);
-    decl(decl&& value);
-    decl& operator=(decl&& value);
-    decl(decl const&) = delete;
-    decl& operator=(decl const&) = delete;
-    ~decl();
-    friend auto operator==(decl const& lhs, node::type rhs) -> bool;
-    auto loc() const -> location;
-    auto kind() const -> node::type;
-    auto label() const -> std::string;
+    virtual ~stmt() = default;
+
+    template<typename T>
+    auto is() const -> bool;
+
+    template<typename T>
+    auto as() const -> T const&;
+
+    template<typename T>
+    auto as() -> T&;
+
+protected:
+    stmt(type t);
+    stmt(type t, location const& loc);
 };
 
-struct expr_true : public node
+struct decl : node
+{
+    using ptr = std::unique_ptr<decl>;
+
+    virtual ~decl() = default;
+
+    template<typename T>
+    auto is() const -> bool;
+
+    template<typename T>
+    auto as() const -> T const&;
+
+    template<typename T>
+    auto as() -> T&;
+
+protected:
+    decl(type t);
+    decl(type t, location const& loc);
+};
+
+#define XSK_ARC_AST_MAKE(node_type)                                                 \
+template<class... Args>                                                             \
+inline static auto make(Args&&... args) -> std::unique_ptr<node_type>               \
+{                                                                                   \
+    return std::unique_ptr<node_type>(new node_type(std::forward<Args>(args)...));  \
+}
+
+struct node_prescriptcall : public node
+{
+    using ptr = std::unique_ptr<node_prescriptcall>;
+
+    node_prescriptcall(location const& loc);
+    XSK_ARC_AST_MAKE(node_prescriptcall)
+};
+
+struct node_voidcodepos : public node
+{
+    using ptr = std::unique_ptr<node_voidcodepos>;
+
+    node_voidcodepos(location const& loc);
+    XSK_ARC_AST_MAKE(node_voidcodepos)
+};
+
+struct expr_empty : public expr
+{
+    using ptr = std::unique_ptr<expr_empty>;
+
+    expr_empty(location const& loc);
+    friend auto operator==(expr_empty const& lhs, expr_empty const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_empty)
+};
+
+struct expr_true : public expr
 {
     using ptr = std::unique_ptr<expr_true>;
 
     expr_true(location const& loc);
     friend auto operator==(expr_true const& lhs, expr_true const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_true)
 };
 
-struct expr_false : public node
+struct expr_false : public expr
 {
     using ptr = std::unique_ptr<expr_false>;
 
     expr_false(location const& loc);
     friend auto operator==(expr_false const& lhs, expr_false const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_false)
 };
 
-struct expr_integer : public node
+struct expr_integer : public expr
 {
     using ptr = std::unique_ptr<expr_integer>;
 
@@ -549,9 +295,10 @@ struct expr_integer : public node
 
     expr_integer(location const& loc, std::string const& value);
     friend auto operator==(expr_integer const& lhs, expr_integer const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_integer)
 };
 
-struct expr_float : public node
+struct expr_float : public expr
 {
     using ptr = std::unique_ptr<expr_float>;
 
@@ -559,21 +306,23 @@ struct expr_float : public node
 
     expr_float(location const& loc, std::string const& value);
     friend auto operator==(expr_float const& lhs, expr_float const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_float)
 };
 
-struct expr_vector : public node
+struct expr_vector : public expr
 {
     using ptr = std::unique_ptr<expr_vector>;
 
-    expr x;
-    expr y;
-    expr z;
+    expr::ptr x;
+    expr::ptr y;
+    expr::ptr z;
 
-    expr_vector(location const& loc, expr x, expr y, expr z);
+    expr_vector(location const& loc, expr::ptr x, expr::ptr y, expr::ptr z);
     friend auto operator==(expr_vector const& lhs, expr_vector const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_vector)
 };
 
-struct expr_hash : public node
+struct expr_hash : public expr
 {
     using ptr = std::unique_ptr<expr_hash>;
 
@@ -581,9 +330,10 @@ struct expr_hash : public node
 
     expr_hash(location const& loc, std::string const& value);
     friend auto operator==(expr_hash const& lhs, expr_hash const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_hash)
 };
 
-struct expr_string : public node
+struct expr_string : public expr
 {
     using ptr = std::unique_ptr<expr_string>;
 
@@ -591,9 +341,10 @@ struct expr_string : public node
 
     expr_string(location const& loc, std::string const& value);
     friend auto operator==(expr_string const& lhs, expr_string const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_string)
 };
 
-struct expr_istring : public node
+struct expr_istring : public expr
 {
     using ptr = std::unique_ptr<expr_istring>;
 
@@ -601,9 +352,10 @@ struct expr_istring : public node
 
     expr_istring(location const& loc, std::string const& value);
     friend auto operator==(expr_istring const& lhs, expr_istring const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_istring)
 };
 
-struct expr_path : public node
+struct expr_path : public expr
 {
     using ptr = std::unique_ptr<expr_path>;
 
@@ -612,9 +364,10 @@ struct expr_path : public node
     expr_path(location const& loc);
     expr_path(location const& loc, std::string const& value);
     friend auto operator==(expr_path const& lhs, expr_path const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_path)
 };
 
-struct expr_identifier : public node
+struct expr_identifier : public expr
 {
     using ptr = std::unique_ptr<expr_identifier>;
 
@@ -622,17 +375,19 @@ struct expr_identifier : public node
 
     expr_identifier(location const& loc, std::string const& value);
     friend auto operator==(expr_identifier const& lhs, expr_identifier const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_identifier)
 };
 
-struct expr_animtree : public node
+struct expr_animtree : public expr
 {
     using ptr = std::unique_ptr<expr_animtree>;
 
     expr_animtree(location const& loc);
     friend auto operator==(expr_animtree const& lhs, expr_animtree const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_animtree)
 };
 
-struct expr_animation : public node
+struct expr_animation : public expr
 {
     using ptr = std::unique_ptr<expr_animation>;
 
@@ -640,115 +395,137 @@ struct expr_animation : public node
 
     expr_animation(location const& loc, std::string const& value);
     friend auto operator==(expr_animation const& lhs, expr_animation const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_animation)
 };
 
-struct expr_classes : public node
+struct expr_classes : public expr
 {
     using ptr = std::unique_ptr<expr_classes>;
 
     expr_classes(location const& loc);
     friend auto operator==(expr_classes const& lhs, expr_classes const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_classes)
 };
 
-struct expr_world : public node
+struct expr_world : public expr
 {
     using ptr = std::unique_ptr<expr_world>;
 
     expr_world(location const& loc);
     friend auto operator==(expr_world const& lhs, expr_world const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_world)
 };
 
-struct expr_level : public node
+struct expr_level : public expr
 {
     using ptr = std::unique_ptr<expr_level>;
 
     expr_level(location const& loc);
     friend auto operator==(expr_level const& lhs, expr_level const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_level)
 };
 
-struct expr_anim : public node
+struct expr_anim : public expr
 {
     using ptr = std::unique_ptr<expr_anim>;
 
     expr_anim(location const& loc);
     friend auto operator==(expr_anim const& lhs, expr_anim const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_anim)
 };
 
-struct expr_self : public node
+struct expr_self : public expr
 {
     using ptr = std::unique_ptr<expr_self>;
 
     expr_self(location const& loc);
     friend auto operator==(expr_self const& lhs, expr_self const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_self)
 };
 
-struct expr_game : public node
+struct expr_game : public expr
 {
     using ptr = std::unique_ptr<expr_game>;
 
     expr_game(location const& loc);
     friend auto operator==(expr_game const& lhs, expr_game const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_game)
 };
 
-struct expr_undefined : public node
+struct expr_undefined : public expr
 {
     using ptr = std::unique_ptr<expr_undefined>;
 
     expr_undefined(location const& loc);
     friend auto operator==(expr_undefined const& lhs, expr_undefined const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_undefined)
 };
 
-struct expr_empty_array : public node
+struct expr_empty_array : public expr
 {
     using ptr = std::unique_ptr<expr_empty_array>;
 
     expr_empty_array(location const& loc);
     friend auto operator==(expr_empty_array const& lhs, expr_empty_array const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_empty_array)
 };
 
-struct expr_paren : public node
+struct expr_ellipsis : public expr
+{
+    using ptr = std::unique_ptr<expr_ellipsis>;
+
+    expr_ellipsis(location const& loc);
+    friend auto operator==(expr_ellipsis const& lhs, expr_ellipsis const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_ellipsis)
+};
+
+struct expr_paren : public expr
 {
     using ptr = std::unique_ptr<expr_paren>;
 
-    expr value;
+    expr::ptr value;
 
-    expr_paren(location const& loc, expr value);
+    expr_paren(location const& loc, expr::ptr value);
     friend auto operator==(expr_paren const& lhs, expr_paren const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_paren)
 };
 
-struct expr_size : public node
+struct expr_size : public expr
 {
     using ptr = std::unique_ptr<expr_size>;
 
-    expr obj;
+    expr::ptr obj;
 
-    expr_size(location const& loc, expr obj);
+    expr_size(location const& loc, expr::ptr obj);
     friend auto operator==(expr_size const& lhs, expr_size const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_size)
 };
 
-struct expr_field : public node
+struct expr_field : public expr
 {
     using ptr = std::unique_ptr<expr_field>;
 
-    expr obj;
+    expr::ptr obj;
     expr_identifier::ptr field;
 
-    expr_field(location const& loc, expr obj, expr_identifier::ptr field);
+    expr_field(location const& loc, expr::ptr obj, expr_identifier::ptr field);
     friend auto operator==(expr_field const& lhs, expr_field const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_field)
 };
 
-struct expr_array : public node
+struct expr_array : public expr
 {
     using ptr = std::unique_ptr<expr_array>;
 
-    expr obj;
-    expr key;
+    expr::ptr obj;
+    expr::ptr key;
 
-    expr_array(location const& loc, expr obj, expr key);
+    expr_array(location const& loc, expr::ptr obj, expr::ptr key);
     friend auto operator==(expr_array const& lhs, expr_array const& rhs) -> bool;
+    XSK_ARC_AST_MAKE(expr_array)
 };
 
-struct expr_reference : public node
+struct expr_reference : public expr
 {
     using ptr = std::unique_ptr<expr_reference>;
 
@@ -756,222 +533,246 @@ struct expr_reference : public node
     expr_identifier::ptr name;
 
     expr_reference(location const& loc, expr_path::ptr path, expr_identifier::ptr name);
+    XSK_ARC_AST_MAKE(expr_reference)
 };
 
-struct expr_getnextarraykey : public node
+struct expr_getnextarraykey : public expr
 {
     using ptr = std::unique_ptr<expr_getnextarraykey>;
 
-    expr arg1;
-    expr arg2;
+    expr::ptr arg1;
+    expr::ptr arg2;
 
-    expr_getnextarraykey(location const& loc, expr arg1, expr arg2);
+    expr_getnextarraykey(location const& loc, expr::ptr arg1, expr::ptr arg2);
+    XSK_ARC_AST_MAKE(expr_getnextarraykey)
 };
 
-struct expr_getfirstarraykey : public node
+struct expr_getfirstarraykey : public expr
 {
     using ptr = std::unique_ptr<expr_getfirstarraykey>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_getfirstarraykey(location const& loc, expr arg);
+    expr_getfirstarraykey(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_getfirstarraykey)
 };
 
-struct expr_getdvarcoloralpha : public node
+struct expr_getdvarcoloralpha : public expr
 {
     using ptr = std::unique_ptr<expr_getdvarcoloralpha>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_getdvarcoloralpha(location const& loc, expr arg);
+    expr_getdvarcoloralpha(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_getdvarcoloralpha)
 };
 
-struct expr_getdvarcolorblue : public node
+struct expr_getdvarcolorblue : public expr
 {
     using ptr = std::unique_ptr<expr_getdvarcolorblue>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_getdvarcolorblue(location const& loc, expr arg);
+    expr_getdvarcolorblue(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_getdvarcolorblue)
 };
 
-struct expr_getdvarcolorgreen : public node
+struct expr_getdvarcolorgreen : public expr
 {
     using ptr = std::unique_ptr<expr_getdvarcolorgreen>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_getdvarcolorgreen(location const& loc, expr arg);
+    expr_getdvarcolorgreen(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_getdvarcolorgreen)
 };
 
-struct expr_getdvarcolorred : public node
+struct expr_getdvarcolorred : public expr
 {
     using ptr = std::unique_ptr<expr_getdvarcolorred>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_getdvarcolorred(location const& loc, expr arg);
+    expr_getdvarcolorred(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_getdvarcolorred)
 };
 
-struct expr_getdvarvector : public node
+struct expr_getdvarvector : public expr
 {
     using ptr = std::unique_ptr<expr_getdvarvector>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_getdvarvector(location const& loc, expr arg);
+    expr_getdvarvector(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_getdvarvector)
 };
 
-struct expr_getdvarfloat : public node
+struct expr_getdvarfloat : public expr
 {
     using ptr = std::unique_ptr<expr_getdvarfloat>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_getdvarfloat(location const& loc, expr arg);
+    expr_getdvarfloat(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_getdvarfloat)
 };
 
-struct expr_getdvarint : public node
+struct expr_getdvarint : public expr
 {
     using ptr = std::unique_ptr<expr_getdvarint>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_getdvarint(location const& loc, expr arg);
+    expr_getdvarint(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_getdvarint)
 };
 
 
-struct expr_getdvar : public node
+struct expr_getdvar : public expr
 {
     using ptr = std::unique_ptr<expr_getdvar>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_getdvar(location const& loc, expr arg);
+    expr_getdvar(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_getdvar)
 };
 
-struct expr_gettime : public node
+struct expr_gettime : public expr
 {
     using ptr = std::unique_ptr<expr_gettime>;
 
     expr_gettime(location const& loc);
+    XSK_ARC_AST_MAKE(expr_gettime)
 };
 
-struct expr_abs : public node
+struct expr_abs : public expr
 {
     using ptr = std::unique_ptr<expr_abs>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_abs(location const& loc, expr arg);
+    expr_abs(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_abs)
 };
 
-struct expr_vectortoangles : public node
+struct expr_vectortoangles : public expr
 {
     using ptr = std::unique_ptr<expr_vectortoangles>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_vectortoangles(location const& loc, expr arg);
+    expr_vectortoangles(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_vectortoangles)
 };
 
-struct expr_angleclamp180 : public node
+struct expr_angleclamp180 : public expr
 {
     using ptr = std::unique_ptr<expr_angleclamp180>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_angleclamp180(location const& loc, expr arg);
+    expr_angleclamp180(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_angleclamp180)
 };
 
-struct expr_anglestoforward : public node
+struct expr_anglestoforward : public expr
 {
     using ptr = std::unique_ptr<expr_anglestoforward>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_anglestoforward(const location& loc, expr arg);
+    expr_anglestoforward(const location& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_anglestoforward)
 };
 
-struct expr_anglestoright : public node
+struct expr_anglestoright : public expr
 {
     using ptr = std::unique_ptr<expr_anglestoright>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_anglestoright(location const& loc, expr arg);
+    expr_anglestoright(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_anglestoright)
 };
 
-struct expr_anglestoup : public node
+struct expr_anglestoup : public expr
 {
     using ptr = std::unique_ptr<expr_anglestoup>;
 
-    expr arg;
+    expr::ptr arg;
 
-    expr_anglestoup(location const& loc, expr arg);
+    expr_anglestoup(location const& loc, expr::ptr arg);
+    XSK_ARC_AST_MAKE(expr_anglestoup)
 };
 
-struct expr_vectorscale : public node
+struct expr_vectorscale : public expr
 {
     using ptr = std::unique_ptr<expr_vectorscale>;
 
-    expr arg1;
-    expr arg2;
+    expr::ptr arg1;
+    expr::ptr arg2;
 
-    expr_vectorscale(location const& loc, expr arg1, expr arg2);
+    expr_vectorscale(location const& loc, expr::ptr arg1, expr::ptr arg2);
+    XSK_ARC_AST_MAKE(expr_vectorscale)
 };
 
-struct expr_isdefined : public node
+struct expr_isdefined : public expr
 {
     using ptr = std::unique_ptr<expr_isdefined>;
 
-    expr value;
+    expr::ptr value;
 
-    expr_isdefined(location const& loc, expr value);
+    expr_isdefined(location const& loc, expr::ptr value);
+    XSK_ARC_AST_MAKE(expr_isdefined)
 };
 
-struct expr_arguments : public node
+struct expr_arguments : public expr
 {
     using ptr = std::unique_ptr<expr_arguments>;
 
-    std::vector<expr> list;
+    std::vector<expr::ptr> list;
 
     expr_arguments(location const& loc);
+    XSK_ARC_AST_MAKE(expr_arguments)
 };
 
-struct expr_parameters : public node
+struct expr_parameters : public expr
 {
     using ptr = std::unique_ptr<expr_parameters>;
 
-    std::vector<expr> list;
+    std::vector<expr::ptr> list;
 
     expr_parameters(location const& loc);
+    XSK_ARC_AST_MAKE(expr_parameters)
 };
 
-struct expr_member : public node
+struct expr_member : public call
 {
     using ptr = std::unique_ptr<expr_member>;
 
-    expr obj;
+    expr::ptr obj;
     expr_identifier::ptr name;
     expr_arguments::ptr args;
     call::mode mode;
 
-    expr_member(location const& loc, expr obj, expr_identifier::ptr name, expr_arguments::ptr args, call::mode mode);
+    expr_member(location const& loc, expr::ptr obj, expr_identifier::ptr name, expr_arguments::ptr args, call::mode mode);
+    XSK_ARC_AST_MAKE(expr_member)
 };
 
-struct expr_pointer : public node
+struct expr_pointer : public call
 {
     using ptr = std::unique_ptr<expr_pointer>;
 
-    expr func;
+    expr::ptr func;
     expr_arguments::ptr args;
     call::mode mode;
 
-    expr_pointer(location const& loc, expr func, expr_arguments::ptr args, call::mode mode);
+    expr_pointer(location const& loc, expr::ptr func, expr_arguments::ptr args, call::mode mode);
+    XSK_ARC_AST_MAKE(expr_pointer)
 };
 
-struct expr_function : public node
+struct expr_function : public call
 {
     using ptr = std::unique_ptr<expr_function>;
 
@@ -981,552 +782,364 @@ struct expr_function : public node
     call::mode mode;
 
     expr_function(location const& loc, expr_path::ptr path, expr_identifier::ptr name, expr_arguments::ptr args, call::mode mode);
+    XSK_ARC_AST_MAKE(expr_function)
 };
 
-struct expr_method : public node
+struct expr_method : public expr
 {
     using ptr = std::unique_ptr<expr_method>;
 
-    expr obj;
-    call value;
+    expr::ptr obj;
+    call::ptr value;
 
-    expr_method(location const& loc, expr obj, call value);
+    expr_method(location const& loc, expr::ptr obj, call::ptr value);
+    XSK_ARC_AST_MAKE(expr_method)
 };
 
-struct expr_call : public node
+struct expr_call : public expr
 {
     using ptr = std::unique_ptr<expr_call>;
 
-    call value;
+    call::ptr value;
 
-    expr_call(location const& loc, call value);
+    expr_call(location const& loc, call::ptr value);
+    XSK_ARC_AST_MAKE(expr_call)
 };
 
-struct expr_new : public node
+struct expr_new : public expr
 {
     using ptr = std::unique_ptr<expr_new>;
 
     expr_identifier::ptr name;
 
     expr_new(location const& loc, expr_identifier::ptr name);
+    XSK_ARC_AST_MAKE(expr_new)
 };
 
-struct expr_complement : public node
+struct expr_complement : public expr
 {
     using ptr = std::unique_ptr<expr_complement>;
 
-    expr rvalue;
+    expr::ptr rvalue;
 
-    expr_complement(location const& loc, expr rvalue);
+    expr_complement(location const& loc, expr::ptr rvalue);
+    XSK_ARC_AST_MAKE(expr_complement)
 };
 
-struct expr_negate : public node
+struct expr_negate : public expr
 {
     using ptr = std::unique_ptr<expr_negate>;
 
-    expr rvalue;
+    expr::ptr rvalue;
 
-    expr_negate(location const& loc, expr rvalue);
+    expr_negate(location const& loc, expr::ptr rvalue);
+    XSK_ARC_AST_MAKE(expr_negate)
 };
 
-struct expr_not : public node
+struct expr_not : public expr
 {
     using ptr = std::unique_ptr<expr_not>;
 
-    expr rvalue;
+    expr::ptr rvalue;
 
-    expr_not(location const& loc, expr rvalue);
+    expr_not(location const& loc, expr::ptr rvalue);
+    XSK_ARC_AST_MAKE(expr_not)
 };
 
-struct expr_binary : public node
+struct expr_binary : public expr
 {
     using ptr = std::unique_ptr<expr_binary>;
 
-    expr lvalue;
-    expr rvalue;
+    enum class op { seq, sne, eq, ne, le, ge, lt, gt, add, sub, mul, div, mod, shl, shr, bwor, bwand, bwexor, bool_or, bool_and };
 
-    expr_binary(type t, location const& loc, expr lvalue, expr rvalue);
+    expr::ptr lvalue;
+    expr::ptr rvalue;
+    op oper;
+
+    expr_binary(location const& loc, expr::ptr lvalue, expr::ptr rvalue, op oper);
+    XSK_ARC_AST_MAKE(expr_binary)
+    auto precedence() -> u8;
 };
 
-struct expr_add : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_add>;
-
-    expr_add(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_sub : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_sub>;
-
-    expr_sub(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_mul : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_mul>;
-
-    expr_mul(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_div : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_div>;
-
-    expr_div(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_mod : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_mod>;
-
-    expr_mod(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_shift_left : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_shift_left>;
-
-    expr_shift_left(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_shift_right : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_shift_right>;
-
-    expr_shift_right(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_bitwise_or : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_bitwise_or>;
-
-    expr_bitwise_or(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_bitwise_and : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_bitwise_and>;
-
-    expr_bitwise_and(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_bitwise_exor : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_bitwise_exor>;
-
-    expr_bitwise_exor(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_super_equal : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_super_equal>;
-
-    expr_super_equal(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_super_not_equal : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_super_not_equal>;
-
-    expr_super_not_equal(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_equality : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_equality>;
-
-    expr_equality(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_inequality : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_inequality>;
-
-    expr_inequality(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_less_equal : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_less_equal>;
-
-    expr_less_equal(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_greater_equal : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_greater_equal>;
-
-    expr_greater_equal(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_less : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_less>;
-
-    expr_less(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_greater : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_greater>;
-
-    expr_greater(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_or : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_or>;
-
-    expr_or(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_and : public expr_binary
-{
-    using ptr = std::unique_ptr<expr_and>;
-
-    expr_and(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_ternary : public node
+struct expr_ternary : public expr
 {
     using ptr = std::unique_ptr<expr_ternary>;
 
-    expr test;
-    expr true_expr;
-    expr false_expr;
+    expr::ptr test;
+    expr::ptr true_expr;
+    expr::ptr false_expr;
 
-    expr_ternary(location const& loc, expr test, expr true_expr, expr false_expr);
+    expr_ternary(location const& loc, expr::ptr test, expr::ptr true_expr, expr::ptr false_expr);
+    XSK_ARC_AST_MAKE(expr_ternary)
 };
 
-struct expr_increment : node
+struct expr_const : public expr
 {
-    using ptr = std::unique_ptr<expr_increment>;
+    using ptr = std::unique_ptr<expr_const>;
 
-    expr lvalue;
-    bool prefix;
+    expr_identifier::ptr lvalue;
+    expr::ptr rvalue;
 
-    expr_increment(location const& loc, expr lvalue, bool prefix);
+    expr_const(location const& loc, expr_identifier::ptr lvalue, expr::ptr rvalue);
+    XSK_ARC_AST_MAKE(expr_const)
 };
 
-struct expr_decrement : node
-{
-    using ptr = std::unique_ptr<expr_decrement>;
-
-    expr lvalue;
-    bool prefix;
-
-    expr_decrement(location const& loc, expr lvalue, bool prefix);
-};
-
-struct expr_assign : public node
+struct expr_assign : public expr
 {
     using ptr = std::unique_ptr<expr_assign>;
 
-    expr lvalue;
-    expr rvalue;
+    enum class op { eq, add, sub, mul, div, mod, shl, shr, bwor, bwand, bwexor };
 
-    expr_assign(type t, location const& loc, expr lvalue, expr rvalue);
+    expr::ptr lvalue;
+    expr::ptr rvalue;
+    op oper;
+
+    expr_assign(location const& loc, expr::ptr lvalue, expr::ptr rvalue, op oper);
+    XSK_ARC_AST_MAKE(expr_assign)
 };
 
-struct expr_assign_equal : public expr_assign
+struct expr_increment : expr
 {
-    using ptr = std::unique_ptr<expr_assign_equal>;
+    using ptr = std::unique_ptr<expr_increment>;
 
-    expr_assign_equal(location const& loc, expr lvalue, expr rvalue);
+    expr::ptr lvalue;
+    bool prefix;
+
+    expr_increment(location const& loc, expr::ptr lvalue, bool prefix);
+    XSK_ARC_AST_MAKE(expr_increment)
 };
 
-struct expr_assign_add : public expr_assign
+struct expr_decrement : expr
 {
-    using ptr = std::unique_ptr<expr_assign_add>;
+    using ptr = std::unique_ptr<expr_decrement>;
 
-    expr_assign_add(location const& loc, expr lvalue, expr rvalue);
+    expr::ptr lvalue;
+    bool prefix;
+
+    expr_decrement(location const& loc, expr::ptr lvalue, bool prefix);
+    XSK_ARC_AST_MAKE(expr_decrement)
 };
 
-struct expr_assign_sub : public expr_assign
+struct stmt_empty : public stmt
 {
-    using ptr = std::unique_ptr<expr_assign_sub>;
+    using ptr = std::unique_ptr<stmt_empty>;
 
-    expr_assign_sub(location const& loc, expr lvalue, expr rvalue);
+    stmt_empty(location const& loc);
+    XSK_ARC_AST_MAKE(stmt_empty)
 };
 
-struct expr_assign_mul : public expr_assign
-{
-    using ptr = std::unique_ptr<expr_assign_mul>;
-
-    expr_assign_mul(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_assign_div : public expr_assign
-{
-    using ptr = std::unique_ptr<expr_assign_div>;
-
-    expr_assign_div(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_assign_mod : public expr_assign
-{
-    using ptr = std::unique_ptr<expr_assign_mod>;
-
-    expr_assign_mod(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_assign_shift_left : public expr_assign
-{
-    using ptr = std::unique_ptr<expr_assign_shift_left>;
-
-    expr_assign_shift_left(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_assign_shift_right : public expr_assign
-{
-    using ptr = std::unique_ptr<expr_assign_shift_right>;
-
-    expr_assign_shift_right(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_assign_bitwise_or : public expr_assign
-{
-    using ptr = std::unique_ptr<expr_assign_bitwise_or>;
-
-    expr_assign_bitwise_or(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_assign_bitwise_and : public expr_assign
-{
-    using ptr = std::unique_ptr<expr_assign_bitwise_and>;
-
-    expr_assign_bitwise_and(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct expr_assign_bitwise_exor : public expr_assign
-{
-    using ptr = std::unique_ptr<expr_assign_bitwise_exor>;
-
-    expr_assign_bitwise_exor(location const& loc, expr lvalue, expr rvalue);
-};
-
-struct stmt_list : public node
+struct stmt_list : public stmt
 {
     using ptr = std::unique_ptr<stmt_list>;
 
-    std::vector<stmt> list;
+    std::vector<stmt::ptr> list;
 
     stmt_list(location const& loc);
+    XSK_ARC_AST_MAKE(stmt_list)
 };
 
-struct stmt_comp : public node
+struct stmt_comp : public stmt
 {
     using ptr = std::unique_ptr<stmt_comp>;
 
     stmt_list::ptr block;
 
     stmt_comp(location const& loc, stmt_list::ptr block);
+    XSK_ARC_AST_MAKE(stmt_comp)
 };
 
-struct stmt_dev : public node
+struct stmt_dev : public stmt
 {
     using ptr = std::unique_ptr<stmt_dev>;
 
     stmt_list::ptr block;
 
     stmt_dev(location const& loc, stmt_list::ptr block);
+    XSK_ARC_AST_MAKE(stmt_dev)
 };
 
-struct stmt_expr : public node
+struct stmt_expr : public stmt
 {
     using ptr = std::unique_ptr<stmt_expr>;
 
-    expr value;
+    expr::ptr value;
 
-    stmt_expr(location const& loc, expr value);
+    stmt_expr(location const& loc, expr::ptr value);
+    XSK_ARC_AST_MAKE(stmt_expr)
 };
 
-struct stmt_call : public node
-{
-    using ptr = std::unique_ptr<stmt_call>;
-
-    expr value;
-
-    stmt_call(location const& loc, expr value);
-};
-
-struct stmt_const : public node
-{
-    using ptr = std::unique_ptr<stmt_const>;
-
-    expr_identifier::ptr lvalue;
-    expr rvalue;
-
-    stmt_const(location const& loc, expr_identifier::ptr lvalue, expr rvalue);
-};
-
-struct stmt_assign : public node
-{
-    using ptr = std::unique_ptr<stmt_assign>;
-
-    expr value;
-
-    stmt_assign(location const& loc, expr value);
-};
-
-struct stmt_endon : public node
+struct stmt_endon : public stmt
 {
     using ptr = std::unique_ptr<stmt_endon>;
 
-    expr obj;
-    expr event;
+    expr::ptr obj;
+    expr::ptr event;
 
-    stmt_endon(location const& loc, expr obj, expr event);
+    stmt_endon(location const& loc, expr::ptr obj, expr::ptr event);
+    XSK_ARC_AST_MAKE(stmt_endon)
 };
 
-struct stmt_notify : public node
+struct stmt_notify : public stmt
 {
     using ptr = std::unique_ptr<stmt_notify>;
 
-    expr obj;
-    expr event;
+    expr::ptr obj;
+    expr::ptr event;
     expr_arguments::ptr args;
 
-    stmt_notify(location const& loc, expr obj, expr event, expr_arguments::ptr args);
+    stmt_notify(location const& loc, expr::ptr obj, expr::ptr event, expr_arguments::ptr args);
+    XSK_ARC_AST_MAKE(stmt_notify)
 };
 
-struct stmt_realwait : public node
-{
-    using ptr = std::unique_ptr<stmt_realwait>;
-
-    expr time;
-
-    stmt_realwait(location const& loc, expr time);
-};
-
-struct stmt_wait : public node
+struct stmt_wait : public stmt
 {
     using ptr = std::unique_ptr<stmt_wait>;
 
-    expr time;
+    expr::ptr time;
 
-    stmt_wait(location const& loc, expr time);
+    stmt_wait(location const& loc, expr::ptr time);
+    XSK_ARC_AST_MAKE(stmt_wait)
 };
 
-struct stmt_waittill : public node
+struct stmt_waittill : public stmt
 {
     using ptr = std::unique_ptr<stmt_waittill>;
 
-    expr obj;
-    expr event;
+    expr::ptr obj;
+    expr::ptr event;
     expr_arguments::ptr args;
 
-    stmt_waittill(location const& loc, expr obj, expr event, expr_arguments::ptr args);
+    stmt_waittill(location const& loc, expr::ptr obj, expr::ptr event, expr_arguments::ptr args);
+    XSK_ARC_AST_MAKE(stmt_waittill)
 };
 
-struct stmt_waittillmatch : public node
+struct stmt_waittillmatch : public stmt
 {
     using ptr = std::unique_ptr<stmt_waittillmatch>;
 
-    expr obj;
-    expr event;
+    expr::ptr obj;
+    expr::ptr event;
     expr_arguments::ptr args;
 
-    stmt_waittillmatch(location const& loc, expr obj, expr expr, expr_arguments::ptr args);
+    stmt_waittillmatch(location const& loc, expr::ptr obj, expr::ptr expr, expr_arguments::ptr args);
+    XSK_ARC_AST_MAKE(stmt_waittillmatch)
 };
 
-struct stmt_waittillframeend : public node
+struct stmt_waittillframeend : public stmt
 {
     using ptr = std::unique_ptr<stmt_waittillframeend>;
 
     stmt_waittillframeend(location const& loc);
+    XSK_ARC_AST_MAKE(stmt_waittillframeend)
 };
 
-struct stmt_if : public node
+struct stmt_waitrealtime : public stmt
+{
+    using ptr = std::unique_ptr<stmt_waitrealtime>;
+
+    expr::ptr time;
+
+    stmt_waitrealtime(location const& loc, expr::ptr time);
+    XSK_ARC_AST_MAKE(stmt_waitrealtime)
+};
+
+struct stmt_if : public stmt
 {
     using ptr = std::unique_ptr<stmt_if>;
 
-    expr test;
-    stmt body;
+    expr::ptr test;
+    stmt::ptr body;
 
-    stmt_if(location const& loc, expr test, stmt body);
+    stmt_if(location const& loc, expr::ptr test, stmt::ptr body);
+    XSK_ARC_AST_MAKE(stmt_if)
 };
 
-struct stmt_ifelse : public node
+struct stmt_ifelse : public stmt
 {
     using ptr = std::unique_ptr<stmt_ifelse>;
 
-    expr test;
-    stmt stmt_if;
-    stmt stmt_else;
+    expr::ptr test;
+    stmt::ptr stmt_if;
+    stmt::ptr stmt_else;
 
-    stmt_ifelse(location const& loc, expr test, stmt stmt_if, stmt stmt_else);
+    stmt_ifelse(location const& loc, expr::ptr test, stmt::ptr stmt_if, stmt::ptr stmt_else);
+    XSK_ARC_AST_MAKE(stmt_ifelse)
 };
 
-struct stmt_while : public node
+struct stmt_while : public stmt
 {
     using ptr = std::unique_ptr<stmt_while>;
 
-    expr test;
-    stmt body;
+    expr::ptr test;
+    stmt::ptr body;
 
-    stmt_while(location const& loc, expr test, stmt body);
+    stmt_while(location const& loc, expr::ptr test, stmt::ptr body);
+    XSK_ARC_AST_MAKE(stmt_while)
 };
 
-struct stmt_dowhile : public node
+struct stmt_dowhile : public stmt
 {
     using ptr = std::unique_ptr<stmt_dowhile>;
 
-    expr test;
-    stmt body;
+    expr::ptr test;
+    stmt::ptr body;
 
-    stmt_dowhile(location const& loc, expr test, stmt body);
+    stmt_dowhile(location const& loc, expr::ptr test, stmt::ptr body);
+    XSK_ARC_AST_MAKE(stmt_dowhile)
 };
 
-struct stmt_for : public node
+struct stmt_for : public stmt
 {
     using ptr = std::unique_ptr<stmt_for>;
 
-    stmt init;
-    expr test;
-    stmt iter;
-    stmt body;
+    stmt::ptr init;
+    expr::ptr test;
+    stmt::ptr iter;
+    stmt::ptr body;
 
-    stmt_for(location const& loc, stmt init, expr test, stmt iter, stmt body);
+    stmt_for(location const& loc, stmt::ptr init, expr::ptr test, stmt::ptr iter, stmt::ptr body);
+    XSK_ARC_AST_MAKE(stmt_for)
 };
 
-struct stmt_foreach : public node
+struct stmt_foreach : public stmt
 {
     using ptr = std::unique_ptr<stmt_foreach>;
 
-    expr container;
-    expr value;
-    expr array;
-    expr key;
-    stmt body;
+    expr::ptr container;
+    expr::ptr value;
+    expr::ptr array;
+    expr::ptr key;
+    stmt::ptr body;
     bool use_key;
 
-    stmt_foreach(location const& loc, expr container, expr value, expr array, expr key, stmt body, bool use_key);
+    stmt_foreach(location const& loc, expr::ptr container, expr::ptr value, expr::ptr array, expr::ptr key, stmt::ptr body, bool use_key);
+    XSK_ARC_AST_MAKE(stmt_foreach)
 };
 
-struct stmt_switch : public node
+struct stmt_switch : public stmt
 {
     using ptr = std::unique_ptr<stmt_switch>;
 
-    expr test;
+    expr::ptr test;
     stmt_comp::ptr body;
 
-    stmt_switch(location const& loc, expr test, stmt_comp::ptr body);
+    stmt_switch(location const& loc, expr::ptr test, stmt_comp::ptr body);
+    XSK_ARC_AST_MAKE(stmt_switch)
 };
 
-struct stmt_case : public node
+struct stmt_case : public stmt
 {
     using ptr = std::unique_ptr<stmt_case>;
 
-    expr value;
+    expr::ptr value;
     stmt_list::ptr body;
 
-    stmt_case(location const& loc, expr value);
-    stmt_case(location const& loc, expr value, stmt_list::ptr body);
+    stmt_case(location const& loc, expr::ptr value);
+    stmt_case(location const& loc, expr::ptr value, stmt_list::ptr body);
+    XSK_ARC_AST_MAKE(stmt_case)
 };
 
-struct stmt_default : public node
+struct stmt_default : public stmt
 {
     using ptr = std::unique_ptr<stmt_default>;
 
@@ -1534,57 +1147,156 @@ struct stmt_default : public node
 
     stmt_default(location const& loc);
     stmt_default(location const& loc, stmt_list::ptr body);
+    XSK_ARC_AST_MAKE(stmt_default)
 };
 
-struct stmt_break : public node
+struct stmt_break : public stmt
 {
     using ptr = std::unique_ptr<stmt_break>;
 
     stmt_break(location const& loc);
+    XSK_ARC_AST_MAKE(stmt_break)
 };
 
-struct stmt_continue : public node
+struct stmt_continue : public stmt
 {
     using ptr = std::unique_ptr<stmt_continue>;
 
     stmt_continue(location const& loc);
+    XSK_ARC_AST_MAKE(stmt_continue)
 };
 
-struct stmt_return : public node
+struct stmt_return : public stmt
 {
     using ptr = std::unique_ptr<stmt_return>;
 
-    expr value;
+    expr::ptr value;
 
-    stmt_return(location const& loc, expr value);
+    stmt_return(location const& loc, expr::ptr value);
+    XSK_ARC_AST_MAKE(stmt_return)
 };
 
-struct stmt_breakpoint : public node
+struct stmt_breakpoint : public stmt
 {
     using ptr = std::unique_ptr<stmt_breakpoint>;
 
     stmt_breakpoint(location const& loc);
+    XSK_ARC_AST_MAKE(stmt_breakpoint)
 };
 
-struct stmt_prof_begin : public node
+struct stmt_prof_begin : public stmt
 {
     using ptr = std::unique_ptr<stmt_prof_begin>;
 
     expr_arguments::ptr args;
 
     stmt_prof_begin(location const& loc, expr_arguments::ptr args);
+    XSK_ARC_AST_MAKE(stmt_prof_begin)
 };
 
-struct stmt_prof_end : public node
+struct stmt_prof_end : public stmt
 {
     using ptr = std::unique_ptr<stmt_prof_end>;
 
     expr_arguments::ptr args;
 
     stmt_prof_end(location const& loc, expr_arguments::ptr args);
+    XSK_ARC_AST_MAKE(stmt_prof_end)
 };
 
-struct decl_function : public node
+struct stmt_jmp : public stmt
+{
+    using ptr = std::unique_ptr<stmt_jmp>;
+
+    std::string value;
+
+    stmt_jmp(location const& loc, std::string const& value);
+    XSK_ARC_AST_MAKE(stmt_jmp)
+};
+
+struct stmt_jmp_back : public stmt
+{
+    using ptr = std::unique_ptr<stmt_jmp_back>;
+
+    std::string value;
+
+    stmt_jmp_back(location const& loc, std::string const& value);
+    XSK_ARC_AST_MAKE(stmt_jmp_back)
+};
+
+struct stmt_jmp_cond : public stmt
+{
+    using ptr = std::unique_ptr<stmt_jmp_cond>;
+
+    expr::ptr test;
+    std::string value;
+
+    stmt_jmp_cond(location const& loc, expr::ptr test, std::string const& value);
+    XSK_ARC_AST_MAKE(stmt_jmp_cond)
+};
+
+struct stmt_jmp_true : public stmt
+{
+    using ptr = std::unique_ptr<stmt_jmp_true>;
+
+    expr::ptr test;
+    std::string value;
+
+    stmt_jmp_true(location const& loc, expr::ptr test, std::string const& value);
+    XSK_ARC_AST_MAKE(stmt_jmp_true)
+};
+
+struct stmt_jmp_false : public stmt
+{
+    using ptr = std::unique_ptr<stmt_jmp_false>;
+
+    expr::ptr test;
+    std::string value;
+
+    stmt_jmp_false(location const& loc, expr::ptr test, std::string const& value);
+    XSK_ARC_AST_MAKE(stmt_jmp_false)
+};
+
+struct stmt_jmp_switch : public stmt
+{
+    using ptr = std::unique_ptr<stmt_jmp_switch>;
+
+    expr::ptr test;
+    std::string value;
+
+    stmt_jmp_switch(location const& loc, expr::ptr test, std::string const& value);
+    XSK_ARC_AST_MAKE(stmt_jmp_switch)
+};
+
+struct stmt_jmp_endswitch : public stmt
+{
+    using ptr = std::unique_ptr<stmt_jmp_endswitch>;
+
+    std::vector<std::string> data;
+
+    stmt_jmp_endswitch(location const& loc, std::vector<std::string> data);
+    XSK_ARC_AST_MAKE(stmt_jmp_endswitch)
+};
+
+struct stmt_jmp_dev : public stmt
+{
+    using ptr = std::unique_ptr<stmt_jmp_dev>;
+
+    std::string value;
+
+    stmt_jmp_dev(location const& loc, std::string const& value);
+    XSK_ARC_AST_MAKE(stmt_jmp_dev)
+};
+
+struct decl_empty : public decl
+{
+    using ptr = std::unique_ptr<decl_empty>;
+
+    decl_empty(location const& loc);
+    XSK_ARC_AST_MAKE(decl_empty)
+};
+
+struct decl_function : public decl
 {
     using ptr = std::unique_ptr<decl_function>;
 
@@ -1595,39 +1307,44 @@ struct decl_function : public node
     export_flags flags;
 
     decl_function(location const& loc, expr_identifier::ptr space, expr_identifier::ptr name, expr_parameters::ptr params, stmt_comp::ptr body, export_flags flags);
+    XSK_ARC_AST_MAKE(decl_function)
 };
 
-struct decl_usingtree : public node
+struct decl_usingtree : public decl
 {
     using ptr = std::unique_ptr<decl_usingtree>;
 
     expr_string::ptr name;
 
     decl_usingtree(location const& loc, expr_string::ptr name);
+    XSK_ARC_AST_MAKE(decl_usingtree)
 };
 
-struct decl_namespace : public node
+struct decl_namespace : public decl
 {
     using ptr = std::unique_ptr<decl_namespace>;
 
     expr_string::ptr name;
 
     decl_namespace(location const& loc, expr_string::ptr name);
+    XSK_ARC_AST_MAKE(decl_namespace)
 };
 
 
-struct decl_dev_begin : public node
+struct decl_dev_begin : public decl
 {
     using ptr = std::unique_ptr<decl_dev_begin>;
 
     decl_dev_begin(location const& loc);
+    XSK_ARC_AST_MAKE(decl_dev_begin)
 };
 
-struct decl_dev_end : public node
+struct decl_dev_end : public decl
 {
     using ptr = std::unique_ptr<decl_dev_end>;
 
     decl_dev_end(location const& loc);
+    XSK_ARC_AST_MAKE(decl_dev_end)
 };
 
 struct include : public node
@@ -1637,6 +1354,7 @@ struct include : public node
     expr_path::ptr path;
 
     include(location const& loc, expr_path::ptr path);
+    XSK_ARC_AST_MAKE(include)
 };
 
 struct program : public node
@@ -1644,254 +1362,13 @@ struct program : public node
     using ptr = std::unique_ptr<program>;
 
     std::vector<include::ptr> includes;
-    std::vector<decl> declarations;
+    std::vector<decl::ptr> declarations;
 
     program();
     program(location const& loc);
+    XSK_ARC_AST_MAKE(program)
 };
 
-struct asm_loc : public node
-{
-    using ptr = std::unique_ptr<asm_loc>;
-
-    std::string value;
-
-    asm_loc(location const& loc, std::string const& value);
-};
-
-struct asm_jmp : public node
-{
-    using ptr = std::unique_ptr<asm_jmp>;
-
-    std::string value;
-
-    asm_jmp(location const& loc, std::string const& value);
-};
-
-struct asm_jmp_back : public node
-{
-    using ptr = std::unique_ptr<asm_jmp_back>;
-
-    std::string value;
-
-    asm_jmp_back(location const& loc, std::string const& value);
-};
-
-struct asm_jmp_cond : public node
-{
-    using ptr = std::unique_ptr<asm_jmp_cond>;
-
-    expr test;
-    std::string value;
-
-    asm_jmp_cond(location const& loc, expr test, std::string const& value);
-};
-
-struct asm_jmp_true : public node
-{
-    using ptr = std::unique_ptr<asm_jmp_true>;
-
-    expr test;
-    std::string value;
-
-    asm_jmp_true(location const& loc, expr test, std::string const& value);
-};
-
-struct asm_jmp_false : public node
-{
-    using ptr = std::unique_ptr<asm_jmp_false>;
-
-    expr test;
-    std::string value;
-
-    asm_jmp_false(location const& loc, expr test, std::string const& value);
-};
-
-struct asm_switch : public node
-{
-    using ptr = std::unique_ptr<asm_switch>;
-
-    expr test;
-    std::string value;
-
-    asm_switch(location const& loc, expr test, std::string const& value);
-};
-
-struct asm_endswitch : public node
-{
-    using ptr = std::unique_ptr<asm_endswitch>;
-
-    std::vector<std::string> data;
-
-    asm_endswitch(location const& loc, std::vector<std::string> data);
-};
-
-struct asm_prescriptcall : public node
-{
-    using ptr = std::unique_ptr<asm_prescriptcall>;
-
-    asm_prescriptcall(location const& loc);
-};
-
-struct asm_voidcodepos : public node
-{
-    using ptr = std::unique_ptr<asm_voidcodepos>;
-
-    asm_voidcodepos(location const& loc);
-};
-
-struct asm_dev : public node
-{
-    using ptr = std::unique_ptr<asm_dev>;
-
-    std::string value;
-
-    asm_dev(location const& loc, std::string const& value);
-};
-
-#define XSK_ARC_MAKE_GENERIC(node_type)                                             \
-template<class... Args>                                                             \
-inline auto make_ ## node_type(Args&&... args) -> std::unique_ptr<node_type>        \
-{                                                                                   \
-    return std::unique_ptr<node_type>(new node_type(std::forward<Args>(args)...));  \
-}
-
-XSK_ARC_MAKE_GENERIC(node)
-XSK_ARC_MAKE_GENERIC(expr_true)
-XSK_ARC_MAKE_GENERIC(expr_false)
-XSK_ARC_MAKE_GENERIC(expr_integer)
-XSK_ARC_MAKE_GENERIC(expr_float)
-XSK_ARC_MAKE_GENERIC(expr_vector)
-XSK_ARC_MAKE_GENERIC(expr_hash)
-XSK_ARC_MAKE_GENERIC(expr_string)
-XSK_ARC_MAKE_GENERIC(expr_istring)
-XSK_ARC_MAKE_GENERIC(expr_path)
-XSK_ARC_MAKE_GENERIC(expr_identifier)
-XSK_ARC_MAKE_GENERIC(expr_animtree)
-XSK_ARC_MAKE_GENERIC(expr_animation)
-XSK_ARC_MAKE_GENERIC(expr_classes)
-XSK_ARC_MAKE_GENERIC(expr_world)
-XSK_ARC_MAKE_GENERIC(expr_level)
-XSK_ARC_MAKE_GENERIC(expr_anim)
-XSK_ARC_MAKE_GENERIC(expr_self)
-XSK_ARC_MAKE_GENERIC(expr_game)
-XSK_ARC_MAKE_GENERIC(expr_undefined)
-XSK_ARC_MAKE_GENERIC(expr_empty_array)
-XSK_ARC_MAKE_GENERIC(expr_paren)
-XSK_ARC_MAKE_GENERIC(expr_size)
-XSK_ARC_MAKE_GENERIC(expr_field)
-XSK_ARC_MAKE_GENERIC(expr_array)
-XSK_ARC_MAKE_GENERIC(expr_reference)
-XSK_ARC_MAKE_GENERIC(expr_getnextarraykey)
-XSK_ARC_MAKE_GENERIC(expr_getfirstarraykey)
-XSK_ARC_MAKE_GENERIC(expr_getdvarcoloralpha)
-XSK_ARC_MAKE_GENERIC(expr_getdvarcolorblue)
-XSK_ARC_MAKE_GENERIC(expr_getdvarcolorgreen)
-XSK_ARC_MAKE_GENERIC(expr_getdvarcolorred)
-XSK_ARC_MAKE_GENERIC(expr_getdvarvector)
-XSK_ARC_MAKE_GENERIC(expr_getdvarfloat)
-XSK_ARC_MAKE_GENERIC(expr_getdvarint)
-XSK_ARC_MAKE_GENERIC(expr_getdvar)
-XSK_ARC_MAKE_GENERIC(expr_gettime)
-XSK_ARC_MAKE_GENERIC(expr_abs)
-XSK_ARC_MAKE_GENERIC(expr_vectortoangles)
-XSK_ARC_MAKE_GENERIC(expr_angleclamp180)
-XSK_ARC_MAKE_GENERIC(expr_anglestoforward)
-XSK_ARC_MAKE_GENERIC(expr_anglestoright)
-XSK_ARC_MAKE_GENERIC(expr_anglestoup)
-XSK_ARC_MAKE_GENERIC(expr_vectorscale)
-XSK_ARC_MAKE_GENERIC(expr_isdefined)
-XSK_ARC_MAKE_GENERIC(expr_arguments)
-XSK_ARC_MAKE_GENERIC(expr_parameters)
-XSK_ARC_MAKE_GENERIC(expr_member)
-XSK_ARC_MAKE_GENERIC(expr_pointer)
-XSK_ARC_MAKE_GENERIC(expr_function)
-XSK_ARC_MAKE_GENERIC(expr_method)
-XSK_ARC_MAKE_GENERIC(expr_call)
-XSK_ARC_MAKE_GENERIC(expr_new)
-XSK_ARC_MAKE_GENERIC(expr_complement)
-XSK_ARC_MAKE_GENERIC(expr_negate)
-XSK_ARC_MAKE_GENERIC(expr_not)
-XSK_ARC_MAKE_GENERIC(expr_add)
-XSK_ARC_MAKE_GENERIC(expr_sub)
-XSK_ARC_MAKE_GENERIC(expr_mul)
-XSK_ARC_MAKE_GENERIC(expr_div)
-XSK_ARC_MAKE_GENERIC(expr_mod)
-XSK_ARC_MAKE_GENERIC(expr_shift_left)
-XSK_ARC_MAKE_GENERIC(expr_shift_right)
-XSK_ARC_MAKE_GENERIC(expr_bitwise_or)
-XSK_ARC_MAKE_GENERIC(expr_bitwise_and)
-XSK_ARC_MAKE_GENERIC(expr_bitwise_exor)
-XSK_ARC_MAKE_GENERIC(expr_super_equal)
-XSK_ARC_MAKE_GENERIC(expr_super_not_equal)
-XSK_ARC_MAKE_GENERIC(expr_equality)
-XSK_ARC_MAKE_GENERIC(expr_inequality)
-XSK_ARC_MAKE_GENERIC(expr_less_equal)
-XSK_ARC_MAKE_GENERIC(expr_greater_equal)
-XSK_ARC_MAKE_GENERIC(expr_less)
-XSK_ARC_MAKE_GENERIC(expr_greater)
-XSK_ARC_MAKE_GENERIC(expr_or)
-XSK_ARC_MAKE_GENERIC(expr_and)
-XSK_ARC_MAKE_GENERIC(expr_ternary)
-XSK_ARC_MAKE_GENERIC(expr_increment)
-XSK_ARC_MAKE_GENERIC(expr_decrement)
-XSK_ARC_MAKE_GENERIC(expr_assign_equal)
-XSK_ARC_MAKE_GENERIC(expr_assign_add)
-XSK_ARC_MAKE_GENERIC(expr_assign_sub)
-XSK_ARC_MAKE_GENERIC(expr_assign_mul)
-XSK_ARC_MAKE_GENERIC(expr_assign_div)
-XSK_ARC_MAKE_GENERIC(expr_assign_mod)
-XSK_ARC_MAKE_GENERIC(expr_assign_shift_left)
-XSK_ARC_MAKE_GENERIC(expr_assign_shift_right)
-XSK_ARC_MAKE_GENERIC(expr_assign_bitwise_or)
-XSK_ARC_MAKE_GENERIC(expr_assign_bitwise_and)
-XSK_ARC_MAKE_GENERIC(expr_assign_bitwise_exor)
-XSK_ARC_MAKE_GENERIC(stmt_list)
-XSK_ARC_MAKE_GENERIC(stmt_comp)
-XSK_ARC_MAKE_GENERIC(stmt_dev)
-XSK_ARC_MAKE_GENERIC(stmt_expr)
-XSK_ARC_MAKE_GENERIC(stmt_call)
-XSK_ARC_MAKE_GENERIC(stmt_assign)
-XSK_ARC_MAKE_GENERIC(stmt_endon)
-XSK_ARC_MAKE_GENERIC(stmt_notify)
-XSK_ARC_MAKE_GENERIC(stmt_realwait)
-XSK_ARC_MAKE_GENERIC(stmt_wait)
-XSK_ARC_MAKE_GENERIC(stmt_waittill)
-XSK_ARC_MAKE_GENERIC(stmt_waittillmatch)
-XSK_ARC_MAKE_GENERIC(stmt_waittillframeend)
-XSK_ARC_MAKE_GENERIC(stmt_if)
-XSK_ARC_MAKE_GENERIC(stmt_ifelse)
-XSK_ARC_MAKE_GENERIC(stmt_while)
-XSK_ARC_MAKE_GENERIC(stmt_dowhile)
-XSK_ARC_MAKE_GENERIC(stmt_for)
-XSK_ARC_MAKE_GENERIC(stmt_foreach)
-XSK_ARC_MAKE_GENERIC(stmt_switch)
-XSK_ARC_MAKE_GENERIC(stmt_case)
-XSK_ARC_MAKE_GENERIC(stmt_default)
-XSK_ARC_MAKE_GENERIC(stmt_break)
-XSK_ARC_MAKE_GENERIC(stmt_continue)
-XSK_ARC_MAKE_GENERIC(stmt_return)
-XSK_ARC_MAKE_GENERIC(stmt_breakpoint)
-XSK_ARC_MAKE_GENERIC(stmt_prof_begin)
-XSK_ARC_MAKE_GENERIC(stmt_prof_end)
-XSK_ARC_MAKE_GENERIC(decl_function)
-XSK_ARC_MAKE_GENERIC(decl_usingtree)
-XSK_ARC_MAKE_GENERIC(decl_dev_begin)
-XSK_ARC_MAKE_GENERIC(decl_dev_end)
-XSK_ARC_MAKE_GENERIC(include)
-XSK_ARC_MAKE_GENERIC(program)
-XSK_ARC_MAKE_GENERIC(asm_loc)
-XSK_ARC_MAKE_GENERIC(asm_jmp)
-XSK_ARC_MAKE_GENERIC(asm_jmp_back)
-XSK_ARC_MAKE_GENERIC(asm_jmp_cond)
-XSK_ARC_MAKE_GENERIC(asm_jmp_false)
-XSK_ARC_MAKE_GENERIC(asm_jmp_true)
-XSK_ARC_MAKE_GENERIC(asm_switch)
-XSK_ARC_MAKE_GENERIC(asm_endswitch)
-XSK_ARC_MAKE_GENERIC(asm_prescriptcall)
-XSK_ARC_MAKE_GENERIC(asm_voidcodepos)
-XSK_ARC_MAKE_GENERIC(asm_dev)
-
-#undef XSK_ARC_MAKE_GENERIC
+#undef XSK_GSC_AST_MAKE
 
 } // namespace xsk::arc

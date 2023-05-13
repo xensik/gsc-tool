@@ -5,12 +5,18 @@
 
 #pragma once
 
-#include "asset.hpp"
-#include "assembly.hpp"
-#include "buffer.hpp"
-#include "location.hpp"
-#include "exception.hpp"
-#include "ast.hpp"
+#include "xsk/arc/common/asset.hpp"
+#include "xsk/arc/common/assembly.hpp"
+#include "xsk/arc/common/buffer.hpp"
+#include "xsk/arc/common/location.hpp"
+#include "xsk/arc/common/exception.hpp"
+#include "xsk/arc/common/lookahead.hpp"
+#include "xsk/arc/common/directive.hpp"
+#include "xsk/arc/common/scope.hpp"
+#include "xsk/arc/common/space.hpp"
+#include "xsk/arc/common/token.hpp"
+#include "xsk/arc/common/define.hpp"
+#include "xsk/arc/common/ast.hpp"
 
 namespace xsk::arc
 {
@@ -37,7 +43,12 @@ enum class system : u8
 {
     pc,
     ps3,
+    ps4,
+    ps5,
     xb2,
+    xb3,
+    xb4,
+    wiiu,
 };
 
 enum class engine : u8
@@ -52,8 +63,19 @@ struct props
 {
     enum values : u32
     {
-        none       = 0 << 0,
-        version2   = 1 << 0,
+        none     = 0 << 0,
+        v2       = 1 << 0,
+        v3       = 1 << 1,
+        header64 = 1 << 2,
+        header72 = 1 << 3,
+        headerxx = 1 << 4,
+        size64   = 1 << 5,
+        hashids  = 1 << 6,
+        devstr   = 1 << 7,
+        spaces   = 1 << 8,
+        globals  = 1 << 9,
+        refvarg  = 1 << 10,
+        foreach  = 1 << 11,
     };
 
     props(values value) : value_(value) {}

@@ -28,7 +28,7 @@ auto compiler::compile(std::string const& file, std::vector<u8>& data) -> assemb
 
 auto compiler::emit_program(program const& prog) -> void
 {
-    assembly_ = make_assembly();
+    assembly_ = assembly::make();
     localfuncs_.clear();
     constants_.clear();
     developer_thread_ = false;
@@ -128,7 +128,7 @@ auto compiler::emit_decl_function(decl_function const& func) -> void
     break_blks_.clear();
     continue_blks_.clear();
 
-    function_ = make_function();
+    function_ = function::make();
     function_->index = index_;
     function_->name = func.name->value;
     function_->id = ctx_->token_id(function_->name);
@@ -2191,7 +2191,7 @@ auto compiler::emit_remove_local_vars(scope& scp) -> void
 
 auto compiler::emit_opcode(opcode op) -> void
 {
-    function_->instructions.push_back(make_instruction());
+    function_->instructions.push_back(instruction::make());
 
     auto& inst = function_->instructions.back();
     inst->opcode = op;
@@ -2203,7 +2203,7 @@ auto compiler::emit_opcode(opcode op) -> void
 
 auto compiler::emit_opcode(opcode op, std::string const& data) -> void
 {
-    function_->instructions.push_back(make_instruction());
+    function_->instructions.push_back(instruction::make());
 
     auto& inst = function_->instructions.back();
     inst->opcode = op;
@@ -2216,7 +2216,7 @@ auto compiler::emit_opcode(opcode op, std::string const& data) -> void
 
 auto compiler::emit_opcode(opcode op, std::vector<std::string> const& data) -> void
 {
-    function_->instructions.push_back(make_instruction());
+    function_->instructions.push_back(instruction::make());
 
     auto& inst = function_->instructions.back();
     inst->opcode = op;

@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "common/types.hpp"
 #include "xsk/utils/reader.hpp"
+#include "xsk/arc/common/types.hpp"
 
 namespace xsk::arc
 {

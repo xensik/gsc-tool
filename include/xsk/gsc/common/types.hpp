@@ -5,18 +5,18 @@
 
 #pragma once
 
-#include "asset.hpp"
-#include "scope.hpp"
-#include "buffer.hpp"
-#include "assembly.hpp"
-#include "location.hpp"
-#include "exception.hpp"
-#include "lookahead.hpp"
-#include "directive.hpp"
-#include "space.hpp"
-#include "token.hpp"
-#include "define.hpp"
-#include "ast.hpp"
+#include "xsk/gsc/common/asset.hpp"
+#include "xsk/gsc/common/scope.hpp"
+#include "xsk/gsc/common/buffer.hpp"
+#include "xsk/gsc/common/assembly.hpp"
+#include "xsk/gsc/common/location.hpp"
+#include "xsk/gsc/common/exception.hpp"
+#include "xsk/gsc/common/lookahead.hpp"
+#include "xsk/gsc/common/directive.hpp"
+#include "xsk/gsc/common/space.hpp"
+#include "xsk/gsc/common/token.hpp"
+#include "xsk/gsc/common/define.hpp"
+#include "xsk/gsc/common/ast.hpp"
 
 namespace xsk::gsc
 {

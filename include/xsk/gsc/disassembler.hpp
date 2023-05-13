@@ -6,7 +6,7 @@
 #pragma once
 
 #include "xsk/utils/reader.hpp"
-#include "common/types.hpp"
+#include "xsk/gsc/common/types.hpp"
 
 namespace xsk::gsc
 {

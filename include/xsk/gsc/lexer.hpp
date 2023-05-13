@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "common/types.hpp"
+#include "xsk/gsc/common/types.hpp"
 
 namespace xsk::gsc
 {

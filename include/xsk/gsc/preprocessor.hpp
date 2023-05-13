@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "common/types.hpp"
-#include "lexer.hpp"
+#include "xsk/gsc/common/types.hpp"
+#include "xsk/gsc/lexer.hpp"
 
 namespace xsk::gsc
 {

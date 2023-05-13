@@ -3,7 +3,6 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
-
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/string.hpp"
 #include "xsk/gsc/disassembler.hpp"
@@ -30,13 +29,13 @@ auto disassembler::disassemble(u8 const* script, usize script_size, u8 const* st
 {
     stack_ = utils::reader{ stack, static_cast<u32>(stack_size), ctx_->endian() == endian::big };
     script_ = utils::reader{ script, static_cast<u32>(script_size), ctx_->endian() == endian::big };
-    assembly_ = make_assembly();
+    assembly_ = assembly::make();
 
     script_.seek(1);
 
     while (script_.is_avail() && stack_.is_avail())
     {
-        func_ = make_function();
+        func_ = function::make();
         func_->index = script_.pos();
         func_->size = stack_.read<u32>();
         func_->id = (ctx_->props() & props::hash) ? 0 : (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
@@ -58,7 +57,7 @@ auto disassembler::dissasemble_function(function& func) -> void
 
     while (size > 0)
     {
-        auto inst = make_instruction();
+        auto inst = instruction::make();
         inst->index = script_.pos();
         inst->opcode = ctx_->opcode_enum(script_.read<u8>());
         inst->size = ctx_->opcode_size(inst->opcode);

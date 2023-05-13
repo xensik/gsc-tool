@@ -4,9 +4,9 @@
 // that can be found in the LICENSE file.
 
 #include "xsk/stdinc.hpp"
+#include "xsk/utils/string.hpp"
 #include "xsk/arc/disassembler.hpp"
 #include "xsk/arc/context.hpp"
-#include "xsk/utils/string.hpp"
 
 namespace xsk::arc
 {
@@ -28,7 +28,7 @@ auto disassembler::disassemble(std::vector<u8> const& data) -> assembly::ptr
 auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
 {
     script_ = utils::reader{ data, static_cast<u32>(data_size), ctx_->endian() == endian::big };
-    assembly_ = make_assembly();
+    assembly_ = assembly::make();
     import_refs_.clear();
     string_refs_.clear();
     anim_refs_.clear();
@@ -37,7 +37,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
     header_.magic = script_.read<u64>();
 
     if (header_.magic != ctx_->magic())
-        throw disasm_error("invalid binary script file!");
+        throw disasm_error("invalid script file or unsupported game version");
 
     header_.source_crc = script_.read<u32>();
     header_.include_offset = script_.read<u32>();
@@ -45,16 +45,20 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
     header_.cseg_offset = script_.read<u32>();
     header_.stringtablefixup_offset = script_.read<u32>();
 
-    if (ctx_->props() & props::version2)
+    if (ctx_->props() & props::devstr)
         header_.devblock_stringtablefixup_offset = script_.read<u32>();
 
     header_.exports_offset = script_.read<u32>();
     header_.imports_offset = script_.read<u32>();
     header_.fixup_offset = script_.read<u32>();
+
+    if (ctx_->props() & props::globals)
+        header_.globalvar_offset = script_.read<u32>();
+
     header_.profile_offset = script_.read<u32>();
     header_.cseg_size = script_.read<u32>();
 
-    if (ctx_->props() & props::version2)
+    if (ctx_->props() & props::size64)
         header_.name = script_.read<u32>();
     else
         header_.name = script_.read<u16>();
@@ -63,9 +67,13 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
     header_.exports_count = script_.read<u16>();
     header_.imports_count = script_.read<u16>();
     header_.fixup_count = script_.read<u16>();
+
+    if (ctx_->props() & props::globals)
+        header_.globalvar_count = script_.read<u16>();
+
     header_.profile_count = script_.read<u16>();
 
-    if (ctx_->props() & props::version2)
+    if (ctx_->props() & props::devstr)
         header_.devblock_stringtablefixup_count = script_.read<u16>();
 
     header_.include_count = script_.read<u8>();
@@ -73,7 +81,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
     header_.flags = script_.read<u8>();
 
     auto string_pool = std::map<u32, std::string>{};
-    script_.pos((ctx_->props() & props::version2) ? 72 : 64);
+    script_.pos((ctx_->props() & props::headerxx) ? header_size_v3 : (ctx_->props() & props::header72) ? header_size_v2 : header_size_v1);
 
     while (script_.pos() < header_.include_offset)
     {
@@ -93,10 +101,22 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
     for (auto i = 0u; i < header_.animtree_count; i++)
     {
         auto entry = std::make_shared<animtree_ref>();
-        entry->name = string_pool.at(script_.read<u16>());
-        auto ref_count = script_.read<u16>();
-        auto anim_count = script_.read<u16>();
-        script_.seek(2);
+        auto ref_count = 0u;
+        auto anim_count = 0u;
+
+        if (ctx_->props() & props::size64)
+        {
+            entry->name = string_pool.at(script_.read<u32>());
+            ref_count = script_.read<u16>();
+            anim_count = script_.read<u16>();
+        }
+        else
+        {
+            entry->name = string_pool.at(script_.read<u16>());
+            ref_count = script_.read<u16>();
+            anim_count = script_.read<u16>();
+            script_.seek(2);
+        }
 
         for (auto j = 0u; j < ref_count; j++)
         {
@@ -107,18 +127,20 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
 
         for (auto j = 0u; j < anim_count; j++)
         {
-            auto name = ctx_->hash_name(script_.read<u32>());
-
-            if (ctx_->props() & props::version2)
-                script_.seek(4);
-        
-            auto ref = script_.read<u32>();
-
-            if (ctx_->props() & props::version2)
-                script_.seek(4);
-
-            entry->anims.push_back({ name, ref });
-            anim_refs_.insert({ ref, entry });
+            if (ctx_->props() & props::size64)
+            {
+                auto name = string_pool.at(static_cast<u32>(script_.read<u64>()));
+                auto ref = static_cast<u32>(script_.read<u64>());
+                entry->anims.push_back({ name, ref });
+                anim_refs_.insert({ ref, entry });
+            }
+            else
+            {
+                auto name = string_pool.at(script_.read<u32>());
+                auto ref = script_.read<u32>();
+                entry->anims.push_back({ name, ref });
+                anim_refs_.insert({ ref, entry });
+            }
         }
     }
 
@@ -127,11 +149,11 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
     for (auto i = 0u; i < header_.stringtablefixup_count; i++)
     {
         auto entry = std::make_shared<string_ref>();
-        entry->name = string_pool.at((ctx_->props() & props::version2) ? script_.read<u32>() : script_.read<u16>());
+        entry->name = string_pool.at((ctx_->props() & props::size64) ? script_.read<u32>() : script_.read<u16>());
         auto count = script_.read<u8>();
         entry->type = script_.read<u8>();
 
-        if (ctx_->props() & props::version2)
+        if (ctx_->props() & props::size64)
             script_.seek(2);
 
         for (auto j = 0u; j < count; j++)
@@ -141,14 +163,14 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
         }
     }
 
-    if (ctx_->props() & props::version2)
+    if (ctx_->props() & props::devstr)
     {
         script_.pos(header_.devblock_stringtablefixup_offset);
 
         for (auto i = 0u; i < header_.devblock_stringtablefixup_count; i++)
         {
             auto entry = std::make_shared<string_ref>();
-            entry->name = "DEVSTR";
+            entry->name = "__devstr__";
             script_.seek(4);
             auto count = script_.read<u8>();
             entry->type = script_.read<u8>();
@@ -162,13 +184,29 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
         }
     }
 
+    if (ctx_->props() & props::globals)
+    {
+        script_.pos(header_.globalvar_offset);
+
+        for (auto i = 0u; i < header_.globalvar_count; i++)
+        {
+            auto name = ctx_->hash_name(script_.read<u32>());
+            auto refs = script_.read<u32>();
+
+            for (auto j = 0u; j < refs; j++)
+            {
+                // todo t8 vars
+            }
+        }
+    }
+
     script_.pos(header_.imports_offset);
 
     for (auto i = 0u; i < header_.imports_count; i++)
     {
         auto entry = std::make_shared<import_ref>();
 
-        if (ctx_->props() & props::version2)
+        if (ctx_->props() & props::hashids)
         {
             entry->name = ctx_->hash_name(script_.read<u32>());
             entry->space = ctx_->hash_name(script_.read<u32>());
@@ -198,7 +236,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
         entry->checksum = script_.read<u32>();
         entry->offset = script_.read<u32>();
 
-        if (ctx_->props() & props::version2)
+        if (ctx_->props() & props::hashids)
         {
             entry->name = ctx_->hash_name(script_.read<u32>());
             entry->space = ctx_->hash_name(script_.read<u32>());
@@ -212,7 +250,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
         entry->params = script_.read<u8>();
         entry->flags = script_.read<u8>();
         
-        if (ctx_->props() & props::version2)
+        if (ctx_->props() & props::hashids)
             script_.seek(2);
 
         exports_.push_back(entry);
@@ -226,15 +264,37 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
         {
             entry->size = (exports_[i + 1]->offset - entry->offset);
 
-            auto pad_size = (ctx_->props() & props::version2) ? 8 : 4;
+            auto pad_size = (ctx_->props() & props::size64) ? 8 : 4;
             auto end_pos = entry->offset + entry->size - pad_size;
 
             script_.pos(end_pos);
 
-            if ((ctx_->props() & props::version2) && script_.read<u64>() == 0)
-                entry->size -= pad_size;
+            if ((ctx_->props() & props::size64) && script_.read<u64>() == 0)
+            {
+                 entry->size -= pad_size;
+
+                script_.pos(end_pos - 2);
+                script_.align(2);
+                for (auto j = 0; j < 4; j++)
+                {
+                    auto op = ctx_->opcode_enum(script_.read<u16>());
+                    if (op == opcode::OP_End || op == opcode::OP_Return) break;
+                    script_.seek_neg(4);
+                }
+
+                entry->size -= end_pos - script_.pos();
+            }
             else if (script_.read<u32>() == 0)
+            {
                 entry->size -= pad_size;
+
+                for (auto j = 1; j < 4; j++)
+                {
+                    script_.pos(end_pos - j);
+                    if (script_.read<u8>() <= 0x01) break;
+                    entry->size--;
+                }
+            }
         }
         else
         {
@@ -243,7 +303,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
 
         script_.pos(entry->offset);
 
-        func_ = make_function();
+        func_ = function::make();
         func_->index = entry->offset;
         func_->size = entry->size;
         func_->params = entry->params;
@@ -265,17 +325,17 @@ auto disassembler::disassemble_function(function& func) -> void
 
     while (size > 0)
     {
-        auto inst = make_instruction();
+        auto inst = instruction::make();
         inst->index = script_.pos();
 
-        if (ctx_->props() & props::version2)
+        if (ctx_->props() & props::size64)
         {
             auto index = script_.read<u16>();
 
-            if (size < 8 && (index >= 0x2000 || ctx_->opcode_enum(index) == opcode::OP_Invalid))
+            if (size < 8 && (index >= 0x4000 || ctx_->opcode_enum(index) == opcode::OP_Invalid))
                 break;
 
-            if ((index & 0x2000) == 0)
+            if ((index & 0x4000) == 0)
                 inst->opcode = ctx_->opcode_enum(index);
             else
                 throw disasm_error(utils::string::va("invalid opcode index 0x%X at pos '%04X'!", index, inst->index));
@@ -289,12 +349,12 @@ auto disassembler::disassemble_function(function& func) -> void
 
             inst->opcode = ctx_->opcode_enum(index);
         }
-        
+
         inst->size = ctx_->opcode_size(inst->opcode);
 
         disassemble_instruction(*inst);
 
-        if (ctx_->props() & props::version2)
+        if (ctx_->props() & props::size64)
             inst->size += script_.align(2);
 
         size -= inst->size;
@@ -302,20 +362,23 @@ auto disassembler::disassemble_function(function& func) -> void
         func.instructions.push_back(std::move(inst));
     }
 
-    for (auto i = func.instructions.size() - 1; i >= 1; i--)
+    // remove padding garbage ops
+    auto last_idx = 0;
+    for (auto i = 1; i <= 4; i++)
     {
-        auto& inst = func.instructions.at(i);
-        auto& last = func.instructions.at(i-1);
+        if (func.instructions.size() - i <= 0)
+            break;
+        
+        auto& inst = func.instructions.at(func.instructions.size() - i);
+
+        if (inst->opcode == opcode::OP_End ||  inst->opcode == opcode::OP_Return)
+            last_idx = i;
 
         if (func.labels.contains(inst->index))
             break;
-
-        if ((inst->opcode == opcode::OP_End ||  inst->opcode == opcode::OP_Return)
-            && (last->opcode != opcode::OP_End && last->opcode != opcode::OP_Return))
-            break;
-
-        func.instructions.pop_back();
     }
+
+    while (last_idx-- > 1) func.instructions.pop_back();
 }
 
 auto disassembler::disassemble_instruction(instruction& inst) -> void
@@ -456,7 +519,7 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
             break;
         case opcode::OP_GetHash:
             inst.size += script_.align(4);
-            inst.data.push_back(ctx_->dvar_name(script_.read<u32>()));
+            inst.data.push_back(ctx_->hash_name(script_.read<u32>()));
             break;
         case opcode::OP_ScriptFunctionCallClass:
         case opcode::OP_ScriptThreadCallClass:
@@ -526,9 +589,9 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
 
 auto disassembler::disassemble_name(instruction& inst) -> void
 {
-    inst.size += script_.align((ctx_->props() & props::version2) ? 4 : 2);
+    inst.size += script_.align((ctx_->props() & props::hashids) ? 4 : 2);
 
-    if (ctx_->props() & props::version2)
+    if (ctx_->props() & props::hashids)
     {
         inst.data.push_back(ctx_->hash_name(script_.read<u32>()));
     }
@@ -553,11 +616,11 @@ auto disassembler::disassemble_params(instruction& inst) -> void
 
     for (auto i = 0u; i < count; i++)
     {
-        if (ctx_->props() & props::version2)
+        if (ctx_->props() & props::hashids)
         {
             inst.size += script_.align(4) + 5;
             inst.data.push_back(ctx_->hash_name(script_.read<u32>()));
-            script_.seek(1);
+            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
         }
         else
         {
@@ -569,8 +632,8 @@ auto disassembler::disassemble_params(instruction& inst) -> void
 
 auto disassembler::disassemble_import(instruction& inst) -> void
 {
-    inst.size += script_.align((ctx_->props() & props::version2) ? 8 : 4);
-    script_.seek((ctx_->props() & props::version2) ? 8 : 4);
+    inst.size += script_.align((ctx_->props() & props::size64) ? 8 : 4);
+    script_.seek((ctx_->props() & props::size64) ? 8 : 4);
 
     auto const itr = import_refs_.find(inst.index);
 
@@ -586,14 +649,14 @@ auto disassembler::disassemble_import(instruction& inst) -> void
 
 auto disassembler::disassemble_string(instruction& inst) -> void
 {
-    inst.size += script_.align((ctx_->props() & props::version2) ? 4 : 2);
+    inst.size += script_.align((ctx_->props() & props::size64) ? 4 : 2);
 
     auto const itr = string_refs_.find(script_.pos());
 
     if (itr != string_refs_.end())
     {
         inst.data.push_back(itr->second->name);
-        script_.seek((ctx_->props() & props::version2) ? 4 : 2);
+        script_.seek((ctx_->props() & props::size64) ? 4 : 2);
         return;
     }
 
@@ -612,7 +675,7 @@ auto disassembler::disassemble_animtree(instruction& inst) -> void
 
 auto disassembler::disassemble_animation(instruction& inst) -> void
 {
-    inst.size += script_.align((ctx_->props() & props::version2) ? 8 : 4);
+    inst.size += script_.align((ctx_->props() & props::size64) ? 8 : 4);
 
     auto const ref = script_.pos();
     auto const itr = anim_refs_.find(ref);
@@ -626,7 +689,7 @@ auto disassembler::disassemble_animation(instruction& inst) -> void
             if (anim.ref == ref)
             {
                 inst.data.push_back(anim.name);
-                script_.seek((ctx_->props() & props::version2) ? 8 : 4);
+                script_.seek((ctx_->props() & props::size64) ? 8 : 4);
                 return;
             }
         }
@@ -641,7 +704,7 @@ auto disassembler::disassemble_jump(instruction& inst) -> void
 
     auto addr = u32{};
 
-    if (ctx_->props() & props::version2)
+    if (ctx_->props() & props::size64)
         addr = ((script_.read<i16>() + 1) & ~(1)) + script_.pos();
     else
         addr = script_.read<i16>() + script_.pos();
@@ -695,17 +758,16 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
 
     for (auto i = 0u; i < count; i++)
     {
-        if (ctx_->props() & props::version2)
+        if (ctx_->props() & props::size64)
         {
             const auto value = script_.read<u32>();
+            const auto str = string_refs_.find(script_.pos() - 4);
 
-            const auto itr = string_refs_.find(script_.pos() - 4);
-
-            if (itr != string_refs_.end())
+            if (str != string_refs_.end())
             {
                 type = switch_type::string;
                 inst.data.push_back("case");
-                inst.data.push_back(itr->second->name);
+                inst.data.push_back(str->second->name);
             }
             else if (value == 0 && i == count - 1)
             {
