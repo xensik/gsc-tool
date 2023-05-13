@@ -116,6 +116,8 @@ jobs:
             config: debug
           - configuration: release
             config: release
+          - arch: x64
+            platform: x64
     steps:
       - uses: rui314/setup-mold@staging
       - name: Check out files
