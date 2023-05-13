@@ -43,7 +43,12 @@ enum class system : u8
 {
     pc,
     ps3,
+    ps4,
+    ps5,
     xb2,
+    xb3,
+    xb4,
+    wiiu,
 };
 
 enum class engine : u8

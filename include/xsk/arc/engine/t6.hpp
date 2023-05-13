@@ -13,12 +13,5 @@ namespace xsk::arc::t6
 
 constexpr usize code_count = 125;
 constexpr usize hash_count = 3326;
-constexpr u64 header_magic = 0x06000A0D43534780;
-
-class context : public arc::context
-{
-public:
-    context();
-};
 
 } // namespace xsk::arc::t6

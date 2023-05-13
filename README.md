@@ -24,17 +24,18 @@ A utility to compile & decompile IW engine game scripts.
 - **T9** *(Call of Duty: Black Ops Cold War)* ***\*WIP\****
 
 ## Usage
-``./gsc-tool.exe <mode> <game> <path>``
+``./gsc-tool.exe <mode> <game> <system> <path>``
 
-**modes**: `asm`, `disasm`, `comp`, `decomp`, `parse`
+**mode**: `asm`, `disasm`, `comp`, `decomp`, `parse`
 - *note:* zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zdecomp` modes
 
-**games**: `iw5`, `iw6`, `iw7`, `iw8`, `iw9`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6`
-- *note:* PS3 & Xbox 360 use `iw5ps`, `iw5xb`, `iw6ps`, `iw6xb`, `s1ps`, `s1xb` games
+**game**: `iw5`, `iw6`, `iw7`, `iw8`, `iw9`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6` `t7` `t8` `t9`
 
-**paths**: `file` or `directory` (recursive process all files inside the directory)
+**system**: `pc`, `ps3`, `ps4`, `ps5`, `xb2` (*360*), `xb3` (*One*), `xb4` (*Series X|S*), `wiiu`
 
-Example: ``./gsc-tool.exe comp iw5 ./data/iw5/my_fancy_script.gsc``
+**path**: `file` or `directory` (recursive process all files inside the directory)
+
+Example: ``./gsc-tool.exe comp iw5 pc ./data/iw5/my_fancy_script.gsc``
 
 | Mode     |Description                | Output      |
 |:---------|:--------------------------|:------------|
@@ -62,7 +63,7 @@ note: for PS3 & Xbox 360 `.gscbin` files *(compressedLen, len, bytecodeLen)* are
 - treyarch (T6) format is a single buffer with gscobj data `.gsc` or `.csc`.
 
 ## Contribute
-If you like my work, feel free to contribute! Would allow me to spend more time adding new features & fixing bugs.
+If you like my work, consider sponsoring/donating! Would allow me to spend more time adding new features & fixing bugs.
 
 BTC: bc1qky7x9kpjlt6nsvt7pckc3wwzk8rk9pgtnmw98u\
 ETH: 0x6261BBE1a33F6Fec4b722DbCe2c28B4CC02c9C7B\
