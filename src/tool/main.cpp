@@ -854,38 +854,38 @@ auto init_t8(mach mach) -> void
 {
     throw std::runtime_error("not implemented");
 
-    if (contexts[game::t8].contains(mach)) return;
+    // if (contexts[game::t8].contains(mach)) return;
 
-    switch (mach)
-    {
-        case mach::pc:
-        {
-            contexts[game::t8][mach] = std::make_unique<t8::context>();
-            contexts[game::t8][mach]->init(build::prod, fs_read);
-            break;
-        }
-        default:
-            throw std::runtime_error("not implemented");
-    }
+    // switch (mach)
+    // {
+    //     case mach::pc:
+    //     {
+    //         contexts[game::t8][mach] = std::make_unique<t8::context>();
+    //         contexts[game::t8][mach]->init(build::prod, fs_read);
+    //         break;
+    //     }
+    //     default:
+    //         throw std::runtime_error("not implemented");
+    // }
 }
 
 auto init_t9(mach mach) -> void
 {
     throw std::runtime_error("not implemented");
 
-    if (contexts[game::t9].contains(mach)) return;
+    // if (contexts[game::t9].contains(mach)) return;
 
-    switch (mach)
-    {
-        case mach::pc:
-        {
-            contexts[game::t9][mach] = std::make_unique<t9::context>();
-            contexts[game::t9][mach]->init(build::prod, fs_read);
-            break;
-        }
-        default:
-            throw std::runtime_error("not implemented");
-    }
+    // switch (mach)
+    // {
+    //     case mach::pc:
+    //     {
+    //         contexts[game::t9][mach] = std::make_unique<t9::context>();
+    //         contexts[game::t9][mach]->init(build::prod, fs_read);
+    //         break;
+    //     }
+    //     default:
+    //         throw std::runtime_error("not implemented");
+    // }
 }
 
 auto init(game game, mach mach) -> void
