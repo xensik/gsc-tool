@@ -1,4 +1,7 @@
 version: 1.0.{build}
+branches:
+  only:
+  - prod
 skip_tags: true
 image: Visual Studio 2022
 configuration: Release
