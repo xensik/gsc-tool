@@ -850,7 +850,7 @@ auto init_t7(mach mach) -> void
     }
 }
 
-auto init_t8(mach mach) -> void
+auto init_t8(mach /*mach*/) -> void
 {
     throw std::runtime_error("not implemented");
 
@@ -869,7 +869,7 @@ auto init_t8(mach mach) -> void
     // }
 }
 
-auto init_t9(mach mach) -> void
+auto init_t9(mach /*mach*/) -> void
 {
     throw std::runtime_error("not implemented");
 
