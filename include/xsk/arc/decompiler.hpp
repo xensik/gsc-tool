@@ -22,6 +22,7 @@ class decompiler
     std::vector<std::string> locals_;
     std::vector<param_type> params_;
     std::stack<node::ptr> stack_;
+    std::string namespace_;
     locjmp locs_;
     bool in_waittill_;
     bool retbool_;
@@ -94,9 +95,10 @@ private:
     auto process_expr_method_function(expr_function& exp, expr::ptr& obj) -> void;
     auto process_expr_parameters(expr_parameters& exp) -> void;
     auto process_expr_arguments(expr_arguments& exp) -> void;
-    auto process_expr_size(expr_size& exp) -> void;
+    auto process_expr_reference(expr_reference& exp) -> void;
     auto process_expr_array(expr_array& exp) -> void;
     auto process_expr_field(expr_field& exp) -> void;
+    auto process_expr_size(expr_size& exp) -> void;
     auto process_expr_vector(expr_vector& exp) -> void;
     auto process_expr_identifier(expr_identifier& exp) -> void;
 };

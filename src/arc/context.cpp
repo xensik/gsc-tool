@@ -260,6 +260,11 @@ auto context::opcode_enum(u16 id) const -> opcode
 
 auto context::hash_id(std::string const& name) const -> u32
 {
+    if (name.starts_with("_id_"))
+    {
+        return static_cast<u32>(std::stoul(name.substr(4), nullptr, 16));
+    }
+
     if (props_ & props::hashids)
     {
 		auto* str = name.data();
