@@ -18,6 +18,7 @@ decompiler::decompiler(context const* ctx) : ctx_{ ctx }
 auto decompiler::decompile(assembly const& data) -> program::ptr
 {
     program_ = program::make();
+    namespace_ = {};
 
     for (auto it = data.includes.rbegin(); it != data.includes.rend(); it++)
     {
@@ -1998,6 +1999,17 @@ auto decompiler::process_function(decl_function& func) -> void
 {
     process_stmt_comp(*func.body);
     process_expr_parameters(*func.params);
+
+    if (ctx_->props() & props::spaces)
+    {
+        if (namespace_ != func.space->value)
+        {
+            namespace_ = func.space->value;
+            program_->declarations.push_back(decl_namespace::make(func.loc(), expr_string::make(func.loc(), func.space->value)));
+        }
+    }
+
+    func.space->value = {};
 }
 
 auto decompiler::process_stmt(stmt& stm) -> void
@@ -2354,6 +2366,9 @@ auto decompiler::process_expr(expr::ptr& exp) -> void
         case node::expr_isdefined:
             process_expr(exp->as<expr_isdefined>().value);
             break;
+        case node::expr_reference:
+            process_expr_reference(exp->as<expr_reference>());
+            break;
         case node::expr_array:
             process_expr_array(exp->as<expr_array>());
             break;
@@ -2534,6 +2549,14 @@ auto decompiler::process_expr_call_pointer(expr_pointer& exp) -> void
 auto decompiler::process_expr_call_function(expr_function& exp) -> void
 {
     process_expr_arguments(*exp.args);
+
+    if (ctx_->props() & props::spaces)
+    {
+        if (exp.path->value == namespace_)
+        {
+            exp.path->value = {};
+        }
+    }
 }
 
 auto decompiler::process_expr_method_pointer(expr_pointer& exp, expr::ptr& obj) -> void
@@ -2547,6 +2570,14 @@ auto decompiler::process_expr_method_function(expr_function& exp, expr::ptr& obj
 {
     process_expr_arguments(*exp.args);
     process_expr(obj);
+
+    if (ctx_->props() & props::spaces)
+    {
+        if (exp.path->value == namespace_)
+        {
+            exp.path->value = {};
+        }
+    }
 }
 
 auto decompiler::process_expr_parameters(expr_parameters& exp) -> void
@@ -2600,9 +2631,15 @@ auto decompiler::process_expr_arguments(expr_arguments& exp) -> void
     }
 }
 
-auto decompiler::process_expr_size(expr_size& exp) -> void
+auto decompiler::process_expr_reference(expr_reference& exp) -> void
 {
-    process_expr(exp.obj);
+    if (ctx_->props() & props::spaces)
+    {
+        if (exp.path->value == namespace_)
+        {
+            exp.path->value = {};
+        }
+    }
 }
 
 auto decompiler::process_expr_array(expr_array& exp) -> void
@@ -2612,6 +2649,11 @@ auto decompiler::process_expr_array(expr_array& exp) -> void
 }
 
 auto decompiler::process_expr_field(expr_field& exp) -> void
+{
+    process_expr(exp.obj);
+}
+
+auto decompiler::process_expr_size(expr_size& exp) -> void
 {
     process_expr(exp.obj);
 }

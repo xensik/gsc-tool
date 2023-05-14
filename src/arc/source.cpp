@@ -187,7 +187,11 @@ auto source::dump_program(program const& data) -> void
 
 auto source::dump_include(include const& inc) -> void
 {
-    fmt::format_to(std::back_inserter(buf_), "#include ");
+    if (ctx_->props() & props::size64)
+        fmt::format_to(std::back_inserter(buf_), "#using ");
+    else
+        fmt::format_to(std::back_inserter(buf_), "#include ");
+
     dump_expr_path(*inc.path);
     fmt::format_to(std::back_inserter(buf_), ";\n");
 }
@@ -562,13 +566,7 @@ auto source::dump_stmt_waittillframeend(stmt_waittillframeend const&) -> void
 
 auto source::dump_stmt_waitrealtime(stmt_waitrealtime const& stm) -> void
 {
-    if (stm.time->is<expr_float>() || stm.time->is<expr_integer>())
-    {
-        fmt::format_to(std::back_inserter(buf_), "waitrealtime ");
-        dump_expr(*stm.time);
-        fmt::format_to(std::back_inserter(buf_), ";");
-    }
-    else if (stm.time->is<expr_paren>())
+    if (stm.time->is<expr_paren>())
     {
         fmt::format_to(std::back_inserter(buf_), "waitrealtime");
         dump_expr(*stm.time);
@@ -1594,7 +1592,7 @@ auto source::dump_expr_string(expr_string const& exp) -> void
 
 auto source::dump_expr_hash(expr_hash const& exp) -> void
 {
-    fmt::format_to(std::back_inserter(buf_), "{}", utils::string::to_literal(exp.value));
+    fmt::format_to(std::back_inserter(buf_), "#{}", utils::string::to_literal(exp.value));
 }
 
 auto source::dump_expr_vector(expr_vector const& exp) -> void
