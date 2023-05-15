@@ -734,9 +734,22 @@ expr_call
     : expr_function                { $$ = expr_call::make(@$, std::move($1)); }
     | expr_pointer                 { $$ = expr_call::make(@$, std::move($1)); }
     ;
+
 expr_method
-    : expr_object expr_function    { $$ = expr_method::make(@$, std::move($1), std::move($2)); }
-    | expr_object expr_pointer     { $$ = expr_method::make(@$, std::move($1), std::move($2)); }
+    : expr_object expr_function
+        {
+            if ($1->loc().begin.line != $2->loc().begin.line)
+                error($2->loc(), "missing ';' ?");
+
+            $$ = expr_method::make(@$, std::move($1), std::move($2));
+        }
+    | expr_object expr_pointer
+        {
+            if ($1->loc().begin.line != $2->loc().begin.line)
+                error($2->loc(), "missing ';' ?");
+
+            $$ = expr_method::make(@$, std::move($1), std::move($2));
+        }
     ;
 
 expr_function
