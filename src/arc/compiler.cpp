@@ -372,8 +372,8 @@ auto compiler::emit_stmt_ifelse(stmt_ifelse const& stm) -> void
 
     insert_label(else_loc);
 
-    paren = scopes_.back();
-    scopes_.push_back(scope(paren.brk, paren.cnt));
+    auto& paren2 = scopes_.back();
+    scopes_.push_back(scope(paren2.brk, paren2.cnt));
     emit_stmt(*stm.stmt_else);
     scopes_.pop_back();
 
@@ -936,7 +936,6 @@ auto compiler::emit_expr_increment(expr_increment const& exp, bool is_stmt) -> v
     {
         emit_expr_variable_ref(*exp.lvalue, false);
         emit_opcode(opcode::OP_Inc);
-        emit_opcode(opcode::OP_SetVariableField);
     }
     else
     {
@@ -950,7 +949,6 @@ auto compiler::emit_expr_decrement(expr_decrement const& exp, bool is_stmt) -> v
     {
         emit_expr_variable_ref(*exp.lvalue, false);
         emit_opcode(opcode::OP_Dec);
-        emit_opcode(opcode::OP_SetVariableField);
     }
     else
     {
