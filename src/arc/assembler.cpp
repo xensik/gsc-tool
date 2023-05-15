@@ -395,7 +395,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             break;
         case opcode::OP_GetHash:
             script_.align(4);
-            script_.write<u32>(static_cast<u32>(std::stoul(inst.data[0], 0, 16)));
+            script_.write<u32>(ctx_->hash_id(inst.data[0]));
             break;
         case opcode::OP_SafeCreateLocalVariables:
             assemble_localvars(inst);
@@ -483,7 +483,7 @@ auto assembler::assemble_switch(instruction const& inst) -> void
 auto assembler::assemble_end_switch(instruction const& inst) -> void
 {
     const auto count = std::stoul(inst.data[0]);
-    const auto numerical = inst.data.back() == "i";
+    const auto type = static_cast<switch_type>(std::stoul(inst.data.back()));
 
     script_.align(4);
     script_.write<u32>(count);
@@ -492,7 +492,7 @@ auto assembler::assemble_end_switch(instruction const& inst) -> void
     {
         if (inst.data[1 + (3 * i)] == "case")
         {
-            if (numerical /*&& utils::string::is_number(inst->data[1 + (3 * i) + 1])*/)
+            if (type == switch_type::integer)
             {
                 script_.write<u32>((std::stoi(inst.data[1 + (3 * i) + 1]) & 0xFFFFFF) + 0x800000);
             }
@@ -515,7 +515,7 @@ auto assembler::assemble_end_switch(instruction const& inst) -> void
         }
         else
         {
-            throw asm_error("invalid switch case '" + inst.data[1 + (3 * i)] + "'!");
+            throw asm_error(fmt::format("invalid switch case {}", inst.data[1 + (3 * i)]));
         }
     }
 }
@@ -586,13 +586,13 @@ auto assembler::process_instruction(instruction const& inst) -> void
         case opcode::OP_EndSwitch:
         {
             const auto count = std::stoul(inst.data[0]);
-            const auto numerical = inst.data.back() == "i";
+            const auto type = static_cast<switch_type>(std::stoul(inst.data.back()));
 
             for (auto i = 0u; i < count; i++)
             {
                 if (inst.data[1 + (3 * i)] == "case")
                 {
-                    if (!numerical /*|| !utils::string::is_number(inst->data[1 + (3 * i) + 1])*/)
+                    if (type == switch_type::string)
                     {
                         process_string(inst.data[1 + (3 * i) + 1]);
                     }
@@ -809,13 +809,13 @@ auto assembler::align_instruction(instruction& inst) -> void
             script_.seek(4);
 
             const auto count = std::stoul(inst.data[0]);
-            const auto numerical = inst.data.back() == "i";
+            const auto type = static_cast<switch_type>(std::stoul(inst.data.back()));
 
             for (auto i = 0u; i < count; i++)
             {
                 if (inst.data[1 + (3 * i)] == "case")
                 {
-                    if (!numerical /*|| !utils::string::is_number(inst.data[1 + (3 * i) + 1])*/)
+                    if (type == switch_type::string)
                     {
                         add_stringref(inst.data[1 + (3 * i) + 1], string_type::literal, script_.pos() + 2);
                     }
@@ -842,7 +842,7 @@ auto assembler::resolve_label(std::string const& name) -> i32
         }
     }
 
-    throw asm_error("couldn't resolve label address of '" + name + "'!");
+    throw asm_error(fmt::format("couldn't resolve label address of {}", name));
 }
 
 auto assembler::resolve_string(std::string const& name) -> u16
@@ -854,7 +854,7 @@ auto assembler::resolve_string(std::string const& name) -> u16
         return itr->second;
     }
 
-    throw asm_error("couldn't resolve string assembly address of '" + name + "'!");
+    throw asm_error(fmt::format("couldn't resolve string address of {}", name));
 }
 
 void assembler::add_stringref(std::string const& str, string_type type, u32 ref)

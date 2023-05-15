@@ -709,8 +709,10 @@ auto preprocessor::read_hashtoken(token& tok) -> void
             return read_hashtoken_animtree(tok, next);
         }
     }
-
-    // TODO: iw9 hash literals #d"src_game"
+    else if (next.type == token::STRING)
+    {
+        return read_hashtoken_hashstr(tok, next);
+    }
 
     // if nothing match return '#'
     tokens_.push_front(std::move(next));
@@ -727,6 +729,21 @@ auto preprocessor::read_hashtoken_animtree(token& hash, token& name) -> void
     else
     {
         // if '#   animtree' return 2 tokens
+        tokens_.push_front(std::move(name));
+        tokens_.push_front(token{ token::HASH, hash.space, hash.pos });
+    }
+}
+
+auto preprocessor::read_hashtoken_hashstr(token& hash, token& name) -> void
+{
+    if (name.space == spacing::none)
+    {
+        name.pos.begin = hash.pos.begin;
+        tokens_.push_front(token{ token::HASHSTR, spacing::none, name.pos, name.data });
+    }
+    else
+    {  
+        // if '#  ""' return 2 tokens
         tokens_.push_front(std::move(name));
         tokens_.push_front(token{ token::HASH, hash.space, hash.pos });
     }
