@@ -207,7 +207,7 @@ auto assembler::assemble(assembly const& data) -> buffer
     if (ctx_->props() & props::size64)
         script_.write<u32>(head.name);
     else
-        script_.write<u16>(head.name);
+        script_.write<u16>(static_cast<u16>(head.name));
 
     script_.write<u16>(head.stringtablefixup_count);
     script_.write<u16>(head.exports_count);
