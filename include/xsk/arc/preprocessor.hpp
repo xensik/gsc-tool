@@ -59,6 +59,7 @@ private:
     auto read_directive_usingtree(token& hash, token& name) -> void;
     auto read_hashtoken(token& hash) -> void;
     auto read_hashtoken_animtree(token& hash, token& name) -> void;
+    auto read_hashtoken_hashstr(token& hash, token& name) -> void;
     auto expand(token& tok, define& def) -> void;
     auto expand_params(token& tok, define& def) -> std::vector<std::vector<token>>;
     auto expect(token& tok, token::kind expected, spacing space = spacing::none) -> void;

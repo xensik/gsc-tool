@@ -5546,7 +5546,7 @@ auto map_token(context const* ctx_, token& tok) -> parser::symbol_type
 
         return parser::symbol_type(parser::token::IDENTIFIER, std::move(tok.data), tok.pos);
     }
-    else if (tok.type == token::PATH ||tok.type == token::STRING ||tok.type == token::ISTRING || tok.type == token::INT ||tok.type == token::FLT)
+    else if (tok.type == token::PATH ||tok.type == token::HASHSTR ||tok.type == token::STRING ||tok.type == token::ISTRING || tok.type == token::INT ||tok.type == token::FLT)
     {
         auto it = tok_to_parser.find(tok.type);
 
