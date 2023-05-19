@@ -245,8 +245,8 @@ auto assembler::assemble_function(function& func) -> void
 
         if (itr != func.labels.end())
         {
-            func.labels.erase(old_idx);
             func.labels.insert({ inst->index, itr->second });
+            func.labels.erase(old_idx);
         }
     }
 
