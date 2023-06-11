@@ -1104,7 +1104,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8443, "challengenotification" },
     { 0x8444, "cancelaimove" },
     { 0x8445, "vehicle_jetbikesethoverforcescale" },
-    { 0x8446, "vehicle_jetbikesethoverforcescale" },
+    { 0x8446, "linktosynchronizedparent" },
     { 0x8447, "getclientomnvar" },
     { 0x8448, "drawpostresolve" },
     { 0x8449, "drawpostresolveoff" },
