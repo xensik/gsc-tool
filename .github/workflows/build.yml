@@ -8,6 +8,11 @@ on:
     branches:
       - "**"
     types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-win:
     name: Build Windows
@@ -37,8 +42,13 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.3.1
 
+      - name: Add premake5 to PATH
+        uses: abel0b/setup-premake@v2.2
+        with:
+          version: "5.0.0-beta2"
+
       - name: Generate project files
-        run: cmd /C call prebuild-windows.bat
+        run: premake5 vs2022
 
       - name: Set up problem matching
         uses: ammaraskar/msvc-problem-matcher@master
@@ -52,7 +62,7 @@ jobs:
           name: Windows ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
             build/bin/${{matrix.arch}}/${{matrix.configuration}}/gsc-tool.exe
-            build/bin/${{matrix.arch}}/${{matrix.configuration}}/gsc-tool.pdb
+            # build/bin/${{matrix.arch}}/${{matrix.configuration}}/gsc-tool.pdb
 
   build-mac:
     name: Build macOS
@@ -83,8 +93,13 @@ jobs:
           fetch-depth: 0
           lfs: false
 
+      - name: Add premake5 to PATH
+        uses: abel0b/setup-premake@v2.2
+        with:
+          version: "5.0.0-beta2"
+
       - name: Generate project files
-        run: ./prebuild-macos.sh
+        run: premake5 gmake2
 
       - name: Set up problem matching
         uses: ammaraskar/gcc-problem-matcher@master
@@ -93,6 +108,7 @@ jobs:
         run: |
           pushd build
           make config=${{matrix.config}}_${{matrix.platform}} -j$(sysctl -n hw.logicalcpu)
+
       - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
         uses: actions/upload-artifact@v3.1.2
         with:
@@ -119,15 +135,23 @@ jobs:
           - arch: x64
             platform: x64
     steps:
-      - uses: rui314/setup-mold@staging
       - name: Check out files
         uses: actions/checkout@v3.3.0
         with:
           submodules: true
           fetch-depth: 0
           lfs: false
+
+      - name: Add mold to PATH
+        uses: rui314/setup-mold@staging
+
+      - name: Add premake5 to PATH
+        uses: abel0b/setup-premake@v2.2
+        with:
+          version: "5.0.0-beta2"
+
       - name: Generate project files
-        run: ./prebuild-linux.sh
+        run: premake5 gmake2
 
       - name: Set up problem matching
         uses: ammaraskar/gcc-problem-matcher@master
