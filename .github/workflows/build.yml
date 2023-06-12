@@ -8,6 +8,11 @@ on:
     branches:
       - "**"
     types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-win:
     name: Build Windows
