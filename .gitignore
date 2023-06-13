@@ -149,6 +149,7 @@ user*.bat
 # VScode
 .vscode/
 
+# Output folders
 renamed/
 parsed/
 compiled/
@@ -157,3 +158,6 @@ assembled/
 disassembled/
 
 data/*
+
+# Version file
+include/xsk/version.hpp

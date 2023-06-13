@@ -29,6 +29,10 @@ function zlib:project()
         "_CRT_NONSTDC_NO_DEPRECATE",
         "_CRT_SECURE_NO_DEPRECATE",
     }
+
+    if os.istarget("darwin") then
+        defines "HAVE_UNISTD_H"
+    end
 end
 
 table.insert(dependencies, zlib)
