@@ -30,6 +30,7 @@
 #include "xsk/arc/engine/t7.hpp"
 #include "xsk/arc/engine/t8.hpp"
 #include "xsk/arc/engine/t9.hpp"
+#include "xsk/version.hpp"
 
 namespace fs = std::filesystem;
 
@@ -1017,12 +1018,19 @@ auto print_usage() -> void
     std::cin.get();
 }
 
+auto branding() -> void
+{
+    std::cout << fmt::format("\nGSC Tool {} created by xensik\n\n", XSK_VERSION_STR);
+}
+
 auto main(u32 argc, char** argv) -> void
 {
     auto path = fs::path{};
     auto mode = mode::_;
     auto game = game::_;
     auto mach = mach::_;
+
+    branding();
 
     if (!parse_flags(argc, argv, mode, game, mach, path))
     {
