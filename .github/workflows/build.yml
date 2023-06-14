@@ -182,8 +182,10 @@ jobs:
 
       - name: Download Binaries
         uses: actions/download-artifact@v3
+        with:
+          name: Windows release x64 binaries
 
       - name: Display structure of downloaded files
-        run: ls -R
+        run: ls -lR
       - name: Deploy app
         run: exit 0
