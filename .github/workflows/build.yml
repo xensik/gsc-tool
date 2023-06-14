@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - "**"
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
   pull_request:
     branches:
       - "**"
@@ -171,10 +173,10 @@ jobs:
             build/bin/${{matrix.platform}}/${{matrix.configuration}}/gsc-tool
 
   deploy:
-    name: Create Release
+    name: Deploy Release
     runs-on: ubuntu-latest
     needs: [ build-win, build-mac, build-lin ]
-    # if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/')
     environment: prod
     steps:
       - name: Check out files
@@ -185,7 +187,11 @@ jobs:
         with:
           name: Windows release x64 binaries
 
-      - name: Display structure of downloaded files
-        run: ls -lR
-      - name: Deploy app
-        run: exit 0
+      - name: Create Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          draft: true
+          files: |
+            gsc-tool.exe
