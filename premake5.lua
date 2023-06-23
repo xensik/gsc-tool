@@ -126,11 +126,7 @@ workspace "gsc-tool"
     end
 
     filter { "system:linux", "platforms:arm64", "toolset:clang" }
-        buildoptions "--target=aarch64-linux-gnu"
-    filter {}
-
-    filter { "system:macosx", "platforms:arm64" }
-        buildoptions "-arch arm64"
+        buildoptions "--target=arm64-linux-gnueabihf-clang"
     filter {}
 
     filter "configurations:release"
