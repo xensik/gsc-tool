@@ -23,7 +23,6 @@ jobs:
       fail-fast: false
       matrix:
         configuration:
-          - debug
           - release
         arch:
           - x86
@@ -35,7 +34,7 @@ jobs:
             platform: x64
     steps:
       - name: Check out files
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.3
         with:
           submodules: true
           fetch-depth: 0
@@ -72,23 +71,20 @@ jobs:
       fail-fast: false
       matrix:
         configuration:
-          - debug
           - release
         arch:
           - x64
-          - ARM64
+          - arm64
         include:
-          - configuration: debug
-            config: debug
           - configuration: release
             config: release
           - arch: x64
             platform: x64
-          - arch: ARM64
+          - arch: arm64
             platform: arm64
     steps:
       - name: Check out files
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.3
         with:
           submodules: true
           fetch-depth: 0
@@ -124,24 +120,30 @@ jobs:
       fail-fast: false
       matrix:
         configuration:
-          - debug
           - release
         arch:
           - x64
+          - arm64
         include:
-          - configuration: debug
-            config: debug
           - configuration: release
             config: release
           - arch: x64
             platform: x64
+          - arch: arm64
+            platform: arm64
     steps:
       - name: Check out files
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.3
         with:
           submodules: true
           fetch-depth: 0
           lfs: false
+
+      - name: Install dependencies (arm64)
+        if: matrix.arch == 'arm64'
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install crossbuild-essential-arm64
 
       - name: Add mold to PATH
         uses: rui314/setup-mold@staging
@@ -156,6 +158,11 @@ jobs:
 
       - name: Set up problem matching
         uses: ammaraskar/gcc-problem-matcher@master
+
+      - name: Set up target environment variables
+        if: matrix.arch == 'arm64'
+        run: |
+          echo "TARGET=aarch64-linux-gnu" >> $GITHUB_ENV
 
       - name: Build ${{matrix.configuration}} ${{matrix.arch}} binaries
         run: |

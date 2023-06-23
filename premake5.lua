@@ -87,7 +87,7 @@ workspace "gsc-tool"
     if os.istarget("darwin") then
         platforms { "x64", "arm64" }
     else
-        platforms { "x86", "x64" }
+        platforms { "x86", "x64", "arm64" }
     end
 
     filter "platforms:x86"
@@ -114,10 +114,6 @@ workspace "gsc-tool"
 
     filter { "system:windows" }
         systemversion "latest"
-    filter {}
-
-    filter { "system:macosx" }
-        systemversion "12.0"
     filter {}
 
     symbols "On"
