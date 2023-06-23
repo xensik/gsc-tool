@@ -126,7 +126,7 @@ workspace "gsc-tool"
     end
 
     filter { "system:linux", "platforms:arm64" }
-        buildoptions "--target=arm64-pc-linux-gnu"
+        buildoptions "--target=aarch64-pc-linux-gnu"
     filter {}
 
     filter "configurations:release"
@@ -146,7 +146,7 @@ project "xsk-tool"
     targetname "gsc-tool"
 
     filter { "system:linux", "platforms:arm64" }
-        buildoptions "--target=arm64-pc-linux-gnu"
+        buildoptions "--target=aarch64-pc-linux-gnu"
     filter {}
 
     dependson "xsk-utils"
@@ -177,7 +177,7 @@ project "xsk-utils"
     language "C++"
 
     filter { "system:linux", "platforms:arm64" }
-        buildoptions "--target=arm64-pc-linux-gnu"
+        buildoptions "--target=aarch64-pc-linux-gnu"
     filter {}
 
     files {
@@ -198,7 +198,7 @@ project "xsk-arc"
     language "C++"
 
     filter { "system:linux", "platforms:arm64" }
-        buildoptions "--target=arm64-pc-linux-gnu"
+        buildoptions "--target=aarch64-pc-linux-gnu"
     filter {}
 
     files {
@@ -218,7 +218,7 @@ project "xsk-gsc"
     language "C++"
 
     filter { "system:linux", "platforms:arm64" }
-        buildoptions "--target=arm64-pc-linux-gnu"
+        buildoptions "--target=aarch64-pc-linux-gnu"
     filter {}
 
     files {
