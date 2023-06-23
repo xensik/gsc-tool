@@ -145,6 +145,10 @@ project "xsk-tool"
     language "C++"
     targetname "gsc-tool"
 
+    filter { "system:linux", "platforms:arm64" }
+        buildoptions "--target=arm64-pc-linux-gnu"
+    filter {}
+
     dependson "xsk-utils"
     dependson "xsk-arc"
     dependson "xsk-gsc"
@@ -172,6 +176,10 @@ project "xsk-utils"
     kind "StaticLib"
     language "C++"
 
+    filter { "system:linux", "platforms:arm64" }
+        buildoptions "--target=arm64-pc-linux-gnu"
+    filter {}
+
     files {
         "./src/utils/**.h",
         "./src/utils/**.hpp",
@@ -189,6 +197,10 @@ project "xsk-arc"
     kind "StaticLib"
     language "C++"
 
+    filter { "system:linux", "platforms:arm64" }
+        buildoptions "--target=arm64-pc-linux-gnu"
+    filter {}
+
     files {
         "./src/arc/**.h",
         "./src/arc/**.hpp",
@@ -204,6 +216,10 @@ project "xsk-arc"
 project "xsk-gsc"
     kind "StaticLib"
     language "C++"
+
+    filter { "system:linux", "platforms:arm64" }
+        buildoptions "--target=arm64-pc-linux-gnu"
+    filter {}
 
     files {
         "./src/gsc/**.h",
