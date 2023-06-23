@@ -104,14 +104,14 @@ jobs:
       - name: Build ${{matrix.configuration}} ${{matrix.arch}} binaries
         run: |
           pushd build
-          make config=${{matrix.config}}_${{matrix.platform}} -j$(sysctl -n hw.logicalcpu)
+          make config=${{matrix.config}}_${{matrix.arch}} -j$(sysctl -n hw.logicalcpu)
 
       - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
         uses: actions/upload-artifact@v3.1.2
         with:
           name: macOS ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
-            build/bin/${{matrix.platform}}/${{matrix.configuration}}/gsc-tool
+            build/bin/${{matrix.arch}}/${{matrix.configuration}}/gsc-tool
 
   build-lin:
     name: Build Linux
@@ -172,7 +172,7 @@ jobs:
         with:
           name: Linux ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
-            build/bin/${{matrix.platform}}/${{matrix.configuration}}/gsc-tool
+            build/bin/${{matrix.arch}}/${{matrix.configuration}}/gsc-tool
 
   deploy:
     name: Deploy Release
