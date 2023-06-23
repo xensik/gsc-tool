@@ -125,8 +125,12 @@ workspace "gsc-tool"
         linkoptions "-pthread"
     end
 
-    filter { "system:linux", "toolset:clang" }
+    filter { "system:linux", "platforms:arm64", "toolset:clang" }
         buildoptions "--target=aarch64-linux-gnu"
+    filter {}
+
+    filter { "system:macosx", "platforms:arm64" }
+        buildoptions "-arch arm64"
     filter {}
 
     filter "configurations:release"
