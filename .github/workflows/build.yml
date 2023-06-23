@@ -23,7 +23,6 @@ jobs:
       fail-fast: false
       matrix:
         configuration:
-          - debug
           - release
         arch:
           - x86
@@ -35,7 +34,7 @@ jobs:
             platform: x64
     steps:
       - name: Check out files
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.3
         with:
           submodules: true
           fetch-depth: 0
@@ -72,23 +71,20 @@ jobs:
       fail-fast: false
       matrix:
         configuration:
-          - debug
           - release
         arch:
           - x64
-          - ARM64
+          - arm64
         include:
-          - configuration: debug
-            config: debug
           - configuration: release
             config: release
           - arch: x64
             platform: x64
-          - arch: ARM64
+          - arch: arm64
             platform: arm64
     steps:
       - name: Check out files
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.3
         with:
           submodules: true
           fetch-depth: 0
@@ -108,14 +104,14 @@ jobs:
       - name: Build ${{matrix.configuration}} ${{matrix.arch}} binaries
         run: |
           pushd build
-          make config=${{matrix.config}}_${{matrix.platform}} -j$(sysctl -n hw.logicalcpu)
+          make config=${{matrix.config}}_${{matrix.arch}} -j$(sysctl -n hw.logicalcpu)
 
       - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
         uses: actions/upload-artifact@v3.1.2
         with:
           name: macOS ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
-            build/bin/${{matrix.platform}}/${{matrix.configuration}}/gsc-tool
+            build/bin/${{matrix.arch}}/${{matrix.configuration}}/gsc-tool
 
   build-lin:
     name: Build Linux
@@ -124,24 +120,30 @@ jobs:
       fail-fast: false
       matrix:
         configuration:
-          - debug
           - release
         arch:
           - x64
+          - arm64
         include:
-          - configuration: debug
-            config: debug
           - configuration: release
             config: release
           - arch: x64
             platform: x64
+          - arch: arm64
+            platform: arm64
     steps:
       - name: Check out files
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.3
         with:
           submodules: true
           fetch-depth: 0
           lfs: false
+
+      - name: Install dependencies (arm64)
+        if: matrix.arch == 'arm64'
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install crossbuild-essential-arm64
 
       - name: Add mold to PATH
         uses: rui314/setup-mold@staging
@@ -157,6 +159,11 @@ jobs:
       - name: Set up problem matching
         uses: ammaraskar/gcc-problem-matcher@master
 
+      - name: Set up environment variable
+        if: matrix.arch == 'arm64'
+        run: |
+          echo "ARCH=arm64" >> $GITHUB_ENV
+
       - name: Build ${{matrix.configuration}} ${{matrix.arch}} binaries
         run: |
           pushd build
@@ -170,7 +177,7 @@ jobs:
         with:
           name: Linux ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
-            build/bin/${{matrix.platform}}/${{matrix.configuration}}/gsc-tool
+            build/bin/${{matrix.arch}}/${{matrix.configuration}}/gsc-tool
 
   deploy:
     name: Deploy Release

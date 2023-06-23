@@ -87,7 +87,7 @@ workspace "gsc-tool"
     if os.istarget("darwin") then
         platforms { "x64", "arm64" }
     else
-        platforms { "x86", "x64" }
+        platforms { "x86", "x64", "arm64" }
     end
 
     filter "platforms:x86"
@@ -116,10 +116,6 @@ workspace "gsc-tool"
         systemversion "latest"
     filter {}
 
-    filter { "system:macosx" }
-        systemversion "12.0"
-    filter {}
-
     symbols "On"
     staticruntime "On"
     warnings "Extra"
@@ -128,6 +124,10 @@ workspace "gsc-tool"
         buildoptions "-pthread"
         linkoptions "-pthread"
     end
+
+    filter { "system:linux", "platforms:arm64" }
+        buildoptions "--target=aarch64-pc-linux-gnu"
+    filter {}
 
     filter "configurations:release"
         optimize "Full"
@@ -144,6 +144,10 @@ project "xsk-tool"
     kind "ConsoleApp"
     language "C++"
     targetname "gsc-tool"
+
+    filter { "system:linux", "platforms:arm64" }
+        buildoptions "--target=aarch64-pc-linux-gnu"
+    filter {}
 
     dependson "xsk-utils"
     dependson "xsk-arc"
@@ -172,6 +176,10 @@ project "xsk-utils"
     kind "StaticLib"
     language "C++"
 
+    filter { "system:linux", "platforms:arm64" }
+        buildoptions "--target=aarch64-pc-linux-gnu"
+    filter {}
+
     files {
         "./src/utils/**.h",
         "./src/utils/**.hpp",
@@ -189,6 +197,10 @@ project "xsk-arc"
     kind "StaticLib"
     language "C++"
 
+    filter { "system:linux", "platforms:arm64" }
+        buildoptions "--target=aarch64-pc-linux-gnu"
+    filter {}
+
     files {
         "./src/arc/**.h",
         "./src/arc/**.hpp",
@@ -204,6 +216,10 @@ project "xsk-arc"
 project "xsk-gsc"
     kind "StaticLib"
     language "C++"
+
+    filter { "system:linux", "platforms:arm64" }
+        buildoptions "--target=aarch64-pc-linux-gnu"
+    filter {}
 
     files {
         "./src/gsc/**.h",
