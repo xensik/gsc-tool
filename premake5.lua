@@ -125,7 +125,7 @@ workspace "gsc-tool"
         linkoptions "-pthread"
     end
 
-    filter { "toolset:clang" }
+    filter { "system:linux", "toolset:clang" }
         buildoptions "--target=aarch64-linux-gnu"
     filter {}
 
