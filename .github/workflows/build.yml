@@ -159,7 +159,7 @@ jobs:
       - name: Set up problem matching
         uses: ammaraskar/gcc-problem-matcher@master
 
-      - name: Set up CXX environment variable
+      - name: Set up environment variable
         if: matrix.arch == 'arm64'
         run: |
           echo "ARCH=arm64" >> $GITHUB_ENV
