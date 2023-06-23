@@ -159,11 +159,6 @@ jobs:
       - name: Set up problem matching
         uses: ammaraskar/gcc-problem-matcher@master
 
-      - name: Set up target environment variables
-        if: matrix.arch == 'arm64'
-        run: |
-          echo "TARGET=aarch64-linux-gnu" >> $GITHUB_ENV
-
       - name: Build ${{matrix.configuration}} ${{matrix.arch}} binaries
         run: |
           pushd build

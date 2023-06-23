@@ -125,6 +125,10 @@ workspace "gsc-tool"
         linkoptions "-pthread"
     end
 
+    filter { "language:C++", "toolset:clang" }
+        buildoptions "--target=aarch64-linux-gnu"
+    filter {}
+
     filter "configurations:release"
         optimize "Full"
         defines { "NDEBUG" }
