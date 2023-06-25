@@ -84,7 +84,7 @@ workspace "gsc-tool"
 
     configurations { "debug", "release" }
 
-    if os.istarget("darwin") then
+    if os.istarget("linux") or os.istarget("darwin") then
         platforms { "x64", "arm64" }
     else
         platforms { "x86", "x64", "arm64" }
