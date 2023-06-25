@@ -84,10 +84,10 @@ workspace "gsc-tool"
 
     configurations { "debug", "release" }
 
-    if os.istarget("darwin") then
+    if os.istarget("linux") or os.istarget("darwin") then
         platforms { "x64", "arm64" }
     else
-        platforms { "x86", "x64" }
+        platforms { "x86", "x64", "arm64" }
     end
 
     filter "platforms:x86"
@@ -116,10 +116,6 @@ workspace "gsc-tool"
         systemversion "latest"
     filter {}
 
-    filter { "system:macosx" }
-        systemversion "12.0"
-    filter {}
-
     symbols "On"
     staticruntime "On"
     warnings "Extra"
@@ -129,9 +125,16 @@ workspace "gsc-tool"
         linkoptions "-pthread"
     end
 
+    if os.istarget("darwin") then
+        filter "platforms:arm64"
+            buildoptions "-arch arm64"
+            linkoptions "-arch arm64"
+        filter {}
+    end
+
     filter "configurations:release"
         optimize "Full"
-        defines { "NDEBUG" }
+        defines "NDEBUG"
         flags { "FatalCompileWarnings" }
     filter {}
 
