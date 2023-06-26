@@ -125,7 +125,7 @@ workspace "gsc-tool"
         linkoptions "-pthread"
     end
 
-    if os.istarget("darwin") then
+    if os.istarget("linux") or os.istarget("darwin") then
         filter "platforms:arm64"
             buildoptions "-arch arm64"
             linkoptions "-arch arm64"

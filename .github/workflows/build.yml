@@ -116,6 +116,7 @@ jobs:
           - release
         arch:
           - x64
+          - arm64
     steps:
       - name: Check out files
         uses: actions/checkout@v3.5.3
