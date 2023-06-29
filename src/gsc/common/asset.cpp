@@ -18,8 +18,7 @@ auto asset::serialize() -> std::vector<u8>
         throw std::runtime_error("script file serialize error");
     }
 
-    data.resize(name.size() + (compressedLen ? compressedLen : len) + bytecodeLen + 13);
-    std::memset(data.data(), 0, data.size());
+    data.resize(name.size() + (compressedLen ? compressedLen : len) + bytecodeLen + 13, 0);
 
     auto pos = usize{ 0 };
 
