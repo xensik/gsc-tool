@@ -116,7 +116,7 @@ workspace "gsc-tool"
         systemversion "latest"
     filter {}
 
-    symbols "On"
+    symbols "Off"
     staticruntime "On"
     warnings "Extra"
 
