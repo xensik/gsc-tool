@@ -120,22 +120,29 @@ workspace "gsc-tool"
     staticruntime "On"
     warnings "Extra"
 
-    if os.istarget("linux") or os.istarget("darwin") then
+    filter { "system:linux", "system:macosx" }
         buildoptions "-pthread"
         linkoptions "-pthread"
+    filter {}
+
+    if os.istarget("linux") then
+        filter { "platforms:arm64" }
+            buildoptions "--target=arm64-linux-gnu"
+            linkoptions "--target=arm64-linux-gnu"
+        filter {}
+
+        linkoptions "-fuse-ld=lld"
     end
 
-    if os.istarget("darwin") then
-        filter "platforms:arm64"
+    filter { "system:macosx", "platforms:arm64" }
             buildoptions "-arch arm64"
             linkoptions "-arch arm64"
-        filter {}
-    end
+    filter {}
 
     filter "configurations:release"
         optimize "Full"
         defines "NDEBUG"
-        flags { "FatalCompileWarnings" }
+        flags "FatalCompileWarnings"
     filter {}
 
     filter "configurations:debug"

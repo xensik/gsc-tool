@@ -116,6 +116,7 @@ jobs:
           - release
         arch:
           - x64
+          - arm64
     steps:
       - name: Check out files
         uses: actions/checkout@v3.5.3
@@ -124,8 +125,11 @@ jobs:
           fetch-depth: 0
           lfs: false
 
-      - name: Add mold to PATH
-        uses: rui314/setup-mold@staging
+      - name: Install dependencies (arm64)
+        if: matrix.arch == 'arm64'
+        run: |
+          sudo apt-get update
+          sudo apt-get install crossbuild-essential-arm64 -y
 
       - name: Add premake5 to PATH
         uses: abel0b/setup-premake@v2.2
