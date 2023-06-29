@@ -116,7 +116,6 @@ workspace "gsc-tool"
         systemversion "latest"
     filter {}
 
-    symbols "Off"
     staticruntime "On"
     warnings "Extra"
 
@@ -141,12 +140,14 @@ workspace "gsc-tool"
 
     filter "configurations:release"
         optimize "Full"
+        symbols "Off"
         defines "NDEBUG"
         flags "FatalCompileWarnings"
     filter {}
 
     filter "configurations:debug"
         optimize "Debug"
+        symbols "On"
         defines { "DEBUG", "_DEBUG" }
     filter {}
 
