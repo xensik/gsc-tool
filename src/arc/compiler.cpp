@@ -1521,6 +1521,7 @@ auto compiler::emit_expr_field_ref(expr_field const& exp, bool set) -> void
             break;
         case node::expr_identifier:
             emit_opcode(opcode::OP_EvalLocalVariableCached, fmt::format("{}", variable_access(exp.obj->as<expr_identifier>())));
+            emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
