@@ -15,6 +15,9 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PREMAKE_VERSION: "5.0.0-beta2"
+
 jobs:
   build-windows:
     name: Build Windows
@@ -44,9 +47,9 @@ jobs:
         uses: microsoft/setup-msbuild@v1.3.1
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.2
+        uses: abel0b/setup-premake@v2.3
         with:
-          version: "5.0.0-beta2"
+          version: ${{ env.PREMAKE_VERSION }}
 
       - name: Generate project files
         run: premake5 vs2022
@@ -84,9 +87,9 @@ jobs:
           lfs: false
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.2
+        uses: abel0b/setup-premake@v2.3
         with:
-          version: "5.0.0-beta2"
+          version: ${{ env.PREMAKE_VERSION }}
 
       - name: Generate project files
         run: premake5 gmake2
@@ -132,9 +135,9 @@ jobs:
           sudo apt-get install crossbuild-essential-arm64 -y
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.2
+        uses: abel0b/setup-premake@v2.3
         with:
-          version: "5.0.0-beta2"
+          version: ${{ env.PREMAKE_VERSION }}
 
       - name: Generate project files
         run: premake5 gmake2
