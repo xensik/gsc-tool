@@ -192,6 +192,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             break;
         }
         case opcode::OP_GetUndefined:
+        case opcode::OP_SafeDecTop:
         {
             stack_.push(expr_undefined::make(loc));
             break;
@@ -1118,7 +1119,6 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_CheckClearParams:
         case opcode::OP_CastFieldObject:
         case opcode::OP_CastBool:
-        case opcode::OP_SafeDecTop:
             break;
         case opcode::OP_CreateLocalVariable:
         case opcode::OP_RemoveLocalVariables:
