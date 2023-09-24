@@ -931,6 +931,8 @@ expr_field
 expr_size
     : expr_object DOT SIZE %prec SIZEOF
         { $$ = expr_size::make(@$, std::move($1)); }
+    | expr_string DOT SIZE %prec SIZEOF
+        { $$ = expr_size::make(@$, std::move($1)); }
     ;
 
 expr_paren
