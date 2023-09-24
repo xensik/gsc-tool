@@ -302,7 +302,10 @@ auto compiler::emit_stmt_waittill(stmt_waittill const& stm) -> void
 
     for (auto const& entry : stm.args->list)
     {
-        emit_opcode(opcode::OP_SafeSetWaittillVariableFieldCached, fmt::format("{}", variable_access(entry->as<expr_identifier>())));
+        if (entry->is<expr_undefined>())
+            emit_opcode(opcode::OP_SafeDecTop);
+        else
+            emit_opcode(opcode::OP_SafeSetWaittillVariableFieldCached, fmt::format("{}", variable_access(entry->as<expr_identifier>())));
     }
 
     emit_opcode(opcode::OP_ClearParams);
@@ -2003,12 +2006,15 @@ auto compiler::process_stmt_waittill(stmt_waittill const& stm) -> void
 {
     for (auto const& entry : stm.args->list)
     {
-        if (!entry->is<expr_identifier>())
+        if (!entry->is<expr_identifier>() && !entry->is<expr_undefined>())
         {
-            throw comp_error(entry->loc(), "illegal waittill param, must be a local variable");
+            throw comp_error(entry->loc(), "illegal waittill param, must be a local variable or undefined");
         }
 
-        variable_register(entry->as<expr_identifier>());
+        if (entry->is<expr_identifier>())
+        {
+            variable_register(entry->as<expr_identifier>());
+        }
     }
 }
 
