@@ -400,9 +400,14 @@ auto disassembler::disassemble_far_call(instruction& inst, bool thread) -> void
         }
 
         auto const file_id = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
-        auto const file_name = file_id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(file_id);
+        auto       file_name = file_id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(file_id);
         auto const func_id = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
         auto const func_name = func_id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(func_id);
+
+        if (file_name.ends_with(".gsc"))
+        {
+            file_name.resize(file_name.size() - 4);
+        }
 
         inst.data.emplace(inst.data.begin(), func_name);
         inst.data.emplace(inst.data.begin(), file_name);
@@ -472,7 +477,7 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
                 inst.data.push_back("default");
                 stack_.read_cstr(); // this should be always [0x01 0x00] unencrypted
             }
-            else if (value < 0x100000)
+            else if (value < 0x80000)
             {
                 if (type == switch_type::integer)
                     throw disasm_error("endswitch type mismatch");
