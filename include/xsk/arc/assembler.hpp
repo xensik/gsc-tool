@@ -25,7 +25,7 @@ class assembler
 
 public:
     assembler(context const* ctx);
-    auto assemble(assembly const& data) -> buffer;
+    auto assemble(assembly const& data, std::string const& string = "") -> buffer;
 
 private:
     auto assemble_function(function& func) -> void;
