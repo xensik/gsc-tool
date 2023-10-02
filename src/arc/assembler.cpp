@@ -14,7 +14,7 @@ assembler::assembler(context const* ctx) : ctx_{ ctx }, script_{ ctx->endian() =
 {
 }
 
-auto assembler::assemble(assembly const& data, std::string const& filename) -> buffer
+auto assembler::assemble(assembly const& data, std::string const& name) -> buffer
 {
     assembly_ = &data;
     script_.clear();
@@ -26,7 +26,7 @@ auto assembler::assemble(assembly const& data, std::string const& filename) -> b
     auto head = header{};
 
     script_.pos((ctx_->props() & props::headerxx) ? 0 : (ctx_->props() & props::header72) ? 72 : 64);
-    process_string(filename);
+    process_string(name);
 
     for (auto const& func : assembly_->functions)
     {
@@ -183,7 +183,7 @@ auto assembler::assemble(assembly const& data, std::string const& filename) -> b
     head.profile_count = 0;
 
     head.flags = 0;
-    head.name = resolve_string(filename);
+    head.name = resolve_string(name);
 
     auto endpos = script_.pos();
 
