@@ -228,6 +228,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> buffe
 
 auto assembler::assemble_function(function& func) -> void
 {
+    auto labels = std::unordered_map<u32, std::string>();
     func.index = script_.pos();
     func.size = 0;
     func_ = &func;
@@ -245,10 +246,11 @@ auto assembler::assemble_function(function& func) -> void
 
         if (itr != func.labels.end())
         {
-            func.labels.insert({ inst->index, itr->second });
-            func.labels.erase(old_idx);
+            labels.insert({ inst->index, itr->second });
         }
     }
+
+    func.labels = std::move(labels);
 
     script_.pos(func.index);
 
