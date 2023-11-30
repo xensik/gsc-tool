@@ -6,6 +6,7 @@
 #pragma once
 
 #include <cstdio>
+#include <cstring>
 #include <ctime>
 
 #include <algorithm>
