@@ -126,8 +126,8 @@ workspace "gsc-tool"
 
     if os.istarget("linux") then
         filter { "platforms:arm64" }
-            buildoptions "--target=arm64-linux-gnu"
-            linkoptions "--target=arm64-linux-gnu"
+            buildoptions "--target=aarch64-unknown-linux-gnu"
+            linkoptions "--target=aarch64-unknown-linux-gnu"
         filter {}
 
         -- use llvm's implementation of the C++ standard library
