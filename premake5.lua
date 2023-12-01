@@ -130,6 +130,11 @@ workspace "gsc-tool"
             linkoptions "--target=arm64-linux-gnu"
         filter {}
 
+        -- use llvm's implementation of the C++ standard library
+        buildoptions "-stdlib=libc++"
+        linkoptions "-stdlib=libc++"
+
+        -- always try to use lld. LD or Gold will not work
         linkoptions "-fuse-ld=lld"
     end
 
