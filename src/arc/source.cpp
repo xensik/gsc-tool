@@ -1410,7 +1410,7 @@ auto source::dump_expr_getdvarint(expr_getdvarint const& exp) -> void
 
 auto source::dump_expr_getdvarfloat(expr_getdvarfloat const& exp) -> void
 {
-    fmt::format_to(std::back_inserter(buf_), "getdvarflaot( ");
+    fmt::format_to(std::back_inserter(buf_), "getdvarfloat( ");
     dump_expr(*exp.arg);
     fmt::format_to(std::back_inserter(buf_), " )");
 }
