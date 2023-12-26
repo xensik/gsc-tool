@@ -682,7 +682,7 @@ auto context::load_header(std::string const& name) -> std::tuple<std::string con
         return { &itr->first, reinterpret_cast<char const*>(itr->second.data()), itr->second.size() };
     }
 
-    auto data = fs_callback_(name);
+    auto data = fs_callback_(name, *this);
 
     if (data.first.data == nullptr && data.first.size == 0 && !data.second.empty())
     {
@@ -711,7 +711,7 @@ auto context::load_include(std::string const& name) -> bool
         if (include_cache_.contains(name))
             return true;
 
-        auto file = fs_callback_(name);
+        auto file = fs_callback_(name, *this);
 
         if ((file.first.data == nullptr || file.first.size == 0) && file.second.empty())
             throw std::runtime_error("empty file");
