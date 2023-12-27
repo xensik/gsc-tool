@@ -18,10 +18,12 @@ class assembler
     assembly const* assembly_;
     utils::writer script_;
     utils::writer stack_;
+    utils::writer dev_map_;
+    u32 dev_map_inst_count_;
 
 public:
     assembler(context const* ctx);
-    auto assemble(assembly const& data) -> std::pair<buffer, buffer>;
+    auto assemble(assembly const& data) -> std::tuple<buffer, buffer, buffer>;
 
 private:
     auto assemble_function(function const& func) -> void;

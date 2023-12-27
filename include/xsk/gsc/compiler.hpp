@@ -28,6 +28,7 @@ class compiler
     bool can_continue_;
     bool developer_thread_;
     bool animload_;
+    std::pair<position::counter_type, position::counter_type> debug_pos_;
 
 public:
     compiler(context* ctx);

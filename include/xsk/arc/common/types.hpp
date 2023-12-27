@@ -6,9 +6,9 @@
 #pragma once
 
 #include "xsk/arc/common/asset.hpp"
+#include "xsk/arc/common/location.hpp"
 #include "xsk/arc/common/assembly.hpp"
 #include "xsk/arc/common/buffer.hpp"
-#include "xsk/arc/common/location.hpp"
 #include "xsk/arc/common/exception.hpp"
 #include "xsk/arc/common/lookahead.hpp"
 #include "xsk/arc/common/directive.hpp"

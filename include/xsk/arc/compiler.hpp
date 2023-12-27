@@ -25,6 +25,7 @@ class compiler
     bool can_break_;
     bool can_continue_;
     bool developer_thread_;
+    std::pair<position::counter_type, position::counter_type> debug_pos_;
 
 public:
     compiler(context* ctx);

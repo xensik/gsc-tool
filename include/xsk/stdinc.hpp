@@ -19,6 +19,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <regex>
 #include <set>

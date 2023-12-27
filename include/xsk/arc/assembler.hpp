@@ -17,6 +17,8 @@ class assembler
     function const* func_;
     assembly const* assembly_;
     utils::writer script_;
+    utils::writer dev_map_;
+    u32 dev_map_inst_count_;
     std::unordered_map<std::string, u16> strpool_;
     std::vector<export_ref> exports_;
     std::vector<import_ref> imports_;
@@ -25,7 +27,7 @@ class assembler
 
 public:
     assembler(context const* ctx);
-    auto assemble(assembly const& data, std::string const& name = {}) -> buffer;
+    auto assemble(assembly const& data, std::string const& name = {}) -> std::pair<buffer, buffer>;
 
 private:
     auto assemble_function(function& func) -> void;

@@ -166,6 +166,7 @@ struct instruction
     u32 size;
     opcode opcode;
     std::vector<std::string> data;
+    std::pair<position::counter_type, position::counter_type> pos;
 
     static auto make() -> instruction::ptr
     {

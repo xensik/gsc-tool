@@ -14,12 +14,15 @@ assembler::assembler(context const* ctx) : ctx_{ ctx }, script_{ ctx->endian() =
 {
 }
 
-auto assembler::assemble(assembly const& data) -> std::pair<buffer, buffer>
+auto assembler::assemble(assembly const& data) -> std::tuple<buffer, buffer, buffer>
 {
     assembly_ = &data;
     script_.clear();
     stack_.clear();
+    dev_map_.clear();
+    dev_map_inst_count_ = 0;
 
+    dev_map_.pos(sizeof(u32));
     script_.write<u8>(ctx_->opcode_id(opcode::OP_End));
 
     for (auto const& func : data.functions)
@@ -27,7 +30,12 @@ auto assembler::assemble(assembly const& data) -> std::pair<buffer, buffer>
         assemble_function(*func);
     }
 
-    return { buffer{ script_.data(), script_.pos() }, buffer{ stack_.data(), stack_.pos() } };
+    auto const dev_endpos = dev_map_.pos();
+    dev_map_.pos(0);
+    dev_map_.write<u32>(dev_map_inst_count_);
+    dev_map_.pos(dev_endpos);
+
+    return { buffer{ script_.data(), script_.pos() }, buffer{ stack_.data(), stack_.pos() }, buffer{ dev_map_.data(), dev_map_.pos() } };
 }
 
 auto assembler::assemble_function(function const& func) -> void
@@ -61,6 +69,11 @@ auto assembler::assemble_function(function const& func) -> void
 
 auto assembler::assemble_instruction(instruction const& inst) -> void
 {
+    dev_map_inst_count_++;
+    dev_map_.write<u32>(script_.pos());
+    dev_map_.write<position::counter_type>(inst.pos.first);
+    dev_map_.write<position::counter_type>(inst.pos.second);
+
     script_.write<u8>(ctx_->opcode_id(inst.opcode));
 
     switch (inst.opcode)
