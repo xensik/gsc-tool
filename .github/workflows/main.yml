@@ -1,4 +1,4 @@
-name: Build
+name: Main
 
 on:
   push:
@@ -166,13 +166,19 @@ jobs:
     needs: [ build-windows, build-macos, build-linux ]
     if: startsWith(github.ref, 'refs/tags/') && (github.event.base_ref == 'refs/heads/prod' || github.event.base_ref == 'refs/heads/dev')
     steps:
-      - name: Check out files
-        uses: actions/checkout@v4
-
       - name: Download Binaries
-        uses: actions/download-artifact@v3.0.2
-        with:
-          name: windows-x64-release
+        uses: actions/download-artifact@v3
+
+      - name: Compress Binaries
+        run: |
+          for dir in */; do
+            if [[ $dir == *"windows"* ]]; then
+              zip -r "${dir%/}.zip" "$dir"
+            else
+              tar -czvf "${dir%/}.tar.gz" "$dir"
+            fi
+          done
+        shell: bash
 
       - name: Create Release
         uses: "marvinpinto/action-automatic-releases@latest"
@@ -181,4 +187,20 @@ jobs:
           prerelease: false
           draft: true
           files: |
-            gsc-tool.exe
+            *.zip
+            *.tar.gz
+
+      - name: Checkout Dockerfile
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            Dockerfile
+          sparse-checkout-cone-mode: false
+
+      - name: Build and Publish Docker Image
+        uses: VaultVulp/gp-docker-action@1.6.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: gsc-tool
+          extract-git-tag: true
+          additional-image-tags: latest
