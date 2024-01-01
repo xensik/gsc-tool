@@ -374,7 +374,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x16A, "physicsexplosionsphere" }, // 0x140B39AB0
     { 0x16B, "_func_16B" }, // 0x140B3A770
     { 0x16C, "_func_16C" }, // 0x140B39FB0
-    { 0x16D, "_func_16D" }, // 0x140B4BA40
+    { 0x16D, "physicstrace" }, // 0x140B4BA40
     { 0x16E, "_func_16E" }, // 0x140B5B440
     { 0x16F, "playerphysicstrace" }, // 0x140B4BBE0
     { 0x170, "playfx" }, // 0x140B357C0
@@ -665,7 +665,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x28D, "physics_getclosestpointtocapsule" }, // 0x1405663F0
     { 0x28E, "physics_getclosestpoint" }, // 0x14055EE10
     { 0x28F, "physics_createcontents" }, // 0x1405639E0
-    { 0x290, "_func_290" }, // 0x14055FF80
+    { 0x290, "physics_getsurfacetypefromflags" }, // 0x14055FF80
     { 0x291, "_func_291" }, // 0x140AF4E00
     { 0x292, "_func_292" }, // 0x140AF49A0
     { 0x293, "_func_293" }, // 0x140B42ED0
@@ -730,7 +730,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2CE, "_func_2CE" }, // 0x140B5AC30
     { 0x2CF, "getmaxclients" }, // 0x140B3EC00
     { 0x2D0, "_func_2D0" }, // 0x140C71C80
-    { 0x2D1, "_func_2D1" }, // 0x140B3AAD0
+    { 0x2D1, "vectortopitch" }, // 0x140B3AAD0
     { 0x2D2, "getserverhostname" }, // 0x140B53F10
     { 0x2D3, "anglestoleft" }, // 0x140B3B7B0
     { 0x2D4, "_func_2D4" }, // 0x140B3F970
