@@ -92,9 +92,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x004F, "attacker" },
     { 0x0050, "attackeraccuracy" },
     { 0x0051, "attackercount" },
-//  { 0x0052, "" },
-//  { 0x0053, "" },
-//  { 0x0054, "" },
+    { 0x0052, "auto_ai" }, // AUTOADDED
+    { 0x0053, "auto_change" }, // AUTOADDED
+    { 0x0054, "auto_nonai" }, // AUTOADDED
     { 0x0055, "axis" },
 //  { 0x0056, "" },
 //  { 0x0057, "" },
@@ -124,37 +124,37 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x006F, "" },
 //  { 0x0070, "" },
     { 0x0071, "bt_eventlistener" },
-//  { 0x0072, "" },
-//  { 0x0073, "" },
-//  { 0x0074, "" },
+    { 0x0072, "bt_finalizebehavior" }, // AUTOADDED
+    { 0x0073, "bt_finalizeregistrar" }, // AUTOADDED
+    { 0x0074, "bt_getchildtaskid" }, // AUTOADDED
     { 0x0075, "bt_getdemeanor" },
 //  { 0x0076, "" },
     { 0x0077, "bt_init" },
-//  { 0x0078, "" },
-//  { 0x0079, "" },
-//  { 0x007A, "" },
-//  { 0x007B, "" },
-//  { 0x007C, "" },
-//  { 0x007D, "" },
-//  { 0x007E, "" },
-//  { 0x007F, "" },
-//  { 0x0080, "" },
-//  { 0x0081, "" },
-//  { 0x0082, "" },
-//  { 0x0083, "" },
-//  { 0x0084, "" },
-//  { 0x0085, "" },
-//  { 0x0086, "" },
-//  { 0x0087, "" },
-//  { 0x0088, "" },
-//  { 0x0089, "" },
-//  { 0x008A, "" },
-//  { 0x008B, "" },
-//  { 0x008C, "" },
-//  { 0x008D, "" },
-//  { 0x008E, "" },
-//  { 0x008F, "" },
-//  { 0x0090, "" },
+    { 0x0078, "bt_initactions" }, // AUTOADDED
+    { 0x0079, "bt_initnodetypes" }, // AUTOADDED
+    { 0x007A, "bt_initroot" }, // AUTOADDED
+    { 0x007B, "bt_istreeregistered" }, // AUTOADDED
+    { 0x007C, "bt_nativecopyaction" }, // AUTOADDED
+    { 0x007D, "bt_nativecopybehavior" }, // AUTOADDED
+    { 0x007E, "bt_nativeexecaction" }, // AUTOADDED
+    { 0x007F, "bt_nativefinalizeregistrar" }, // AUTOADDED
+    { 0x0080, "bt_nativeistreeregistered" }, // AUTOADDED
+    { 0x0081, "bt_nativeregisteraction" }, // AUTOADDED
+    { 0x0082, "bt_nativeregisterbehavior" }, // AUTOADDED
+    { 0x0083, "bt_nativeregisterbehaviortotree" }, // AUTOADDED
+    { 0x0084, "bt_nativeregistertree" }, // AUTOADDED
+    { 0x0085, "bt_nativesetregistrar" }, // AUTOADDED
+    { 0x0086, "bt_nativetick" }, // AUTOADDED
+    { 0x0087, "bt_negateresult" }, // AUTOADDED
+    { 0x0088, "bt_registeraction" }, // AUTOADDED
+    { 0x0089, "bt_registerbehavior" }, // AUTOADDED
+    { 0x008A, "bt_registerbehaviortotree" }, // AUTOADDED
+    { 0x008B, "bt_registerprefabtaskids" }, // AUTOADDED
+    { 0x008C, "bt_registertaskargs" }, // AUTOADDED
+    { 0x008D, "bt_registertree" }, // AUTOADDED
+    { 0x008E, "bt_setregistrar" }, // AUTOADDED
+    { 0x008F, "bt_terminateprevrunningaction" }, // AUTOADDED
+    { 0x0090, "bt_tick" }, // AUTOADDED
 //  { 0x0091, "" },
 //  { 0x0092, "" },
 //  { 0x0093, "" },
@@ -170,21 +170,21 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x009D, "classname" },
     { 0x009E, "clipdistance" },
     { 0x009F, "code_classname" },
-//  { 0x00A0, "" },
-//  { 0x00A1, "" },
-//  { 0x00A2, "" },
+    { 0x00A0, "code_damageradius" }, // AUTOADDED
+    { 0x00A1, "code_move" }, // AUTOADDED
+    { 0x00A2, "code_move_slide" }, // AUTOADDED
     { 0x00A3, "codecallback_agentadded" },
     { 0x00A4, "codecallback_agentdamaged" },
-//  { 0x00A5, "" },
+    { 0x00A5, "codecallback_agentimpaled" }, // AUTOADDED
     { 0x00A6, "codecallback_agentkilled" },
 //  { 0x00A7, "" },
 //  { 0x00A8, "" },
 //  { 0x00A9, "" },
-//  { 0x00AA, "" },
+    { 0x00AA, "codecallback_getprojectilespeedscale" }, // AUTOADDED
     { 0x00AB, "codecallback_hostmigration" },
-//  { 0x00AC, "" },
+    { 0x00AC, "codecallback_leaderdialog" }, // AUTOADDED
     { 0x00AD, "codecallback_playerconnect" },
-//  { 0x00AE, "" },
+    { 0x00AE, "codecallback_playerdamage" }, // AUTOADDED
     { 0x00AF, "codecallback_playerdisconnect" },
 //  { 0x00B0, "" },
 //  { 0x00B1, "" },
@@ -194,10 +194,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x00B5, "" },
 //  { 0x00B6, "" },
     { 0x00B7, "codecallback_startgametype" },
-//  { 0x00B8, "" },
+    { 0x00B8, "codecallback_vehicledamage" }, // AUTOADDED
     { 0x00B9, "color" },
-//  { 0x00BA, "" },
-//  { 0x00BB, "" },
+    { 0x00BA, "color_blind_toggled" }, // AUTOADDED
+    { 0x00BB, "combat" }, // AUTOADDED
     { 0x00BC, "combatmode" },
 //  { 0x00BD, "" },
 //  { 0x00BE, "" },
@@ -229,7 +229,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x00D8, "" },
 //  { 0x00D9, "" },
     { 0x00DA, "damage" },
-//  { 0x00DB, "" },
+    { 0x00DB, "damage_notdone" }, // AUTOADDED
     { 0x00DC, "damagedir" },
     { 0x00DD, "damagelocation" },
     { 0x00DE, "damagemod" },
@@ -242,7 +242,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x00E5, "" },
 //  { 0x00E6, "" },
     { 0x00E7, "deathinvulnerabletime" },
-//  { 0x00E8, "" },
+    { 0x00E8, "deathplant" }, // AUTOADDED
     { 0x00E9, "deaths" },
 //  { 0x00EA, "" },
     { 0x00EB, "delayeddeath" },
@@ -260,7 +260,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x00F7, "dodangerreact" },
     { 0x00F8, "doffar" },
     { 0x00F9, "dofnear" },
-//  { 0x00FA, "" },
+    { 0x00FA, "dog" }, // AUTOADDED
     { 0x00FB, "doghandler" },
     { 0x00FC, "doingambush" },
 //  { 0x00FD, "" },
@@ -269,15 +269,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x0100, "downaimlimit" },
     { 0x0101, "drawoncompass" },
     { 0x0102, "dropweapon" },
-//  { 0x0103, "" },
-//  { 0x0104, "" },
-//  { 0x0105, "" },
+    { 0x0103, "eftarc" }, // AUTOADDED
+    { 0x0104, "empty" }, // AUTOADDED
+    { 0x0105, "empty_offhand" }, // AUTOADDED
     { 0x0106, "enable" },
     { 0x0107, "enablehudlighting" },
     { 0x0108, "enableshadows" },
-//  { 0x0109, "" },
-//  { 0x010A, "" },
-//  { 0x010B, "" },
+    { 0x0109, "end_firing" }, // AUTOADDED
+    { 0x010A, "end_firing_left" }, // AUTOADDED
+    { 0x010B, "end_script" }, // AUTOADDED
     { 0x010C, "enemy" },
 //  { 0x010D, "" },
 //  { 0x010E, "" },
@@ -318,12 +318,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x0131, "" },
     { 0x0132, "fixednode" },
     { 0x0133, "fixednodesaferadius" },
-//  { 0x0134, "" },
-//  { 0x0135, "" },
-//  { 0x0136, "" },
-//  { 0x0137, "" },
-//  { 0x0138, "" },
-//  { 0x0139, "" },
+    { 0x0134, "flags" }, // AUTOADDED
+    { 0x0135, "flash" }, // AUTOADDED
+    { 0x0136, "flashbang" }, // AUTOADDED
+    { 0x0137, "follow" }, // AUTOADDED
+    { 0x0138, "followmax" }, // AUTOADDED
+    { 0x0139, "followmin" }, // AUTOADDED
     { 0x013A, "font" },
     { 0x013B, "fontscale" },
     { 0x013C, "footstepdetectdist" },
@@ -333,25 +333,25 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x0140, "forcespectatorclient" },
 //  { 0x0141, "" },
     { 0x0142, "foreground" },
-//  { 0x0143, "" },
+    { 0x0143, "forward" }, // AUTOADDED
     { 0x0144, "fov" },
     { 0x0145, "fovcosine" },
     { 0x0146, "fovcosinebusy" },
     { 0x0147, "fovcosinez" },
 //  { 0x0148, "" },
 //  { 0x0149, "" },
-//  { 0x014A, "" },
+    { 0x014A, "free" }, // AUTOADDED
     { 0x014B, "freecamera" },
 //  { 0x014C, "" },
 //  { 0x014D, "" },
 //  { 0x014E, "" },
     { 0x014F, "frontshieldanglecos" },
     { 0x0150, "game_extrainfo" },
-//  { 0x0151, "" },
-//  { 0x0152, "" },
+    { 0x0151, "generatenavmesh" }, // AUTOADDED
+    { 0x0152, "glass_destroyed" }, // AUTOADDED
     { 0x0153, "glowalpha" },
     { 0x0154, "glowcolor" },
-//  { 0x0155, "" },
+    { 0x0155, "goal" }, // AUTOADDED
     { 0x0156, "goalnode" },
 //  { 0x0157, "" },
 //  { 0x0158, "" },
@@ -362,17 +362,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x015D, "goingtoruntopos" },
 //  { 0x015E, "" },
     { 0x015F, "grenade" },
-//  { 0x0160, "" },
-//  { 0x0161, "" },
+    { 0x0160, "grenade_fire" }, // AUTOADDED
+    { 0x0161, "grenade_pullback" }, // AUTOADDED
     { 0x0162, "grenadeammo" },
     { 0x0163, "grenadeawareness" },
-//  { 0x0164, "" },
+    { 0x0164, "grenadedanger" }, // AUTOADDED
     { 0x0165, "grenadereturnthrowchance" },
     { 0x0166, "grenadeweapon" },
-//  { 0x0167, "" },
+    { 0x0167, "groundEntChanged" }, // AUTOADDED
     { 0x0168, "groundtype" },
-//  { 0x0169, "" },
-//  { 0x016A, "" },
+    { 0x0169, "gun_ads" }, // AUTOADDED
+    { 0x016A, "gun_silencer" }, // AUTOADDED
     { 0x016B, "gunblockedbywall" },
 //  { 0x016C, "" },
 //  { 0x016D, "" },
@@ -384,16 +384,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x0173, "height" },
     { 0x0174, "hidein3rdperson" },
     { 0x0175, "hidewhendead" },
-//  { 0x0176, "" },
+    { 0x0176, "hidewhenindemo" }, // AUTOADDED
     { 0x0177, "hidewheninmenu" },
-//  { 0x0178, "" },
+    { 0x0178, "high_priority" }, // AUTOADDED
     { 0x0179, "highlyawareradius" },
     { 0x017A, "hindlegstraceoffset" },
-//  { 0x017B, "" },
-//  { 0x017C, "" },
+    { 0x017B, "hintstring" }, // AUTOADDED
+    { 0x017C, "hit_by_missile" }, // AUTOADDED
     { 0x017D, "horzalign" },
-//  { 0x017E, "" },
-//  { 0x017F, "" },
+    { 0x017E, "host_sucks_end_game" }, // AUTOADDED
+    { 0x017F, "human" }, // AUTOADDED
     { 0x0180, "ignoreall" },
     { 0x0181, "ignoreclosefoliage" },
     { 0x0182, "ignoreexplosionevents" },
@@ -403,9 +403,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x0186, "ignoresuppression" },
     { 0x0187, "ignoretriggers" },
     { 0x0188, "index" },
-//  { 0x0189, "" },
-//  { 0x018A, "" },
-//  { 0x018B, "" },
+    { 0x0189, "infinite_energy" }, // AUTOADDED
+    { 0x018A, "info_notnull" }, // AUTOADDED
+    { 0x018B, "info_player_start" }, // AUTOADDED
     { 0x018C, "init" },
     { 0x018D, "initstructs" },
     { 0x018E, "insolid" },
@@ -432,17 +432,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x01A3, "keepclaimednode" },
     { 0x01A4, "keepclaimednodeifvalid" },
     { 0x01A5, "keepnodeduringscriptedanim" },
-//  { 0x01A6, "" },
-//  { 0x01A7, "" },
-//  { 0x01A8, "" },
+    { 0x01A6, "key1" }, // AUTOADDED
+    { 0x01A7, "key2" }, // AUTOADDED
+    { 0x01A8, "killanimscript" }, // AUTOADDED
     { 0x01A9, "killcamentity" },
     { 0x01AA, "killcamentitylookat" },
     { 0x01AB, "kills" },
-//  { 0x01AC, "" },
+    { 0x01AC, "known_event" }, // AUTOADDED
     { 0x01AD, "label" },
-//  { 0x01AE, "" },
-//  { 0x01AF, "" },
-//  { 0x01B0, "" },
+    { 0x01AE, "ladder_down" }, // AUTOADDED
+    { 0x01AF, "ladder_up" }, // AUTOADDED
+    { 0x01B0, "land" }, // AUTOADDED
     { 0x01B1, "lastattacker" },
     { 0x01B2, "lastenemysightpos" },
     { 0x01B3, "laststand" },
@@ -464,7 +464,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x01C3, "lookright" },
     { 0x01C4, "looktarget" },
     { 0x01C5, "lookup" },
-//  { 0x01C6, "" },
+    { 0x01C6, "low_priority" }, // AUTOADDED
     { 0x01C7, "lowresbackground" },
 //  { 0x01C8, "" },
 //  { 0x01C9, "" },
@@ -513,9 +513,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x01F4, "" },
     { 0x01F5, "movemode" },
     { 0x01F6, "name" },
-//  { 0x01F7, "" },
-//  { 0x01F8, "" },
-//  { 0x01F9, "" },
+    { 0x01F7, "navvolume_ignoreglass" }, // AUTOADDED
+    { 0x01F8, "navvolume_worldonly" }, // AUTOADDED
+    { 0x01F9, "near_goal" }, // AUTOADDED
     { 0x01FA, "nearz" },
 //  { 0x01FB, "" },
 //  { 0x01FC, "" },
@@ -534,7 +534,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x0209, "" },
     { 0x020A, "nodeoffsetpos" },
     { 0x020B, "nododgemove" },
-//  { 0x020C, "" },
+    { 0x020C, "nogravity" }, // AUTOADDED
     { 0x020D, "nogrenadereturnthrow" },
 //  { 0x020E, "" },
 //  { 0x020F, "" },
@@ -552,25 +552,25 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x021B, "onlygoodnearestnodes" },
     { 0x021C, "onlytakedamagefromplayer" },
     { 0x021D, "oriented" },
-//  { 0x021E, "" },
+    { 0x021E, "orientto_complete" }, // AUTOADDED
     { 0x021F, "origin" },
 //  { 0x0220, "" },
 //  { 0x0221, "" },
     { 0x0222, "owner" },
     { 0x0223, "pacifist" },
     { 0x0224, "pacifistwait" },
-//  { 0x0225, "" },
-//  { 0x0226, "" },
-//  { 0x0227, "" },
+    { 0x0225, "pain" }, // AUTOADDED
+    { 0x0226, "parentangles" }, // AUTOADDED
+    { 0x0227, "parentindex" }, // AUTOADDED
     { 0x0228, "parentname" },
-//  { 0x0229, "" },
-//  { 0x022A, "" },
-//  { 0x022B, "" },
-//  { 0x022C, "" },
-//  { 0x022D, "" },
-//  { 0x022E, "" },
-//  { 0x022F, "" },
-//  { 0x0230, "" },
+    { 0x0229, "parentpos" }, // AUTOADDED
+    { 0x022A, "partname" }, // AUTOADDED
+    { 0x022B, "path_blocked" }, // AUTOADDED
+    { 0x022C, "path_changed" }, // AUTOADDED
+    { 0x022D, "path_dir_change" }, // AUTOADDED
+    { 0x022E, "path_enemy" }, // AUTOADDED
+    { 0x022F, "path_need_dodge" }, // AUTOADDED
+    { 0x0230, "path_set" }, // AUTOADDED
     { 0x0231, "pathenemyfightdist" },
     { 0x0232, "pathenemylookahead" },
     { 0x0233, "pathgoalpos" },
@@ -585,13 +585,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x023C, "" },
     { 0x023D, "player" },
 //  { 0x023E, "" },
-//  { 0x023F, "" },
-//  { 0x0240, "" },
-//  { 0x0241, "" },
-//  { 0x0242, "" },
-//  { 0x0243, "" },
-//  { 0x0244, "" },
-//  { 0x0245, "" },
+    { 0x023F, "playercardbackground" }, // AUTOADDED
+    { 0x0240, "playercardpatch" }, // AUTOADDED
+    { 0x0241, "playercardpatchbacking" }, // AUTOADDED
+    { 0x0242, "playercontrol" }, // AUTOADDED
+    { 0x0243, "playing" }, // AUTOADDED
+    { 0x0244, "point" }, // AUTOADDED
+    { 0x0245, "position" }, // AUTOADDED
     { 0x0246, "postsharpturnlookaheaddist" },
     { 0x0247, "precache" },
 //  { 0x0248, "" },
@@ -627,13 +627,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x0266, "" },
     { 0x0267, "right" },
     { 0x0268, "rightaimlimit" },
-//  { 0x0269, "" },
-//  { 0x026A, "" },
-//  { 0x026B, "" },
-//  { 0x026C, "" },
+    { 0x0269, "rightarc" }, // AUTOADDED
+    { 0x026A, "rigindex" }, // AUTOADDED
+    { 0x026B, "riotshield_damaged" }, // AUTOADDED
+    { 0x026C, "rocket" }, // AUTOADDED
 //  { 0x026D, "" },
     { 0x026E, "rotation" },
-//  { 0x026F, "" },
+    { 0x026F, "run" }, // AUTOADDED
     { 0x0270, "runcost" },
 //  { 0x0271, "" },
     { 0x0272, "safetochangescript" },
@@ -649,9 +649,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x027C, "script_linkname" },
 //  { 0x027D, "" },
     { 0x027E, "script_noteworthy" },
-//  { 0x027F, "" },
-//  { 0x0280, "" },
-//  { 0x0281, "" },
+    { 0x027F, "script_origin" }, // AUTOADDED
+    { 0x0280, "script_parent" }, // AUTOADDED
+    { 0x0281, "script_parentname" }, // AUTOADDED
     { 0x0282, "script_pushable" },
 //  { 0x0283, "" },
 //  { 0x0284, "" },
@@ -676,7 +676,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x0297, "fovground" },
 //  { 0x0298, "" },
     { 0x0299, "sightlatency" },
-//  { 0x029A, "" },
+    { 0x029A, "silenced_shot" }, // AUTOADDED
     { 0x029B, "slidevelocity" },
 //  { 0x029C, "" },
 //  { 0x029D, "" },
@@ -695,12 +695,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x02AA, "spaceship_rotaccel" },
     { 0x02AB, "spaceship_rotvel" },
     { 0x02AC, "spaceship_vel" },
-//  { 0x02AD, "" },
-//  { 0x02AE, "" },
+    { 0x02AD, "spawned" }, // AUTOADDED
+    { 0x02AE, "spawner" }, // AUTOADDED
     { 0x02AF, "spawnflags" },
     { 0x02B0, "spectatekillcam" },
-//  { 0x02B1, "" },
-//  { 0x02B2, "" },
+    { 0x02B1, "spectating_cycle" }, // AUTOADDED
+    { 0x02B2, "spectator" }, // AUTOADDED
     { 0x02B3, "speed" },
 //  { 0x02B4, "" },
 //  { 0x02B5, "" },
@@ -744,75 +744,75 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x02DB, "" },
     { 0x02DC, "syncedmeleetarget" },
     { 0x02DD, "tag" },
-//  { 0x02DE, "" },
-//  { 0x02DF, "" },
-//  { 0x02E0, "" },
-//  { 0x02E1, "" },
-//  { 0x02E2, "" },
-//  { 0x02E3, "" },
-//  { 0x02E4, "" },
-//  { 0x02E5, "" },
-//  { 0x02E6, "" },
-//  { 0x02E7, "" },
-//  { 0x02E8, "" },
-//  { 0x02E9, "" },
-//  { 0x02EA, "" },
-//  { 0x02EB, "" },
-//  { 0x02EC, "" },
-//  { 0x02ED, "" },
-//  { 0x02EE, "" },
-//  { 0x02EF, "" },
-//  { 0x02F0, "" },
-//  { 0x02F1, "" },
-//  { 0x02F2, "" },
-//  { 0x02F3, "" },
-//  { 0x02F4, "" },
-//  { 0x02F5, "" },
-//  { 0x02F6, "" },
-//  { 0x02F7, "" },
-//  { 0x02F8, "" },
-//  { 0x02F9, "" },
-//  { 0x02FA, "" },
-//  { 0x02FB, "" },
-//  { 0x02FC, "" },
-//  { 0x02FD, "" },
-//  { 0x02FE, "" },
-//  { 0x02FF, "" },
-//  { 0x0300, "" },
-//  { 0x0301, "" },
-//  { 0x0302, "" },
-//  { 0x0303, "" },
-//  { 0x0304, "" },
-//  { 0x0305, "" },
-//  { 0x0306, "" },
-//  { 0x0307, "" },
-//  { 0x0308, "" },
-//  { 0x0309, "" },
-//  { 0x030A, "" },
-//  { 0x030B, "" },
-//  { 0x030C, "" },
-//  { 0x030D, "" },
-//  { 0x030E, "" },
-//  { 0x030F, "" },
-//  { 0x0310, "" },
-//  { 0x0311, "" },
-//  { 0x0312, "" },
-//  { 0x0313, "" },
-//  { 0x0314, "" },
-//  { 0x0315, "" },
-//  { 0x0316, "" },
-//  { 0x0317, "" },
-//  { 0x0318, "" },
-//  { 0x0319, "" },
-//  { 0x031A, "" },
-//  { 0x031B, "" },
-//  { 0x031C, "" },
-//  { 0x031D, "" },
-//  { 0x031E, "" },
-//  { 0x031F, "" },
-//  { 0x0320, "" },
-//  { 0x0321, "" },
-//  { 0x0322, "" },
+    { 0x02DE, "tag_aim" }, // AUTOADDED
+    { 0x02DF, "tag_aim_animated" }, // AUTOADDED
+    { 0x02E0, "tag_aim_pivot" }, // AUTOADDED
+    { 0x02E1, "tag_barrel" }, // AUTOADDED
+    { 0x02E2, "tag_blade_off" }, // AUTOADDED
+    { 0x02E3, "tag_body" }, // AUTOADDED
+    { 0x02E4, "tag_brass" }, // AUTOADDED
+    { 0x02E5, "tag_butt" }, // AUTOADDED
+    { 0x02E6, "tag_cambone" }, // AUTOADDED
+    { 0x02E7, "tag_camera" }, // AUTOADDED
+    { 0x02E8, "tag_charge_fx01" }, // AUTOADDED
+    { 0x02E9, "tag_charge_fx02" }, // AUTOADDED
+    { 0x02EA, "tag_charge_fx03" }, // AUTOADDED
+    { 0x02EB, "tag_charge_fx04" }, // AUTOADDED
+    { 0x02EC, "tag_charge_fx05" }, // AUTOADDED
+    { 0x02ED, "tag_charge_fx06" }, // AUTOADDED
+    { 0x02EE, "tag_charge_fx07" }, // AUTOADDED
+    { 0x02EF, "tag_charge_fx08" }, // AUTOADDED
+    { 0x02F0, "tag_charge_fx09" }, // AUTOADDED
+    { 0x02F1, "tag_charge_fx10" }, // AUTOADDED
+    { 0x02F2, "tag_charge_fx11" }, // AUTOADDED
+    { 0x02F3, "tag_charge_fx12" }, // AUTOADDED
+    { 0x02F4, "tag_charge_fx13" }, // AUTOADDED
+    { 0x02F5, "tag_charge_fx14" }, // AUTOADDED
+    { 0x02F6, "tag_charge_fx15" }, // AUTOADDED
+    { 0x02F7, "tag_charge_fx16" }, // AUTOADDED
+    { 0x02F8, "tag_clip" }, // AUTOADDED
+    { 0x02F9, "tag_detach" }, // AUTOADDED
+    { 0x02FA, "tag_engine_left" }, // AUTOADDED
+    { 0x02FB, "tag_engine_right" }, // AUTOADDED
+    { 0x02FC, "tag_eotech_reticle" }, // AUTOADDED
+    { 0x02FD, "tag_eye" }, // AUTOADDED
+    { 0x02FE, "tag_flash" }, // AUTOADDED
+    { 0x02FF, "tag_flash_2" }, // AUTOADDED
+    { 0x0300, "tag_flash_silenced" }, // AUTOADDED
+    { 0x0301, "tag_fx" }, // AUTOADDED
+    { 0x0302, "tag_gasmask" }, // AUTOADDED
+    { 0x0303, "tag_gasmask2" }, // AUTOADDED
+    { 0x0304, "tag_glass_ads" }, // AUTOADDED
+    { 0x0305, "tag_glass_ads2" }, // AUTOADDED
+    { 0x0306, "tag_glass_hip" }, // AUTOADDED
+    { 0x0307, "tag_glass_hip2" }, // AUTOADDED
+    { 0x0308, "tag_ik_loc_le" }, // AUTOADDED
+    { 0x0309, "tag_ik_loc_le_foregrip" }, // AUTOADDED
+    { 0x030A, "tag_ik_loc_le_launcher" }, // AUTOADDED
+    { 0x030B, "tag_ik_loc_le_shotgun" }, // AUTOADDED
+    { 0x030C, "tag_inhand" }, // AUTOADDED
+    { 0x030D, "tag_knife_fx" }, // AUTOADDED
+    { 0x030E, "tag_laser" }, // AUTOADDED
+    { 0x030F, "tag_launcher" }, // AUTOADDED
+    { 0x0310, "tag_magnifier_eotech_reticle" }, // AUTOADDED
+    { 0x0311, "tag_motion_tracker_bl" }, // AUTOADDED
+    { 0x0312, "tag_motion_tracker_br" }, // AUTOADDED
+    { 0x0313, "tag_motion_tracker_fx" }, // AUTOADDED
+    { 0x0314, "tag_motion_tracker_tl" }, // AUTOADDED
+    { 0x0315, "tag_origin" }, // AUTOADDED
+    { 0x0316, "tag_player" }, // AUTOADDED
+    { 0x0317, "tag_popout" }, // AUTOADDED
+    { 0x0318, "tag_reticle_acog" }, // AUTOADDED
+    { 0x0319, "tag_reticle_hamr" }, // AUTOADDED
+    { 0x031A, "tag_reticle_on" }, // AUTOADDED
+    { 0x031B, "tag_reticle_red_dot" }, // AUTOADDED
+    { 0x031C, "tag_reticle_reflex" }, // AUTOADDED
+    { 0x031D, "tag_reticle_tavor_scope" }, // AUTOADDED
+    { 0x031E, "tag_reticle_thermal_scope" }, // AUTOADDED
+    { 0x031F, "tag_shield_back" }, // AUTOADDED
+    { 0x0320, "tag_shotgun" }, // AUTOADDED
+    { 0x0321, "tag_show_alt" }, // AUTOADDED
+    { 0x0322, "tag_stowed_back" }, // AUTOADDED
 //  { 0x0323, "" },
 //  { 0x0324, "" },
 //  { 0x0325, "" },
@@ -831,16 +831,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x0332, "" },
 //  { 0x0333, "" },
     { 0x0334, "target" },
-//  { 0x0335, "" },
+    { 0x0335, "target_script_trigger" }, // AUTOADDED
     { 0x0336, "targetname" },
     { 0x0337, "team" },
-//  { 0x0338, "" },
-//  { 0x0339, "" },
-//  { 0x033A, "" },
+    { 0x0338, "team3" }, // AUTOADDED
+    { 0x0339, "teammode_axisallies" }, // AUTOADDED
+    { 0x033A, "teammode_ffa" }, // AUTOADDED
     { 0x033B, "teammovewaittime" },
-//  { 0x033C, "" },
+    { 0x033C, "thermal" }, // AUTOADDED
     { 0x033D, "thermalbodymaterial" },
-//  { 0x033E, "" },
+    { 0x033E, "third_person" }, // AUTOADDED
     { 0x033F, "threatbias" },
     { 0x0340, "threatbiasgroup" },
     { 0x0341, "threatsight" },
@@ -877,8 +877,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x0360, "" },
 //  { 0x0361, "" },
     { 0x0362, "turretinvulnerability" },
-//  { 0x0363, "" },
-//  { 0x0364, "" },
+    { 0x0363, "turretownerchange" }, // AUTOADDED
+    { 0x0364, "turretstatechange" }, // AUTOADDED
     { 0x0365, "type" },
 //  { 0x0366, "" },
     { 0x0367, "up" },
@@ -899,17 +899,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x0376, "veh_pathdir" },
     { 0x0377, "veh_pathspeed" },
     { 0x0378, "veh_pathtype" },
-//  { 0x0379, "" },
+    { 0x0379, "veh_predictedcollision" }, // AUTOADDED
     { 0x037A, "veh_speed" },
     { 0x037B, "veh_throttle" },
     { 0x037C, "veh_topspeed" },
     { 0x037D, "veh_transmission" },
-//  { 0x037E, "" },
-//  { 0x037F, "" },
-//  { 0x0380, "" },
+    { 0x037E, "vehicle_dismount" }, // AUTOADDED
+    { 0x037F, "vehicle_mount" }, // AUTOADDED
+    { 0x0380, "vehicletype" }, // AUTOADDED
     { 0x0381, "velocity" },
     { 0x0382, "vertalign" },
-//  { 0x0383, "" },
+    { 0x0383, "view_jostle" }, // AUTOADDED
     { 0x0384, "visionsetmissilecam" },
     { 0x0385, "visionsetmissilecamduration" },
     { 0x0386, "visionsetnaked" },
@@ -925,25 +925,25 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x0390, "" },
     { 0x0391, "walkdist" },
     { 0x0392, "walkdistfacingmotion" },
-//  { 0x0393, "" },
+    { 0x0393, "waypoint_reached" }, // AUTOADDED
     { 0x0394, "weapon" },
-//  { 0x0395, "" },
-//  { 0x0396, "" },
-//  { 0x0397, "" },
-//  { 0x0398, "" },
-//  { 0x0399, "" },
-//  { 0x039A, "" },
-//  { 0x039B, "" },
+    { 0x0395, "weapon_change" }, // AUTOADDED
+    { 0x0396, "weapon_dropped" }, // AUTOADDED
+    { 0x0397, "weapon_fired" }, // AUTOADDED
+    { 0x0398, "weapon_switch_started" }, // AUTOADDED
+    { 0x0399, "weapon_taken" }, // AUTOADDED
+    { 0x039A, "weaponchange" }, // AUTOADDED
+    { 0x039B, "weaponinfo" }, // AUTOADDED
     { 0x039C, "weaponname" },
 //  { 0x039D, "" },
 //  { 0x039E, "" },
     { 0x039F, "width" },
-//  { 0x03A0, "" },
-//  { 0x03A1, "" },
+    { 0x03A0, "world" }, // AUTOADDED
+    { 0x03A1, "worldspawn" }, // AUTOADDED
     { 0x03A2, "x" },
     { 0x03A3, "xuid" },
     { 0x03A4, "y" },
-//  { 0x03A5, "" },
+    { 0x03A5, "yawconvergencetime" }, // AUTOADDED
     { 0x03A6, "z" },
 //  { 0x03A7, "" },
 //  { 0x03A8, "" },
@@ -2751,7 +2751,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x0AB2, "scripts/mp/gestures" },
     { 0x0AB3, "scripts/mp/global_fx" },
     { 0x0AB4, "scripts/mp/global_fx_code" },
-//  { 0x0AB5, "" },
+    { 0x0AB5, "scripts/mp/globalentities" }, // AUTOADDED
     { 0x0AB6, "scripts/mp/globallogic" },
 //  { 0x0AB7, "" },
     { 0x0AB8, "scripts/mp/healthoverlay" },
@@ -2881,8 +2881,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x0B34, "" },
     { 0x0B35, "scripts/sp/gameskill" },
     { 0x0B36, "scripts/sp/geo_mover" },
-//  { 0x0B37, "" },
-//  { 0x0B38, "" },
+    { 0x0B37, "scripts/sp/gibbing" }, // AUTOADDED
+    { 0x0B38, "scripts/sp/glass" }, // AUTOADDED
     { 0x0B39, "scripts/sp/global_fx" },
     { 0x0B3A, "scripts/sp/global_fx_code" },
 //  { 0x0B3B, "" },
@@ -4472,7 +4472,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x116B, "" },
 //  { 0x116C, "" },
 //  { 0x116D, "" },
-//  { 0x116E, "" },
+    { 0x116E, "_allowbattleslide" }, // AUTOADDED
 //  { 0x116F, "" },
 //  { 0x1170, "" },
 //  { 0x1171, "" },
@@ -4510,14 +4510,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1191, "" },
 //  { 0x1192, "" },
 //  { 0x1193, "" },
-//  { 0x1194, "" },
-//  { 0x1195, "" },
-//  { 0x1196, "" },
+    { 0x1194, "_baseeffect" }, // AUTOADDED
+    { 0x1195, "_baseeffectenemy" }, // AUTOADDED
+    { 0x1196, "_baseeffectfriendly" }, // AUTOADDED
 //  { 0x1197, "" },
     { 0x1198, "_blackboard" },
 //  { 0x1199, "" },
 //  { 0x119A, "" },
-//  { 0x119B, "" },
+    { 0x119B, "_box_setactivehelper" }, // AUTOADDED
 //  { 0x119C, "" },
 //  { 0x119D, "" },
 //  { 0x119E, "" },
@@ -4594,8 +4594,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11E5, "" },
 //  { 0x11E6, "" },
 //  { 0x11E7, "" },
-//  { 0x11E8, "" },
-//  { 0x11E9, "" },
+    { 0x11E8, "_domflageffect" }, // AUTOADDED
+    { 0x11E9, "_domflagpulseeffect" }, // AUTOADDED
 //  { 0x11EA, "" },
 //  { 0x11EB, "" },
 //  { 0x11EC, "" },
@@ -4754,11 +4754,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1285, "" },
 //  { 0x1286, "" },
 //  { 0x1287, "" },
-//  { 0x1288, "" },
-//  { 0x1289, "" },
-//  { 0x128A, "" },
-//  { 0x128B, "" },
-//  { 0x128C, "" },
+    { 0x1288, "_flageffect" }, // AUTOADDED
+    { 0x1289, "_flagradiuseffect" }, // AUTOADDED
+    { 0x128A, "_freeze_until_phototaken" }, // AUTOADDED
+    { 0x128B, "_freezecontrols" }, // AUTOADDED
+    { 0x128C, "_freezelookcontrols" }, // AUTOADDED
     { 0x128D, "_fx" },
 //  { 0x128E, "" },
 //  { 0x128F, "" },
@@ -4798,9 +4798,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12B1, "" },
 //  { 0x12B2, "" },
 //  { 0x12B3, "" },
-//  { 0x12B4, "" },
+    { 0x12B4, "_getplayerscore" }, // AUTOADDED
 //  { 0x12B5, "" },
-//  { 0x12B6, "" },
+    { 0x12B6, "_getteamscore" }, // AUTOADDED
 //  { 0x12B7, "" },
 //  { 0x12B8, "" },
 //  { 0x12B9, "" },
@@ -4831,11 +4831,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12D2, "" },
 //  { 0x12D3, "" },
 //  { 0x12D4, "" },
-//  { 0x12D5, "" },
+    { 0x12D5, "_hardpointeffect" }, // AUTOADDED
 //  { 0x12D6, "" },
 //  { 0x12D7, "" },
 //  { 0x12D8, "" },
-//  { 0x12D9, "" },
+    { 0x12D9, "_hidefromplayer" }, // AUTOADDED
 //  { 0x12DA, "" },
 //  { 0x12DB, "" },
 //  { 0x12DC, "" },
@@ -5098,7 +5098,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13DD, "" },
 //  { 0x13DE, "" },
 //  { 0x13DF, "" },
-//  { 0x13E0, "" },
+    { 0x13E0, "_setvehgoalpos" }, // AUTOADDED
 //  { 0x13E1, "" },
 //  { 0x13E2, "" },
 //  { 0x13E3, "" },
@@ -5187,7 +5187,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1436, "" },
 //  { 0x1437, "" },
 //  { 0x1438, "" },
-//  { 0x1439, "" },
+    { 0x1439, "_useperkenabled" }, // AUTOADDED
     { 0x143A, "_validateattacker" },
 //  { 0x143B, "" },
 //  { 0x143C, "" },
@@ -5426,13 +5426,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1525, "" },
 //  { 0x1526, "" },
     { 0x1527, "aborted" },
-//  { 0x1528, "" },
-//  { 0x1529, "" },
-//  { 0x152A, "" },
-//  { 0x152B, "" },
-//  { 0x152C, "" },
-//  { 0x152D, "" },
-//  { 0x152E, "" },
+    { 0x1528, "abortextractpickup" }, // AUTOADDED
+    { 0x1529, "abortlevel" }, // AUTOADDED
+    { 0x152A, "abortmonitoredweaponswitch" }, // AUTOADDED
+    { 0x152B, "abortreliableweaponswitch" }, // AUTOADDED
+    { 0x152C, "abortshufflecleanup" }, // AUTOADDED
+    { 0x152D, "above_pain_breathing_sfx_threshold" }, // AUTOADDED
+    { 0x152E, "abs_int" }, // AUTOADDED
     { 0x152F, "absangleclamp180" },
 //  { 0x1530, "" },
 //  { 0x1531, "" },
@@ -5441,7 +5441,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x1534, "absyawtoenemy2d" },
     { 0x1535, "absyawtoenemy" },
     { 0x1536, "absyawtoorigin" },
-//  { 0x1537, "" },
+    { 0x1537, "gunship" }, // AUTOADDED
 //  { 0x1538, "" },
 //  { 0x1539, "" },
 //  { 0x153A, "" },
@@ -5451,7 +5451,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x153E, "" },
 //  { 0x153F, "" },
 //  { 0x1540, "" },
-//  { 0x1541, "" },
+    { 0x1541, "gunshipplayer" }, // AUTOADDED
 //  { 0x1542, "" },
 //  { 0x1543, "" },
 //  { 0x1544, "" },
@@ -5497,11 +5497,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x156C, "" },
 //  { 0x156D, "" },
 //  { 0x156E, "" },
-//  { 0x156F, "" },
+    { 0x156F, "acquirecannontarget" }, // AUTOADDED
 //  { 0x1570, "" },
 //  { 0x1571, "" },
 //  { 0x1572, "" },
-//  { 0x1573, "" },
+    { 0x1573, "acquireturrettarget" }, // AUTOADDED
 //  { 0x1574, "" },
 //  { 0x1575, "" },
 //  { 0x1576, "" },
@@ -5643,7 +5643,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x15FE, "" },
 //  { 0x15FF, "" },
 //  { 0x1600, "" },
-//  { 0x1601, "" },
+    { 0x1601, "activateagent" }, // AUTOADDED
 //  { 0x1602, "" },
 //  { 0x1603, "" },
 //  { 0x1604, "" },
@@ -5653,7 +5653,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1608, "" },
 //  { 0x1609, "" },
 //  { 0x160A, "" },
-//  { 0x160B, "" },
+    { 0x160B, "activatelifepackboost" }, // AUTOADDED
 //  { 0x160C, "" },
 //  { 0x160D, "" },
 //  { 0x160E, "" },
@@ -5884,7 +5884,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x16EF, "" },
 //  { 0x16F0, "" },
 //  { 0x16F1, "" },
-//  { 0x16F2, "" },
+    { 0x16F2, "add_humanoid_agent" }, // AUTOADDED
     { 0x16F3, "add_init_script" },
 //  { 0x16F4, "" },
 //  { 0x16F5, "" },
@@ -5952,7 +5952,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1733, "" },
     { 0x1734, "add_reactive_fx" },
 //  { 0x1735, "" },
-//  { 0x1736, "" },
+    { 0x1736, "add_reverb" }, // AUTOADDED
 //  { 0x1737, "" },
 //  { 0x1738, "" },
 //  { 0x1739, "" },
@@ -6055,7 +6055,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x179A, "" },
 //  { 0x179B, "" },
 //  { 0x179C, "" },
-//  { 0x179D, "" },
+    { 0x179D, "addairexplosion" }, // AUTOADDED
 //  { 0x179E, "" },
 //  { 0x179F, "" },
 //  { 0x17A0, "" },
@@ -6073,7 +6073,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x17AC, "addattacker" },
 //  { 0x17AD, "" },
 //  { 0x17AE, "" },
-//  { 0x17AF, "" },
+    { 0x17AF, "addboxtolevelarray" }, // AUTOADDED
 //  { 0x17B0, "" },
 //  { 0x17B1, "" },
 //  { 0x17B2, "" },
@@ -6086,7 +6086,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x17B9, "" },
 //  { 0x17BA, "" },
 //  { 0x17BB, "" },
-//  { 0x17BC, "" },
+    { 0x17BC, "addchild" }, // AUTOADDED
 //  { 0x17BD, "" },
 //  { 0x17BE, "" },
     { 0x17BF, "addcratetype" },
@@ -6100,11 +6100,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x17C7, "" },
 //  { 0x17C8, "" },
 //  { 0x17C9, "" },
-//  { 0x17CA, "" },
-//  { 0x17CB, "" },
+    { 0x17CA, "addglobalrankxpmultiplier" }, // AUTOADDED
+    { 0x17CB, "addglobalweaponrankxpmultiplier" }, // AUTOADDED
 //  { 0x17CC, "" },
 //  { 0x17CD, "" },
-//  { 0x17CE, "" },
+    { 0x17CE, "addheavyarmor" }, // AUTOADDED
 //  { 0x17CF, "" },
 //  { 0x17D0, "" },
 //  { 0x17D1, "" },
@@ -6132,7 +6132,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x17E7, "" },
 //  { 0x17E8, "" },
 //  { 0x17E9, "" },
-//  { 0x17EA, "" },
+    { 0x17EA, "addlevelstoexperience" }, // AUTOADDED
 //  { 0x17EB, "" },
 //  { 0x17EC, "" },
 //  { 0x17ED, "" },
@@ -6183,7 +6183,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x181A, "" },
 //  { 0x181B, "" },
 //  { 0x181C, "" },
-//  { 0x181D, "" },
+    { 0x181D, "addrecentdamage" }, // AUTOADDED
 //  { 0x181E, "" },
 //  { 0x181F, "" },
 //  { 0x1820, "" },
@@ -6196,9 +6196,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1827, "" },
 //  { 0x1828, "" },
     { 0x1829, "addspawnpoints" },
-//  { 0x182A, "" },
-//  { 0x182B, "" },
-//  { 0x182C, "" },
+    { 0x182A, "addspawnviewer" }, // AUTOADDED
+    { 0x182B, "addspeaker" }, // AUTOADDED
+    { 0x182C, "addstackcount" }, // AUTOADDED
     { 0x182D, "addstartspawnpoints" },
 //  { 0x182E, "" },
 //  { 0x182F, "" },
@@ -6207,7 +6207,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1832, "" },
 //  { 0x1833, "" },
 //  { 0x1834, "" },
-//  { 0x1835, "" },
+    { 0x1835, "addteamrankxpmultiplier" }, // AUTOADDED
 //  { 0x1836, "" },
 //  { 0x1837, "" },
 //  { 0x1838, "" },
@@ -6254,13 +6254,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1861, "" },
 //  { 0x1862, "" },
 //  { 0x1863, "" },
-//  { 0x1864, "" },
+    { 0x1864, "addtougvlist" }, // AUTOADDED
 //  { 0x1865, "" },
-//  { 0x1866, "" },
+    { 0x1866, "addturret" }, // AUTOADDED
 //  { 0x1867, "" },
 //  { 0x1868, "" },
 //  { 0x1869, "" },
-//  { 0x186A, "" },
+    { 0x186A, "addweaponrankxpmultiplier" }, // AUTOADDED
 //  { 0x186B, "" },
 //  { 0x186C, "" },
 //  { 0x186D, "" },
@@ -6361,7 +6361,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x18CC, "" },
 //  { 0x18CD, "" },
 //  { 0x18CE, "" },
-//  { 0x18CF, "" },
+    { 0x18CF, "advancebombcase" }, // AUTOADDED
 //  { 0x18D0, "" },
 //  { 0x18D1, "" },
 //  { 0x18D2, "" },
@@ -6373,7 +6373,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x18D8, "" },
 //  { 0x18D9, "" },
 //  { 0x18DA, "" },
-//  { 0x18DB, "" },
+    { 0x18DB, "aerial_vehicle_allowed" }, // AUTOADDED
 //  { 0x18DC, "" },
 //  { 0x18DD, "" },
 //  { 0x18DE, "" },
@@ -6389,25 +6389,25 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x18E8, "" },
 //  { 0x18E9, "" },
 //  { 0x18EA, "" },
-//  { 0x18EB, "" },
+    { 0x18EB, "agent_available_to_spawn_time" }, // AUTOADDED
     { 0x18EC, "agent_damage_finished" },
 //  { 0x18ED, "" },
-//  { 0x18EE, "" },
+    { 0x18EE, "agent_definition" }, // AUTOADDED
 //  { 0x18EF, "" },
 //  { 0x18F0, "" },
     { 0x18F1, "agent_funcs" },
-//  { 0x18F2, "" },
-//  { 0x18F3, "" },
+    { 0x18F2, "agent_gameparticipant" }, // AUTOADDED
+    { 0x18F3, "agent_go_to_pos" }, // AUTOADDED
 //  { 0x18F4, "" },
-//  { 0x18F5, "" },
-//  { 0x18F6, "" },
-//  { 0x18F7, "" },
-//  { 0x18F8, "" },
+    { 0x18F5, "agent_player_conf_think" }, // AUTOADDED
+    { 0x18F6, "agent_player_dom_think" }, // AUTOADDED
+    { 0x18F7, "agent_player_mugger_think" }, // AUTOADDED
+    { 0x18F8, "agent_player_sd_think" }, // AUTOADDED
 //  { 0x18F9, "" },
 //  { 0x18FA, "" },
-//  { 0x18FB, "" },
-//  { 0x18FC, "" },
-//  { 0x18FD, "" },
+    { 0x18FB, "agent_squadmember_conf_think" }, // AUTOADDED
+    { 0x18FC, "agent_squadmember_dom_think" }, // AUTOADDED
+    { 0x18FD, "agent_squadmember_mugger_think" }, // AUTOADDED
 //  { 0x18FE, "" },
     { 0x18FF, "agent_type" },
     { 0x1900, "agentarray" },
@@ -6771,9 +6771,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1A66, "" },
 //  { 0x1A67, "" },
 //  { 0x1A68, "" },
-//  { 0x1A69, "" },
-//  { 0x1A6A, "" },
-//  { 0x1A6B, "" },
+    { 0x1A69, "air_raid_active" }, // AUTOADDED
+    { 0x1A6A, "air_raid_team_called" }, // AUTOADDED
+    { 0x1A6B, "air_start_nodes" }, // AUTOADDED
 //  { 0x1A6C, "" },
 //  { 0x1A6D, "" },
 //  { 0x1A6E, "" },
@@ -6906,7 +6906,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1AED, "" },
 //  { 0x1AEE, "" },
 //  { 0x1AEF, "" },
-//  { 0x1AF0, "" },
+    { 0x1AF0, "airstrike_earthquake" }, // AUTOADDED
 //  { 0x1AF1, "" },
 //  { 0x1AF2, "" },
 //  { 0x1AF3, "" },
@@ -7226,7 +7226,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1C2D, "" },
 //  { 0x1C2E, "" },
 //  { 0x1C2F, "" },
-//  { 0x1C30, "" },
+    { 0x1C30, "allieszone" }, // AUTOADDED
 //  { 0x1C31, "" },
 //  { 0x1C32, "" },
 //  { 0x1C33, "" },
@@ -7304,7 +7304,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1C7B, "" },
 //  { 0x1C7C, "" },
 //  { 0x1C7D, "" },
-//  { 0x1C7E, "" },
+    { 0x1C7E, "allowdamageflash" }, // AUTOADDED
 //  { 0x1C7F, "" },
 //  { 0x1C80, "" },
 //  { 0x1C81, "" },
@@ -7324,7 +7324,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1C8F, "" },
 //  { 0x1C90, "" },
 //  { 0x1C91, "" },
-//  { 0x1C92, "" },
+    { 0x1C92, "allowfauxdeath" }, // AUTOADDED
 //  { 0x1C93, "" },
 //  { 0x1C94, "" },
 //  { 0x1C95, "" },
@@ -7339,7 +7339,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1C9E, "" },
 //  { 0x1C9F, "" },
 //  { 0x1CA0, "" },
-//  { 0x1CA1, "" },
+    { 0x1CA1, "allowperks" }, // AUTOADDED
 //  { 0x1CA2, "" },
 //  { 0x1CA3, "" },
 //  { 0x1CA4, "" },
@@ -7349,18 +7349,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1CA8, "" },
 //  { 0x1CA9, "" },
 //  { 0x1CAA, "" },
-//  { 0x1CAB, "" },
+    { 0x1CAB, "allowsuperweaponstow" }, // AUTOADDED
 //  { 0x1CAC, "" },
 //  { 0x1CAD, "" },
 //  { 0x1CAE, "" },
     { 0x1CAF, "allowuse" },
 //  { 0x1CB0, "" },
 //  { 0x1CB1, "" },
-//  { 0x1CB2, "" },
-//  { 0x1CB3, "" },
-//  { 0x1CB4, "" },
+    { 0x1CB2, "allowweaponcache" }, // AUTOADDED
+    { 0x1CB3, "allowweapons" }, // AUTOADDED
+    { 0x1CB4, "allowweaponsforsentry" }, // AUTOADDED
 //  { 0x1CB5, "" },
-//  { 0x1CB6, "" },
+    { 0x1CB6, "allplayershaveassetsloaded" }, // AUTOADDED
 //  { 0x1CB7, "" },
 //  { 0x1CB8, "" },
 //  { 0x1CB9, "" },
@@ -7482,7 +7482,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1D2D, "" },
 //  { 0x1D2E, "" },
 //  { 0x1D2F, "" },
-//  { 0x1D30, "" },
+    { 0x1D30, "allyaveragedist" }, // AUTOADDED
 //  { 0x1D31, "" },
 //  { 0x1D32, "" },
 //  { 0x1D33, "" },
@@ -7497,11 +7497,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1D3C, "" },
 //  { 0x1D3D, "" },
 //  { 0x1D3E, "" },
-//  { 0x1D3F, "" },
+    { 0x1D3F, "already_used" }, // AUTOADDED
 //  { 0x1D40, "" },
 //  { 0x1D41, "" },
 //  { 0x1D42, "" },
-//  { 0x1D43, "" },
+    { 0x1D43, "alreadyhit" }, // AUTOADDED
 //  { 0x1D44, "" },
 //  { 0x1D45, "" },
 //  { 0x1D46, "" },
@@ -7529,7 +7529,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1D5C, "" },
 //  { 0x1D5D, "" },
 //  { 0x1D5E, "" },
-//  { 0x1D5F, "" },
+    { 0x1D5F, "alwaysgamemodeclass" }, // AUTOADDED
 //  { 0x1D60, "" },
 //  { 0x1D61, "" },
 //  { 0x1D62, "" },
@@ -7781,23 +7781,23 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1E58, "" },
 //  { 0x1E59, "" },
 //  { 0x1E5A, "" },
-//  { 0x1E5B, "" },
+    { 0x1E5B, "analytics" }, // AUTOADDED
 //  { 0x1E5C, "" },
 //  { 0x1E5D, "" },
-//  { 0x1E5E, "" },
-//  { 0x1E5F, "" },
-//  { 0x1E60, "" },
-//  { 0x1E61, "" },
-//  { 0x1E62, "" },
-//  { 0x1E63, "" },
-//  { 0x1E64, "" },
-//  { 0x1E65, "" },
-//  { 0x1E66, "" },
-//  { 0x1E67, "" },
+    { 0x1E5E, "analyticsdoesspawndataexist" }, // AUTOADDED
+    { 0x1E5F, "analyticsendgame" }, // AUTOADDED
+    { 0x1E60, "analyticsinitspawndata" }, // AUTOADDED
+    { 0x1E61, "analyticslog" }, // AUTOADDED
+    { 0x1E62, "analyticslogenabled" }, // AUTOADDED
+    { 0x1E63, "analyticslogid" }, // AUTOADDED
+    { 0x1E64, "analyticslogtype" }, // AUTOADDED
+    { 0x1E65, "analyticssend_shouldsenddata" }, // AUTOADDED
+    { 0x1E66, "analyticssend_spawnfactors" }, // AUTOADDED
+    { 0x1E67, "analyticssend_spawnplayerdetails" }, // AUTOADDED
 //  { 0x1E68, "" },
 //  { 0x1E69, "" },
 //  { 0x1E6A, "" },
-//  { 0x1E6B, "" },
+    { 0x1E6B, "analyticsstorespawndata" }, // AUTOADDED
 //  { 0x1E6C, "" },
 //  { 0x1E6D, "" },
 //  { 0x1E6E, "" },
@@ -7829,7 +7829,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1E88, "" },
 //  { 0x1E89, "" },
 //  { 0x1E8A, "" },
-//  { 0x1E8B, "" },
+    { 0x1E8B, "anglesclamp180" }, // AUTOADDED
 //  { 0x1E8C, "" },
 //  { 0x1E8D, "" },
 //  { 0x1E8E, "" },
@@ -8102,7 +8102,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1F99, "" },
 //  { 0x1F9A, "" },
 //  { 0x1F9B, "" },
-//  { 0x1F9C, "" },
+    { 0x1F9C, "animatemodel" }, // AUTOADDED
 //  { 0x1F9D, "" },
 //  { 0x1F9E, "" },
 //  { 0x1F9F, "" },
@@ -8129,7 +8129,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1FB4, "" },
 //  { 0x1FB5, "" },
 //  { 0x1FB6, "" },
-//  { 0x1FB7, "" },
+    { 0x1FB7, "animhasfacialoverride" }, // AUTOADDED
 //  { 0x1FB8, "" },
 //  { 0x1FB9, "" },
 //  { 0x1FBA, "" },
@@ -8143,7 +8143,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1FC2, "" },
 //  { 0x1FC3, "" },
 //  { 0x1FC4, "" },
-//  { 0x1FC5, "" },
+    { 0x1FC5, "animoverrides" }, // AUTOADDED
 //  { 0x1FC6, "" },
 //  { 0x1FC7, "" },
 //  { 0x1FC8, "" },
@@ -8172,13 +8172,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1FDF, "" },
 //  { 0x1FE0, "" },
 //  { 0x1FE1, "" },
-//  { 0x1FE2, "" },
-//  { 0x1FE3, "" },
-//  { 0x1FE4, "" },
-//  { 0x1FE5, "" },
-//  { 0x1FE6, "" },
-//  { 0x1FE7, "" },
-//  { 0x1FE8, "" },
+    { 0x1FE2, "animsuite_getparentobject" }, // AUTOADDED
+    { 0x1FE3, "animsuite_linkchildrentoparentobject" }, // AUTOADDED
+    { 0x1FE4, "animsuite_playthreadedsound" }, // AUTOADDED
+    { 0x1FE5, "animsuite_rotation" }, // AUTOADDED
+    { 0x1FE6, "animsuite_rotation_continuous" }, // AUTOADDED
+    { 0x1FE7, "animsuite_rotation_pingpong" }, // AUTOADDED
+    { 0x1FE8, "animsuite_translation" }, // AUTOADDED
 //  { 0x1FE9, "" },
 //  { 0x1FEA, "" },
 //  { 0x1FEB, "" },
@@ -8246,7 +8246,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2029, "" },
 //  { 0x202A, "" },
 //  { 0x202B, "" },
-//  { 0x202C, "" },
+    { 0x202C, "antithreat" }, // AUTOADDED
 //  { 0x202D, "" },
 //  { 0x202E, "" },
 //  { 0x202F, "" },
@@ -8379,7 +8379,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x20AE, "" },
     { 0x20AF, "apply_option_to_selected_fx" },
 //  { 0x20B0, "" },
-//  { 0x20B1, "" },
+    { 0x20B1, "apply_reverb" }, // AUTOADDED
 //  { 0x20B2, "" },
 //  { 0x20B3, "" },
 //  { 0x20B4, "" },
@@ -8389,7 +8389,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x20B8, "" },
 //  { 0x20B9, "" },
 //  { 0x20BA, "" },
-//  { 0x20BB, "" },
+    { 0x20BB, "applyarchetype" }, // AUTOADDED
 //  { 0x20BC, "" },
 //  { 0x20BD, "" },
 //  { 0x20BE, "" },
@@ -8497,8 +8497,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2124, "" },
 //  { 0x2125, "" },
 //  { 0x2126, "" },
-//  { 0x2127, "" },
-//  { 0x2128, "" },
+    { 0x2127, "archetypeids" }, // AUTOADDED
+    { 0x2128, "archetypes" }, // AUTOADDED
 //  { 0x2129, "" },
 //  { 0x212A, "" },
 //  { 0x212B, "" },
@@ -8840,7 +8840,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x227B, "" },
 //  { 0x227C, "" },
     { 0x227D, "array_call" },
-//  { 0x227E, "" },
+    { 0x227E, "array_check_for_dupes" }, // AUTOADDED
     { 0x227F, "array_combine" },
 //  { 0x2280, "" },
 //  { 0x2281, "" },
@@ -8890,18 +8890,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x22AD, "" },
 //  { 0x22AE, "" },
     { 0x22AF, "array_remove_duplicates" },
-//  { 0x22B0, "" },
-//  { 0x22B1, "" },
-//  { 0x22B2, "" },
-//  { 0x22B3, "" },
-//  { 0x22B4, "" },
-//  { 0x22B5, "" },
-//  { 0x22B6, "" },
-//  { 0x22B7, "" },
-//  { 0x22B8, "" },
-//  { 0x22B9, "" },
-//  { 0x22BA, "" },
-//  { 0x22BB, "" },
+    { 0x22B0, "array_remove_first" }, // AUTOADDED
+    { 0x22B1, "array_remove_index" }, // AUTOADDED
+    { 0x22B2, "array_remove_keep_index" }, // AUTOADDED
+    { 0x22B3, "array_remove_key" }, // AUTOADDED
+    { 0x22B4, "array_remove_key_array" }, // AUTOADDED
+    { 0x22B5, "array_remove_nokeys" }, // AUTOADDED
+    { 0x22B6, "array_removedead" }, // AUTOADDED
+    { 0x22B7, "array_removedead_keepkeys" }, // AUTOADDED
+    { 0x22B8, "array_removedead_or_dying" }, // AUTOADDED
+    { 0x22B9, "array_removedeadandai" }, // AUTOADDED
+    { 0x22BA, "array_removedeaddyingorundefined" }, // AUTOADDED
+    { 0x22BB, "array_removedeadvehicles" }, // AUTOADDED
     { 0x22BC, "array_removeundefined" },
     { 0x22BD, "array_reverse" },
 //  { 0x22BE, "" },
@@ -8974,7 +8974,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2301, "" },
 //  { 0x2302, "" },
 //  { 0x2303, "" },
-//  { 0x2304, "" },
+    { 0x2304, "asm_addephemeraleventtowatchlist" }, // AUTOADDED
 //  { 0x2305, "" },
 //  { 0x2306, "" },
 //  { 0x2307, "" },
@@ -8992,8 +8992,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2313, "" },
 //  { 0x2314, "" },
 //  { 0x2315, "" },
-//  { 0x2316, "" },
-//  { 0x2317, "" },
+    { 0x2316, "asm_cleardemeanoranimoverride" }, // AUTOADDED
+    { 0x2317, "asm_clearevents" }, // AUTOADDED
 //  { 0x2318, "" },
 //  { 0x2319, "" },
 //  { 0x231A, "" },
@@ -9010,41 +9010,41 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2325, "" },
 //  { 0x2326, "" },
 //  { 0x2327, "" },
-//  { 0x2328, "" },
+    { 0x2328, "asm_ephemeral_event_watchlist" }, // AUTOADDED
 //  { 0x2329, "" },
 //  { 0x232A, "" },
 //  { 0x232B, "" },
 //  { 0x232C, "" },
-//  { 0x232D, "" },
+    { 0x232D, "asm_events" }, // AUTOADDED
 //  { 0x232E, "" },
     { 0x232F, "asm_fireephemeralevent" },
-//  { 0x2330, "" },
-//  { 0x2331, "" },
-//  { 0x2332, "" },
-//  { 0x2333, "" },
-//  { 0x2334, "" },
-//  { 0x2335, "" },
-//  { 0x2336, "" },
-//  { 0x2337, "" },
-//  { 0x2338, "" },
-//  { 0x2339, "" },
-//  { 0x233A, "" },
-//  { 0x233B, "" },
-//  { 0x233C, "" },
-//  { 0x233D, "" },
+    { 0x2330, "asm_fireevent" }, // AUTOADDED
+    { 0x2331, "asm_fireevent_internal" }, // AUTOADDED
+    { 0x2332, "asm_generichandler" }, // AUTOADDED
+    { 0x2333, "asm_getaimlimitset" }, // AUTOADDED
+    { 0x2334, "asm_getallanimindicesforalias" }, // AUTOADDED
+    { 0x2335, "asm_getallanimsforalias" }, // AUTOADDED
+    { 0x2336, "asm_getallanimsforstate" }, // AUTOADDED
+    { 0x2337, "asm_getanim" }, // AUTOADDED
+    { 0x2338, "asm_getanimindex" }, // AUTOADDED
+    { 0x2339, "asm_getbodyknob" }, // AUTOADDED
+    { 0x233A, "asm_getcurrentstate" }, // AUTOADDED
+    { 0x233B, "asm_getcurrentstatename" }, // AUTOADDED
+    { 0x233C, "asm_getdemeanor" }, // AUTOADDED
+    { 0x233D, "asm_getdemeanoranimoverride" }, // AUTOADDED
 //  { 0x233E, "" },
 //  { 0x233F, "" },
-//  { 0x2340, "" },
+    { 0x2340, "asm_getmoveplaybackrate" }, // AUTOADDED
 //  { 0x2341, "" },
 //  { 0x2342, "" },
-//  { 0x2343, "" },
+    { 0x2343, "asm_globalinit" }, // AUTOADDED
 //  { 0x2344, "" },
 //  { 0x2345, "" },
 //  { 0x2346, "" },
 //  { 0x2347, "" },
 //  { 0x2348, "" },
 //  { 0x2349, "" },
-//  { 0x234A, "" },
+    { 0x234A, "asm_hasdemeanoranimoverride" }, // AUTOADDED
 //  { 0x234B, "" },
 //  { 0x234C, "" },
 //  { 0x234D, "" },
@@ -9052,8 +9052,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x234F, "" },
 //  { 0x2350, "" },
 //  { 0x2351, "" },
-//  { 0x2352, "" },
-//  { 0x2353, "" },
+    { 0x2352, "asm_iscrawlmelee" }, // AUTOADDED
+    { 0x2353, "asm_getdemeanor" }, // AUTOADDED
 //  { 0x2354, "" },
 //  { 0x2355, "" },
 //  { 0x2356, "" },
@@ -9091,8 +9091,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2376, "" },
 //  { 0x2377, "" },
 //  { 0x2378, "" },
-//  { 0x2379, "" },
-//  { 0x237A, "" },
+    { 0x2379, "asm_setcrawlmelee" }, // AUTOADDED
+    { 0x237A, "asm_setdemeanoranimoverride" }, // AUTOADDED
 //  { 0x237B, "" },
 //  { 0x237C, "" },
 //  { 0x237D, "" },
@@ -9101,7 +9101,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2380, "" },
 //  { 0x2381, "" },
 //  { 0x2382, "" },
-//  { 0x2383, "" },
+    { 0x2383, "asm_shouldpowerdown" }, // AUTOADDED
 //  { 0x2384, "" },
 //  { 0x2385, "" },
 //  { 0x2386, "" },
@@ -9110,7 +9110,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2389, "" },
 //  { 0x238A, "" },
 //  { 0x238B, "" },
-//  { 0x238C, "" },
+    { 0x238C, "asm_updatefrantic" }, // AUTOADDED
 //  { 0x238D, "" },
 //  { 0x238E, "" },
 //  { 0x238F, "" },
@@ -9140,7 +9140,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x23A7, "" },
 //  { 0x23A8, "" },
 //  { 0x23A9, "" },
-//  { 0x23AA, "" },
+    { 0x23AA, "assaultspawns" }, // AUTOADDED
 //  { 0x23AB, "" },
 //  { 0x23AC, "" },
 //  { 0x23AD, "" },
@@ -9148,7 +9148,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x23AF, "" },
 //  { 0x23B0, "" },
 //  { 0x23B1, "" },
-//  { 0x23B2, "" },
+    { 0x23B2, "assign_agent_func" }, // AUTOADDED
 //  { 0x23B3, "" },
 //  { 0x23B4, "" },
 //  { 0x23B5, "" },
@@ -9197,11 +9197,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x23E0, "" },
 //  { 0x23E1, "" },
 //  { 0x23E2, "" },
-//  { 0x23E3, "" },
-//  { 0x23E4, "" },
-//  { 0x23E5, "" },
-//  { 0x23E6, "" },
-//  { 0x23E7, "" },
+    { 0x23E3, "assignteamspawns" }, // AUTOADDED
+    { 0x23E4, "assigntimervisibleteam" }, // AUTOADDED
+    { 0x23E5, "assignvehicleminimumsforvolume" }, // AUTOADDED
+    { 0x23E6, "assist_onbeginuse" }, // AUTOADDED
+    { 0x23E7, "assist_onenduse" }, // AUTOADDED
     { 0x23E8, "assistedsuicide" },
     { 0x23E9, "assists_disabled" },
 //  { 0x23EA, "" },
@@ -9353,7 +9353,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x247C, "" },
 //  { 0x247D, "" },
 //  { 0x247E, "" },
-//  { 0x247F, "" },
+    { 0x247F, "attachedusemodel" }, // AUTOADDED
 //  { 0x2480, "" },
 //  { 0x2481, "" },
     { 0x2482, "attachhat" },
@@ -9364,7 +9364,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2487, "" },
 //  { 0x2488, "" },
 //  { 0x2489, "" },
-//  { 0x248A, "" },
+    { 0x248A, "attachmentcheck" }, // AUTOADDED
 //  { 0x248B, "" },
 //  { 0x248C, "" },
 //  { 0x248D, "" },
@@ -9389,7 +9389,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x24A0, "" },
 //  { 0x24A1, "" },
 //  { 0x24A2, "" },
-//  { 0x24A3, "" },
+    { 0x24A3, "attachobjecttocarrier" }, // AUTOADDED
 //  { 0x24A4, "" },
 //  { 0x24A5, "" },
 //  { 0x24A6, "" },
@@ -9399,7 +9399,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x24AA, "" },
 //  { 0x24AB, "" },
 //  { 0x24AC, "" },
-//  { 0x24AD, "" },
+    { 0x24AD, "attachtoughenuparmor" }, // AUTOADDED
 //  { 0x24AE, "" },
 //  { 0x24AF, "" },
 //  { 0x24B0, "" },
@@ -9435,7 +9435,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x24CE, "" },
 //  { 0x24CF, "" },
 //  { 0x24D0, "" },
-//  { 0x24D1, "" },
+    { 0x24D1, "attackarrow" }, // AUTOADDED
 //  { 0x24D2, "" },
 //  { 0x24D3, "" },
 //  { 0x24D4, "" },
@@ -9456,7 +9456,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x24E3, "" },
 //  { 0x24E4, "" },
     { 0x24E5, "attackerdata" },
-//  { 0x24E6, "" },
+    { 0x24E6, "attackerendzone" }, // AUTOADDED
     { 0x24E7, "attackerent" },
 //  { 0x24E8, "" },
 //  { 0x24E9, "" },
@@ -9484,7 +9484,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x24FF, "" },
 //  { 0x2500, "" },
 //  { 0x2501, "" },
-//  { 0x2502, "" },
+    { 0x2502, "attackerposition" }, // AUTOADDED
 //  { 0x2503, "" },
 //  { 0x2504, "" },
 //  { 0x2505, "" },
@@ -9496,12 +9496,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x250B, "" },
 //  { 0x250C, "" },
 //  { 0x250D, "" },
-//  { 0x250E, "" },
+    { 0x250E, "attackertable" }, // AUTOADDED
 //  { 0x250F, "" },
 //  { 0x2510, "" },
 //  { 0x2511, "" },
 //  { 0x2512, "" },
-//  { 0x2513, "" },
+    { 0x2513, "attackgroundtarget" }, // AUTOADDED
 //  { 0x2514, "" },
 //  { 0x2515, "" },
 //  { 0x2516, "" },
@@ -9520,7 +9520,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2523, "" },
 //  { 0x2524, "" },
 //  { 0x2525, "" },
-//  { 0x2526, "" },
+    { 0x2526, "attacklasedtarget" }, // AUTOADDED
 //  { 0x2527, "" },
 //  { 0x2528, "" },
 //  { 0x2529, "" },
@@ -9602,7 +9602,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2575, "" },
 //  { 0x2576, "" },
 //  { 0x2577, "" },
-//  { 0x2578, "" },
+    { 0x2578, "audio" }, // AUTOADDED
 //  { 0x2579, "" },
 //  { 0x257A, "" },
 //  { 0x257B, "" },
@@ -9887,7 +9887,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2692, "" },
 //  { 0x2693, "" },
 //  { 0x2694, "" },
-//  { 0x2695, "" },
+    { 0x2695, "autospotdeathwatcher" }, // AUTOADDED
 //  { 0x2696, "" },
 //  { 0x2697, "" },
 //  { 0x2698, "" },
@@ -9904,14 +9904,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x26A3, "" },
 //  { 0x26A4, "" },
 //  { 0x26A5, "" },
-//  { 0x26A6, "" },
+    { 0x26A6, "averagealliesz" }, // AUTOADDED
 //  { 0x26A7, "" },
 //  { 0x26A8, "" },
 //  { 0x26A9, "" },
 //  { 0x26AA, "" },
 //  { 0x26AB, "" },
 //  { 0x26AC, "" },
-//  { 0x26AD, "" },
+    { 0x26AD, "avoidcarepackages" }, // AUTOADDED
 //  { 0x26AE, "" },
 //  { 0x26AF, "" },
 //  { 0x26B0, "" },
@@ -9924,14 +9924,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x26B7, "" },
 //  { 0x26B8, "" },
 //  { 0x26B9, "" },
-//  { 0x26BA, "" },
-//  { 0x26BB, "" },
+    { 0x26BA, "avoidlastattackerlocation" }, // AUTOADDED
+    { 0x26BB, "avoidlastdeathlocation" }, // AUTOADDED
 //  { 0x26BC, "" },
 //  { 0x26BD, "" },
-//  { 0x26BE, "" },
-//  { 0x26BF, "" },
-//  { 0x26C0, "" },
-//  { 0x26C1, "" },
+    { 0x26BE, "avoidrecentlyusedbyanyone" }, // AUTOADDED
+    { 0x26BF, "avoidrecentlyusedbyenemies" }, // AUTOADDED
+    { 0x26C0, "avoidrugbyoffsides" }, // AUTOADDED
+    { 0x26C1, "avoidsamespawn" }, // AUTOADDED
 //  { 0x26C2, "" },
 //  { 0x26C3, "" },
 //  { 0x26C4, "" },
@@ -9944,7 +9944,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x26CB, "" },
 //  { 0x26CC, "" },
     { 0x26CD, "awardbuffdebuffassists" },
-//  { 0x26CE, "" },
+    { 0x26CE, "awardcapturepoints" }, // AUTOADDED
 //  { 0x26CF, "" },
 //  { 0x26D0, "" },
 //  { 0x26D1, "" },
@@ -9953,8 +9953,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x26D4, "" },
 //  { 0x26D5, "" },
 //  { 0x26D6, "" },
-//  { 0x26D7, "" },
-//  { 0x26D8, "" },
+    { 0x26D7, "awardqueue" }, // AUTOADDED
+    { 0x26D8, "awards" }, // AUTOADDED
 //  { 0x26D9, "" },
 //  { 0x26DA, "" },
 //  { 0x26DB, "" },
@@ -9992,7 +9992,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x26FB, "" },
 //  { 0x26FC, "" },
 //  { 0x26FD, "" },
-//  { 0x26FE, "" },
+    { 0x26FE, "axiszone" }, // AUTOADDED
 //  { 0x26FF, "" },
 //  { 0x2700, "" },
 //  { 0x2701, "" },
@@ -10095,7 +10095,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2762, "" },
 //  { 0x2763, "" },
 //  { 0x2764, "" },
-//  { 0x2765, "" },
+    { 0x2765, "balanceteams" }, // AUTOADDED
 //  { 0x2766, "" },
 //  { 0x2767, "" },
 //  { 0x2768, "" },
@@ -10104,106 +10104,106 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x276B, "" },
 //  { 0x276C, "" },
 //  { 0x276D, "" },
-//  { 0x276E, "" },
+    { 0x276E, "ball" }, // AUTOADDED
 //  { 0x276F, "" },
 //  { 0x2770, "" },
 //  { 0x2771, "" },
-//  { 0x2772, "" },
+    { 0x2772, "ball_assign_start" }, // AUTOADDED
 //  { 0x2773, "" },
 //  { 0x2774, "" },
 //  { 0x2775, "" },
 //  { 0x2776, "" },
-//  { 0x2777, "" },
-//  { 0x2778, "" },
-//  { 0x2779, "" },
-//  { 0x277A, "" },
-//  { 0x277B, "" },
-//  { 0x277C, "" },
-//  { 0x277D, "" },
+    { 0x2777, "ball_carried" }, // AUTOADDED
+    { 0x2778, "ball_carrier_cleanup" }, // AUTOADDED
+    { 0x2779, "ball_carrier_touched_goal" }, // AUTOADDED
+    { 0x277A, "ball_check_assist" }, // AUTOADDED
+    { 0x277B, "ball_check_pass_kill_pickup" }, // AUTOADDED
+    { 0x277C, "ball_clear_contents" }, // AUTOADDED
+    { 0x277D, "ball_connect_watch" }, // AUTOADDED
 //  { 0x277E, "" },
-//  { 0x277F, "" },
-//  { 0x2780, "" },
-//  { 0x2781, "" },
-//  { 0x2782, "" },
-//  { 0x2783, "" },
-//  { 0x2784, "" },
+    { 0x277F, "ball_create_ball_starts" }, // AUTOADDED
+    { 0x2780, "ball_create_killcam_ent" }, // AUTOADDED
+    { 0x2781, "ball_create_team_goal" }, // AUTOADDED
+    { 0x2782, "ball_default_origins" }, // AUTOADDED
+    { 0x2783, "ball_dont_interpolate" }, // AUTOADDED
+    { 0x2784, "ball_download_fx" }, // AUTOADDED
 //  { 0x2785, "" },
 //  { 0x2786, "" },
 //  { 0x2787, "" },
 //  { 0x2788, "" },
 //  { 0x2789, "" },
-//  { 0x278A, "" },
+    { 0x278A, "ball_find_ground" }, // AUTOADDED
 //  { 0x278B, "" },
-//  { 0x278C, "" },
-//  { 0x278D, "" },
-//  { 0x278E, "" },
-//  { 0x278F, "" },
-//  { 0x2790, "" },
-//  { 0x2791, "" },
-//  { 0x2792, "" },
-//  { 0x2793, "" },
-//  { 0x2794, "" },
-//  { 0x2795, "" },
-//  { 0x2796, "" },
+    { 0x278C, "ball_fx_active" }, // AUTOADDED
+    { 0x278D, "ball_fx_start" }, // AUTOADDED
+    { 0x278E, "ball_fx_start_player" }, // AUTOADDED
+    { 0x278F, "ball_fx_stop" }, // AUTOADDED
+    { 0x2790, "ball_get_num_players_on_team" }, // AUTOADDED
+    { 0x2791, "ball_get_path_dist" }, // AUTOADDED
+    { 0x2792, "ball_get_view_team" }, // AUTOADDED
+    { 0x2793, "ball_give_score" }, // AUTOADDED
+    { 0x2794, "ball_goal_can_use" }, // AUTOADDED
+    { 0x2795, "ball_goal_fx" }, // AUTOADDED
+    { 0x2796, "ball_goal_fx_for_player" }, // AUTOADDED
 //  { 0x2797, "" },
-//  { 0x2798, "" },
+    { 0x2798, "ball_goals" }, // AUTOADDED
 //  { 0x2799, "" },
-//  { 0x279A, "" },
-//  { 0x279B, "" },
-//  { 0x279C, "" },
+    { 0x279A, "ball_impact_sounds" }, // AUTOADDED
+    { 0x279B, "ball_in_goal" }, // AUTOADDED
+    { 0x279C, "ball_init_map_min_max" }, // AUTOADDED
 //  { 0x279D, "" },
 //  { 0x279E, "" },
-//  { 0x279F, "" },
-//  { 0x27A0, "" },
+    { 0x279F, "ball_maxs" }, // AUTOADDED
+    { 0x27A0, "ball_mins" }, // AUTOADDED
 //  { 0x27A1, "" },
-//  { 0x27A2, "" },
-//  { 0x27A3, "" },
-//  { 0x27A4, "" },
-//  { 0x27A5, "" },
-//  { 0x27A6, "" },
-//  { 0x27A7, "" },
-//  { 0x27A8, "" },
-//  { 0x27A9, "" },
-//  { 0x27AA, "" },
-//  { 0x27AB, "" },
-//  { 0x27AC, "" },
-//  { 0x27AD, "" },
-//  { 0x27AE, "" },
-//  { 0x27AF, "" },
-//  { 0x27B0, "" },
-//  { 0x27B1, "" },
-//  { 0x27B2, "" },
-//  { 0x27B3, "" },
-//  { 0x27B4, "" },
-//  { 0x27B5, "" },
-//  { 0x27B6, "" },
-//  { 0x27B7, "" },
-//  { 0x27B8, "" },
-//  { 0x27B9, "" },
+    { 0x27A2, "ball_on_connect" }, // AUTOADDED
+    { 0x27A3, "ball_on_host_migration" }, // AUTOADDED
+    { 0x27A4, "ball_on_pickup" }, // AUTOADDED
+    { 0x27A5, "ball_on_projectile_death" }, // AUTOADDED
+    { 0x27A6, "ball_on_projectile_hit_client" }, // AUTOADDED
+    { 0x27A7, "ball_on_reset" }, // AUTOADDED
+    { 0x27A8, "ball_overridemovingplatformdeath" }, // AUTOADDED
+    { 0x27A9, "ball_pass_or_shoot" }, // AUTOADDED
+    { 0x27AA, "ball_pass_or_throw_active" }, // AUTOADDED
+    { 0x27AB, "ball_pass_projectile" }, // AUTOADDED
+    { 0x27AC, "ball_pass_touch_goal" }, // AUTOADDED
+    { 0x27AD, "ball_pass_watch" }, // AUTOADDED
+    { 0x27AE, "ball_physics_bad_trigger_at_rest" }, // AUTOADDED
+    { 0x27AF, "ball_physics_bad_trigger_watch" }, // AUTOADDED
+    { 0x27B0, "ball_physics_fake_bounce" }, // AUTOADDED
+    { 0x27B1, "ball_physics_launch" }, // AUTOADDED
+    { 0x27B2, "ball_physics_launch_drop" }, // AUTOADDED
+    { 0x27B3, "ball_physics_out_of_level" }, // AUTOADDED
+    { 0x27B4, "ball_physics_timeout" }, // AUTOADDED
+    { 0x27B5, "ball_physics_touch_cant_pickup_player" }, // AUTOADDED
+    { 0x27B6, "ball_physics_touch_goal" }, // AUTOADDED
+    { 0x27B7, "ball_play_fx_joined_team" }, // AUTOADDED
+    { 0x27B8, "ball_play_local_team_sound" }, // AUTOADDED
+    { 0x27B9, "ball_play_score_fx" }, // AUTOADDED
 //  { 0x27BA, "" },
 //  { 0x27BB, "" },
 //  { 0x27BC, "" },
 //  { 0x27BD, "" },
 //  { 0x27BE, "" },
 //  { 0x27BF, "" },
-//  { 0x27C0, "" },
+    { 0x27C0, "ball_score_sound" }, // AUTOADDED
 //  { 0x27C1, "" },
 //  { 0x27C2, "" },
 //  { 0x27C3, "" },
 //  { 0x27C4, "" },
 //  { 0x27C5, "" },
-//  { 0x27C6, "" },
+    { 0x27C6, "ball_starts" }, // AUTOADDED
 //  { 0x27C7, "" },
 //  { 0x27C8, "" },
 //  { 0x27C9, "" },
-//  { 0x27CA, "" },
+    { 0x27CA, "ball_triggers" }, // AUTOADDED
 //  { 0x27CB, "" },
 //  { 0x27CC, "" },
 //  { 0x27CD, "" },
 //  { 0x27CE, "" },
 //  { 0x27CF, "" },
 //  { 0x27D0, "" },
-//  { 0x27D1, "" },
+    { 0x27D1, "ballactivationdelay" }, // AUTOADDED
 //  { 0x27D2, "" },
 //  { 0x27D3, "" },
 //  { 0x27D4, "" },
@@ -10250,13 +10250,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x27FD, "" },
 //  { 0x27FE, "" },
 //  { 0x27FF, "" },
-//  { 0x2800, "" },
+    { 0x2800, "balls" }, // AUTOADDED
 //  { 0x2801, "" },
 //  { 0x2802, "" },
-//  { 0x2803, "" },
-//  { 0x2804, "" },
-//  { 0x2805, "" },
-//  { 0x2806, "" },
+    { 0x2803, "balltime" }, // AUTOADDED
+    { 0x2804, "balltimerpaused" }, // AUTOADDED
+    { 0x2805, "balltimerstopped" }, // AUTOADDED
+    { 0x2806, "balltimerwait" }, // AUTOADDED
 //  { 0x2807, "" },
 //  { 0x2808, "" },
 //  { 0x2809, "" },
@@ -10268,7 +10268,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x280F, "" },
 //  { 0x2810, "" },
 //  { 0x2811, "" },
-//  { 0x2812, "" },
+    { 0x2812, "bar" }, // AUTOADDED
 //  { 0x2813, "" },
 //  { 0x2814, "" },
 //  { 0x2815, "" },
@@ -10396,23 +10396,23 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x288F, "" },
 //  { 0x2890, "" },
 //  { 0x2891, "" },
-//  { 0x2892, "" },
+    { 0x2892, "base_setupvfx" }, // AUTOADDED
 //  { 0x2893, "" },
 //  { 0x2894, "" },
 //  { 0x2895, "" },
 //  { 0x2896, "" },
-//  { 0x2897, "" },
+    { 0x2897, "basealpha" }, // AUTOADDED
 //  { 0x2898, "" },
 //  { 0x2899, "" },
 //  { 0x289A, "" },
 //  { 0x289B, "" },
-//  { 0x289C, "" },
-//  { 0x289D, "" },
+    { 0x289C, "baseeffectforward" }, // AUTOADDED
+    { 0x289D, "baseeffectpos" }, // AUTOADDED
 //  { 0x289E, "" },
-//  { 0x289F, "" },
-//  { 0x28A0, "" },
+    { 0x289F, "basefontscale" }, // AUTOADDED
+    { 0x28A0, "basefxid" }, // AUTOADDED
 //  { 0x28A1, "" },
-//  { 0x28A2, "" },
+    { 0x28A2, "baseheight" }, // AUTOADDED
 //  { 0x28A3, "" },
 //  { 0x28A4, "" },
 //  { 0x28A5, "" },
@@ -10422,11 +10422,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x28A9, "" },
 //  { 0x28AA, "" },
 //  { 0x28AB, "" },
-//  { 0x28AC, "" },
+    { 0x28AC, "baseorigin" }, // AUTOADDED
 //  { 0x28AD, "" },
 //  { 0x28AE, "" },
 //  { 0x28AF, "" },
-//  { 0x28B0, "" },
+    { 0x28B0, "basewidth" }, // AUTOADDED
 //  { 0x28B1, "" },
 //  { 0x28B2, "" },
 //  { 0x28B3, "" },
@@ -10498,23 +10498,23 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x28F5, "" },
 //  { 0x28F6, "" },
 //  { 0x28F7, "" },
-//  { 0x28F8, "" },
-//  { 0x28F9, "" },
-//  { 0x28FA, "" },
-//  { 0x28FB, "" },
-//  { 0x28FC, "" },
-//  { 0x28FD, "" },
-//  { 0x28FE, "" },
-//  { 0x28FF, "" },
-//  { 0x2900, "" },
-//  { 0x2901, "" },
-//  { 0x2902, "" },
-//  { 0x2903, "" },
-//  { 0x2904, "" },
-//  { 0x2905, "" },
-//  { 0x2906, "" },
-//  { 0x2907, "" },
-//  { 0x2908, "" },
+    { 0x28F8, "battleslideshield" }, // AUTOADDED
+    { 0x28F9, "battleslideshield_break" }, // AUTOADDED
+    { 0x28FA, "battleslideshield_breakfx" }, // AUTOADDED
+    { 0x28FB, "battleslideshield_damagedfx" }, // AUTOADDED
+    { 0x28FC, "battleslideshield_killondeathdisconnectunset" }, // AUTOADDED
+    { 0x28FD, "battleslideshield_killonjumpfall" }, // AUTOADDED
+    { 0x28FE, "battleslideshield_killonsprint" }, // AUTOADDED
+    { 0x28FF, "battleslideshield_killontime" }, // AUTOADDED
+    { 0x2900, "battleslideshield_lower" }, // AUTOADDED
+    { 0x2901, "battleslideshield_lowerfx" }, // AUTOADDED
+    { 0x2902, "battleslideshield_loweronleavearea" }, // AUTOADDED
+    { 0x2903, "battleslideshield_lowerontime" }, // AUTOADDED
+    { 0x2904, "battleslideshield_monitor" }, // AUTOADDED
+    { 0x2905, "battleslideshield_monitorhealth" }, // AUTOADDED
+    { 0x2906, "battleslideshield_raise" }, // AUTOADDED
+    { 0x2907, "battleslideshield_raisefx" }, // AUTOADDED
+    { 0x2908, "battleslideshield_unlink" }, // AUTOADDED
 //  { 0x2909, "" },
 //  { 0x290A, "" },
 //  { 0x290B, "" },
@@ -10549,30 +10549,30 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2928, "" },
 //  { 0x2929, "" },
 //  { 0x292A, "" },
-//  { 0x292B, "" },
+    { 0x292B, "bb_getrequestedcoverstate" }, // AUTOADDED
 //  { 0x292C, "" },
-//  { 0x292D, "" },
+    { 0x292D, "bb_getrequestedturret" }, // AUTOADDED
     { 0x292E, "bb_getrequestedweapon" },
     { 0x292F, "bb_getrequestedwhizby" },
     { 0x2930, "bb_getthrowgrenadetarget" },
 //  { 0x2931, "" },
 //  { 0x2932, "" },
 //  { 0x2933, "" },
-//  { 0x2934, "" },
+    { 0x2934, "bb_hasshufflenode" }, // AUTOADDED
 //  { 0x2935, "" },
 //  { 0x2936, "" },
 //  { 0x2937, "" },
     { 0x2938, "bb_isanimscripted" },
-//  { 0x2939, "" },
-//  { 0x293A, "" },
+    { 0x2939, "bb_iscovermultiswitchrequested" }, // AUTOADDED
+    { 0x293A, "bb_iscrawlmelee" }, // AUTOADDED
     { 0x293B, "bb_isfrantic" },
 //  { 0x293C, "" },
 //  { 0x293D, "" },
 //  { 0x293E, "" },
     { 0x293F, "bb_isheadless" },
-//  { 0x2940, "" },
-//  { 0x2941, "" },
-//  { 0x2942, "" },
+    { 0x2940, "bb_isinbadcrouchspot" }, // AUTOADDED
+    { 0x2941, "bb_isincombat" }, // AUTOADDED
+    { 0x2942, "bb_ismissingaleg" }, // AUTOADDED
 //  { 0x2943, "" },
 //  { 0x2944, "" },
     { 0x2945, "bb_ispartdismembered" },
@@ -10582,15 +10582,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2949, "" },
     { 0x294A, "bb_isrodeorequested" },
     { 0x294B, "bb_isselfdestruct" },
-//  { 0x294C, "" },
+    { 0x294C, "bb_isshort" }, // AUTOADDED
     { 0x294D, "bb_isweaponclass" },
     { 0x294E, "bb_iswhizbyrequested" },
-//  { 0x294F, "" },
-//  { 0x2950, "" },
-//  { 0x2951, "" },
-//  { 0x2952, "" },
-//  { 0x2953, "" },
-//  { 0x2954, "" },
+    { 0x294F, "bb_meleechargeaborted" }, // AUTOADDED
+    { 0x2950, "bb_meleechargerequested" }, // AUTOADDED
+    { 0x2951, "bb_meleecomplete" }, // AUTOADDED
+    { 0x2952, "bb_meleeinprogress" }, // AUTOADDED
+    { 0x2953, "bb_meleerequested" }, // AUTOADDED
+    { 0x2954, "bb_meleerequestinvalid" }, // AUTOADDED
     { 0x2955, "bb_moverequested" },
     { 0x2956, "bb_movetyperequested" },
 //  { 0x2957, "" },
@@ -10608,12 +10608,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2963, "" },
 //  { 0x2964, "" },
     { 0x2965, "bb_requestmelee" },
-//  { 0x2966, "" },
+    { 0x2966, "bb_requestmeleecharge" }, // AUTOADDED
     { 0x2967, "bb_requestmove" },
     { 0x2968, "bb_requestmovetype" },
     { 0x2969, "bb_requestreload" },
-//  { 0x296A, "" },
-//  { 0x296B, "" },
+    { 0x296A, "bb_requestsmartobject" }, // AUTOADDED
+    { 0x296B, "bb_requeststance" }, // AUTOADDED
     { 0x296C, "bb_requestthrowgrenade" },
     { 0x296D, "bb_requestfire" },
 //  { 0x296E, "" },
@@ -10624,15 +10624,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x2973, "bb_setanimscripted" },
     { 0x2974, "bb_setcanrodeo" },
     { 0x2975, "bb_setcivilianstate" },
-//  { 0x2976, "" },
+    { 0x2976, "bb_setcovernode" }, // AUTOADDED
 //  { 0x2977, "" },
 //  { 0x2978, "" },
 //  { 0x2979, "" },
 //  { 0x297A, "" },
 //  { 0x297B, "" },
     { 0x297C, "bb_setheadless" },
-//  { 0x297D, "" },
-//  { 0x297E, "" },
+    { 0x297D, "bb_setisinbadcrouchspot" }, // AUTOADDED
+    { 0x297E, "bb_setisincombat" }, // AUTOADDED
     { 0x297F, "bb_setmeleetarget" },
 //  { 0x2980, "" },
     { 0x2981, "bb_setrodeorequest" },
@@ -10648,7 +10648,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x298B, "" },
 //  { 0x298C, "" },
 //  { 0x298D, "" },
-//  { 0x298E, "" },
+    { 0x298E, "bb_wantstostrafe" }, // AUTOADDED
 //  { 0x298F, "" },
 //  { 0x2990, "" },
     { 0x2991, "bb_werepartsdismemberedinorder" },
@@ -10670,7 +10670,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x29A1, "" },
 //  { 0x29A2, "" },
 //  { 0x29A3, "" },
-//  { 0x29A4, "" },
+    { 0x29A4, "bcdisabled" }, // AUTOADDED
 //  { 0x29A5, "" },
 //  { 0x29A6, "" },
 //  { 0x29A7, "" },
@@ -10863,7 +10863,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2A62, "" },
 //  { 0x2A63, "" },
 //  { 0x2A64, "" },
-//  { 0x2A65, "" },
+    { 0x2A65, "beginevasivemaneuvers" }, // AUTOADDED
 //  { 0x2A66, "" },
 //  { 0x2A67, "" },
 //  { 0x2A68, "" },
@@ -10884,12 +10884,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2A77, "" },
 //  { 0x2A78, "" },
 //  { 0x2A79, "" },
-//  { 0x2A7A, "" },
-//  { 0x2A7B, "" },
-//  { 0x2A7C, "" },
-//  { 0x2A7D, "" },
-//  { 0x2A7E, "" },
-//  { 0x2A7F, "" },
+    { 0x2A7A, "beginteamchoice" }, // AUTOADDED
+    { 0x2A7B, "beginuse" }, // AUTOADDED
+    { 0x2A7C, "beginusefunc" }, // AUTOADDED
+    { 0x2A7D, "beginusegas" }, // AUTOADDED
+    { 0x2A7E, "beginusesupplypack" }, // AUTOADDED
+    { 0x2A7F, "behavior" }, // AUTOADDED
     { 0x2A80, "behaviortreeasset" },
 //  { 0x2A81, "" },
 //  { 0x2A82, "" },
@@ -10914,7 +10914,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2A95, "" },
 //  { 0x2A96, "" },
 //  { 0x2A97, "" },
-//  { 0x2A98, "" },
+    { 0x2A98, "bestscorestats" }, // AUTOADDED
 //  { 0x2A99, "" },
 //  { 0x2A9A, "" },
 //  { 0x2A9B, "" },
@@ -10941,7 +10941,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2AB0, "" },
 //  { 0x2AB1, "" },
 //  { 0x2AB2, "" },
-//  { 0x2AB3, "" },
+    { 0x2AB3, "bhascovernode" }, // AUTOADDED
 //  { 0x2AB4, "" },
 //  { 0x2AB5, "" },
 //  { 0x2AB6, "" },
@@ -11151,7 +11151,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2B82, "" },
 //  { 0x2B83, "" },
 //  { 0x2B84, "" },
-//  { 0x2B85, "" },
+    { 0x2B85, "blenddelete" }, // AUTOADDED
 //  { 0x2B86, "" },
 //  { 0x2B87, "" },
 //  { 0x2B88, "" },
@@ -11169,13 +11169,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2B94, "" },
 //  { 0x2B95, "" },
 //  { 0x2B96, "" },
-//  { 0x2B97, "" },
-//  { 0x2B98, "" },
+    { 0x2B97, "blinddurations" }, // AUTOADDED
+    { 0x2B98, "blindeyerecipients" }, // AUTOADDED
 //  { 0x2B99, "" },
 //  { 0x2B9A, "" },
 //  { 0x2B9B, "" },
-//  { 0x2B9C, "" },
-//  { 0x2B9D, "" },
+    { 0x2B9C, "blindparts" }, // AUTOADDED
+    { 0x2B9D, "blindstates" }, // AUTOADDED
 //  { 0x2B9E, "" },
 //  { 0x2B9F, "" },
 //  { 0x2BA0, "" },
@@ -11204,7 +11204,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2BB7, "" },
 //  { 0x2BB8, "" },
 //  { 0x2BB9, "" },
-//  { 0x2BBA, "" },
+    { 0x2BBA, "blockkillstreakforbots" }, // AUTOADDED
 //  { 0x2BBB, "" },
 //  { 0x2BBC, "" },
 //  { 0x2BBD, "" },
@@ -11212,7 +11212,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2BBF, "" },
 //  { 0x2BC0, "" },
 //  { 0x2BC1, "" },
-//  { 0x2BC2, "" },
+    { 0x2BC2, "bloodeffect" }, // AUTOADDED
 //  { 0x2BC3, "" },
 //  { 0x2BC4, "" },
 //  { 0x2BC5, "" },
@@ -11283,7 +11283,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2C06, "" },
 //  { 0x2C07, "" },
 //  { 0x2C08, "" },
-//  { 0x2C09, "" },
+    { 0x2C09, "body" }, // AUTOADDED
 //  { 0x2C0A, "" },
 //  { 0x2C0B, "" },
 //  { 0x2C0C, "" },
@@ -11348,7 +11348,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2C47, "" },
 //  { 0x2C48, "" },
 //  { 0x2C49, "" },
-//  { 0x2C4A, "" },
+    { 0x2C4A, "bombdefused" }, // AUTOADDED
 //  { 0x2C4B, "" },
 //  { 0x2C4C, "" },
 //  { 0x2C4D, "" },
@@ -11362,23 +11362,23 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2C55, "" },
 //  { 0x2C56, "" },
 //  { 0x2C57, "" },
-//  { 0x2C58, "" },
+    { 0x2C58, "bombexploded" }, // AUTOADDED
 //  { 0x2C59, "" },
 //  { 0x2C5A, "" },
 //  { 0x2C5B, "" },
-//  { 0x2C5C, "" },
+    { 0x2C5C, "bombplanted" }, // AUTOADDED
 //  { 0x2C5D, "" },
 //  { 0x2C5E, "" },
 //  { 0x2C5F, "" },
-//  { 0x2C60, "" },
-//  { 0x2C61, "" },
+    { 0x2C60, "bombrespawnangles" }, // AUTOADDED
+    { 0x2C61, "bombrespawnpoint" }, // AUTOADDED
 //  { 0x2C62, "" },
 //  { 0x2C63, "" },
 //  { 0x2C64, "" },
 //  { 0x2C65, "" },
 //  { 0x2C66, "" },
 //  { 0x2C67, "" },
-//  { 0x2C68, "" },
+    { 0x2C68, "bombsquadmodel" }, // AUTOADDED
 //  { 0x2C69, "" },
 //  { 0x2C6A, "" },
 //  { 0x2C6B, "" },
@@ -11396,7 +11396,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2C77, "" },
 //  { 0x2C78, "" },
 //  { 0x2C79, "" },
-//  { 0x2C7A, "" },
+    { 0x2C7A, "objectives" }, // AUTOADDED
 //  { 0x2C7B, "" },
 //  { 0x2C7C, "" },
 //  { 0x2C7D, "" },
@@ -11442,7 +11442,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2CA5, "" },
 //  { 0x2CA6, "" },
 //  { 0x2CA7, "" },
-//  { 0x2CA8, "" },
+    { 0x2CA8, "boomtrackplayerdeath" }, // AUTOADDED
 //  { 0x2CA9, "" },
 //  { 0x2CAA, "" },
 //  { 0x2CAB, "" },
@@ -11532,128 +11532,128 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x2CFF, "bot" },
     { 0x2D00, "bot_3d_sighting_model" },
     { 0x2D01, "bot_3d_sighting_model_thread" },
-//  { 0x2D02, "" },
+    { 0x2D02, "bot_abort_tactical_goal" }, // AUTOADDED
 //  { 0x2D03, "" },
-//  { 0x2D04, "" },
-//  { 0x2D05, "" },
-//  { 0x2D06, "" },
-//  { 0x2D07, "" },
+    { 0x2D04, "bot_add_scavenger_bag" }, // AUTOADDED
+    { 0x2D05, "bot_add_to_bot_damage_targets" }, // AUTOADDED
+    { 0x2D06, "bot_add_to_bot_level_targets" }, // AUTOADDED
+    { 0x2D07, "bot_add_to_bot_use_targets" }, // AUTOADDED
     { 0x2D08, "bot_ambush_end" },
 //  { 0x2D09, "" },
 //  { 0x2D0A, "" },
 //  { 0x2D0B, "" },
     { 0x2D0C, "bot_assign_personality_functions" },
-//  { 0x2D0D, "" },
-//  { 0x2D0E, "" },
-//  { 0x2D0F, "" },
+    { 0x2D0D, "bot_attachment_reticle" }, // AUTOADDED
+    { 0x2D0E, "bot_attachmenttable" }, // AUTOADDED
+    { 0x2D0F, "bot_attacker_limit_for_team" }, // AUTOADDED
     { 0x2D10, "bot_balance_personality" },
-//  { 0x2D11, "" },
-//  { 0x2D12, "" },
-//  { 0x2D13, "" },
-//  { 0x2D14, "" },
-//  { 0x2D15, "" },
-//  { 0x2D16, "" },
-//  { 0x2D17, "" },
-//  { 0x2D18, "" },
-//  { 0x2D19, "" },
-//  { 0x2D1A, "" },
-//  { 0x2D1B, "" },
-//  { 0x2D1C, "" },
-//  { 0x2D1D, "" },
-//  { 0x2D1E, "" },
-//  { 0x2D1F, "" },
-//  { 0x2D20, "" },
-//  { 0x2D21, "" },
-//  { 0x2D22, "" },
-//  { 0x2D23, "" },
-//  { 0x2D24, "" },
-//  { 0x2D25, "" },
-//  { 0x2D26, "" },
-//  { 0x2D27, "" },
-//  { 0x2D28, "" },
-//  { 0x2D29, "" },
-//  { 0x2D2A, "" },
-//  { 0x2D2B, "" },
-//  { 0x2D2C, "" },
-//  { 0x2D2D, "" },
-//  { 0x2D2E, "" },
-//  { 0x2D2F, "" },
-//  { 0x2D30, "" },
-//  { 0x2D31, "" },
-//  { 0x2D32, "" },
+    { 0x2D11, "bot_ball_ai_director_update" }, // AUTOADDED
+    { 0x2D12, "bot_ball_think" }, // AUTOADDED
+    { 0x2D13, "bot_bhd_think" }, // AUTOADDED
+    { 0x2D14, "bot_blitz_think" }, // AUTOADDED
+    { 0x2D15, "bot_body_is_dead" }, // AUTOADDED
+    { 0x2D16, "bot_bots_enabled_or_added" }, // AUTOADDED
+    { 0x2D17, "bot_br_think" }, // AUTOADDED
+    { 0x2D18, "bot_cache_entrances" }, // AUTOADDED
+    { 0x2D19, "bot_cache_entrances_to_bombzones" }, // AUTOADDED
+    { 0x2D1A, "bot_cache_entrances_to_flags_or_radios" }, // AUTOADDED
+    { 0x2D1B, "bot_cache_entrances_to_gametype_array" }, // AUTOADDED
+    { 0x2D1C, "bot_cache_flag_distances" }, // AUTOADDED
+    { 0x2D1D, "bot_camotable" }, // AUTOADDED
+    { 0x2D1E, "bot_camp_tag" }, // AUTOADDED
+    { 0x2D1F, "bot_camp_zone" }, // AUTOADDED
+    { 0x2D20, "bot_camping" }, // AUTOADDED
+    { 0x2D21, "bot_can_change_stance_while_watching_nodes" }, // AUTOADDED
+    { 0x2D22, "bot_can_join_team" }, // AUTOADDED
+    { 0x2D23, "bot_can_revive" }, // AUTOADDED
+    { 0x2D24, "bot_can_use_aa_launcher" }, // AUTOADDED
+    { 0x2D25, "bot_can_use_air_superiority" }, // AUTOADDED
+    { 0x2D26, "bot_can_use_ball_drone" }, // AUTOADDED
+    { 0x2D27, "bot_can_use_box_by_type" }, // AUTOADDED
+    { 0x2D28, "bot_can_use_emp" }, // AUTOADDED
+    { 0x2D29, "bot_can_use_killstreak" }, // AUTOADDED
+    { 0x2D2A, "bot_can_use_point_in_defend" }, // AUTOADDED
+    { 0x2D2B, "bot_capture_point" }, // AUTOADDED
+    { 0x2D2C, "bot_capture_zone" }, // AUTOADDED
+    { 0x2D2D, "bot_capture_zone_get_furthest_distance" }, // AUTOADDED
+    { 0x2D2E, "bot_check_tag_above_head" }, // AUTOADDED
+    { 0x2D2F, "bot_check_team_is_using_position" }, // AUTOADDED
+    { 0x2D30, "bot_choose_difficulty_for_default" }, // AUTOADDED
+    { 0x2D31, "bot_choose_flag" }, // AUTOADDED
+    { 0x2D32, "bot_chosen_difficulty" }, // AUTOADDED
     { 0x2D33, "bot_class" },
-//  { 0x2D34, "" },
+    { 0x2D34, "bot_client_counts" }, // AUTOADDED
 //  { 0x2D35, "" },
 //  { 0x2D36, "" },
 //  { 0x2D37, "" },
 //  { 0x2D38, "" },
 //  { 0x2D39, "" },
 //  { 0x2D3A, "" },
-//  { 0x2D3B, "" },
-//  { 0x2D3C, "" },
-//  { 0x2D3D, "" },
-//  { 0x2D3E, "" },
-//  { 0x2D3F, "" },
-//  { 0x2D40, "" },
-//  { 0x2D41, "" },
-//  { 0x2D42, "" },
+    { 0x2D3B, "bot_control_heli" }, // AUTOADDED
+    { 0x2D3C, "bot_control_heli_main_move_loop" }, // AUTOADDED
+    { 0x2D3D, "bot_control_heli_pilot" }, // AUTOADDED
+    { 0x2D3E, "bot_control_heli_sniper" }, // AUTOADDED
+    { 0x2D3F, "bot_control_odin" }, // AUTOADDED
+    { 0x2D40, "bot_control_odin_assault" }, // AUTOADDED
+    { 0x2D41, "bot_control_odin_support" }, // AUTOADDED
+    { 0x2D42, "bot_control_switchblade_cluster" }, // AUTOADDED
 //  { 0x2D43, "" },
 //  { 0x2D44, "" },
 //  { 0x2D45, "" },
 //  { 0x2D46, "" },
     { 0x2D47, "bot_damage_callback" },
-//  { 0x2D48, "" },
-//  { 0x2D49, "" },
-//  { 0x2D4A, "" },
-//  { 0x2D4B, "" },
-//  { 0x2D4C, "" },
-//  { 0x2D4D, "" },
+    { 0x2D48, "bot_dark_volumes" }, // AUTOADDED
+    { 0x2D49, "bot_default_sd_role_behavior" }, // AUTOADDED
+    { 0x2D4A, "bot_defcon_think" }, // AUTOADDED
+    { 0x2D4B, "bot_defend_get_precalc_entrances_for_current_area" }, // AUTOADDED
+    { 0x2D4C, "bot_defend_get_random_entrance_point_for_current_area" }, // AUTOADDED
+    { 0x2D4D, "bot_defend_player_guarding" }, // AUTOADDED
 //  { 0x2D4E, "" },
 //  { 0x2D4F, "" },
 //  { 0x2D50, "" },
-//  { 0x2D51, "" },
-//  { 0x2D52, "" },
-//  { 0x2D53, "" },
-//  { 0x2D54, "" },
-//  { 0x2D55, "" },
-//  { 0x2D56, "" },
-//  { 0x2D57, "" },
+    { 0x2D51, "bot_defending" }, // AUTOADDED
+    { 0x2D52, "bot_defending_center" }, // AUTOADDED
+    { 0x2D53, "bot_defending_nodes" }, // AUTOADDED
+    { 0x2D54, "bot_defending_override_origin_node" }, // AUTOADDED
+    { 0x2D55, "bot_defending_radius" }, // AUTOADDED
+    { 0x2D56, "bot_defending_trigger" }, // AUTOADDED
+    { 0x2D57, "bot_defending_type" }, // AUTOADDED
 //  { 0x2D58, "" },
 //  { 0x2D59, "" },
 //  { 0x2D5A, "" },
 //  { 0x2D5B, "" },
-//  { 0x2D5C, "" },
-//  { 0x2D5D, "" },
-//  { 0x2D5E, "" },
-//  { 0x2D5F, "" },
-//  { 0x2D60, "" },
-//  { 0x2D61, "" },
-//  { 0x2D62, "" },
-//  { 0x2D63, "" },
-//  { 0x2D64, "" },
-//  { 0x2D65, "" },
-//  { 0x2D66, "" },
-//  { 0x2D67, "" },
+    { 0x2D5C, "bot_disable_tactical_goals" }, // AUTOADDED
+    { 0x2D5D, "bot_dm_think" }, // AUTOADDED
+    { 0x2D5E, "bot_do_doublejump" }, // AUTOADDED
+    { 0x2D5F, "bot_dom_debug_should_capture_all" }, // AUTOADDED
+    { 0x2D60, "bot_dom_debug_should_protect_all" }, // AUTOADDED
+    { 0x2D61, "bot_dom_get_node_chance" }, // AUTOADDED
+    { 0x2D62, "bot_dom_leader_dialog" }, // AUTOADDED
+    { 0x2D63, "bot_dom_override_flag_targets" }, // AUTOADDED
+    { 0x2D64, "bot_dom_think" }, // AUTOADDED
+    { 0x2D65, "bot_draw_circle" }, // AUTOADDED
+    { 0x2D66, "bot_draw_cylinder" }, // AUTOADDED
+    { 0x2D67, "bot_draw_cylinder_think" }, // AUTOADDED
     { 0x2D68, "bot_drop" },
-//  { 0x2D69, "" },
-//  { 0x2D6A, "" },
-//  { 0x2D6B, "" },
-//  { 0x2D6C, "" },
-//  { 0x2D6D, "" },
-//  { 0x2D6E, "" },
-//  { 0x2D6F, "" },
-//  { 0x2D70, "" },
+    { 0x2D69, "bot_enable_tactical_goals" }, // AUTOADDED
+    { 0x2D6A, "bot_end_control_on_respawn" }, // AUTOADDED
+    { 0x2D6B, "bot_end_control_on_vehicle_death" }, // AUTOADDED
+    { 0x2D6C, "bot_end_control_watcher" }, // AUTOADDED
+    { 0x2D6D, "bot_end_odin_watcher" }, // AUTOADDED
+    { 0x2D6E, "bot_ent_is_anonymous_mine" }, // AUTOADDED
+    { 0x2D6F, "bot_fallback_personality" }, // AUTOADDED
+    { 0x2D70, "bot_fallback_weapon" }, // AUTOADDED
     { 0x2D71, "bot_filter_ambush_inuse" },
-//  { 0x2D72, "" },
-//  { 0x2D73, "" },
-//  { 0x2D74, "" },
-//  { 0x2D75, "" },
-//  { 0x2D76, "" },
-//  { 0x2D77, "" },
-//  { 0x2D78, "" },
-//  { 0x2D79, "" },
+    { 0x2D72, "bot_filter_ambush_vicinity" }, // AUTOADDED
+    { 0x2D73, "bot_find_ambush_entrances" }, // AUTOADDED
+    { 0x2D74, "bot_find_best_tag_from_array" }, // AUTOADDED
+    { 0x2D75, "bot_find_closest_tag" }, // AUTOADDED
+    { 0x2D76, "bot_find_defend_node_func" }, // AUTOADDED
+    { 0x2D77, "bot_find_node_that_protects_point" }, // AUTOADDED
+    { 0x2D78, "bot_find_node_to_capture_point" }, // AUTOADDED
+    { 0x2D79, "bot_find_node_to_capture_zone" }, // AUTOADDED
 //  { 0x2D7A, "" },
-//  { 0x2D7B, "" },
+    { 0x2D7B, "bot_find_random_midpoint" }, // AUTOADDED
 //  { 0x2D7C, "" },
 //  { 0x2D7D, "" },
     { 0x2D7E, "bot_fireteam_buddy_search" },
@@ -11678,7 +11678,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2D91, "" },
 //  { 0x2D92, "" },
 //  { 0x2D93, "" },
-//  { 0x2D94, "" },
+    { 0x2D94, "bot_flag_trigger" }, // AUTOADDED
 //  { 0x2D95, "" },
 //  { 0x2D96, "" },
 //  { 0x2D97, "" },
@@ -11691,46 +11691,46 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x2D9E, "bot_funcs" },
     { 0x2D9F, "bot_gametype_chooses_class" },
     { 0x2DA0, "bot_gametype_chooses_team" },
-//  { 0x2DA1, "" },
-//  { 0x2DA2, "" },
-//  { 0x2DA3, "" },
-//  { 0x2DA4, "" },
-//  { 0x2DA5, "" },
+    { 0x2DA1, "bot_gametype_precaching_done" }, // AUTOADDED
+    { 0x2DA2, "bot_get_all_possible_flags" }, // AUTOADDED
+    { 0x2DA3, "bot_get_ambush_trap_item" }, // AUTOADDED
+    { 0x2DA4, "bot_get_available_ball" }, // AUTOADDED
+    { 0x2DA5, "bot_get_ball_carrier" }, // AUTOADDED
     { 0x2DA6, "bot_get_client_limit" },
-//  { 0x2DA7, "" },
-//  { 0x2DA8, "" },
-//  { 0x2DA9, "" },
-//  { 0x2DAA, "" },
-//  { 0x2DAB, "" },
-//  { 0x2DAC, "" },
-//  { 0x2DAD, "" },
-//  { 0x2DAE, "" },
+    { 0x2DA7, "bot_get_enemy_team" }, // AUTOADDED
+    { 0x2DA8, "bot_get_entrances_for_stance_and_index" }, // AUTOADDED
+    { 0x2DA9, "bot_get_grenade_ammo" }, // AUTOADDED
+    { 0x2DAA, "bot_get_grenade_for_purpose" }, // AUTOADDED
+    { 0x2DAB, "bot_get_heli_goal_dist_sq" }, // AUTOADDED
+    { 0x2DAC, "bot_get_heli_slowdown_dist_sq" }, // AUTOADDED
+    { 0x2DAD, "bot_get_host_team" }, // AUTOADDED
+    { 0x2DAE, "bot_get_human_picked_team" }, // AUTOADDED
     { 0x2DAF, "bot_get_known_attacker" },
-//  { 0x2DB0, "" },
+    { 0x2DB0, "bot_get_low_on_ammo" }, // AUTOADDED
 //  { 0x2DB1, "" },
-//  { 0x2DB2, "" },
-//  { 0x2DB3, "" },
-//  { 0x2DB4, "" },
-//  { 0x2DB5, "" },
-//  { 0x2DB6, "" },
-//  { 0x2DB7, "" },
-//  { 0x2DB8, "" },
-//  { 0x2DB9, "" },
-//  { 0x2DBA, "" },
-//  { 0x2DBB, "" },
-//  { 0x2DBC, "" },
-//  { 0x2DBD, "" },
-//  { 0x2DBE, "" },
-//  { 0x2DBF, "" },
-//  { 0x2DC0, "" },
-//  { 0x2DC1, "" },
+    { 0x2DB2, "bot_get_player_team" }, // AUTOADDED
+    { 0x2DB3, "bot_get_rank_xp" }, // AUTOADDED
+    { 0x2DB4, "bot_get_string_index_for_integer" }, // AUTOADDED
+    { 0x2DB5, "bot_get_team_limit" }, // AUTOADDED
+    { 0x2DB6, "bot_get_teammates_currently_defending_point" }, // AUTOADDED
+    { 0x2DB7, "bot_get_teammates_in_radius" }, // AUTOADDED
+    { 0x2DB8, "bot_get_total_gun_ammo" }, // AUTOADDED
+    { 0x2DB9, "bot_get_zones_within_dist" }, // AUTOADDED
+    { 0x2DBA, "bot_get_zones_within_dist_recurs" }, // AUTOADDED
+    { 0x2DBB, "bot_goal_can_override" }, // AUTOADDED
+    { 0x2DBC, "bot_goto_zone" }, // AUTOADDED
+    { 0x2DBD, "bot_grenade_matches_purpose" }, // AUTOADDED
+    { 0x2DBE, "bot_grind_extra_think" }, // AUTOADDED
+    { 0x2DBF, "bot_grind_think" }, // AUTOADDED
+    { 0x2DC0, "bot_grnd_think" }, // AUTOADDED
+    { 0x2DC1, "bot_guard_player" }, // AUTOADDED
 //  { 0x2DC2, "" },
 //  { 0x2DC3, "" },
 //  { 0x2DC4, "" },
-//  { 0x2DC5, "" },
-//  { 0x2DC6, "" },
-//  { 0x2DC7, "" },
-//  { 0x2DC8, "" },
+    { 0x2DC5, "bot_has_tactical_goal" }, // AUTOADDED
+    { 0x2DC6, "bot_headquarters_think" }, // AUTOADDED
+    { 0x2DC7, "bot_heli_find_unvisited_nodes" }, // AUTOADDED
+    { 0x2DC8, "bot_heli_nodes" }, // AUTOADDED
 //  { 0x2DC9, "" },
 //  { 0x2DCA, "" },
 //  { 0x2DCB, "" },
@@ -11739,77 +11739,77 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2DCE, "" },
 //  { 0x2DCF, "" },
 //  { 0x2DD0, "" },
-//  { 0x2DD1, "" },
+    { 0x2DD1, "bot_interaction_type" }, // AUTOADDED
 //  { 0x2DD2, "" },
 //  { 0x2DD3, "" },
-//  { 0x2DD4, "" },
-//  { 0x2DD5, "" },
-//  { 0x2DD6, "" },
-//  { 0x2DD7, "" },
-//  { 0x2DD8, "" },
+    { 0x2DD4, "bot_is_bodyguarding" }, // AUTOADDED
+    { 0x2DD5, "bot_is_capturing" }, // AUTOADDED
+    { 0x2DD6, "bot_is_capturing_flag" }, // AUTOADDED
+    { 0x2DD7, "bot_is_defending" }, // AUTOADDED
+    { 0x2DD8, "bot_is_defending_point" }, // AUTOADDED
     { 0x2DD9, "bot_is_fireteam_mode" },
-//  { 0x2DDA, "" },
-//  { 0x2DDB, "" },
-//  { 0x2DDC, "" },
-//  { 0x2DDD, "" },
-//  { 0x2DDE, "" },
-//  { 0x2DDF, "" },
+    { 0x2DDA, "bot_is_guarding_player" }, // AUTOADDED
+    { 0x2DDB, "bot_is_killstreak_supported" }, // AUTOADDED
+    { 0x2DDC, "bot_is_patrolling" }, // AUTOADDED
+    { 0x2DDD, "bot_is_protecting" }, // AUTOADDED
+    { 0x2DDE, "bot_is_protecting_flag" }, // AUTOADDED
+    { 0x2DDF, "bot_is_ready_to_spawn" }, // AUTOADDED
     { 0x2DE0, "bot_is_remote_or_linked" },
-//  { 0x2DE1, "" },
+    { 0x2DE1, "bot_is_tag_visible" }, // AUTOADDED
     { 0x2DE2, "bot_israndom" },
-//  { 0x2DE3, "" },
-//  { 0x2DE4, "" },
-//  { 0x2DE5, "" },
-//  { 0x2DE6, "" },
-//  { 0x2DE7, "" },
-//  { 0x2DE8, "" },
-//  { 0x2DE9, "" },
-//  { 0x2DEA, "" },
-//  { 0x2DEB, "" },
-//  { 0x2DEC, "" },
-//  { 0x2DED, "" },
-//  { 0x2DEE, "" },
-//  { 0x2DEF, "" },
-//  { 0x2DF0, "" },
-//  { 0x2DF1, "" },
-//  { 0x2DF2, "" },
+    { 0x2DE3, "bot_jump_for_tag" }, // AUTOADDED
+    { 0x2DE4, "bot_killstreak_choose_loc_enemies" }, // AUTOADDED
+    { 0x2DE5, "bot_killstreak_drop" }, // AUTOADDED
+    { 0x2DE6, "bot_killstreak_drop_anywhere" }, // AUTOADDED
+    { 0x2DE7, "bot_killstreak_drop_hidden" }, // AUTOADDED
+    { 0x2DE8, "bot_killstreak_drop_outside" }, // AUTOADDED
+    { 0x2DE9, "bot_killstreak_get_all_outside_allies" }, // AUTOADDED
+    { 0x2DEA, "bot_killstreak_get_all_outside_enemies" }, // AUTOADDED
+    { 0x2DEB, "bot_killstreak_get_outside_players" }, // AUTOADDED
+    { 0x2DEC, "bot_killstreak_get_zone_allies_outside" }, // AUTOADDED
+    { 0x2DED, "bot_killstreak_get_zone_enemies_outside" }, // AUTOADDED
+    { 0x2DEE, "bot_killstreak_is_valid_internal" }, // AUTOADDED
+    { 0x2DEF, "bot_killstreak_is_valid_single" }, // AUTOADDED
+    { 0x2DF0, "bot_killstreak_never_use" }, // AUTOADDED
+    { 0x2DF1, "bot_killstreak_remote_control" }, // AUTOADDED
+    { 0x2DF2, "bot_killstreak_sentry" }, // AUTOADDED
     { 0x2DF3, "bot_killstreak_setup" },
-//  { 0x2DF4, "" },
-//  { 0x2DF5, "" },
-//  { 0x2DF6, "" },
+    { 0x2DF4, "bot_killstreak_simple_use" }, // AUTOADDED
+    { 0x2DF5, "bot_killstreak_valid_for_specific_streaktype" }, // AUTOADDED
+    { 0x2DF6, "bot_killstreak_vanguard_start" }, // AUTOADDED
 //  { 0x2DF7, "" },
 //  { 0x2DF8, "" },
-//  { 0x2DF9, "" },
+    { 0x2DF9, "bot_ks_funcs" }, // AUTOADDED
 //  { 0x2DFA, "" },
 //  { 0x2DFB, "" },
 //  { 0x2DFC, "" },
 //  { 0x2DFD, "" },
-//  { 0x2DFE, "" },
-//  { 0x2DFF, "" },
-//  { 0x2E00, "" },
-//  { 0x2E01, "" },
+    { 0x2DFE, "bot_loadout_choose_from_attachmenttable" }, // AUTOADDED
+    { 0x2DFF, "bot_loadout_choose_from_camotable" }, // AUTOADDED
+    { 0x2E00, "bot_loadout_choose_from_default_class" }, // AUTOADDED
+    { 0x2E01, "bot_loadout_choose_from_perktable" }, // AUTOADDED
 //  { 0x2E02, "" },
 //  { 0x2E03, "" },
 //  { 0x2E04, "" },
 //  { 0x2E05, "" },
 //  { 0x2E06, "" },
 //  { 0x2E07, "" },
-//  { 0x2E08, "" },
-//  { 0x2E09, "" },
-//  { 0x2E0A, "" },
-//  { 0x2E0B, "" },
-//  { 0x2E0C, "" },
-//  { 0x2E0D, "" },
-//  { 0x2E0E, "" },
-//  { 0x2E0F, "" },
+    { 0x2E08, "bot_loadout_get_archetype" }, // AUTOADDED
+    { 0x2E09, "bot_loadout_get_difficulty" }, // AUTOADDED
+    { 0x2E0A, "bot_loadout_item_allowed" }, // AUTOADDED
+    { 0x2E0B, "bot_loadout_make_index" }, // AUTOADDED
+    { 0x2E0C, "bot_loadout_perk_slots" }, // AUTOADDED
+    { 0x2E0D, "bot_loadout_pick" }, // AUTOADDED
+    { 0x2E0E, "bot_loadout_set" }, // AUTOADDED
+    { 0x2E0F, "bot_loadout_setup_perks" }, // AUTOADDED
 //  { 0x2E10, "" },
 //  { 0x2E11, "" },
 //  { 0x2E12, "" },
 //  { 0x2E13, "" },
 //  { 0x2E14, "" },
     { 0x2E15, "bot_lui_convert_team_to_int" },
-//  { 0x2E16, "" },
-//  { 0x2E17, "" },
+    { 0x2E16, "bot_make_entity_sentient" }, // AUTOADDED
+    { 0x2E17, "bot_map_center" }, // AUTOADDED
 //  { 0x2E18, "" },
 //  { 0x2E19, "" },
 //  { 0x2E1A, "" },
@@ -11819,7 +11819,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2E1E, "" },
 //  { 0x2E1F, "" },
 //  { 0x2E20, "" },
-//  { 0x2E21, "" },
+    { 0x2E21, "bot_monitor_enemy_camp_spots" }, // AUTOADDED
 //  { 0x2E22, "" },
 //  { 0x2E23, "" },
 //  { 0x2E24, "" },
@@ -11827,57 +11827,57 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2E26, "" },
 //  { 0x2E27, "" },
 //  { 0x2E28, "" },
-//  { 0x2E29, "" },
-//  { 0x2E2A, "" },
-//  { 0x2E2B, "" },
-//  { 0x2E2C, "" },
-//  { 0x2E2D, "" },
-//  { 0x2E2E, "" },
-//  { 0x2E2F, "" },
-//  { 0x2E30, "" },
-//  { 0x2E31, "" },
-//  { 0x2E32, "" },
-//  { 0x2E33, "" },
-//  { 0x2E34, "" },
-//  { 0x2E35, "" },
-//  { 0x2E36, "" },
-//  { 0x2E37, "" },
-//  { 0x2E38, "" },
-//  { 0x2E39, "" },
-//  { 0x2E3A, "" },
-//  { 0x2E3B, "" },
-//  { 0x2E3C, "" },
-//  { 0x2E3D, "" },
-//  { 0x2E3E, "" },
-//  { 0x2E3F, "" },
-//  { 0x2E40, "" },
-//  { 0x2E41, "" },
-//  { 0x2E42, "" },
-//  { 0x2E43, "" },
-//  { 0x2E44, "" },
-//  { 0x2E45, "" },
-//  { 0x2E46, "" },
-//  { 0x2E47, "" },
-//  { 0x2E48, "" },
-//  { 0x2E49, "" },
-//  { 0x2E4A, "" },
-//  { 0x2E4B, "" },
-//  { 0x2E4C, "" },
-//  { 0x2E4D, "" },
-//  { 0x2E4E, "" },
-//  { 0x2E4F, "" },
-//  { 0x2E50, "" },
-//  { 0x2E51, "" },
-//  { 0x2E52, "" },
+    { 0x2E29, "bot_notify_streak_used" }, // AUTOADDED
+    { 0x2E2A, "bot_odin_find_target_for_airdrop" }, // AUTOADDED
+    { 0x2E2B, "bot_odin_find_target_for_rods" }, // AUTOADDED
+    { 0x2E2C, "bot_odin_get_closest_visible_outside_player" }, // AUTOADDED
+    { 0x2E2D, "bot_odin_get_high_priority_smoke_locations" }, // AUTOADDED
+    { 0x2E2E, "bot_odin_get_num_valid_care_packages" }, // AUTOADDED
+    { 0x2E2F, "bot_odin_get_player_target_point" }, // AUTOADDED
+    { 0x2E30, "bot_odin_get_visible_outside_players" }, // AUTOADDED
+    { 0x2E31, "bot_odin_should_airdrop_at_marker" }, // AUTOADDED
+    { 0x2E32, "bot_odin_should_drop_smoke_at_marker" }, // AUTOADDED
+    { 0x2E33, "bot_odin_should_fire_flash_at_marker" }, // AUTOADDED
+    { 0x2E34, "bot_odin_should_fire_rod_at_marker" }, // AUTOADDED
+    { 0x2E35, "bot_odin_time_to_move" }, // AUTOADDED
+    { 0x2E36, "bot_odin_try_airdrop" }, // AUTOADDED
+    { 0x2E37, "bot_odin_try_flash" }, // AUTOADDED
+    { 0x2E38, "bot_odin_try_rods" }, // AUTOADDED
+    { 0x2E39, "bot_odin_try_smoke" }, // AUTOADDED
+    { 0x2E3A, "bot_odin_try_spawn_juggernaut" }, // AUTOADDED
+    { 0x2E3B, "bot_out_of_ammo" }, // AUTOADDED
+    { 0x2E3C, "bot_out_of_combat_time" }, // AUTOADDED
+    { 0x2E3D, "bot_patrol_area" }, // AUTOADDED
+    { 0x2E3E, "bot_perk_cost" }, // AUTOADDED
+    { 0x2E3F, "bot_perktable" }, // AUTOADDED
+    { 0x2E40, "bot_perktable_groups" }, // AUTOADDED
+    { 0x2E41, "bot_perktypes" }, // AUTOADDED
+    { 0x2E42, "bot_pers_init" }, // AUTOADDED
+    { 0x2E43, "bot_pers_update" }, // AUTOADDED
+    { 0x2E44, "bot_personality" }, // AUTOADDED
+    { 0x2E45, "bot_personality_list" }, // AUTOADDED
+    { 0x2E46, "bot_personality_type" }, // AUTOADDED
+    { 0x2E47, "bot_personality_types_desired" }, // AUTOADDED
+    { 0x2E48, "bot_pick_personality_from_weapon" }, // AUTOADDED
+    { 0x2E49, "bot_pick_random_point_from_set" }, // AUTOADDED
+    { 0x2E4A, "bot_pick_random_point_in_radius" }, // AUTOADDED
+    { 0x2E4B, "bot_picking_up" }, // AUTOADDED
+    { 0x2E4C, "bot_pickup_weapon" }, // AUTOADDED
+    { 0x2E4D, "bot_pill_think" }, // AUTOADDED
+    { 0x2E4E, "bot_player_spawned" }, // AUTOADDED
+    { 0x2E4F, "bot_point_is_on_pathgrid" }, // AUTOADDED
+    { 0x2E50, "bot_post_teleport" }, // AUTOADDED
+    { 0x2E51, "bot_post_use_ammo_crate" }, // AUTOADDED
+    { 0x2E52, "bot_post_use_box_of_type" }, // AUTOADDED
 //  { 0x2E53, "" },
 //  { 0x2E54, "" },
-//  { 0x2E55, "" },
-//  { 0x2E56, "" },
-//  { 0x2E57, "" },
-//  { 0x2E58, "" },
-//  { 0x2E59, "" },
-//  { 0x2E5A, "" },
-//  { 0x2E5B, "" },
+    { 0x2E55, "bot_pre_use_box_of_type" }, // AUTOADDED
+    { 0x2E56, "bot_prematchdonetime" }, // AUTOADDED
+    { 0x2E57, "bot_protect_point" }, // AUTOADDED
+    { 0x2E58, "bot_queued_process" }, // AUTOADDED
+    { 0x2E59, "bot_queued_process_level_thread" }, // AUTOADDED
+    { 0x2E5A, "bot_queued_process_level_thread_active" }, // AUTOADDED
+    { 0x2E5B, "bot_queued_process_queue" }, // AUTOADDED
     { 0x2E5C, "bot_random_path" },
     { 0x2E5D, "bot_random_path_default" },
     { 0x2E5E, "bot_random_path_function" },
@@ -11885,56 +11885,56 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2E60, "" },
 //  { 0x2E61, "" },
     { 0x2E62, "bot_recent_point_of_interest" },
-//  { 0x2E63, "" },
-//  { 0x2E64, "" },
-//  { 0x2E65, "" },
-//  { 0x2E66, "" },
+    { 0x2E63, "bot_register_killstreak_func" }, // AUTOADDED
+    { 0x2E64, "bot_remove_from_bot_level_targets" }, // AUTOADDED
+    { 0x2E65, "bot_remove_invalid_tags" }, // AUTOADDED
+    { 0x2E66, "bot_respawn_launcher_name" }, // AUTOADDED
     { 0x2E67, "bot_restart_think_threads" },
-//  { 0x2E68, "" },
+    { 0x2E68, "bot_rnd_prestige" }, // AUTOADDED
     { 0x2E69, "bot_rnd_rank" },
-//  { 0x2E6A, "" },
-//  { 0x2E6B, "" },
-//  { 0x2E6C, "" },
-//  { 0x2E6D, "" },
-//  { 0x2E6E, "" },
-//  { 0x2E6F, "" },
-//  { 0x2E70, "" },
-//  { 0x2E71, "" },
-//  { 0x2E72, "" },
-//  { 0x2E73, "" },
-//  { 0x2E74, "" },
-//  { 0x2E75, "" },
-//  { 0x2E76, "" },
-//  { 0x2E77, "" },
-//  { 0x2E78, "" },
-//  { 0x2E79, "" },
-//  { 0x2E7A, "" },
-//  { 0x2E7B, "" },
-//  { 0x2E7C, "" },
-//  { 0x2E7D, "" },
-//  { 0x2E7E, "" },
-//  { 0x2E7F, "" },
-//  { 0x2E80, "" },
+    { 0x2E6A, "bot_scavenger_bags" }, // AUTOADDED
+    { 0x2E6B, "bot_sd_ai_director_update" }, // AUTOADDED
+    { 0x2E6C, "bot_sd_override_zone_targets" }, // AUTOADDED
+    { 0x2E6D, "bot_sd_start" }, // AUTOADDED
+    { 0x2E6E, "bot_sd_think" }, // AUTOADDED
+    { 0x2E6F, "bot_seek_dropped_weapon" }, // AUTOADDED
+    { 0x2E70, "bot_send_cancel_notify" }, // AUTOADDED
+    { 0x2E71, "bot_send_place_notify" }, // AUTOADDED
+    { 0x2E72, "bot_sentry_activate" }, // AUTOADDED
+    { 0x2E73, "bot_sentry_add_goal" }, // AUTOADDED
+    { 0x2E74, "bot_sentry_cancel" }, // AUTOADDED
+    { 0x2E75, "bot_sentry_cancel_failsafe" }, // AUTOADDED
+    { 0x2E76, "bot_sentry_carried_obj" }, // AUTOADDED
+    { 0x2E77, "bot_sentry_choose_placement" }, // AUTOADDED
+    { 0x2E78, "bot_sentry_choose_target" }, // AUTOADDED
+    { 0x2E79, "bot_sentry_ensure_exit" }, // AUTOADDED
+    { 0x2E7A, "bot_sentry_force_cancel" }, // AUTOADDED
+    { 0x2E7B, "bot_sentry_path_start" }, // AUTOADDED
+    { 0x2E7C, "bot_sentry_path_thread" }, // AUTOADDED
+    { 0x2E7D, "bot_sentry_should_abort" }, // AUTOADDED
+    { 0x2E7E, "bot_set_ambush_trap" }, // AUTOADDED
+    { 0x2E7F, "bot_set_ambush_trap_wait_fire" }, // AUTOADDED
+    { 0x2E80, "bot_set_bombzone_bottargets" }, // AUTOADDED
     { 0x2E81, "bot_set_difficulty" },
     { 0x2E82, "bot_set_loadout_class" },
     { 0x2E83, "bot_set_personality" },
-//  { 0x2E84, "" },
-//  { 0x2E85, "" },
-//  { 0x2E86, "" },
-//  { 0x2E87, "" },
+    { 0x2E84, "bot_set_role" }, // AUTOADDED
+    { 0x2E85, "bot_set_role_delayed" }, // AUTOADDED
+    { 0x2E86, "bot_setup_bombzone_bottargets" }, // AUTOADDED
+    { 0x2E87, "bot_setup_bot_targets" }, // AUTOADDED
     { 0x2E88, "bot_setup_callback_class" },
     { 0x2E89, "bot_setup_loadout_callback" },
-//  { 0x2E8A, "" },
-//  { 0x2E8B, "" },
-//  { 0x2E8C, "" },
-//  { 0x2E8D, "" },
+    { 0x2E8A, "bot_setup_objective_bottargets" }, // AUTOADDED
+    { 0x2E8B, "bot_setup_radio_bottargets" }, // AUTOADDED
+    { 0x2E8C, "bot_should_defend" }, // AUTOADDED
+    { 0x2E8D, "bot_should_defend_flag" }, // AUTOADDED
     { 0x2E8E, "bot_should_do_killcam" },
-//  { 0x2E8F, "" },
+    { 0x2E8F, "bot_should_melee_level_damage_target" }, // AUTOADDED
     { 0x2E90, "bot_should_pickup_weapons" },
-//  { 0x2E91, "" },
-//  { 0x2E92, "" },
-//  { 0x2E93, "" },
-//  { 0x2E94, "" },
+    { 0x2E91, "bot_should_pickup_weapons_infect" }, // AUTOADDED
+    { 0x2E92, "bot_should_use_ammo_crate" }, // AUTOADDED
+    { 0x2E93, "bot_should_use_ballistic_vest_crate" }, // AUTOADDED
+    { 0x2E94, "bot_should_use_grenade_crate" }, // AUTOADDED
 //  { 0x2E95, "" },
 //  { 0x2E96, "" },
 //  { 0x2E97, "" },
@@ -11950,13 +11950,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2EA1, "" },
 //  { 0x2EA2, "" },
 //  { 0x2EA3, "" },
-//  { 0x2EA4, "" },
-//  { 0x2EA5, "" },
+    { 0x2EA4, "bot_supported_killstreaks" }, // AUTOADDED
+    { 0x2EA5, "bot_switch_to_killstreak_weapon" }, // AUTOADDED
 //  { 0x2EA6, "" },
-//  { 0x2EA7, "" },
-//  { 0x2EA8, "" },
-//  { 0x2EA9, "" },
-//  { 0x2EAA, "" },
+    { 0x2EA7, "bot_tag_obj_radius" }, // AUTOADDED
+    { 0x2EA8, "bot_target" }, // AUTOADDED
+    { 0x2EA9, "bot_target_is_flag" }, // AUTOADDED
+    { 0x2EAA, "bot_targets" }, // AUTOADDED
     { 0x2EAB, "bot_tdm_apply_commander_tactics" },
     { 0x2EAC, "bot_team" },
     { 0x2EAD, "bot_team_tdm_personality" },
@@ -11973,38 +11973,38 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x2EB8, "bot_think_tactical_goals" },
     { 0x2EB9, "bot_think_watch_aerial_killstreak" },
     { 0x2EBA, "bot_think_watch_enemy" },
-//  { 0x2EBB, "" },
-//  { 0x2EBC, "" },
-//  { 0x2EBD, "" },
-//  { 0x2EBE, "" },
-//  { 0x2EBF, "" },
-//  { 0x2EC0, "" },
-//  { 0x2EC1, "" },
-//  { 0x2EC2, "" },
-//  { 0x2EC3, "" },
-//  { 0x2EC4, "" },
-//  { 0x2EC5, "" },
-//  { 0x2EC6, "" },
-//  { 0x2EC7, "" },
+    { 0x2EBB, "bot_triggers" }, // AUTOADDED
+    { 0x2EBC, "bot_try_trap_follower" }, // AUTOADDED
+    { 0x2EBD, "bot_update_camp_assassin" }, // AUTOADDED
+    { 0x2EBE, "bot_usebutton_wait" }, // AUTOADDED
+    { 0x2EBF, "bot_valid_camp_assassin" }, // AUTOADDED
+    { 0x2EC0, "bot_validate_perk" }, // AUTOADDED
+    { 0x2EC1, "bot_validate_reticle" }, // AUTOADDED
+    { 0x2EC2, "bot_validate_weapon" }, // AUTOADDED
+    { 0x2EC3, "bot_vanguard_find_unvisited_nodes" }, // AUTOADDED
+    { 0x2EC4, "bot_vanguard_height_trace_size" }, // AUTOADDED
+    { 0x2EC5, "bot_variables_initialized" }, // AUTOADDED
+    { 0x2EC6, "bot_vectors_are_equal" }, // AUTOADDED
+    { 0x2EC7, "bot_visited_times" }, // AUTOADDED
 //  { 0x2EC8, "" },
 //  { 0x2EC9, "" },
 //  { 0x2ECA, "" },
 //  { 0x2ECB, "" },
-//  { 0x2ECC, "" },
-//  { 0x2ECD, "" },
+    { 0x2ECC, "bot_waittill_out_of_combat_or_time" }, // AUTOADDED
+    { 0x2ECD, "bot_waittill_using_vehicle" }, // AUTOADDED
     { 0x2ECE, "bot_war_think" },
-//  { 0x2ECF, "" },
-//  { 0x2ED0, "" },
-//  { 0x2ED1, "" },
-//  { 0x2ED2, "" },
-//  { 0x2ED3, "" },
-//  { 0x2ED4, "" },
-//  { 0x2ED5, "" },
+    { 0x2ECF, "bot_watch_entrances_delayed" }, // AUTOADDED
+    { 0x2ED0, "bot_watch_for_death" }, // AUTOADDED
+    { 0x2ED1, "bot_watch_for_killstreak_use" }, // AUTOADDED
+    { 0x2ED2, "bot_watch_manual_detonate" }, // AUTOADDED
+    { 0x2ED3, "bot_watch_new_tags" }, // AUTOADDED
+    { 0x2ED4, "bot_watch_nodes" }, // AUTOADDED
+    { 0x2ED5, "bot_weap_personality" }, // AUTOADDED
 //  { 0x2ED6, "" },
 //  { 0x2ED7, "" },
-//  { 0x2ED8, "" },
-//  { 0x2ED9, "" },
-//  { 0x2EDA, "" },
+    { 0x2ED8, "botarchetype" }, // AUTOADDED
+    { 0x2ED9, "botarchetypes" }, // AUTOADDED
+    { 0x2EDA, "botblockedkillstreaks" }, // AUTOADDED
 //  { 0x2EDB, "" },
 //  { 0x2EDC, "" },
 //  { 0x2EDD, "" },
@@ -12017,25 +12017,25 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2EE4, "" },
 //  { 0x2EE5, "" },
 //  { 0x2EE6, "" },
-//  { 0x2EE7, "" },
-//  { 0x2EE8, "" },
+    { 0x2EE7, "botloadoutsets" }, // AUTOADDED
+    { 0x2EE8, "botloadouttemplates" }, // AUTOADDED
 //  { 0x2EE9, "" },
 //  { 0x2EEA, "" },
-//  { 0x2EEB, "" },
-//  { 0x2EEC, "" },
-//  { 0x2EED, "" },
-//  { 0x2EEE, "" },
-//  { 0x2EEF, "" },
+    { 0x2EEB, "bots" }, // AUTOADDED
+    { 0x2EEC, "bots_attacking_wanted" }, // AUTOADDED
+    { 0x2EED, "bots_defending_wanted" }, // AUTOADDED
+    { 0x2EEE, "bots_disable_team_switching" }, // AUTOADDED
+    { 0x2EEF, "bots_exist" }, // AUTOADDED
 //  { 0x2EF0, "" },
 //  { 0x2EF1, "" },
     { 0x2EF2, "bots_gametype_handles_class_choice" },
     { 0x2EF3, "bots_gametype_handles_team_choice" },
 //  { 0x2EF4, "" },
 //  { 0x2EF5, "" },
-//  { 0x2EF6, "" },
-//  { 0x2EF7, "" },
-//  { 0x2EF8, "" },
-//  { 0x2EF9, "" },
+    { 0x2EF6, "bots_notify_on_disconnect" }, // AUTOADDED
+    { 0x2EF7, "bots_notify_on_spawn" }, // AUTOADDED
+    { 0x2EF8, "bots_remove_from_array_on_notify" }, // AUTOADDED
+    { 0x2EF9, "bots_update_difficulty" }, // AUTOADDED
 //  { 0x2EFA, "" },
 //  { 0x2EFB, "" },
 //  { 0x2EFC, "" },
@@ -12062,45 +12062,45 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x2F11, "" },
 //  { 0x2F12, "" },
 //  { 0x2F13, "" },
-//  { 0x2F14, "" },
-//  { 0x2F15, "" },
+    { 0x2F14, "box_agentconnected" }, // AUTOADDED
+    { 0x2F15, "box_disableplayeruse" }, // AUTOADDED
 //  { 0x2F16, "" },
 //  { 0x2F17, "" },
-//  { 0x2F18, "" },
+    { 0x2F18, "box_enableplayeruse" }, // AUTOADDED
 //  { 0x2F19, "" },
 //  { 0x2F1A, "" },
 //  { 0x2F1B, "" },
 //  { 0x2F1C, "" },
 //  { 0x2F1D, "" },
-//  { 0x2F1E, "" },
-//  { 0x2F1F, "" },
-//  { 0x2F20, "" },
-//  { 0x2F21, "" },
+    { 0x2F1E, "box_modelteamupdater" }, // AUTOADDED
+    { 0x2F1F, "box_modifydamage" }, // AUTOADDED
+    { 0x2F20, "box_playerconnected" }, // AUTOADDED
+    { 0x2F21, "box_playerjoinedteam" }, // AUTOADDED
 //  { 0x2F22, "" },
 //  { 0x2F23, "" },
 //  { 0x2F24, "" },
 //  { 0x2F25, "" },
-//  { 0x2F26, "" },
-//  { 0x2F27, "" },
-//  { 0x2F28, "" },
+    { 0x2F26, "box_timeout" }, // AUTOADDED
+    { 0x2F27, "box_waittill_player_spawn_and_add_box" }, // AUTOADDED
+    { 0x2F28, "boxcapturethink" }, // AUTOADDED
 //  { 0x2F29, "" },
 //  { 0x2F2A, "" },
 //  { 0x2F2B, "" },
 //  { 0x2F2C, "" },
 //  { 0x2F2D, "" },
 //  { 0x2F2E, "" },
-//  { 0x2F2F, "" },
-//  { 0x2F30, "" },
-//  { 0x2F31, "" },
-//  { 0x2F32, "" },
+    { 0x2F2F, "boxparams" }, // AUTOADDED
+    { 0x2F30, "boxsettings" }, // AUTOADDED
+    { 0x2F31, "boxthink" }, // AUTOADDED
+    { 0x2F32, "boxtouchonly" }, // AUTOADDED
     { 0x2F33, "boxtype" },
 //  { 0x2F34, "" },
 //  { 0x2F35, "" },
 //  { 0x2F36, "" },
-//  { 0x2F37, "" },
+    { 0x2F37, "bpm" }, // AUTOADDED
 //  { 0x2F38, "" },
-//  { 0x2F39, "" },
-//  { 0x2F3A, "" },
+    { 0x2F39, "bpowerdown" }, // AUTOADDED
+    { 0x2F3A, "bpowereddown" }, // AUTOADDED
 //  { 0x2F3B, "" },
 //  { 0x2F3C, "" },
 //  { 0x2F3D, "" },
@@ -12619,64 +12619,64 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x313E, "" },
 //  { 0x313F, "" },
 //  { 0x3140, "" },
-//  { 0x3141, "" },
-//  { 0x3142, "" },
-//  { 0x3143, "" },
-//  { 0x3144, "" },
-//  { 0x3145, "" },
-//  { 0x3146, "" },
-//  { 0x3147, "" },
-//  { 0x3148, "" },
-//  { 0x3149, "" },
-//  { 0x314A, "" },
-//  { 0x314B, "" },
-//  { 0x314C, "" },
-//  { 0x314D, "" },
-//  { 0x314E, "" },
-//  { 0x314F, "" },
-//  { 0x3150, "" },
-//  { 0x3151, "" },
-//  { 0x3152, "" },
-//  { 0x3153, "" },
-//  { 0x3154, "" },
-//  { 0x3155, "" },
-//  { 0x3156, "" },
-//  { 0x3157, "" },
-//  { 0x3158, "" },
-//  { 0x3159, "" },
-//  { 0x315A, "" },
-//  { 0x315B, "" },
-//  { 0x315C, "" },
-//  { 0x315D, "" },
-//  { 0x315E, "" },
-//  { 0x315F, "" },
-//  { 0x3160, "" },
-//  { 0x3161, "" },
-//  { 0x3162, "" },
-//  { 0x3163, "" },
-//  { 0x3164, "" },
-//  { 0x3165, "" },
-//  { 0x3166, "" },
+    { 0x3141, "btraversing" }, // AUTOADDED
+    { 0x3142, "btreeorient" }, // AUTOADDED
+    { 0x3143, "btstate_addsubstate" }, // AUTOADDED
+    { 0x3144, "btstate_clearsubstates" }, // AUTOADDED
+    { 0x3145, "btstate_endcurrentsubstate" }, // AUTOADDED
+    { 0x3146, "btstate_endstates" }, // AUTOADDED
+    { 0x3147, "btstate_getcurrentsubstate" }, // AUTOADDED
+    { 0x3148, "btstate_getsubstate" }, // AUTOADDED
+    { 0x3149, "btstate_setupstate" }, // AUTOADDED
+    { 0x314A, "btstate_tickstates" }, // AUTOADDED
+    { 0x314B, "btstate_transitionstate" }, // AUTOADDED
+    { 0x314C, "bucket" }, // AUTOADDED
+    { 0x314D, "bucket_terminator" }, // AUTOADDED
+    { 0x314E, "buddy_boost" }, // AUTOADDED
+    { 0x314F, "buddy_boost_restart" }, // AUTOADDED
+    { 0x3150, "buddy_down" }, // AUTOADDED
+    { 0x3151, "buddy_down_damage_thread" }, // AUTOADDED
+    { 0x3152, "buddy_down_dialogue" }, // AUTOADDED
+    { 0x3153, "buddy_down_door_damage" }, // AUTOADDED
+    { 0x3154, "buddy_down_dropgun" }, // AUTOADDED
+    { 0x3155, "buddy_down_enemydead_interrupt" }, // AUTOADDED
+    { 0x3156, "buddy_down_gunner_damage_thread" }, // AUTOADDED
+    { 0x3157, "buddy_down_gunner_death" }, // AUTOADDED
+    { 0x3158, "buddy_down_gunner_flashed_thread" }, // AUTOADDED
+    { 0x3159, "buddy_down_player_engaging_early" }, // AUTOADDED
+    { 0x315A, "buddy_down_price_anim" }, // AUTOADDED
+    { 0x315B, "buddy_down_remove_playerclip" }, // AUTOADDED
+    { 0x315C, "buddy_down_skip_move" }, // AUTOADDED
+    { 0x315D, "buddy_down_skip_post_clear" }, // AUTOADDED
+    { 0x315E, "buddy_down_skip_setup" }, // AUTOADDED
+    { 0x315F, "buddy_down_trigger_damage_ondamage" }, // AUTOADDED
+    { 0x3160, "buddy_down_trigger_damage_onflashbang" }, // AUTOADDED
+    { 0x3161, "buddy_down_two_enemy_dead_thread" }, // AUTOADDED
+    { 0x3162, "buddyplayerid" }, // AUTOADDED
+    { 0x3163, "buddyspawn" }, // AUTOADDED
+    { 0x3164, "buddyspawnid" }, // AUTOADDED
+    { 0x3165, "budgetedents" }, // AUTOADDED
+    { 0x3166, "budy_death_watcher" }, // AUTOADDED
     { 0x3167, "buffedbyplayers" },
-//  { 0x3168, "" },
-//  { 0x3169, "" },
-//  { 0x316A, "" },
-//  { 0x316B, "" },
-//  { 0x316C, "" },
-//  { 0x316D, "" },
-//  { 0x316E, "" },
-//  { 0x316F, "" },
-//  { 0x3170, "" },
-//  { 0x3171, "" },
-//  { 0x3172, "" },
-//  { 0x3173, "" },
-//  { 0x3174, "" },
-//  { 0x3175, "" },
-//  { 0x3176, "" },
-//  { 0x3177, "" },
-//  { 0x3178, "" },
-//  { 0x3179, "" },
-//  { 0x317A, "" },
+    { 0x3168, "bufferedbestscorestats" }, // AUTOADDED
+    { 0x3169, "bufferedchildstats" }, // AUTOADDED
+    { 0x316A, "bufferedchildstatsmax" }, // AUTOADDED
+    { 0x316B, "bufferednotifications" }, // AUTOADDED
+    { 0x316C, "bufferednotify" }, // AUTOADDED
+    { 0x316D, "bufferednotify_internal" }, // AUTOADDED
+    { 0x316E, "bufferedstats" }, // AUTOADDED
+    { 0x316F, "bufferedstatsmax" }, // AUTOADDED
+    { 0x3170, "bufferedstatwritethink" }, // AUTOADDED
+    { 0x3171, "bufferedweapons" }, // AUTOADDED
+    { 0x3172, "bug_out" }, // AUTOADDED
+    { 0x3173, "bug_test_move_startpoint" }, // AUTOADDED
+    { 0x3174, "bugoutontimeout" }, // AUTOADDED
+    { 0x3175, "build_ace" }, // AUTOADDED
+    { 0x3176, "build_aianims" }, // AUTOADDED
+    { 0x3177, "build_all_treadfx" }, // AUTOADDED
+    { 0x3178, "build_atmo_types" }, // AUTOADDED
+    { 0x3179, "build_attach_models" }, // AUTOADDED
+    { 0x317A, "build_bulletshield" }, // AUTOADDED
     { 0x317B, "build_call_buttons" },
 //  { 0x317C, "" },
 //  { 0x317D, "" },
@@ -12827,17 +12827,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x320E, "" },
 //  { 0x320F, "" },
 //  { 0x3210, "" },
-//  { 0x3211, "" },
-//  { 0x3212, "" },
-//  { 0x3213, "" },
-//  { 0x3214, "" },
-//  { 0x3215, "" },
-//  { 0x3216, "" },
-//  { 0x3217, "" },
-//  { 0x3218, "" },
-//  { 0x3219, "" },
-//  { 0x321A, "" },
-//  { 0x321B, "" },
+    { 0x3211, "buildkilldeathactionvalue" }, // AUTOADDED
+    { 0x3212, "buildloadoutsforweaponstreaming" }, // AUTOADDED
+    { 0x3213, "buildloadoutstring" }, // AUTOADDED
+    { 0x3214, "buildmeritinfo" }, // AUTOADDED
+    { 0x3215, "buildmerittableinfo" }, // AUTOADDED
+    { 0x3216, "buildprimaries" }, // AUTOADDED
+    { 0x3217, "buildrandomattachmentarray" }, // AUTOADDED
+    { 0x3218, "buildrandomweapontable" }, // AUTOADDED
+    { 0x3219, "buildscoreboardtype" }, // AUTOADDED
+    { 0x321A, "buildsecondaries" }, // AUTOADDED
+    { 0x321B, "buildspawnpointstatestring" }, // AUTOADDED
 //  { 0x321C, "" },
 //  { 0x321D, "" },
 //  { 0x321E, "" },
@@ -12882,11 +12882,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3245, "" },
 //  { 0x3246, "" },
 //  { 0x3247, "" },
-//  { 0x3248, "" },
+    { 0x3248, "bulletoutline" }, // AUTOADDED
 //  { 0x3249, "" },
 //  { 0x324A, "" },
 //  { 0x324B, "" },
-//  { 0x324C, "" },
+    { 0x324C, "bulletoutlineremoveenemy" }, // AUTOADDED
 //  { 0x324D, "" },
 //  { 0x324E, "" },
 //  { 0x324F, "" },
@@ -12897,7 +12897,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3254, "" },
 //  { 0x3255, "" },
 //  { 0x3256, "" },
-//  { 0x3257, "" },
+    { 0x3257, "bulletstormshield" }, // AUTOADDED
 //  { 0x3258, "" },
 //  { 0x3259, "" },
 //  { 0x325A, "" },
@@ -13002,8 +13002,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x32BD, "" },
 //  { 0x32BE, "" },
 //  { 0x32BF, "" },
-//  { 0x32C0, "" },
-//  { 0x32C1, "" },
+    { 0x32C0, "burstmax" }, // AUTOADDED
+    { 0x32C1, "burstmin" }, // AUTOADDED
 //  { 0x32C2, "" },
     { 0x32C3, "burstshootanimrate" },
 //  { 0x32C4, "" },
@@ -13101,7 +13101,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3320, "" },
 //  { 0x3321, "" },
 //  { 0x3322, "" },
-//  { 0x3323, "" },
+    { 0x3323, "bwantstostrafe" }, // AUTOADDED
 //  { 0x3324, "" },
 //  { 0x3325, "" },
 //  { 0x3326, "" },
@@ -13113,21 +13113,21 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x332C, "" },
 //  { 0x332D, "" },
 //  { 0x332E, "" },
-//  { 0x332F, "" },
+    { 0x332F, "c4_candetonate" }, // AUTOADDED
 //  { 0x3330, "" },
 //  { 0x3331, "" },
 //  { 0x3332, "" },
 //  { 0x3333, "" },
-//  { 0x3334, "" },
-//  { 0x3335, "" },
-//  { 0x3336, "" },
+    { 0x3334, "c4_destroyongameend" }, // AUTOADDED
+    { 0x3335, "c4_detonate" }, // AUTOADDED
+    { 0x3336, "c4_detonateall" }, // AUTOADDED
 //  { 0x3337, "" },
 //  { 0x3338, "" },
 //  { 0x3339, "" },
 //  { 0x333A, "" },
 //  { 0x333B, "" },
 //  { 0x333C, "" },
-//  { 0x333D, "" },
+    { 0x333D, "c4_set" }, // AUTOADDED
 //  { 0x333E, "" },
 //  { 0x333F, "" },
 //  { 0x3340, "" },
@@ -13144,7 +13144,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x334B, "" },
 //  { 0x334C, "" },
 //  { 0x334D, "" },
-//  { 0x334E, "" },
+    { 0x334E, "c4s" }, // AUTOADDED
 //  { 0x334F, "" },
 //  { 0x3350, "" },
 //  { 0x3351, "" },
@@ -13960,9 +13960,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x367B, "" },
 //  { 0x367C, "" },
 //  { 0x367D, "" },
-//  { 0x367E, "" },
-//  { 0x367F, "" },
-//  { 0x3680, "" },
+    { 0x367E, "cac_getloadoutarchetypeperk" }, // AUTOADDED
+    { 0x367F, "cac_getloadoutextraperk" }, // AUTOADDED
+    { 0x3680, "cac_getloadoutperk" }, // AUTOADDED
 //  { 0x3681, "" },
 //  { 0x3682, "" },
 //  { 0x3683, "" },
@@ -13970,8 +13970,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3685, "" },
 //  { 0x3686, "" },
 //  { 0x3687, "" },
-//  { 0x3688, "" },
-//  { 0x3689, "" },
+    { 0x3688, "cac_getsuper" }, // AUTOADDED
+    { 0x3689, "cac_getweapon" }, // AUTOADDED
 //  { 0x368A, "" },
 //  { 0x368B, "" },
 //  { 0x368C, "" },
@@ -13979,11 +13979,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x368E, "" },
 //  { 0x368F, "" },
 //  { 0x3690, "" },
-//  { 0x3691, "" },
-//  { 0x3692, "" },
+    { 0x3691, "cac_getweaponcamo" }, // AUTOADDED
+    { 0x3692, "cac_getweaponlootitemid" }, // AUTOADDED
 //  { 0x3693, "" },
-//  { 0x3694, "" },
-//  { 0x3695, "" },
+    { 0x3694, "cac_getweaponreticle" }, // AUTOADDED
+    { 0x3695, "cac_getweaponvariantid" }, // AUTOADDED
 //  { 0x3696, "" },
 //  { 0x3697, "" },
 //  { 0x3698, "" },
@@ -13997,9 +13997,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x36A0, "" },
 //  { 0x36A1, "" },
 //  { 0x36A2, "" },
-//  { 0x36A3, "" },
+    { 0x36A3, "cachedactions" }, // AUTOADDED
 //  { 0x36A4, "" },
-//  { 0x36A5, "" },
+    { 0x36A5, "cacheplayeraction" }, // AUTOADDED
 //  { 0x36A6, "" },
 //  { 0x36A7, "" },
 //  { 0x36A8, "" },
@@ -14104,7 +14104,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x370B, "" },
 //  { 0x370C, "" },
 //  { 0x370D, "" },
-//  { 0x370E, "" },
+    { 0x370E, "calculated_nearest_node" }, // AUTOADDED
 //  { 0x370F, "" },
 //  { 0x3710, "" },
 //  { 0x3711, "" },
@@ -14120,7 +14120,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x371B, "" },
 //  { 0x371C, "" },
 //  { 0x371D, "" },
-//  { 0x371E, "" },
+    { 0x371E, "calculatespawndisttoballstart" }, // AUTOADDED
 //  { 0x371F, "" },
 //  { 0x3720, "" },
 //  { 0x3721, "" },
@@ -14212,7 +14212,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3777, "" },
 //  { 0x3778, "" },
 //  { 0x3779, "" },
-//  { 0x377A, "" },
+    { 0x377A, "calloutareathink" }, // AUTOADDED
 //  { 0x377B, "" },
 //  { 0x377C, "" },
 //  { 0x377D, "" },
@@ -14283,14 +14283,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x37BE, "" },
 //  { 0x37BF, "" },
 //  { 0x37C0, "" },
-//  { 0x37C1, "" },
+    { 0x37C1, "cameraang" }, // AUTOADDED
 //  { 0x37C2, "" },
-//  { 0x37C3, "" },
+    { 0x37C3, "cameramapobjs" }, // AUTOADDED
 //  { 0x37C4, "" },
 //  { 0x37C5, "" },
 //  { 0x37C6, "" },
 //  { 0x37C7, "" },
-//  { 0x37C8, "" },
+    { 0x37C8, "camerapos" }, // AUTOADDED
 //  { 0x37C9, "" },
 //  { 0x37CA, "" },
 //  { 0x37CB, "" },
@@ -14422,7 +14422,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3849, "" },
 //  { 0x384A, "" },
 //  { 0x384B, "" },
-//  { 0x384C, "" },
+    { 0x384C, "can_set_traversal_unit_type" }, // AUTOADDED
 //  { 0x384D, "" },
 //  { 0x384E, "" },
 //  { 0x384F, "" },
@@ -14460,7 +14460,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x386F, "" },
 //  { 0x3870, "" },
 //  { 0x3871, "" },
-//  { 0x3872, "" },
+    { 0x3872, "canbeplaced" }, // AUTOADDED
 //  { 0x3873, "" },
 //  { 0x3874, "" },
 //  { 0x3875, "" },
@@ -14496,7 +14496,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3893, "" },
 //  { 0x3894, "" },
 //  { 0x3895, "" },
-//  { 0x3896, "" },
+    { 0x3896, "canconcat" }, // AUTOADDED
 //  { 0x3897, "" },
 //  { 0x3898, "" },
 //  { 0x3899, "" },
@@ -14544,11 +14544,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x38C3, "" },
 //  { 0x38C4, "" },
 //  { 0x38C5, "" },
-//  { 0x38C6, "" },
+    { 0x38C6, "canlogclient" }, // AUTOADDED
 //  { 0x38C7, "" },
 //  { 0x38C8, "" },
 //  { 0x38C9, "" },
-//  { 0x38CA, "" },
+    { 0x38CA, "canloglife" }, // AUTOADDED
 //  { 0x38CB, "" },
 //  { 0x38CC, "" },
 //  { 0x38CD, "" },
@@ -14557,7 +14557,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x38D0, "" },
 //  { 0x38D1, "" },
 //  { 0x38D2, "" },
-//  { 0x38D3, "" },
+    { 0x38D3, "cannon" }, // AUTOADDED
     { 0x38D4, "cannon_effect" },
 //  { 0x38D5, "" },
 //  { 0x38D6, "" },
@@ -14567,7 +14567,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x38DA, "" },
 //  { 0x38DB, "" },
 //  { 0x38DC, "" },
-//  { 0x38DD, "" },
+    { 0x38DD, "cannontarget" }, // AUTOADDED
 //  { 0x38DE, "" },
 //  { 0x38DF, "" },
 //  { 0x38E0, "" },
@@ -14586,45 +14586,45 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x38ED, "" },
 //  { 0x38EE, "" },
 //  { 0x38EF, "" },
-//  { 0x38F0, "" },
-//  { 0x38F1, "" },
-//  { 0x38F2, "" },
-//  { 0x38F3, "" },
-//  { 0x38F4, "" },
-//  { 0x38F5, "" },
-//  { 0x38F6, "" },
-//  { 0x38F7, "" },
-//  { 0x38F8, "" },
-//  { 0x38F9, "" },
-//  { 0x38FA, "" },
-//  { 0x38FB, "" },
-//  { 0x38FC, "" },
-//  { 0x38FD, "" },
-//  { 0x38FE, "" },
-//  { 0x38FF, "" },
-//  { 0x3900, "" },
-//  { 0x3901, "" },
-//  { 0x3902, "" },
-//  { 0x3903, "" },
-//  { 0x3904, "" },
+    { 0x38F0, "canplayerbebuddyspawnedon" }, // AUTOADDED
+    { 0x38F1, "canplaygesture" }, // AUTOADDED
+    { 0x38F2, "canplayhalfwayvo" }, // AUTOADDED
+    { 0x38F3, "canplaynotetrackvo" }, // AUTOADDED
+    { 0x38F4, "canpressuse" }, // AUTOADDED
+    { 0x38F5, "canprocessot" }, // AUTOADDED
+    { 0x38F6, "canprocessselection" }, // AUTOADDED
+    { 0x38F7, "canrappelreload" }, // AUTOADDED
+    { 0x38F8, "canrecordcombatrecordstats" }, // AUTOADDED
+    { 0x38F9, "canregenhealth" }, // AUTOADDED
+    { 0x38FA, "canreusebox" }, // AUTOADDED
+    { 0x38FB, "canrevivewithweapon" }, // AUTOADDED
+    { 0x38FC, "cansay" }, // AUTOADDED
+    { 0x38FD, "cansaycontact" }, // AUTOADDED
+    { 0x38FE, "cansayname" }, // AUTOADDED
+    { 0x38FF, "cansayplayername" }, // AUTOADDED
+    { 0x3900, "cansee_armory" }, // AUTOADDED
+    { 0x3901, "cansee_bounds" }, // AUTOADDED
+    { 0x3902, "cansee_detailed" }, // AUTOADDED
+    { 0x3903, "cansee_point" }, // AUTOADDED
+    { 0x3904, "cansee_vertical" }, // AUTOADDED
     { 0x3905, "canseeandshootpoint" },
 //  { 0x3906, "" },
     { 0x3907, "canseeenemy" },
     { 0x3908, "canseeenemyfromexposed" },
     { 0x3909, "canseepointfromexposedatcorner" },
     { 0x390A, "canseepointfromexposedatnode" },
-//  { 0x390B, "" },
-//  { 0x390C, "" },
-//  { 0x390D, "" },
-//  { 0x390E, "" },
-//  { 0x390F, "" },
-//  { 0x3910, "" },
-//  { 0x3911, "" },
+    { 0x390B, "canseetarget" }, // AUTOADDED
+    { 0x390C, "canseethroughfoliage" }, // AUTOADDED
+    { 0x390D, "canshootinvehicle" }, // AUTOADDED
+    { 0x390E, "canshoottarget" }, // AUTOADDED
+    { 0x390F, "canshoottargetfrompos" }, // AUTOADDED
+    { 0x3910, "canshowsplash" }, // AUTOADDED
+    { 0x3911, "canshowtoughenupshield" }, // AUTOADDED
 //  { 0x3912, "" },
 //  { 0x3913, "" },
 //  { 0x3914, "" },
 //  { 0x3915, "" },
-//  { 0x3916, "" },
+    { 0x3916, "canstow" }, // AUTOADDED
     { 0x3917, "cansuppressenemy" },
     { 0x3918, "cansuppressenemyfromexposed" },
 //  { 0x3919, "" },
@@ -14865,7 +14865,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3A04, "" },
 //  { 0x3A05, "" },
 //  { 0x3A06, "" },
-//  { 0x3A07, "" },
+    { 0x3A07, "capsperminute" }, // AUTOADDED
     { 0x3A08, "capsule_get_closest_point" },
     { 0x3A09, "capsule_trace" },
     { 0x3A0A, "capsule_trace_get_all_results" },
@@ -14922,7 +14922,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3A3D, "" },
 //  { 0x3A3E, "" },
 //  { 0x3A3F, "" },
-//  { 0x3A40, "" },
+    { 0x3A40, "capturetime" }, // AUTOADDED
 //  { 0x3A41, "" },
 //  { 0x3A42, "" },
 //  { 0x3A43, "" },
@@ -14946,8 +14946,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3A55, "" },
 //  { 0x3A56, "" },
 //  { 0x3A57, "" },
-//  { 0x3A58, "" },
-//  { 0x3A59, "" },
+    { 0x3A58, "carepackagedropnodes" }, // AUTOADDED
+    { 0x3A59, "carepackages" }, // AUTOADDED
 //  { 0x3A5A, "" },
 //  { 0x3A5B, "" },
 //  { 0x3A5C, "" },
@@ -15015,18 +15015,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3A9A, "" },
 //  { 0x3A9B, "" },
 //  { 0x3A9C, "" },
-//  { 0x3A9D, "" },
-//  { 0x3A9E, "" },
-//  { 0x3A9F, "" },
-//  { 0x3AA0, "" },
-//  { 0x3AA1, "" },
-//  { 0x3AA2, "" },
-//  { 0x3AA3, "" },
-//  { 0x3AA4, "" },
-//  { 0x3AA5, "" },
-//  { 0x3AA6, "" },
-//  { 0x3AA7, "" },
-//  { 0x3AA8, "" },
+    { 0x3A9D, "carriedby" }, // AUTOADDED
+    { 0x3A9E, "carriedgascan" }, // AUTOADDED
+    { 0x3A9F, "carriedims" }, // AUTOADDED
+    { 0x3AA0, "carrieditem" }, // AUTOADDED
+    { 0x3AA1, "carriedmedusa" }, // AUTOADDED
+    { 0x3AA2, "carriedobj" }, // AUTOADDED
+    { 0x3AA3, "carriedobject" }, // AUTOADDED
+    { 0x3AA4, "carriedrevocator" }, // AUTOADDED
+    { 0x3AA5, "carriedsentry" }, // AUTOADDED
+    { 0x3AA6, "carriedtrapangles" }, // AUTOADDED
+    { 0x3AA7, "carriedtrapoffset" }, // AUTOADDED
+    { 0x3AA8, "carrier" }, // AUTOADDED
 //  { 0x3AA9, "" },
 //  { 0x3AAA, "" },
 //  { 0x3AAB, "" },
@@ -15095,28 +15095,28 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3AEA, "" },
 //  { 0x3AEB, "" },
 //  { 0x3AEC, "" },
-//  { 0x3AED, "" },
-//  { 0x3AEE, "" },
-//  { 0x3AEF, "" },
-//  { 0x3AF0, "" },
-//  { 0x3AF1, "" },
-//  { 0x3AF2, "" },
+    { 0x3AED, "carrierbonusscore" }, // AUTOADDED
+    { 0x3AEE, "carrierbonustime" }, // AUTOADDED
+    { 0x3AEF, "carriergivescore" }, // AUTOADDED
+    { 0x3AF0, "carrierhascarryweaponinloadout" }, // AUTOADDED
+    { 0x3AF1, "carriervisible" }, // AUTOADDED
+    { 0x3AF2, "carrierweaponcurrent" }, // AUTOADDED
 //  { 0x3AF3, "" },
-//  { 0x3AF4, "" },
-//  { 0x3AF5, "" },
+    { 0x3AF4, "carryflag" }, // AUTOADDED
+    { 0x3AF5, "carryicon" }, // AUTOADDED
 //  { 0x3AF6, "" },
     { 0x3AF7, "carryobject" },
-//  { 0x3AF8, "" },
-//  { 0x3AF9, "" },
-//  { 0x3AFA, "" },
-//  { 0x3AFB, "" },
-//  { 0x3AFC, "" },
-//  { 0x3AFD, "" },
+    { 0x3AF8, "carryobject_overridemovingplatformdeath" }, // AUTOADDED
+    { 0x3AF9, "carryobjectasset" }, // AUTOADDED
+    { 0x3AFA, "carryobjectproxthink" }, // AUTOADDED
+    { 0x3AFB, "carryobjectproxthinkdelayed" }, // AUTOADDED
+    { 0x3AFC, "carryobjectusethink" }, // AUTOADDED
+    { 0x3AFD, "carryremoteuav_delete" }, // AUTOADDED
 //  { 0x3AFE, "" },
 //  { 0x3AFF, "" },
 //  { 0x3B00, "" },
-//  { 0x3B01, "" },
-//  { 0x3B02, "" },
+    { 0x3B01, "carryweapon" }, // AUTOADDED
+    { 0x3B02, "carryweaponthink" }, // AUTOADDED
 //  { 0x3B03, "" },
 //  { 0x3B04, "" },
 //  { 0x3B05, "" },
@@ -15147,8 +15147,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3B1E, "" },
 //  { 0x3B1F, "" },
 //  { 0x3B20, "" },
-//  { 0x3B21, "" },
-//  { 0x3B22, "" },
+    { 0x3B21, "cat_array_add" }, // AUTOADDED
+    { 0x3B22, "cat_array_get" }, // AUTOADDED
 //  { 0x3B23, "" },
 //  { 0x3B24, "" },
 //  { 0x3B25, "" },
@@ -15263,7 +15263,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3B92, "" },
 //  { 0x3B93, "" },
 //  { 0x3B94, "" },
-//  { 0x3B95, "" },
+    { 0x3B95, "category" }, // AUTOADDED
 //  { 0x3B96, "" },
 //  { 0x3B97, "" },
 //  { 0x3B98, "" },
@@ -15297,7 +15297,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3BB4, "" },
 //  { 0x3BB5, "" },
 //  { 0x3BB6, "" },
-//  { 0x3BB7, "" },
+    { 0x3BB7, "centerref" }, // AUTOADDED
 //  { 0x3BB8, "" },
 //  { 0x3BB9, "" },
 //  { 0x3BBA, "" },
@@ -15456,7 +15456,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3C53, "" },
 //  { 0x3C54, "" },
 //  { 0x3C55, "" },
-//  { 0x3C56, "" },
+    { 0x3C56, "changedarchetypeinfo" }, // AUTOADDED
 //  { 0x3C57, "" },
 //  { 0x3C58, "" },
 //  { 0x3C59, "" },
@@ -15468,8 +15468,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3C5F, "" },
 //  { 0x3C60, "" },
     { 0x3C61, "changingdirection" },
-//  { 0x3C62, "" },
-//  { 0x3C63, "" },
+    { 0x3C62, "changingtoregularinfected" }, // AUTOADDED
+    { 0x3C63, "changingtoregularinfectedbykill" }, // AUTOADDED
 //  { 0x3C64, "" },
 //  { 0x3C65, "" },
 //  { 0x3C66, "" },
@@ -15551,7 +15551,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3CB2, "" },
 //  { 0x3CB3, "" },
 //  { 0x3CB4, "" },
-//  { 0x3CB5, "" },
+    { 0x3CB5, "characters" }, // AUTOADDED
 //  { 0x3CB6, "" },
 //  { 0x3CB7, "" },
 //  { 0x3CB8, "" },
@@ -15817,7 +15817,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3DBC, "" },
 //  { 0x3DBD, "" },
 //  { 0x3DBE, "" },
-//  { 0x3DBF, "" },
+    { 0x3DBF, "check_owner" }, // AUTOADDED
 //  { 0x3DC0, "" },
 //  { 0x3DC1, "" },
 //  { 0x3DC2, "" },
@@ -15878,7 +15878,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3DF9, "" },
 //  { 0x3DFA, "" },
 //  { 0x3DFB, "" },
-//  { 0x3DFC, "" },
+    { 0x3DFC, "checkcodcasterplayerdataexists" }, // AUTOADDED
 //  { 0x3DFD, "" },
 //  { 0x3DFE, "" },
 //  { 0x3DFF, "" },
@@ -15887,7 +15887,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3E02, "" },
 //  { 0x3E03, "" },
 //  { 0x3E04, "" },
-//  { 0x3E05, "" },
+    { 0x3E05, "checkdynamicspawns" }, // AUTOADDED
 //  { 0x3E06, "" },
 //  { 0x3E07, "" },
 //  { 0x3E08, "" },
@@ -15915,7 +15915,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3E1E, "" },
 //  { 0x3E1F, "" },
 //  { 0x3E20, "" },
-//  { 0x3E21, "" },
+    { 0x3E21, "checkisfacing" }, // AUTOADDED
 //  { 0x3E22, "" },
     { 0x3E23, "checkkillsteal" },
 //  { 0x3E24, "" },
@@ -15929,7 +15929,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3E2C, "" },
 //  { 0x3E2D, "" },
 //  { 0x3E2E, "" },
-//  { 0x3E2F, "" },
+    { 0x3E2F, "checkpassivemessage" }, // AUTOADDED
 //  { 0x3E30, "" },
 //  { 0x3E31, "" },
 //  { 0x3E32, "" },
@@ -15952,13 +15952,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3E43, "" },
 //  { 0x3E44, "" },
 //  { 0x3E45, "" },
-//  { 0x3E46, "" },
+    { 0x3E46, "checkscopes" }, // AUTOADDED
     { 0x3E47, "checkscorelimit" },
 //  { 0x3E48, "" },
 //  { 0x3E49, "" },
 //  { 0x3E4A, "" },
 //  { 0x3E4B, "" },
-//  { 0x3E4C, "" },
+    { 0x3E4C, "checkstancestatus" }, // AUTOADDED
 //  { 0x3E4D, "" },
 //  { 0x3E4E, "" },
 //  { 0x3E4F, "" },
@@ -15984,23 +15984,23 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3E63, "" },
 //  { 0x3E64, "" },
 //  { 0x3E65, "" },
-//  { 0x3E66, "" },
-//  { 0x3E67, "" },
+    { 0x3E66, "childchecktime" }, // AUTOADDED
+    { 0x3E67, "children" }, // AUTOADDED
 //  { 0x3E68, "" },
-//  { 0x3E69, "" },
-//  { 0x3E6A, "" },
-//  { 0x3E6B, "" },
-//  { 0x3E6C, "" },
-//  { 0x3E6D, "" },
-//  { 0x3E6E, "" },
+    { 0x3E69, "chill" }, // AUTOADDED
+    { 0x3E6A, "chill_blind" }, // AUTOADDED
+    { 0x3E6B, "chill_data" }, // AUTOADDED
+    { 0x3E6C, "chill_impair" }, // AUTOADDED
+    { 0x3E6D, "chill_impairend" }, // AUTOADDED
+    { 0x3E6E, "chill_init" }, // AUTOADDED
 //  { 0x3E6F, "" },
-//  { 0x3E70, "" },
-//  { 0x3E71, "" },
+    { 0x3E70, "chill_resetdata" }, // AUTOADDED
+    { 0x3E71, "chill_resetscriptable" }, // AUTOADDED
 //  { 0x3E72, "" },
 //  { 0x3E73, "" },
 //  { 0x3E74, "" },
-//  { 0x3E75, "" },
-//  { 0x3E76, "" },
+    { 0x3E75, "chill_update" }, // AUTOADDED
+    { 0x3E76, "chillend" }, // AUTOADDED
 //  { 0x3E77, "" },
 //  { 0x3E78, "" },
 //  { 0x3E79, "" },
@@ -16054,7 +16054,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3EA9, "" },
 //  { 0x3EAA, "" },
 //  { 0x3EAB, "" },
-//  { 0x3EAC, "" },
+    { 0x3EAC, "chooseanim_weaponswitch" }, // AUTOADDED
 //  { 0x3EAD, "" },
 //  { 0x3EAE, "" },
 //  { 0x3EAF, "" },
@@ -16065,7 +16065,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3EB4, "" },
 //  { 0x3EB5, "" },
 //  { 0x3EB6, "" },
-//  { 0x3EB7, "" },
+    { 0x3EB7, "chooseanimshoot" }, // AUTOADDED
 //  { 0x3EB8, "" },
 //  { 0x3EB9, "" },
 //  { 0x3EBA, "" },
@@ -16087,10 +16087,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3ECA, "" },
 //  { 0x3ECB, "" },
 //  { 0x3ECC, "" },
-//  { 0x3ECD, "" },
-//  { 0x3ECE, "" },
+    { 0x3ECD, "choosedemeanoranimwithoverride" }, // AUTOADDED
+    { 0x3ECE, "choosedemeanoranimwithoverridevariants" }, // AUTOADDED
 //  { 0x3ECF, "" },
-//  { 0x3ED0, "" },
+    { 0x3ED0, "choosedirection" }, // AUTOADDED
 //  { 0x3ED1, "" },
 //  { 0x3ED2, "" },
 //  { 0x3ED3, "" },
@@ -16142,7 +16142,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3F01, "" },
 //  { 0x3F02, "" },
 //  { 0x3F03, "" },
-//  { 0x3F04, "" },
+    { 0x3F04, "choosestrongdamagedeath" }, // AUTOADDED
 //  { 0x3F05, "" },
 //  { 0x3F06, "" },
 //  { 0x3F07, "" },
@@ -16163,7 +16163,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3F16, "" },
 //  { 0x3F17, "" },
 //  { 0x3F18, "" },
-//  { 0x3F19, "" },
+    { 0x3F19, "chopper_fx" }, // AUTOADDED
 //  { 0x3F1A, "" },
 //  { 0x3F1B, "" },
 //  { 0x3F1C, "" },
@@ -16395,15 +16395,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3FFE, "" },
 //  { 0x3FFF, "" },
 //  { 0x4000, "" },
-//  { 0x4001, "" },
+    { 0x4001, "clampweaponspeed" }, // AUTOADDED
 //  { 0x4002, "" },
 //  { 0x4003, "" },
     { 0x4004, "class" },
 //  { 0x4005, "" },
 //  { 0x4006, "" },
     { 0x4007, "class_override" },
-//  { 0x4008, "" },
-//  { 0x4009, "" },
+    { 0x4008, "class_progression_init" }, // AUTOADDED
+    { 0x4009, "classcallback" }, // AUTOADDED
 //  { 0x400A, "" },
 //  { 0x400B, "" },
 //  { 0x400C, "" },
@@ -16413,7 +16413,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4010, "" },
 //  { 0x4011, "" },
 //  { 0x4012, "" },
-//  { 0x4013, "" },
+    { 0x4013, "classtweaks" }, // AUTOADDED
 //  { 0x4014, "" },
 //  { 0x4015, "" },
 //  { 0x4016, "" },
@@ -16463,7 +16463,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4042, "" },
 //  { 0x4043, "" },
 //  { 0x4044, "" },
-//  { 0x4045, "" },
+    { 0x4045, "cleanup" }, // AUTOADDED
 //  { 0x4046, "" },
 //  { 0x4047, "" },
 //  { 0x4048, "" },
@@ -16619,7 +16619,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x40DE, "" },
 //  { 0x40DF, "" },
 //  { 0x40E0, "" },
-//  { 0x40E1, "" },
+    { 0x40E1, "cleanupafterplayerdeath" }, // AUTOADDED
 //  { 0x40E2, "" },
 //  { 0x40E3, "" },
 //  { 0x40E4, "" },
@@ -16638,11 +16638,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x40F1, "" },
 //  { 0x40F2, "" },
 //  { 0x40F3, "" },
-//  { 0x40F4, "" },
-//  { 0x40F5, "" },
-//  { 0x40F6, "" },
-//  { 0x40F7, "" },
-//  { 0x40F8, "" },
+    { 0x40F4, "cleanupequipment" }, // AUTOADDED
+    { 0x40F5, "cleanupexplosivesondeath" }, // AUTOADDED
+    { 0x40F6, "cleanupflashanim" }, // AUTOADDED
+    { 0x40F7, "cleanupgamemodes" }, // AUTOADDED
+    { 0x40F8, "cleanupgametypevips" }, // AUTOADDED
 //  { 0x40F9, "" },
 //  { 0x40FA, "" },
 //  { 0x40FB, "" },
@@ -16653,7 +16653,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4100, "" },
 //  { 0x4101, "" },
 //  { 0x4102, "" },
-//  { 0x4103, "" },
+    { 0x4103, "cleanuplocalplayersplashlist" }, // AUTOADDED
 //  { 0x4104, "" },
 //  { 0x4105, "" },
 //  { 0x4106, "" },
@@ -16778,14 +16778,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x417D, "" },
 //  { 0x417E, "" },
     { 0x417F, "clear_settable_fx" },
-//  { 0x4180, "" },
-//  { 0x4181, "" },
-//  { 0x4182, "" },
-//  { 0x4183, "" },
-//  { 0x4184, "" },
-//  { 0x4185, "" },
-//  { 0x4186, "" },
-//  { 0x4187, "" },
+    { 0x4180, "clear_shackled_squat_override" }, // AUTOADDED
+    { 0x4181, "clear_snake" }, // AUTOADDED
+    { 0x4182, "clear_tank_stackup" }, // AUTOADDED
+    { 0x4183, "clear_target_entity" }, // AUTOADDED
+    { 0x4184, "clear_target_zone_update" }, // AUTOADDED
+    { 0x4185, "clear_team_colors" }, // AUTOADDED
+    { 0x4186, "clear_to_pick_disguise_up" }, // AUTOADDED
+    { 0x4187, "clear_to_pick_disguise_up_veh" }, // AUTOADDED
     { 0x4188, "clear_tool_hud" },
 //  { 0x4189, "" },
 //  { 0x418A, "" },
@@ -16802,7 +16802,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4195, "" },
 //  { 0x4196, "" },
 //  { 0x4197, "" },
-//  { 0x4198, "" },
+    { 0x4198, "cleararchetype" }, // AUTOADDED
 //  { 0x4199, "" },
 //  { 0x419A, "" },
 //  { 0x419B, "" },
@@ -16815,7 +16815,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x41A2, "" },
 //  { 0x41A3, "" },
 //  { 0x41A4, "" },
-//  { 0x41A5, "" },
+    { 0x41A5, "cleardamagehistory" }, // AUTOADDED
 //  { 0x41A6, "" },
 //  { 0x41A7, "" },
 //  { 0x41A8, "" },
@@ -16840,10 +16840,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x41BB, "" },
 //  { 0x41BC, "" },
 //  { 0x41BD, "" },
-//  { 0x41BE, "" },
+    { 0x41BE, "clearkillcamkilledbyitemomnvars" }, // AUTOADDED
 //  { 0x41BF, "" },
 //  { 0x41C0, "" },
-//  { 0x41C1, "" },
+    { 0x41C1, "clearkillstreakselection" }, // AUTOADDED
 //  { 0x41C2, "" },
 //  { 0x41C3, "" },
 //  { 0x41C4, "" },
@@ -16851,9 +16851,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x41C6, "" },
 //  { 0x41C7, "" },
 //  { 0x41C8, "" },
-//  { 0x41C9, "" },
-//  { 0x41CA, "" },
-//  { 0x41CB, "" },
+    { 0x41C9, "clearonvictimdisconnect" }, // AUTOADDED
+    { 0x41CA, "clearpassives" }, // AUTOADDED
+    { 0x41CB, "clearpathactionvalue" }, // AUTOADDED
 //  { 0x41CC, "" },
 //  { 0x41CD, "" },
 //  { 0x41CE, "" },
@@ -16864,8 +16864,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x41D3, "" },
 //  { 0x41D4, "" },
 //  { 0x41D5, "" },
-//  { 0x41D6, "" },
-//  { 0x41D7, "" },
+    { 0x41D6, "clearrideintro" }, // AUTOADDED
+    { 0x41D7, "clearscoreeventlistafterwait" }, // AUTOADDED
 //  { 0x41D8, "" },
 //  { 0x41D9, "" },
 //  { 0x41DA, "" },
@@ -16890,11 +16890,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x41ED, "" },
 //  { 0x41EE, "" },
 //  { 0x41EF, "" },
-//  { 0x41F0, "" },
-//  { 0x41F1, "" },
-//  { 0x41F2, "" },
-//  { 0x41F3, "" },
-//  { 0x41F4, "" },
+    { 0x41F0, "clientid" }, // AUTOADDED
+    { 0x41F1, "clientmatchdata" }, // AUTOADDED
+    { 0x41F2, "clientmatchdata_data_type" }, // AUTOADDED
+    { 0x41F3, "clientmatchdata_struct" }, // AUTOADDED
+    { 0x41F4, "clientmatchdataid" }, // AUTOADDED
     { 0x41F5, "clientnum" },
 //  { 0x41F6, "" },
 //  { 0x41F7, "" },
@@ -17053,7 +17053,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4290, "" },
 //  { 0x4291, "" },
 //  { 0x4292, "" },
-//  { 0x4293, "" },
+    { 0x4293, "closeomamenuondeath" }, // AUTOADDED
 //  { 0x4294, "" },
 //  { 0x4295, "" },
 //  { 0x4296, "" },
@@ -17069,15 +17069,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x42A0, "" },
     { 0x42A1, "closestdistancebetweenlines" },
     { 0x42A2, "closestdistancebetweensegments" },
-//  { 0x42A3, "" },
-//  { 0x42A4, "" },
-//  { 0x42A5, "" },
-//  { 0x42A6, "" },
-//  { 0x42A7, "" },
-//  { 0x42A8, "" },
-//  { 0x42A9, "" },
-//  { 0x42AA, "" },
-//  { 0x42AB, "" },
+    { 0x42A3, "closestdoorpos" }, // AUTOADDED
+    { 0x42A4, "closestenemies" }, // AUTOADDED
+    { 0x42A5, "closestenemies_array" }, // AUTOADDED
+    { 0x42A6, "closestpoint" }, // AUTOADDED
+    { 0x42A7, "closestpointtowall" }, // AUTOADDED
+    { 0x42A8, "closet_runner_ignore_manager" }, // AUTOADDED
+    { 0x42A9, "closetacopsmap" }, // AUTOADDED
+    { 0x42AA, "closetargetsinouterradius" }, // AUTOADDED
+    { 0x42AB, "closetogoalcheck" }, // AUTOADDED
 //  { 0x42AC, "" },
 //  { 0x42AD, "" },
 //  { 0x42AE, "" },
@@ -17213,8 +17213,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4330, "" },
 //  { 0x4331, "" },
 //  { 0x4332, "" },
-//  { 0x4333, "" },
-//  { 0x4334, "" },
+    { 0x4333, "codcastermatchdata" }, // AUTOADDED
+    { 0x4334, "codcastermatchdataid" }, // AUTOADDED
 //  { 0x4335, "" },
 //  { 0x4336, "" },
 //  { 0x4337, "" },
@@ -17421,9 +17421,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4400, "" },
     { 0x4401, "combatendtime" },
 //  { 0x4402, "" },
-//  { 0x4403, "" },
-//  { 0x4404, "" },
-//  { 0x4405, "" },
+    { 0x4403, "combathighicon" }, // AUTOADDED
+    { 0x4404, "combathighoverlay" }, // AUTOADDED
+    { 0x4405, "combathightimer" }, // AUTOADDED
 //  { 0x4406, "" },
 //  { 0x4407, "" },
 //  { 0x4408, "" },
@@ -17509,16 +17509,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4458, "" },
 //  { 0x4459, "" },
 //  { 0x445A, "" },
-//  { 0x445B, "" },
-//  { 0x445C, "" },
+    { 0x445B, "compare_player_pass_dot" }, // AUTOADDED
+    { 0x445C, "compare_player_score" }, // AUTOADDED
 //  { 0x445D, "" },
 //  { 0x445E, "" },
 //  { 0x445F, "" },
-//  { 0x4460, "" },
+    { 0x4460, "compareballindexes" }, // AUTOADDED
 //  { 0x4461, "" },
-//  { 0x4462, "" },
-//  { 0x4463, "" },
-//  { 0x4464, "" },
+    { 0x4462, "comparezoneindexes" }, // AUTOADDED
+    { 0x4463, "compassiconenemy" }, // AUTOADDED
+    { 0x4464, "compassiconfriendly" }, // AUTOADDED
 //  { 0x4465, "" },
 //  { 0x4466, "" },
 //  { 0x4467, "" },
@@ -17561,7 +17561,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x448C, "" },
 //  { 0x448D, "" },
 //  { 0x448E, "" },
-//  { 0x448F, "" },
+    { 0x448F, "computescoreboardslot" }, // AUTOADDED
 //  { 0x4490, "" },
 //  { 0x4491, "" },
 //  { 0x4492, "" },
@@ -17727,7 +17727,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4532, "" },
 //  { 0x4533, "" },
 //  { 0x4534, "" },
-//  { 0x4535, "" },
+    { 0x4535, "connectnewagent" }, // AUTOADDED
 //  { 0x4536, "" },
 //  { 0x4537, "" },
 //  { 0x4538, "" },
@@ -17759,7 +17759,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4552, "" },
 //  { 0x4553, "" },
 //  { 0x4554, "" },
-//  { 0x4555, "" },
+    { 0x4555, "constraingametype" }, // AUTOADDED
 //  { 0x4556, "" },
 //  { 0x4557, "" },
 //  { 0x4558, "" },
@@ -17800,7 +17800,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x457B, "" },
 //  { 0x457C, "" },
 //  { 0x457D, "" },
-//  { 0x457E, "" },
+    { 0x457E, "contestedbrush" }, // AUTOADDED
 //  { 0x457F, "" },
 //  { 0x4580, "" },
 //  { 0x4581, "" },
@@ -17959,11 +17959,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x461A, "" },
 //  { 0x461B, "" },
 //  { 0x461C, "" },
-//  { 0x461D, "" },
+    { 0x461D, "cooldowntime" }, // AUTOADDED
 //  { 0x461E, "" },
 //  { 0x461F, "" },
 //  { 0x4620, "" },
-//  { 0x4621, "" },
+    { 0x4621, "cooldownwaittime" }, // AUTOADDED
 //  { 0x4622, "" },
 //  { 0x4623, "" },
 //  { 0x4624, "" },
@@ -18263,7 +18263,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x474A, "" },
 //  { 0x474B, "" },
 //  { 0x474C, "" },
-//  { 0x474D, "" },
+    { 0x474D, "coverstate" }, // AUTOADDED
 //  { 0x474E, "" },
 //  { 0x474F, "" },
 //  { 0x4750, "" },
@@ -18318,7 +18318,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4781, "" },
 //  { 0x4782, "" },
 //  { 0x4783, "" },
-//  { 0x4784, "" },
+    { 0x4784, "cpm" }, // AUTOADDED
 //  { 0x4785, "" },
 //  { 0x4786, "" },
 //  { 0x4787, "" },
@@ -18425,7 +18425,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x47EC, "" },
     { 0x47ED, "cranked" },
     { 0x47EE, "cranked_end_time" },
-//  { 0x47EF, "" },
+    { 0x47EF, "crankedbombtimer" }, // AUTOADDED
 //  { 0x47F0, "" },
 //  { 0x47F1, "" },
 //  { 0x47F2, "" },
@@ -18498,16 +18498,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4835, "" },
 //  { 0x4836, "" },
 //  { 0x4837, "" },
-//  { 0x4838, "" },
-//  { 0x4839, "" },
-//  { 0x483A, "" },
-//  { 0x483B, "" },
-//  { 0x483C, "" },
-//  { 0x483D, "" },
-//  { 0x483E, "" },
-//  { 0x483F, "" },
+    { 0x4838, "crate_get_bot_target_check_distance" }, // AUTOADDED
+    { 0x4839, "crate_get_nearest_valid_nodes" }, // AUTOADDED
+    { 0x483A, "crate_has_landed" }, // AUTOADDED
+    { 0x483B, "crate_in_range" }, // AUTOADDED
+    { 0x483C, "crate_is_on_path_grid" }, // AUTOADDED
+    { 0x483D, "crate_landed_and_on_path_grid" }, // AUTOADDED
+    { 0x483E, "bot_has_streak_in_crate" }, // AUTOADDED
+    { 0x483F, "crate_monitor_position" }, // AUTOADDED
 //  { 0x4840, "" },
-//  { 0x4841, "" },
+    { 0x4841, "crate_picked_up" }, // AUTOADDED
 //  { 0x4842, "" },
 //  { 0x4843, "" },
 //  { 0x4844, "" },
@@ -18526,7 +18526,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4851, "" },
 //  { 0x4852, "" },
 //  { 0x4853, "" },
-//  { 0x4854, "" },
+    { 0x4854, "cratekill" }, // AUTOADDED
 //  { 0x4855, "" },
 //  { 0x4856, "" },
 //  { 0x4857, "" },
@@ -18563,7 +18563,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4876, "" },
 //  { 0x4877, "" },
 //  { 0x4878, "" },
-//  { 0x4879, "" },
+    { 0x4879, "crawlmelee" }, // AUTOADDED
 //  { 0x487A, "" },
 //  { 0x487B, "" },
 //  { 0x487C, "" },
@@ -18833,16 +18833,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4984, "" },
 //  { 0x4985, "" },
 //  { 0x4986, "" },
-//  { 0x4987, "" },
+    { 0x4987, "createbar" }, // AUTOADDED
 //  { 0x4988, "" },
 //  { 0x4989, "" },
 //  { 0x498A, "" },
-//  { 0x498B, "" },
+    { 0x498B, "createboxforplayer" }, // AUTOADDED
 //  { 0x498C, "" },
 //  { 0x498D, "" },
 //  { 0x498E, "" },
 //  { 0x498F, "" },
-//  { 0x4990, "" },
+    { 0x4990, "createcaptureobjective" }, // AUTOADDED
 //  { 0x4991, "" },
 //  { 0x4992, "" },
 //  { 0x4993, "" },
@@ -18856,7 +18856,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x499B, "" },
 //  { 0x499C, "" },
 //  { 0x499D, "" },
-//  { 0x499E, "" },
+    { 0x499E, "createcodcastermatchdataforplayer" }, // AUTOADDED
 //  { 0x499F, "" },
 //  { 0x49A0, "" },
 //  { 0x49A1, "" },
@@ -18865,19 +18865,19 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x49A4, "" },
 //  { 0x49A5, "" },
 //  { 0x49A6, "" },
-//  { 0x49A7, "" },
-//  { 0x49A8, "" },
-//  { 0x49A9, "" },
+    { 0x49A7, "createdropzones" }, // AUTOADDED
+    { 0x49A8, "createdynamicholduseobject" }, // AUTOADDED
+    { 0x49A9, "createechoalias" }, // AUTOADDED
     { 0x49AA, "createeffect" },
-//  { 0x49AB, "" },
-//  { 0x49AC, "" },
-//  { 0x49AD, "" },
+    { 0x49AB, "createendzone" }, // AUTOADDED
+    { 0x49AC, "createendzoneobjective" }, // AUTOADDED
+    { 0x49AD, "createentityeventdata" }, // AUTOADDED
     { 0x49AE, "createexploder" },
     { 0x49AF, "createexploderex" },
-//  { 0x49B0, "" },
-//  { 0x49B1, "" },
-//  { 0x49B2, "" },
-//  { 0x49B3, "" },
+    { 0x49B0, "createextractvfx" }, // AUTOADDED
+    { 0x49B1, "createflagsandhud" }, // AUTOADDED
+    { 0x49B2, "createfontstring" }, // AUTOADDED
+    { 0x49B3, "createfullscreenimage" }, // AUTOADDED
     { 0x49B4, "createfx" },
     { 0x49B5, "createfx_adjust_array" },
     { 0x49B6, "createfx_autosave" },
@@ -18915,13 +18915,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x49D6, "" },
 //  { 0x49D7, "" },
 //  { 0x49D8, "" },
-//  { 0x49D9, "" },
+    { 0x49D9, "createicon" }, // AUTOADDED
 //  { 0x49DA, "" },
 //  { 0x49DB, "" },
 //  { 0x49DC, "" },
     { 0x49DD, "createintervalsound" },
 //  { 0x49DE, "" },
-//  { 0x49DF, "" },
+    { 0x49DF, "createkillcam" }, // AUTOADDED
 //  { 0x49E0, "" },
 //  { 0x49E1, "" },
 //  { 0x49E2, "" },
@@ -18938,7 +18938,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x49ED, "" },
 //  { 0x49EE, "" },
 //  { 0x49EF, "" },
-//  { 0x49F0, "" },
+    { 0x49F0, "createmlgcamobject" }, // AUTOADDED
 //  { 0x49F1, "" },
 //  { 0x49F2, "" },
 //  { 0x49F3, "" },
@@ -18956,10 +18956,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x49FF, "" },
 //  { 0x4A00, "" },
 //  { 0x4A01, "" },
-//  { 0x4A02, "" },
-//  { 0x4A03, "" },
-//  { 0x4A04, "" },
-//  { 0x4A05, "" },
+    { 0x4A02, "createprimaryprogressbar" }, // AUTOADDED
+    { 0x4A03, "createprimaryprogressbartext" }, // AUTOADDED
+    { 0x4A04, "createpulluptrigger" }, // AUTOADDED
+    { 0x4A05, "createquestinstance" }, // AUTOADDED
     { 0x4A06, "createreactiveent" },
 //  { 0x4A07, "" },
 //  { 0x4A08, "" },
@@ -18977,7 +18977,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4A14, "" },
 //  { 0x4A15, "" },
 //  { 0x4A16, "" },
-//  { 0x4A17, "" },
+    { 0x4A17, "createservertimer" }, // AUTOADDED
 //  { 0x4A18, "" },
 //  { 0x4A19, "" },
 //  { 0x4A1A, "" },
@@ -18993,7 +18993,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4A24, "" },
 //  { 0x4A25, "" },
 //  { 0x4A26, "" },
-//  { 0x4A27, "" },
+    { 0x4A27, "createtimer" }, // AUTOADDED
 //  { 0x4A28, "" },
 //  { 0x4A29, "" },
 //  { 0x4A2A, "" },
@@ -19067,7 +19067,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4A6E, "" },
 //  { 0x4A6F, "" },
 //  { 0x4A70, "" },
-//  { 0x4A71, "" },
+    { 0x4A71, "critical_factor" }, // AUTOADDED
 //  { 0x4A72, "" },
 //  { 0x4A73, "" },
 //  { 0x4A74, "" },
@@ -19215,17 +19215,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4B02, "" },
 //  { 0x4B03, "" },
 //  { 0x4B04, "" },
-//  { 0x4B05, "" },
+    { 0x4B05, "ctf_loadouts" }, // AUTOADDED
 //  { 0x4B06, "" },
 //  { 0x4B07, "" },
 //  { 0x4B08, "" },
 //  { 0x4B09, "" },
 //  { 0x4B0A, "" },
 //  { 0x4B0B, "" },
-//  { 0x4B0C, "" },
-//  { 0x4B0D, "" },
-//  { 0x4B0E, "" },
-//  { 0x4B0F, "" },
+    { 0x4B0C, "cur_defend_angle_override" }, // AUTOADDED
+    { 0x4B0D, "cur_defend_node" }, // AUTOADDED
+    { 0x4B0E, "cur_defend_point_override" }, // AUTOADDED
+    { 0x4B0F, "cur_defend_stance" }, // AUTOADDED
 //  { 0x4B10, "" },
 //  { 0x4B11, "" },
 //  { 0x4B12, "" },
@@ -19235,10 +19235,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4B16, "" },
 //  { 0x4B17, "" },
 //  { 0x4B18, "" },
-//  { 0x4B19, "" },
+    { 0x4B19, "curbombzone" }, // AUTOADDED
 //  { 0x4B1A, "" },
 //  { 0x4B1B, "" },
-//  { 0x4B1C, "" },
+    { 0x4B1C, "curclass" }, // AUTOADDED
 //  { 0x4B1D, "" },
 //  { 0x4B1E, "" },
 //  { 0x4B1F, "" },
@@ -19251,14 +19251,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4B26, "" },
 //  { 0x4B27, "" },
 //  { 0x4B28, "" },
-//  { 0x4B29, "" },
-//  { 0x4B2A, "" },
-//  { 0x4B2B, "" },
+    { 0x4B29, "curobj" }, // AUTOADDED
+    { 0x4B2A, "curobjectiveindex" }, // AUTOADDED
+    { 0x4B2B, "curobjid" }, // AUTOADDED
     { 0x4B2C, "curorigin" },
 //  { 0x4B2D, "" },
 //  { 0x4B2E, "" },
 //  { 0x4B2F, "" },
-//  { 0x4B30, "" },
+    { 0x4B30, "curprogress" }, // AUTOADDED
 //  { 0x4B31, "" },
 //  { 0x4B32, "" },
 //  { 0x4B33, "" },
@@ -19399,7 +19399,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4BBA, "" },
 //  { 0x4BBB, "" },
 //  { 0x4BBC, "" },
-//  { 0x4BBD, "" },
+    { 0x4BBD, "current_start" }, // AUTOADDED
 //  { 0x4BBE, "" },
 //  { 0x4BBF, "" },
 //  { 0x4BC0, "" },
@@ -19468,12 +19468,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4BFF, "" },
 //  { 0x4C00, "" },
 //  { 0x4C01, "" },
-//  { 0x4C02, "" },
+    { 0x4C02, "currentselectedkillstreakslot" }, // AUTOADDED
 //  { 0x4C03, "" },
 //  { 0x4C04, "" },
 //  { 0x4C05, "" },
 //  { 0x4C06, "" },
-//  { 0x4C07, "" },
+    { 0x4C07, "currentstate" }, // AUTOADDED
 //  { 0x4C08, "" },
 //  { 0x4C09, "" },
 //  { 0x4C0A, "" },
@@ -19508,7 +19508,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4C27, "" },
 //  { 0x4C28, "" },
 //  { 0x4C29, "" },
-//  { 0x4C2A, "" },
+    { 0x4C2A, "cursuspsensetrack" }, // AUTOADDED
 //  { 0x4C2B, "" },
 //  { 0x4C2C, "" },
 //  { 0x4C2D, "" },
@@ -19794,7 +19794,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4D45, "" },
     { 0x4D46, "damagedsubpart" },
 //  { 0x4D47, "" },
-//  { 0x4D48, "" },
+    { 0x4D48, "damageeventcount" }, // AUTOADDED
 //  { 0x4D49, "" },
 //  { 0x4D4A, "" },
 //  { 0x4D4B, "" },
@@ -19809,7 +19809,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4D54, "" },
 //  { 0x4D55, "" },
 //  { 0x4D56, "" },
-//  { 0x4D57, "" },
+    { 0x4D57, "damagelistindex" }, // AUTOADDED
 //  { 0x4D58, "" },
     { 0x4D59, "damagelocationisany" },
 //  { 0x4D5A, "" },
@@ -19825,7 +19825,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4D64, "" },
 //  { 0x4D65, "" },
 //  { 0x4D66, "" },
-//  { 0x4D67, "" },
+    { 0x4D67, "damageshellshockandrumble" }, // AUTOADDED
 //  { 0x4D68, "" },
 //  { 0x4D69, "" },
 //  { 0x4D6A, "" },
@@ -19888,7 +19888,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4DA3, "" },
 //  { 0x4DA4, "" },
 //  { 0x4DA5, "" },
-//  { 0x4DA6, "" },
+    { 0x4DA6, "deactivate" }, // AUTOADDED
 //  { 0x4DA7, "" },
 //  { 0x4DA8, "" },
 //  { 0x4DA9, "" },
@@ -19942,7 +19942,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4DD9, "" },
 //  { 0x4DDA, "" },
     { 0x4DDB, "deactivateagent" },
-//  { 0x4DDC, "" },
+    { 0x4DDC, "deactivateagentdelayed" }, // AUTOADDED
 //  { 0x4DDD, "" },
 //  { 0x4DDE, "" },
 //  { 0x4DDF, "" },
@@ -20061,7 +20061,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4E50, "" },
 //  { 0x4E51, "" },
 //  { 0x4E52, "" },
-//  { 0x4E53, "" },
+    { 0x4E53, "deathoverridecallback" }, // AUTOADDED
 //  { 0x4E54, "" },
 //  { 0x4E55, "" },
 //  { 0x4E56, "" },
@@ -20216,7 +20216,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4EEB, "" },
 //  { 0x4EEC, "" },
 //  { 0x4EED, "" },
-//  { 0x4EEE, "" },
+    { 0x4EEE, "debug_line" }, // AUTOADDED
 //  { 0x4EEF, "" },
 //  { 0x4EF0, "" },
 //  { 0x4EF1, "" },
@@ -20243,8 +20243,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4F06, "" },
 //  { 0x4F07, "" },
 //  { 0x4F08, "" },
-//  { 0x4F09, "" },
-//  { 0x4F0A, "" },
+    { 0x4F09, "debug_print3d" }, // AUTOADDED
+    { 0x4F0A, "debug_print3d_simple" }, // AUTOADDED
 //  { 0x4F0B, "" },
 //  { 0x4F0C, "" },
 //  { 0x4F0D, "" },
@@ -20270,7 +20270,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4F21, "" },
 //  { 0x4F22, "" },
 //  { 0x4F23, "" },
-//  { 0x4F24, "" },
+    { 0x4F24, "debug_temp_sphere" }, // AUTOADDED
 //  { 0x4F25, "" },
 //  { 0x4F26, "" },
 //  { 0x4F27, "" },
@@ -20292,7 +20292,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4F37, "" },
 //  { 0x4F38, "" },
 //  { 0x4F39, "" },
-//  { 0x4F3A, "" },
+    { 0x4F3A, "debugcircle" }, // AUTOADDED
 //  { 0x4F3B, "" },
 //  { 0x4F3C, "" },
 //  { 0x4F3D, "" },
@@ -20306,7 +20306,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4F45, "" },
 //  { 0x4F46, "" },
 //  { 0x4F47, "" },
-//  { 0x4F48, "" },
+    { 0x4F48, "debugline" }, // AUTOADDED
 //  { 0x4F49, "" },
 //  { 0x4F4A, "" },
 //  { 0x4F4B, "" },
@@ -20315,7 +20315,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4F4E, "" },
 //  { 0x4F4F, "" },
 //  { 0x4F50, "" },
-//  { 0x4F51, "" },
+    { 0x4F51, "debugprint" }, // AUTOADDED
 //  { 0x4F52, "" },
 //  { 0x4F53, "" },
 //  { 0x4F54, "" },
@@ -20330,7 +20330,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4F5D, "" },
 //  { 0x4F5E, "" },
 //  { 0x4F5F, "" },
-//  { 0x4F60, "" },
+    { 0x4F60, "decaytime" }, // AUTOADDED
 //  { 0x4F61, "" },
 //  { 0x4F62, "" },
 //  { 0x4F63, "" },
@@ -20453,7 +20453,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4FD8, "" },
 //  { 0x4FD9, "" },
 //  { 0x4FDA, "" },
-//  { 0x4FDB, "" },
+    { 0x4FDB, "default_ball_origin" }, // AUTOADDED
 //  { 0x4FDC, "" },
 //  { 0x4FDD, "" },
 //  { 0x4FDE, "" },
@@ -20478,7 +20478,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x4FF1, "" },
 //  { 0x4FF2, "" },
 //  { 0x4FF3, "" },
-//  { 0x4FF4, "" },
+    { 0x4FF4, "default_goal_origins" }, // AUTOADDED
 //  { 0x4FF5, "" },
 //  { 0x4FF6, "" },
 //  { 0x4FF7, "" },
@@ -20498,8 +20498,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5005, "" },
 //  { 0x5006, "" },
 //  { 0x5007, "" },
-//  { 0x5008, "" },
-//  { 0x5009, "" },
+    { 0x5008, "default_onhalftime" }, // AUTOADDED
+    { 0x5009, "default_ononeleftevent" }, // AUTOADDED
 //  { 0x500A, "" },
 //  { 0x500B, "" },
 //  { 0x500C, "" },
@@ -20553,7 +20553,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x503C, "" },
 //  { 0x503D, "" },
 //  { 0x503E, "" },
-//  { 0x503F, "" },
+    { 0x503F, "defaultlightfx" }, // AUTOADDED
 //  { 0x5040, "" },
 //  { 0x5041, "" },
 //  { 0x5042, "" },
@@ -20612,7 +20612,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5077, "" },
 //  { 0x5078, "" },
 //  { 0x5079, "" },
-//  { 0x507A, "" },
+    { 0x507A, "defend_valid_center" }, // AUTOADDED
 //  { 0x507B, "" },
 //  { 0x507C, "" },
 //  { 0x507D, "" },
@@ -20625,18 +20625,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5084, "" },
 //  { 0x5085, "" },
 //  { 0x5086, "" },
-//  { 0x5087, "" },
+    { 0x5087, "defendloc" }, // AUTOADDED
 //  { 0x5088, "" },
 //  { 0x5089, "" },
 //  { 0x508A, "" },
 //  { 0x508B, "" },
 //  { 0x508C, "" },
-//  { 0x508D, "" },
+    { 0x508D, "defense_death_monitor" }, // AUTOADDED
 //  { 0x508E, "" },
 //  { 0x508F, "" },
 //  { 0x5090, "" },
 //  { 0x5091, "" },
-//  { 0x5092, "" },
+    { 0x5092, "defense_score_flags" }, // AUTOADDED
 //  { 0x5093, "" },
 //  { 0x5094, "" },
 //  { 0x5095, "" },
@@ -20652,8 +20652,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x509F, "" },
 //  { 0x50A0, "" },
 //  { 0x50A1, "" },
-//  { 0x50A2, "" },
-//  { 0x50A3, "" },
+    { 0x50A2, "definechestweapons" }, // AUTOADDED
+    { 0x50A3, "definepassivevalue" }, // AUTOADDED
 //  { 0x50A4, "" },
 //  { 0x50A5, "" },
 //  { 0x50A6, "" },
@@ -20758,7 +20758,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5109, "" },
 //  { 0x510A, "" },
 //  { 0x510B, "" },
-//  { 0x510C, "" },
+    { 0x510C, "delayjackalloopsfx" }, // AUTOADDED
 //  { 0x510D, "" },
 //  { 0x510E, "" },
 //  { 0x510F, "" },
@@ -20769,8 +20769,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5114, "" },
 //  { 0x5115, "" },
 //  { 0x5116, "" },
-//  { 0x5117, "" },
-//  { 0x5118, "" },
+    { 0x5117, "delayplayer" }, // AUTOADDED
+    { 0x5118, "delayplayerscorepopup" }, // AUTOADDED
 //  { 0x5119, "" },
 //  { 0x511A, "" },
 //  { 0x511B, "" },
@@ -20912,7 +20912,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x51A3, "" },
 //  { 0x51A4, "" },
 //  { 0x51A5, "" },
-//  { 0x51A6, "" },
+    { 0x51A6, "deleteaftertime" }, // AUTOADDED
 //  { 0x51A7, "" },
 //  { 0x51A8, "" },
 //  { 0x51A9, "" },
@@ -20920,8 +20920,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x51AB, "" },
 //  { 0x51AC, "" },
 //  { 0x51AD, "" },
-//  { 0x51AE, "" },
-//  { 0x51AF, "" },
+    { 0x51AE, "deletedestructiblekillcament" }, // AUTOADDED
+    { 0x51AF, "deletedisparateplacedequipment" }, // AUTOADDED
 //  { 0x51B0, "" },
 //  { 0x51B1, "" },
 //  { 0x51B2, "" },
@@ -20940,10 +20940,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x51BF, "" },
 //  { 0x51C0, "" },
 //  { 0x51C1, "" },
-//  { 0x51C2, "" },
+    { 0x51C2, "deleteonentnotify" }, // AUTOADDED
 //  { 0x51C3, "" },
 //  { 0x51C4, "" },
-//  { 0x51C5, "" },
+    { 0x51C5, "deleteonownerdeath" }, // AUTOADDED
 //  { 0x51C6, "" },
 //  { 0x51C7, "" },
 //  { 0x51C8, "" },
@@ -21020,7 +21020,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x520F, "" },
 //  { 0x5210, "" },
 //  { 0x5211, "" },
-//  { 0x5212, "" },
+    { 0x5212, "deployable_box" }, // AUTOADDED
 //  { 0x5213, "" },
 //  { 0x5214, "" },
 //  { 0x5215, "" },
@@ -21034,12 +21034,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x521D, "" },
 //  { 0x521E, "" },
 //  { 0x521F, "" },
-//  { 0x5220, "" },
-//  { 0x5221, "" },
+    { 0x5220, "deployablebox_vest_max" }, // AUTOADDED
+    { 0x5221, "deployablebox_vest_rank" }, // AUTOADDED
 //  { 0x5222, "" },
 //  { 0x5223, "" },
 //  { 0x5224, "" },
-//  { 0x5225, "" },
+    { 0x5225, "deployableexclusion" }, // AUTOADDED
 //  { 0x5226, "" },
 //  { 0x5227, "" },
 //  { 0x5228, "" },
@@ -21051,7 +21051,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x522E, "" },
 //  { 0x522F, "" },
 //  { 0x5230, "" },
-//  { 0x5231, "" },
+    { 0x5231, "deployflares" }, // AUTOADDED
 //  { 0x5232, "" },
 //  { 0x5233, "" },
 //  { 0x5234, "" },
@@ -21113,13 +21113,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x526C, "" },
 //  { 0x526D, "" },
 //  { 0x526E, "" },
-//  { 0x526F, "" },
+    { 0x526F, "desired_accel" }, // AUTOADDED
 //  { 0x5270, "" },
 //  { 0x5271, "" },
 //  { 0x5272, "" },
 //  { 0x5273, "" },
 //  { 0x5274, "" },
-//  { 0x5275, "" },
+    { 0x5275, "desired_speed" }, // AUTOADDED
 //  { 0x5276, "" },
 //  { 0x5277, "" },
 //  { 0x5278, "" },
@@ -21222,7 +21222,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x52D9, "" },
 //  { 0x52DA, "" },
 //  { 0x52DB, "" },
-//  { 0x52DC, "" },
+    { 0x52DC, "destroyelem" }, // AUTOADDED
 //  { 0x52DD, "" },
 //  { 0x52DE, "" },
 //  { 0x52DF, "" },
@@ -21282,7 +21282,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5315, "" },
 //  { 0x5316, "" },
 //  { 0x5317, "" },
-//  { 0x5318, "" },
+    { 0x5318, "destroyexplosiveoncollision" }, // AUTOADDED
 //  { 0x5319, "" },
 //  { 0x531A, "" },
 //  { 0x531B, "" },
@@ -21310,9 +21310,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5331, "" },
 //  { 0x5332, "" },
 //  { 0x5333, "" },
-//  { 0x5334, "" },
-//  { 0x5335, "" },
-//  { 0x5336, "" },
+    { 0x5334, "destructable_destruct" }, // AUTOADDED
+    { 0x5335, "destructable_think" }, // AUTOADDED
+    { 0x5336, "destructible" }, // AUTOADDED
 //  { 0x5337, "" },
 //  { 0x5338, "" },
 //  { 0x5339, "" },
@@ -21403,13 +21403,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x538E, "" },
 //  { 0x538F, "" },
 //  { 0x5390, "" },
-//  { 0x5391, "" },
+    { 0x5391, "detachflag" }, // AUTOADDED
 //  { 0x5392, "" },
-//  { 0x5393, "" },
+    { 0x5393, "detachifattached" }, // AUTOADDED
 //  { 0x5394, "" },
-//  { 0x5395, "" },
+    { 0x5395, "detachobjectifcarried" }, // AUTOADDED
 //  { 0x5396, "" },
-//  { 0x5397, "" },
+    { 0x5397, "detachusemodels" }, // AUTOADDED
 //  { 0x5398, "" },
 //  { 0x5399, "" },
 //  { 0x539A, "" },
@@ -21479,20 +21479,20 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x53DA, "" },
 //  { 0x53DB, "" },
 //  { 0x53DC, "" },
-//  { 0x53DD, "" },
+    { 0x53DD, "dev_flag_find_ground" }, // AUTOADDED
 //  { 0x53DE, "" },
 //  { 0x53DF, "" },
 //  { 0x53E0, "" },
-//  { 0x53E1, "" },
+    { 0x53E1, "devball" }, // AUTOADDED
 //  { 0x53E2, "" },
-//  { 0x53E3, "" },
+    { 0x53E3, "devfindhost" }, // AUTOADDED
 //  { 0x53E4, "" },
 //  { 0x53E5, "" },
 //  { 0x53E6, "" },
 //  { 0x53E7, "" },
 //  { 0x53E8, "" },
 //  { 0x53E9, "" },
-//  { 0x53EA, "" },
+    { 0x53EA, "devlistinventory" }, // AUTOADDED
 //  { 0x53EB, "" },
 //  { 0x53EC, "" },
 //  { 0x53ED, "" },
@@ -21711,7 +21711,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x54C2, "" },
 //  { 0x54C3, "" },
 //  { 0x54C4, "" },
-//  { 0x54C5, "" },
+    { 0x54C5, "didstatusnotify" }, // AUTOADDED
 //  { 0x54C6, "" },
 //  { 0x54C7, "" },
 //  { 0x54C8, "" },
@@ -21950,7 +21950,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x55B1, "" },
 //  { 0x55B2, "" },
 //  { 0x55B3, "" },
-//  { 0x55B4, "" },
+    { 0x55B4, "disablebattlechatter" }, // AUTOADDED
 //  { 0x55B5, "" },
 //  { 0x55B6, "" },
 //  { 0x55B7, "" },
@@ -21958,7 +21958,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x55B9, "" },
 //  { 0x55BA, "" },
 //  { 0x55BB, "" },
-//  { 0x55BC, "" },
+    { 0x55BC, "disabled_use_for" }, // AUTOADDED
 //  { 0x55BD, "" },
     { 0x55BE, "disabledads_MAYBE" },
 //  { 0x55BF, "" },
@@ -22005,7 +22005,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x55E8, "" },
     { 0x55E9, "disabledweaponswitch_MAYBE" },
 //  { 0x55EA, "" },
-//  { 0x55EB, "" },
+    { 0x55EB, "disableenemybaseoutline" }, // AUTOADDED
 //  { 0x55EC, "" },
 //  { 0x55ED, "" },
 //  { 0x55EE, "" },
@@ -22019,7 +22019,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x55F6, "" },
 //  { 0x55F7, "" },
 //  { 0x55F8, "" },
-//  { 0x55F9, "" },
+    { 0x55F9, "disablelifepackboost" }, // AUTOADDED
 //  { 0x55FA, "" },
 //  { 0x55FB, "" },
     { 0x55FC, "disablelongdeath" },
@@ -22027,9 +22027,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x55FE, "" },
 //  { 0x55FF, "" },
 //  { 0x5600, "" },
-//  { 0x5601, "" },
+    { 0x5601, "disablemusic" }, // AUTOADDED
 //  { 0x5602, "" },
-//  { 0x5603, "" },
+    { 0x5603, "disableobject" }, // AUTOADDED
 //  { 0x5604, "" },
 //  { 0x5605, "" },
 //  { 0x5606, "" },
@@ -22044,7 +22044,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x560F, "" },
 //  { 0x5610, "" },
 //  { 0x5611, "" },
-//  { 0x5612, "" },
+    { 0x5612, "disablespawnwarnings" }, // AUTOADDED
 //  { 0x5613, "" },
 //  { 0x5614, "" },
 //  { 0x5615, "" },
@@ -22312,13 +22312,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x571B, "" },
 //  { 0x571C, "" },
 //  { 0x571D, "" },
-//  { 0x571E, "" },
+    { 0x571E, "distsqtoballstart" }, // AUTOADDED
 //  { 0x571F, "" },
-//  { 0x5720, "" },
+    { 0x5720, "distsquaredcheck" }, // AUTOADDED
 //  { 0x5721, "" },
-//  { 0x5722, "" },
+    { 0x5722, "distsumsquared" }, // AUTOADDED
 //  { 0x5723, "" },
-//  { 0x5724, "" },
+    { 0x5724, "disttohomebase" }, // AUTOADDED
 //  { 0x5725, "" },
 //  { 0x5726, "" },
 //  { 0x5727, "" },
@@ -22542,7 +22542,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5801, "" },
 //  { 0x5802, "" },
 //  { 0x5803, "" },
-//  { 0x5804, "" },
+    { 0x5804, "dodgedefenseignorefunc" }, // AUTOADDED
 //  { 0x5805, "" },
 //  { 0x5806, "" },
 //  { 0x5807, "" },
@@ -22556,7 +22556,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x580F, "" },
 //  { 0x5810, "" },
 //  { 0x5811, "" },
-//  { 0x5812, "" },
+    { 0x5812, "dodging" }, // AUTOADDED
 //  { 0x5813, "" },
 //  { 0x5814, "" },
 //  { 0x5815, "" },
@@ -22578,7 +22578,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5825, "" },
 //  { 0x5826, "" },
 //  { 0x5827, "" },
-//  { 0x5828, "" },
+    { 0x5828, "doeomcombat" }, // AUTOADDED
 //  { 0x5829, "" },
 //  { 0x582A, "" },
 //  { 0x582B, "" },
@@ -22625,7 +22625,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5854, "" },
 //  { 0x5855, "" },
 //  { 0x5856, "" },
-//  { 0x5857, "" },
+    { 0x5857, "doflyby" }, // AUTOADDED
 //  { 0x5858, "" },
 //  { 0x5859, "" },
 //  { 0x585A, "" },
@@ -22727,15 +22727,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x58BA, "" },
 //  { 0x58BB, "" },
 //  { 0x58BC, "" },
-//  { 0x58BD, "" },
-//  { 0x58BE, "" },
-//  { 0x58BF, "" },
+    { 0x58BD, "dogtag" }, // AUTOADDED
+    { 0x58BE, "dogtagallyonusecb" }, // AUTOADDED
+    { 0x58BF, "dogtagenemyonusecb" }, // AUTOADDED
     { 0x58C0, "dogtags" },
 //  { 0x58C1, "" },
 //  { 0x58C2, "" },
 //  { 0x58C3, "" },
 //  { 0x58C4, "" },
-//  { 0x58C5, "" },
+    { 0x58C5, "dogtagstext" }, // AUTOADDED
 //  { 0x58C6, "" },
 //  { 0x58C7, "" },
 //  { 0x58C8, "" },
@@ -22813,7 +22813,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5910, "" },
 //  { 0x5911, "" },
 //  { 0x5912, "" },
-//  { 0x5913, "" },
+    { 0x5913, "objectives" }, // AUTOADDED
 //  { 0x5914, "" },
 //  { 0x5915, "" },
 //  { 0x5916, "" },
@@ -22858,7 +22858,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x593D, "" },
 //  { 0x593E, "" },
 //  { 0x593F, "" },
-//  { 0x5940, "" },
+    { 0x5940, "dont_auto_balance" }, // AUTOADDED
 //  { 0x5941, "" },
 //  { 0x5942, "" },
 //  { 0x5943, "" },
@@ -23030,16 +23030,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x59E9, "" },
 //  { 0x59EA, "" },
 //  { 0x59EB, "" },
-//  { 0x59EC, "" },
-//  { 0x59ED, "" },
-//  { 0x59EE, "" },
+    { 0x59EC, "door_state_change" }, // AUTOADDED
+    { 0x59ED, "door_state_exit" }, // AUTOADDED
+    { 0x59EE, "door_state_next" }, // AUTOADDED
 //  { 0x59EF, "" },
 //  { 0x59F0, "" },
 //  { 0x59F1, "" },
 //  { 0x59F2, "" },
 //  { 0x59F3, "" },
 //  { 0x59F4, "" },
-//  { 0x59F5, "" },
+    { 0x59F5, "door_system_init" }, // AUTOADDED
 //  { 0x59F6, "" },
 //  { 0x59F7, "" },
 //  { 0x59F8, "" },
@@ -23093,7 +23093,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5A28, "" },
 //  { 0x5A29, "" },
 //  { 0x5A2A, "" },
-//  { 0x5A2B, "" },
+    { 0x5A2B, "doors" }, // AUTOADDED
 //  { 0x5A2C, "" },
 //  { 0x5A2D, "" },
 //  { 0x5A2E, "" },
@@ -23150,7 +23150,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5A61, "" },
 //  { 0x5A62, "" },
 //  { 0x5A63, "" },
-//  { 0x5A64, "" },
+    { 0x5A64, "doradiationdamage" }, // AUTOADDED
 //  { 0x5A65, "" },
 //  { 0x5A66, "" },
 //  { 0x5A67, "" },
@@ -23271,7 +23271,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5ADA, "" },
 //  { 0x5ADB, "" },
 //  { 0x5ADC, "" },
-//  { 0x5ADD, "" },
+    { 0x5ADD, "doublebubblesort" }, // AUTOADDED
 //  { 0x5ADE, "" },
 //  { 0x5ADF, "" },
 //  { 0x5AE0, "" },
@@ -23318,7 +23318,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5B09, "" },
 //  { 0x5B0A, "" },
 //  { 0x5B0B, "" },
-//  { 0x5B0C, "" },
+    { 0x5B0C, "dpadname" }, // AUTOADDED
 //  { 0x5B0D, "" },
 //  { 0x5B0E, "" },
 //  { 0x5B0F, "" },
@@ -23380,7 +23380,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5B47, "" },
 //  { 0x5B48, "" },
 //  { 0x5B49, "" },
-//  { 0x5B4A, "" },
+    { 0x5B4A, "draw_line" }, // AUTOADDED
     { 0x5B4B, "draw_line_for_time" },
 //  { 0x5B4C, "" },
 //  { 0x5B4D, "" },
@@ -23406,7 +23406,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5B61, "" },
 //  { 0x5B62, "" },
 //  { 0x5B63, "" },
-//  { 0x5B64, "" },
+    { 0x5B64, "draw_text" }, // AUTOADDED
 //  { 0x5B65, "" },
     { 0x5B66, "draw_trace" },
     { 0x5B67, "draw_trace_hit" },
@@ -23426,7 +23426,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5B75, "" },
 //  { 0x5B76, "" },
 //  { 0x5B77, "" },
-//  { 0x5B78, "" },
+    { 0x5B78, "drawfriend" }, // AUTOADDED
 //  { 0x5B79, "" },
 //  { 0x5B7A, "" },
 //  { 0x5B7B, "" },
@@ -23747,7 +23747,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5CB6, "" },
 //  { 0x5CB7, "" },
 //  { 0x5CB8, "" },
-//  { 0x5CB9, "" },
+    { 0x5CB9, "dronemissilespawnarray" }, // AUTOADDED
 //  { 0x5CBA, "" },
 //  { 0x5CBB, "" },
 //  { 0x5CBC, "" },
@@ -23886,7 +23886,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5D41, "" },
 //  { 0x5D42, "" },
 //  { 0x5D43, "" },
-//  { 0x5D44, "" },
+    { 0x5D44, "droppingtoground" }, // AUTOADDED
 //  { 0x5D45, "" },
 //  { 0x5D46, "" },
 //  { 0x5D47, "" },
@@ -23961,7 +23961,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5D8C, "" },
 //  { 0x5D8D, "" },
 //  { 0x5D8E, "" },
-//  { 0x5D8F, "" },
+    { 0x5D8F, "dropship_change_thrust_sfx" }, // AUTOADDED
 //  { 0x5D90, "" },
 //  { 0x5D91, "" },
 //  { 0x5D92, "" },
@@ -24436,7 +24436,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5F67, "" },
 //  { 0x5F68, "" },
 //  { 0x5F69, "" },
-//  { 0x5F6A, "" },
+    { 0x5F6A, "dvar" }, // AUTOADDED
 //  { 0x5F6B, "" },
 //  { 0x5F6C, "" },
 //  { 0x5F6D, "" },
@@ -24477,7 +24477,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x5F90, "" },
 //  { 0x5F91, "" },
 //  { 0x5F92, "" },
-//  { 0x5F93, "" },
+    { 0x5F93, "dynamicspawns" }, // AUTOADDED
 //  { 0x5F94, "" },
 //  { 0x5F95, "" },
 //  { 0x5F96, "" },
@@ -24617,7 +24617,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x601C, "" },
 //  { 0x601D, "" },
 //  { 0x601E, "" },
-//  { 0x601F, "" },
+    { 0x601F, "elemtype" }, // AUTOADDED
 //  { 0x6020, "" },
 //  { 0x6021, "" },
 //  { 0x6022, "" },
@@ -25005,14 +25005,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x61A0, "" },
 //  { 0x61A1, "" },
 //  { 0x61A2, "" },
-//  { 0x61A3, "" },
+    { 0x61A3, "empgrenaded" }, // AUTOADDED
 //  { 0x61A4, "" },
 //  { 0x61A5, "" },
 //  { 0x61A6, "" },
 //  { 0x61A7, "" },
 //  { 0x61A8, "" },
 //  { 0x61A9, "" },
-//  { 0x61AA, "" },
+    { 0x61AA, "empmarked" }, // AUTOADDED
 //  { 0x61AB, "" },
 //  { 0x61AC, "" },
 //  { 0x61AD, "" },
@@ -25034,7 +25034,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x61BD, "" },
 //  { 0x61BE, "" },
 //  { 0x61BF, "" },
-//  { 0x61C0, "" },
+    { 0x61C0, "emptylocations" }, // AUTOADDED
 //  { 0x61C1, "" },
 //  { 0x61C2, "" },
 //  { 0x61C3, "" },
@@ -25194,7 +25194,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x625D, "" },
 //  { 0x625E, "" },
 //  { 0x625F, "" },
-//  { 0x6260, "" },
+    { 0x6260, "enablebattlechatter" }, // AUTOADDED
     { 0x6261, "enabled" },
 //  { 0x6262, "" },
 //  { 0x6263, "" },
@@ -25213,9 +25213,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6270, "" },
 //  { 0x6271, "" },
 //  { 0x6272, "" },
-//  { 0x6273, "" },
-//  { 0x6274, "" },
-//  { 0x6275, "" },
+    { 0x6273, "enablemultibombui" }, // AUTOADDED
+    { 0x6274, "enablemusic" }, // AUTOADDED
+    { 0x6275, "enableobject" }, // AUTOADDED
 //  { 0x6276, "" },
 //  { 0x6277, "" },
 //  { 0x6278, "" },
@@ -25227,7 +25227,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x627E, "" },
 //  { 0x627F, "" },
 //  { 0x6280, "" },
-//  { 0x6281, "" },
+    { 0x6281, "enablevisibilitycullingforclient" }, // AUTOADDED
 //  { 0x6282, "" },
 //  { 0x6283, "" },
 //  { 0x6284, "" },
@@ -25394,10 +25394,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6325, "" },
 //  { 0x6326, "" },
 //  { 0x6327, "" },
-//  { 0x6328, "" },
+    { 0x6328, "endgameicon" }, // AUTOADDED
 //  { 0x6329, "" },
 //  { 0x632A, "" },
-//  { 0x632B, "" },
+    { 0x632B, "endgametimer" }, // AUTOADDED
 //  { 0x632C, "" },
 //  { 0x632D, "" },
 //  { 0x632E, "" },
@@ -25408,7 +25408,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6333, "" },
 //  { 0x6334, "" },
 //  { 0x6335, "" },
-//  { 0x6336, "" },
+    { 0x6336, "endinactiveinstructionondeath" }, // AUTOADDED
 //  { 0x6337, "" },
 //  { 0x6338, "" },
 //  { 0x6339, "" },
@@ -25445,12 +25445,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6358, "" },
 //  { 0x6359, "" },
 //  { 0x635A, "" },
-//  { 0x635B, "" },
+    { 0x635B, "endinstructiononnotification" }, // AUTOADDED
 //  { 0x635C, "" },
 //  { 0x635D, "" },
 //  { 0x635E, "" },
 //  { 0x635F, "" },
-//  { 0x6360, "" },
+    { 0x6360, "endmatchonhostdisconnect" }, // AUTOADDED
 //  { 0x6361, "" },
 //  { 0x6362, "" },
 //  { 0x6363, "" },
@@ -25464,10 +25464,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x636B, "" },
 //  { 0x636C, "" },
 //  { 0x636D, "" },
-//  { 0x636E, "" },
+    { 0x636E, "endondeath" }, // AUTOADDED
 //  { 0x636F, "" },
 //  { 0x6370, "" },
-//  { 0x6371, "" },
+    { 0x6371, "endonstring" }, // AUTOADDED
 //  { 0x6372, "" },
 //  { 0x6373, "" },
 //  { 0x6374, "" },
@@ -25479,7 +25479,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x637A, "" },
 //  { 0x637B, "" },
 //  { 0x637C, "" },
-//  { 0x637D, "" },
+    { 0x637D, "endrespawnnotify" }, // AUTOADDED
 //  { 0x637E, "" },
 //  { 0x637F, "" },
 //  { 0x6380, "" },
@@ -25511,7 +25511,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x639A, "" },
 //  { 0x639B, "" },
 //  { 0x639C, "" },
-//  { 0x639D, "" },
+    { 0x639D, "enemies" }, // AUTOADDED
 //  { 0x639E, "" },
 //  { 0x639F, "" },
 //  { 0x63A0, "" },
@@ -25581,9 +25581,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x63E0, "" },
 //  { 0x63E1, "" },
 //  { 0x63E2, "" },
-//  { 0x63E3, "" },
-//  { 0x63E4, "" },
-//  { 0x63E5, "" },
+    { 0x63E3, "enemy_camp_assassin" }, // AUTOADDED
+    { 0x63E4, "enemy_camp_assassin_goal" }, // AUTOADDED
+    { 0x63E5, "enemy_camp_spots" }, // AUTOADDED
 //  { 0x63E6, "" },
 //  { 0x63E7, "" },
 //  { 0x63E8, "" },
@@ -25842,11 +25842,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x64E5, "" },
 //  { 0x64E6, "" },
 //  { 0x64E7, "" },
-//  { 0x64E8, "" },
+    { 0x64E8, "enemy_mortar_strike_exists" }, // AUTOADDED
 //  { 0x64E9, "" },
 //  { 0x64EA, "" },
 //  { 0x64EB, "" },
-//  { 0x64EC, "" },
+    { 0x64EC, "enemy_odin_assault_exists" }, // AUTOADDED
 //  { 0x64ED, "" },
 //  { 0x64EE, "" },
 //  { 0x64EF, "" },
@@ -25905,7 +25905,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6524, "" },
 //  { 0x6525, "" },
 //  { 0x6526, "" },
-//  { 0x6527, "" },
+    { 0x6527, "enemy_switchblade_exists" }, // AUTOADDED
 //  { 0x6528, "" },
 //  { 0x6529, "" },
 //  { 0x652A, "" },
@@ -25945,14 +25945,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x654C, "" },
 //  { 0x654D, "" },
 //  { 0x654E, "" },
-//  { 0x654F, "" },
-//  { 0x6550, "" },
+    { 0x654F, "enemybasewatcher" }, // AUTOADDED
+    { 0x6550, "enemybrush" }, // AUTOADDED
 //  { 0x6551, "" },
 //  { 0x6552, "" },
 //  { 0x6553, "" },
 //  { 0x6554, "" },
 //  { 0x6555, "" },
-//  { 0x6556, "" },
+    { 0x6556, "enemyendtimes" }, // AUTOADDED
 //  { 0x6557, "" },
 //  { 0x6558, "" },
 //  { 0x6559, "" },
@@ -25961,12 +25961,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x655C, "" },
 //  { 0x655D, "" },
 //  { 0x655E, "" },
-//  { 0x655F, "" },
+    { 0x655F, "enemyids" }, // AUTOADDED
 //  { 0x6560, "" },
     { 0x6561, "enemyishiding" },
 //  { 0x6562, "" },
 //  { 0x6563, "" },
-//  { 0x6564, "" },
+    { 0x6564, "enemymodel" }, // AUTOADDED
 //  { 0x6565, "" },
 //  { 0x6566, "" },
 //  { 0x6567, "" },
@@ -25984,7 +25984,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6573, "" },
 //  { 0x6574, "" },
 //  { 0x6575, "" },
-//  { 0x6576, "" },
+    { 0x6576, "enemyteamid" }, // AUTOADDED
 //  { 0x6577, "" },
 //  { 0x6578, "" },
 //  { 0x6579, "" },
@@ -26074,7 +26074,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x65CD, "" },
 //  { 0x65CE, "" },
 //  { 0x65CF, "" },
-//  { 0x65D0, "" },
+    { 0x65D0, "enginevfxtag" }, // AUTOADDED
 //  { 0x65D1, "" },
     { 0x65D2, "ensurelaststandparamsvalidity" },
 //  { 0x65D3, "" },
@@ -26193,7 +26193,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6644, "" },
 //  { 0x6645, "" },
 //  { 0x6646, "" },
-//  { 0x6647, "" },
+    { 0x6647, "entityheadicons" }, // AUTOADDED
 //  { 0x6648, "" },
 //  { 0x6649, "" },
     { 0x664A, "entnum" },
@@ -26206,8 +26206,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6651, "" },
 //  { 0x6652, "" },
 //  { 0x6653, "" },
-//  { 0x6654, "" },
-//  { 0x6655, "" },
+    { 0x6654, "entrance_to_enemy_zone" }, // AUTOADDED
+    { 0x6655, "entrance_visible_from" }, // AUTOADDED
 //  { 0x6656, "" },
 //  { 0x6657, "" },
 //  { 0x6658, "" },
@@ -26224,7 +26224,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6663, "" },
 //  { 0x6664, "" },
 //  { 0x6665, "" },
-//  { 0x6666, "" },
+    { 0x6666, "entsound" }, // AUTOADDED
 //  { 0x6667, "" },
 //  { 0x6668, "" },
 //  { 0x6669, "" },
@@ -26271,7 +26271,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6692, "" },
 //  { 0x6693, "" },
 //  { 0x6694, "" },
-//  { 0x6695, "" },
+    { 0x6695, "equipment_enabled" }, // AUTOADDED
 //  { 0x6696, "" },
 //  { 0x6697, "" },
 //  { 0x6698, "" },
@@ -26290,7 +26290,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x66A5, "" },
 //  { 0x66A6, "" },
 //  { 0x66A7, "" },
-//  { 0x66A8, "" },
+    { 0x66A8, "equipmentdeletevfx" }, // AUTOADDED
 //  { 0x66A9, "" },
 //  { 0x66AA, "" },
 //  { 0x66AB, "" },
@@ -26313,7 +26313,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x66BC, "" },
     { 0x66BD, "error" },
 //  { 0x66BE, "" },
-//  { 0x66BF, "" },
+    { 0x66BF, "errormessagebitflipper" }, // AUTOADDED
 //  { 0x66C0, "" },
 //  { 0x66C1, "" },
 //  { 0x66C2, "" },
@@ -26449,7 +26449,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6744, "" },
 //  { 0x6745, "" },
     { 0x6746, "estate" },
-//  { 0x6747, "" },
+    { 0x6747, "estimatedtimetillscorelimit" }, // AUTOADDED
 //  { 0x6748, "" },
 //  { 0x6749, "" },
 //  { 0x674A, "" },
@@ -26605,7 +26605,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x67E0, "" },
 //  { 0x67E1, "" },
 //  { 0x67E2, "" },
-//  { 0x67E3, "" },
+    { 0x67E3, "evasivemaneuvers" }, // AUTOADDED
 //  { 0x67E4, "" },
 //  { 0x67E5, "" },
 //  { 0x67E6, "" },
@@ -26829,7 +26829,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x68C0, "" },
 //  { 0x68C1, "" },
 //  { 0x68C2, "" },
-//  { 0x68C3, "" },
+    { 0x68C3, "exceededmaxlittlebirds" }, // AUTOADDED
 //  { 0x68C4, "" },
 //  { 0x68C5, "" },
     { 0x68C6, "exception" },
@@ -26851,7 +26851,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x68D6, "" },
 //  { 0x68D7, "" },
 //  { 0x68D8, "" },
-//  { 0x68D9, "" },
+    { 0x68D9, "executing" }, // AUTOADDED
 //  { 0x68DA, "" },
 //  { 0x68DB, "" },
 //  { 0x68DC, "" },
@@ -26949,8 +26949,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6938, "" },
 //  { 0x6939, "" },
 //  { 0x693A, "" },
-  { 0x693B, "exists_in_array_MAYBE" },
-//  { 0x693C, "" },
+    { 0x693B, "exists_in_array_MAYBE" },
+    { 0x693C, "existinarray" }, // AUTOADDED
 //  { 0x693D, "" },
 //  { 0x693E, "" },
 //  { 0x693F, "" },
@@ -27025,9 +27025,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6984, "" },
 //  { 0x6985, "" },
 //  { 0x6986, "" },
-//  { 0x6987, "" },
-//  { 0x6988, "" },
-//  { 0x6989, "" },
+    { 0x6987, "expandmaxs" }, // AUTOADDED
+    { 0x6988, "expandmins" }, // AUTOADDED
+    { 0x6989, "expandspawnpointbounds" }, // AUTOADDED
 //  { 0x698A, "" },
 //  { 0x698B, "" },
 //  { 0x698C, "" },
@@ -27060,7 +27060,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x69A7, "exploder_delay" },
     { 0x69A8, "exploder_earthquake" },
     { 0x69A9, "exploder_flag_wait" },
-//  { 0x69AA, "" },
+    { 0x69AA, "exploder_load" }, // AUTOADDED
     { 0x69AB, "exploder_model_is_chunk" },
     { 0x69AC, "exploder_model_is_damaged_model" },
     { 0x69AD, "exploder_model_starts_hidden" },
@@ -27290,7 +27290,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6A8D, "" },
 //  { 0x6A8E, "" },
 //  { 0x6A8F, "" },
-//  { 0x6A90, "" },
+    { 0x6A90, "factors" }, // AUTOADDED
 //  { 0x6A91, "" },
 //  { 0x6A92, "" },
 //  { 0x6A93, "" },
@@ -27324,7 +27324,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6AAF, "" },
 //  { 0x6AB0, "" },
 //  { 0x6AB1, "" },
-//  { 0x6AB2, "" },
+    { 0x6AB2, "fadeaway" }, // AUTOADDED
 //  { 0x6AB3, "" },
 //  { 0x6AB4, "" },
 //  { 0x6AB5, "" },
@@ -27489,7 +27489,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6B54, "" },
 //  { 0x6B55, "" },
 //  { 0x6B56, "" },
-//  { 0x6B57, "" },
+    { 0x6B57, "fakevote" }, // AUTOADDED
 //  { 0x6B58, "" },
 //  { 0x6B59, "" },
 //  { 0x6B5A, "" },
@@ -27572,7 +27572,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x6BA7, "fauxdeath" },
 //  { 0x6BA8, "" },
 //  { 0x6BA9, "" },
-//  { 0x6BAA, "" },
+    { 0x6BAA, "fauxvehiclecount" }, // AUTOADDED
 //  { 0x6BAB, "" },
 //  { 0x6BAC, "" },
 //  { 0x6BAD, "" },
@@ -27626,7 +27626,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6BDD, "" },
 //  { 0x6BDE, "" },
 //  { 0x6BDF, "" },
-//  { 0x6BE0, "" },
+    { 0x6BE0, "fighter_deathfx" }, // AUTOADDED
 //  { 0x6BE1, "" },
 //  { 0x6BE2, "" },
 //  { 0x6BE3, "" },
@@ -27761,7 +27761,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6C64, "" },
 //  { 0x6C65, "" },
 //  { 0x6C66, "" },
-//  { 0x6C67, "" },
+    { 0x6C67, "finalkillcam_killcamentityindex" }, // AUTOADDED
 //  { 0x6C68, "" },
 //  { 0x6C69, "" },
 //  { 0x6C6A, "" },
@@ -27769,7 +27769,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x6C6C, "finalkillcam_timegameended" },
     { 0x6C6D, "finalkillcam_timerecorded" },
 //  { 0x6C6E, "" },
-//  { 0x6C6F, "" },
+    { 0x6C6F, "finalkillcam_winner" }, // AUTOADDED
 //  { 0x6C70, "" },
 //  { 0x6C71, "" },
 //  { 0x6C72, "" },
@@ -27784,19 +27784,19 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6C7B, "" },
 //  { 0x6C7C, "" },
 //  { 0x6C7D, "" },
-//  { 0x6C7E, "" },
+    { 0x6C7E, "find_camp_node" }, // AUTOADDED
     { 0x6C7F, "find_camp_node_worker" },
 //  { 0x6C80, "" },
-//  { 0x6C81, "" },
+    { 0x6C81, "find_closest_heli_node_2d" }, // AUTOADDED
 //  { 0x6C82, "" },
-//  { 0x6C83, "" },
+    { 0x6C83, "find_cluster_rocket_for_bot" }, // AUTOADDED
 //  { 0x6C84, "" },
 //  { 0x6C85, "" },
-//  { 0x6C86, "" },
-//  { 0x6C87, "" },
-//  { 0x6C88, "" },
+    { 0x6C86, "find_defend_node_bodyguard" }, // AUTOADDED
+    { 0x6C87, "find_defend_node_capture" }, // AUTOADDED
+    { 0x6C88, "find_defend_node_capture_zone" }, // AUTOADDED
 //  { 0x6C89, "" },
-//  { 0x6C8A, "" },
+    { 0x6C8A, "find_defend_node_protect" }, // AUTOADDED
 //  { 0x6C8B, "" },
 //  { 0x6C8C, "" },
 //  { 0x6C8D, "" },
@@ -27847,7 +27847,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6CBA, "" },
 //  { 0x6CBB, "" },
 //  { 0x6CBC, "" },
-//  { 0x6CBD, "" },
+    { 0x6CBD, "findnewowner" }, // AUTOADDED
 //  { 0x6CBE, "" },
 //  { 0x6CBF, "" },
 //  { 0x6CC0, "" },
@@ -27855,13 +27855,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6CC2, "" },
 //  { 0x6CC3, "" },
 //  { 0x6CC4, "" },
-//  { 0x6CC5, "" },
+    { 0x6CC5, "findspawnlocationnearplayer" }, // AUTOADDED
 //  { 0x6CC6, "" },
 //  { 0x6CC7, "" },
 //  { 0x6CC8, "" },
-//  { 0x6CC9, "" },
-//  { 0x6CCA, "" },
-//  { 0x6CCB, "" },
+    { 0x6CC9, "findunobstructedfiringpoint" }, // AUTOADDED
+    { 0x6CCA, "findunobstructedfiringpointaroundy" }, // AUTOADDED
+    { 0x6CCB, "findunobstructedfiringpointaroundz" }, // AUTOADDED
 //  { 0x6CCC, "" },
 //  { 0x6CCD, "" },
     { 0x6CCE, "finish_creating_entity" },
@@ -28036,7 +28036,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6D77, "" },
     { 0x6D78, "firemortar" },
 //  { 0x6D79, "" },
-//  { 0x6D7A, "" },
+    { 0x6D7A, "fireontarget" }, // AUTOADDED
 //  { 0x6D7B, "" },
 //  { 0x6D7C, "" },
 //  { 0x6D7D, "" },
@@ -28152,7 +28152,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6DEB, "" },
 //  { 0x6DEC, "" },
 //  { 0x6DED, "" },
-//  { 0x6DEE, "" },
+    { 0x6DEE, "firsttimebomb" }, // AUTOADDED
     { 0x6DEF, "firsttimedamaged" },
 //  { 0x6DF0, "" },
 //  { 0x6DF1, "" },
@@ -28169,19 +28169,19 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6DFC, "" },
 //  { 0x6DFD, "" },
 //  { 0x6DFE, "" },
-//  { 0x6DFF, "" },
-//  { 0x6E00, "" },
+    { 0x6DFF, "fixarchetype" }, // AUTOADDED
+    { 0x6E00, "fixattachment" }, // AUTOADDED
 //  { 0x6E01, "" },
 //  { 0x6E02, "" },
 //  { 0x6E03, "" },
 //  { 0x6E04, "" },
 //  { 0x6E05, "" },
-//  { 0x6E06, "" },
+    { 0x6E06, "fixinvaliditems" }, // AUTOADDED
 //  { 0x6E07, "" },
 //  { 0x6E08, "" },
-//  { 0x6E09, "" },
+    { 0x6E09, "fixperk" }, // AUTOADDED
 //  { 0x6E0A, "" },
-//  { 0x6E0B, "" },
+    { 0x6E0B, "fixsuper" }, // AUTOADDED
 //  { 0x6E0C, "" },
 //  { 0x6E0D, "" },
 //  { 0x6E0E, "" },
@@ -28224,7 +28224,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6E33, "" },
     { 0x6E34, "flag_exist" },
 //  { 0x6E35, "" },
-//  { 0x6E36, "" },
+    { 0x6E36, "flag_find_ground" }, // AUTOADDED
 //  { 0x6E37, "" },
 //  { 0x6E38, "" },
     { 0x6E39, "flag_init" },
@@ -28269,14 +28269,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6E60, "" },
 //  { 0x6E61, "" },
 //  { 0x6E62, "" },
-//  { 0x6E63, "" },
+    { 0x6E63, "flagbaseglowfxid" }, // AUTOADDED
 //  { 0x6E64, "" },
 //  { 0x6E65, "" },
 //  { 0x6E66, "" },
 //  { 0x6E67, "" },
 //  { 0x6E68, "" },
-//  { 0x6E69, "" },
-//  { 0x6E6A, "" },
+    { 0x6E69, "flagownersalive" }, // AUTOADDED
+    { 0x6E6A, "flagradiusfxid" }, // AUTOADDED
 //  { 0x6E6B, "" },
 //  { 0x6E6C, "" },
 //  { 0x6E6D, "" },
@@ -28374,7 +28374,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6EC9, "" },
     { 0x6ECA, "flashendtime" },
 //  { 0x6ECB, "" },
-//  { 0x6ECC, "" },
+    { 0x6ECC, "flashfrac" }, // AUTOADDED
 //  { 0x6ECD, "" },
 //  { 0x6ECE, "" },
 //  { 0x6ECF, "" },
@@ -28392,7 +28392,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6EDB, "" },
 //  { 0x6EDC, "" },
 //  { 0x6EDD, "" },
-//  { 0x6EDE, "" },
+    { 0x6EDE, "flashthread" }, // AUTOADDED
 //  { 0x6EDF, "" },
 //  { 0x6EE0, "" },
     { 0x6EE1, "flat_angle" },
@@ -28542,11 +28542,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x6F71, "" },
 //  { 0x6F72, "" },
 //  { 0x6F73, "" },
-//  { 0x6F74, "" },
+    { 0x6F74, "flushmidmatchawardqueue" }, // AUTOADDED
 //  { 0x6F75, "" },
 //  { 0x6F76, "" },
 //  { 0x6F77, "" },
-//  { 0x6F78, "" },
+    { 0x6F78, "flushscorepointspopupqueue" }, // AUTOADDED
 //  { 0x6F79, "" },
 //  { 0x6F7A, "" },
 //  { 0x6F7B, "" },
@@ -29273,9 +29273,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x724C, "" },
 //  { 0x724D, "" },
 //  { 0x724E, "" },
-//  { 0x724F, "" },
+    { 0x724F, "fontheight" }, // AUTOADDED
     { 0x7250, "fontpulse" },
-//  { 0x7251, "" },
+    { 0x7251, "fontpulseinit" }, // AUTOADDED
 //  { 0x7252, "" },
 //  { 0x7253, "" },
 //  { 0x7254, "" },
@@ -29375,7 +29375,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x72B2, "" },
 //  { 0x72B3, "" },
 //  { 0x72B4, "" },
-//  { 0x72B5, "" },
+    { 0x72B5, "forcedisable" }, // AUTOADDED
 //  { 0x72B6, "" },
 //  { 0x72B7, "" },
 //  { 0x72B8, "" },
@@ -29445,7 +29445,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x72F8, "" },
 //  { 0x72F9, "" },
 //  { 0x72FA, "" },
-//  { 0x72FB, "" },
+    { 0x72FB, "forgetpassives" }, // AUTOADDED
 //  { 0x72FC, "" },
 //  { 0x72FD, "" },
 //  { 0x72FE, "" },
@@ -29523,7 +29523,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7346, "" },
 //  { 0x7347, "" },
 //  { 0x7348, "" },
-//  { 0x7349, "" },
+    { 0x7349, "frac" }, // AUTOADDED
 //  { 0x734A, "" },
 //  { 0x734B, "" },
 //  { 0x734C, "" },
@@ -29544,7 +29544,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x735B, "frame_events" },
 //  { 0x735C, "" },
 //  { 0x735D, "" },
-//  { 0x735E, "" },
+    { 0x735E, "frames_visible" }, // AUTOADDED
 //  { 0x735F, "" },
 //  { 0x7360, "" },
 //  { 0x7361, "" },
@@ -29561,7 +29561,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x736C, "" },
 //  { 0x736D, "" },
 //  { 0x736E, "" },
-//  { 0x736F, "" },
+    { 0x736F, "freegameplayhudelems" }, // AUTOADDED
 //  { 0x7370, "" },
 //  { 0x7371, "" },
 //  { 0x7372, "" },
@@ -29708,15 +29708,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x73FF, "" },
 //  { 0x7400, "" },
 //  { 0x7401, "" },
-//  { 0x7402, "" },
-//  { 0x7403, "" },
+    { 0x7402, "friendlybasewatcher" }, // AUTOADDED
+    { 0x7403, "friendlybrush" }, // AUTOADDED
 //  { 0x7404, "" },
 //  { 0x7405, "" },
 //  { 0x7406, "" },
 //  { 0x7407, "" },
 //  { 0x7408, "" },
 //  { 0x7409, "" },
-//  { 0x740A, "" },
+    { 0x740A, "friendlyfire" }, // AUTOADDED
 //  { 0x740B, "" },
 //  { 0x740C, "" },
 //  { 0x740D, "" },
@@ -29727,7 +29727,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7412, "" },
 //  { 0x7413, "" },
 //  { 0x7414, "" },
-//  { 0x7415, "" },
+    { 0x7415, "friendlyfirecheck" }, // AUTOADDED
 //  { 0x7416, "" },
 //  { 0x7417, "" },
 //  { 0x7418, "" },
@@ -29735,14 +29735,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x741A, "" },
 //  { 0x741B, "" },
 //  { 0x741C, "" },
-//  { 0x741D, "" },
+    { 0x741D, "friendlymodel" }, // AUTOADDED
 //  { 0x741E, "" },
 //  { 0x741F, "" },
 //  { 0x7420, "" },
 //  { 0x7421, "" },
 //  { 0x7422, "" },
 //  { 0x7423, "" },
-//  { 0x7424, "" },
+    { 0x7424, "friendlyteamid" }, // AUTOADDED
 //  { 0x7425, "" },
 //  { 0x7426, "" },
 //  { 0x7427, "" },
@@ -29901,7 +29901,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x74C0, "" },
 //  { 0x74C1, "" },
     { 0x74C2, "func" },
-//  { 0x74C3, "" },
+    { 0x74C3, "func_bot_get_closest_navigable_point" }, // AUTOADDED
 //  { 0x74C4, "" },
 //  { 0x74C5, "" },
 //  { 0x74C6, "" },
@@ -29909,7 +29909,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x74C8, "" },
 //  { 0x74C9, "" },
 //  { 0x74CA, "" },
-//  { 0x74CB, "" },
+    { 0x74CB, "func_glass_handler" }, // AUTOADDED
 //  { 0x74CC, "" },
 //  { 0x74CD, "" },
     { 0x74CE, "func_player_speed" },
@@ -30031,10 +30031,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x7542, "fx" },
 //  { 0x7543, "" },
 //  { 0x7544, "" },
-//  { 0x7545, "" },
-//  { 0x7546, "" },
-//  { 0x7547, "" },
-//  { 0x7548, "" },
+    { 0x7545, "fx_airstrike_afterburner" }, // AUTOADDED
+    { 0x7546, "fx_airstrike_contrail" }, // AUTOADDED
+    { 0x7547, "fx_airstrike_wingtip_light_green" }, // AUTOADDED
+    { 0x7548, "fx_airstrike_wingtip_light_red" }, // AUTOADDED
 //  { 0x7549, "" },
 //  { 0x754A, "" },
 //  { 0x754B, "" },
@@ -30287,7 +30287,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x7642, "fxstop" },
 //  { 0x7643, "" },
 //  { 0x7644, "" },
-//  { 0x7645, "" },
+    { 0x7645, "fxtime" }, // AUTOADDED
 //  { 0x7646, "" },
 //  { 0x7647, "" },
 //  { 0x7648, "" },
@@ -30323,7 +30323,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7666, "" },
 //  { 0x7667, "" },
 //  { 0x7668, "" },
-//  { 0x7669, "" },
+    { 0x7669, "gameended" }, // AUTOADDED
 //  { 0x766A, "" },
 //  { 0x766B, "" },
 //  { 0x766C, "" },
@@ -30347,15 +30347,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x767E, "" },
 //  { 0x767F, "" },
 //  { 0x7680, "" },
-//  { 0x7681, "" },
+    { 0x7681, "gamescoreevent" }, // AUTOADDED
 //  { 0x7682, "" },
 //  { 0x7683, "" },
 //  { 0x7684, "" },
 //  { 0x7685, "" },
 //  { 0x7686, "" },
 //  { 0x7687, "" },
-//  { 0x7688, "" },
-//  { 0x7689, "" },
+    { 0x7688, "gametimerbeeps" }, // AUTOADDED
+    { 0x7689, "gametweaks" }, // AUTOADDED
     { 0x768A, "gametype" },
 //  { 0x768B, "" },
 //  { 0x768C, "" },
@@ -30464,7 +30464,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x76F3, "" },
 //  { 0x76F4, "" },
 //  { 0x76F5, "" },
-//  { 0x76F6, "" },
+    { 0x76F6, "gathergroups" }, // AUTOADDED
 //  { 0x76F7, "" },
 //  { 0x76F8, "" },
 //  { 0x76F9, "" },
@@ -30686,7 +30686,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x77D1, "" },
 //  { 0x77D2, "" },
 //  { 0x77D3, "" },
-//  { 0x77D4, "" },
+    { 0x77D4, "get_adjusted_armor" }, // AUTOADDED
 //  { 0x77D5, "" },
 //  { 0x77D6, "" },
 //  { 0x77D7, "" },
@@ -30730,10 +30730,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x77FD, "" },
 //  { 0x77FE, "" },
 //  { 0x77FF, "" },
-//  { 0x7800, "" },
+    { 0x7800, "get_all_connected_nodes" }, // AUTOADDED
 //  { 0x7801, "" },
 //  { 0x7802, "" },
-//  { 0x7803, "" },
+    { 0x7803, "get_all_my_locations" }, // AUTOADDED
 //  { 0x7804, "" },
 //  { 0x7805, "" },
 //  { 0x7806, "" },
@@ -30824,7 +30824,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x785B, "" },
 //  { 0x785C, "" },
 //  { 0x785D, "" },
-//  { 0x785E, "" },
+    { 0x785E, "get_best_area_attack_node" }, // AUTOADDED
 //  { 0x785F, "" },
 //  { 0x7860, "" },
 //  { 0x7861, "" },
@@ -31119,7 +31119,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7982, "" },
 //  { 0x7983, "" },
     { 0x7984, "get_enemy_team" },
-//  { 0x7985, "" },
+    { 0x7985, "get_enemy_vanguard" }, // AUTOADDED
 //  { 0x7986, "" },
 //  { 0x7987, "" },
 //  { 0x7988, "" },
@@ -31155,7 +31155,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x79A6, "" },
     { 0x79A7, "get_exploder_array_proc" },
 //  { 0x79A8, "" },
-//  { 0x79A9, "" },
+    { 0x79A9, "get_extended_path" }, // AUTOADDED
 //  { 0x79AA, "" },
 //  { 0x79AB, "" },
 //  { 0x79AC, "" },
@@ -31995,7 +31995,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7CEE, "" },
 //  { 0x7CEF, "" },
 //  { 0x7CF0, "" },
-    { 0x7CF1, "get_template_script_MAYBE" }, // returns level.script or level.template_script
+    { 0x7CF1, "get_template_script_MAYBE" },
 //  { 0x7CF2, "" },
 //  { 0x7CF3, "" },
 //  { 0x7CF4, "" },
@@ -32085,7 +32085,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7D48, "" },
 //  { 0x7D49, "" },
 //  { 0x7D4A, "" },
-//  { 0x7D4B, "" },
+    { 0x7D4B, "get_visible_nodes_array" }, // AUTOADDED
 //  { 0x7D4C, "" },
 //  { 0x7D4D, "" },
 //  { 0x7D4E, "" },
@@ -32158,8 +32158,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7D91, "" },
 //  { 0x7D92, "" },
 //  { 0x7D93, "" },
-//  { 0x7D94, "" },
-//  { 0x7D95, "" },
+    { 0x7D94, "getactiveagentsofspecies" }, // AUTOADDED
+    { 0x7D95, "getactiveagentsoftype" }, // AUTOADDED
 //  { 0x7D96, "" },
 //  { 0x7D97, "" },
 //  { 0x7D98, "" },
@@ -32185,8 +32185,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7DAC, "" },
 //  { 0x7DAD, "" },
 //  { 0x7DAE, "" },
-//  { 0x7DAF, "" },
-//  { 0x7DB0, "" },
+    { 0x7DAF, "getaliveagents" }, // AUTOADDED
+    { 0x7DB0, "getaliveagentsofteam" }, // AUTOADDED
 //  { 0x7DB1, "" },
 //  { 0x7DB2, "" },
 //  { 0x7DB3, "" },
@@ -32234,7 +32234,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7DDD, "" },
 //  { 0x7DDE, "" },
 //  { 0x7DDF, "" },
-//  { 0x7DE0, "" },
+    { 0x7DE0, "getattachmentloadoutstring" }, // AUTOADDED
 //  { 0x7DE1, "" },
 //  { 0x7DE2, "" },
 //  { 0x7DE3, "" },
@@ -32252,13 +32252,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7DEF, "" },
 //  { 0x7DF0, "" },
 //  { 0x7DF1, "" },
-//  { 0x7DF2, "" },
+    { 0x7DF2, "getballorigin" }, // AUTOADDED
 //  { 0x7DF3, "" },
 //  { 0x7DF4, "" },
 //  { 0x7DF5, "" },
 //  { 0x7DF6, "" },
 //  { 0x7DF7, "" },
-//  { 0x7DF8, "" },
+    { 0x7DF8, "getbattleslideoffensedamage" }, // AUTOADDED
 //  { 0x7DF9, "" },
 //  { 0x7DFA, "" },
 //  { 0x7DFB, "" },
@@ -32288,14 +32288,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7E13, "" },
 //  { 0x7E14, "" },
 //  { 0x7E15, "" },
-//  { 0x7E16, "" },
+    { 0x7E16, "getcameravecorang" }, // AUTOADDED
 //  { 0x7E17, "" },
-//  { 0x7E18, "" },
+    { 0x7E18, "getcannedresponse" }, // AUTOADDED
 //  { 0x7E19, "" },
-//  { 0x7E1A, "" },
+    { 0x7E1A, "getcapxpscale" }, // AUTOADDED
 //  { 0x7E1B, "" },
 //  { 0x7E1C, "" },
-//  { 0x7E1D, "" },
+    { 0x7E1D, "getcenterpoint" }, // AUTOADDED
 //  { 0x7E1E, "" },
 //  { 0x7E1F, "" },
 //  { 0x7E20, "" },
@@ -32308,10 +32308,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7E27, "" },
 //  { 0x7E28, "" },
 //  { 0x7E29, "" },
-//  { 0x7E2A, "" },
+    { 0x7E2A, "getclasschoice" }, // AUTOADDED
 //  { 0x7E2B, "" },
 //  { 0x7E2C, "" },
-//  { 0x7E2D, "" },
+    { 0x7E2D, "getclosenoderadiusdist" }, // AUTOADDED
     { 0x7E2E, "getclosest" },
 //  { 0x7E2F, "" },
 //  { 0x7E30, "" },
@@ -32328,7 +32328,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7E3B, "" },
 //  { 0x7E3C, "" },
 //  { 0x7E3D, "" },
-//  { 0x7E3E, "" },
+    { 0x7E3E, "getcorrectheight" }, // AUTOADDED
     { 0x7E3F, "getcover3dnodeoffset" },
 //  { 0x7E40, "" },
 //  { 0x7E41, "" },
@@ -32342,10 +32342,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7E49, "" },
 //  { 0x7E4A, "" },
 //  { 0x7E4B, "" },
-//  { 0x7E4C, "" },
+    { 0x7E4C, "getcurrentfraction" }, // AUTOADDED
 //  { 0x7E4D, "" },
-//  { 0x7E4E, "" },
-//  { 0x7E4F, "" },
+    { 0x7E4E, "getcurrentsuper" }, // AUTOADDED
+    { 0x7E4F, "getcurrentsuperref" }, // AUTOADDED
 //  { 0x7E50, "" },
 //  { 0x7E51, "" },
 //  { 0x7E52, "" },
@@ -32431,7 +32431,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7EA2, "" },
 //  { 0x7EA3, "" },
 //  { 0x7EA4, "" },
-//  { 0x7EA5, "" },
+    { 0x7EA5, "getexplodedistance" }, // AUTOADDED
     { 0x7EA6, "getexploderdelaydefault" },
 //  { 0x7EA7, "" },
 //  { 0x7EA8, "" },
@@ -32445,26 +32445,26 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7EB0, "" },
 //  { 0x7EB1, "" },
 //  { 0x7EB2, "" },
-//  { 0x7EB3, "" },
+    { 0x7EB3, "getfarnoderadiusdist" }, // AUTOADDED
 //  { 0x7EB4, "" },
 //  { 0x7EB5, "" },
 //  { 0x7EB6, "" },
 //  { 0x7EB7, "" },
 //  { 0x7EB8, "" },
-//  { 0x7EB9, "" },
-//  { 0x7EBA, "" },
+    { 0x7EB9, "getflagcount" }, // AUTOADDED
+    { 0x7EBA, "getflagpos" }, // AUTOADDED
 //  { 0x7EBB, "" },
 //  { 0x7EBC, "" },
 //  { 0x7EBD, "" },
-//  { 0x7EBE, "" },
+    { 0x7EBE, "getflightpath" }, // AUTOADDED
 //  { 0x7EBF, "" },
 //  { 0x7EC0, "" },
 //  { 0x7EC1, "" },
 //  { 0x7EC2, "" },
 //  { 0x7EC3, "" },
 //  { 0x7EC4, "" },
-//  { 0x7EC5, "" },
-//  { 0x7EC6, "" },
+    { 0x7EC5, "getfreeagent" }, // AUTOADDED
+    { 0x7EC6, "getfreeagentcount" }, // AUTOADDED
 //  { 0x7EC7, "" },
 //  { 0x7EC8, "" },
 //  { 0x7EC9, "" },
@@ -32485,7 +32485,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7ED8, "" },
 //  { 0x7ED9, "" },
 //  { 0x7EDA, "" },
-//  { 0x7EDB, "" },
+    { 0x7EDB, "getglobalweaponrankxpmultiplier" }, // AUTOADDED
 //  { 0x7EDC, "" },
 //  { 0x7EDD, "" },
 //  { 0x7EDE, "" },
@@ -32514,22 +32514,22 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7EF5, "" },
 //  { 0x7EF6, "" },
 //  { 0x7EF7, "" },
-//  { 0x7EF8, "" },
+    { 0x7EF8, "getheavyarmor" }, // AUTOADDED
 //  { 0x7EF9, "" },
 //  { 0x7EFA, "" },
 //  { 0x7EFB, "" },
 //  { 0x7EFC, "" },
 //  { 0x7EFD, "" },
 //  { 0x7EFE, "" },
-//  { 0x7EFF, "" },
-//  { 0x7F00, "" },
+    { 0x7EFF, "gethighestprogressedplayers" }, // AUTOADDED
+    { 0x7F00, "gethighestscoringplayer" }, // AUTOADDED
 //  { 0x7F01, "" },
-//  { 0x7F02, "" },
-//  { 0x7F03, "" },
+    { 0x7F02, "gethitlocheight" }, // AUTOADDED
+    { 0x7F03, "gethitmarkerpriority" }, // AUTOADDED
 //  { 0x7F04, "" },
 //  { 0x7F05, "" },
 //  { 0x7F06, "" },
-//  { 0x7F07, "" },
+    { 0x7F07, "gethostplayer" }, // AUTOADDED
 //  { 0x7F08, "" },
 //  { 0x7F09, "" },
 //  { 0x7F0A, "" },
@@ -32546,7 +32546,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7F15, "" },
 //  { 0x7F16, "" },
 //  { 0x7F17, "" },
-//  { 0x7F18, "" },
+    { 0x7F18, "getindexfromhitloc" }, // AUTOADDED
 //  { 0x7F19, "" },
 //  { 0x7F1A, "" },
     { 0x7F1B, "getintervalsounddelaymaxdefault" },
@@ -32556,7 +32556,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7F1F, "" },
 //  { 0x7F20, "" },
 //  { 0x7F21, "" },
-//  { 0x7F22, "" },
+    { 0x7F22, "getitemweaponname" }, // AUTOADDED
 //  { 0x7F23, "" },
     { 0x7F24, "getjointeampermissions" },
 //  { 0x7F25, "" },
@@ -32602,14 +32602,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7F4D, "" },
 //  { 0x7F4E, "" },
 //  { 0x7F4F, "" },
-//  { 0x7F50, "" },
+    { 0x7F50, "getkillstreaksetupinfo" }, // AUTOADDED
 //  { 0x7F51, "" },
 //  { 0x7F52, "" },
 //  { 0x7F53, "" },
 //  { 0x7F54, "" },
 //  { 0x7F55, "" },
 //  { 0x7F56, "" },
-//  { 0x7F57, "" },
+    { 0x7F57, "getkothzonedeadzonedist" }, // AUTOADDED
 //  { 0x7F58, "" },
 //  { 0x7F59, "" },
 //  { 0x7F5A, "" },
@@ -32637,23 +32637,23 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7F70, "" },
 //  { 0x7F71, "" },
 //  { 0x7F72, "" },
-//  { 0x7F73, "" },
+    { 0x7F73, "getlightarmorvalue" }, // AUTOADDED
 //  { 0x7F74, "" },
 //  { 0x7F75, "" },
 //  { 0x7F76, "" },
 //  { 0x7F77, "" },
 //  { 0x7F78, "" },
 //  { 0x7F79, "" },
-//  { 0x7F7A, "" },
+    { 0x7F7A, "getlivingplayers" }, // AUTOADDED
 //  { 0x7F7B, "" },
-//  { 0x7F7C, "" },
+    { 0x7F7C, "getloadoutstreaktypefromstreaktype" }, // AUTOADDED
 //  { 0x7F7D, "" },
 //  { 0x7F7E, "" },
 //  { 0x7F7F, "" },
 //  { 0x7F80, "" },
     { 0x7F81, "getloopeffectdelaydefault" },
 //  { 0x7F82, "" },
-//  { 0x7F83, "" },
+    { 0x7F83, "getlosingplayers" }, // AUTOADDED
 //  { 0x7F84, "" },
 //  { 0x7F85, "" },
 //  { 0x7F86, "" },
@@ -32665,16 +32665,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7F8C, "" },
 //  { 0x7F8D, "" },
 //  { 0x7F8E, "" },
-//  { 0x7F8F, "" },
+    { 0x7F8F, "getmatchbonusspm" }, // AUTOADDED
 //  { 0x7F90, "" },
-//  { 0x7F91, "" },
+    { 0x7F91, "getmatchrulesdatawithteamandindex" }, // AUTOADDED
 //  { 0x7F92, "" },
 //  { 0x7F93, "" },
 //  { 0x7F94, "" },
 //  { 0x7F95, "" },
-//  { 0x7F96, "" },
+    { 0x7F96, "getmaxattachments" }, // AUTOADDED
 //  { 0x7F97, "" },
-//  { 0x7F98, "" },
+    { 0x7F98, "getmaxdistancetolos" }, // AUTOADDED
 //  { 0x7F99, "" },
 //  { 0x7F9A, "" },
 //  { 0x7F9B, "" },
@@ -32682,12 +32682,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7F9D, "" },
 //  { 0x7F9E, "" },
 //  { 0x7F9F, "" },
-//  { 0x7FA0, "" },
+    { 0x7FA0, "getmaxprimaryattachments" }, // AUTOADDED
 //  { 0x7FA1, "" },
 //  { 0x7FA2, "" },
 //  { 0x7FA3, "" },
-//  { 0x7FA4, "" },
-//  { 0x7FA5, "" },
+    { 0x7FA4, "getmaxweaponrank" }, // AUTOADDED
+    { 0x7FA5, "getmaxweaponrankforrootweapon" }, // AUTOADDED
 //  { 0x7FA6, "" },
 //  { 0x7FA7, "" },
 //  { 0x7FA8, "" },
@@ -32707,7 +32707,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7FB6, "" },
 //  { 0x7FB7, "" },
 //  { 0x7FB8, "" },
-//  { 0x7FB9, "" },
+    { 0x7FB9, "getminutespassed" }, // AUTOADDED
 //  { 0x7FBA, "" },
 //  { 0x7FBB, "" },
 //  { 0x7FBC, "" },
@@ -32748,12 +32748,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x7FDF, "" },
 //  { 0x7FE0, "" },
 //  { 0x7FE1, "" },
-//  { 0x7FE2, "" },
+    { 0x7FE2, "getnewpoint" }, // AUTOADDED
 //  { 0x7FE3, "" },
 //  { 0x7FE4, "" },
 //  { 0x7FE5, "" },
 //  { 0x7FE6, "" },
-//  { 0x7FE7, "" },
+    { 0x7FE7, "getnextmissilespawnindex" }, // AUTOADDED
 //  { 0x7FE8, "" },
 //  { 0x7FE9, "" },
 //  { 0x7FEA, "" },
@@ -32777,7 +32777,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x7FFC, "getnodeoffset" },
 //  { 0x7FFD, "" },
 //  { 0x7FFE, "" },
-//  { 0x7FFF, "" },
+    { 0x7FFF, "getnodetypename" }, // AUTOADDED
 //  { 0x8000, "" },
 //  { 0x8001, "" },
     { 0x8002, "getnodeyawtoenemy" },
@@ -32786,7 +32786,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8005, "" },
 //  { 0x8006, "" },
 //  { 0x8007, "" },
-//  { 0x8008, "" },
+    { 0x8008, "getnumactiveagents" }, // AUTOADDED
 //  { 0x8009, "" },
 //  { 0x800A, "" },
 //  { 0x800B, "" },
@@ -32794,21 +32794,21 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x800D, "" },
 //  { 0x800E, "" },
 //  { 0x800F, "" },
-//  { 0x8010, "" },
+    { 0x8010, "getnumownedactiveagents" }, // AUTOADDED
 //  { 0x8011, "" },
 //  { 0x8012, "" },
-//  { 0x8013, "" },
+    { 0x8013, "getnumownedjackals" }, // AUTOADDED
 //  { 0x8014, "" },
 //  { 0x8015, "" },
 //  { 0x8016, "" },
 //  { 0x8017, "" },
 //  { 0x8018, "" },
 //  { 0x8019, "" },
-//  { 0x801A, "" },
-//  { 0x801B, "" },
-//  { 0x801C, "" },
-//  { 0x801D, "" },
-//  { 0x801E, "" },
+    { 0x801A, "getobjectivehinttext" }, // AUTOADDED
+    { 0x801B, "getobjectivescoretext" }, // AUTOADDED
+    { 0x801C, "getobjectivetext" }, // AUTOADDED
+    { 0x801D, "getobjpointbyindex" }, // AUTOADDED
+    { 0x801E, "getobjpointbyname" }, // AUTOADDED
 //  { 0x801F, "" },
 //  { 0x8020, "" },
 //  { 0x8021, "" },
@@ -32816,7 +32816,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8023, "" },
 //  { 0x8024, "" },
 //  { 0x8025, "" },
-//  { 0x8026, "" },
+    { 0x8026, "getothermode" }, // AUTOADDED
 //  { 0x8027, "" },
 //  { 0x8028, "" },
 //  { 0x8029, "" },
@@ -32839,9 +32839,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x803A, "" },
 //  { 0x803B, "" },
 //  { 0x803C, "" },
-//  { 0x803D, "" },
+    { 0x803D, "getowneddomflags" }, // AUTOADDED
 //  { 0x803E, "" },
-//  { 0x803F, "" },
+    { 0x803F, "getownerteamplayer" }, // AUTOADDED
 //  { 0x8040, "" },
 //  { 0x8041, "" },
 //  { 0x8042, "" },
@@ -32855,14 +32855,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x804A, "" },
 //  { 0x804B, "" },
 //  { 0x804C, "" },
-//  { 0x804D, "" },
-//  { 0x804E, "" },
+    { 0x804D, "getpassivestruct" }, // AUTOADDED
+    { 0x804E, "getpassivevalue" }, // AUTOADDED
 //  { 0x804F, "" },
 //  { 0x8050, "" },
-//  { 0x8051, "" },
+    { 0x8051, "getpathend" }, // AUTOADDED
 //  { 0x8052, "" },
-//  { 0x8053, "" },
-//  { 0x8054, "" },
+    { 0x8053, "getpathsighttestnodes" }, // AUTOADDED
+    { 0x8054, "getpathstart" }, // AUTOADDED
 //  { 0x8055, "" },
 //  { 0x8056, "" },
 //  { 0x8057, "" },
@@ -32892,14 +32892,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x806F, "" },
 //  { 0x8070, "" },
 //  { 0x8071, "" },
-//  { 0x8072, "" },
+    { 0x8072, "getplayerfromclientnum" }, // AUTOADDED
 //  { 0x8073, "" },
 //  { 0x8074, "" },
 //  { 0x8075, "" },
 //  { 0x8076, "" },
 //  { 0x8077, "" },
 //  { 0x8078, "" },
-//  { 0x8079, "" },
+    { 0x8079, "getplayermodelname" }, // AUTOADDED
 //  { 0x807A, "" },
 //  { 0x807B, "" },
 //  { 0x807C, "" },
@@ -32909,10 +32909,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8080, "" },
 //  { 0x8081, "" },
 //  { 0x8082, "" },
-//  { 0x8083, "" },
+    { 0x8083, "getplayertraceheight" }, // AUTOADDED
 //  { 0x8084, "" },
-//  { 0x8085, "" },
-//  { 0x8086, "" },
+    { 0x8085, "getplayerweaponrank" }, // AUTOADDED
+    { 0x8086, "getplayerweaponrankxp" }, // AUTOADDED
 //  { 0x8087, "" },
 //  { 0x8088, "" },
 //  { 0x8089, "" },
@@ -32935,27 +32935,27 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x809A, "" },
 //  { 0x809B, "" },
 //  { 0x809C, "" },
-//  { 0x809D, "" },
+    { 0x809D, "getprioritywaittime" }, // AUTOADDED
 //  { 0x809E, "" },
 //  { 0x809F, "" },
 //  { 0x80A0, "" },
 //  { 0x80A1, "" },
 //  { 0x80A2, "" },
-//  { 0x80A3, "" },
+    { 0x80A3, "getqacalloutalias" }, // AUTOADDED
     { 0x80A4, "getquadrant" },
 //  { 0x80A5, "" },
 //  { 0x80A6, "" },
 //  { 0x80A7, "" },
 //  { 0x80A8, "" },
 //  { 0x80A9, "" },
-//  { 0x80AA, "" },
+    { 0x80AA, "getradiuspathsighttestnodes" }, // AUTOADDED
 //  { 0x80AB, "" },
 //  { 0x80AC, "" },
 //  { 0x80AD, "" },
 //  { 0x80AE, "" },
 //  { 0x80AF, "" },
 //  { 0x80B0, "" },
-//  { 0x80B1, "" },
+    { 0x80B1, "getrandomattachments" }, // AUTOADDED
 //  { 0x80B2, "" },
 //  { 0x80B3, "" },
 //  { 0x80B4, "" },
@@ -32970,26 +32970,26 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x80BD, "" },
 //  { 0x80BE, "" },
 //  { 0x80BF, "" },
-//  { 0x80C0, "" },
+    { 0x80C0, "getrandompoint" }, // AUTOADDED
 //  { 0x80C1, "" },
 //  { 0x80C2, "" },
 //  { 0x80C3, "" },
 //  { 0x80C4, "" },
-//  { 0x80C5, "" },
+    { 0x80C5, "getrandomweapon" }, // AUTOADDED
 //  { 0x80C6, "" },
 //  { 0x80C7, "" },
-//  { 0x80C8, "" },
+    { 0x80C8, "getrank" }, // AUTOADDED
 //  { 0x80C9, "" },
 //  { 0x80CA, "" },
-//  { 0x80CB, "" },
-//  { 0x80CC, "" },
-//  { 0x80CD, "" },
+    { 0x80CB, "getrankinfofull" }, // AUTOADDED
+    { 0x80CC, "getrankinfoicon" }, // AUTOADDED
+    { 0x80CD, "getrankinfolevel" }, // AUTOADDED
 //  { 0x80CE, "" },
     { 0x80CF, "getrankinfominxp" },
 //  { 0x80D0, "" },
     { 0x80D1, "getrankinfoxpamt" },
-//  { 0x80D2, "" },
-//  { 0x80D3, "" },
+    { 0x80D2, "getrankxp" }, // AUTOADDED
+    { 0x80D3, "getrankxpmultiplier" }, // AUTOADDED
 //  { 0x80D4, "" },
 //  { 0x80D5, "" },
 //  { 0x80D6, "" },
@@ -33004,14 +33004,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x80DF, "" },
 //  { 0x80E0, "" },
 //  { 0x80E1, "" },
-//  { 0x80E2, "" },
+    { 0x80E2, "getrecoilreductionvalue" }, // AUTOADDED
 //  { 0x80E3, "" },
 //  { 0x80E4, "" },
 //  { 0x80E5, "" },
-//  { 0x80E6, "" },
+    { 0x80E6, "getrelativeteam" }, // AUTOADDED
 //  { 0x80E7, "" },
 //  { 0x80E8, "" },
-//  { 0x80E9, "" },
+    { 0x80E9, "getrespawndelay" }, // AUTOADDED
 //  { 0x80EA, "" },
 //  { 0x80EB, "" },
 //  { 0x80EC, "" },
@@ -33021,28 +33021,28 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x80F0, "" },
 //  { 0x80F1, "" },
 //  { 0x80F2, "" },
-//  { 0x80F3, "" },
+    { 0x80F3, "getrigindexfromarchetyperef" }, // AUTOADDED
 //  { 0x80F4, "" },
 //  { 0x80F5, "" },
-//  { 0x80F6, "" },
+    { 0x80F6, "getrootsuperref" }, // AUTOADDED
 //  { 0x80F7, "" },
 //  { 0x80F8, "" },
-//  { 0x80F9, "" },
+    { 0x80F9, "getroundswon" }, // AUTOADDED
 //  { 0x80FA, "" },
 //  { 0x80FB, "" },
 //  { 0x80FC, "" },
 //  { 0x80FD, "" },
 //  { 0x80FE, "" },
-//  { 0x80FF, "" },
+    { 0x80FF, "getsantizedhealth" }, // AUTOADDED
 //  { 0x8100, "" },
 //  { 0x8101, "" },
     { 0x8102, "getscoreinfocategory" },
 //  { 0x8103, "" },
     { 0x8104, "getscoreinfovalue" },
-//  { 0x8105, "" },
-//  { 0x8106, "" },
-//  { 0x8107, "" },
-//  { 0x8108, "" },
+    { 0x8105, "getscorelimit" }, // AUTOADDED
+    { 0x8106, "getscoreperminute" }, // AUTOADDED
+    { 0x8107, "getscoreperminuteroundbased" }, // AUTOADDED
+    { 0x8108, "getscoreremaining" }, // AUTOADDED
 //  { 0x8109, "" },
 //  { 0x810A, "" },
 //  { 0x810B, "" },
@@ -33094,14 +33094,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8139, "" },
 //  { 0x813A, "" },
 //  { 0x813B, "" },
-//  { 0x813C, "" },
+    { 0x813C, "getspawnpoint_random" }, // AUTOADDED
 //  { 0x813D, "" },
 //  { 0x813E, "" },
     { 0x813F, "getspawnpoint_startspawn" },
     { 0x8140, "getspawnpointarray" },
-//  { 0x8141, "" },
+    { 0x8141, "getspawnpointdist" }, // AUTOADDED
 //  { 0x8142, "" },
-//  { 0x8143, "" },
+    { 0x8143, "getspawnteam" }, // AUTOADDED
 //  { 0x8144, "" },
 //  { 0x8145, "" },
 //  { 0x8146, "" },
@@ -33109,16 +33109,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8148, "" },
 //  { 0x8149, "" },
 //  { 0x814A, "" },
-//  { 0x814B, "" },
+    { 0x814B, "getsplashtablename" }, // AUTOADDED
 //  { 0x814C, "" },
 //  { 0x814D, "" },
 //  { 0x814E, "" },
 //  { 0x814F, "" },
 //  { 0x8150, "" },
 //  { 0x8151, "" },
-//  { 0x8152, "" },
+    { 0x8152, "getstackcount" }, // AUTOADDED
 //  { 0x8153, "" },
-//  { 0x8154, "" },
+    { 0x8154, "getstackvalues" }, // AUTOADDED
 //  { 0x8155, "" },
 //  { 0x8156, "" },
 //  { 0x8157, "" },
@@ -33179,7 +33179,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x818E, "" },
 //  { 0x818F, "" },
 //  { 0x8190, "" },
-//  { 0x8191, "" },
+    { 0x8191, "gettag" }, // AUTOADDED
 //  { 0x8192, "" },
 //  { 0x8193, "" },
 //  { 0x8194, "" },
@@ -33201,7 +33201,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x81A4, "" },
 //  { 0x81A5, "" },
 //  { 0x81A6, "" },
-//  { 0x81A7, "" },
+    { 0x81A7, "getteamdompoints" }, // AUTOADDED
 //  { 0x81A8, "" },
 //  { 0x81A9, "" },
 //  { 0x81AA, "" },
@@ -33234,14 +33234,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x81C5, "" },
 //  { 0x81C6, "" },
 //  { 0x81C7, "" },
-//  { 0x81C8, "" },
+    { 0x81C8, "gettimefrommatchstart" }, // AUTOADDED
 //  { 0x81C9, "" },
 //  { 0x81CA, "" },
 //  { 0x81CB, "" },
 //  { 0x81CC, "" },
 //  { 0x81CD, "" },
 //  { 0x81CE, "" },
-//  { 0x81CF, "" },
+    { 0x81CF, "gettimesincedompointcapture" }, // AUTOADDED
 //  { 0x81D0, "" },
 //  { 0x81D1, "" },
 //  { 0x81D2, "" },
@@ -33263,7 +33263,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x81E2, "" },
 //  { 0x81E3, "" },
 //  { 0x81E4, "" },
-//  { 0x81E5, "" },
+    { 0x81E5, "gettweakabledvarvalue" }, // AUTOADDED
 //  { 0x81E6, "" },
 //  { 0x81E7, "" },
 //  { 0x81E8, "" },
@@ -33272,20 +33272,20 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x81EB, "" },
 //  { 0x81EC, "" },
 //  { 0x81ED, "" },
-//  { 0x81EE, "" },
+    { 0x81EE, "getuniqueobjectid" }, // AUTOADDED
 //  { 0x81EF, "" },
 //  { 0x81F0, "" },
 //  { 0x81F1, "" },
 //  { 0x81F2, "" },
 //  { 0x81F3, "" },
 //  { 0x81F4, "" },
-//  { 0x81F5, "" },
+    { 0x81F5, "getvalidattachments" }, // AUTOADDED
 //  { 0x81F6, "" },
-//  { 0x81F7, "" },
+    { 0x81F7, "getvalidlocation" }, // AUTOADDED
 //  { 0x81F8, "" },
 //  { 0x81F9, "" },
 //  { 0x81FA, "" },
-//  { 0x81FB, "" },
+    { 0x81FB, "getvalidspawnpathnodenearplayer" }, // AUTOADDED
 //  { 0x81FC, "" },
 //  { 0x81FD, "" },
 //  { 0x81FE, "" },
@@ -33311,7 +33311,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8212, "" },
 //  { 0x8213, "" },
 //  { 0x8214, "" },
-//  { 0x8215, "" },
+    { 0x8215, "getweaponassetfromrootweapon" }, // AUTOADDED
 //  { 0x8216, "" },
 //  { 0x8217, "" },
 //  { 0x8218, "" },
@@ -33320,7 +33320,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x821B, "" },
 //  { 0x821C, "" },
 //  { 0x821D, "" },
-//  { 0x821E, "" },
+    { 0x821E, "getweaponchoice" }, // AUTOADDED
 //  { 0x821F, "" },
 //  { 0x8220, "" },
 //  { 0x8221, "" },
@@ -33329,18 +33329,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8224, "" },
 //  { 0x8225, "" },
 //  { 0x8226, "" },
-//  { 0x8227, "" },
+    { 0x8227, "getweaponmaxrankxp" }, // AUTOADDED
 //  { 0x8228, "" },
 //  { 0x8229, "" },
 //  { 0x822A, "" },
 //  { 0x822B, "" },
-//  { 0x822C, "" },
+    { 0x822C, "getweaponrankforxp" }, // AUTOADDED
 //  { 0x822D, "" },
 //  { 0x822E, "" },
 //  { 0x822F, "" },
 //  { 0x8230, "" },
 //  { 0x8231, "" },
-//  { 0x8232, "" },
+    { 0x8232, "getweaponrankxpmultiplier" }, // AUTOADDED
 //  { 0x8233, "" },
 //  { 0x8234, "" },
 //  { 0x8235, "" },
@@ -33348,15 +33348,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8237, "" },
 //  { 0x8238, "" },
 //  { 0x8239, "" },
-//  { 0x823A, "" },
+    { 0x823A, "getweaponvariantattachments" }, // AUTOADDED
 //  { 0x823B, "" },
 //  { 0x823C, "" },
 //  { 0x823D, "" },
 //  { 0x823E, "" },
 //  { 0x823F, "" },
-//  { 0x8240, "" },
+    { 0x8240, "getwingamebytype" }, // AUTOADDED
 //  { 0x8241, "" },
-//  { 0x8242, "" },
+    { 0x8242, "calculatewinningteam" }, // AUTOADDED
 //  { 0x8243, "" },
 //  { 0x8244, "" },
     { 0x8245, "getyaw2d" },
@@ -33662,7 +33662,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8371, "" },
 //  { 0x8372, "" },
 //  { 0x8373, "" },
-//  { 0x8374, "" },
+    { 0x8374, "givekillstreak" }, // AUTOADDED
 //  { 0x8375, "" },
 //  { 0x8376, "" },
 //  { 0x8377, "" },
@@ -33676,7 +33676,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x837F, "" },
     { 0x8380, "givemidmatchaward" },
 //  { 0x8381, "" },
-//  { 0x8382, "" },
+    { 0x8382, "giveobject" }, // AUTOADDED
 //  { 0x8383, "" },
 //  { 0x8384, "" },
 //  { 0x8385, "" },
@@ -33688,10 +33688,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x838B, "" },
 //  { 0x838C, "" },
 //  { 0x838D, "" },
-//  { 0x838E, "" },
+    { 0x838E, "giveplaceable" }, // AUTOADDED
 //  { 0x838F, "" },
 //  { 0x8390, "" },
-//  { 0x8391, "" },
+    { 0x8391, "giveplayerpassive" }, // AUTOADDED
 //  { 0x8392, "" },
 //  { 0x8393, "" },
 //  { 0x8394, "" },
@@ -33705,11 +33705,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x839C, "" },
 //  { 0x839D, "" },
 //  { 0x839E, "" },
-//  { 0x839F, "" },
+    { 0x839F, "givescoreforblackhat" }, // AUTOADDED
 //  { 0x83A0, "" },
-//  { 0x83A1, "" },
+    { 0x83A1, "givescorefortrophyblocks" }, // AUTOADDED
 //  { 0x83A2, "" },
-//  { 0x83A3, "" },
+    { 0x83A3, "givesentry" }, // AUTOADDED
 //  { 0x83A4, "" },
 //  { 0x83A5, "" },
 //  { 0x83A6, "" },
@@ -33717,7 +33717,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x83A8, "" },
 //  { 0x83A9, "" },
 //  { 0x83AA, "" },
-//  { 0x83AB, "" },
+    { 0x83AB, "givesurvivortimescore" }, // AUTOADDED
 //  { 0x83AC, "" },
 //  { 0x83AD, "" },
 //  { 0x83AE, "" },
@@ -33754,7 +33754,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x83CD, "" },
 //  { 0x83CE, "" },
 //  { 0x83CF, "" },
-//  { 0x83D0, "" },
+    { 0x83D0, "glinton" }, // AUTOADDED
 //  { 0x83D1, "" },
 //  { 0x83D2, "" },
 //  { 0x83D3, "" },
@@ -33762,7 +33762,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x83D5, "" },
 //  { 0x83D6, "" },
 //  { 0x83D7, "" },
-//  { 0x83D8, "" },
+    { 0x83D8, "global_fx" }, // AUTOADDED
 //  { 0x83D9, "" },
 //  { 0x83DA, "" },
 //  { 0x83DB, "" },
@@ -33856,7 +33856,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8433, "" },
 //  { 0x8434, "" },
 //  { 0x8435, "" },
-//  { 0x8436, "" },
+    { 0x8436, "goals" }, // AUTOADDED
 //  { 0x8437, "" },
 //  { 0x8438, "" },
 //  { 0x8439, "" },
@@ -33870,7 +33870,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8441, "" },
 //  { 0x8442, "" },
 //  { 0x8443, "" },
-//  { 0x8444, "" },
+    { 0x8444, "going_for_knife" }, // AUTOADDED
 //  { 0x8445, "" },
 //  { 0x8446, "" },
 //  { 0x8447, "" },
@@ -34196,7 +34196,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8587, "" },
 //  { 0x8588, "" },
 //  { 0x8589, "" },
-//  { 0x858A, "" },
+    { 0x858A, "grenade_earthquake" }, // AUTOADDED
 //  { 0x858B, "" },
 //  { 0x858C, "" },
 //  { 0x858D, "" },
@@ -34245,7 +34245,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x85B8, "" },
 //  { 0x85B9, "" },
 //  { 0x85BA, "" },
-//  { 0x85BB, "" },
+    { 0x85BB, "grenadeexplosionfx" }, // AUTOADDED
 //  { 0x85BC, "" },
 //  { 0x85BD, "" },
 //  { 0x85BE, "" },
@@ -34271,7 +34271,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x85D2, "" },
 //  { 0x85D3, "" },
 //  { 0x85D4, "" },
-//  { 0x85D5, "" },
+    { 0x85D5, "grenades" }, // AUTOADDED
 //  { 0x85D6, "" },
 //  { 0x85D7, "" },
 //  { 0x85D8, "" },
@@ -34361,7 +34361,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x862C, "" },
 //  { 0x862D, "" },
 //  { 0x862E, "" },
-//  { 0x862F, "" },
+    { 0x862F, "ground_origin" }, // AUTOADDED
 //  { 0x8630, "" },
 //  { 0x8631, "" },
 //  { 0x8632, "" },
@@ -34405,13 +34405,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8658, "" },
 //  { 0x8659, "" },
 //  { 0x865A, "" },
-//  { 0x865B, "" },
+    { 0x865B, "groundpoundboost_onimpact" }, // AUTOADDED
 //  { 0x865C, "" },
 //  { 0x865D, "" },
-//  { 0x865E, "" },
-//  { 0x865F, "" },
+    { 0x865E, "groundpound_raisefx" }, // AUTOADDED
+    { 0x865F, "groundpoundshield_damagedfx" }, // AUTOADDED
 //  { 0x8660, "" },
-//  { 0x8661, "" },
+    { 0x8661, "groundpoundshield_deleteshield" }, // AUTOADDED
 //  { 0x8662, "" },
 //  { 0x8663, "" },
 //  { 0x8664, "" },
@@ -34425,7 +34425,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x866C, "" },
 //  { 0x866D, "" },
 //  { 0x866E, "" },
-//  { 0x866F, "" },
+    { 0x866F, "groundpoundshock_onimpactfx" }, // AUTOADDED
 //  { 0x8670, "" },
 //  { 0x8671, "" },
 //  { 0x8672, "" },
@@ -34526,7 +34526,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x86D1, "" },
 //  { 0x86D2, "" },
 //  { 0x86D3, "" },
-//  { 0x86D4, "" },
+    { 0x86D4, "gun_guns" }, // AUTOADDED
 //  { 0x86D5, "" },
 //  { 0x86D6, "" },
 //  { 0x86D7, "" },
@@ -34565,8 +34565,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x86F8, "gunfireloopfxthread" },
 //  { 0x86F9, "" },
 //  { 0x86FA, "" },
-//  { 0x86FB, "" },
-//  { 0x86FC, "" },
+    { 0x86FB, "gungamegunindex" }, // AUTOADDED
+    { 0x86FC, "gungameprevgunindex" }, // AUTOADDED
 //  { 0x86FD, "" },
 //  { 0x86FE, "" },
 //  { 0x86FF, "" },
@@ -35038,7 +35038,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x88D1, "" },
 //  { 0x88D2, "" },
 //  { 0x88D3, "" },
-//  { 0x88D4, "" },
+    { 0x88D4, "handle_disable_rotation" }, // AUTOADDED
 //  { 0x88D5, "" },
 //  { 0x88D6, "" },
 //  { 0x88D7, "" },
@@ -35127,9 +35127,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x892A, "" },
 //  { 0x892B, "" },
 //  { 0x892C, "" },
-//  { 0x892D, "" },
+    { 0x892D, "handle_moving_platform_invalid" }, // AUTOADDED
 //  { 0x892E, "" },
-//  { 0x892F, "" },
+    { 0x892F, "handle_moving_platforms" }, // AUTOADDED
 //  { 0x8930, "" },
 //  { 0x8931, "" },
 //  { 0x8932, "" },
@@ -35222,9 +35222,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8989, "" },
 //  { 0x898A, "" },
 //  { 0x898B, "" },
-//  { 0x898C, "" },
+    { 0x898C, "handledamage" }, // AUTOADDED
 //  { 0x898D, "" },
-//  { 0x898E, "" },
+    { 0x898E, "handledeath" }, // AUTOADDED
 //  { 0x898F, "" },
 //  { 0x8990, "" },
 //  { 0x8991, "" },
@@ -35235,7 +35235,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x8996, "handledropclip" },
 //  { 0x8997, "" },
 //  { 0x8998, "" },
-//  { 0x8999, "" },
+    { 0x8999, "handleempdamage" }, // AUTOADDED
 //  { 0x899A, "" },
 //  { 0x899B, "" },
 //  { 0x899C, "" },
@@ -35277,7 +35277,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x89C0, "" },
 //  { 0x89C1, "" },
 //  { 0x89C2, "" },
-//  { 0x89C3, "" },
+    { 0x89C3, "handlemeleedamage" }, // AUTOADDED
 //  { 0x89C4, "" },
 //  { 0x89C5, "" },
 //  { 0x89C6, "" },
@@ -35314,7 +35314,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x89E5, "" },
 //  { 0x89E6, "" },
 //  { 0x89E7, "" },
-//  { 0x89E8, "" },
+    { 0x89E8, "handlespectating" }, // AUTOADDED
 //  { 0x89E9, "" },
 //  { 0x89EA, "" },
 //  { 0x89EB, "" },
@@ -35332,7 +35332,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x89F7, "" },
 //  { 0x89F8, "" },
 //  { 0x89F9, "" },
-//  { 0x89FA, "" },
+    { 0x89FA, "handleuse" }, // AUTOADDED
 //  { 0x89FB, "" },
 //  { 0x89FC, "" },
 //  { 0x89FD, "" },
@@ -35650,7 +35650,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8B35, "" },
 //  { 0x8B36, "" },
 //  { 0x8B37, "" },
-//  { 0x8B38, "" },
+    { 0x8B38, "hardcoremode" }, // AUTOADDED
 //  { 0x8B39, "" },
 //  { 0x8B3A, "" },
 //  { 0x8B3B, "" },
@@ -35667,7 +35667,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8B46, "" },
 //  { 0x8B47, "" },
 //  { 0x8B48, "" },
-//  { 0x8B49, "" },
+    { 0x8B49, "hardpoint_setneutral" }, // AUTOADDED
 //  { 0x8B4A, "" },
 //  { 0x8B4B, "" },
 //  { 0x8B4C, "" },
@@ -35676,14 +35676,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8B4F, "" },
 //  { 0x8B50, "" },
 //  { 0x8B51, "" },
-//  { 0x8B52, "" },
+    { 0x8B52, "hardpointtweaks" }, // AUTOADDED
 //  { 0x8B53, "" },
 //  { 0x8B54, "" },
 //  { 0x8B55, "" },
-//  { 0x8B56, "" },
+    { 0x8B56, "harrier_afterburnerfx" }, // AUTOADDED
 //  { 0x8B57, "" },
 //  { 0x8B58, "" },
-//  { 0x8B59, "" },
+    { 0x8B59, "harrier_smoke" }, // AUTOADDED
 //  { 0x8B5A, "" },
 //  { 0x8B5B, "" },
 //  { 0x8B5C, "" },
@@ -35787,9 +35787,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8BBE, "" },
 //  { 0x8BBF, "" },
 //  { 0x8BC0, "" },
-//  { 0x8BC1, "" },
+    { 0x8BC1, "hasactivesmokegrenade" }, // AUTOADDED
 //  { 0x8BC2, "" },
-//  { 0x8BC3, "" },
+    { 0x8BC3, "healthregendisabled" }, // AUTOADDED
 //  { 0x8BC4, "" },
 //  { 0x8BC5, "" },
 //  { 0x8BC6, "" },
@@ -35813,21 +35813,21 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x8BD8, "hasbots" },
 //  { 0x8BD9, "" },
 //  { 0x8BDA, "" },
-//  { 0x8BDB, "" },
+    { 0x8BDB, "haschangedarchetype" }, // AUTOADDED
 //  { 0x8BDC, "" },
 //  { 0x8BDD, "" },
 //  { 0x8BDE, "" },
 //  { 0x8BDF, "" },
 //  { 0x8BE0, "" },
 //  { 0x8BE1, "" },
-//  { 0x8BE2, "" },
+    { 0x8BE2, "hasdied" }, // AUTOADDED
 //  { 0x8BE3, "" },
 //  { 0x8BE4, "" },
 //  { 0x8BE5, "" },
 //  { 0x8BE6, "" },
 //  { 0x8BE7, "" },
 //  { 0x8BE8, "" },
-//  { 0x8BE9, "" },
+    { 0x8BE9, "hasdonecombat" }, // AUTOADDED
 //  { 0x8BEA, "" },
 //  { 0x8BEB, "" },
 //  { 0x8BEC, "" },
@@ -35851,13 +35851,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8BFE, "" },
 //  { 0x8BFF, "" },
 //  { 0x8C00, "" },
-//  { 0x8C01, "" },
+    { 0x8C01, "hasincoming" }, // AUTOADDED
 //  { 0x8C02, "" },
-//  { 0x8C03, "" },
+    { 0x8C03, "hasjuiced" }, // AUTOADDED
 //  { 0x8C04, "" },
 //  { 0x8C05, "" },
 //  { 0x8C06, "" },
-//  { 0x8C07, "" },
+    { 0x8C07, "haslightarmor" }, // AUTOADDED
 //  { 0x8C08, "" },
 //  { 0x8C09, "" },
 //  { 0x8C0A, "" },
@@ -35876,7 +35876,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8C17, "" },
 //  { 0x8C18, "" },
 //  { 0x8C19, "" },
-//  { 0x8C1A, "" },
+    { 0x8C1A, "hasregenfaster" }, // AUTOADDED
 //  { 0x8C1B, "" },
 //  { 0x8C1C, "" },
 //  { 0x8C1D, "" },
@@ -35892,7 +35892,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8C27, "" },
 //  { 0x8C28, "" },
 //  { 0x8C29, "" },
-//  { 0x8C2A, "" },
+    { 0x8C2A, "hasspawned" }, // AUTOADDED
 //  { 0x8C2B, "" },
 //  { 0x8C2C, "" },
 //  { 0x8C2D, "" },
@@ -35906,7 +35906,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8C35, "" },
 //  { 0x8C36, "" },
 //  { 0x8C37, "" },
-//  { 0x8C38, "" },
+    { 0x8C38, "hasvalidationinfraction" }, // AUTOADDED
 //  { 0x8C39, "" },
 //  { 0x8C3A, "" },
 //  { 0x8C3B, "" },
@@ -36072,7 +36072,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8CDB, "" },
 //  { 0x8CDC, "" },
 //  { 0x8CDD, "" },
-//  { 0x8CDE, "" },
+    { 0x8CDE, "heatlevel" }, // AUTOADDED
 //  { 0x8CDF, "" },
 //  { 0x8CE0, "" },
 //  { 0x8CE1, "" },
@@ -36102,8 +36102,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8CF9, "" },
 //  { 0x8CFA, "" },
 //  { 0x8CFB, "" },
-//  { 0x8CFC, "" },
-//  { 0x8CFD, "" },
+    { 0x8CFC, "heavyarmor" }, // AUTOADDED
+    { 0x8CFD, "heavyarmor_break" }, // AUTOADDED
 //  { 0x8CFE, "" },
 //  { 0x8CFF, "" },
 //  { 0x8D00, "" },
@@ -36113,7 +36113,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8D04, "" },
 //  { 0x8D05, "" },
 //  { 0x8D06, "" },
-//  { 0x8D07, "" },
+    { 0x8D07, "heavyarmormodifydamage" }, // AUTOADDED
 //  { 0x8D08, "" },
 //  { 0x8D09, "" },
 //  { 0x8D0A, "" },
@@ -36149,7 +36149,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8D28, "" },
 //  { 0x8D29, "" },
 //  { 0x8D2A, "" },
-//  { 0x8D2B, "" },
+    { 0x8D2B, "heli_angle_offset" }, // AUTOADDED
 //  { 0x8D2C, "" },
 //  { 0x8D2D, "" },
 //  { 0x8D2E, "" },
@@ -36157,7 +36157,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8D30, "" },
 //  { 0x8D31, "" },
 //  { 0x8D32, "" },
-//  { 0x8D33, "" },
+    { 0x8D33, "heli_crash" }, // AUTOADDED
 //  { 0x8D34, "" },
 //  { 0x8D35, "" },
 //  { 0x8D36, "" },
@@ -36168,12 +36168,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8D3B, "" },
 //  { 0x8D3C, "" },
 //  { 0x8D3D, "" },
-//  { 0x8D3E, "" },
+    { 0x8D3E, "heli_crash_nodes" }, // AUTOADDED
 //  { 0x8D3F, "" },
 //  { 0x8D40, "" },
 //  { 0x8D41, "" },
 //  { 0x8D42, "" },
-//  { 0x8D43, "" },
+    { 0x8D43, "heli_debug" }, // AUTOADDED
 //  { 0x8D44, "" },
 //  { 0x8D45, "" },
 //  { 0x8D46, "" },
@@ -36188,7 +36188,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8D4F, "" },
 //  { 0x8D50, "" },
 //  { 0x8D51, "" },
-//  { 0x8D52, "" },
+    { 0x8D52, "heli_fly_loop_path" }, // AUTOADDED
 //  { 0x8D53, "" },
 //  { 0x8D54, "" },
 //  { 0x8D55, "" },
@@ -36198,26 +36198,26 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8D59, "" },
 //  { 0x8D5A, "" },
 //  { 0x8D5B, "" },
-//  { 0x8D5C, "" },
+    { 0x8D5C, "heli_getteamforsoundclip" }, // AUTOADDED
 //  { 0x8D5D, "" },
 //  { 0x8D5E, "" },
 //  { 0x8D5F, "" },
 //  { 0x8D60, "" },
-//  { 0x8D61, "" },
+    { 0x8D61, "heli_health" }, // AUTOADDED
 //  { 0x8D62, "" },
 //  { 0x8D63, "" },
-//  { 0x8D64, "" },
+    { 0x8D64, "heli_is_threatened" }, // AUTOADDED
 //  { 0x8D65, "" },
 //  { 0x8D66, "" },
 //  { 0x8D67, "" },
 //  { 0x8D68, "" },
-//  { 0x8D69, "" },
-//  { 0x8D6A, "" },
+    { 0x8D69, "heli_leave_on_disconnect" }, // AUTOADDED
+    { 0x8D6A, "heli_leave_on_gameended" }, // AUTOADDED
 //  { 0x8D6B, "" },
-//  { 0x8D6C, "" },
-//  { 0x8D6D, "" },
+    { 0x8D6C, "heli_leave_on_spawned" }, // AUTOADDED
+    { 0x8D6D, "heli_leave_on_timeout" }, // AUTOADDED
 //  { 0x8D6E, "" },
-//  { 0x8D6F, "" },
+    { 0x8D6F, "heli_loop_nodes" }, // AUTOADDED
 //  { 0x8D70, "" },
 //  { 0x8D71, "" },
 //  { 0x8D72, "" },
@@ -36226,26 +36226,26 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8D75, "" },
 //  { 0x8D76, "" },
 //  { 0x8D77, "" },
-//  { 0x8D78, "" },
-//  { 0x8D79, "" },
+    { 0x8D78, "heli_pick_node_furthest_from_center" }, // AUTOADDED
+    { 0x8D79, "heli_pilot" }, // AUTOADDED
 //  { 0x8D7A, "" },
-//  { 0x8D7B, "" },
+    { 0x8D7B, "heli_pilot_control_heli_aiming" }, // AUTOADDED
 //  { 0x8D7C, "" },
-//  { 0x8D7D, "" },
+    { 0x8D7D, "heli_pilot_missile_radius" }, // AUTOADDED
 //  { 0x8D7E, "" },
-//  { 0x8D7F, "" },
-//  { 0x8D80, "" },
+    { 0x8D7F, "heli_pilot_pick_node" }, // AUTOADDED
+    { 0x8D80, "heli_pilot_waittill_initial_goal" }, // AUTOADDED
 //  { 0x8D81, "" },
-//  { 0x8D82, "" },
-//  { 0x8D83, "" },
+    { 0x8D82, "heli_reset" }, // AUTOADDED
+    { 0x8D83, "heli_secondary_explosions" }, // AUTOADDED
 //  { 0x8D84, "" },
 //  { 0x8D85, "" },
 //  { 0x8D86, "" },
-//  { 0x8D87, "" },
-//  { 0x8D88, "" },
-//  { 0x8D89, "" },
-//  { 0x8D8A, "" },
-//  { 0x8D8B, "" },
+    { 0x8D87, "heli_sniper_clear_script_goal_on_ride" }, // AUTOADDED
+    { 0x8D88, "heli_sniper_pick_node" }, // AUTOADDED
+    { 0x8D89, "heli_sniper_waittill_initial_goal" }, // AUTOADDED
+    { 0x8D8A, "heli_sound" }, // AUTOADDED
+    { 0x8D8B, "heli_spin" }, // AUTOADDED
 //  { 0x8D8C, "" },
 //  { 0x8D8D, "" },
 //  { 0x8D8E, "" },
@@ -36264,15 +36264,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8D9B, "" },
 //  { 0x8D9C, "" },
 //  { 0x8D9D, "" },
-//  { 0x8D9E, "" },
+    { 0x8D9E, "heli_turretclipsize" }, // AUTOADDED
 //  { 0x8D9F, "" },
 //  { 0x8DA0, "" },
 //  { 0x8DA1, "" },
-//  { 0x8DA2, "" },
+    { 0x8DA2, "heli_visual_range" }, // AUTOADDED
 //  { 0x8DA3, "" },
-//  { 0x8DA4, "" },
-//  { 0x8DA5, "" },
-//  { 0x8DA6, "" },
+    { 0x8DA4, "heli_watchdeath" }, // AUTOADDED
+    { 0x8DA5, "heli_watchempdamage" }, // AUTOADDED
+    { 0x8DA6, "heliconfigs" }, // AUTOADDED
 //  { 0x8DA7, "" },
 //  { 0x8DA8, "" },
 //  { 0x8DA9, "" },
@@ -36291,30 +36291,30 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8DB6, "" },
 //  { 0x8DB7, "" },
 //  { 0x8DB8, "" },
-//  { 0x8DB9, "" },
+    { 0x8DB9, "heligotostartposition" }, // AUTOADDED
 //  { 0x8DBA, "" },
 //  { 0x8DBB, "" },
 //  { 0x8DBC, "" },
-//  { 0x8DBD, "" },
+    { 0x8DBD, "heliinproximity" }, // AUTOADDED
 //  { 0x8DBE, "" },
 //  { 0x8DBF, "" },
 //  { 0x8DC0, "" },
 //  { 0x8DC1, "" },
 //  { 0x8DC2, "" },
-//  { 0x8DC3, "" },
-//  { 0x8DC4, "" },
+    { 0x8DC3, "helipilot_getcloseststartnode" }, // AUTOADDED
+    { 0x8DC4, "helipilot_getlinkedstruct" }, // AUTOADDED
 //  { 0x8DC5, "" },
-//  { 0x8DC6, "" },
-//  { 0x8DC7, "" },
-//  { 0x8DC8, "" },
-//  { 0x8DC9, "" },
-//  { 0x8DCA, "" },
-//  { 0x8DCB, "" },
-//  { 0x8DCC, "" },
-//  { 0x8DCD, "" },
-//  { 0x8DCE, "" },
-//  { 0x8DCF, "" },
-//  { 0x8DD0, "" },
+    { 0x8DC6, "helipilot_lightfx" }, // AUTOADDED
+    { 0x8DC7, "helipilot_setairstartnodes" }, // AUTOADDED
+    { 0x8DC8, "helipilot_watchads" }, // AUTOADDED
+    { 0x8DC9, "helipilot_watchdeath" }, // AUTOADDED
+    { 0x8DCA, "helipilot_watchobjectivecam" }, // AUTOADDED
+    { 0x8DCB, "helipilot_watchownerloss" }, // AUTOADDED
+    { 0x8DCC, "helipilot_watchroundend" }, // AUTOADDED
+    { 0x8DCD, "helipilot_watchtimeout" }, // AUTOADDED
+    { 0x8DCE, "helipilotsettings" }, // AUTOADDED
+    { 0x8DCF, "helipilottype" }, // AUTOADDED
+    { 0x8DD0, "heliremoveoutline" }, // AUTOADDED
 //  { 0x8DD1, "" },
 //  { 0x8DD2, "" },
 //  { 0x8DD3, "" },
@@ -36452,7 +36452,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8E57, "" },
 //  { 0x8E58, "" },
 //  { 0x8E59, "" },
-//  { 0x8E5A, "" },
+    { 0x8E5A, "hidden" }, // AUTOADDED
 //  { 0x8E5B, "" },
 //  { 0x8E5C, "" },
 //  { 0x8E5D, "" },
@@ -36551,7 +36551,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8EBA, "" },
 //  { 0x8EBB, "" },
 //  { 0x8EBC, "" },
-//  { 0x8EBD, "" },
+    { 0x8EBD, "hideelem" }, // AUTOADDED
 //  { 0x8EBE, "" },
 //  { 0x8EBF, "" },
 //  { 0x8EC0, "" },
@@ -36559,7 +36559,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8EC2, "" },
 //  { 0x8EC3, "" },
 //  { 0x8EC4, "" },
-//  { 0x8EC5, "" },
+    { 0x8EC5, "hidehudelementongameend" }, // AUTOADDED
 //  { 0x8EC6, "" },
 //  { 0x8EC7, "" },
 //  { 0x8EC8, "" },
@@ -36574,8 +36574,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8ED1, "" },
 //  { 0x8ED2, "" },
 //  { 0x8ED3, "" },
-//  { 0x8ED4, "" },
-//  { 0x8ED5, "" },
+    { 0x8ED4, "hideplacedmodel" }, // AUTOADDED
+    { 0x8ED5, "hideplayerspecificbrushes" }, // AUTOADDED
 //  { 0x8ED6, "" },
 //  { 0x8ED7, "" },
 //  { 0x8ED8, "" },
@@ -36584,12 +36584,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8EDB, "" },
 //  { 0x8EDC, "" },
 //  { 0x8EDD, "" },
-//  { 0x8EDE, "" },
+    { 0x8EDE, "hideworldiconongameend" }, // AUTOADDED
 //  { 0x8EDF, "" },
 //  { 0x8EE0, "" },
 //  { 0x8EE1, "" },
 //  { 0x8EE2, "" },
-//  { 0x8EE3, "" },
+    { 0x8EE3, "high_priority_for" }, // AUTOADDED
 //  { 0x8EE4, "" },
 //  { 0x8EE5, "" },
 //  { 0x8EE6, "" },
@@ -36938,8 +36938,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x903D, "" },
 //  { 0x903E, "" },
 //  { 0x903F, "" },
-//  { 0x9040, "" },
-//  { 0x9041, "" },
+    { 0x9040, "hitmarkerpriorities" }, // AUTOADDED
+    { 0x9041, "hitroundlimit" }, // AUTOADDED
 //  { 0x9042, "" },
 //  { 0x9043, "" },
 //  { 0x9044, "" },
@@ -37035,19 +37035,19 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x909E, "" },
 //  { 0x909F, "" },
 //  { 0x90A0, "" },
-//  { 0x90A1, "" },
-//  { 0x90A2, "" },
+    { 0x90A1, "hostforcedend" }, // AUTOADDED
+    { 0x90A2, "hostidledout" }, // AUTOADDED
 //  { 0x90A3, "" },
 //  { 0x90A4, "" },
-//  { 0x90A5, "" },
-//  { 0x90A6, "" },
-//  { 0x90A7, "" },
+    { 0x90A5, "hostmigrationconnectwatcher" }, // AUTOADDED
+    { 0x90A6, "hostmigrationcontrolsfrozen" }, // AUTOADDED
+    { 0x90A7, "hostmigrationname" }, // AUTOADDED
 //  { 0x90A8, "" },
-//  { 0x90A9, "" },
-//  { 0x90AA, "" },
-//  { 0x90AB, "" },
+    { 0x90A9, "hostmigrationtimer" }, // AUTOADDED
+    { 0x90AA, "hostmigrationtimerthink" }, // AUTOADDED
+    { 0x90AB, "hostmigrationtimerthink_internal" }, // AUTOADDED
 //  { 0x90AC, "" },
-//  { 0x90AD, "" },
+    { 0x90AD, "hostmigrationwaitforplayers" }, // AUTOADDED
 //  { 0x90AE, "" },
 //  { 0x90AF, "" },
 //  { 0x90B0, "" },
@@ -37114,7 +37114,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x90ED, "" },
 //  { 0x90EE, "" },
 //  { 0x90EF, "" },
-//  { 0x90F0, "" },
+    { 0x90F0, "hoverlifepack" }, // AUTOADDED
 //  { 0x90F1, "" },
 //  { 0x90F2, "" },
 //  { 0x90F3, "" },
@@ -37154,7 +37154,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9115, "" },
 //  { 0x9116, "" },
 //  { 0x9117, "" },
-//  { 0x9118, "" },
+    { 0x9118, "hp" }, // AUTOADDED
 //  { 0x9119, "" },
 //  { 0x911A, "" },
 //  { 0x911B, "" },
@@ -37255,7 +37255,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x917A, "" },
     { 0x917B, "hudelem_count" },
 //  { 0x917C, "" },
-//  { 0x917D, "" },
+    { 0x917D, "hudelemdestroy" }, // AUTOADDED
     { 0x917E, "hudelems" },
 //  { 0x917F, "" },
 //  { 0x9180, "" },
@@ -37308,7 +37308,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x91AF, "" },
 //  { 0x91B0, "" },
 //  { 0x91B1, "" },
-//  { 0x91B2, "" },
+    { 0x91B2, "hudtweaks" }, // AUTOADDED
 //  { 0x91B3, "" },
 //  { 0x91B4, "" },
 //  { 0x91B5, "" },
@@ -37570,7 +37570,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x92B5, "" },
 //  { 0x92B6, "" },
 //  { 0x92B7, "" },
-//  { 0x92B8, "" },
+    { 0x92B8, "id" }, // AUTOADDED
 //  { 0x92B9, "" },
     { 0x92BA, "idamage" },
 //  { 0x92BB, "" },
@@ -37633,7 +37633,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x92F4, "" },
 //  { 0x92F5, "" },
 //  { 0x92F6, "" },
-//  { 0x92F7, "" },
+    { 0x92F7, "idleresettime" }, // AUTOADDED
 //  { 0x92F8, "" },
 //  { 0x92F9, "" },
 //  { 0x92FA, "" },
@@ -37722,8 +37722,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x934D, "" },
 //  { 0x934E, "" },
 //  { 0x934F, "" },
-//  { 0x9350, "" },
-//  { 0x9351, "" },
+    { 0x9350, "impale_detachaftertime" }, // AUTOADDED
+    { 0x9351, "impale_effects" }, // AUTOADDED
 //  { 0x9352, "" },
 //  { 0x9353, "" },
 //  { 0x9354, "" },
@@ -37794,7 +37794,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9395, "" },
 //  { 0x9396, "" },
 //  { 0x9397, "" },
-//  { 0x9398, "" },
+    { 0x9398, "in_goal" }, // AUTOADDED
 //  { 0x9399, "" },
 //  { 0x939A, "" },
 //  { 0x939B, "" },
@@ -37810,7 +37810,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x93A5, "" },
 //  { 0x93A6, "" },
 //  { 0x93A7, "" },
-//  { 0x93A8, "" },
+    { 0x93A8, "in_use" }, // AUTOADDED
 //  { 0x93A9, "" },
 //  { 0x93AA, "" },
 //  { 0x93AB, "" },
@@ -37827,8 +37827,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x93B6, "" },
 //  { 0x93B7, "" },
 //  { 0x93B8, "" },
-//  { 0x93B9, "" },
-//  { 0x93BA, "" },
+    { 0x93B9, "inboundsfx" }, // AUTOADDED
+    { 0x93BA, "inboundvo" }, // AUTOADDED
 //  { 0x93BB, "" },
 //  { 0x93BC, "" },
 //  { 0x93BD, "" },
@@ -37861,12 +37861,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x93D8, "" },
 //  { 0x93D9, "" },
 //  { 0x93DA, "" },
-//  { 0x93DB, "" },
+    { 0x93DB, "incomingmissiles" }, // AUTOADDED
 //  { 0x93DC, "" },
 //  { 0x93DD, "" },
 //  { 0x93DE, "" },
     { 0x93DF, "incperstat" },
-//  { 0x93E0, "" },
+    { 0x93E0, "incplayerrecord" }, // AUTOADDED
 //  { 0x93E1, "" },
 //  { 0x93E2, "" },
 //  { 0x93E3, "" },
@@ -37910,7 +37910,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9409, "" },
 //  { 0x940A, "" },
 //  { 0x940B, "" },
-//  { 0x940C, "" },
+    { 0x940C, "inenemybase" }, // AUTOADDED
 //  { 0x940D, "" },
 //  { 0x940E, "" },
 //  { 0x940F, "" },
@@ -37921,7 +37921,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9414, "" },
 //  { 0x9415, "" },
 //  { 0x9416, "" },
-//  { 0x9417, "" },
+    { 0x9417, "infect_teamscores" }, // AUTOADDED
 //  { 0x9418, "" },
 //  { 0x9419, "" },
 //  { 0x941A, "" },
@@ -38094,8 +38094,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x94C1, "" },
 //  { 0x94C2, "" },
 //  { 0x94C3, "" },
-//  { 0x94C4, "" },
-//  { 0x94C5, "" },
+    { 0x94C4, "inframes" }, // AUTOADDED
+    { 0x94C5, "infriendlybase" }, // AUTOADDED
 //  { 0x94C6, "" },
 //  { 0x94C7, "" },
     { 0x94C8, "ingraceperiod" },
@@ -38107,7 +38107,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x94CE, "" },
 //  { 0x94CF, "" },
 //  { 0x94D0, "" },
-//  { 0x94D1, "" },
+    { 0x94D1, "inheliproximity" }, // AUTOADDED
 //  { 0x94D2, "" },
 //  { 0x94D3, "" },
 //  { 0x94D4, "" },
@@ -38275,7 +38275,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9576, "" },
 //  { 0x9577, "" },
 //  { 0x9578, "" },
-//  { 0x9579, "" },
+    { 0x9579, "init_class_table" }, // AUTOADDED
 //  { 0x957A, "" },
 //  { 0x957B, "" },
 //  { 0x957C, "" },
@@ -38618,7 +38618,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x96CD, "" },
 //  { 0x96CE, "" },
 //  { 0x96CF, "" },
-//  { 0x96D0, "" },
+    { 0x96D0, "init_perktable" }, // AUTOADDED
 //  { 0x96D1, "" },
 //  { 0x96D2, "" },
 //  { 0x96D3, "" },
@@ -38678,7 +38678,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9709, "" },
 //  { 0x970A, "" },
 //  { 0x970B, "" },
-//  { 0x970C, "" },
+    { 0x970C, "init_reverb" }, // AUTOADDED
 //  { 0x970D, "" },
 //  { 0x970E, "" },
 //  { 0x970F, "" },
@@ -38787,7 +38787,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9776, "" },
 //  { 0x9777, "" },
 //  { 0x9778, "" },
-//  { 0x9779, "" },
+    { 0x9779, "init_template_table" }, // AUTOADDED
 //  { 0x977A, "" },
 //  { 0x977B, "" },
 //  { 0x977C, "" },
@@ -38879,20 +38879,20 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x97D2, "" },
 //  { 0x97D3, "" },
 //  { 0x97D4, "" },
-//  { 0x97D5, "" },
+    { 0x97D5, "initawards" }, // AUTOADDED
 //  { 0x97D6, "" },
-//  { 0x97D7, "" },
-//  { 0x97D8, "" },
+    { 0x97D7, "initbaseaward" }, // AUTOADDED
+    { 0x97D8, "initbasemidmatchaward" }, // AUTOADDED
 //  { 0x97D9, "" },
 //  { 0x97DA, "" },
-//  { 0x97DB, "" },
-//  { 0x97DC, "" },
+    { 0x97DB, "initbestscorestatstable" }, // AUTOADDED
+    { 0x97DC, "initbombsitespawns" }, // AUTOADDED
 //  { 0x97DD, "" },
 //  { 0x97DE, "" },
 //  { 0x97DF, "" },
 //  { 0x97E0, "" },
 //  { 0x97E1, "" },
-//  { 0x97E2, "" },
+    { 0x97E2, "initbufferedstats" }, // AUTOADDED
 //  { 0x97E3, "" },
 //  { 0x97E4, "" },
 //  { 0x97E5, "" },
@@ -39047,8 +39047,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x987A, "" },
 //  { 0x987B, "" },
     { 0x987C, "initializematchrules" },
-//  { 0x987D, "" },
-//  { 0x987E, "" },
+    { 0x987D, "initializeobjectives" }, // AUTOADDED
+    { 0x987E, "initializetagpathvariables" }, // AUTOADDED
 //  { 0x987F, "" },
 //  { 0x9880, "" },
 //  { 0x9881, "" },
@@ -39077,8 +39077,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9898, "" },
 //  { 0x9899, "" },
 //  { 0x989A, "" },
-//  { 0x989B, "" },
-//  { 0x989C, "" },
+    { 0x989B, "initmidmatchaward" }, // AUTOADDED
+    { 0x989C, "initmidmatchawards" }, // AUTOADDED
 //  { 0x989D, "" },
 //  { 0x989E, "" },
 //  { 0x989F, "" },
@@ -39091,7 +39091,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x98A6, "" },
 //  { 0x98A7, "" },
 //  { 0x98A8, "" },
-//  { 0x98A9, "" },
+    { 0x98A9, "initobjectivecam" }, // AUTOADDED
 //  { 0x98AA, "" },
 //  { 0x98AB, "" },
 //  { 0x98AC, "" },
@@ -39104,7 +39104,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x98B3, "" },
 //  { 0x98B4, "" },
 //  { 0x98B5, "" },
-//  { 0x98B6, "" },
+    { 0x98B6, "initplayerclass" }, // AUTOADDED
 //  { 0x98B7, "" },
 //  { 0x98B8, "" },
 //  { 0x98B9, "" },
@@ -39116,7 +39116,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x98BF, "" },
 //  { 0x98C0, "" },
 //  { 0x98C1, "" },
-//  { 0x98C2, "" },
+    { 0x98C2, "initridekillstreak" }, // AUTOADDED
 //  { 0x98C3, "" },
 //  { 0x98C4, "" },
 //  { 0x98C5, "" },
@@ -39127,8 +39127,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x98CA, "" },
 //  { 0x98CB, "" },
 //  { 0x98CC, "" },
-//  { 0x98CD, "" },
-//  { 0x98CE, "" },
+    { 0x98CD, "initspawnpointvalues" }, // AUTOADDED
+    { 0x98CE, "initspawns" }, // AUTOADDED
 //  { 0x98CF, "" },
 //  { 0x98D0, "" },
 //  { 0x98D1, "" },
@@ -39136,7 +39136,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x98D3, "" },
 //  { 0x98D4, "" },
 //  { 0x98D5, "" },
-//  { 0x98D6, "" },
+    { 0x98D6, "initsurvivaltime" }, // AUTOADDED
 //  { 0x98D7, "" },
 //  { 0x98D8, "" },
 //  { 0x98D9, "" },
@@ -39178,7 +39178,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x98FD, "" },
 //  { 0x98FE, "" },
 //  { 0x98FF, "" },
-//  { 0x9900, "" },
+    { 0x9900, "inovertime" }, // AUTOADDED
 //  { 0x9901, "" },
 //  { 0x9902, "" },
 //  { 0x9903, "" },
@@ -39516,7 +39516,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9A4F, "" },
 //  { 0x9A50, "" },
 //  { 0x9A51, "" },
-//  { 0x9A52, "" },
+    { 0x9A52, "interactteam" }, // AUTOADDED
 //  { 0x9A53, "" },
 //  { 0x9A54, "" },
 //  { 0x9A55, "" },
@@ -39576,7 +39576,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9A8B, "" },
 //  { 0x9A8C, "" },
 //  { 0x9A8D, "" },
-//  { 0x9A8E, "" },
+    { 0x9A8E, "interrupter" }, // AUTOADDED
 //  { 0x9A8F, "" },
 //  { 0x9A90, "" },
 //  { 0x9A91, "" },
@@ -39694,8 +39694,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9B01, "" },
 //  { 0x9B02, "" },
 //  { 0x9B03, "" },
-//  { 0x9B04, "" },
-//  { 0x9B05, "" },
+    { 0x9B04, "inuse" }, // AUTOADDED
+    { 0x9B05, "inuseby" }, // AUTOADDED
 //  { 0x9B06, "" },
 //  { 0x9B07, "" },
     { 0x9B08, "invalid" },
@@ -39705,9 +39705,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9B0C, "" },
 //  { 0x9B0D, "" },
 //  { 0x9B0E, "" },
-//  { 0x9B0F, "" },
+    { 0x9B0F, "invaliditems" }, // AUTOADDED
 //  { 0x9B10, "" },
-//  { 0x9B11, "" },
+    { 0x9B11, "invalidparentoverridecallback" }, // AUTOADDED
 //  { 0x9B12, "" },
 //  { 0x9B13, "" },
 //  { 0x9B14, "" },
@@ -39738,7 +39738,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9B2D, "" },
 //  { 0x9B2E, "" },
 //  { 0x9B2F, "" },
-//  { 0x9B30, "" },
+    { 0x9B30, "invulnerabilityframe" }, // AUTOADDED
 //  { 0x9B31, "" },
 //  { 0x9B32, "" },
 //  { 0x9B33, "" },
@@ -39924,7 +39924,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9BE7, "" },
 //  { 0x9BE8, "" },
 //  { 0x9BE9, "" },
-//  { 0x9BEA, "" },
+    { 0x9BEA, "is_friendly_damage" }, // AUTOADDED
 //  { 0x9BEB, "" },
 //  { 0x9BEC, "" },
 //  { 0x9BED, "" },
@@ -39945,7 +39945,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9BFC, "" },
 //  { 0x9BFD, "" },
 //  { 0x9BFE, "" },
-//  { 0x9BFF, "" },
+    { 0x9BFF, "is_higher_priority" }, // AUTOADDED
 //  { 0x9C00, "" },
 //  { 0x9C01, "" },
 //  { 0x9C02, "" },
@@ -39981,7 +39981,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9C20, "" },
 //  { 0x9C21, "" },
 //  { 0x9C22, "" },
-//  { 0x9C23, "" },
+    { 0x9C23, "is_indoor_map" }, // AUTOADDED
 //  { 0x9C24, "" },
 //  { 0x9C25, "" },
 //  { 0x9C26, "" },
@@ -40125,7 +40125,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9CB0, "" },
 //  { 0x9CB1, "" },
 //  { 0x9CB2, "" },
-//  { 0x9CB3, "" },
+    { 0x9CB3, "is_scripted_agent" }, // AUTOADDED
 //  { 0x9CB4, "" },
 //  { 0x9CB5, "" },
 //  { 0x9CB6, "" },
@@ -40149,7 +40149,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9CC8, "" },
 //  { 0x9CC9, "" },
 //  { 0x9CCA, "" },
-//  { 0x9CCB, "" },
+    { 0x9CCB, "is_spawnid_a_less_than_b" }, // AUTOADDED
 //  { 0x9CCC, "" },
 //  { 0x9CCD, "" },
 //  { 0x9CCE, "" },
@@ -40194,7 +40194,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9CF5, "" },
 //  { 0x9CF6, "" },
 //  { 0x9CF7, "" },
-//  { 0x9CF8, "" },
+    { 0x9CF8, "is_using_behaviortree" }, // AUTOADDED
 //  { 0x9CF9, "" },
 //  { 0x9CFA, "" },
 //  { 0x9CFB, "" },
@@ -40231,7 +40231,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9D1A, "" },
 //  { 0x9D1B, "" },
 //  { 0x9D1C, "" },
-//  { 0x9D1D, "" },
+    { 0x9D1D, "is_weight_a_less_than_b" }, // AUTOADDED
 //  { 0x9D1E, "" },
 //  { 0x9D1F, "" },
 //  { 0x9D20, "" },
@@ -40239,7 +40239,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9D22, "" },
 //  { 0x9D23, "" },
 //  { 0x9D24, "" },
-//  { 0x9D25, "" },
+    { 0x9D25, "isactive" }, // AUTOADDED
 //  { 0x9D26, "" },
 //  { 0x9D27, "" },
 //  { 0x9D28, "" },
@@ -40282,7 +40282,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x9D4D, "isasniper" },
 //  { 0x9D4E, "" },
 //  { 0x9D4F, "" },
-//  { 0x9D50, "" },
+    { 0x9D50, "isatcovernode" }, // AUTOADDED
 //  { 0x9D51, "" },
 //  { 0x9D52, "" },
 //  { 0x9D53, "" },
@@ -40292,12 +40292,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9D57, "" },
 //  { 0x9D58, "" },
 //  { 0x9D59, "" },
-//  { 0x9D5A, "" },
+    { 0x9D5A, "isattacking" }, // AUTOADDED
 //  { 0x9D5B, "" },
 //  { 0x9D5C, "" },
 //  { 0x9D5D, "" },
 //  { 0x9D5E, "" },
-//  { 0x9D5F, "" },
+    { 0x9D5F, "isbackkill" }, // AUTOADDED
 //  { 0x9D60, "" },
 //  { 0x9D61, "" },
 //  { 0x9D62, "" },
@@ -40305,9 +40305,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9D64, "" },
 //  { 0x9D65, "" },
 //  { 0x9D66, "" },
-//  { 0x9D67, "" },
+    { 0x9D67, "isbehindmeleevictim" }, // AUTOADDED
 //  { 0x9D68, "" },
-//  { 0x9D69, "" },
+    { 0x9D69, "isbeingcaptured" }, // AUTOADDED
 //  { 0x9D6A, "" },
 //  { 0x9D6B, "" },
 //  { 0x9D6C, "" },
@@ -40324,14 +40324,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9D77, "" },
 //  { 0x9D78, "" },
 //  { 0x9D79, "" },
-//  { 0x9D7A, "" },
-//  { 0x9D7B, "" },
-//  { 0x9D7C, "" },
+    { 0x9D7A, "iscallouttypeconcat" }, // AUTOADDED
+    { 0x9D7B, "iscallouttypeqa" }, // AUTOADDED
+    { 0x9D7C, "iscallouttypereport" }, // AUTOADDED
 //  { 0x9D7D, "" },
 //  { 0x9D7E, "" },
 //  { 0x9D7F, "" },
 //  { 0x9D80, "" },
-//  { 0x9D81, "" },
+    { 0x9D81, "iscarrying" }, // AUTOADDED
 //  { 0x9D82, "" },
 //  { 0x9D83, "" },
 //  { 0x9D84, "" },
@@ -40340,18 +40340,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9D87, "" },
 //  { 0x9D88, "" },
 //  { 0x9D89, "" },
-//  { 0x9D8A, "" },
+    { 0x9D8A, "ischilled" }, // AUTOADDED
 //  { 0x9D8B, "" },
 //  { 0x9D8C, "" },
 //  { 0x9D8D, "" },
 //  { 0x9D8E, "" },
 //  { 0x9D8F, "" },
-//  { 0x9D90, "" },
+    { 0x9D90, "isconsumableitem" }, // AUTOADDED
 //  { 0x9D91, "" },
 //  { 0x9D92, "" },
 //  { 0x9D93, "" },
 //  { 0x9D94, "" },
-//  { 0x9D95, "" },
+    { 0x9D95, "iscosmeticitem" }, // AUTOADDED
 //  { 0x9D96, "" },
 //  { 0x9D97, "" },
 //  { 0x9D98, "" },
@@ -40385,7 +40385,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9DB4, "" },
 //  { 0x9DB5, "" },
 //  { 0x9DB6, "" },
-//  { 0x9DB7, "" },
+    { 0x9DB7, "isdeathfromabove" }, // AUTOADDED
 //  { 0x9DB8, "" },
 //  { 0x9DB9, "" },
 //  { 0x9DBA, "" },
@@ -40400,7 +40400,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9DC3, "" },
 //  { 0x9DC4, "" },
 //  { 0x9DC5, "" },
-//  { 0x9DC6, "" },
+    { 0x9DC6, "isdoingsplash" }, // AUTOADDED
 //  { 0x9DC7, "" },
 //  { 0x9DC8, "" },
 //  { 0x9DC9, "" },
@@ -40409,7 +40409,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9DCC, "" },
 //  { 0x9DCD, "" },
 //  { 0x9DCE, "" },
-//  { 0x9DCF, "" },
+    { 0x9DCF, "isdynamicspawn" }, // AUTOADDED
 //  { 0x9DD0, "" },
 //  { 0x9DD1, "" },
 //  { 0x9DD2, "" },
@@ -40432,16 +40432,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9DE3, "" },
 //  { 0x9DE4, "" },
 //  { 0x9DE5, "" },
-//  { 0x9DE6, "" },
+    { 0x9DE6, "isexplosivedangeroustoplayer" }, // AUTOADDED
 //  { 0x9DE7, "" },
 //  { 0x9DE8, "" },
 //  { 0x9DE9, "" },
 //  { 0x9DEA, "" },
 //  { 0x9DEB, "" },
-//  { 0x9DEC, "" },
+    { 0x9DEC, "isfacing" }, // AUTOADDED
 //  { 0x9DED, "" },
 //  { 0x9DEE, "" },
-//  { 0x9DEF, "" },
+    { 0x9DEF, "isfactorregistered" }, // AUTOADDED
 //  { 0x9DF0, "" },
 //  { 0x9DF1, "" },
 //  { 0x9DF2, "" },
@@ -40454,7 +40454,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9DF9, "" },
 //  { 0x9DFA, "" },
     { 0x9DFB, "isflashed" },
-//  { 0x9DFC, "" },
+    { 0x9DFC, "isflashing" }, // AUTOADDED
 //  { 0x9DFD, "" },
 //  { 0x9DFE, "" },
 //  { 0x9DFF, "" },
@@ -40464,17 +40464,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9E03, "" },
 //  { 0x9E04, "" },
 //  { 0x9E05, "" },
-//  { 0x9E06, "" },
-//  { 0x9E07, "" },
-//  { 0x9E08, "" },
+    { 0x9E06, "isfriendlyfire" }, // AUTOADDED
+    { 0x9E07, "isfriendlyteam" }, // AUTOADDED
+    { 0x9E08, "isfriendlytobox" }, // AUTOADDED
 //  { 0x9E09, "" },
-//  { 0x9E0A, "" },
+    { 0x9E0A, "isfriendlytosentry" }, // AUTOADDED
 //  { 0x9E0B, "" },
 //  { 0x9E0C, "" },
 //  { 0x9E0D, "" },
 //  { 0x9E0E, "" },
 //  { 0x9E0F, "" },
-//  { 0x9E10, "" },
+    { 0x9E10, "isgimme" }, // AUTOADDED
 //  { 0x9E11, "" },
 //  { 0x9E12, "" },
 //  { 0x9E13, "" },
@@ -40488,7 +40488,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9E1B, "" },
 //  { 0x9E1C, "" },
 //  { 0x9E1D, "" },
-//  { 0x9E1E, "" },
+    { 0x9E1E, "ishackweapon" }, // AUTOADDED
 //  { 0x9E1F, "" },
 //  { 0x9E20, "" },
 //  { 0x9E21, "" },
@@ -40511,7 +40511,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9E32, "" },
 //  { 0x9E33, "" },
 //  { 0x9E34, "" },
-//  { 0x9E35, "" },
+    { 0x9E35, "ishome" }, // AUTOADDED
 //  { 0x9E36, "" },
 //  { 0x9E37, "" },
 //  { 0x9E38, "" },
@@ -40531,21 +40531,21 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9E46, "" },
 //  { 0x9E47, "" },
 //  { 0x9E48, "" },
-//  { 0x9E49, "" },
+    { 0x9E49, "isinitialinfected" }, // AUTOADDED
 //  { 0x9E4A, "" },
 //  { 0x9E4B, "" },
 //  { 0x9E4C, "" },
 //  { 0x9E4D, "" },
 //  { 0x9E4E, "" },
-//  { 0x9E4F, "" },
+    { 0x9E4F, "isinremotenodeploy" }, // AUTOADDED
     { 0x9E50, "isinset" },
 //  { 0x9E51, "" },
 //  { 0x9E52, "" },
-//  { 0x9E53, "" },
+    { 0x9E53, "isinuse" }, // AUTOADDED
 //  { 0x9E54, "" },
 //  { 0x9E55, "" },
 //  { 0x9E56, "" },
-//  { 0x9E57, "" },
+    { 0x9E57, "isinzone" }, // AUTOADDED
 //  { 0x9E58, "" },
     { 0x9E59, "isjuggernaut" },
 //  { 0x9E5A, "" },
@@ -40556,14 +40556,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9E5F, "" },
 //  { 0x9E60, "" },
 //  { 0x9E61, "" },
-//  { 0x9E62, "" },
+    { 0x9E62, "isjuiced" }, // AUTOADDED
 //  { 0x9E63, "" },
 //  { 0x9E64, "" },
 //  { 0x9E65, "" },
-//  { 0x9E66, "" },
+    { 0x9E66, "iskillstreakblockedforbots" }, // AUTOADDED
 //  { 0x9E67, "" },
 //  { 0x9E68, "" },
-//  { 0x9E69, "" },
+    { 0x9E69, "iskillstreakitem" }, // AUTOADDED
 //  { 0x9E6A, "" },
 //  { 0x9E6B, "" },
 //  { 0x9E6C, "" },
@@ -40574,7 +40574,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9E71, "" },
 //  { 0x9E72, "" },
 //  { 0x9E73, "" },
-//  { 0x9E74, "" },
+    { 0x9E74, "islastwinbytwo" }, // AUTOADDED
 //  { 0x9E75, "" },
 //  { 0x9E76, "" },
 //  { 0x9E77, "" },
@@ -40624,7 +40624,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9EA3, "" },
 //  { 0x9EA4, "" },
 //  { 0x9EA5, "" },
-//  { 0x9EA6, "" },
+    { 0x9EA6, "ismlgmatch" }, // AUTOADDED
 //  { 0x9EA7, "" },
 //  { 0x9EA8, "" },
 //  { 0x9EA9, "" },
@@ -40632,7 +40632,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9EAB, "" },
 //  { 0x9EAC, "" },
 //  { 0x9EAD, "" },
-//  { 0x9EAE, "" },
+    { 0x9EAE, "ismusicenabled" }, // AUTOADDED
 //  { 0x9EAF, "" },
 //  { 0x9EB0, "" },
     { 0x9EB1, "isnode3d" },
@@ -40655,7 +40655,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9EC2, "" },
 //  { 0x9EC3, "" },
 //  { 0x9EC4, "" },
-//  { 0x9EC5, "" },
+    { 0x9EC5, "isonemanarmymenu" }, // AUTOADDED
 //  { 0x9EC6, "" },
 //  { 0x9EC7, "" },
 //  { 0x9EC8, "" },
@@ -40668,7 +40668,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9ECF, "" },
 //  { 0x9ED0, "" },
 //  { 0x9ED1, "" },
-//  { 0x9ED2, "" },
+    { 0x9ED2, "ispainted" }, // AUTOADDED
     { 0x9ED3, "ispartdismembered" },
 //  { 0x9ED4, "" },
 //  { 0x9ED5, "" },
@@ -40678,7 +40678,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9ED9, "" },
 //  { 0x9EDA, "" },
 //  { 0x9EDB, "" },
-//  { 0x9EDC, "" },
+    { 0x9EDC, "isperformingmaneuver" }, // AUTOADDED
 //  { 0x9EDD, "" },
 //  { 0x9EDE, "" },
 //  { 0x9EDF, "" },
@@ -40686,7 +40686,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9EE1, "" },
 //  { 0x9EE2, "" },
 //  { 0x9EE3, "" },
-//  { 0x9EE4, "" },
+    { 0x9EE4, "isplaced" }, // AUTOADDED
 //  { 0x9EE5, "" },
 //  { 0x9EE6, "" },
 //  { 0x9EE7, "" },
@@ -40702,8 +40702,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9EF1, "" },
 //  { 0x9EF2, "" },
 //  { 0x9EF3, "" },
-//  { 0x9EF4, "" },
-//  { 0x9EF5, "" },
+    { 0x9EF4, "isplayeroutsideofanybombsite" }, // AUTOADDED
+    { 0x9EF5, "isplayeroutsideofcurbombsite" }, // AUTOADDED
 //  { 0x9EF6, "" },
 //  { 0x9EF7, "" },
 //  { 0x9EF8, "" },
@@ -40711,9 +40711,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9EFA, "" },
     { 0x9EFB, "isplayertimer" },
 //  { 0x9EFC, "" },
-//  { 0x9EFD, "" },
+    { 0x9EFD, "isplayerusingbox" }, // AUTOADDED
 //  { 0x9EFE, "" },
-//  { 0x9EFF, "" },
+    { 0x9EFF, "isplayerweaponatmaxxp" }, // AUTOADDED
 //  { 0x9F00, "" },
 //  { 0x9F01, "" },
 //  { 0x9F02, "" },
@@ -40722,7 +40722,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9F05, "" },
 //  { 0x9F06, "" },
 //  { 0x9F07, "" },
-//  { 0x9F08, "" },
+    { 0x9F08, "ispoweritem" }, // AUTOADDED
 //  { 0x9F09, "" },
 //  { 0x9F0A, "" },
 //  { 0x9F0B, "" },
@@ -40736,7 +40736,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9F13, "" },
 //  { 0x9F14, "" },
 //  { 0x9F15, "" },
-//  { 0x9F16, "" },
+    { 0x9F16, "isreadytofire" }, // AUTOADDED
 //  { 0x9F17, "" },
 //  { 0x9F18, "" },
     { 0x9F19, "isreallyalive" },
@@ -40744,8 +40744,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9F1B, "" },
 //  { 0x9F1C, "" },
 //  { 0x9F1D, "" },
-//  { 0x9F1E, "" },
-//  { 0x9F1F, "" },
+    { 0x9F1E, "isregisteredevent" }, // AUTOADDED
+    { 0x9F1F, "isrelativeteam" }, // AUTOADDED
 //  { 0x9F20, "" },
     { 0x9F21, "isreloading" },
 //  { 0x9F22, "" },
@@ -40775,7 +40775,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9F3A, "" },
 //  { 0x9F3B, "" },
 //  { 0x9F3C, "" },
-//  { 0x9F3D, "" },
+    { 0x9F3D, "isselectableweapon" }, // AUTOADDED
 //  { 0x9F3E, "" },
 //  { 0x9F3F, "" },
 //  { 0x9F40, "" },
@@ -40802,7 +40802,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9F55, "" },
 //  { 0x9F56, "" },
 //  { 0x9F57, "" },
-//  { 0x9F58, "" },
+    { 0x9F58, "isskeetshooter" }, // AUTOADDED
 //  { 0x9F59, "" },
 //  { 0x9F5A, "" },
 //  { 0x9F5B, "" },
@@ -40843,29 +40843,29 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9F7E, "" },
 //  { 0x9F7F, "" },
 //  { 0x9F80, "" },
-//  { 0x9F81, "" },
+    { 0x9F81, "isstunnedorblinded" }, // AUTOADDED
 //  { 0x9F82, "" },
 //  { 0x9F83, "" },
 //  { 0x9F84, "" },
 //  { 0x9F85, "" },
 //  { 0x9F86, "" },
 //  { 0x9F87, "" },
-//  { 0x9F88, "" },
-//  { 0x9F89, "" },
+    { 0x9F88, "issuperinuse" }, // AUTOADDED
+    { 0x9F89, "issupercharging" }, // AUTOADDED
 //  { 0x9F8A, "" },
 //  { 0x9F8B, "" },
 //  { 0x9F8C, "" },
 //  { 0x9F8D, "" },
 //  { 0x9F8E, "" },
     { 0x9F8F, "issuppressedwrapper" },
-//  { 0x9F90, "" },
-//  { 0x9F91, "" },
+    { 0x9F90, "issurvivorkill" }, // AUTOADDED
+    { 0x9F91, "isswitchingteams" }, // AUTOADDED
 //  { 0x9F92, "" },
 //  { 0x9F93, "" },
 //  { 0x9F94, "" },
 //  { 0x9F95, "" },
 //  { 0x9F96, "" },
-//  { 0x9F97, "" },
+    { 0x9F97, "istarget" }, // AUTOADDED
 //  { 0x9F98, "" },
 //  { 0x9F99, "" },
 //  { 0x9F9A, "" },
@@ -40874,7 +40874,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9F9D, "" },
 //  { 0x9F9E, "" },
 //  { 0x9F9F, "" },
-//  { 0x9FA0, "" },
+    { 0x9FA0, "isteamswitchbalanced" }, // AUTOADDED
 //  { 0x9FA1, "" },
 //  { 0x9FA2, "" },
 //  { 0x9FA3, "" },
@@ -40885,8 +40885,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9FA8, "" },
 //  { 0x9FA9, "" },
 //  { 0x9FAA, "" },
-//  { 0x9FAB, "" },
-//  { 0x9FAC, "" },
+    { 0x9FAB, "istimetobeatvalid" }, // AUTOADDED
+    { 0x9FAC, "issmallmissile" }, // AUTOADDED
 //  { 0x9FAD, "" },
 //  { 0x9FAE, "" },
 //  { 0x9FAF, "" },
@@ -40896,7 +40896,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x9FB3, "istrue" },
 //  { 0x9FB4, "" },
 //  { 0x9FB5, "" },
-//  { 0x9FB6, "" },
+    { 0x9FB6, "isttlosdataavailable" }, // AUTOADDED
 //  { 0x9FB7, "" },
 //  { 0x9FB8, "" },
 //  { 0x9FB9, "" },
@@ -40908,7 +40908,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9FBF, "" },
 //  { 0x9FC0, "" },
 //  { 0x9FC1, "" },
-//  { 0x9FC2, "" },
+    { 0x9FC2, "isusingdefaultclass" }, // AUTOADDED
 //  { 0x9FC3, "" },
 //  { 0x9FC4, "" },
     { 0x9FC5, "isusingprimary" },
@@ -40918,13 +40918,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x9FC9, "isusingshotgun" },
     { 0x9FCA, "isusingsidearm" },
 //  { 0x9FCB, "" },
-//  { 0x9FCC, "" },
+    { 0x9FCC, "isusingvanguard" }, // AUTOADDED
 //  { 0x9FCD, "" },
 //  { 0x9FCE, "" },
 //  { 0x9FCF, "" },
 //  { 0x9FD0, "" },
 //  { 0x9FD1, "" },
-//  { 0x9FD2, "" },
+    { 0x9FD2, "isvalidbestweapon" }, // AUTOADDED
 //  { 0x9FD3, "" },
 //  { 0x9FD4, "" },
 //  { 0x9FD5, "" },
@@ -40971,7 +40971,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9FFE, "" },
 //  { 0x9FFF, "" },
 //  { 0xA000, "" },
-//  { 0xA001, "" },
+    { 0xA001, "isweaponitem" }, // AUTOADDED
 //  { 0xA002, "" },
 //  { 0xA003, "" },
 //  { 0xA004, "" },
@@ -40982,7 +40982,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0xA009, "isweaponswitchdisabled_MAYBE" },
 //  { 0xA00A, "" },
 //  { 0xA00B, "" },
-//  { 0xA00C, "" },
+    { 0xA00C, "iswinningteam" }, // AUTOADDED
 //  { 0xA00D, "" },
 //  { 0xA00E, "" },
 //  { 0xA00F, "" },
@@ -41024,7 +41024,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA033, "" },
 //  { 0xA034, "" },
 //  { 0xA035, "" },
-//  { 0xA036, "" },
+    { 0xA036, "itemremoveammofromaltmodes" }, // AUTOADDED
 //  { 0xA037, "" },
 //  { 0xA038, "" },
 //  { 0xA039, "" },
@@ -41926,7 +41926,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA3B9, "" },
 //  { 0xA3BA, "" },
 //  { 0xA3BB, "" },
-//  { 0xA3BC, "" },
+    { 0xA3BC, "jackaldelete" }, // AUTOADDED
 //  { 0xA3BD, "" },
 //  { 0xA3BE, "" },
 //  { 0xA3BF, "" },
@@ -41981,7 +41981,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA3F0, "" },
 //  { 0xA3F1, "" },
 //  { 0xA3F2, "" },
-//  { 0xA3F3, "" },
+    { 0xA3F3, "jackalgettargets" }, // AUTOADDED
 //  { 0xA3F4, "" },
 //  { 0xA3F5, "" },
 //  { 0xA3F6, "" },
@@ -42012,7 +42012,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA40F, "" },
 //  { 0xA410, "" },
 //  { 0xA411, "" },
-//  { 0xA412, "" },
+    { 0xA412, "jackals" }, // AUTOADDED
 //  { 0xA413, "" },
 //  { 0xA414, "" },
 //  { 0xA415, "" },
@@ -42034,11 +42034,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA425, "" },
 //  { 0xA426, "" },
 //  { 0xA427, "" },
-//  { 0xA428, "" },
-//  { 0xA429, "" },
+    { 0xA428, "jackpot_tag" }, // AUTOADDED
+    { 0xA429, "jackpot_targetfx" }, // AUTOADDED
 //  { 0xA42A, "" },
-//  { 0xA42B, "" },
-//  { 0xA42C, "" },
+    { 0xA42B, "jackpotpileicon" }, // AUTOADDED
+    { 0xA42C, "jackpotpileobjid" }, // AUTOADDED
 //  { 0xA42D, "" },
 //  { 0xA42E, "" },
 //  { 0xA42F, "" },
@@ -42152,7 +42152,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA49B, "" },
 //  { 0xA49C, "" },
 //  { 0xA49D, "" },
-//  { 0xA49E, "" },
+    { 0xA49E, "joining_team" }, // AUTOADDED
 //  { 0xA49F, "" },
 //  { 0xA4A0, "" },
 //  { 0xA4A1, "" },
@@ -42410,7 +42410,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA59D, "" },
 //  { 0xA59E, "" },
 //  { 0xA59F, "" },
-//  { 0xA5A0, "" },
+    { 0xA5A0, "keyobject" }, // AUTOADDED
 //  { 0xA5A1, "" },
 //  { 0xA5A2, "" },
 //  { 0xA5A3, "" },
@@ -42425,7 +42425,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA5AC, "" },
 //  { 0xA5AD, "" },
 //  { 0xA5AE, "" },
-//  { 0xA5AF, "" },
+    { 0xA5AF, "kickwait" }, // AUTOADDED
 //  { 0xA5B0, "" },
 //  { 0xA5B1, "" },
 //  { 0xA5B2, "" },
@@ -42556,7 +42556,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA62F, "" },
 //  { 0xA630, "" },
 //  { 0xA631, "" },
-//  { 0xA632, "" },
+    { 0xA632, "killagent" }, // AUTOADDED
 //  { 0xA633, "" },
 //  { 0xA634, "" },
 //  { 0xA635, "" },
@@ -42564,13 +42564,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA637, "" },
 //  { 0xA638, "" },
 //  { 0xA639, "" },
-//  { 0xA63A, "" },
+    { 0xA63A, "killcament" }, // AUTOADDED
 //  { 0xA63B, "" },
-//  { 0xA63C, "" },
+    { 0xA63C, "killcamentnum" }, // AUTOADDED
 //  { 0xA63D, "" },
 //  { 0xA63E, "" },
 //  { 0xA63F, "" },
-//  { 0xA640, "" },
+    { 0xA640, "killcamoffset" }, // AUTOADDED
 //  { 0xA641, "" },
 //  { 0xA642, "" },
 //  { 0xA643, "" },
@@ -42579,7 +42579,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA646, "" },
 //  { 0xA647, "" },
 //  { 0xA648, "" },
-//  { 0xA649, "" },
+    { 0xA649, "killdog" }, // AUTOADDED
 //  { 0xA64A, "" },
 //  { 0xA64B, "" },
 //  { 0xA64C, "" },
@@ -42592,7 +42592,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA653, "" },
 //  { 0xA654, "" },
 //  { 0xA655, "" },
-//  { 0xA656, "" },
+    { 0xA656, "killedself" }, // AUTOADDED
 //  { 0xA657, "" },
 //  { 0xA658, "" },
 //  { 0xA659, "" },
@@ -42606,7 +42606,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA661, "" },
 //  { 0xA662, "" },
 //  { 0xA663, "" },
-//  { 0xA664, "" },
+    { 0xA664, "killhardpointvfx" }, // AUTOADDED
 //  { 0xA665, "" },
 //  { 0xA666, "" },
 //  { 0xA667, "" },
@@ -42645,12 +42645,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA688, "" },
 //  { 0xA689, "" },
 //  { 0xA68A, "" },
-//  { 0xA68B, "" },
-//  { 0xA68C, "" },
-//  { 0xA68D, "" },
+    { 0xA68B, "killstreak_botcanuse" }, // AUTOADDED
+    { 0xA68C, "killstreak_botfunc" }, // AUTOADDED
+    { 0xA68D, "killstreak_botparm" }, // AUTOADDED
 //  { 0xA68E, "" },
-//  { 0xA68F, "" },
-//  { 0xA690, "" },
+    { 0xA68F, "killstreak_global_bp_exists_for" }, // AUTOADDED
+    { 0xA690, "killstreak_info" }, // AUTOADDED
 //  { 0xA691, "" },
 //  { 0xA692, "" },
     { 0xA693, "killstreakcratethink" },
@@ -42678,13 +42678,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA6A9, "" },
 //  { 0xA6AA, "" },
 //  { 0xA6AB, "" },
-//  { 0xA6AC, "" },
+    { 0xA6AC, "killstreaks_array" }, // AUTOADDED
 //  { 0xA6AD, "" },
 //  { 0xA6AE, "" },
 //  { 0xA6AF, "" },
 //  { 0xA6B0, "" },
 //  { 0xA6B1, "" },
-//  { 0xA6B2, "" },
+    { 0xA6B2, "killstreaksetups" }, // AUTOADDED
 //  { 0xA6B3, "" },
 //  { 0xA6B4, "" },
 //  { 0xA6B5, "" },
@@ -42764,7 +42764,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA6FF, "" },
 //  { 0xA700, "" },
 //  { 0xA701, "" },
-//  { 0xA702, "" },
+    { 0xA702, "knife_trigger" }, // AUTOADDED
 //  { 0xA703, "" },
 //  { 0xA704, "" },
 //  { 0xA705, "" },
@@ -43094,7 +43094,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA849, "" },
 //  { 0xA84A, "" },
 //  { 0xA84B, "" },
-//  { 0xA84C, "" },
+    { 0xA84C, "lanterns" }, // AUTOADDED
 //  { 0xA84D, "" },
 //  { 0xA84E, "" },
 //  { 0xA84F, "" },
@@ -43107,7 +43107,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA856, "" },
 //  { 0xA857, "" },
 //  { 0xA858, "" },
-//  { 0xA859, "" },
+    { 0xA859, "largeprojectiledamage" }, // AUTOADDED
 //  { 0xA85A, "" },
 //  { 0xA85B, "" },
 //  { 0xA85C, "" },
@@ -43125,7 +43125,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA868, "" },
 //  { 0xA869, "" },
 //  { 0xA86A, "" },
-//  { 0xA86B, "" },
+    { 0xA86B, "laser_on" }, // AUTOADDED
 //  { 0xA86C, "" },
 //  { 0xA86D, "" },
 //  { 0xA86E, "" },
@@ -43212,7 +43212,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA8BF, "" },
 //  { 0xA8C0, "" },
 //  { 0xA8C1, "" },
-//  { 0xA8C2, "" },
+    { 0xA8C2, "last_global_badplace_time" }, // AUTOADDED
 //  { 0xA8C3, "" },
 //  { 0xA8C4, "" },
 //  { 0xA8C5, "" },
@@ -43237,8 +43237,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA8D8, "" },
 //  { 0xA8D9, "" },
 //  { 0xA8DA, "" },
-//  { 0xA8DB, "" },
-//  { 0xA8DC, "" },
+    { 0xA8DB, "last_large_rod_target" }, // AUTOADDED
+    { 0xA8DC, "last_large_rod_time" }, // AUTOADDED
 //  { 0xA8DD, "" },
 //  { 0xA8DE, "" },
 //  { 0xA8DF, "" },
@@ -43278,7 +43278,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA901, "" },
     { 0xA902, "last_selected_entity_has_changed" },
 //  { 0xA903, "" },
-//  { 0xA904, "" },
+    { 0xA904, "last_sentry" }, // AUTOADDED
 //  { 0xA905, "" },
 //  { 0xA906, "" },
 //  { 0xA907, "" },
@@ -43310,7 +43310,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA921, "" },
 //  { 0xA922, "" },
 //  { 0xA923, "" },
-//  { 0xA924, "" },
+    { 0xA924, "last_used_time" }, // AUTOADDED
 //  { 0xA925, "" },
 //  { 0xA926, "" },
 //  { 0xA927, "" },
@@ -43322,7 +43322,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA92D, "" },
 //  { 0xA92E, "" },
 //  { 0xA92F, "" },
-//  { 0xA930, "" },
+    { 0xA930, "lastaction" }, // AUTOADDED
 //  { 0xA931, "" },
 //  { 0xA932, "" },
 //  { 0xA933, "" },
@@ -43335,7 +43335,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA93A, "" },
 //  { 0xA93B, "" },
 //  { 0xA93C, "" },
-//  { 0xA93D, "" },
+    { 0xA93D, "lastarchetypeinfo" }, // AUTOADDED
 //  { 0xA93E, "" },
 //  { 0xA93F, "" },
 //  { 0xA940, "" },
@@ -43348,7 +43348,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA947, "" },
 //  { 0xA948, "" },
 //  { 0xA949, "" },
-//  { 0xA94A, "" },
+    { 0xA94A, "lastbucket" }, // AUTOADDED
 //  { 0xA94B, "" },
 //  { 0xA94C, "" },
 //  { 0xA94D, "" },
@@ -43366,7 +43366,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA959, "" },
 //  { 0xA95A, "" },
 //  { 0xA95B, "" },
-//  { 0xA95C, "" },
+    { 0xA95C, "lastclass" }, // AUTOADDED
 //  { 0xA95D, "" },
 //  { 0xA95E, "" },
 //  { 0xA95F, "" },
@@ -43375,7 +43375,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA962, "" },
 //  { 0xA963, "" },
 //  { 0xA964, "" },
-//  { 0xA965, "" },
+    { 0xA965, "lastdamagedtime" }, // AUTOADDED
 //  { 0xA966, "" },
 //  { 0xA967, "" },
 //  { 0xA968, "" },
@@ -43388,7 +43388,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA96F, "" },
 //  { 0xA970, "" },
 //  { 0xA971, "" },
-//  { 0xA972, "" },
+    { 0xA972, "lastdeathpos" }, // AUTOADDED
 //  { 0xA973, "" },
 //  { 0xA974, "" },
 //  { 0xA975, "" },
@@ -43437,7 +43437,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA9A0, "" },
 //  { 0xA9A1, "" },
 //  { 0xA9A2, "" },
-//  { 0xA9A3, "" },
+    { 0xA9A3, "lastkilledby" }, // AUTOADDED
 //  { 0xA9A4, "" },
 //  { 0xA9A5, "" },
 //  { 0xA9A6, "" },
@@ -43446,7 +43446,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA9A9, "" },
 //  { 0xA9AA, "" },
 //  { 0xA9AB, "" },
-//  { 0xA9AC, "" },
+    { 0xA9AC, "lastlegitimateattacker" }, // AUTOADDED
 //  { 0xA9AD, "" },
 //  { 0xA9AE, "" },
 //  { 0xA9AF, "" },
@@ -43510,16 +43510,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xA9E9, "" },
 //  { 0xA9EA, "" },
 //  { 0xA9EB, "" },
-//  { 0xA9EC, "" },
+    { 0xA9EC, "lastselfvotime" }, // AUTOADDED
 //  { 0xA9ED, "" },
-//  { 0xA9EE, "" },
+    { 0xA9EE, "lastshotfiredtime" }, // AUTOADDED
 //  { 0xA9EF, "" },
 //  { 0xA9F0, "" },
 //  { 0xA9F1, "" },
 //  { 0xA9F2, "" },
 //  { 0xA9F3, "" },
-//  { 0xA9F4, "" },
-//  { 0xA9F5, "" },
+    { 0xA9F4, "lastspawnpoint" }, // AUTOADDED
+    { 0xA9F5, "lastspawnteam" }, // AUTOADDED
     { 0xA9F6, "lastspawntime" },
 //  { 0xA9F7, "" },
 //  { 0xA9F8, "" },
@@ -43538,7 +43538,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAA05, "" },
 //  { 0xAA06, "" },
 //  { 0xAA07, "" },
-//  { 0xAA08, "" },
+    { 0xAA08, "laststanding" }, // AUTOADDED
 //  { 0xAA09, "" },
 //  { 0xAA0A, "" },
 //  { 0xAA0B, "" },
@@ -43557,7 +43557,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAA18, "" },
 //  { 0xAA19, "" },
 //  { 0xAA1A, "" },
-//  { 0xAA1B, "" },
+    { 0xAA1B, "laststate" }, // AUTOADDED
 //  { 0xAA1C, "" },
 //  { 0xAA1D, "" },
 //  { 0xAA1E, "" },
@@ -43581,10 +43581,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAA30, "" },
 //  { 0xAA31, "" },
 //  { 0xAA32, "" },
-//  { 0xAA33, "" },
+    { 0xAA33, "lasttouchedplatform" }, // AUTOADDED
 //  { 0xAA34, "" },
 //  { 0xAA35, "" },
-//  { 0xAA36, "" },
+    { 0xAA36, "lastupdatetime" }, // AUTOADDED
 //  { 0xAA37, "" },
 //  { 0xAA38, "" },
 //  { 0xAA39, "" },
@@ -43592,13 +43592,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAA3B, "" },
 //  { 0xAA3C, "" },
 //  { 0xAA3D, "" },
-//  { 0xAA3E, "" },
+    { 0xAA3E, "lastusedtime" }, // AUTOADDED
 //  { 0xAA3F, "" },
 //  { 0xAA40, "" },
-//  { 0xAA41, "" },
-//  { 0xAA42, "" },
+    { 0xAA41, "lastvectotarget" }, // AUTOADDED
+    { 0xAA42, "lastvisionsetthermal" }, // AUTOADDED
 //  { 0xAA43, "" },
-//  { 0xAA44, "" },
+    { 0xAA44, "lastwave" }, // AUTOADDED
     { 0xAA45, "lastweapon" },
 //  { 0xAA46, "" },
 //  { 0xAA47, "" },
@@ -43728,10 +43728,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAAC3, "" },
 //  { 0xAAC4, "" },
 //  { 0xAAC5, "" },
-//  { 0xAAC6, "" },
+    { 0xAAC6, "lbexplode" }, // AUTOADDED
 //  { 0xAAC7, "" },
 //  { 0xAAC8, "" },
-//  { 0xAAC9, "" },
+    { 0xAAC9, "lbspin" }, // AUTOADDED
 //  { 0xAACA, "" },
 //  { 0xAACB, "" },
 //  { 0xAACC, "" },
@@ -43837,7 +43837,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAB30, "" },
 //  { 0xAB31, "" },
 //  { 0xAB32, "" },
-//  { 0xAB33, "" },
+    { 0xAB33, "leaving_team" }, // AUTOADDED
 //  { 0xAB34, "" },
 //  { 0xAB35, "" },
 //  { 0xAB36, "" },
@@ -44009,13 +44009,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xABDC, "" },
 //  { 0xABDD, "" },
 //  { 0xABDE, "" },
-//  { 0xABDF, "" },
+    { 0xABDF, "level_notify" }, // AUTOADDED
 //  { 0xABE0, "" },
 //  { 0xABE1, "" },
 //  { 0xABE2, "" },
 //  { 0xABE3, "" },
 //  { 0xABE4, "" },
-//  { 0xABE5, "" },
+    { 0xABE5, "level_specific_bot_targets" }, // AUTOADDED
 //  { 0xABE6, "" },
 //  { 0xABE7, "" },
 //  { 0xABE8, "" },
@@ -44145,8 +44145,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAC64, "" },
 //  { 0xAC65, "" },
 //  { 0xAC66, "" },
-//  { 0xAC67, "" },
-//  { 0xAC68, "" },
+    { 0xAC67, "lifeboostactive" }, // AUTOADDED
+    { 0xAC68, "lifeid" }, // AUTOADDED
 //  { 0xAC69, "" },
 //  { 0xAC6A, "" },
 //  { 0xAC6B, "" },
@@ -44154,8 +44154,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAC6D, "" },
 //  { 0xAC6E, "" },
 //  { 0xAC6F, "" },
-//  { 0xAC70, "" },
-//  { 0xAC71, "" },
+    { 0xAC70, "lifepackowner" }, // AUTOADDED
+    { 0xAC71, "lifespan" }, // AUTOADDED
 //  { 0xAC72, "" },
 //  { 0xAC73, "" },
 //  { 0xAC74, "" },
@@ -44208,22 +44208,22 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xACA3, "" },
 //  { 0xACA4, "" },
 //  { 0xACA5, "" },
-//  { 0xACA6, "" },
+    { 0xACA6, "lightarmor_lightarmor_disabled" }, // AUTOADDED
 //  { 0xACA7, "" },
-//  { 0xACA8, "" },
-//  { 0xACA9, "" },
+    { 0xACA8, "lightarmor_monitordeath" }, // AUTOADDED
+    { 0xACA9, "lightarmor_set" }, // AUTOADDED
 //  { 0xACAA, "" },
 //  { 0xACAB, "" },
 //  { 0xACAC, "" },
 //  { 0xACAD, "" },
-//  { 0xACAE, "" },
+    { 0xACAE, "lightarmorhp" }, // AUTOADDED
 //  { 0xACAF, "" },
 //  { 0xACB0, "" },
-//  { 0xACB1, "" },
+    { 0xACB1, "lightbarstructs" }, // AUTOADDED
 //  { 0xACB2, "" },
 //  { 0xACB3, "" },
 //  { 0xACB4, "" },
-//  { 0xACB5, "" },
+    { 0xACB5, "lightfxfunc" }, // AUTOADDED
 //  { 0xACB6, "" },
 //  { 0xACB7, "" },
 //  { 0xACB8, "" },
@@ -44246,9 +44246,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xACC9, "" },
 //  { 0xACCA, "" },
 //  { 0xACCB, "" },
-//  { 0xACCC, "" },
+    { 0xACCC, "lights_off" }, // AUTOADDED
 //  { 0xACCD, "" },
-//  { 0xACCE, "" },
+    { 0xACCE, "lights_on" }, // AUTOADDED
 //  { 0xACCF, "" },
 //  { 0xACD0, "" },
 //  { 0xACD1, "" },
@@ -44272,7 +44272,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xACE3, "" },
 //  { 0xACE4, "" },
 //  { 0xACE5, "" },
-//  { 0xACE6, "" },
+    { 0xACE6, "line_interect_sphere" }, // AUTOADDED
 //  { 0xACE7, "" },
 //  { 0xACE8, "" },
 //  { 0xACE9, "" },
@@ -44328,7 +44328,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAD1B, "" },
 //  { 0xAD1C, "" },
 //  { 0xAD1D, "" },
-//  { 0xAD1E, "" },
+    { 0xAD1E, "linked_ents" }, // AUTOADDED
 //  { 0xAD1F, "" },
 //  { 0xAD20, "" },
 //  { 0xAD21, "" },
@@ -44355,7 +44355,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAD36, "" },
 //  { 0xAD37, "" },
 //  { 0xAD38, "" },
-//  { 0xAD39, "" },
+    { 0xAD39, "linkparent" }, // AUTOADDED
 //  { 0xAD3A, "" },
 //  { 0xAD3B, "" },
 //  { 0xAD3C, "" },
@@ -44426,7 +44426,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAD7D, "" },
 //  { 0xAD7E, "" },
 //  { 0xAD7F, "" },
-//  { 0xAD80, "" },
+    { 0xAD80, "listoffoundturrets" }, // AUTOADDED
 //  { 0xAD81, "" },
 //  { 0xAD82, "" },
 //  { 0xAD83, "" },
@@ -44437,7 +44437,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAD88, "" },
 //  { 0xAD89, "" },
 //  { 0xAD8A, "" },
-//  { 0xAD8B, "" },
+    { 0xAD8B, "littlebirds" }, // AUTOADDED
 //  { 0xAD8C, "" },
 //  { 0xAD8D, "" },
 //  { 0xAD8E, "" },
@@ -44604,8 +44604,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAE2F, "" },
 //  { 0xAE30, "" },
 //  { 0xAE31, "" },
-//  { 0xAE32, "" },
-//  { 0xAE33, "" },
+    { 0xAE32, "loadout_getclassteam" }, // AUTOADDED
+    { 0xAE33, "loadout_getplayerstreaktype" }, // AUTOADDED
 //  { 0xAE34, "" },
 //  { 0xAE35, "" },
 //  { 0xAE36, "" },
@@ -44644,15 +44644,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAE57, "" },
 //  { 0xAE58, "" },
 //  { 0xAE59, "" },
-//  { 0xAE5A, "" },
+    { 0xAE5A, "loadout_updateplayerstreaktype" }, // AUTOADDED
 //  { 0xAE5B, "" },
 //  { 0xAE5C, "" },
-//  { 0xAE5D, "" },
+    { 0xAE5D, "loadout_updatestreaktype" }, // AUTOADDED
 //  { 0xAE5E, "" },
 //  { 0xAE5F, "" },
 //  { 0xAE60, "" },
 //  { 0xAE61, "" },
-//  { 0xAE62, "" },
+    { 0xAE62, "loadoutarchetype" }, // AUTOADDED
 //  { 0xAE63, "" },
 //  { 0xAE64, "" },
 //  { 0xAE65, "" },
@@ -44675,7 +44675,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAE76, "" },
 //  { 0xAE77, "" },
 //  { 0xAE78, "" },
-//  { 0xAE79, "" },
+    { 0xAE79, "loadoutperks" }, // AUTOADDED
 //  { 0xAE7A, "" },
 //  { 0xAE7B, "" },
 //  { 0xAE7C, "" },
@@ -44688,7 +44688,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAE83, "" },
 //  { 0xAE84, "" },
 //  { 0xAE85, "" },
-//  { 0xAE86, "" },
+    { 0xAE86, "loadoutprimaryattachments" }, // AUTOADDED
 //  { 0xAE87, "" },
 //  { 0xAE88, "" },
 //  { 0xAE89, "" },
@@ -44701,14 +44701,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAE90, "" },
 //  { 0xAE91, "" },
 //  { 0xAE92, "" },
-//  { 0xAE93, "" },
+    { 0xAE93, "loadouts" }, // AUTOADDED
 //  { 0xAE94, "" },
 //  { 0xAE95, "" },
 //  { 0xAE96, "" },
 //  { 0xAE97, "" },
 //  { 0xAE98, "" },
 //  { 0xAE99, "" },
-//  { 0xAE9A, "" },
+    { 0xAE9A, "loadoutsecondaryattachments" }, // AUTOADDED
 //  { 0xAE9B, "" },
 //  { 0xAE9C, "" },
 //  { 0xAE9D, "" },
@@ -44720,18 +44720,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAEA3, "" },
 //  { 0xAEA4, "" },
 //  { 0xAEA5, "" },
-//  { 0xAEA6, "" },
+    { 0xAEA6, "loadoutsgroup" }, // AUTOADDED
 //  { 0xAEA7, "" },
 //  { 0xAEA8, "" },
-//  { 0xAEA9, "" },
-//  { 0xAEAA, "" },
+    { 0xAEA9, "loadoutstreaktype" }, // AUTOADDED
+    { 0xAEAA, "loadoutsuper" }, // AUTOADDED
 //  { 0xAEAB, "" },
-//  { 0xAEAC, "" },
+    { 0xAEAC, "loadoutvalues" }, // AUTOADDED
 //  { 0xAEAD, "" },
 //  { 0xAEAE, "" },
 //  { 0xAEAF, "" },
 //  { 0xAEB0, "" },
-//  { 0xAEB1, "" },
+    { 0xAEB1, "loadweaponranktable" }, // AUTOADDED
 //  { 0xAEB2, "" },
 //  { 0xAEB3, "" },
 //  { 0xAEB4, "" },
@@ -44744,7 +44744,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAEBB, "" },
 //  { 0xAEBC, "" },
 //  { 0xAEBD, "" },
-//  { 0xAEBE, "" },
+    { 0xAEBE, "local_waittill_any_return_6" }, // AUTOADDED
 //  { 0xAEBF, "" },
 //  { 0xAEC0, "" },
 //  { 0xAEC1, "" },
@@ -44752,10 +44752,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAEC3, "" },
     { 0xAEC4, "location" },
 //  { 0xAEC5, "" },
-//  { 0xAEC6, "" },
-//  { 0xAEC7, "" },
+    { 0xAEC6, "location_called_out_ever" }, // AUTOADDED
+    { 0xAEC7, "location_called_out_recently" }, // AUTOADDED
 //  { 0xAEC8, "" },
-//  { 0xAEC9, "" },
+    { 0xAEC9, "location_get_last_callout_time" }, // AUTOADDED
 //  { 0xAECA, "" },
     { 0xAECB, "locationaliases" },
     { 0xAECC, "locationlastcallouttimes" },
@@ -44859,7 +44859,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAF2E, "" },
 //  { 0xAF2F, "" },
 //  { 0xAF30, "" },
-//  { 0xAF31, "" },
+    { 0xAF31, "lockplayerforremoteuavlaunch" }, // AUTOADDED
 //  { 0xAF32, "" },
 //  { 0xAF33, "" },
 //  { 0xAF34, "" },
@@ -44960,9 +44960,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAF93, "" },
 //  { 0xAF94, "" },
 //  { 0xAF95, "" },
-//  { 0xAF96, "" },
+    { 0xAF96, "logattackerkillstreak" }, // AUTOADDED
 //  { 0xAF97, "" },
-//  { 0xAF98, "" },
+    { 0xAF98, "logbadspawn" }, // AUTOADDED
 //  { 0xAF99, "" },
 //  { 0xAF9A, "" },
 //  { 0xAF9B, "" },
@@ -44991,10 +44991,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAFB2, "" },
 //  { 0xAFB3, "" },
 //  { 0xAFB4, "" },
-//  { 0xAFB5, "" },
+    { 0xAFB5, "logevent_tag" }, // AUTOADDED
 //  { 0xAFB6, "" },
-//  { 0xAFB7, "" },
-//  { 0xAFB8, "" },
+    { 0xAFB7, "logextraspawn" }, // AUTOADDED
+    { 0xAFB8, "logextraspawninfothink" }, // AUTOADDED
 //  { 0xAFB9, "" },
 //  { 0xAFBA, "" },
 //  { 0xAFBB, "" },
@@ -45029,7 +45029,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xAFD8, "" },
 //  { 0xAFD9, "" },
 //  { 0xAFDA, "" },
-//  { 0xAFDB, "" },
+    { 0xAFDB, "logteamselection" }, // AUTOADDED
 //  { 0xAFDC, "" },
 //  { 0xAFDD, "" },
 //  { 0xAFDE, "" },
@@ -45113,7 +45113,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB02C, "" },
 //  { 0xB02D, "" },
 //  { 0xB02E, "" },
-//  { 0xB02F, "" },
+    { 0xB02F, "lookuppowerslot" }, // AUTOADDED
 //  { 0xB030, "" },
 //  { 0xB031, "" },
 //  { 0xB032, "" },
@@ -45138,7 +45138,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB045, "" },
 //  { 0xB046, "" },
 //  { 0xB047, "" },
-//  { 0xB048, "" },
+    { 0xB048, "loop_sound" }, // AUTOADDED
     { 0xB049, "loop_sound_delete" },
 //  { 0xB04A, "" },
 //  { 0xB04B, "" },
@@ -45174,7 +45174,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB069, "" },
 //  { 0xB06A, "" },
 //  { 0xB06B, "" },
-//  { 0xB06C, "" },
+    { 0xB06C, "looptriggeredeffect" }, // AUTOADDED
 //  { 0xB06D, "" },
 //  { 0xB06E, "" },
 //  { 0xB06F, "" },
@@ -45288,16 +45288,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB0DB, "" },
 //  { 0xB0DC, "" },
 //  { 0xB0DD, "" },
-//  { 0xB0DE, "" },
-//  { 0xB0DF, "" },
-//  { 0xB0E0, "" },
-//  { 0xB0E1, "" },
+    { 0xB0DE, "lowermessage" }, // AUTOADDED
+    { 0xB0DF, "lowermessagefont" }, // AUTOADDED
+    { 0xB0E0, "lowermessages" }, // AUTOADDED
+    { 0xB0E1, "lowermessagethink" }, // AUTOADDED
 //  { 0xB0E2, "" },
 //  { 0xB0E3, "" },
-//  { 0xB0E4, "" },
-//  { 0xB0E5, "" },
-//  { 0xB0E6, "" },
-//  { 0xB0E7, "" },
+    { 0xB0E4, "lowertextfontsize" }, // AUTOADDED
+    { 0xB0E5, "lowertexty" }, // AUTOADDED
+    { 0xB0E6, "lowertextyalign" }, // AUTOADDED
+    { 0xB0E7, "lowertimer" }, // AUTOADDED
 //  { 0xB0E8, "" },
 //  { 0xB0E9, "" },
 //  { 0xB0EA, "" },
@@ -45737,16 +45737,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB29C, "" },
 //  { 0xB29D, "" },
 //  { 0xB29E, "" },
-//  { 0xB29F, "" },
+    { 0xB29F, "makecranked" }, // AUTOADDED
 //  { 0xB2A0, "" },
 //  { 0xB2A1, "" },
 //  { 0xB2A2, "" },
-//  { 0xB2A3, "" },
-//  { 0xB2A4, "" },
-//  { 0xB2A5, "" },
-//  { 0xB2A6, "" },
+    { 0xB2A3, "makeexplosiveunusable" }, // AUTOADDED
+    { 0xB2A4, "makeexplosiveunusuabletag" }, // AUTOADDED
+    { 0xB2A5, "makeexplosiveusable" }, // AUTOADDED
+    { 0xB2A6, "makeexplosiveusableinternal" }, // AUTOADDED
 //  { 0xB2A7, "" },
-//  { 0xB2A8, "" },
+    { 0xB2A8, "makehelitype" }, // AUTOADDED
 //  { 0xB2A9, "" },
 //  { 0xB2AA, "" },
 //  { 0xB2AB, "" },
@@ -45755,7 +45755,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB2AE, "" },
 //  { 0xB2AF, "" },
 //  { 0xB2B0, "" },
-//  { 0xB2B1, "" },
+    { 0xB2B1, "makesolid" }, // AUTOADDED
 //  { 0xB2B2, "" },
 //  { 0xB2B3, "" },
 //  { 0xB2B4, "" },
@@ -45887,11 +45887,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB332, "" },
 //  { 0xB333, "" },
 //  { 0xB334, "" },
-//  { 0xB335, "" },
+    { 0xB335, "mapname" }, // AUTOADDED
 //  { 0xB336, "" },
 //  { 0xB337, "" },
 //  { 0xB338, "" },
-//  { 0xB339, "" },
+    { 0xB339, "mapsize" }, // AUTOADDED
 //  { 0xB33A, "" },
 //  { 0xB33B, "" },
 //  { 0xB33C, "" },
@@ -45946,18 +45946,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB36D, "" },
 //  { 0xB36E, "" },
 //  { 0xB36F, "" },
-//  { 0xB370, "" },
+    { 0xB370, "markedbyboomperk" }, // AUTOADDED
 //  { 0xB371, "" },
-//  { 0xB372, "" },
+    { 0xB372, "markedplayers" }, // AUTOADDED
 //  { 0xB373, "" },
 //  { 0xB374, "" },
-//  { 0xB375, "" },
+    { 0xB375, "markempsignatures" }, // AUTOADDED
 //  { 0xB376, "" },
-//  { 0xB377, "" },
+    { 0xB377, "marker" }, // AUTOADDED
 //  { 0xB378, "" },
 //  { 0xB379, "" },
 //  { 0xB37A, "" },
-//  { 0xB37B, "" },
+    { 0xB37B, "markfordetete" }, // AUTOADDED
 //  { 0xB37C, "" },
 //  { 0xB37D, "" },
 //  { 0xB37E, "" },
@@ -45965,7 +45965,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB380, "" },
 //  { 0xB381, "" },
 //  { 0xB382, "" },
-//  { 0xB383, "" },
+    { 0xB383, "marktargetlaser" }, // AUTOADDED
 //  { 0xB384, "" },
 //  { 0xB385, "" },
 //  { 0xB386, "" },
@@ -46068,36 +46068,36 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB3E7, "" },
 //  { 0xB3E8, "" },
 //  { 0xB3E9, "" },
-//  { 0xB3EA, "" },
+    { 0xB3EA, "matchforfeittimer" }, // AUTOADDED
 //  { 0xB3EB, "" },
     { 0xB3EC, "matchmakinggame" },
 //  { 0xB3ED, "" },
-//  { 0xB3EE, "" },
-//  { 0xB3EF, "" },
-//  { 0xB3F0, "" },
+    { 0xB3EE, "matchreceventcountline" }, // AUTOADDED
+    { 0xB3EF, "matchrecevents" }, // AUTOADDED
+    { 0xB3F0, "matchrecording_dump" }, // AUTOADDED
 //  { 0xB3F1, "" },
 //  { 0xB3F2, "" },
-//  { 0xB3F3, "" },
+    { 0xB3F3, "matchrecording_generateid" }, // AUTOADDED
 //  { 0xB3F4, "" },
 //  { 0xB3F5, "" },
 //  { 0xB3F6, "" },
-//  { 0xB3F7, "" },
+    { 0xB3F7, "matchrecording_inceventlinecount" }, // AUTOADDED
 //  { 0xB3F8, "" },
-//  { 0xB3F9, "" },
+    { 0xB3F9, "matchrecording_isenabled" }, // AUTOADDED
 //  { 0xB3FA, "" },
-//  { 0xB3FB, "" },
-//  { 0xB3FC, "" },
-//  { 0xB3FD, "" },
+    { 0xB3FB, "matchrecording_logevent" }, // AUTOADDED
+    { 0xB3FC, "matchrecording_logeventmsg" }, // AUTOADDED
+    { 0xB3FD, "matchrecording_logeventplayername" }, // AUTOADDED
 //  { 0xB3FE, "" },
 //  { 0xB3FF, "" },
-//  { 0xB400, "" },
+    { 0xB400, "matchrecording_onplayerconnect" }, // AUTOADDED
 //  { 0xB401, "" },
 //  { 0xB402, "" },
 //  { 0xB403, "" },
 //  { 0xB404, "" },
-//  { 0xB405, "" },
-//  { 0xB406, "" },
-//  { 0xB407, "" },
+    { 0xB405, "matchrecording_teammap" }, // AUTOADDED
+    { 0xB406, "matchrecording_type" }, // AUTOADDED
+    { 0xB407, "matchrecording_usereventthink" }, // AUTOADDED
 //  { 0xB408, "" },
 //  { 0xB409, "" },
     { 0xB40A, "matchrules_damagemultiplier" },
@@ -46108,9 +46108,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB40F, "" },
     { 0xB410, "matchrules_vampirism" },
 //  { 0xB411, "" },
-//  { 0xB412, "" },
+    { 0xB412, "livelobbymatchstarttimer" }, // AUTOADDED
 //  { 0xB413, "" },
-//  { 0xB414, "" },
+    { 0xB414, "matchstarttimerskip" }, // AUTOADDED
 //  { 0xB415, "" },
 //  { 0xB416, "" },
 //  { 0xB417, "" },
@@ -46213,7 +46213,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB478, "" },
 //  { 0xB479, "" },
 //  { 0xB47A, "" },
-//  { 0xB47B, "" },
+    { 0xB47B, "maxalpha" }, // AUTOADDED
 //  { 0xB47C, "" },
 //  { 0xB47D, "" },
 //  { 0xB47E, "" },
@@ -46236,7 +46236,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB48F, "" },
 //  { 0xB490, "" },
 //  { 0xB491, "" },
-//  { 0xB492, "" },
+    { 0xB492, "maxdistance" }, // AUTOADDED
 //  { 0xB493, "" },
 //  { 0xB494, "" },
 //  { 0xB495, "" },
@@ -46246,14 +46246,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB499, "" },
 //  { 0xB49A, "" },
 //  { 0xB49B, "" },
-//  { 0xB49C, "" },
+    { 0xB49C, "maxfontscale" }, // AUTOADDED
 //  { 0xB49D, "" },
 //  { 0xB49E, "" },
 //  { 0xB49F, "" },
 //  { 0xB4A0, "" },
 //  { 0xB4A1, "" },
 //  { 0xB4A2, "" },
-//  { 0xB4A3, "" },
+    { 0xB4A3, "maxheight" }, // AUTOADDED
 //  { 0xB4A4, "" },
 //  { 0xB4A5, "" },
 //  { 0xB4A6, "" },
@@ -46265,8 +46265,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB4AC, "" },
 //  { 0xB4AD, "" },
 //  { 0xB4AE, "" },
-//  { 0xB4AF, "" },
-//  { 0xB4B0, "" },
+    { 0xB4AF, "maxlives" }, // AUTOADDED
+    { 0xB4B0, "maxlogclients" }, // AUTOADDED
 //  { 0xB4B1, "" },
 //  { 0xB4B2, "" },
 //  { 0xB4B3, "" },
@@ -46279,16 +46279,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB4BA, "" },
 //  { 0xB4BB, "" },
 //  { 0xB4BC, "" },
-//  { 0xB4BD, "" },
+    { 0xB4BD, "maxplayerspawninfluencedistsquared" }, // AUTOADDED
 //  { 0xB4BE, "" },
 //  { 0xB4BF, "" },
-//  { 0xB4C0, "" },
+    { 0xB4C0, "maxrank" }, // AUTOADDED
 //  { 0xB4C1, "" },
 //  { 0xB4C2, "" },
 //  { 0xB4C3, "" },
 //  { 0xB4C4, "" },
 //  { 0xB4C5, "" },
-//  { 0xB4C6, "" },
+    { 0xB4C6, "maxspawndisttohomebase" }, // AUTOADDED
 //  { 0xB4C7, "" },
 //  { 0xB4C8, "" },
 //  { 0xB4C9, "" },
@@ -46299,12 +46299,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB4CE, "" },
 //  { 0xB4CF, "" },
 //  { 0xB4D0, "" },
-//  { 0xB4D1, "" },
+    { 0xB4D1, "maxuses" }, // AUTOADDED
 //  { 0xB4D2, "" },
 //  { 0xB4D3, "" },
-//  { 0xB4D4, "" },
+    { 0xB4D4, "maxweaponranks" }, // AUTOADDED
 //  { 0xB4D5, "" },
-//  { 0xB4D6, "" },
+    { 0xB4D6, "maxxp" }, // AUTOADDED
 //  { 0xB4D7, "" },
 //  { 0xB4D8, "" },
 //  { 0xB4D9, "" },
@@ -46654,9 +46654,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB631, "" },
 //  { 0xB632, "" },
     { 0xB633, "meleerequested" },
-//  { 0xB634, "" },
-//  { 0xB635, "" },
-//  { 0xB636, "" },
+    { 0xB634, "meleerequestedcharge" }, // AUTOADDED
+    { 0xB635, "meleerequestedcharge_target" }, // AUTOADDED
+    { 0xB636, "meleerequestedcharge_targetposition" }, // AUTOADDED
 //  { 0xB637, "" },
     { 0xB638, "meleerequestedtarget" },
 //  { 0xB639, "" },
@@ -46714,15 +46714,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0xB66D, "menu_none" },
     { 0xB66E, "menu_select_by_name" },
 //  { 0xB66F, "" },
-//  { 0xB670, "" },
+    { 0xB670, "menuclass" }, // AUTOADDED
 //  { 0xB671, "" },
     { 0xB672, "menunone" },
 //  { 0xB673, "" },
 //  { 0xB674, "" },
 //  { 0xB675, "" },
-//  { 0xB676, "" },
+    { 0xB676, "menurigperks" }, // AUTOADDED
     { 0xB677, "menus" },
-//  { 0xB678, "" },
+    { 0xB678, "menuspectator" }, // AUTOADDED
 //  { 0xB679, "" },
 //  { 0xB67A, "" },
 //  { 0xB67B, "" },
@@ -46791,11 +46791,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB6BA, "" },
 //  { 0xB6BB, "" },
 //  { 0xB6BC, "" },
-//  { 0xB6BD, "" },
+    { 0xB6BD, "mgturret" }, // AUTOADDED
 //  { 0xB6BE, "" },
-//  { 0xB6BF, "" },
-//  { 0xB6C0, "" },
-//  { 0xB6C1, "" },
+    { 0xB6BF, "mgturretinfo" }, // AUTOADDED
+    { 0xB6C0, "mgturretleft" }, // AUTOADDED
+    { 0xB6C1, "mgturretright" }, // AUTOADDED
 //  { 0xB6C2, "" },
 //  { 0xB6C3, "" },
 //  { 0xB6C4, "" },
@@ -46913,7 +46913,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB734, "" },
 //  { 0xB735, "" },
 //  { 0xB736, "" },
-//  { 0xB737, "" },
+    { 0xB737, "migrationcapturereset" }, // AUTOADDED
 //  { 0xB738, "" },
 //  { 0xB739, "" },
 //  { 0xB73A, "" },
@@ -46953,7 +46953,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB75C, "" },
 //  { 0xB75D, "" },
 //  { 0xB75E, "" },
-//  { 0xB75F, "" },
+    { 0xB75F, "mindistsquared" }, // AUTOADDED
 //  { 0xB760, "" },
 //  { 0xB761, "" },
 //  { 0xB762, "" },
@@ -46971,17 +46971,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB76E, "" },
 //  { 0xB76F, "" },
 //  { 0xB770, "" },
-//  { 0xB771, "" },
-//  { 0xB772, "" },
+    { 0xB771, "minefield" }, // AUTOADDED
+    { 0xB772, "minefield_kill" }, // AUTOADDED
 //  { 0xB773, "" },
-//  { 0xB774, "" },
+    { 0xB774, "minefields" }, // AUTOADDED
 //  { 0xB775, "" },
 //  { 0xB776, "" },
 //  { 0xB777, "" },
 //  { 0xB778, "" },
 //  { 0xB779, "" },
-//  { 0xB77A, "" },
-//  { 0xB77B, "" },
+    { 0xB77A, "mineselfdestruct" }, // AUTOADDED
+    { 0xB77B, "mineselfdestructtime" }, // AUTOADDED
 //  { 0xB77C, "" },
 //  { 0xB77D, "" },
 //  { 0xB77E, "" },
@@ -47065,7 +47065,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB7CC, "" },
 //  { 0xB7CD, "" },
 //  { 0xB7CE, "" },
-//  { 0xB7CF, "" },
+    { 0xB7CF, "minxp" }, // AUTOADDED
 //  { 0xB7D0, "" },
 //  { 0xB7D1, "" },
 //  { 0xB7D2, "" },
@@ -47104,12 +47104,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB7F3, "" },
 //  { 0xB7F4, "" },
 //  { 0xB7F5, "" },
-//  { 0xB7F6, "" },
+    { 0xB7F6, "missile_find_ground_target" }, // AUTOADDED
 //  { 0xB7F7, "" },
 //  { 0xB7F8, "" },
 //  { 0xB7F9, "" },
-//  { 0xB7FA, "" },
-//  { 0xB7FB, "" },
+    { 0xB7FA, "missile_get_desired_angles_to_target" }, // AUTOADDED
+    { 0xB7FB, "missile_get_distance_to_target" }, // AUTOADDED
 //  { 0xB7FC, "" },
 //  { 0xB7FD, "" },
 //  { 0xB7FE, "" },
@@ -47124,7 +47124,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB807, "" },
 //  { 0xB808, "" },
 //  { 0xB809, "" },
-//  { 0xB80A, "" },
+    { 0xB80A, "missile_isincoming" }, // AUTOADDED
 //  { 0xB80B, "" },
 //  { 0xB80C, "" },
 //  { 0xB80D, "" },
@@ -47266,7 +47266,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB895, "" },
 //  { 0xB896, "" },
 //  { 0xB897, "" },
-//  { 0xB898, "" },
+    { 0xB898, "missiles" }, // AUTOADDED
 //  { 0xB899, "" },
 //  { 0xB89A, "" },
 //  { 0xB89B, "" },
@@ -47396,16 +47396,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB917, "" },
 //  { 0xB918, "" },
 //  { 0xB919, "" },
-//  { 0xB91A, "" },
+    { 0xB91A, "modelbase" }, // AUTOADDED
 //  { 0xB91B, "" },
 //  { 0xB91C, "" },
-//  { 0xB91D, "" },
+    { 0xB91D, "modeldestroyed" }, // AUTOADDED
 //  { 0xB91E, "" },
 //  { 0xB91F, "" },
 //  { 0xB920, "" },
 //  { 0xB921, "" },
 //  { 0xB922, "" },
-//  { 0xB923, "" },
+    { 0xB923, "modelnames" }, // AUTOADDED
 //  { 0xB924, "" },
 //  { 0xB925, "" },
 //  { 0xB926, "" },
@@ -47415,10 +47415,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB92A, "" },
 //  { 0xB92B, "" },
 //  { 0xB92C, "" },
-//  { 0xB92D, "" },
+    { 0xB92D, "modifieddefendcheck" }, // AUTOADDED
 //  { 0xB92E, "" },
 //  { 0xB92F, "" },
-//  { 0xB930, "" },
+    { 0xB930, "modifiers" }, // AUTOADDED
 //  { 0xB931, "" },
 //  { 0xB932, "" },
     { 0xB933, "modify_player_speed" },
@@ -47435,7 +47435,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB93E, "" },
 //  { 0xB93F, "" },
 //  { 0xB940, "" },
-//  { 0xB941, "" },
+    { 0xB941, "momentum" }, // AUTOADDED
 //  { 0xB942, "" },
 //  { 0xB943, "" },
 //  { 0xB944, "" },
@@ -47460,7 +47460,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB957, "" },
     { 0xB958, "monitor_callbutton" },
 //  { 0xB959, "" },
-//  { 0xB95A, "" },
+    { 0xB95A, "monitor_cautious_approach_early_out" }, // AUTOADDED
 //  { 0xB95B, "" },
 //  { 0xB95C, "" },
 //  { 0xB95D, "" },
@@ -47468,7 +47468,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB95F, "" },
 //  { 0xB960, "" },
 //  { 0xB961, "" },
-//  { 0xB962, "" },
+    { 0xB962, "monitor_defend_player" }, // AUTOADDED
 //  { 0xB963, "" },
 //  { 0xB964, "" },
 //  { 0xB965, "" },
@@ -47476,7 +47476,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB967, "" },
 //  { 0xB968, "" },
 //  { 0xB969, "" },
-//  { 0xB96A, "" },
+    { 0xB96A, "monitor_enemy_dangerous_killstreak" }, // AUTOADDED
 //  { 0xB96B, "" },
 //  { 0xB96C, "" },
 //  { 0xB96D, "" },
@@ -47501,9 +47501,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB980, "" },
 //  { 0xB981, "" },
 //  { 0xB982, "" },
-//  { 0xB983, "" },
+    { 0xB983, "monitor_odin_marker" }, // AUTOADDED
 //  { 0xB984, "" },
-//  { 0xB985, "" },
+    { 0xB985, "monitor_pause_spawning" }, // AUTOADDED
 //  { 0xB986, "" },
 //  { 0xB987, "" },
 //  { 0xB988, "" },
@@ -47563,7 +47563,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB9BE, "" },
 //  { 0xB9BF, "" },
 //  { 0xB9C0, "" },
-//  { 0xB9C1, "" },
+    { 0xB9C1, "monitorboost" }, // AUTOADDED
 //  { 0xB9C2, "" },
 //  { 0xB9C3, "" },
 //  { 0xB9C4, "" },
@@ -47591,7 +47591,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB9DA, "" },
 //  { 0xB9DB, "" },
 //  { 0xB9DC, "" },
-//  { 0xB9DD, "" },
+    { 0xB9DD, "monitorgameend" }, // AUTOADDED
 //  { 0xB9DE, "" },
 //  { 0xB9DF, "" },
 //  { 0xB9E0, "" },
@@ -47623,9 +47623,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB9FA, "" },
 //  { 0xB9FB, "" },
 //  { 0xB9FC, "" },
-//  { 0xB9FD, "" },
+    { 0xB9FD, "monitorobjectivecamera" }, // AUTOADDED
 //  { 0xB9FE, "" },
-//  { 0xB9FF, "" },
+    { 0xB9FF, "monitorowner" }, // AUTOADDED
 //  { 0xBA00, "" },
 //  { 0xBA01, "" },
 //  { 0xBA02, "" },
@@ -47651,7 +47651,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBA16, "" },
 //  { 0xBA17, "" },
 //  { 0xBA18, "" },
-//  { 0xBA19, "" },
+    { 0xBA19, "monitorsmokeactive" }, // AUTOADDED
 //  { 0xBA1A, "" },
 //  { 0xBA1B, "" },
 //  { 0xBA1C, "" },
@@ -48307,7 +48307,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBCA6, "" },
 //  { 0xBCA7, "" },
 //  { 0xBCA8, "" },
-//  { 0xBCA9, "" },
+    { 0xBCA9, "moveballtoplayer" }, // AUTOADDED
 //  { 0xBCAA, "" },
 //  { 0xBCAB, "" },
 //  { 0xBCAC, "" },
@@ -48352,7 +48352,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBCD3, "" },
 //  { 0xBCD4, "" },
 //  { 0xBCD5, "" },
-//  { 0xBCD6, "" },
+    { 0xBCD6, "moveplaybackrate" }, // AUTOADDED
 //  { 0xBCD7, "" },
 //  { 0xBCD8, "" },
 //  { 0xBCD9, "" },
@@ -48360,7 +48360,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBCDB, "" },
 //  { 0xBCDC, "" },
 //  { 0xBCDD, "" },
-//  { 0xBCDE, "" },
+    { 0xBCDE, "mover_suicide" }, // AUTOADDED
 //  { 0xBCDF, "" },
 //  { 0xBCE0, "" },
 //  { 0xBCE1, "" },
@@ -48372,7 +48372,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBCE7, "" },
 //  { 0xBCE8, "" },
 //  { 0xBCE9, "" },
-//  { 0xBCEA, "" },
+    { 0xBCEA, "movers" }, // AUTOADDED
 //  { 0xBCEB, "" },
 //  { 0xBCEC, "" },
 //  { 0xBCED, "" },
@@ -48384,7 +48384,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBCF3, "" },
 //  { 0xBCF4, "" },
 //  { 0xBCF5, "" },
-//  { 0xBCF6, "" },
+    { 0xBCF6, "movespeedscaler" }, // AUTOADDED
 //  { 0xBCF7, "" },
 //  { 0xBCF8, "" },
 //  { 0xBCF9, "" },
@@ -48433,7 +48433,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBD24, "" },
 //  { 0xBD25, "" },
 //  { 0xBD26, "" },
-//  { 0xBD27, "" },
+    { 0xBD27, "movetypeisnotcasual" }, // AUTOADDED
 //  { 0xBD28, "" },
 //  { 0xBD29, "" },
 //  { 0xBD2A, "" },
@@ -48441,8 +48441,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBD2C, "" },
 //  { 0xBD2D, "" },
 //  { 0xBD2E, "" },
-//  { 0xBD2F, "" },
-//  { 0xBD30, "" },
+    { 0xBD2F, "movezoneaftertime" }, // AUTOADDED
+    { 0xBD30, "moving" }, // AUTOADDED
 //  { 0xBD31, "" },
 //  { 0xBD32, "" },
 //  { 0xBD33, "" },
@@ -48473,7 +48473,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBD4C, "" },
 //  { 0xBD4D, "" },
 //  { 0xBD4E, "" },
-//  { 0xBD4F, "" },
+    { 0xBD4F, "movingplatformdetonate" }, // AUTOADDED
 //  { 0xBD50, "" },
 //  { 0xBD51, "" },
 //  { 0xBD52, "" },
@@ -48518,53 +48518,53 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBD79, "" },
 //  { 0xBD7A, "" },
 //  { 0xBD7B, "" },
-//  { 0xBD7C, "" },
-//  { 0xBD7D, "" },
-//  { 0xBD7E, "" },
-//  { 0xBD7F, "" },
-//  { 0xBD80, "" },
-//  { 0xBD81, "" },
-//  { 0xBD82, "" },
-//  { 0xBD83, "" },
-//  { 0xBD84, "" },
+    { 0xBD7C, "mugger_add_extra_tag" }, // AUTOADDED
+    { 0xBD7D, "mugger_bank_limit" }, // AUTOADDED
+    { 0xBD7E, "mugger_bank_tags" }, // AUTOADDED
+    { 0xBD7F, "mugger_check_muggernaut" }, // AUTOADDED
+    { 0xBD80, "mugger_delayed_banking" }, // AUTOADDED
+    { 0xBD81, "mugger_dropzones" }, // AUTOADDED
+    { 0xBD82, "mugger_extra_tags" }, // AUTOADDED
+    { 0xBD83, "mugger_first_unused_or_oldest_extra_tag" }, // AUTOADDED
+    { 0xBD84, "mugger_fx" }, // AUTOADDED
 //  { 0xBD85, "" },
 //  { 0xBD86, "" },
-//  { 0xBD87, "" },
-//  { 0xBD88, "" },
-//  { 0xBD89, "" },
+    { 0xBD87, "mugger_init_tags" }, // AUTOADDED
+    { 0xBD88, "mugger_jackpot_abort_after_time" }, // AUTOADDED
+    { 0xBD89, "mugger_jackpot_cleanup" }, // AUTOADDED
 //  { 0xBD8A, "" },
 //  { 0xBD8B, "" },
 //  { 0xBD8C, "" },
-//  { 0xBD8D, "" },
-//  { 0xBD8E, "" },
-//  { 0xBD8F, "" },
+    { 0xBD8D, "mugger_jackpot_limit" }, // AUTOADDED
+    { 0xBD8E, "mugger_jackpot_num_tags" }, // AUTOADDED
+    { 0xBD8F, "mugger_jackpot_pile_notify" }, // AUTOADDED
 //  { 0xBD90, "" },
-//  { 0xBD91, "" },
-//  { 0xBD92, "" },
-//  { 0xBD93, "" },
-//  { 0xBD94, "" },
+    { 0xBD91, "mugger_jackpot_run" }, // AUTOADDED
+    { 0xBD92, "mugger_jackpot_tags_spawned" }, // AUTOADDED
+    { 0xBD93, "mugger_jackpot_tags_unspawned" }, // AUTOADDED
+    { 0xBD94, "mugger_jackpot_text" }, // AUTOADDED
 //  { 0xBD95, "" },
 //  { 0xBD96, "" },
-//  { 0xBD97, "" },
+    { 0xBD97, "mugger_jackpot_watch" }, // AUTOADDED
 //  { 0xBD98, "" },
-//  { 0xBD99, "" },
+    { 0xBD99, "mugger_max_extra_tags" }, // AUTOADDED
 //  { 0xBD9A, "" },
-//  { 0xBD9B, "" },
-//  { 0xBD9C, "" },
-//  { 0xBD9D, "" },
-//  { 0xBD9E, "" },
+    { 0xBD9B, "mugger_monitor_remote_uav_pickups" }, // AUTOADDED
+    { 0xBD9C, "mugger_monitor_tank_pickups" }, // AUTOADDED
+    { 0xBD9D, "mugger_muggernaut_muggings_needed" }, // AUTOADDED
+    { 0xBD9E, "mugger_muggernaut_window" }, // AUTOADDED
 //  { 0xBD9F, "" },
-//  { 0xBDA0, "" },
+    { 0xBDA0, "mugger_pile_icon_remove" }, // AUTOADDED
 //  { 0xBDA1, "" },
-//  { 0xBDA2, "" },
+    { 0xBDA2, "mugger_tag_pickup_wait" }, // AUTOADDED
 //  { 0xBDA3, "" },
-//  { 0xBDA4, "" },
-//  { 0xBDA5, "" },
+    { 0xBDA4, "mugger_tag_temp_spawn" }, // AUTOADDED
+    { 0xBDA5, "mugger_targetfxid" }, // AUTOADDED
 //  { 0xBDA6, "" },
 //  { 0xBDA7, "" },
 //  { 0xBDA8, "" },
 //  { 0xBDA9, "" },
-//  { 0xBDAA, "" },
+    { 0xBDAA, "muggings" }, // AUTOADDED
 //  { 0xBDAB, "" },
 //  { 0xBDAC, "" },
 //  { 0xBDAD, "" },
@@ -48598,7 +48598,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBDC9, "" },
 //  { 0xBDCA, "" },
 //  { 0xBDCB, "" },
-//  { 0xBDCC, "" },
+    { 0xBDCC, "multiteambased" }, // AUTOADDED
 //  { 0xBDCD, "" },
 //  { 0xBDCE, "" },
 //  { 0xBDCF, "" },
@@ -48634,7 +48634,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBDED, "" },
 //  { 0xBDEE, "" },
 //  { 0xBDEF, "" },
-//  { 0xBDF0, "" },
+    { 0xBDF0, "musicenabled" }, // AUTOADDED
 //  { 0xBDF1, "" },
 //  { 0xBDF2, "" },
 //  { 0xBDF3, "" },
@@ -48721,7 +48721,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBE44, "" },
 //  { 0xBE45, "" },
 //  { 0xBE46, "" },
-//  { 0xBE47, "" },
+    { 0xBE47, "name_complete" }, // AUTOADDED
 //  { 0xBE48, "" },
 //  { 0xBE49, "" },
 //  { 0xBE4A, "" },
@@ -48774,11 +48774,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBE79, "" },
 //  { 0xBE7A, "" },
 //  { 0xBE7B, "" },
-//  { 0xBE7C, "" },
+    { 0xBE7C, "nearest_node" }, // AUTOADDED
 //  { 0xBE7D, "" },
-//  { 0xBE7E, "" },
-//  { 0xBE7F, "" },
-//  { 0xBE80, "" },
+    { 0xBE7E, "nearest_nodes" }, // AUTOADDED
+    { 0xBE7F, "nearest_point_on_pathgrid" }, // AUTOADDED
+    { 0xBE80, "nearest_points" }, // AUTOADDED
 //  { 0xBE81, "" },
 //  { 0xBE82, "" },
 //  { 0xBE83, "" },
@@ -48820,7 +48820,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBEA7, "" },
 //  { 0xBEA8, "" },
 //  { 0xBEA9, "" },
-//  { 0xBEAA, "" },
+    { 0xBEAA, "neighbors" }, // AUTOADDED
 //  { 0xBEAB, "" },
 //  { 0xBEAC, "" },
 //  { 0xBEAD, "" },
@@ -48888,12 +48888,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBEEB, "" },
 //  { 0xBEEC, "" },
 //  { 0xBEED, "" },
-//  { 0xBEEE, "" },
+    { 0xBEEE, "neutralbrush" }, // AUTOADDED
 //  { 0xBEEF, "" },
 //  { 0xBEF0, "" },
 //  { 0xBEF1, "" },
 //  { 0xBEF2, "" },
-//  { 0xBEF3, "" },
+    { 0xBEF3, "neutralhardpointfx" }, // AUTOADDED
 //  { 0xBEF4, "" },
 //  { 0xBEF5, "" },
 //  { 0xBEF6, "" },
@@ -48970,7 +48970,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBF3D, "" },
 //  { 0xBF3E, "" },
 //  { 0xBF3F, "" },
-//  { 0xBF40, "" },
+    { 0xBF40, "next_goal_time" }, // AUTOADDED
 //  { 0xBF41, "" },
 //  { 0xBF42, "" },
 //  { 0xBF43, "" },
@@ -49010,7 +49010,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBF65, "" },
 //  { 0xBF66, "" },
 //  { 0xBF67, "" },
-//  { 0xBF68, "" },
+    { 0xBF68, "next_time_check_tags" }, // AUTOADDED
 //  { 0xBF69, "" },
 //  { 0xBF6A, "" },
 //  { 0xBF6B, "" },
@@ -49062,7 +49062,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBF99, "" },
 //  { 0xBF9A, "" },
 //  { 0xBF9B, "" },
-//  { 0xBF9C, "" },
+    { 0xBF9C, "nextobjectid" }, // AUTOADDED
 //  { 0xBF9D, "" },
 //  { 0xBF9E, "" },
 //  { 0xBF9F, "" },
@@ -49078,8 +49078,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBFA9, "" },
 //  { 0xBFAA, "" },
 //  { 0xBFAB, "" },
-//  { 0xBFAC, "" },
-//  { 0xBFAD, "" },
+    { 0xBFAC, "nextspawntobeinstrumented" }, // AUTOADDED
+    { 0xBFAD, "nextsplash" }, // AUTOADDED
 //  { 0xBFAE, "" },
 //  { 0xBFAF, "" },
 //  { 0xBFB0, "" },
@@ -49125,7 +49125,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBFD8, "" },
 //  { 0xBFD9, "" },
 //  { 0xBFDA, "" },
-//  { 0xBFDB, "" },
+    { 0xBFDB, "no_agent_spawn" }, // AUTOADDED
 //  { 0xBFDC, "" },
 //  { 0xBFDD, "" },
 //  { 0xBFDE, "" },
@@ -49161,8 +49161,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xBFFC, "" },
 //  { 0xBFFD, "" },
 //  { 0xBFFE, "" },
-//  { 0xBFFF, "" },
-//  { 0xC000, "" },
+    { 0xBFFF, "no_moving_platfrom_death" }, // AUTOADDED
+    { 0xC000, "no_moving_platfrom_unlink" }, // AUTOADDED
 //  { 0xC001, "" },
 //  { 0xC002, "" },
 //  { 0xC003, "" },
@@ -49211,14 +49211,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC02E, "" },
 //  { 0xC02F, "" },
 //  { 0xC030, "" },
-//  { 0xC031, "" },
+    { 0xC031, "node_closest_to_defend_center" }, // AUTOADDED
 //  { 0xC032, "" },
 //  { 0xC033, "" },
 //  { 0xC034, "" },
 //  { 0xC035, "" },
 //  { 0xC036, "" },
 //  { 0xC037, "" },
-//  { 0xC038, "" },
+    { 0xC038, "node_is_valid_outside_for_vanguard" }, // AUTOADDED
 //  { 0xC039, "" },
 //  { 0xC03A, "" },
 //  { 0xC03B, "" },
@@ -49236,8 +49236,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC047, "" },
 //  { 0xC048, "" },
 //  { 0xC049, "" },
-//  { 0xC04A, "" },
-//  { 0xC04B, "" },
+    { 0xC04A, "nodeiscoverexposed3dtype" }, // AUTOADDED
+    { 0xC04B, "nodeiscoverstand3dtype" }, // AUTOADDED
 //  { 0xC04C, "" },
 //  { 0xC04D, "" },
 //  { 0xC04E, "" },
@@ -49272,7 +49272,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC06B, "" },
 //  { 0xC06C, "" },
 //  { 0xC06D, "" },
-//  { 0xC06E, "" },
+    { 0xC06E, "nolightfx" }, // AUTOADDED
 //  { 0xC06F, "" },
 //  { 0xC070, "" },
 //  { 0xC071, "" },
@@ -49297,7 +49297,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC084, "" },
 //  { 0xC085, "" },
 //  { 0xC086, "" },
-//  { 0xC087, "" },
+    { 0xC087, "nopickuptime" }, // AUTOADDED
 //  { 0xC088, "" },
     { 0xC089, "noragdoll" },
 //  { 0xC08A, "" },
@@ -49339,8 +49339,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC0AE, "" },
 //  { 0xC0AF, "" },
 //  { 0xC0B0, "" },
-//  { 0xC0B1, "" },
-//  { 0xC0B2, "" },
+    { 0xC0B1, "not_closing" }, // AUTOADDED
+    { 0xC0B2, "not_opening" }, // AUTOADDED
 //  { 0xC0B3, "" },
 //  { 0xC0B4, "" },
 //  { 0xC0B5, "" },
@@ -49477,7 +49477,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC138, "" },
 //  { 0xC139, "" },
 //  { 0xC13A, "" },
-//  { 0xC13B, "" },
+    { 0xC13B, "notify_moving_platform_invalid" }, // AUTOADDED
 //  { 0xC13C, "" },
 //  { 0xC13D, "" },
 //  { 0xC13E, "" },
@@ -49528,7 +49528,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC16B, "" },
 //  { 0xC16C, "" },
 //  { 0xC16D, "" },
-//  { 0xC16E, "" },
+    { 0xC16E, "notifyplayers" }, // AUTOADDED
 //  { 0xC16F, "" },
 //  { 0xC170, "" },
 //  { 0xC171, "" },
@@ -49558,7 +49558,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC189, "" },
 //  { 0xC18A, "" },
 //  { 0xC18B, "" },
-//  { 0xC18C, "" },
+    { 0xC18C, "nousekillstreak" }, // AUTOADDED
 //  { 0xC18D, "" },
 //  { 0xC18E, "" },
 //  { 0xC18F, "" },
@@ -49690,12 +49690,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC20D, "" },
 //  { 0xC20E, "" },
     { 0xC20F, "numagents" },
-//  { 0xC210, "" },
+    { 0xC210, "numareas" }, // AUTOADDED
 //  { 0xC211, "" },
 //  { 0xC212, "" },
 //  { 0xC213, "" },
 //  { 0xC214, "" },
-//  { 0xC215, "" },
+    { 0xC215, "numbermapobjs" }, // AUTOADDED
 //  { 0xC216, "" },
 //  { 0xC217, "" },
 //  { 0xC218, "" },
@@ -49703,7 +49703,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC21A, "" },
 //  { 0xC21B, "" },
 //  { 0xC21C, "" },
-//  { 0xC21D, "" },
+    { 0xC21D, "numcaps" }, // AUTOADDED
 //  { 0xC21E, "" },
 //  { 0xC21F, "" },
 //  { 0xC220, "" },
@@ -49717,16 +49717,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC228, "" },
 //  { 0xC229, "" },
 //  { 0xC22A, "" },
-//  { 0xC22B, "" },
+    { 0xC22B, "numflares" }, // AUTOADDED
     { 0xC22C, "numfriendlyfemalevoices" },
     { 0xC22D, "numfriendlyvoices" },
 //  { 0xC22E, "" },
 //  { 0xC22F, "" },
-//  { 0xC230, "" },
+    { 0xC230, "numgrabs" }, // AUTOADDED
     { 0xC231, "numgrenadesinprogresstowardsplayer" },
 //  { 0xC232, "" },
 //  { 0xC233, "" },
-//  { 0xC234, "" },
+    { 0xC234, "numkills" }, // AUTOADDED
 //  { 0xC235, "" },
 //  { 0xC236, "" },
 //  { 0xC237, "" },
@@ -49786,7 +49786,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC26D, "" },
 //  { 0xC26E, "" },
 //  { 0xC26F, "" },
-//  { 0xC270, "" },
+    { 0xC270, "object" }, // AUTOADDED
 //  { 0xC271, "" },
 //  { 0xC272, "" },
 //  { 0xC273, "" },
@@ -49842,37 +49842,37 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC2A5, "" },
 //  { 0xC2A6, "" },
 //  { 0xC2A7, "" },
-//  { 0xC2A8, "" },
+    { 0xC2A8, "objectives" }, // AUTOADDED
 //  { 0xC2A9, "" },
 //  { 0xC2AA, "" },
 //  { 0xC2AB, "" },
 //  { 0xC2AC, "" },
-//  { 0xC2AD, "" },
+    { 0xC2AD, "objectivescaler" }, // AUTOADDED
 //  { 0xC2AE, "" },
-//  { 0xC2AF, "" },
+    { 0xC2AF, "objectivesettings" }, // AUTOADDED
 //  { 0xC2B0, "" },
 //  { 0xC2B1, "" },
 //  { 0xC2B2, "" },
 //  { 0xC2B3, "" },
 //  { 0xC2B4, "" },
-//  { 0xC2B5, "" },
+    { 0xC2B5, "objid" }, // AUTOADDED
 //  { 0xC2B6, "" },
 //  { 0xC2B7, "" },
 //  { 0xC2B8, "" },
 //  { 0xC2B9, "" },
 //  { 0xC2BA, "" },
-//  { 0xC2BB, "" },
+    { 0xC2BB, "objidfriendly" }, // AUTOADDED
 //  { 0xC2BC, "" },
-//  { 0xC2BD, "" },
-//  { 0xC2BE, "" },
+    { 0xC2BD, "objidpingfriendly" }, // AUTOADDED
+    { 0xC2BE, "objidpingenemy" }, // AUTOADDED
 //  { 0xC2BF, "" },
 //  { 0xC2C0, "" },
-//  { 0xC2C1, "" },
+    { 0xC2C1, "objpointnames" }, // AUTOADDED
     { 0xC2C2, "objpoints" },
 //  { 0xC2C3, "" },
 //  { 0xC2C4, "" },
 //  { 0xC2C5, "" },
-//  { 0xC2C6, "" },
+    { 0xC2C6, "objvisall" }, // AUTOADDED
 //  { 0xC2C7, "" },
 //  { 0xC2C8, "" },
 //  { 0xC2C9, "" },
@@ -49885,12 +49885,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC2D0, "" },
 //  { 0xC2D1, "" },
 //  { 0xC2D2, "" },
-//  { 0xC2D3, "" },
-//  { 0xC2D4, "" },
+    { 0xC2D3, "odin" }, // AUTOADDED
+    { 0xC2D4, "odin_airdropusetime" }, // AUTOADDED
 //  { 0xC2D5, "" },
 //  { 0xC2D6, "" },
-//  { 0xC2D7, "" },
-//  { 0xC2D8, "" },
+    { 0xC2D7, "odin_assault_get_target" }, // AUTOADDED
+    { 0xC2D8, "odin_assault_perform_action" }, // AUTOADDED
 //  { 0xC2D9, "" },
 //  { 0xC2DA, "" },
 //  { 0xC2DB, "" },
@@ -49907,7 +49907,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC2E6, "" },
 //  { 0xC2E7, "" },
 //  { 0xC2E8, "" },
-//  { 0xC2E9, "" },
+    { 0xC2E9, "odin_flash_radius" }, // AUTOADDED
 //  { 0xC2EA, "" },
 //  { 0xC2EB, "" },
 //  { 0xC2EC, "" },
@@ -49922,37 +49922,37 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC2F5, "" },
 //  { 0xC2F6, "" },
 //  { 0xC2F7, "" },
-//  { 0xC2F8, "" },
-//  { 0xC2F9, "" },
-//  { 0xC2FA, "" },
-//  { 0xC2FB, "" },
+    { 0xC2F8, "odin_juggernautusetime" }, // AUTOADDED
+    { 0xC2F9, "odin_large_rod_radius" }, // AUTOADDED
+    { 0xC2FA, "odin_largerodusetime" }, // AUTOADDED
+    { 0xC2FB, "odin_last_predict_position_time" }, // AUTOADDED
 //  { 0xC2FC, "" },
 //  { 0xC2FD, "" },
 //  { 0xC2FE, "" },
 //  { 0xC2FF, "" },
 //  { 0xC300, "" },
-//  { 0xC301, "" },
+    { 0xC301, "odin_markingusetime" }, // AUTOADDED
 //  { 0xC302, "" },
 //  { 0xC303, "" },
 //  { 0xC304, "" },
 //  { 0xC305, "" },
 //  { 0xC306, "" },
-//  { 0xC307, "" },
-//  { 0xC308, "" },
+    { 0xC307, "odin_predicted_loc_for_player" }, // AUTOADDED
+    { 0xC308, "odin_predicted_loc_time_for_player" }, // AUTOADDED
 //  { 0xC309, "" },
 //  { 0xC30A, "" },
 //  { 0xC30B, "" },
 //  { 0xC30C, "" },
 //  { 0xC30D, "" },
 //  { 0xC30E, "" },
-//  { 0xC30F, "" },
-//  { 0xC310, "" },
-//  { 0xC311, "" },
+    { 0xC30F, "odin_small_rod_radius" }, // AUTOADDED
+    { 0xC310, "odin_smallrodusetime" }, // AUTOADDED
+    { 0xC311, "odin_smokeusetime" }, // AUTOADDED
 //  { 0xC312, "" },
 //  { 0xC313, "" },
 //  { 0xC314, "" },
-//  { 0xC315, "" },
-//  { 0xC316, "" },
+    { 0xC315, "odin_support_get_target" }, // AUTOADDED
+    { 0xC316, "odin_support_perform_action" }, // AUTOADDED
 //  { 0xC317, "" },
 //  { 0xC318, "" },
 //  { 0xC319, "" },
@@ -49964,7 +49964,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC31F, "" },
 //  { 0xC320, "" },
 //  { 0xC321, "" },
-//  { 0xC322, "" },
+    { 0xC322, "odintype" }, // AUTOADDED
 //  { 0xC323, "" },
 //  { 0xC324, "" },
 //  { 0xC325, "" },
@@ -50029,7 +50029,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC360, "" },
 //  { 0xC361, "" },
 //  { 0xC362, "" },
-//  { 0xC363, "" },
+    { 0xC363, "offset3d" }, // AUTOADDED
     { 0xC364, "offset" },
     { 0xC365, "offset_fix" },
 //  { 0xC366, "" },
@@ -50176,7 +50176,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC3F3, "" },
 //  { 0xC3F4, "" },
 //  { 0xC3F5, "" },
-//  { 0xC3F6, "" },
+    { 0xC3F6, "oldmaxsightdistsqrd" }, // AUTOADDED
 //  { 0xC3F7, "" },
 //  { 0xC3F8, "" },
 //  { 0xC3F9, "" },
@@ -50186,9 +50186,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC3FD, "" },
 //  { 0xC3FE, "" },
 //  { 0xC3FF, "" },
-//  { 0xC400, "" },
+    { 0xC400, "oldprimarygun" }, // AUTOADDED
 //  { 0xC401, "" },
-//  { 0xC402, "" },
+    { 0xC402, "oldradius" }, // AUTOADDED
 //  { 0xC403, "" },
 //  { 0xC404, "" },
 //  { 0xC405, "" },
@@ -50346,7 +50346,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC49D, "" },
 //  { 0xC49E, "" },
 //  { 0xC49F, "" },
-//  { 0xC4A0, "" },
+    { 0xC4A0, "omausebar" }, // AUTOADDED
 //  { 0xC4A1, "" },
 //  { 0xC4A2, "" },
     { 0xC4A3, "omnvarnames" },
@@ -50369,7 +50369,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC4B4, "" },
 //  { 0xC4B5, "" },
 //  { 0xC4B6, "" },
-//  { 0xC4B7, "" },
+    { 0xC4B7, "on_path_grid" }, // AUTOADDED
 //  { 0xC4B8, "" },
 //  { 0xC4B9, "" },
 //  { 0xC4BA, "" },
@@ -50384,24 +50384,24 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC4C3, "" },
     { 0xC4C4, "onassist" },
 //  { 0xC4C5, "" },
-//  { 0xC4C6, "" },
+    { 0xC4C6, "onattackdelegate" }, // AUTOADDED
 //  { 0xC4C7, "" },
     { 0xC4C8, "onback" },
 //  { 0xC4C9, "" },
 //  { 0xC4CA, "" },
-//  { 0xC4CB, "" },
-//  { 0xC4CC, "" },
+    { 0xC4CB, "onbeginuse" }, // AUTOADDED
+    { 0xC4CC, "onbombexploded" }, // AUTOADDED
 //  { 0xC4CD, "" },
-//  { 0xC4CE, "" },
+    { 0xC4CE, "onbombzoneobjectivecomplete" }, // AUTOADDED
 //  { 0xC4CF, "" },
 //  { 0xC4D0, "" },
 //  { 0xC4D1, "" },
-//  { 0xC4D2, "" },
-//  { 0xC4D3, "" },
+    { 0xC4D2, "oncancel" }, // AUTOADDED
+    { 0xC4D3, "oncanceldelegate" }, // AUTOADDED
 //  { 0xC4D4, "" },
-//  { 0xC4D5, "" },
-//  { 0xC4D6, "" },
-//  { 0xC4D7, "" },
+    { 0xC4D5, "oncarried" }, // AUTOADDED
+    { 0xC4D6, "oncarrieddelegate" }, // AUTOADDED
+    { 0xC4D7, "oncarrierdeath" }, // AUTOADDED
 //  { 0xC4D8, "" },
 //  { 0xC4D9, "" },
 //  { 0xC4DA, "" },
@@ -50417,11 +50417,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC4E4, "" },
 //  { 0xC4E5, "" },
 //  { 0xC4E6, "" },
-//  { 0xC4E7, "" },
-//  { 0xC4E8, "" },
+    { 0xC4E7, "ondeactivedelegate" }, // AUTOADDED
+    { 0xC4E8, "ondeadevent" }, // AUTOADDED
 //  { 0xC4E9, "" },
 //  { 0xC4EA, "" },
-//  { 0xC4EB, "" },
+    { 0xC4EB, "ondeathdelegate" }, // AUTOADDED
 //  { 0xC4EC, "" },
 //  { 0xC4ED, "" },
 //  { 0xC4EE, "" },
@@ -50431,7 +50431,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC4F2, "" },
 //  { 0xC4F3, "" },
 //  { 0xC4F4, "" },
-//  { 0xC4F5, "" },
+    { 0xC4F5, "ondisconnect" }, // AUTOADDED
 //  { 0xC4F6, "" },
 //  { 0xC4F7, "" },
 //  { 0xC4F8, "" },
@@ -50455,7 +50455,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC50A, "" },
 //  { 0xC50B, "" },
 //  { 0xC50C, "" },
-//  { 0xC50D, "" },
+    { 0xC50D, "onenduse" }, // AUTOADDED
 //  { 0xC50E, "" },
 //  { 0xC50F, "" },
 //  { 0xC510, "" },
@@ -50488,12 +50488,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC52B, "" },
 //  { 0xC52C, "" },
 //  { 0xC52D, "" },
-//  { 0xC52E, "" },
+    { 0xC52E, "onflybycompletedelegate" }, // AUTOADDED
 //  { 0xC52F, "" },
 //  { 0xC530, "" },
 //  { 0xC531, "" },
 //  { 0xC532, "" },
-//  { 0xC533, "" },
+    { 0xC533, "ongameended" }, // AUTOADDED
 //  { 0xC534, "" },
 //  { 0xC535, "" },
 //  { 0xC536, "" },
@@ -50512,7 +50512,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC543, "" },
 //  { 0xC544, "" },
 //  { 0xC545, "" },
-//  { 0xC546, "" },
+    { 0xC546, "onkillstreakdamaged" }, // AUTOADDED
 //  { 0xC547, "" },
     { 0xC548, "onkillstreakkilled" },
 //  { 0xC549, "" },
@@ -50522,13 +50522,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC54D, "" },
 //  { 0xC54E, "" },
     { 0xC54F, "onlinegame" },
-//  { 0xC550, "" },
+    { 0xC550, "only_allowable_tactical_goals" }, // AUTOADDED
 //  { 0xC551, "" },
 //  { 0xC552, "" },
 //  { 0xC553, "" },
 //  { 0xC554, "" },
 //  { 0xC555, "" },
-//  { 0xC556, "" },
+    { 0xC556, "onlyroundoverride" }, // AUTOADDED
 //  { 0xC557, "" },
 //  { 0xC558, "" },
 //  { 0xC559, "" },
@@ -50537,12 +50537,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC55C, "" },
 //  { 0xC55D, "" },
     { 0xC55E, "onnormaldeath" },
-//  { 0xC55F, "" },
+    { 0xC55F, "onobjectdelivered" }, // AUTOADDED
 //  { 0xC560, "" },
-//  { 0xC561, "" },
+    { 0xC561, "onobjectivecomplete" }, // AUTOADDED
 //  { 0xC562, "" },
 //  { 0xC563, "" },
-//  { 0xC564, "" },
+    { 0xC564, "ononeleftevent" }, // AUTOADDED
 //  { 0xC565, "" },
 //  { 0xC566, "" },
 //  { 0xC567, "" },
@@ -50552,17 +50552,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC56B, "" },
 //  { 0xC56C, "" },
 //  { 0xC56D, "" },
-//  { 0xC56E, "" },
-//  { 0xC56F, "" },
-//  { 0xC570, "" },
+    { 0xC56E, "onplayerconnect" }, // AUTOADDED
+    { 0xC56F, "onplayerconnectaudioinit" }, // AUTOADDED
+    { 0xC570, "onplayerconnected" }, // AUTOADDED
 //  { 0xC571, "" },
 //  { 0xC572, "" },
 //  { 0xC573, "" },
 //  { 0xC574, "" },
 //  { 0xC575, "" },
 //  { 0xC576, "" },
-//  { 0xC577, "" },
-//  { 0xC578, "" },
+    { 0xC577, "onplayerkilled" }, // AUTOADDED
+    { 0xC578, "_ondeathordisconnectinternal" }, // AUTOADDED
     { 0xC579, "onplayerscore" },
 //  { 0xC57A, "" },
     { 0xC57B, "onplayerspawned" },
@@ -50619,7 +50619,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC5AE, "" },
 //  { 0xC5AF, "" },
 //  { 0xC5B0, "" },
-//  { 0xC5B1, "" },
+    { 0xC5B1, "onteamselection" }, // AUTOADDED
     { 0xC5B2, "ontimelimit" },
 //  { 0xC5B3, "" },
 //  { 0xC5B4, "" },
@@ -50629,10 +50629,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC5B8, "" },
 //  { 0xC5B9, "" },
 //  { 0xC5BA, "" },
-//  { 0xC5BB, "" },
+    { 0xC5BB, "onuse" }, // AUTOADDED
 //  { 0xC5BC, "" },
 //  { 0xC5BD, "" },
-//  { 0xC5BE, "" },
+    { 0xC5BE, "onusedeployable" }, // AUTOADDED
 //  { 0xC5BF, "" },
 //  { 0xC5C0, "" },
 //  { 0xC5C1, "" },
@@ -50885,7 +50885,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC6B8, "" },
 //  { 0xC6B9, "" },
 //  { 0xC6BA, "" },
-//  { 0xC6BB, "" },
+    { 0xC6BB, "optionalnumber" }, // AUTOADDED
 //  { 0xC6BC, "" },
     { 0xC6BD, "optionalstepeffects" },
 //  { 0xC6BE, "" },
@@ -50974,9 +50974,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC711, "" },
 //  { 0xC712, "" },
 //  { 0xC713, "" },
-//  { 0xC714, "" },
+    { 0xC714, "origin_ent" }, // AUTOADDED
 //  { 0xC715, "" },
-//  { 0xC716, "" },
+    { 0xC716, "origin_is_valid_for_vanguard" }, // AUTOADDED
 //  { 0xC717, "" },
 //  { 0xC718, "" },
     { 0xC719, "origin_offset" },
@@ -51003,7 +51003,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC72E, "" },
 //  { 0xC72F, "" },
 //  { 0xC730, "" },
-//  { 0xC731, "" },
+    { 0xC731, "originalowner" }, // AUTOADDED
 //  { 0xC732, "" },
 //  { 0xC733, "" },
 //  { 0xC734, "" },
@@ -51033,8 +51033,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC74C, "" },
 //  { 0xC74D, "" },
 //  { 0xC74E, "" },
-//  { 0xC74F, "" },
-//  { 0xC750, "" },
+    { 0xC74F, "outboundflightanim" }, // AUTOADDED
+    { 0xC750, "outboundsfx" }, // AUTOADDED
 //  { 0xC751, "" },
 //  { 0xC752, "" },
 //  { 0xC753, "" },
@@ -51056,7 +51056,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC763, "" },
 //  { 0xC764, "" },
 //  { 0xC765, "" },
-//  { 0xC766, "" },
+    { 0xC766, "outframes" }, // AUTOADDED
 //  { 0xC767, "" },
 //  { 0xC768, "" },
 //  { 0xC769, "" },
@@ -51089,46 +51089,46 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC784, "" },
 //  { 0xC785, "" },
 //  { 0xC786, "" },
-//  { 0xC787, "" },
+    { 0xC787, "outlineaddtogloballist" }, // AUTOADDED
 //  { 0xC788, "" },
 //  { 0xC789, "" },
 //  { 0xC78A, "" },
 //  { 0xC78B, "" },
 //  { 0xC78C, "" },
-//  { 0xC78D, "" },
+    { 0xC78D, "outlinedent" }, // AUTOADDED
 //  { 0xC78E, "" },
 //  { 0xC78F, "" },
 //  { 0xC790, "" },
-//  { 0xC791, "" },
+    { 0xC791, "outlinedisableinternalall" }, // AUTOADDED
 //  { 0xC792, "" },
 //  { 0xC793, "" },
 //  { 0xC794, "" },
 //  { 0xC795, "" },
 //  { 0xC796, "" },
-//  { 0xC797, "" },
+    { 0xC797, "outlineents" }, // AUTOADDED
 //  { 0xC798, "" },
 //  { 0xC799, "" },
-//  { 0xC79A, "" },
-//  { 0xC79B, "" },
-//  { 0xC79C, "" },
-//  { 0xC79D, "" },
+    { 0xC79A, "outlinegenerateuniqueid" }, // AUTOADDED
+    { 0xC79B, "outlinegethighestinfoforplayer" }, // AUTOADDED
+    { 0xC79C, "outlinegethighestpriorityid" }, // AUTOADDED
+    { 0xC79D, "outlineid" }, // AUTOADDED
 //  { 0xC79E, "" },
-//  { 0xC79F, "" },
+    { 0xC79F, "outlineids" }, // AUTOADDED
 //  { 0xC7A0, "" },
 //  { 0xC7A1, "" },
 //  { 0xC7A2, "" },
 //  { 0xC7A3, "" },
 //  { 0xC7A4, "" },
-//  { 0xC7A5, "" },
+    { 0xC7A5, "outlineonplayerjoinedteam_onfirstspawn" }, // AUTOADDED
 //  { 0xC7A6, "" },
 //  { 0xC7A7, "" },
 //  { 0xC7A8, "" },
 //  { 0xC7A9, "" },
 //  { 0xC7AA, "" },
 //  { 0xC7AB, "" },
-//  { 0xC7AC, "" },
+    { 0xC7AC, "outlineremovefromgloballist" }, // AUTOADDED
 //  { 0xC7AD, "" },
-//  { 0xC7AE, "" },
+    { 0xC7AE, "outlines" }, // AUTOADDED
 //  { 0xC7AF, "" },
 //  { 0xC7B0, "" },
 //  { 0xC7B1, "" },
@@ -51178,7 +51178,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC7DD, "" },
 //  { 0xC7DE, "" },
 //  { 0xC7DF, "" },
-//  { 0xC7E0, "" },
+    { 0xC7E0, "outside_zones" }, // AUTOADDED
 //  { 0xC7E1, "" },
 //  { 0xC7E2, "" },
 //  { 0xC7E3, "" },
@@ -51203,9 +51203,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC7F6, "" },
 //  { 0xC7F7, "" },
 //  { 0xC7F8, "" },
-//  { 0xC7F9, "" },
+    { 0xC7F9, "overheated" }, // AUTOADDED
 //  { 0xC7FA, "" },
-//  { 0xC7FB, "" },
+    { 0xC7FB, "overheattime" }, // AUTOADDED
 //  { 0xC7FC, "" },
 //  { 0xC7FD, "" },
 //  { 0xC7FE, "" },
@@ -51251,7 +51251,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC826, "" },
 //  { 0xC827, "" },
 //  { 0xC828, "" },
-//  { 0xC829, "" },
+    { 0xC829, "overrideweaponspeed_speedscale" }, // AUTOADDED
 //  { 0xC82A, "" },
 //  { 0xC82B, "" },
 //  { 0xC82C, "" },
@@ -51272,7 +51272,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC83B, "" },
 //  { 0xC83C, "" },
 //  { 0xC83D, "" },
-//  { 0xC83E, "" },
+    { 0xC83E, "ownerteam" }, // AUTOADDED
 //  { 0xC83F, "" },
 //  { 0xC840, "" },
 //  { 0xC841, "" },
@@ -51339,7 +51339,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC87E, "" },
 //  { 0xC87F, "" },
 //  { 0xC880, "" },
-//  { 0xC881, "" },
+    { 0xC881, "painted" }, // AUTOADDED
 //  { 0xC882, "" },
 //  { 0xC883, "" },
 //  { 0xC884, "" },
@@ -51450,19 +51450,19 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC8ED, "" },
 //  { 0xC8EE, "" },
 //  { 0xC8EF, "" },
-//  { 0xC8F0, "" },
-//  { 0xC8F1, "" },
-//  { 0xC8F2, "" },
+    { 0xC8F0, "params" }, // AUTOADDED
+    { 0xC8F1, "params_default" }, // AUTOADDED
+    { 0xC8F2, "parent" }, // AUTOADDED
 //  { 0xC8F3, "" },
 //  { 0xC8F4, "" },
 //  { 0xC8F5, "" },
 //  { 0xC8F6, "" },
 //  { 0xC8F7, "" },
 //  { 0xC8F8, "" },
-//  { 0xC8F9, "" },
-//  { 0xC8FA, "" },
-//  { 0xC8FB, "" },
-//  { 0xC8FC, "" },
+    { 0xC8F9, "parm1" }, // AUTOADDED
+    { 0xC8FA, "parm2" }, // AUTOADDED
+    { 0xC8FB, "parm3" }, // AUTOADDED
+    { 0xC8FC, "parm4" }, // AUTOADDED
 //  { 0xC8FD, "" },
 //  { 0xC8FE, "" },
 //  { 0xC8FF, "" },
@@ -51473,7 +51473,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC904, "" },
 //  { 0xC905, "" },
 //  { 0xC906, "" },
-//  { 0xC907, "" },
+    { 0xC907, "parsed" }, // AUTOADDED
     { 0xC908, "parselocationaliases" },
 //  { 0xC909, "" },
 //  { 0xC90A, "" },
@@ -51506,7 +51506,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC925, "" },
 //  { 0xC926, "" },
 //  { 0xC927, "" },
-//  { 0xC928, "" },
+    { 0xC928, "participants" }, // AUTOADDED
 //  { 0xC929, "" },
 //  { 0xC92A, "" },
 //  { 0xC92B, "" },
@@ -51515,11 +51515,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC92E, "" },
 //  { 0xC92F, "" },
 //  { 0xC930, "" },
-//  { 0xC931, "" },
-//  { 0xC932, "" },
+    { 0xC931, "pass_dot" }, // AUTOADDED
+    { 0xC932, "pass_icon" }, // AUTOADDED
 //  { 0xC933, "" },
 //  { 0xC934, "" },
-//  { 0xC935, "" },
+    { 0xC935, "pass_target" }, // AUTOADDED
 //  { 0xC936, "" },
 //  { 0xC937, "" },
 //  { 0xC938, "" },
@@ -51533,19 +51533,19 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC940, "" },
 //  { 0xC941, "" },
 //  { 0xC942, "" },
-//  { 0xC943, "" },
+    { 0xC943, "passivemap" }, // AUTOADDED
 //  { 0xC944, "" },
 //  { 0xC945, "" },
-//  { 0xC946, "" },
+    { 0xC946, "passives" }, // AUTOADDED
 //  { 0xC947, "" },
 //  { 0xC948, "" },
-//  { 0xC949, "" },
-//  { 0xC94A, "" },
+    { 0xC949, "passivevalues" }, // AUTOADDED
+    { 0xC94A, "passplayer" }, // AUTOADDED
 //  { 0xC94B, "" },
-//  { 0xC94C, "" },
+    { 0xC94C, "passtime" }, // AUTOADDED
     { 0xC94D, "paste_ents" },
 //  { 0xC94E, "" },
-//  { 0xC94F, "" },
+    { 0xC94F, "path" }, // AUTOADDED
 //  { 0xC950, "" },
 //  { 0xC951, "" },
 //  { 0xC952, "" },
@@ -51671,17 +51671,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xC9CA, "" },
 //  { 0xC9CB, "" },
 //  { 0xC9CC, "" },
-//  { 0xC9CD, "" },
-//  { 0xC9CE, "" },
+    { 0xC9CD, "pauseballtimer" }, // AUTOADDED
+    { 0xC9CE, "pausecountdowntimer" }, // AUTOADDED
     { 0xC9CF, "pauseeffect" },
 //  { 0xC9D0, "" },
-//  { 0xC9D1, "" },
+    { 0xC9D1, "pausemax" }, // AUTOADDED
 //  { 0xC9D2, "" },
-//  { 0xC9D3, "" },
+    { 0xC9D3, "pausemin" }, // AUTOADDED
 //  { 0xC9D4, "" },
 //  { 0xC9D5, "" },
 //  { 0xC9D6, "" },
-//  { 0xC9D7, "" },
+    { 0xC9D7, "pausing_bot_connect_monitor" }, // AUTOADDED
 //  { 0xC9D8, "" },
 //  { 0xC9D9, "" },
 //  { 0xC9DA, "" },
@@ -51804,8 +51804,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCA4F, "" },
 //  { 0xCA50, "" },
 //  { 0xCA51, "" },
-//  { 0xCA52, "" },
-//  { 0xCA53, "" },
+    { 0xCA52, "perkicon" }, // AUTOADDED
+    { 0xCA53, "perkname" }, // AUTOADDED
 //  { 0xCA54, "" },
 //  { 0xCA55, "" },
 //  { 0xCA56, "" },
@@ -51822,13 +51822,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCA61, "" },
 //  { 0xCA62, "" },
 //  { 0xCA63, "" },
-//  { 0xCA64, "" },
-//  { 0xCA65, "" },
+    { 0xCA64, "perktable_add" }, // AUTOADDED
+    { 0xCA65, "perktable_costs" }, // AUTOADDED
 //  { 0xCA66, "" },
-//  { 0xCA67, "" },
-//  { 0xCA68, "" },
-//  { 0xCA69, "" },
-//  { 0xCA6A, "" },
+    { 0xCA67, "perkusedeathtracker" }, // AUTOADDED
+    { 0xCA68, "perkwatcher" }, // AUTOADDED
+    { 0xCA69, "perkweaponlaseroffforswitchstart" }, // AUTOADDED
+    { 0xCA6A, "perkweaponlaseron" }, // AUTOADDED
 //  { 0xCA6B, "" },
 //  { 0xCA6C, "" },
 //  { 0xCA6D, "" },
@@ -51989,7 +51989,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCB08, "" },
 //  { 0xCB09, "" },
 //  { 0xCB0A, "" },
-//  { 0xCB0B, "" },
+    { 0xCB0B, "physicsactivated" }, // AUTOADDED
 //  { 0xCB0C, "" },
 //  { 0xCB0D, "" },
 //  { 0xCB0E, "" },
@@ -52201,7 +52201,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCBDC, "" },
 //  { 0xCBDD, "" },
 //  { 0xCBDE, "" },
-//  { 0xCBDF, "" },
+    { 0xCBDF, "pistolarray" }, // AUTOADDED
 //  { 0xCBE0, "" },
 //  { 0xCBE1, "" },
 //  { 0xCBE2, "" },
@@ -52243,7 +52243,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCC06, "" },
 //  { 0xCC07, "" },
 //  { 0xCC08, "" },
-//  { 0xCC09, "" },
+    { 0xCC09, "placeableconfigs" }, // AUTOADDED
 //  { 0xCC0A, "" },
 //  { 0xCC0B, "" },
 //  { 0xCC0C, "" },
@@ -52254,7 +52254,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCC11, "" },
 //  { 0xCC12, "" },
 //  { 0xCC13, "" },
-//  { 0xCC14, "" },
+    { 0xCC14, "placedsentries" }, // AUTOADDED
 //  { 0xCC15, "" },
 //  { 0xCC16, "" },
 //  { 0xCC17, "" },
@@ -52300,18 +52300,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCC3F, "" },
 //  { 0xCC40, "" },
 //  { 0xCC41, "" },
-//  { 0xCC42, "" },
-//  { 0xCC43, "" },
-//  { 0xCC44, "" },
-//  { 0xCC45, "" },
-//  { 0xCC46, "" },
-//  { 0xCC47, "" },
+    { 0xCC42, "planecleanup" }, // AUTOADDED
+    { 0xCC43, "planeconfigs" }, // AUTOADDED
+    { 0xCC44, "planemodel" }, // AUTOADDED
+    { 0xCC45, "planemove" }, // AUTOADDED
+    { 0xCC46, "planes" }, // AUTOADDED
+    { 0xCC47, "planespawn" }, // AUTOADDED
 //  { 0xCC48, "" },
 //  { 0xCC49, "" },
 //  { 0xCC4A, "" },
 //  { 0xCC4B, "" },
-//  { 0xCC4C, "" },
-//  { 0xCC4D, "" },
+    { 0xCC4C, "plantedlethalequip" }, // AUTOADDED
+    { 0xCC4D, "plantedtacticalequip" }, // AUTOADDED
 //  { 0xCC4E, "" },
 //  { 0xCC4F, "" },
 //  { 0xCC50, "" },
@@ -52519,7 +52519,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCD1A, "" },
 //  { 0xCD1B, "" },
 //  { 0xCD1C, "" },
-//  { 0xCD1D, "" },
+    { 0xCD1D, "play_fx_with_entity" }, // AUTOADDED
 //  { 0xCD1E, "" },
 //  { 0xCD1F, "" },
 //  { 0xCD20, "" },
@@ -53013,7 +53013,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCF08, "" },
 //  { 0xCF09, "" },
 //  { 0xCF0A, "" },
-//  { 0xCF0B, "" },
+    { 0xCF0B, "playdamageefx" }, // AUTOADDED
 //  { 0xCF0C, "" },
 //  { 0xCF0D, "" },
 //  { 0xCF0E, "" },
@@ -53022,7 +53022,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCF11, "" },
 //  { 0xCF12, "" },
 //  { 0xCF13, "" },
-//  { 0xCF14, "" },
+    { 0xCF14, "playdeathfx" }, // AUTOADDED
 //  { 0xCF15, "" },
 //  { 0xCF16, "" },
 //  { 0xCF17, "" },
@@ -53204,7 +53204,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCFC7, "" },
 //  { 0xCFC8, "" },
 //  { 0xCFC9, "" },
-//  { 0xCFCA, "" },
+    { 0xCFCA, "player_clear_pass_target" }, // AUTOADDED
 //  { 0xCFCB, "" },
 //  { 0xCFCC, "" },
 //  { 0xCFCD, "" },
@@ -53281,7 +53281,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD014, "" },
 //  { 0xD015, "" },
 //  { 0xD016, "" },
-//  { 0xD017, "" },
+    { 0xD017, "player_delete_ball_goal_fx" }, // AUTOADDED
 //  { 0xD018, "" },
 //  { 0xD019, "" },
 //  { 0xD01A, "" },
@@ -53777,7 +53777,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD204, "" },
 //  { 0xD205, "" },
 //  { 0xD206, "" },
-//  { 0xD207, "" },
+    { 0xD207, "player_no_pickup_time" }, // AUTOADDED
 //  { 0xD208, "" },
 //  { 0xD209, "" },
 //  { 0xD20A, "" },
@@ -53786,7 +53786,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD20D, "" },
 //  { 0xD20E, "" },
 //  { 0xD20F, "" },
-//  { 0xD210, "" },
+    { 0xD210, "player_on_disconnect" }, // AUTOADDED
 //  { 0xD211, "" },
 //  { 0xD212, "" },
 //  { 0xD213, "" },
@@ -53811,7 +53811,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD226, "" },
 //  { 0xD227, "" },
 //  { 0xD228, "" },
-//  { 0xD229, "" },
+    { 0xD229, "player_picked_team" }, // AUTOADDED
 //  { 0xD22A, "" },
 //  { 0xD22B, "" },
 //  { 0xD22C, "" },
@@ -53840,7 +53840,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD243, "" },
 //  { 0xD244, "" },
 //  { 0xD245, "" },
-//  { 0xD246, "" },
+    { 0xD246, "player_pushed_kill" }, // AUTOADDED
 //  { 0xD247, "" },
 //  { 0xD248, "" },
 //  { 0xD249, "" },
@@ -54120,7 +54120,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD35B, "" },
 //  { 0xD35C, "" },
 //  { 0xD35D, "" },
-//  { 0xD35E, "" },
+    { 0xD35E, "playeraffectedarray" }, // AUTOADDED
 //  { 0xD35F, "" },
 //  { 0xD360, "" },
 //  { 0xD361, "" },
@@ -54161,16 +54161,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD384, "" },
 //  { 0xD385, "" },
 //  { 0xD386, "" },
-//  { 0xD387, "" },
+    { 0xD387, "playerenterarea" }, // AUTOADDED
 //  { 0xD388, "" },
-//  { 0xD389, "" },
+    { 0xD389, "playerentersoftlanding" }, // AUTOADDED
 //  { 0xD38A, "" },
 //  { 0xD38B, "" },
-//  { 0xD38C, "" },
+    { 0xD38C, "playerfields" }, // AUTOADDED
 //  { 0xD38D, "" },
 //  { 0xD38E, "" },
 //  { 0xD38F, "" },
-//  { 0xD390, "" },
+    { 0xD390, "playerforplayercard" }, // AUTOADDED
 //  { 0xD391, "" },
 //  { 0xD392, "" },
 //  { 0xD393, "" },
@@ -54197,7 +54197,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD3A8, "" },
 //  { 0xD3A9, "" },
 //  { 0xD3AA, "" },
-//  { 0xD3AB, "" },
+    { 0xD3AB, "playerid" }, // AUTOADDED
 //  { 0xD3AC, "" },
 //  { 0xD3AD, "" },
 //  { 0xD3AE, "" },
@@ -54232,12 +54232,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD3CB, "" },
 //  { 0xD3CC, "" },
 //  { 0xD3CD, "" },
-//  { 0xD3CE, "" },
-//  { 0xD3CF, "" },
+    { 0xD3CE, "playerleavearea" }, // AUTOADDED
+    { 0xD3CF, "playerleavesoftlanding" }, // AUTOADDED
 //  { 0xD3D0, "" },
 //  { 0xD3D1, "" },
 //  { 0xD3D2, "" },
-//  { 0xD3D3, "" },
+    { 0xD3D3, "playerlinked" }, // AUTOADDED
 //  { 0xD3D4, "" },
 //  { 0xD3D5, "" },
 //  { 0xD3D6, "" },
@@ -54257,9 +54257,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD3E4, "" },
 //  { 0xD3E5, "" },
 //  { 0xD3E6, "" },
-//  { 0xD3E7, "" },
+    { 0xD3E7, "playerproxyagent" }, // AUTOADDED
 //  { 0xD3E8, "" },
-//  { 0xD3E9, "" },
+    { 0xD3E9, "playerremoveoutline" }, // AUTOADDED
 //  { 0xD3EA, "" },
 //  { 0xD3EB, "" },
 //  { 0xD3EC, "" },
@@ -54294,7 +54294,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD409, "" },
 //  { 0xD40A, "" },
 //  { 0xD40B, "" },
-//  { 0xD40C, "" },
+    { 0xD40C, "players_waiting_to_join" }, // AUTOADDED
 //  { 0xD40D, "" },
 //  { 0xD40E, "" },
 //  { 0xD40F, "" },
@@ -54302,7 +54302,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD411, "" },
 //  { 0xD412, "" },
 //  { 0xD413, "" },
-//  { 0xD414, "" },
+    { 0xD414, "playersettagcount" }, // AUTOADDED
 //  { 0xD415, "" },
 //  { 0xD416, "" },
 //  { 0xD417, "" },
@@ -54332,7 +54332,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD42F, "" },
 //  { 0xD430, "" },
 //  { 0xD431, "" },
-//  { 0xD432, "" },
+    { 0xD432, "playersvisibleto" }, // AUTOADDED
 //  { 0xD433, "" },
 //  { 0xD434, "" },
 //  { 0xD435, "" },
@@ -54365,7 +54365,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD450, "" },
 //  { 0xD451, "" },
 //  { 0xD452, "" },
-//  { 0xD453, "" },
+    { 0xD453, "playertweaks" }, // AUTOADDED
     { 0xD454, "playerunlimitedammothread" },
 //  { 0xD455, "" },
 //  { 0xD456, "" },
@@ -54404,7 +54404,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD477, "" },
 //  { 0xD478, "" },
 //  { 0xD479, "" },
-//  { 0xD47A, "" },
+    { 0xD47A, "playflarefx" }, // AUTOADDED
 //  { 0xD47B, "" },
 //  { 0xD47C, "" },
 //  { 0xD47D, "" },
@@ -54433,7 +54433,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD494, "" },
 //  { 0xD495, "" },
 //  { 0xD496, "" },
-//  { 0xD497, "" },
+    { 0xD497, "playheatfx" }, // AUTOADDED
 //  { 0xD498, "" },
 //  { 0xD499, "" },
 //  { 0xD49A, "" },
@@ -54451,15 +54451,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD4A6, "" },
 //  { 0xD4A7, "" },
 //  { 0xD4A8, "" },
-//  { 0xD4A9, "" },
+    { 0xD4A9, "playing_sound" }, // AUTOADDED
 //  { 0xD4AA, "" },
 //  { 0xD4AB, "" },
 //  { 0xD4AC, "" },
-//  { 0xD4AD, "" },
+    { 0xD4AD, "playinglocksound" }, // AUTOADDED
 //  { 0xD4AE, "" },
 //  { 0xD4AF, "" },
-//  { 0xD4B0, "" },
-//  { 0xD4B1, "" },
+    { 0xD4B0, "playingselfvo" }, // AUTOADDED
+    { 0xD4B1, "playingselfvotracking" }, // AUTOADDED
 //  { 0xD4B2, "" },
 //  { 0xD4B3, "" },
 //  { 0xD4B4, "" },
@@ -54472,10 +54472,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD4BB, "" },
 //  { 0xD4BC, "" },
 //  { 0xD4BD, "" },
-//  { 0xD4BE, "" },
+    { 0xD4BE, "playlinkedsmokeeffect" }, // AUTOADDED
 //  { 0xD4BF, "" },
-//  { 0xD4C0, "" },
-//  { 0xD4C1, "" },
+    { 0xD4C0, "playlockerrorsound" }, // AUTOADDED
+    { 0xD4C1, "playlocksound" }, // AUTOADDED
 //  { 0xD4C2, "" },
 //  { 0xD4C3, "" },
 //  { 0xD4C4, "" },
@@ -54519,7 +54519,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD4EA, "" },
 //  { 0xD4EB, "" },
 //  { 0xD4EC, "" },
-//  { 0xD4ED, "" },
+    { 0xD4ED, "playovertime" }, // AUTOADDED
 //  { 0xD4EE, "" },
 //  { 0xD4EF, "" },
 //  { 0xD4F0, "" },
@@ -54532,7 +54532,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD4F7, "" },
 //  { 0xD4F8, "" },
 //  { 0xD4F9, "" },
-//  { 0xD4FA, "" },
+    { 0xD4FA, "playplanefx" }, // AUTOADDED
 //  { 0xD4FB, "" },
 //  { 0xD4FC, "" },
 //  { 0xD4FD, "" },
@@ -54569,8 +54569,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD51C, "" },
 //  { 0xD51D, "" },
 //  { 0xD51E, "" },
-//  { 0xD51F, "" },
-//  { 0xD520, "" },
+    { 0xD51F, "playsmokefx" }, // AUTOADDED
+    { 0xD520, "playsonicboom" }, // AUTOADDED
 //  { 0xD521, "" },
 //  { 0xD522, "" },
 //  { 0xD523, "" },
@@ -54870,7 +54870,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD649, "" },
 //  { 0xD64A, "" },
 //  { 0xD64B, "" },
-//  { 0xD64C, "" },
+    { 0xD64C, "poison" }, // AUTOADDED
 //  { 0xD64D, "" },
 //  { 0xD64E, "" },
 //  { 0xD64F, "" },
@@ -54952,7 +54952,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD69B, "" },
 //  { 0xD69C, "" },
 //  { 0xD69D, "" },
-//  { 0xD69E, "" },
+    { 0xD69E, "pos_is_valid_outside_for_vanguard" }, // AUTOADDED
 //  { 0xD69F, "" },
 //  { 0xD6A0, "" },
 //  { 0xD6A1, "" },
@@ -55172,7 +55172,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD777, "" },
 //  { 0xD778, "" },
 //  { 0xD779, "" },
-//  { 0xD77A, "" },
+    { 0xD77A, "equipmentref" }, // AUTOADDED
 //  { 0xD77B, "" },
 //  { 0xD77C, "" },
 //  { 0xD77D, "" },
@@ -55217,7 +55217,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD7A4, "" },
 //  { 0xD7A5, "" },
 //  { 0xD7A6, "" },
-//  { 0xD7A7, "" },
+    { 0xD7A7, "practicenotify" }, // AUTOADDED
 //  { 0xD7A8, "" },
 //  { 0xD7A9, "" },
 //  { 0xD7AA, "" },
@@ -55347,11 +55347,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD826, "" },
 //  { 0xD827, "" },
 //  { 0xD828, "" },
-//  { 0xD829, "" },
-//  { 0xD82A, "" },
+    { 0xD829, "preferalliesbydistance" }, // AUTOADDED
+    { 0xD82A, "preferbyteambase" }, // AUTOADDED
 //  { 0xD82B, "" },
 //  { 0xD82C, "" },
-//  { 0xD82D, "" },
+    { 0xD82D, "preferclosetoally" }, // AUTOADDED
 //  { 0xD82E, "" },
 //  { 0xD82F, "" },
 //  { 0xD830, "" },
@@ -55485,14 +55485,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD8B0, "" },
 //  { 0xD8B1, "" },
 //  { 0xD8B2, "" },
-//  { 0xD8B3, "" },
+    { 0xD8B3, "previousstreakpoints" }, // AUTOADDED
 //  { 0xD8B4, "" },
 //  { 0xD8B5, "" },
 //  { 0xD8B6, "" },
 //  { 0xD8B7, "" },
 //  { 0xD8B8, "" },
 //  { 0xD8B9, "" },
-//  { 0xD8BA, "" },
+    { 0xD8BA, "prevownerteam" }, // AUTOADDED
 //  { 0xD8BB, "" },
 //  { 0xD8BC, "" },
 //  { 0xD8BD, "" },
@@ -55522,14 +55522,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD8D5, "" },
 //  { 0xD8D6, "" },
 //  { 0xD8D7, "" },
-//  { 0xD8D8, "" },
-//  { 0xD8D9, "" },
-//  { 0xD8DA, "" },
-//  { 0xD8DB, "" },
-//  { 0xD8DC, "" },
-//  { 0xD8DD, "" },
-//  { 0xD8DE, "" },
-//  { 0xD8DF, "" },
+    { 0xD8D8, "primaryprogressbarfontsize" }, // AUTOADDED
+    { 0xD8D9, "primaryprogressbarheight" }, // AUTOADDED
+    { 0xD8DA, "primaryprogressbartextx" }, // AUTOADDED
+    { 0xD8DB, "primaryprogressbartexty" }, // AUTOADDED
+    { 0xD8DC, "primaryprogressbarwidth" }, // AUTOADDED
+    { 0xD8DD, "primaryprogressbarx" }, // AUTOADDED
+    { 0xD8DE, "primaryprogressbary" }, // AUTOADDED
+    { 0xD8DF, "primarytarget" }, // AUTOADDED
 //  { 0xD8E0, "" },
     { 0xD8E1, "primaryweapon" },
 //  { 0xD8E2, "" },
@@ -55598,8 +55598,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD921, "" },
 //  { 0xD922, "" },
 //  { 0xD923, "" },
-//  { 0xD924, "" },
-//  { 0xD925, "" },
+    { 0xD924, "prioritize_watch_nodes_toward_enemies" }, // AUTOADDED
+    { 0xD925, "priority" }, // AUTOADDED
 //  { 0xD926, "" },
 //  { 0xD927, "" },
 //  { 0xD928, "" },
@@ -55691,7 +55691,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD97E, "" },
 //  { 0xD97F, "" },
 //  { 0xD980, "" },
-//  { 0xD981, "" },
+    { 0xD981, "process_moving_platform_death" }, // AUTOADDED
 //  { 0xD982, "" },
 //  { 0xD983, "" },
 //  { 0xD984, "" },
@@ -55702,7 +55702,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD989, "" },
 //  { 0xD98A, "" },
 //  { 0xD98B, "" },
-//  { 0xD98C, "" },
+    { 0xD98C, "processassist" }, // AUTOADDED
 //  { 0xD98D, "" },
 //  { 0xD98E, "" },
 //  { 0xD98F, "" },
@@ -55743,7 +55743,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD9B2, "" },
 //  { 0xD9B3, "" },
 //  { 0xD9B4, "" },
-//  { 0xD9B5, "" },
+    { 0xD9B5, "processshieldassist" }, // AUTOADDED
 //  { 0xD9B6, "" },
 //  { 0xD9B7, "" },
 //  { 0xD9B8, "" },
@@ -55908,7 +55908,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDA57, "" },
 //  { 0xDA58, "" },
 //  { 0xDA59, "" },
-//  { 0xDA5A, "" },
+    { 0xDA5A, "projectile" }, // AUTOADDED
 //  { 0xDA5B, "" },
 //  { 0xDA5C, "" },
 //  { 0xDA5D, "" },
@@ -55939,7 +55939,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDA76, "" },
 //  { 0xDA77, "" },
 //  { 0xDA78, "" },
-//  { 0xDA79, "" },
+    { 0xDA79, "prone_only" }, // AUTOADDED
 //  { 0xDA7A, "" },
 //  { 0xDA7B, "" },
 //  { 0xDA7C, "" },
@@ -55981,7 +55981,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDAA0, "" },
 //  { 0xDAA1, "" },
 //  { 0xDAA2, "" },
-//  { 0xDAA3, "" },
+    { 0xDAA3, "protect_radius" }, // AUTOADDED
 //  { 0xDAA4, "" },
 //  { 0xDAA5, "" },
 //  { 0xDAA6, "" },
@@ -55992,8 +55992,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDAAB, "" },
 //  { 0xDAAC, "" },
 //  { 0xDAAD, "" },
-//  { 0xDAAE, "" },
-//  { 0xDAAF, "" },
+    { 0xDAAE, "proxbar" }, // AUTOADDED
+    { 0xDAAF, "proxbartext" }, // AUTOADDED
 //  { 0xDAB0, "" },
 //  { 0xDAB1, "" },
 //  { 0xDAB2, "" },
@@ -56019,12 +56019,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDAC6, "" },
 //  { 0xDAC7, "" },
 //  { 0xDAC8, "" },
-//  { 0xDAC9, "" },
+    { 0xDAC9, "proximityassist" }, // AUTOADDED
 //  { 0xDACA, "" },
 //  { 0xDACB, "" },
 //  { 0xDACC, "" },
 //  { 0xDACD, "" },
-//  { 0xDACE, "" },
+    { 0xDACE, "proximitykill" }, // AUTOADDED
 //  { 0xDACF, "" },
 //  { 0xDAD0, "" },
 //  { 0xDAD1, "" },
@@ -56128,7 +56128,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDB33, "" },
 //  { 0xDB34, "" },
 //  { 0xDB35, "" },
-//  { 0xDB36, "" },
+    { 0xDB36, "putgunaway" }, // AUTOADDED
 //  { 0xDB37, "" },
     { 0xDB38, "putguninhand" },
 //  { 0xDB39, "" },
@@ -56138,7 +56138,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDB3D, "" },
 //  { 0xDB3E, "" },
 //  { 0xDB3F, "" },
-//  { 0xDB40, "" },
+    { 0xDB40, "qafinished" }, // AUTOADDED
 //  { 0xDB41, "" },
 //  { 0xDB42, "" },
 //  { 0xDB43, "" },
@@ -56156,7 +56156,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDB4F, "" },
 //  { 0xDB50, "" },
     { 0xDB51, "quadrantanimweights" },
-//  { 0xDB52, "" },
+    { 0xDB52, "quality" }, // AUTOADDED
 //  { 0xDB53, "" },
 //  { 0xDB54, "" },
 //  { 0xDB55, "" },
@@ -56220,14 +56220,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDB8F, "" },
 //  { 0xDB90, "" },
 //  { 0xDB91, "" },
-//  { 0xDB92, "" },
+    { 0xDB92, "queuemidmatchaward" }, // AUTOADDED
 //  { 0xDB93, "" },
 //  { 0xDB94, "" },
 //  { 0xDB95, "" },
-//  { 0xDB96, "" },
-//  { 0xDB97, "" },
+    { 0xDB96, "queuescoreeventpopup" }, // AUTOADDED
+    { 0xDB97, "queuescorepointspopup" }, // AUTOADDED
 //  { 0xDB98, "" },
-//  { 0xDB99, "" },
+    { 0xDB99, "queuesplash" }, // AUTOADDED
 //  { 0xDB9A, "" },
 //  { 0xDB9B, "" },
 //  { 0xDB9C, "" },
@@ -56307,7 +56307,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDBE6, "" },
 //  { 0xDBE7, "" },
 //  { 0xDBE8, "" },
-//  { 0xDBE9, "" },
+    { 0xDBE9, "radiationoverlay" }, // AUTOADDED
 //  { 0xDBEA, "" },
 //  { 0xDBEB, "" },
 //  { 0xDBEC, "" },
@@ -56514,10 +56514,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDCB5, "" },
 //  { 0xDCB6, "" },
 //  { 0xDCB7, "" },
-//  { 0xDCB8, "" },
+    { 0xDCB8, "randomizepassthroughchildren" }, // AUTOADDED
 //  { 0xDCB9, "" },
 //  { 0xDCBA, "" },
-//  { 0xDCBB, "" },
+    { 0xDCBB, "randomjackalmovement" }, // AUTOADDED
 //  { 0xDCBC, "" },
 //  { 0xDCBD, "" },
 //  { 0xDCBE, "" },
@@ -56527,8 +56527,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDCC2, "" },
 //  { 0xDCC3, "" },
 //  { 0xDCC4, "" },
-//  { 0xDCC5, "" },
-//  { 0xDCC6, "" },
+    { 0xDCC5, "randomscore" }, // AUTOADDED
+    { 0xDCC6, "randomspawnscore" }, // AUTOADDED
 //  { 0xDCC7, "" },
     { 0xDCC8, "randomvector" },
     { 0xDCC9, "randomvectorrange" },
@@ -56538,14 +56538,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDCCD, "" },
 //  { 0xDCCE, "" },
 //  { 0xDCCF, "" },
-//  { 0xDCD0, "" },
+    { 0xDCD0, "rangetrigger" }, // AUTOADDED
 //  { 0xDCD1, "" },
     { 0xDCD2, "rankedmatch" },
-//  { 0xDCD3, "" },
-//  { 0xDCD4, "" },
-//  { 0xDCD5, "" },
+    { 0xDCD3, "rankedmatchupdates" }, // AUTOADDED
+    { 0xDCD4, "rankinfo" }, // AUTOADDED
+    { 0xDCD5, "rankingenabled" }, // AUTOADDED
 //  { 0xDCD6, "" },
-//  { 0xDCD7, "" },
+    { 0xDCD7, "rankxpmultipliers" }, // AUTOADDED
 //  { 0xDCD8, "" },
 //  { 0xDCD9, "" },
 //  { 0xDCDA, "" },
@@ -56561,7 +56561,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDCE4, "" },
 //  { 0xDCE5, "" },
 //  { 0xDCE6, "" },
-//  { 0xDCE7, "" },
+    { 0xDCE7, "rateofchange" }, // AUTOADDED
 //  { 0xDCE8, "" },
 //  { 0xDCE9, "" },
 //  { 0xDCEA, "" },
@@ -56692,7 +56692,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDD67, "" },
 //  { 0xDD68, "" },
 //  { 0xDD69, "" },
-//  { 0xDD6A, "" },
+    { 0xDD6A, "readweaponinfofromtable" }, // AUTOADDED
     { 0xDD6B, "ready" },
 //  { 0xDD6C, "" },
 //  { 0xDD6D, "" },
@@ -56777,8 +56777,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDDBC, "" },
 //  { 0xDDBD, "" },
 //  { 0xDDBE, "" },
-//  { 0xDDBF, "" },
-//  { 0xDDC0, "" },
+    { 0xDDBF, "recentdamageamount" }, // AUTOADDED
+    { 0xDDC0, "recentdamages" }, // AUTOADDED
 //  { 0xDDC1, "" },
 //  { 0xDDC2, "" },
 //  { 0xDDC3, "" },
@@ -56791,7 +56791,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDDCA, "" },
 //  { 0xDDCB, "" },
 //  { 0xDDCC, "" },
-//  { 0xDDCD, "" },
+    { 0xDDCD, "recentsplashcount" }, // AUTOADDED
 //  { 0xDDCE, "" },
 //  { 0xDDCF, "" },
 //  { 0xDDD0, "" },
@@ -56799,13 +56799,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDDD2, "" },
 //  { 0xDDD3, "" },
 //  { 0xDDD4, "" },
-//  { 0xDDD5, "" },
+    { 0xDDD5, "recipe_getkillstreak" }, // AUTOADDED
 //  { 0xDDD6, "" },
 //  { 0xDDD7, "" },
 //  { 0xDDD8, "" },
 //  { 0xDDD9, "" },
 //  { 0xDDDA, "" },
-//  { 0xDDDB, "" },
+    { 0xDDDB, "recoilscale" }, // AUTOADDED
 //  { 0xDDDC, "" },
 //  { 0xDDDD, "" },
 //  { 0xDDDE, "" },
@@ -56831,7 +56831,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDDF2, "" },
 //  { 0xDDF3, "" },
 //  { 0xDDF4, "" },
-//  { 0xDDF5, "" },
+    { 0xDDF5, "recordvalidationinfraction" }, // AUTOADDED
 //  { 0xDDF6, "" },
 //  { 0xDDF7, "" },
 //  { 0xDDF8, "" },
@@ -56905,7 +56905,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDE3C, "" },
 //  { 0xDE3D, "" },
 //  { 0xDE3E, "" },
-//  { 0xDE3F, "" },
+    { 0xDE3F, "ref" }, // AUTOADDED
 //  { 0xDE40, "" },
 //  { 0xDE41, "" },
 //  { 0xDE42, "" },
@@ -56950,7 +56950,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDE69, "" },
 //  { 0xDE6A, "" },
 //  { 0xDE6B, "" },
-//  { 0xDE6C, "" },
+    { 0xDE6C, "refresh_existing_bots" }, // AUTOADDED
 //  { 0xDE6D, "" },
 //  { 0xDE6E, "" },
 //  { 0xDE6F, "" },
@@ -56967,7 +56967,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDE7A, "" },
 //  { 0xDE7B, "" },
 //  { 0xDE7C, "" },
-//  { 0xDE7D, "" },
+    { 0xDE7D, "refundsuper" }, // AUTOADDED
 //  { 0xDE7E, "" },
 //  { 0xDE7F, "" },
 //  { 0xDE80, "" },
@@ -57108,7 +57108,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDF07, "" },
     { 0xDF08, "registerroundlimitdvar" },
     { 0xDF09, "registerroundswitchdvar" },
-//  { 0xDF0A, "" },
+    { 0xDF0A, "registerscoreinfo" }, // AUTOADDED
     { 0xDF0B, "registerscorelimitdvar" },
 //  { 0xDF0C, "" },
 //  { 0xDF0D, "" },
@@ -57118,7 +57118,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0xDF11, "registertimelimitdvar" },
 //  { 0xDF12, "" },
 //  { 0xDF13, "" },
-//  { 0xDF14, "" },
+    { 0xDF14, "registertweakable" }, // AUTOADDED
 //  { 0xDF15, "" },
 //  { 0xDF16, "" },
 //  { 0xDF17, "" },
@@ -57144,10 +57144,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDF2B, "" },
 //  { 0xDF2C, "" },
     { 0xDF2D, "reinitializematchrulesonmigration" },
-//  { 0xDF2E, "" },
-//  { 0xDF2F, "" },
+    { 0xDF2E, "reinitializethermal" }, // AUTOADDED
+    { 0xDF2F, "relatedbrushmodel" }, // AUTOADDED
 //  { 0xDF30, "" },
-//  { 0xDF31, "" },
+    { 0xDF31, "relativepoint" }, // AUTOADDED
 //  { 0xDF32, "" },
 //  { 0xDF33, "" },
 //  { 0xDF34, "" },
@@ -57203,7 +57203,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDF66, "" },
 //  { 0xDF67, "" },
 //  { 0xDF68, "" },
-//  { 0xDF69, "" },
+    { 0xDF69, "remapscoreeventforweapon" }, // AUTOADDED
 //  { 0xDF6A, "" },
 //  { 0xDF6B, "" },
 //  { 0xDF6C, "" },
@@ -57214,7 +57214,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDF71, "" },
 //  { 0xDF72, "" },
 //  { 0xDF73, "" },
-//  { 0xDF74, "" },
+    { 0xDF74, "remote_uav" }, // AUTOADDED
 //  { 0xDF75, "" },
 //  { 0xDF76, "" },
 //  { 0xDF77, "" },
@@ -57226,7 +57226,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDF7D, "" },
 //  { 0xDF7E, "" },
 //  { 0xDF7F, "" },
-//  { 0xDF80, "" },
+    { 0xDF80, "remotemissileinprogress" }, // AUTOADDED
 //  { 0xDF81, "" },
 //  { 0xDF82, "" },
 //  { 0xDF83, "" },
@@ -57236,38 +57236,38 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDF87, "" },
 //  { 0xDF88, "" },
 //  { 0xDF89, "" },
-//  { 0xDF8A, "" },
-//  { 0xDF8B, "" },
-//  { 0xDF8C, "" },
-//  { 0xDF8D, "" },
-//  { 0xDF8E, "" },
-//  { 0xDF8F, "" },
-//  { 0xDF90, "" },
+    { 0xDF8A, "remoteuav" }, // AUTOADDED
+    { 0xDF8B, "remoteuav_cantargetuav" }, // AUTOADDED
+    { 0xDF8C, "remoteuav_cleanup" }, // AUTOADDED
+    { 0xDF8D, "remoteuav_clear_marked_on_gameended" }, // AUTOADDED
+    { 0xDF8E, "remoteuav_clearincomingwarning" }, // AUTOADDED
+    { 0xDF8F, "remoteuav_clearmarkedforowner" }, // AUTOADDED
+    { 0xDF90, "remoteuav_delaylaunchdialog" }, // AUTOADDED
 //  { 0xDF91, "" },
 //  { 0xDF92, "" },
-//  { 0xDF93, "" },
-//  { 0xDF94, "" },
-//  { 0xDF95, "" },
+    { 0xDF93, "remoteuav_explode_on_changeteams" }, // AUTOADDED
+    { 0xDF94, "remoteuav_explode_on_death" }, // AUTOADDED
+    { 0xDF95, "remoteuav_explode_on_disconnect" }, // AUTOADDED
 //  { 0xDF96, "" },
 //  { 0xDF97, "" },
-//  { 0xDF98, "" },
+    { 0xDF98, "remoteuav_fx" }, // AUTOADDED
 //  { 0xDF99, "" },
-//  { 0xDF9A, "" },
-//  { 0xDF9B, "" },
-//  { 0xDF9C, "" },
+    { 0xDF9A, "remoteuav_handleincomingsam" }, // AUTOADDED
+    { 0xDF9B, "remoteuav_handleincomingstinger" }, // AUTOADDED
+    { 0xDF9C, "remoteuav_in_range" }, // AUTOADDED
 //  { 0xDF9D, "" },
-//  { 0xDF9E, "" },
-//  { 0xDF9F, "" },
-//  { 0xDFA0, "" },
+    { 0xDF9E, "remoteuav_leave" }, // AUTOADDED
+    { 0xDF9F, "remoteuav_leave_on_timeout" }, // AUTOADDED
+    { 0xDFA0, "remoteuav_light_fx" }, // AUTOADDED
 //  { 0xDFA1, "" },
-//  { 0xDFA2, "" },
-//  { 0xDFA3, "" },
+    { 0xDFA2, "remoteuav_nodeployzones" }, // AUTOADDED
+    { 0xDFA3, "remoteuav_operationrumble" }, // AUTOADDED
 //  { 0xDFA4, "" },
 //  { 0xDFA5, "" },
-//  { 0xDFA6, "" },
+    { 0xDFA6, "remoteuav_rangecountdown" }, // AUTOADDED
 //  { 0xDFA7, "" },
-//  { 0xDFA8, "" },
-//  { 0xDFA9, "" },
+    { 0xDFA8, "remoteuav_rumble" }, // AUTOADDED
+    { 0xDFA9, "remoteuav_staticfade" }, // AUTOADDED
 //  { 0xDFAA, "" },
 //  { 0xDFAB, "" },
 //  { 0xDFAC, "" },
@@ -57355,7 +57355,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xDFFE, "" },
 //  { 0xDFFF, "" },
 //  { 0xE000, "" },
-//  { 0xE001, "" },
+    { 0xE001, "remove_ends_from_path" }, // AUTOADDED
 //  { 0xE002, "" },
 //  { 0xE003, "" },
 //  { 0xE004, "" },
@@ -57570,12 +57570,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE0D5, "" },
 //  { 0xE0D6, "" },
 //  { 0xE0D7, "" },
-//  { 0xE0D8, "" },
+    { 0xE0D8, "removebombzonec" }, // AUTOADDED
 //  { 0xE0D9, "" },
-//  { 0xE0DA, "" },
+    { 0xE0DA, "removeboxfromlevelarray" }, // AUTOADDED
 //  { 0xE0DB, "" },
 //  { 0xE0DC, "" },
-//  { 0xE0DD, "" },
+    { 0xE0DD, "removechild" }, // AUTOADDED
 //  { 0xE0DE, "" },
 //  { 0xE0DF, "" },
 //  { 0xE0E0, "" },
@@ -57589,7 +57589,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE0E8, "" },
 //  { 0xE0E9, "" },
 //  { 0xE0EA, "" },
-//  { 0xE0EB, "" },
+    { 0xE0EB, "removedestroyedchildren" }, // AUTOADDED
 //  { 0xE0EC, "" },
 //  { 0xE0ED, "" },
 //  { 0xE0EE, "" },
@@ -57644,16 +57644,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE11F, "" },
 //  { 0xE120, "" },
 //  { 0xE121, "" },
-//  { 0xE122, "" },
+    { 0xE122, "removefromugvlist" }, // AUTOADDED
 //  { 0xE123, "" },
 //  { 0xE124, "" },
-//  { 0xE125, "" },
-//  { 0xE126, "" },
+    { 0xE125, "removeglobalrankxpmultiplier" }, // AUTOADDED
+    { 0xE126, "removeglobalweaponrankxpmultiplier" }, // AUTOADDED
 //  { 0xE127, "" },
 //  { 0xE128, "" },
 //  { 0xE129, "" },
 //  { 0xE12A, "" },
-//  { 0xE12B, "" },
+    { 0xE12B, "removeheavyarmor" }, // AUTOADDED
 //  { 0xE12C, "" },
 //  { 0xE12D, "" },
 //  { 0xE12E, "" },
@@ -57667,7 +57667,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE136, "" },
 //  { 0xE137, "" },
 //  { 0xE138, "" },
-//  { 0xE139, "" },
+    { 0xE139, "removelittlebird" }, // AUTOADDED
 //  { 0xE13A, "" },
 //  { 0xE13B, "" },
 //  { 0xE13C, "" },
@@ -57680,7 +57680,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE143, "" },
 //  { 0xE144, "" },
 //  { 0xE145, "" },
-//  { 0xE146, "" },
+    { 0xE146, "removeoutline" }, // AUTOADDED
 //  { 0xE147, "" },
 //  { 0xE148, "" },
 //  { 0xE149, "" },
@@ -57692,23 +57692,23 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE14F, "" },
 //  { 0xE150, "" },
 //  { 0xE151, "" },
-//  { 0xE152, "" },
+    { 0xE152, "removeperks" }, // AUTOADDED
 //  { 0xE153, "" },
 //  { 0xE154, "" },
 //  { 0xE155, "" },
 //  { 0xE156, "" },
 //  { 0xE157, "" },
 //  { 0xE158, "" },
-//  { 0xE159, "" },
+    { 0xE159, "removeplayerdataafterleavinggame" }, // AUTOADDED
 //  { 0xE15A, "" },
 //  { 0xE15B, "" },
 //  { 0xE15C, "" },
 //  { 0xE15D, "" },
 //  { 0xE15E, "" },
-//  { 0xE15F, "" },
+    { 0xE15F, "removerankxpmultiplier" }, // AUTOADDED
 //  { 0xE160, "" },
 //  { 0xE161, "" },
-//  { 0xE162, "" },
+    { 0xE162, "removeremoteweapon" }, // AUTOADDED
 //  { 0xE163, "" },
 //  { 0xE164, "" },
 //  { 0xE165, "" },
@@ -57731,13 +57731,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE176, "" },
 //  { 0xE177, "" },
 //  { 0xE178, "" },
-//  { 0xE179, "" },
+    { 0xE179, "removetagsongameended" }, // AUTOADDED
 //  { 0xE17A, "" },
 //  { 0xE17B, "" },
-//  { 0xE17C, "" },
+    { 0xE17C, "removeteamrankxpmultiplier" }, // AUTOADDED
 //  { 0xE17D, "" },
 //  { 0xE17E, "" },
-//  { 0xE17F, "" },
+    { 0xE17F, "removetimedoutinstructions" }, // AUTOADDED
 //  { 0xE180, "" },
 //  { 0xE181, "" },
 //  { 0xE182, "" },
@@ -57751,7 +57751,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE18A, "" },
 //  { 0xE18B, "" },
 //  { 0xE18C, "" },
-//  { 0xE18D, "" },
+    { 0xE18D, "removeweaponrankxpmultiplier" }, // AUTOADDED
 //  { 0xE18E, "" },
 //  { 0xE18F, "" },
 //  { 0xE190, "" },
@@ -57784,7 +57784,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE1AB, "" },
 //  { 0xE1AC, "" },
 //  { 0xE1AD, "" },
-//  { 0xE1AE, "" },
+    { 0xE1AE, "requestedturret" }, // AUTOADDED
 //  { 0xE1AF, "" },
 //  { 0xE1B0, "" },
 //  { 0xE1B1, "" },
@@ -57937,7 +57937,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE244, "" },
 //  { 0xE245, "" },
 //  { 0xE246, "" },
-//  { 0xE247, "" },
+    { 0xE247, "resetattackerlist" }, // AUTOADDED
 //  { 0xE248, "" },
 //  { 0xE249, "" },
 //  { 0xE24A, "" },
@@ -57985,7 +57985,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE274, "" },
 //  { 0xE275, "" },
 //  { 0xE276, "" },
-//  { 0xE277, "" },
+    { 0xE277, "resettags" }, // AUTOADDED
 //  { 0xE278, "" },
 //  { 0xE279, "" },
 //  { 0xE27A, "" },
@@ -58014,13 +58014,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE291, "" },
     { 0xE292, "respawn_watcher" },
     { 0xE293, "respawn_with_launcher" },
-//  { 0xE294, "" },
+    { 0xE294, "respawnbombcase" }, // AUTOADDED
 //  { 0xE295, "" },
 //  { 0xE296, "" },
 //  { 0xE297, "" },
 //  { 0xE298, "" },
 //  { 0xE299, "" },
-//  { 0xE29A, "" },
+    { 0xE29A, "respawntimerstarttime" }, // AUTOADDED
 //  { 0xE29B, "" },
 //  { 0xE29C, "" },
 //  { 0xE29D, "" },
@@ -58047,7 +58047,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE2B2, "" },
 //  { 0xE2B3, "" },
 //  { 0xE2B4, "" },
-//  { 0xE2B5, "" },
+    { 0xE2B5, "restarttimer" }, // AUTOADDED
 //  { 0xE2B6, "" },
 //  { 0xE2B7, "" },
 //  { 0xE2B8, "" },
@@ -58089,7 +58089,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE2DC, "" },
 //  { 0xE2DD, "" },
 //  { 0xE2DE, "" },
-//  { 0xE2DF, "" },
+    { 0xE2DF, "restoreperk" }, // AUTOADDED
 //  { 0xE2E0, "" },
 //  { 0xE2E1, "" },
 //  { 0xE2E2, "" },
@@ -58119,7 +58119,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE2FA, "" },
 //  { 0xE2FB, "" },
 //  { 0xE2FC, "" },
-//  { 0xE2FD, "" },
+    { 0xE2FD, "resumeballtimer" }, // AUTOADDED
 //  { 0xE2FE, "" },
 //  { 0xE2FF, "" },
 //  { 0xE300, "" },
@@ -58481,11 +58481,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE464, "" },
 //  { 0xE465, "" },
 //  { 0xE466, "" },
-//  { 0xE467, "" },
+    { 0xE467, "return_triggerer" }, // AUTOADDED
 //  { 0xE468, "" },
 //  { 0xE469, "" },
 //  { 0xE46A, "" },
-//  { 0xE46B, "" },
+    { 0xE46B, "returnaftertime" }, // AUTOADDED
 //  { 0xE46C, "" },
 //  { 0xE46D, "" },
 //  { 0xE46E, "" },
@@ -58499,7 +58499,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE476, "" },
 //  { 0xE477, "" },
 //  { 0xE478, "" },
-//  { 0xE479, "" },
+    { 0xE479, "returntime" }, // AUTOADDED
 //  { 0xE47A, "" },
 //  { 0xE47B, "" },
 //  { 0xE47C, "" },
@@ -58522,7 +58522,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE48D, "" },
 //  { 0xE48E, "" },
 //  { 0xE48F, "" },
-//  { 0xE490, "" },
+    { 0xE490, "reverb_settings" }, // AUTOADDED
 //  { 0xE491, "" },
 //  { 0xE492, "" },
 //  { 0xE493, "" },
@@ -58831,7 +58831,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE5C2, "" },
 //  { 0xE5C3, "" },
 //  { 0xE5C4, "" },
-//  { 0xE5C5, "" },
+    { 0xE5C5, "rocket_cleanupondeath" }, // AUTOADDED
 //  { 0xE5C6, "" },
 //  { 0xE5C7, "" },
 //  { 0xE5C8, "" },
@@ -58856,7 +58856,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE5DB, "" },
     { 0xE5DC, "rocketlauncherammo" },
 //  { 0xE5DD, "" },
-//  { 0xE5DE, "" },
+    { 0xE5DE, "rockets" }, // AUTOADDED
 //  { 0xE5DF, "" },
 //  { 0xE5E0, "" },
 //  { 0xE5E1, "" },
@@ -59244,8 +59244,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE75F, "" },
 //  { 0xE760, "" },
 //  { 0xE761, "" },
-//  { 0xE762, "" },
-//  { 0xE763, "" },
+    { 0xE762, "roundlimit" }, // AUTOADDED
+    { 0xE763, "roundscorelimit" }, // AUTOADDED
 //  { 0xE764, "" },
 //  { 0xE765, "" },
 //  { 0xE766, "" },
@@ -59331,7 +59331,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE7B6, "" },
 //  { 0xE7B7, "" },
 //  { 0xE7B8, "" },
-//  { 0xE7B9, "" },
+    { 0xE7B9, "rules" }, // AUTOADDED
 //  { 0xE7BA, "" },
 //  { 0xE7BB, "" },
 //  { 0xE7BC, "" },
@@ -59626,7 +59626,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE8DD, "" },
 //  { 0xE8DE, "" },
 //  { 0xE8DF, "" },
-//  { 0xE8E0, "" },
+    { 0xE8E0, "rushtimeramount" }, // AUTOADDED
 //  { 0xE8E1, "" },
 //  { 0xE8E2, "" },
 //  { 0xE8E3, "" },
@@ -60179,7 +60179,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEB06, "" },
 //  { 0xEB07, "" },
 //  { 0xEB08, "" },
-//  { 0xEB09, "" },
+    { 0xEB09, "sam_attacktargets" }, // AUTOADDED
 //  { 0xEB0A, "" },
 //  { 0xEB0B, "" },
 //  { 0xEB0C, "" },
@@ -60192,10 +60192,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEB13, "" },
 //  { 0xEB14, "" },
 //  { 0xEB15, "" },
-//  { 0xEB16, "" },
+    { 0xEB16, "sammissilegroups" }, // AUTOADDED
 //  { 0xEB17, "" },
 //  { 0xEB18, "" },
-//  { 0xEB19, "" },
+    { 0xEB19, "samtargetent" }, // AUTOADDED
 //  { 0xEB1A, "" },
 //  { 0xEB1B, "" },
 //  { 0xEB1C, "" },
@@ -60250,7 +60250,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEB4D, "" },
 //  { 0xEB4E, "" },
 //  { 0xEB4F, "" },
-//  { 0xEB50, "" },
+    { 0xEB50, "satellitecount" }, // AUTOADDED
 //  { 0xEB51, "" },
 //  { 0xEB52, "" },
     { 0xEB53, "save" },
@@ -60453,7 +60453,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEC18, "" },
 //  { 0xEC19, "" },
 //  { 0xEC1A, "" },
-//  { 0xEC1B, "" },
+    { 0xEC1B, "score_fx" }, // AUTOADDED
 //  { 0xEC1C, "" },
 //  { 0xEC1D, "" },
 //  { 0xEC1E, "" },
@@ -60462,19 +60462,19 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEC21, "" },
 //  { 0xEC22, "" },
 //  { 0xEC23, "" },
-//  { 0xEC24, "" },
+    { 0xEC24, "scorebuddyspawn" }, // AUTOADDED
 //  { 0xEC25, "" },
-//  { 0xEC26, "" },
-//  { 0xEC27, "" },
+    { 0xEC26, "scoreconfirm" }, // AUTOADDED
+    { 0xEC27, "scoredeny" }, // AUTOADDED
 //  { 0xEC28, "" },
 //  { 0xEC29, "" },
 //  { 0xEC2A, "" },
 //  { 0xEC2B, "" },
-//  { 0xEC2C, "" },
+    { 0xEC2C, "scoreeventlistsize" }, // AUTOADDED
     { 0xEC2D, "scoreeventpopup" },
 //  { 0xEC2E, "" },
 //  { 0xEC2F, "" },
-//  { 0xEC30, "" },
+    { 0xEC30, "scoreeventqueue" }, // AUTOADDED
 //  { 0xEC31, "" },
 //  { 0xEC32, "" },
 //  { 0xEC33, "" },
@@ -60483,17 +60483,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEC36, "" },
 //  { 0xEC37, "" },
 //  { 0xEC38, "" },
-//  { 0xEC39, "" },
-//  { 0xEC3A, "" },
+    { 0xEC39, "scorefrozenuntil" }, // AUTOADDED
+    { 0xEC3A, "scoreinfo" }, // AUTOADDED
 //  { 0xEC3B, "" },
 //  { 0xEC3C, "" },
 //  { 0xEC3D, "" },
 //  { 0xEC3E, "" },
 //  { 0xEC3F, "" },
 //  { 0xEC40, "" },
-//  { 0xEC41, "" },
+    { 0xEC41, "scorepertick" }, // AUTOADDED
 //  { 0xEC42, "" },
-//  { 0xEC43, "" },
+    { 0xEC43, "scorepointsqueue" }, // AUTOADDED
 //  { 0xEC44, "" },
 //  { 0xEC45, "" },
 //  { 0xEC46, "" },
@@ -60510,7 +60510,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEC51, "" },
 //  { 0xEC52, "" },
 //  { 0xEC53, "" },
-//  { 0xEC54, "" },
+    { 0xEC54, "scoringtime" }, // AUTOADDED
 //  { 0xEC55, "" },
 //  { 0xEC56, "" },
 //  { 0xEC57, "" },
@@ -60554,10 +60554,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEC7D, "" },
 //  { 0xEC7E, "" },
 //  { 0xEC7F, "" },
-//  { 0xEC80, "" },
-//  { 0xEC81, "" },
-//  { 0xEC82, "" },
-//  { 0xEC83, "" },
+    { 0xEC80, "scoutpingmod" }, // AUTOADDED
+    { 0xEC81, "scoutpingpreviousstage" }, // AUTOADDED
+    { 0xEC82, "scoutpingradius" }, // AUTOADDED
+    { 0xEC83, "scoutsweeptime" }, // AUTOADDED
 //  { 0xEC84, "" },
 //  { 0xEC85, "" },
 //  { 0xEC86, "" },
@@ -60576,20 +60576,20 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEC93, "" },
 //  { 0xEC94, "" },
 //  { 0xEC95, "" },
-//  { 0xEC96, "" },
+    { 0xEC96, "scramble_acquiretarget" }, // AUTOADDED
 //  { 0xEC97, "" },
 //  { 0xEC98, "" },
 //  { 0xEC99, "" },
 //  { 0xEC9A, "" },
-//  { 0xEC9B, "" },
-//  { 0xEC9C, "" },
+    { 0xEC9B, "scrambled" }, // AUTOADDED
+    { 0xEC9C, "scrambler" }, // AUTOADDED
 //  { 0xEC9D, "" },
 //  { 0xEC9E, "" },
 //  { 0xEC9F, "" },
-//  { 0xECA0, "" },
-//  { 0xECA1, "" },
+    { 0xECA0, "scrambletarget" }, // AUTOADDED
+    { 0xECA1, "scrambletargetent" }, // AUTOADDED
 //  { 0xECA2, "" },
-//  { 0xECA3, "" },
+    { 0xECA3, "scrambleturretattacktargets" }, // AUTOADDED
 //  { 0xECA4, "" },
 //  { 0xECA5, "" },
 //  { 0xECA6, "" },
@@ -60652,15 +60652,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xECDF, "" },
 //  { 0xECE0, "" },
 //  { 0xECE1, "" },
-//  { 0xECE2, "" },
+    { 0xECE2, "script_accel" }, // AUTOADDED
 //  { 0xECE3, "" },
-//  { 0xECE4, "" },
+    { 0xECE4, "script_accumulate" }, // AUTOADDED
 //  { 0xECE5, "" },
 //  { 0xECE6, "" },
 //  { 0xECE7, "" },
 //  { 0xECE8, "" },
 //  { 0xECE9, "" },
-//  { 0xECEA, "" },
+    { 0xECEA, "script_airspeed" }, // AUTOADDED
 //  { 0xECEB, "" },
 //  { 0xECEC, "" },
 //  { 0xECED, "" },
@@ -60722,7 +60722,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xED25, "" },
 //  { 0xED26, "" },
 //  { 0xED27, "" },
-//  { 0xED28, "" },
+    { 0xED28, "script_chance" }, // AUTOADDED
     { 0xED29, "script_char_group" },
     { 0xED2A, "script_char_index" },
 //  { 0xED2B, "" },
@@ -60771,7 +60771,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xED56, "" },
 //  { 0xED57, "" },
 //  { 0xED58, "" },
-//  { 0xED59, "" },
+    { 0xED59, "script_destructable_area" }, // AUTOADDED
 //  { 0xED5A, "" },
 //  { 0xED5B, "" },
 //  { 0xED5C, "" },
@@ -60868,18 +60868,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEDB7, "" },
 //  { 0xEDB8, "" },
 //  { 0xEDB9, "" },
-//  { 0xEDBA, "" },
+    { 0xEDBA, "script_fxcommand" }, // AUTOADDED
     { 0xEDBB, "script_fxid" },
 //  { 0xEDBC, "" },
 //  { 0xEDBD, "" },
 //  { 0xEDBE, "" },
-//  { 0xEDBF, "" },
-//  { 0xEDC0, "" },
-//  { 0xEDC1, "" },
-//  { 0xEDC2, "" },
-//  { 0xEDC3, "" },
-//  { 0xEDC4, "" },
-//  { 0xEDC5, "" },
+    { 0xEDBF, "script_gameobjectname" }, // AUTOADDED
+    { 0xEDC0, "script_gametype_ctf" }, // AUTOADDED
+    { 0xEDC1, "script_gametype_dm" }, // AUTOADDED
+    { 0xEDC2, "script_gametype_hq" }, // AUTOADDED
+    { 0xEDC3, "script_gametype_koth" }, // AUTOADDED
+    { 0xEDC4, "script_gametype_sd" }, // AUTOADDED
+    { 0xEDC5, "script_gametype_tdm" }, // AUTOADDED
 //  { 0xEDC6, "" },
 //  { 0xEDC7, "" },
 //  { 0xEDC8, "" },
@@ -60983,41 +60983,41 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEE2A, "" },
 //  { 0xEE2B, "" },
 //  { 0xEE2C, "" },
-//  { 0xEE2D, "" },
+    { 0xEE2D, "script_mover" }, // AUTOADDED
 //  { 0xEE2E, "" },
 //  { 0xEE2F, "" },
-//  { 0xEE30, "" },
-//  { 0xEE31, "" },
-//  { 0xEE32, "" },
-//  { 0xEE33, "" },
-//  { 0xEE34, "" },
-//  { 0xEE35, "" },
-//  { 0xEE36, "" },
-//  { 0xEE37, "" },
-//  { 0xEE38, "" },
-//  { 0xEE39, "" },
-//  { 0xEE3A, "" },
-//  { 0xEE3B, "" },
-//  { 0xEE3C, "" },
-//  { 0xEE3D, "" },
-//  { 0xEE3E, "" },
-//  { 0xEE3F, "" },
-//  { 0xEE40, "" },
-//  { 0xEE41, "" },
-//  { 0xEE42, "" },
-//  { 0xEE43, "" },
-//  { 0xEE44, "" },
-//  { 0xEE45, "" },
-//  { 0xEE46, "" },
-//  { 0xEE47, "" },
-//  { 0xEE48, "" },
-//  { 0xEE49, "" },
-//  { 0xEE4A, "" },
-//  { 0xEE4B, "" },
-//  { 0xEE4C, "" },
-//  { 0xEE4D, "" },
-//  { 0xEE4E, "" },
-//  { 0xEE4F, "" },
+    { 0xEE30, "script_mover_agent_spawn_watch" }, // AUTOADDED
+    { 0xEE31, "script_mover_allow_usable" }, // AUTOADDED
+    { 0xEE32, "script_mover_apply_move_parameters" }, // AUTOADDED
+    { 0xEE33, "script_mover_call_func_on_notify" }, // AUTOADDED
+    { 0xEE34, "script_mover_classnames" }, // AUTOADDED
+    { 0xEE35, "script_mover_connect_watch" }, // AUTOADDED
+    { 0xEE36, "script_mover_defaults" }, // AUTOADDED
+    { 0xEE37, "script_mover_func_on_notify" }, // AUTOADDED
+    { 0xEE38, "script_mover_get_top_parent" }, // AUTOADDED
+    { 0xEE39, "script_mover_has_parent_moved" }, // AUTOADDED
+    { 0xEE3A, "script_mover_hintstrings" }, // AUTOADDED
+    { 0xEE3B, "script_mover_init_move_parameters" }, // AUTOADDED
+    { 0xEE3C, "script_mover_int" }, // AUTOADDED
+    { 0xEE3D, "script_mover_is_script_mover" }, // AUTOADDED
+    { 0xEE3E, "script_mover_link_to_use_object" }, // AUTOADDED
+    { 0xEE3F, "script_mover_move_to_named_goal" }, // AUTOADDED
+    { 0xEE40, "script_mover_move_to_target" }, // AUTOADDED
+    { 0xEE41, "script_mover_named_goals" }, // AUTOADDED
+    { 0xEE42, "script_mover_parameters" }, // AUTOADDED
+    { 0xEE43, "script_mover_parse_move_parameters" }, // AUTOADDED
+    { 0xEE44, "script_mover_parse_range" }, // AUTOADDED
+    { 0xEE45, "script_mover_parse_targets" }, // AUTOADDED
+    { 0xEE46, "script_mover_run_notify" }, // AUTOADDED
+    { 0xEE47, "script_mover_save_default_move_parameters" }, // AUTOADDED
+    { 0xEE48, "script_mover_set_defaults" }, // AUTOADDED
+    { 0xEE49, "script_mover_set_param" }, // AUTOADDED
+    { 0xEE4A, "script_mover_set_usable" }, // AUTOADDED
+    { 0xEE4B, "script_mover_start_use" }, // AUTOADDED
+    { 0xEE4C, "script_mover_trigger_on" }, // AUTOADDED
+    { 0xEE4D, "script_mover_unlink_from_use_object" }, // AUTOADDED
+    { 0xEE4E, "script_mover_use_can_link" }, // AUTOADDED
+    { 0xEE4F, "script_mover_use_trigger" }, // AUTOADDED
 //  { 0xEE50, "" },
 //  { 0xEE51, "" },
 //  { 0xEE52, "" },
@@ -61059,7 +61059,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEE76, "" },
 //  { 0xEE77, "" },
 //  { 0xEE78, "" },
-//  { 0xEE79, "" },
+    { 0xEE79, "script_parameters" }, // AUTOADDED
 //  { 0xEE7A, "" },
 //  { 0xEE7B, "" },
 //  { 0xEE7C, "" },
@@ -61077,7 +61077,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEE88, "" },
     { 0xEE89, "script_prefab_exploder" },
 //  { 0xEE8A, "" },
-//  { 0xEE8B, "" },
+    { 0xEE8B, "script_print_fx" }, // AUTOADDED
 //  { 0xEE8C, "" },
 //  { 0xEE8D, "" },
 //  { 0xEE8E, "" },
@@ -61165,7 +61165,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEEE0, "" },
 //  { 0xEEE1, "" },
 //  { 0xEEE2, "" },
-//  { 0xEEE3, "" },
+    { 0xEEE3, "script_threshold" }, // AUTOADDED
 //  { 0xEEE4, "" },
 //  { 0xEEE5, "" },
 //  { 0xEEE6, "" },
@@ -61447,7 +61447,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEFFA, "" },
 //  { 0xEFFB, "" },
 //  { 0xEFFC, "" },
-//  { 0xEFFD, "" },
+    { 0xEFFD, "sd_endgame" }, // AUTOADDED
 //  { 0xEFFE, "" },
 //  { 0xEFFF, "" },
 //  { 0xF000, "" },
@@ -61645,9 +61645,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF0C0, "" },
 //  { 0xF0C1, "" },
 //  { 0xF0C2, "" },
-//  { 0xF0C3, "" },
+    { 0xF0C3, "secondarytarget" }, // AUTOADDED
     { 0xF0C4, "secondaryweapon" },
-//  { 0xF0C5, "" },
+    { 0xF0C5, "secondowner" }, // AUTOADDED
 //  { 0xF0C6, "" },
 //  { 0xF0C7, "" },
 //  { 0xF0C8, "" },
@@ -61876,8 +61876,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF1A7, "" },
 //  { 0xF1A8, "" },
 //  { 0xF1A9, "" },
-//  { 0xF1AA, "" },
-//  { 0xF1AB, "" },
+    { 0xF1AA, "selectairstrikelocation" }, // AUTOADDED
+    { 0xF1AB, "selectbestspawnpoint" }, // AUTOADDED
 //  { 0xF1AC, "" },
 //  { 0xF1AD, "" },
 //  { 0xF1AE, "" },
@@ -61892,7 +61892,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF1B7, "" },
 //  { 0xF1B8, "" },
 //  { 0xF1B9, "" },
-//  { 0xF1BA, "" },
+    { 0xF1BA, "selectedclass" }, // AUTOADDED
 //  { 0xF1BB, "" },
     { 0xF1BC, "selectedmove_forward" },
     { 0xF1BD, "selectedmove_right" },
@@ -61908,7 +61908,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0xF1C7, "selectinglocation" },
 //  { 0xF1C8, "" },
 //  { 0xF1C9, "" },
-//  { 0xF1CA, "" },
+    { 0xF1CA, "selectlocationvo" }, // AUTOADDED
 //  { 0xF1CB, "" },
 //  { 0xF1CC, "" },
 //  { 0xF1CD, "" },
@@ -61981,9 +61981,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF210, "" },
 //  { 0xF211, "" },
 //  { 0xF212, "" },
-//  { 0xF213, "" },
-//  { 0xF214, "" },
-//  { 0xF215, "" },
+    { 0xF213, "selfvohistory" }, // AUTOADDED
+    { 0xF214, "selfvoinfo" }, // AUTOADDED
+    { 0xF215, "selfvomap" }, // AUTOADDED
 //  { 0xF216, "" },
 //  { 0xF217, "" },
 //  { 0xF218, "" },
@@ -62006,10 +62006,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF229, "" },
 //  { 0xF22A, "" },
 //  { 0xF22B, "" },
-//  { 0xF22C, "" },
+    { 0xF22C, "sendcodcastermatchdata" }, // AUTOADDED
 //  { 0xF22D, "" },
 //  { 0xF22E, "" },
-//  { 0xF22F, "" },
+    { 0xF22F, "sendgameendedfrozennotify" }, // AUTOADDED
 //  { 0xF230, "" },
 //  { 0xF231, "" },
 //  { 0xF232, "" },
@@ -62019,10 +62019,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF236, "" },
 //  { 0xF237, "" },
 //  { 0xF238, "" },
-//  { 0xF239, "" },
-//  { 0xF23A, "" },
-//  { 0xF23B, "" },
-//  { 0xF23C, "" },
+    { 0xF239, "sentry_attacktargets" }, // AUTOADDED
+    { 0xF23A, "sentry_beepsounds" }, // AUTOADDED
+    { 0xF23B, "sentry_burstfirestart" }, // AUTOADDED
+    { 0xF23C, "sentry_burstfirestop" }, // AUTOADDED
 //  { 0xF23D, "" },
 //  { 0xF23E, "" },
 //  { 0xF23F, "" },
@@ -62031,48 +62031,48 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF242, "" },
 //  { 0xF243, "" },
 //  { 0xF244, "" },
-//  { 0xF245, "" },
+    { 0xF245, "sentry_heatmonitor" }, // AUTOADDED
 //  { 0xF246, "" },
 //  { 0xF247, "" },
-//  { 0xF248, "" },
+    { 0xF248, "sentry_laser_burstfirestart" }, // AUTOADDED
 //  { 0xF249, "" },
-//  { 0xF24A, "" },
-//  { 0xF24B, "" },
-//  { 0xF24C, "" },
+    { 0xF24A, "sentry_makesolid" }, // AUTOADDED
+    { 0xF24B, "sentry_moving_platform_death" }, // AUTOADDED
+    { 0xF24C, "sentry_oncarrierchangedteam" }, // AUTOADDED
 //  { 0xF24D, "" },
-//  { 0xF24E, "" },
-//  { 0xF24F, "" },
-//  { 0xF250, "" },
+    { 0xF24E, "sentry_oncarrierdisconnect" }, // AUTOADDED
+    { 0xF24F, "sentry_ongameended" }, // AUTOADDED
+    { 0xF250, "sentry_place_delay" }, // AUTOADDED
 //  { 0xF251, "" },
 //  { 0xF252, "" },
-//  { 0xF253, "" },
+    { 0xF253, "sentry_setcancelled" }, // AUTOADDED
 //  { 0xF254, "" },
 //  { 0xF255, "" },
 //  { 0xF256, "" },
 //  { 0xF257, "" },
-//  { 0xF258, "" },
+    { 0xF258, "sentry_setowner" }, // AUTOADDED
 //  { 0xF259, "" },
 //  { 0xF25A, "" },
-//  { 0xF25B, "" },
-//  { 0xF25C, "" },
+    { 0xF25B, "sentry_spindown" }, // AUTOADDED
+    { 0xF25C, "sentry_spinup" }, // AUTOADDED
 //  { 0xF25D, "" },
 //  { 0xF25E, "" },
 //  { 0xF25F, "" },
-//  { 0xF260, "" },
-//  { 0xF261, "" },
+    { 0xF260, "sentry_targetlocksound" }, // AUTOADDED
+    { 0xF261, "sentry_timeout" }, // AUTOADDED
 //  { 0xF262, "" },
 //  { 0xF263, "" },
 //  { 0xF264, "" },
-//  { 0xF265, "" },
+    { 0xF265, "sentrygun" }, // AUTOADDED
 //  { 0xF266, "" },
 //  { 0xF267, "" },
-//  { 0xF268, "" },
-//  { 0xF269, "" },
+    { 0xF268, "sentrymodeoff" }, // AUTOADDED
+    { 0xF269, "sentrymodeon" }, // AUTOADDED
 //  { 0xF26A, "" },
-//  { 0xF26B, "" },
-//  { 0xF26C, "" },
+    { 0xF26B, "sentrysettings" }, // AUTOADDED
+    { 0xF26C, "sentryshocktargetent" }, // AUTOADDED
 //  { 0xF26D, "" },
-//  { 0xF26E, "" },
+    { 0xF26E, "sentrytype" }, // AUTOADDED
 //  { 0xF26F, "" },
 //  { 0xF270, "" },
 //  { 0xF271, "" },
@@ -62103,10 +62103,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF28A, "" },
 //  { 0xF28B, "" },
     { 0xF28C, "set_agent_health" },
-//  { 0xF28D, "" },
-//  { 0xF28E, "" },
+    { 0xF28D, "set_agent_model" }, // AUTOADDED
+    { 0xF28E, "set_agent_spawn_health" }, // AUTOADDED
 //  { 0xF28F, "" },
-//  { 0xF290, "" },
+    { 0xF290, "set_agent_team" }, // AUTOADDED
 //  { 0xF291, "" },
 //  { 0xF292, "" },
 //  { 0xF293, "" },
@@ -62566,16 +62566,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF459, "" },
 //  { 0xF45A, "" },
 //  { 0xF45B, "" },
-//  { 0xF45C, "" },
-//  { 0xF45D, "" },
-//  { 0xF45E, "" },
-//  { 0xF45F, "" },
-//  { 0xF460, "" },
-//  { 0xF461, "" },
-//  { 0xF462, "" },
-//  { 0xF463, "" },
-//  { 0xF464, "" },
-//  { 0xF465, "" },
+    { 0xF45C, "set_lightbar" }, // AUTOADDED
+    { 0xF45D, "set_lightbar_color" }, // AUTOADDED
+    { 0xF45E, "set_lightbar_endon_death" }, // AUTOADDED
+    { 0xF45F, "set_lightbar_for_time" }, // AUTOADDED
+    { 0xF460, "set_lightbar_for_time_endon_death" }, // AUTOADDED
+    { 0xF461, "set_lightbar_off" }, // AUTOADDED
+    { 0xF462, "set_lightbar_on" }, // AUTOADDED
+    { 0xF463, "set_lightbar_perm" }, // AUTOADDED
+    { 0xF464, "set_lightbar_perm_endon_death" }, // AUTOADDED
+    { 0xF465, "set_lightbar_pulse_time" }, // AUTOADDED
 //  { 0xF466, "" },
 //  { 0xF467, "" },
 //  { 0xF468, "" },
@@ -63034,12 +63034,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF62D, "" },
 //  { 0xF62E, "" },
 //  { 0xF62F, "" },
-//  { 0xF630, "" },
+    { 0xF630, "setblockhealthregen" }, // AUTOADDED
 //  { 0xF631, "" },
 //  { 0xF632, "" },
-//  { 0xF633, "" },
+    { 0xF633, "setaffinityspeedboost" }, // AUTOADDED
 //  { 0xF634, "" },
-//  { 0xF635, "" },
+    { 0xF635, "setagentteam" }, // AUTOADDED
 //  { 0xF636, "" },
 //  { 0xF637, "" },
 //  { 0xF638, "" },
@@ -63066,7 +63066,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF64D, "" },
 //  { 0xF64E, "" },
 //  { 0xF64F, "" },
-//  { 0xF650, "" },
+    { 0xF650, "setautospot" }, // AUTOADDED
 //  { 0xF651, "" },
 //  { 0xF652, "" },
 //  { 0xF653, "" },
@@ -63079,12 +63079,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF65A, "" },
 //  { 0xF65B, "" },
 //  { 0xF65C, "" },
-//  { 0xF65D, "" },
+    { 0xF65D, "setbattleslideshield" }, // AUTOADDED
 //  { 0xF65E, "" },
 //  { 0xF65F, "" },
 //  { 0xF660, "" },
 //  { 0xF661, "" },
-//  { 0xF662, "" },
+    { 0xF662, "setbestscore" }, // AUTOADDED
 //  { 0xF663, "" },
 //  { 0xF664, "" },
 //  { 0xF665, "" },
@@ -63097,13 +63097,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF66C, "" },
 //  { 0xF66D, "" },
 //  { 0xF66E, "" },
-//  { 0xF66F, "" },
+    { 0xF66F, "setbombtimeromnvars" }, // AUTOADDED
 //  { 0xF670, "" },
 //  { 0xF671, "" },
 //  { 0xF672, "" },
 //  { 0xF673, "" },
-//  { 0xF674, "" },
-//  { 0xF675, "" },
+    { 0xF674, "setbucketval" }, // AUTOADDED
+    { 0xF675, "setbulletoutline" }, // AUTOADDED
 //  { 0xF676, "" },
 //  { 0xF677, "" },
 //  { 0xF678, "" },
@@ -63112,8 +63112,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF67B, "" },
 //  { 0xF67C, "" },
 //  { 0xF67D, "" },
-//  { 0xF67E, "" },
-//  { 0xF67F, "" },
+    { 0xF67E, "setcarepackage" }, // AUTOADDED
+    { 0xF67F, "setcarrier" }, // AUTOADDED
 //  { 0xF680, "" },
 //  { 0xF681, "" },
 //  { 0xF682, "" },
@@ -63129,9 +63129,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF68C, "" },
 //  { 0xF68D, "" },
 //  { 0xF68E, "" },
-//  { 0xF68F, "" },
+    { 0xF68F, "setcinematiccamerastyle" }, // AUTOADDED
 //  { 0xF690, "" },
-//  { 0xF691, "" },
+    { 0xF691, "setclass" }, // AUTOADDED
 //  { 0xF692, "" },
 //  { 0xF693, "" },
 //  { 0xF694, "" },
@@ -63152,7 +63152,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF6A3, "" },
 //  { 0xF6A4, "" },
 //  { 0xF6A5, "" },
-//  { 0xF6A6, "" },
+    { 0xF6A6, "setcrankedbombtimer" }, // AUTOADDED
 //  { 0xF6A7, "" },
 //  { 0xF6A8, "" },
 //  { 0xF6A9, "" },
@@ -63164,11 +63164,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF6AF, "" },
 //  { 0xF6B0, "" },
 //  { 0xF6B1, "" },
-//  { 0xF6B2, "" },
+    { 0xF6B2, "setddlfieldsforplayer" }, // AUTOADDED
 //  { 0xF6B3, "" },
 //  { 0xF6B4, "" },
 //  { 0xF6B5, "" },
-//  { 0xF6B6, "" },
+    { 0xF6B6, "setdefaultammoclip" }, // AUTOADDED
     { 0xF6B7, "setdefaultcallbacks" },
 //  { 0xF6B8, "" },
 //  { 0xF6B9, "" },
@@ -63208,7 +63208,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF6DB, "" },
 //  { 0xF6DC, "" },
 //  { 0xF6DD, "" },
-//  { 0xF6DE, "" },
+    { 0xF6DE, "setendgame" }, // AUTOADDED
 //  { 0xF6DF, "" },
 //  { 0xF6E0, "" },
 //  { 0xF6E1, "" },
@@ -63233,7 +63233,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF6F4, "" },
 //  { 0xF6F5, "" },
 //  { 0xF6F6, "" },
-//  { 0xF6F7, "" },
+    { 0xF6F7, "setextradodge" }, // AUTOADDED
 //  { 0xF6F8, "" },
 //  { 0xF6F9, "" },
     { 0xF6FA, "setextrascore0" },
@@ -63256,9 +63256,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF70B, "" },
 //  { 0xF70C, "" },
 //  { 0xF70D, "" },
-//  { 0xF70E, "" },
+    { 0xF70E, "setflagpositions" }, // AUTOADDED
 //  { 0xF70F, "" },
-//  { 0xF710, "" },
+    { 0xF710, "setflashfrac" }, // AUTOADDED
 //  { 0xF711, "" },
 //  { 0xF712, "" },
 //  { 0xF713, "" },
@@ -63300,7 +63300,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF737, "" },
 //  { 0xF738, "" },
 //  { 0xF739, "" },
-//  { 0xF73A, "" },
+    { 0xF73A, "sethardshell" }, // AUTOADDED
 //  { 0xF73B, "" },
 //  { 0xF73C, "" },
 //  { 0xF73D, "" },
@@ -63318,8 +63318,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF749, "" },
 //  { 0xF74A, "" },
 //  { 0xF74B, "" },
-//  { 0xF74C, "" },
-//  { 0xF74D, "" },
+    { 0xF74C, "seticonshader" }, // AUTOADDED
+    { 0xF74D, "seticonsize" }, // AUTOADDED
 //  { 0xF74E, "" },
 //  { 0xF74F, "" },
 //  { 0xF750, "" },
@@ -63329,9 +63329,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF754, "" },
 //  { 0xF755, "" },
 //  { 0xF756, "" },
-//  { 0xF757, "" },
+    { 0xF757, "setinfectedmsg" }, // AUTOADDED
 //  { 0xF758, "" },
-//  { 0xF759, "" },
+    { 0xF759, "setinflictorstat" }, // AUTOADDED
 //  { 0xF75A, "" },
 //  { 0xF75B, "" },
 //  { 0xF75C, "" },
@@ -63351,7 +63351,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF76A, "" },
 //  { 0xF76B, "" },
 //  { 0xF76C, "" },
-//  { 0xF76D, "" },
+    { 0xF76D, "setkillcamkilledbyitemomnvars" }, // AUTOADDED
 //  { 0xF76E, "" },
 //  { 0xF76F, "" },
 //  { 0xF770, "" },
@@ -63370,22 +63370,22 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF77D, "" },
 //  { 0xF77E, "" },
 //  { 0xF77F, "" },
-//  { 0xF780, "" },
+    { 0xF780, "setlevelmlgcam" }, // AUTOADDED
 //  { 0xF781, "" },
 //  { 0xF782, "" },
 //  { 0xF783, "" },
-//  { 0xF784, "" },
-//  { 0xF785, "" },
-//  { 0xF786, "" },
+    { 0xF784, "setlifepackvisualforplayer" }, // AUTOADDED
+    { 0xF785, "setlightarmor" }, // AUTOADDED
+    { 0xF786, "setlightarmorvalue" }, // AUTOADDED
 //  { 0xF787, "" },
-//  { 0xF788, "" },
+    { 0xF788, "setlightweight" }, // AUTOADDED
 //  { 0xF789, "" },
 //  { 0xF78A, "" },
 //  { 0xF78B, "" },
 //  { 0xF78C, "" },
 //  { 0xF78D, "" },
-//  { 0xF78E, "" },
-//  { 0xF78F, "" },
+    { 0xF78E, "setmapcenterfordev" }, // AUTOADDED
+    { 0xF78F, "setmarksman" }, // AUTOADDED
 //  { 0xF790, "" },
 //  { 0xF791, "" },
 //  { 0xF792, "" },
@@ -63404,8 +63404,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF79F, "" },
 //  { 0xF7A0, "" },
 //  { 0xF7A1, "" },
-//  { 0xF7A2, "" },
-//  { 0xF7A3, "" },
+    { 0xF7A2, "setmodelfromcustomization" }, // AUTOADDED
+    { 0xF7A3, "setmodelvisibility" }, // AUTOADDED
 //  { 0xF7A4, "" },
 //  { 0xF7A5, "" },
 //  { 0xF7A6, "" },
@@ -63415,7 +63415,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF7AA, "" },
 //  { 0xF7AB, "" },
 //  { 0xF7AC, "" },
-//  { 0xF7AD, "" },
+    { 0xF7AD, "setneutral" }, // AUTOADDED
 //  { 0xF7AE, "" },
 //  { 0xF7AF, "" },
 //  { 0xF7B0, "" },
@@ -63444,7 +63444,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF7C7, "" },
 //  { 0xF7C8, "" },
 //  { 0xF7C9, "" },
-//  { 0xF7CA, "" },
+    { 0xF7CA, "setoriginbyname" }, // AUTOADDED
 //  { 0xF7CB, "" },
 //  { 0xF7CC, "" },
 //  { 0xF7CD, "" },
@@ -63452,12 +63452,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF7CF, "" },
 //  { 0xF7D0, "" },
 //  { 0xF7D1, "" },
-//  { 0xF7D2, "" },
-//  { 0xF7D3, "" },
+    { 0xF7D2, "setoverrideweaponspeed" }, // AUTOADDED
+    { 0xF7D3, "setovertimelimitdvar" }, // AUTOADDED
 //  { 0xF7D4, "" },
 //  { 0xF7D5, "" },
-//  { 0xF7D6, "" },
-//  { 0xF7D7, "" },
+    { 0xF7D6, "setparent" }, // AUTOADDED
+    { 0xF7D7, "setpassivevalue" }, // AUTOADDED
 //  { 0xF7D8, "" },
 //  { 0xF7D9, "" },
 //  { 0xF7DA, "" },
@@ -63499,8 +63499,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF7FE, "" },
 //  { 0xF7FF, "" },
 //  { 0xF800, "" },
-//  { 0xF801, "" },
-//  { 0xF802, "" },
+    { 0xF801, "setpoint" }, // AUTOADDED
+    { 0xF802, "setpointbar" }, // AUTOADDED
     { 0xF803, "setpose" },
 //  { 0xF804, "" },
 //  { 0xF805, "" },
@@ -63531,20 +63531,20 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF81E, "" },
 //  { 0xF81F, "" },
 //  { 0xF820, "" },
-//  { 0xF821, "" },
+    { 0xF821, "setrshieldradar" }, // AUTOADDED
 //  { 0xF822, "" },
-//  { 0xF823, "" },
+    { 0xF823, "setrshieldscrambler" }, // AUTOADDED
 //  { 0xF824, "" },
 //  { 0xF825, "" },
 //  { 0xF826, "" },
-//  { 0xF827, "" },
+    { 0xF827, "setsaboteur" }, // AUTOADDED
 //  { 0xF828, "" },
 //  { 0xF829, "" },
 //  { 0xF82A, "" },
 //  { 0xF82B, "" },
 //  { 0xF82C, "" },
 //  { 0xF82D, "" },
-//  { 0xF82E, "" },
+    { 0xF82E, "setscrambled" }, // AUTOADDED
 //  { 0xF82F, "" },
 //  { 0xF830, "" },
 //  { 0xF831, "" },
@@ -63555,7 +63555,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF836, "" },
 //  { 0xF837, "" },
 //  { 0xF838, "" },
-//  { 0xF839, "" },
+    { 0xF839, "setselfvoinfo" }, // AUTOADDED
 //  { 0xF83A, "" },
 //  { 0xF83B, "" },
 //  { 0xF83C, "" },
@@ -63569,7 +63569,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF844, "" },
 //  { 0xF845, "" },
 //  { 0xF846, "" },
-//  { 0xF847, "" },
+    { 0xF847, "setsize" }, // AUTOADDED
 //  { 0xF848, "" },
 //  { 0xF849, "" },
 //  { 0xF84A, "" },
@@ -63584,31 +63584,31 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF853, "" },
 //  { 0xF854, "" },
     { 0xF855, "setspecialloadout" },
-//  { 0xF856, "" },
+    { 0xF856, "setspecialloadouts" }, // AUTOADDED
 //  { 0xF857, "" },
 //  { 0xF858, "" },
 //  { 0xF859, "" },
 //  { 0xF85A, "" },
 //  { 0xF85B, "" },
-//  { 0xF85C, "" },
+    { 0xF85C, "setstackvalues" }, // AUTOADDED
 //  { 0xF85D, "" },
 //  { 0xF85E, "" },
 //  { 0xF85F, "" },
-//  { 0xF860, "" },
+    { 0xF860, "setsteadyaimpro" }, // AUTOADDED
 //  { 0xF861, "" },
 //  { 0xF862, "" },
 //  { 0xF863, "" },
 //  { 0xF864, "" },
 //  { 0xF865, "" },
 //  { 0xF866, "" },
-//  { 0xF867, "" },
+    { 0xF867, "setstreakpoints" }, // AUTOADDED
 //  { 0xF868, "" },
 //  { 0xF869, "" },
 //  { 0xF86A, "" },
 //  { 0xF86B, "" },
 //  { 0xF86C, "" },
 //  { 0xF86D, "" },
-//  { 0xF86E, "" },
+    { 0xF86E, "setsurvivaltime" }, // AUTOADDED
 //  { 0xF86F, "" },
 //  { 0xF870, "" },
 //  { 0xF871, "" },
@@ -63623,7 +63623,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF87A, "" },
 //  { 0xF87B, "" },
 //  { 0xF87C, "" },
-//  { 0xF87D, "" },
+    { 0xF87D, "setteamusetime" }, // AUTOADDED
 //  { 0xF87E, "" },
 //  { 0xF87F, "" },
 //  { 0xF880, "" },
@@ -63634,17 +63634,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF885, "" },
 //  { 0xF886, "" },
 //  { 0xF887, "" },
-//  { 0xF888, "" },
+    { 0xF888, "setthruster" }, // AUTOADDED
 //  { 0xF889, "" },
 //  { 0xF88A, "" },
 //  { 0xF88B, "" },
-//  { 0xF88C, "" },
-//  { 0xF88D, "" },
+    { 0xF88C, "settimetobeat" }, // AUTOADDED
+    { 0xF88D, "settings" }, // AUTOADDED
 //  { 0xF88E, "" },
 //  { 0xF88F, "" },
 //  { 0xF890, "" },
-//  { 0xF891, "" },
-//  { 0xF892, "" },
+    { 0xF891, "settoughenup" }, // AUTOADDED
+    { 0xF892, "settoughenupmodel" }, // AUTOADDED
 //  { 0xF893, "" },
 //  { 0xF894, "" },
 //  { 0xF895, "" },
@@ -63655,9 +63655,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF89A, "" },
 //  { 0xF89B, "" },
 //  { 0xF89C, "" },
-//  { 0xF89D, "" },
-//  { 0xF89E, "" },
-//  { 0xF89F, "" },
+    { 0xF89D, "settweakablevalue" }, // AUTOADDED
+    { 0xF89E, "settweakabledvar" }, // AUTOADDED
+    { 0xF89F, "setuav" }, // AUTOADDED
 //  { 0xF8A0, "" },
 //  { 0xF8A1, "" },
 //  { 0xF8A2, "" },
@@ -63667,7 +63667,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF8A6, "" },
 //  { 0xF8A7, "" },
 //  { 0xF8A8, "" },
-//  { 0xF8A9, "" },
+    { 0xF8A9, "setup_agent" }, // AUTOADDED
 //  { 0xF8AA, "" },
 //  { 0xF8AB, "" },
 //  { 0xF8AC, "" },
@@ -63928,7 +63928,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF9AB, "" },
 //  { 0xF9AC, "" },
 //  { 0xF9AD, "" },
-//  { 0xF9AE, "" },
+    { 0xF9AE, "setup_investigate_location" }, // AUTOADDED
 //  { 0xF9AF, "" },
 //  { 0xF9B0, "" },
 //  { 0xF9B1, "" },
@@ -64155,7 +64155,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFA8E, "" },
 //  { 0xFA8F, "" },
 //  { 0xFA90, "" },
-//  { 0xFA91, "" },
+    { 0xFA91, "setupbases" }, // AUTOADDED
 //  { 0xFA92, "" },
 //  { 0xFA93, "" },
 //  { 0xFA94, "" },
@@ -64228,7 +64228,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFAD7, "" },
 //  { 0xFAD8, "" },
 //  { 0xFAD9, "" },
-//  { 0xFADA, "" },
+    { 0xFADA, "setuppingwatcher" }, // AUTOADDED
 //  { 0xFADB, "" },
 //  { 0xFADC, "" },
 //  { 0xFADD, "" },
@@ -64243,11 +64243,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFAE6, "" },
 //  { 0xFAE7, "" },
 //  { 0xFAE8, "" },
-//  { 0xFAE9, "" },
-//  { 0xFAEA, "" },
+    { 0xFAE9, "setupselfvo" }, // AUTOADDED
+    { 0xFAEA, "setupsfxobjs" }, // AUTOADDED
 //  { 0xFAEB, "" },
 //  { 0xFAEC, "" },
-//  { 0xFAED, "" },
+    { 0xFAED, "setup_spawn_struct" }, // AUTOADDED
 //  { 0xFAEE, "" },
 //  { 0xFAEF, "" },
 //  { 0xFAF0, "" },
@@ -64255,7 +64255,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFAF2, "" },
 //  { 0xFAF3, "" },
 //  { 0xFAF4, "" },
-//  { 0xFAF5, "" },
+    { 0xFAF5, "setupvisuals" }, // AUTOADDED
 //  { 0xFAF6, "" },
 //  { 0xFAF7, "" },
 //  { 0xFAF8, "" },
@@ -64270,11 +64270,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFB01, "" },
 //  { 0xFB02, "" },
 //  { 0xFB03, "" },
-//  { 0xFB04, "" },
-//  { 0xFB05, "" },
-//  { 0xFB06, "" },
+    { 0xFB04, "setuseanimgoalweight" }, // AUTOADDED
+    { 0xFB05, "setuseanimgoalweight_wait" }, // AUTOADDED
+    { 0xFB06, "setusehinttext" }, // AUTOADDED
 //  { 0xFB07, "" },
-//  { 0xFB08, "" },
+    { 0xFB08, "setusetime" }, // AUTOADDED
 //  { 0xFB09, "" },
 //  { 0xFB0A, "" },
 //  { 0xFB0B, "" },
@@ -64289,13 +64289,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFB14, "" },
 //  { 0xFB15, "" },
 //  { 0xFB16, "" },
-//  { 0xFB17, "" },
+    { 0xFB17, "setweaponlaser" }, // AUTOADDED
 //  { 0xFB18, "" },
 //  { 0xFB19, "" },
-//  { 0xFB1A, "" },
-//  { 0xFB1B, "" },
+    { 0xFB1A, "setweaponlaser_monitorweaponswitchstart" }, // AUTOADDED
+    { 0xFB1B, "setweaponlaser_onweaponswitchstart" }, // AUTOADDED
 //  { 0xFB1C, "" },
-//  { 0xFB1D, "" },
+    { 0xFB1D, "setweaponstat" }, // AUTOADDED
 //  { 0xFB1E, "" },
 //  { 0xFB1F, "" },
 //  { 0xFB20, "" },
@@ -64590,7 +64590,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFC41, "" },
 //  { 0xFC42, "" },
 //  { 0xFC43, "" },
-//  { 0xFC44, "" },
+    { 0xFC44, "shader" }, // AUTOADDED
 //  { 0xFC45, "" },
 //  { 0xFC46, "" },
 //  { 0xFC47, "" },
@@ -64629,7 +64629,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFC68, "" },
 //  { 0xFC69, "" },
 //  { 0xFC6A, "" },
-//  { 0xFC6B, "" },
+    { 0xFC6B, "shellshockreduction" }, // AUTOADDED
 //  { 0xFC6C, "" },
 //  { 0xFC6D, "" },
 //  { 0xFC6E, "" },
@@ -65248,7 +65248,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFED3, "" },
 //  { 0xFED4, "" },
 //  { 0xFED5, "" },
-//  { 0xFED6, "" },
+    { 0xFED6, "shootstate" }, // AUTOADDED
 //  { 0xFED7, "" },
 //  { 0xFED8, "" },
 //  { 0xFED9, "" },
@@ -65303,7 +65303,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFF0A, "" },
 //  { 0xFF0B, "" },
 //  { 0xFF0C, "" },
-//  { 0xFF0D, "" },
+    { 0xFF0D, "should_abort" }, // AUTOADDED
 //  { 0xFF0E, "" },
 //  { 0xFF0F, "" },
 //  { 0xFF10, "" },
@@ -65425,7 +65425,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFF84, "" },
 //  { 0xFF85, "" },
 //  { 0xFF86, "" },
-//  { 0xFF87, "" },
+    { 0xFF87, "should_select_new_ambush_point" }, // AUTOADDED
 //  { 0xFF88, "" },
 //  { 0xFF89, "" },
 //  { 0xFF8A, "" },
@@ -65444,13 +65444,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFF97, "" },
 //  { 0xFF98, "" },
 //  { 0xFF99, "" },
-//  { 0xFF9A, "" },
+    { 0xFF9A, "should_start_cautious_approach_default" }, // AUTOADDED
 //  { 0xFF9B, "" },
 //  { 0xFF9C, "" },
 //  { 0xFF9D, "" },
 //  { 0xFF9E, "" },
 //  { 0xFF9F, "" },
-//  { 0xFFA0, "" },
+    { 0xFFA0, "should_stop_seeking_weapon" }, // AUTOADDED
 //  { 0xFFA1, "" },
 //  { 0xFFA2, "" },
 //  { 0xFFA3, "" },
@@ -65610,11 +65610,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1003D, "" },
 //  { 0x1003E, "" },
 //  { 0x1003F, "" },
-//  { 0x10040, "" },
+    { 0x10040, "shouldpingobject" }, // AUTOADDED
 //  { 0x10041, "" },
 //  { 0x10042, "" },
 //  { 0x10043, "" },
-//  { 0x10044, "" },
+    { 0x10044, "shouldplayerlogevents" }, // AUTOADDED
 //  { 0x10045, "" },
 //  { 0x10046, "" },
 //  { 0x10047, "" },
@@ -65639,7 +65639,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1005A, "" },
 //  { 0x1005B, "" },
 //  { 0x1005C, "" },
-//  { 0x1005D, "" },
+    { 0x1005D, "shouldplaywinbytwo" }, // AUTOADDED
 //  { 0x1005E, "" },
 //  { 0x1005F, "" },
 //  { 0x10060, "" },
@@ -65668,7 +65668,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x10077, "shouldshootenemyent" },
 //  { 0x10078, "" },
 //  { 0x10079, "" },
-//  { 0x1007A, "" },
+    { 0x1007A, "shouldshowcompassduetoradar" }, // AUTOADDED
 //  { 0x1007B, "" },
 //  { 0x1007C, "" },
 //  { 0x1007D, "" },
@@ -65677,7 +65677,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10080, "" },
 //  { 0x10081, "" },
 //  { 0x10082, "" },
-//  { 0x10083, "" },
+    { 0x10083, "shouldspawntags" }, // AUTOADDED
 //  { 0x10084, "" },
 //  { 0x10085, "" },
 //  { 0x10086, "" },
@@ -65817,8 +65817,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1010C, "" },
 //  { 0x1010D, "" },
 //  { 0x1010E, "" },
-//  { 0x1010F, "" },
-//  { 0x10110, "" },
+    { 0x1010F, "showballbaseeffecttoplayer" }, // AUTOADDED
+    { 0x10110, "showbaseeffecttoplayer" }, // AUTOADDED
 //  { 0x10111, "" },
 //  { 0x10112, "" },
 //  { 0x10113, "" },
@@ -65828,21 +65828,21 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10117, "" },
 //  { 0x10118, "" },
 //  { 0x10119, "" },
-//  { 0x1011A, "" },
+    { 0x1011A, "showcratesplash" }, // AUTOADDED
 //  { 0x1011B, "" },
 //  { 0x1011C, "" },
 //  { 0x1011D, "" },
 //  { 0x1011E, "" },
-//  { 0x1011F, "" },
+    { 0x1011F, "showelem" }, // AUTOADDED
 //  { 0x10120, "" },
 //  { 0x10121, "" },
-//  { 0x10122, "" },
-//  { 0x10123, "" },
+    { 0x10122, "showerrormessage" }, // AUTOADDED
+    { 0x10123, "showerrormessagetoallplayers" }, // AUTOADDED
 //  { 0x10124, "" },
 //  { 0x10125, "" },
 //  { 0x10126, "" },
-//  { 0x10127, "" },
-//  { 0x10128, "" },
+    { 0x10127, "showflagradiuseffecttoplayers" }, // AUTOADDED
+    { 0x10128, "showfriendicon" }, // AUTOADDED
 //  { 0x10129, "" },
 //  { 0x1012A, "" },
 //  { 0x1012B, "" },
@@ -65863,16 +65863,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1013A, "" },
 //  { 0x1013B, "" },
 //  { 0x1013C, "" },
-//  { 0x1013D, "" },
+    { 0x1013D, "showmiscmessage" }, // AUTOADDED
 //  { 0x1013E, "" },
-//  { 0x1013F, "" },
+    { 0x1013F, "showninfected" }, // AUTOADDED
 //  { 0x10140, "" },
 //  { 0x10141, "" },
 //  { 0x10142, "" },
 //  { 0x10143, "" },
 //  { 0x10144, "" },
 //  { 0x10145, "" },
-//  { 0x10146, "" },
+    { 0x10146, "showplacedmodel" }, // AUTOADDED
 //  { 0x10147, "" },
 //  { 0x10148, "" },
 //  { 0x10149, "" },
@@ -65892,7 +65892,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10157, "" },
 //  { 0x10158, "" },
 //  { 0x10159, "" },
-//  { 0x1015A, "" },
+    { 0x1015A, "showuidamageflash" }, // AUTOADDED
 //  { 0x1015B, "" },
 //  { 0x1015C, "" },
 //  { 0x1015D, "" },
@@ -65915,7 +65915,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1016E, "" },
 //  { 0x1016F, "" },
 //  { 0x10170, "" },
-//  { 0x10171, "" },
+    { 0x10171, "shufflenode" }, // AUTOADDED
 //  { 0x10172, "" },
 //  { 0x10173, "" },
 //  { 0x10174, "" },
@@ -65990,17 +65990,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x101B9, "" },
 //  { 0x101BA, "" },
 //  { 0x101BB, "" },
-//  { 0x101BC, "" },
-//  { 0x101BD, "" },
-//  { 0x101BE, "" },
+    { 0x101BC, "siege_a_xpos" }, // AUTOADDED
+    { 0x101BD, "siege_a_ypos" }, // AUTOADDED
+    { 0x101BE, "siege_a_zpos" }, // AUTOADDED
 //  { 0x101BF, "" },
-//  { 0x101C0, "" },
-//  { 0x101C1, "" },
-//  { 0x101C2, "" },
+    { 0x101C0, "siege_b_xpos" }, // AUTOADDED
+    { 0x101C1, "siege_b_ypos" }, // AUTOADDED
+    { 0x101C2, "siege_b_zpos" }, // AUTOADDED
 //  { 0x101C3, "" },
-//  { 0x101C4, "" },
-//  { 0x101C5, "" },
-//  { 0x101C6, "" },
+    { 0x101C4, "siege_c_xpos" }, // AUTOADDED
+    { 0x101C5, "siege_c_ypos" }, // AUTOADDED
+    { 0x101C6, "siege_c_zpos" }, // AUTOADDED
 //  { 0x101C7, "" },
 //  { 0x101C8, "" },
 //  { 0x101C9, "" },
@@ -66017,12 +66017,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x101D4, "" },
 //  { 0x101D5, "" },
 //  { 0x101D6, "" },
-//  { 0x101D7, "" },
+    { 0x101D7, "siegeflagcapturing" }, // AUTOADDED
 //  { 0x101D8, "" },
 //  { 0x101D9, "" },
 //  { 0x101DA, "" },
 //  { 0x101DB, "" },
-//  { 0x101DC, "" },
+    { 0x101DC, "siegetimeleft" }, // AUTOADDED
 //  { 0x101DD, "" },
 //  { 0x101DE, "" },
 //  { 0x101DF, "" },
@@ -66359,7 +66359,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1032A, "" },
 //  { 0x1032B, "" },
 //  { 0x1032C, "" },
-//  { 0x1032D, "" },
+    { 0x1032D, "slowmotionendofgame" }, // AUTOADDED
 //  { 0x1032E, "" },
 //  { 0x1032F, "" },
 //  { 0x10330, "" },
@@ -66423,7 +66423,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1036A, "" },
 //  { 0x1036B, "" },
 //  { 0x1036C, "" },
-//  { 0x1036D, "" },
+    { 0x1036D, "smoke_grenade_late_death" }, // AUTOADDED
 //  { 0x1036E, "" },
 //  { 0x1036F, "" },
 //  { 0x10370, "" },
@@ -66434,7 +66434,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10375, "" },
 //  { 0x10376, "" },
 //  { 0x10377, "" },
-//  { 0x10378, "" },
+    { 0x10378, "smokegrenadegiveblindeye" }, // AUTOADDED
 //  { 0x10379, "" },
 //  { 0x1037A, "" },
 //  { 0x1037B, "" },
@@ -66498,7 +66498,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x103B5, "" },
 //  { 0x103B6, "" },
 //  { 0x103B7, "" },
-//  { 0x103B8, "" },
+    { 0x103B8, "sniperglint_remove" }, // AUTOADDED
 //  { 0x103B9, "" },
 //  { 0x103BA, "" },
 //  { 0x103BB, "" },
@@ -66546,11 +66546,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x103E5, "" },
 //  { 0x103E6, "" },
 //  { 0x103E7, "" },
-//  { 0x103E8, "" },
+    { 0x103E8, "softlanding" }, // AUTOADDED
 //  { 0x103E9, "" },
-//  { 0x103EA, "" },
+    { 0x103EA, "softlandingwaiter" }, // AUTOADDED
 //  { 0x103EB, "" },
-//  { 0x103EC, "" },
+    { 0x103EC, "softsighttest" }, // AUTOADDED
 //  { 0x103ED, "" },
 //  { 0x103EE, "" },
 //  { 0x103EF, "" },
@@ -66577,7 +66577,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10404, "" },
 //  { 0x10405, "" },
 //  { 0x10406, "" },
-//  { 0x10407, "" },
+    { 0x10407, "sonicboomsfx" }, // AUTOADDED
 //  { 0x10408, "" },
 //  { 0x10409, "" },
 //  { 0x1040A, "" },
@@ -66623,9 +66623,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10432, "" },
 //  { 0x10433, "" },
     { 0x10434, "sortandcullanimstructarray" },
-//  { 0x10435, "" },
+    { 0x10435, "sortballarray" }, // AUTOADDED
 //  { 0x10436, "" },
-//  { 0x10437, "" },
+    { 0x10437, "sortbyweight" }, // AUTOADDED
 //  { 0x10438, "" },
 //  { 0x10439, "" },
 //  { 0x1043A, "" },
@@ -66634,7 +66634,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1043D, "" },
 //  { 0x1043E, "" },
 //  { 0x1043F, "" },
-//  { 0x10440, "" },
+    { 0x10440, "sotf" }, // AUTOADDED
 //  { 0x10441, "" },
 //  { 0x10442, "" },
 //  { 0x10443, "" },
@@ -66690,16 +66690,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10475, "" },
 //  { 0x10476, "" },
 //  { 0x10477, "" },
-//  { 0x10478, "" },
+    { 0x10478, "soundent" }, // AUTOADDED
 //  { 0x10479, "" },
-//  { 0x1047A, "" },
-//  { 0x1047B, "" },
+    { 0x1047A, "soundfx" }, // AUTOADDED
+    { 0x1047B, "soundfxdelete" }, // AUTOADDED
 //  { 0x1047C, "" },
 //  { 0x1047D, "" },
 //  { 0x1047E, "" },
 //  { 0x1047F, "" },
 //  { 0x10480, "" },
-//  { 0x10481, "" },
+    { 0x10481, "soundwatcher" }, // AUTOADDED
 //  { 0x10482, "" },
 //  { 0x10483, "" },
 //  { 0x10484, "" },
@@ -67089,7 +67089,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10604, "" },
 //  { 0x10605, "" },
 //  { 0x10606, "" },
-//  { 0x10607, "" },
+    { 0x10607, "spam_points_popup" }, // AUTOADDED
 //  { 0x10608, "" },
 //  { 0x10609, "" },
 //  { 0x1060A, "" },
@@ -67516,7 +67516,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x107AF, "" },
 //  { 0x107B0, "" },
 //  { 0x107B1, "" },
-//  { 0x107B2, "" },
+    { 0x107B2, "spawn_regular_agent" }, // AUTOADDED
 //  { 0x107B3, "" },
 //  { 0x107B4, "" },
 //  { 0x107B5, "" },
@@ -67585,7 +67585,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x107F4, "" },
 //  { 0x107F5, "" },
 //  { 0x107F6, "" },
-//  { 0x107F7, "" },
+    { 0x107F7, "spawn_time" }, // AUTOADDED
 //  { 0x107F8, "" },
 //  { 0x107F9, "" },
 //  { 0x107FA, "" },
@@ -67659,12 +67659,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1083E, "" },
 //  { 0x1083F, "" },
 //  { 0x10840, "" },
-//  { 0x10841, "" },
+    { 0x10841, "spawncount" }, // AUTOADDED
 //  { 0x10842, "" },
 //  { 0x10843, "" },
 //  { 0x10844, "" },
 //  { 0x10845, "" },
-//  { 0x10846, "" },
+    { 0x10846, "spawndelay" }, // AUTOADDED
 //  { 0x10847, "" },
 //  { 0x10848, "" },
 //  { 0x10849, "" },
@@ -67798,22 +67798,22 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x108C9, "" },
 //  { 0x108CA, "" },
 //  { 0x108CB, "" },
-//  { 0x108CC, "" },
-//  { 0x108CD, "" },
+    { 0x108CC, "spawnfxarray" }, // AUTOADDED
+    { 0x108CD, "spawnfxdelay" }, // AUTOADDED
 //  { 0x108CE, "" },
 //  { 0x108CF, "" },
 //  { 0x108D0, "" },
-//  { 0x108D1, "" },
+    { 0x108D1, "spawnglobals" }, // AUTOADDED
 //  { 0x108D2, "" },
 //  { 0x108D3, "" },
 //  { 0x108D4, "" },
 //  { 0x108D5, "" },
 //  { 0x108D6, "" },
 //  { 0x108D7, "" },
-//  { 0x108D8, "" },
+    { 0x108D8, "spawnidstobeinstrumented" }, // AUTOADDED
 //  { 0x108D9, "" },
 //  { 0x108DA, "" },
-//  { 0x108DB, "" },
+    { 0x108DB, "spawningafterremotedeath" }, // AUTOADDED
 //  { 0x108DC, "" },
 //  { 0x108DD, "" },
 //  { 0x108DE, "" },
@@ -67872,12 +67872,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10913, "" },
 //  { 0x10914, "" },
 //  { 0x10915, "" },
-//  { 0x10916, "" },
+    { 0x10916, "spawntime" }, // AUTOADDED
 //  { 0x10917, "" },
 //  { 0x10918, "" },
 //  { 0x10919, "" },
 //  { 0x1091A, "" },
-//  { 0x1091B, "" },
+    { 0x1091B, "spawnusedbyenemies" }, // AUTOADDED
 //  { 0x1091C, "" },
 //  { 0x1091D, "" },
 //  { 0x1091E, "" },
@@ -67961,8 +67961,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1096C, "" },
 //  { 0x1096D, "" },
 //  { 0x1096E, "" },
-//  { 0x1096F, "" },
-//  { 0x10970, "" },
+    { 0x1096F, "species" }, // AUTOADDED
+    { 0x10970, "species_funcs" }, // AUTOADDED
 //  { 0x10971, "" },
 //  { 0x10972, "" },
 //  { 0x10973, "" },
@@ -67973,7 +67973,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10978, "" },
 //  { 0x10979, "" },
 //  { 0x1097A, "" },
-//  { 0x1097B, "" },
+    { 0x1097B, "spectating_actively" }, // AUTOADDED
 //  { 0x1097C, "" },
 //  { 0x1097D, "" },
 //  { 0x1097E, "" },
@@ -68024,7 +68024,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x109AB, "" },
 //  { 0x109AC, "" },
 //  { 0x109AD, "" },
-//  { 0x109AE, "" },
+    { 0x109AE, "speedmod" }, // AUTOADDED
 //  { 0x109AF, "" },
 //  { 0x109B0, "" },
 //  { 0x109B1, "" },
@@ -68123,9 +68123,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10A0E, "" },
 //  { 0x10A0F, "" },
 //  { 0x10A10, "" },
-//  { 0x10A11, "" },
+    { 0x10A11, "spinsoundshortly" }, // AUTOADDED
 //  { 0x10A12, "" },
-//  { 0x10A13, "" },
+    { 0x10A13, "spinuptime" }, // AUTOADDED
 //  { 0x10A14, "" },
 //  { 0x10A15, "" },
 //  { 0x10A16, "" },
@@ -68168,8 +68168,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10A3B, "" },
 //  { 0x10A3C, "" },
 //  { 0x10A3D, "" },
-//  { 0x10A3E, "" },
-//  { 0x10A3F, "" },
+    { 0x10A3E, "splashqueuehead" }, // AUTOADDED
+    { 0x10A3F, "splashqueuetail" }, // AUTOADDED
 //  { 0x10A40, "" },
 //  { 0x10A41, "" },
 //  { 0x10A42, "" },
@@ -68192,7 +68192,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10A53, "" },
 //  { 0x10A54, "" },
 //  { 0x10A55, "" },
-//  { 0x10A56, "" },
+    { 0x10A56, "splitscreen" }, // AUTOADDED
 //  { 0x10A57, "" },
 //  { 0x10A58, "" },
 //  { 0x10A59, "" },
@@ -68342,7 +68342,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10AE9, "" },
 //  { 0x10AEA, "" },
 //  { 0x10AEB, "" },
-//  { 0x10AEC, "" },
+    { 0x10AEC, "squadmemberbufferedstats" }, // AUTOADDED
 //  { 0x10AED, "" },
 //  { 0x10AEE, "" },
 //  { 0x10AEF, "" },
@@ -68424,9 +68424,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10B3B, "" },
 //  { 0x10B3C, "" },
 //  { 0x10B3D, "" },
-//  { 0x10B3E, "" },
-//  { 0x10B3F, "" },
-//  { 0x10B40, "" },
+    { 0x10B3E, "stackscurrent" }, // AUTOADDED
+    { 0x10B3F, "stacksmax" }, // AUTOADDED
+    { 0x10B40, "stackvalues" }, // AUTOADDED
 //  { 0x10B41, "" },
 //  { 0x10B42, "" },
 //  { 0x10B43, "" },
@@ -69000,7 +69000,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10D7B, "" },
 //  { 0x10D7C, "" },
 //  { 0x10D7D, "" },
-//  { 0x10D7E, "" },
+    { 0x10D7E, "startcontrol" }, // AUTOADDED
 //  { 0x10D7F, "" },
 //  { 0x10D80, "" },
 //  { 0x10D81, "" },
@@ -69029,7 +69029,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10D98, "" },
 //  { 0x10D99, "" },
 //  { 0x10D9A, "" },
-//  { 0x10D9B, "" },
+    { 0x10D9B, "startflashing" }, // AUTOADDED
 //  { 0x10D9C, "" },
 //  { 0x10D9D, "" },
 //  { 0x10D9E, "" },
@@ -69039,7 +69039,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10DA2, "" },
 //  { 0x10DA3, "" },
 //  { 0x10DA4, "" },
-//  { 0x10DA5, "" },
+    { 0x10DA5, "starthoveranim" }, // AUTOADDED
 //  { 0x10DA6, "" },
 //  { 0x10DA7, "" },
 //  { 0x10DA8, "" },
@@ -69129,15 +69129,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10DFC, "" },
 //  { 0x10DFD, "" },
 //  { 0x10DFE, "" },
-//  { 0x10DFF, "" },
-//  { 0x10E00, "" },
+    { 0x10DFF, "starttime" }, // AUTOADDED
+    { 0x10E00, "starttimefrommatchstart" }, // AUTOADDED
 //  { 0x10E01, "" },
-//  { 0x10E02, "" },
+    { 0x10E02, "starttrackingplane" }, // AUTOADDED
 //  { 0x10E03, "" },
 //  { 0x10E04, "" },
 //  { 0x10E05, "" },
-//  { 0x10E06, "" },
-//  { 0x10E07, "" },
+    { 0x10E06, "startusemover" }, // AUTOADDED
+    { 0x10E07, "startuseorigin" }, // AUTOADDED
 //  { 0x10E08, "" },
 //  { 0x10E09, "" },
 //  { 0x10E0A, "" },
@@ -69151,9 +69151,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10E12, "" },
 //  { 0x10E13, "" },
 //  { 0x10E14, "" },
-//  { 0x10E15, "" },
+    { 0x10E15, "stataddchild" }, // AUTOADDED
 //  { 0x10E16, "" },
-//  { 0x10E17, "" },
+    { 0x10E17, "stataddchildbufferedwithmax" }, // AUTOADDED
 //  { 0x10E18, "" },
 //  { 0x10E19, "" },
 //  { 0x10E1A, "" },
@@ -69168,7 +69168,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10E23, "" },
 //  { 0x10E24, "" },
 //  { 0x10E25, "" },
-//  { 0x10E26, "" },
+    { 0x10E26, "statecurr" }, // AUTOADDED
 //  { 0x10E27, "" },
 //  { 0x10E28, "" },
 //  { 0x10E29, "" },
@@ -69176,14 +69176,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10E2B, "" },
 //  { 0x10E2C, "" },
 //  { 0x10E2D, "" },
-//  { 0x10E2E, "" },
-//  { 0x10E2F, "" },
+    { 0x10E2E, "stateprev" }, // AUTOADDED
+    { 0x10E2F, "states" }, // AUTOADDED
 //  { 0x10E30, "" },
 //  { 0x10E31, "" },
 //  { 0x10E32, "" },
 //  { 0x10E33, "" },
 //  { 0x10E34, "" },
-//  { 0x10E35, "" },
+    { 0x10E35, "statgetchild" }, // AUTOADDED
 //  { 0x10E36, "" },
 //  { 0x10E37, "" },
 //  { 0x10E38, "" },
@@ -69201,7 +69201,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10E44, "" },
 //  { 0x10E45, "" },
 //  { 0x10E46, "" },
-//  { 0x10E47, "" },
+    { 0x10E47, "staticdata" }, // AUTOADDED
 //  { 0x10E48, "" },
 //  { 0x10E49, "" },
 //  { 0x10E4A, "" },
@@ -69553,7 +69553,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10FA4, "" },
 //  { 0x10FA5, "" },
 //  { 0x10FA6, "" },
-//  { 0x10FA7, "" },
+    { 0x10FA7, "missilelauncherlostsightlinetime" }, // AUTOADDED
 //  { 0x10FA8, "" },
 //  { 0x10FA9, "" },
 //  { 0x10FAA, "" },
@@ -69632,7 +69632,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10FF3, "" },
 //  { 0x10FF4, "" },
 //  { 0x10FF5, "" },
-//  { 0x10FF6, "" },
+    { 0x10FF6, "stop_fx_idle" }, // AUTOADDED
     { 0x10FF7, "stop_fx_looper" },
 //  { 0x10FF8, "" },
 //  { 0x10FF9, "" },
@@ -69643,7 +69643,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10FFE, "" },
 //  { 0x10FFF, "" },
 //  { 0x11000, "" },
-//  { 0x11001, "" },
+    { 0x11001, "stop_handling_moving_platforms" }, // AUTOADDED
 //  { 0x11002, "" },
 //  { 0x11003, "" },
 //  { 0x11004, "" },
@@ -69690,7 +69690,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1102D, "" },
 //  { 0x1102E, "" },
 //  { 0x1102F, "" },
-//  { 0x11030, "" },
+    { 0x11030, "stop_player_pushed_kill" }, // AUTOADDED
 //  { 0x11031, "" },
 //  { 0x11032, "" },
 //  { 0x11033, "" },
@@ -69699,7 +69699,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11036, "" },
 //  { 0x11037, "" },
 //  { 0x11038, "" },
-//  { 0x11039, "" },
+    { 0x11039, "stop_reviving" }, // AUTOADDED
 //  { 0x1103A, "" },
 //  { 0x1103B, "" },
 //  { 0x1103C, "" },
@@ -69724,7 +69724,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1104F, "" },
 //  { 0x11050, "" },
 //  { 0x11051, "" },
-//  { 0x11052, "" },
+    { 0x11052, "stop_using_crate" }, // AUTOADDED
 //  { 0x11053, "" },
 //  { 0x11054, "" },
 //  { 0x11055, "" },
@@ -69754,7 +69754,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1106D, "" },
 //  { 0x1106E, "" },
 //  { 0x1106F, "" },
-//  { 0x11070, "" },
+    { 0x11070, "stopflashing" }, // AUTOADDED
 //  { 0x11071, "" },
 //  { 0x11072, "" },
 //  { 0x11073, "" },
@@ -69785,16 +69785,16 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1108C, "" },
 //  { 0x1108D, "" },
 //  { 0x1108E, "" },
-//  { 0x1108F, "" },
+    { 0x1108F, "stopsuspensemusic" }, // AUTOADDED
 //  { 0x11090, "" },
 //  { 0x11091, "" },
 //  { 0x11092, "" },
 //  { 0x11093, "" },
-//  { 0x11094, "" },
+    { 0x11094, "stoptickingsound" }, // AUTOADDED
 //  { 0x11095, "" },
 //  { 0x11096, "" },
 //  { 0x11097, "" },
-//  { 0x11098, "" },
+    { 0x11098, "stoptrackingplane" }, // AUTOADDED
 //  { 0x11099, "" },
 //  { 0x1109A, "" },
 //  { 0x1109B, "" },
@@ -69876,18 +69876,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x110E7, "" },
 //  { 0x110E8, "" },
 //  { 0x110E9, "" },
-//  { 0x110EA, "" },
+    { 0x110EA, "streakname" }, // AUTOADDED
 //  { 0x110EB, "" },
 //  { 0x110EC, "" },
 //  { 0x110ED, "" },
-//  { 0x110EE, "" },
+    { 0x110EE, "streakpoints" }, // AUTOADDED
 //  { 0x110EF, "" },
 //  { 0x110F0, "" },
 //  { 0x110F1, "" },
 //  { 0x110F2, "" },
 //  { 0x110F3, "" },
-//  { 0x110F4, "" },
-//  { 0x110F5, "" },
+    { 0x110F4, "streaktype" }, // AUTOADDED
+    { 0x110F5, "streaktyperesetsondeath" }, // AUTOADDED
 //  { 0x110F6, "" },
 //  { 0x110F7, "" },
 //  { 0x110F8, "" },
@@ -69971,7 +69971,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11146, "" },
 //  { 0x11147, "" },
     { 0x11148, "string_starts_with" },
-//  { 0x11149, "" },
+    { 0x11149, "string_to_bool" }, // AUTOADDED
 //  { 0x1114A, "" },
 //  { 0x1114B, "" },
 //  { 0x1114C, "" },
@@ -69981,7 +69981,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11150, "" },
 //  { 0x11151, "" },
 //  { 0x11152, "" },
-//  { 0x11153, "" },
+    { 0x11153, "stripweapsuffix" }, // AUTOADDED
 //  { 0x11154, "" },
 //  { 0x11155, "" },
 //  { 0x11156, "" },
@@ -70206,7 +70206,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11231, "" },
 //  { 0x11232, "" },
 //  { 0x11233, "" },
-//  { 0x11234, "" },
+    { 0x11234, "super" }, // AUTOADDED
 //  { 0x11235, "" },
 //  { 0x11236, "" },
 //  { 0x11237, "" },
@@ -70252,10 +70252,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1125F, "" },
 //  { 0x11260, "" },
 //  { 0x11261, "" },
-//  { 0x11262, "" },
+    { 0x11262, "superkill" }, // AUTOADDED
 //  { 0x11263, "" },
 //  { 0x11264, "" },
-//  { 0x11265, "" },
+    { 0x11265, "supershutdown" }, // AUTOADDED
 //  { 0x11266, "" },
 //  { 0x11267, "" },
 //  { 0x11268, "" },
@@ -70351,7 +70351,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x112C2, "" },
 //  { 0x112C3, "" },
 //  { 0x112C4, "" },
-//  { 0x112C5, "" },
+    { 0x112C5, "supportturret" }, // AUTOADDED
 //  { 0x112C6, "" },
 //  { 0x112C7, "" },
 //  { 0x112C8, "" },
@@ -70362,7 +70362,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x112CD, "" },
     { 0x112CE, "suppressionthreshold" },
 //  { 0x112CF, "" },
-//  { 0x112D0, "" },
+    { 0x112D0, "suppresstimeout" }, // AUTOADDED
 //  { 0x112D1, "" },
 //  { 0x112D2, "" },
 //  { 0x112D3, "" },
@@ -70379,7 +70379,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x112DE, "" },
 //  { 0x112DF, "" },
 //  { 0x112E0, "" },
-//  { 0x112E1, "" },
+    { 0x112E1, "survivalstarttime" }, // AUTOADDED
 //  { 0x112E2, "" },
 //  { 0x112E3, "" },
 //  { 0x112E4, "" },
@@ -70388,8 +70388,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x112E7, "" },
 //  { 0x112E8, "" },
 //  { 0x112E9, "" },
-//  { 0x112EA, "" },
-//  { 0x112EB, "" },
+    { 0x112EA, "survivorscorepertick" }, // AUTOADDED
+    { 0x112EB, "survivorscoretime" }, // AUTOADDED
 //  { 0x112EC, "" },
 //  { 0x112ED, "" },
 //  { 0x112EE, "" },
@@ -70524,7 +70524,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1136F, "" },
 //  { 0x11370, "" },
 //  { 0x11371, "" },
-//  { 0x11372, "" },
+    { 0x11372, "switchblade_handle_awareness" }, // AUTOADDED
 //  { 0x11373, "" },
 //  { 0x11374, "" },
 //  { 0x11375, "" },
@@ -70589,24 +70589,24 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x113B0, "" },
 //  { 0x113B1, "" },
 //  { 0x113B2, "" },
-//  { 0x113B3, "" },
+    { 0x113B3, "table_getarchetype" }, // AUTOADDED
 //  { 0x113B4, "" },
 //  { 0x113B5, "" },
 //  { 0x113B6, "" },
 //  { 0x113B7, "" },
-//  { 0x113B8, "" },
-//  { 0x113B9, "" },
+    { 0x113B8, "table_getgesture" }, // AUTOADDED
+    { 0x113B9, "table_getkillstreak" }, // AUTOADDED
 //  { 0x113BA, "" },
-//  { 0x113BB, "" },
+    { 0x113BB, "table_getperk" }, // AUTOADDED
 //  { 0x113BC, "" },
 //  { 0x113BD, "" },
-//  { 0x113BE, "" },
+    { 0x113BE, "table_getsuper" }, // AUTOADDED
 //  { 0x113BF, "" },
-//  { 0x113C0, "" },
-//  { 0x113C1, "" },
+    { 0x113C0, "table_getweapon" }, // AUTOADDED
+    { 0x113C1, "table_getweaponattachment" }, // AUTOADDED
 //  { 0x113C2, "" },
-//  { 0x113C3, "" },
-//  { 0x113C4, "" },
+    { 0x113C3, "table_getweaponcamo" }, // AUTOADDED
+    { 0x113C4, "table_getweaponreticle" }, // AUTOADDED
 //  { 0x113C5, "" },
 //  { 0x113C6, "" },
 //  { 0x113C7, "" },
@@ -70618,7 +70618,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x113CD, "" },
 //  { 0x113CE, "" },
 //  { 0x113CF, "" },
-//  { 0x113D0, "" },
+    { 0x113D0, "tactical_goals" }, // AUTOADDED
 //  { 0x113D1, "" },
 //  { 0x113D2, "" },
 //  { 0x113D3, "" },
@@ -70631,7 +70631,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x113DA, "" },
 //  { 0x113DB, "" },
 //  { 0x113DC, "" },
-//  { 0x113DD, "" },
+    { 0x113DD, "tag_getting" }, // AUTOADDED
 //  { 0x113DE, "" },
 //  { 0x113DF, "" },
 //  { 0x113E0, "" },
@@ -70641,7 +70641,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x113E4, "" },
 //  { 0x113E5, "" },
 //  { 0x113E6, "" },
-//  { 0x113E7, "" },
+    { 0x113E7, "tag_stowed_hip" }, // AUTOADDED
 //  { 0x113E8, "" },
 //  { 0x113E9, "" },
 //  { 0x113EA, "" },
@@ -70695,13 +70695,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1141A, "" },
 //  { 0x1141B, "" },
 //  { 0x1141C, "" },
-//  { 0x1141D, "" },
+    { 0x1141D, "tags_carried" }, // AUTOADDED
 //  { 0x1141E, "" },
 //  { 0x1141F, "" },
-//  { 0x11420, "" },
-//  { 0x11421, "" },
-//  { 0x11422, "" },
-//  { 0x11423, "" },
+    { 0x11420, "tags_seen_by_owner" }, // AUTOADDED
+    { 0x11421, "tags_to_bank" }, // AUTOADDED
+    { 0x11422, "tagscarried" }, // AUTOADDED
+    { 0x11423, "tagteamupdater" }, // AUTOADDED
 //  { 0x11424, "" },
 //  { 0x11425, "" },
 //  { 0x11426, "" },
@@ -70880,7 +70880,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x114D3, "" },
 //  { 0x114D4, "" },
 //  { 0x114D5, "" },
-//  { 0x114D6, "" },
+    { 0x114D6, "tank_watchfiring" }, // AUTOADDED
 //  { 0x114D7, "" },
 //  { 0x114D8, "" },
 //  { 0x114D9, "" },
@@ -70894,11 +70894,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x114E1, "" },
 //  { 0x114E2, "" },
 //  { 0x114E3, "" },
-//  { 0x114E4, "" },
+    { 0x114E4, "tanksettings" }, // AUTOADDED
 //  { 0x114E5, "" },
 //  { 0x114E6, "" },
 //  { 0x114E7, "" },
-//  { 0x114E8, "" },
+    { 0x114E8, "tanktype" }, // AUTOADDED
 //  { 0x114E9, "" },
 //  { 0x114EA, "" },
 //  { 0x114EB, "" },
@@ -71028,7 +71028,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11567, "" },
 //  { 0x11568, "" },
 //  { 0x11569, "" },
-//  { 0x1156A, "" },
+    { 0x1156A, "targeting_marker" }, // AUTOADDED
 //  { 0x1156B, "" },
 //  { 0x1156C, "" },
 //  { 0x1156D, "" },
@@ -71043,7 +71043,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11576, "" },
 //  { 0x11577, "" },
 //  { 0x11578, "" },
-//  { 0x11579, "" },
+    { 0x11579, "javelin_targetpointtooclose" }, // AUTOADDED
 //  { 0x1157A, "" },
 //  { 0x1157B, "" },
 //  { 0x1157C, "" },
@@ -71081,7 +71081,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1159C, "" },
 //  { 0x1159D, "" },
 //  { 0x1159E, "" },
-//  { 0x1159F, "" },
+    { 0x1159F, "tdef_flagtime" }, // AUTOADDED
 //  { 0x115A0, "" },
 //  { 0x115A1, "" },
 //  { 0x115A2, "" },
@@ -71115,8 +71115,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x115BE, "" },
 //  { 0x115BF, "" },
 //  { 0x115C0, "" },
-//  { 0x115C1, "" },
-//  { 0x115C2, "" },
+    { 0x115C1, "teambalance" }, // AUTOADDED
+    { 0x115C2, "teambase" }, // AUTOADDED
     { 0x115C3, "teambased" },
 //  { 0x115C4, "" },
 //  { 0x115C5, "" },
@@ -71140,7 +71140,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x115D7, "" },
 //  { 0x115D8, "" },
 //  { 0x115D9, "" },
-//  { 0x115DA, "" },
+    { 0x115DA, "teamnamelist" }, // AUTOADDED
 //  { 0x115DB, "" },
 //  { 0x115DC, "" },
 //  { 0x115DD, "" },
@@ -71151,20 +71151,20 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x115E2, "" },
 //  { 0x115E3, "" },
 //  { 0x115E4, "" },
-//  { 0x115E5, "" },
+    { 0x115E5, "teamrankxpmultipliers" }, // AUTOADDED
 //  { 0x115E6, "" },
 //  { 0x115E7, "" },
 //  { 0x115E8, "" },
-//  { 0x115E9, "" },
+    { 0x115E9, "teamsmatch" }, // AUTOADDED
 //  { 0x115EA, "" },
 //  { 0x115EB, "" },
 //  { 0x115EC, "" },
 //  { 0x115ED, "" },
 //  { 0x115EE, "" },
 //  { 0x115EF, "" },
-//  { 0x115F0, "" },
+    { 0x115F0, "teamtweaks" }, // AUTOADDED
 //  { 0x115F1, "" },
-//  { 0x115F2, "" },
+    { 0x115F2, "teamusetimes" }, // AUTOADDED
 //  { 0x115F3, "" },
 //  { 0x115F4, "" },
 //  { 0x115F5, "" },
@@ -71272,7 +71272,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1165B, "" },
 //  { 0x1165C, "" },
 //  { 0x1165D, "" },
-//  { 0x1165E, "" },
+    { 0x1165E, "teleporting" }, // AUTOADDED
 //  { 0x1165F, "" },
 //  { 0x11660, "" },
 //  { 0x11661, "" },
@@ -71367,7 +71367,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x116BA, "" },
 //  { 0x116BB, "" },
 //  { 0x116BC, "" },
-//  { 0x116BD, "" },
+    { 0x116BD, "temp_tag" }, // AUTOADDED
 //  { 0x116BE, "" },
 //  { 0x116BF, "" },
 //  { 0x116C0, "" },
@@ -71514,8 +71514,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1174D, "" },
 //  { 0x1174E, "" },
 //  { 0x1174F, "" },
-//  { 0x11750, "" },
-//  { 0x11751, "" },
+    { 0x11750, "testmiscmessage" }, // AUTOADDED
+    { 0x11751, "testpassivemessage" }, // AUTOADDED
 //  { 0x11752, "" },
 //  { 0x11753, "" },
 //  { 0x11754, "" },
@@ -71617,7 +71617,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x117B4, "" },
 //  { 0x117B5, "" },
 //  { 0x117B6, "" },
-//  { 0x117B7, "" },
+    { 0x117B7, "threadedsetweaponstatbyname" }, // AUTOADDED
     { 0x117B8, "threads" },
 //  { 0x117B9, "" },
 //  { 0x117BA, "" },
@@ -71667,7 +71667,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x117E6, "" },
 //  { 0x117E7, "" },
 //  { 0x117E8, "" },
-//  { 0x117E9, "" },
+    { 0x117E9, "threatlevel" }, // AUTOADDED
 //  { 0x117EA, "" },
 //  { 0x117EB, "" },
 //  { 0x117EC, "" },
@@ -71740,7 +71740,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1182F, "" },
 //  { 0x11830, "" },
 //  { 0x11831, "" },
-//  { 0x11832, "" },
+    { 0x11832, "throwtime" }, // AUTOADDED
 //  { 0x11833, "" },
 //  { 0x11834, "" },
 //  { 0x11835, "" },
@@ -71828,7 +71828,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11887, "" },
 //  { 0x11888, "" },
 //  { 0x11889, "" },
-//  { 0x1188A, "" },
+    { 0x1188A, "thrustfxent" }, // AUTOADDED
 //  { 0x1188B, "" },
 //  { 0x1188C, "" },
 //  { 0x1188D, "" },
@@ -71938,9 +71938,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x118F5, "" },
 //  { 0x118F6, "" },
 //  { 0x118F7, "" },
-//  { 0x118F8, "" },
+    { 0x118F8, "timelimitclock_intermission" }, // AUTOADDED
 //  { 0x118F9, "" },
-//  { 0x118FA, "" },
+    { 0x118FA, "timelimitoverride" }, // AUTOADDED
 //  { 0x118FB, "" },
 //  { 0x118FC, "" },
 //  { 0x118FD, "" },
@@ -71952,25 +71952,25 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11903, "" },
 //  { 0x11904, "" },
 //  { 0x11905, "" },
-//  { 0x11906, "" },
+    { 0x11906, "timeoutregenfaster" }, // AUTOADDED
 //  { 0x11907, "" },
 //  { 0x11908, "" },
-//  { 0x11909, "" },
-//  { 0x1190A, "" },
+    { 0x11909, "timepaused" }, // AUTOADDED
+    { 0x1190A, "timepausestart" }, // AUTOADDED
 //  { 0x1190B, "" },
 //  { 0x1190C, "" },
-//  { 0x1190D, "" },
-//  { 0x1190E, "" },
+    { 0x1190D, "timeplacedinstack" }, // AUTOADDED
+    { 0x1190E, "timeplayed" }, // AUTOADDED
 //  { 0x1190F, "" },
 //  { 0x11910, "" },
 //  { 0x11911, "" },
 //  { 0x11912, "" },
-//  { 0x11913, "" },
+    { 0x11913, "timer_cancel" }, // AUTOADDED
 //  { 0x11914, "" },
 //  { 0x11915, "" },
 //  { 0x11916, "" },
 //  { 0x11917, "" },
-//  { 0x11918, "" },
+    { 0x11918, "timer_run" }, // AUTOADDED
 //  { 0x11919, "" },
     { 0x1191A, "timername" },
 //  { 0x1191B, "" },
@@ -71978,8 +71978,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1191D, "" },
 //  { 0x1191E, "" },
 //  { 0x1191F, "" },
-//  { 0x11920, "" },
-//  { 0x11921, "" },
+    { 0x11920, "timerstoppedforgamemode" }, // AUTOADDED
+    { 0x11921, "times" }, // AUTOADDED
 //  { 0x11922, "" },
 //  { 0x11923, "" },
 //  { 0x11924, "" },
@@ -71988,7 +71988,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11927, "" },
 //  { 0x11928, "" },
 //  { 0x11929, "" },
-//  { 0x1192A, "" },
+    { 0x1192A, "timesincelastspawn" }, // AUTOADDED
 //  { 0x1192B, "" },
 //  { 0x1192C, "" },
 //  { 0x1192D, "" },
@@ -72005,7 +72005,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11938, "" },
 //  { 0x11939, "" },
 //  { 0x1193A, "" },
-//  { 0x1193B, "" },
+    { 0x1193B, "timeuntilwavespawn" }, // AUTOADDED
 //  { 0x1193C, "" },
 //  { 0x1193D, "" },
 //  { 0x1193E, "" },
@@ -72249,7 +72249,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11A2C, "" },
 //  { 0x11A2D, "" },
 //  { 0x11A2E, "" },
-//  { 0x11A2F, "" },
+    { 0x11A2F, "total_tags_banked" }, // AUTOADDED
 //  { 0x11A30, "" },
 //  { 0x11A31, "" },
 //  { 0x11A32, "" },
@@ -72259,17 +72259,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11A36, "" },
 //  { 0x11A37, "" },
 //  { 0x11A38, "" },
-//  { 0x11A39, "" },
+    { 0x11A39, "totalplayers" }, // AUTOADDED
 //  { 0x11A3A, "" },
 //  { 0x11A3B, "" },
-//  { 0x11A3C, "" },
+    { 0x11A3C, "totalscorelimit" }, // AUTOADDED
 //  { 0x11A3D, "" },
 //  { 0x11A3E, "" },
 //  { 0x11A3F, "" },
 //  { 0x11A40, "" },
 //  { 0x11A41, "" },
 //  { 0x11A42, "" },
-//  { 0x11A43, "" },
+    { 0x11A43, "touchingnozonetrigger" }, // AUTOADDED
 //  { 0x11A44, "" },
 //  { 0x11A45, "" },
 //  { 0x11A46, "" },
@@ -72337,10 +72337,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11A84, "" },
 //  { 0x11A85, "" },
 //  { 0x11A86, "" },
-//  { 0x11A87, "" },
+    { 0x11A87, "tracegroundpoint" }, // AUTOADDED
 //  { 0x11A88, "" },
 //  { 0x11A89, "" },
-//  { 0x11A8A, "" },
+    { 0x11A8A, "tracenewpoint" }, // AUTOADDED
 //  { 0x11A8B, "" },
 //  { 0x11A8C, "" },
 //  { 0x11A8D, "" },
@@ -72405,7 +72405,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11AC8, "" },
 //  { 0x11AC9, "" },
 //  { 0x11ACA, "" },
-//  { 0x11ACB, "" },
+    { 0x11ACB, "trackcarepackages" }, // AUTOADDED
 //  { 0x11ACC, "" },
 //  { 0x11ACD, "" },
 //  { 0x11ACE, "" },
@@ -72422,7 +72422,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11AD9, "" },
 //  { 0x11ADA, "" },
 //  { 0x11ADB, "" },
-//  { 0x11ADC, "" },
+    { 0x11ADC, "trackgrenades" }, // AUTOADDED
 //  { 0x11ADD, "" },
 //  { 0x11ADE, "" },
 //  { 0x11ADF, "" },
@@ -72458,7 +72458,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11AFD, "" },
 //  { 0x11AFE, "" },
 //  { 0x11AFF, "" },
-//  { 0x11B00, "" },
+    { 0x11B00, "trackmissiles" }, // AUTOADDED
 //  { 0x11B01, "" },
 //  { 0x11B02, "" },
 //  { 0x11B03, "" },
@@ -72473,7 +72473,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11B0C, "" },
 //  { 0x11B0D, "" },
 //  { 0x11B0E, "" },
-//  { 0x11B0F, "" },
+    { 0x11B0F, "trail_fx" }, // AUTOADDED
 //  { 0x11B10, "" },
 //  { 0x11B11, "" },
 //  { 0x11B12, "" },
@@ -72502,7 +72502,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x11B29, "" },
 //  { 0x11B2A, "" },
 //  { 0x11B2B, "" },
-//  { 0x11B2C, "" },
+    { 0x11B2C, "trait" }, // AUTOADDED
 //  { 0x11B2D, "" },
 //  { 0x11B2E, "" },
 //  { 0x11B2F, "" },
@@ -75378,7 +75378,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12665, "" },
 //  { 0x12666, "" },
 //  { 0x12667, "" },
-//  { 0x12668, "" },
+    { 0x12668, "isspecialpain" }, // AUTOADDED
 //  { 0x12669, "" },
 //  { 0x1266A, "" },
 //  { 0x1266B, "" },
@@ -75392,21 +75392,21 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12673, "" },
 //  { 0x12674, "" },
 //  { 0x12675, "" },
-//  { 0x12676, "" },
-//  { 0x12677, "" },
+    { 0x12676, "transitionfadein" }, // AUTOADDED
+    { 0x12677, "transitionfadeout" }, // AUTOADDED
 //  { 0x12678, "" },
-//  { 0x12679, "" },
-//  { 0x1267A, "" },
-//  { 0x1267B, "" },
-//  { 0x1267C, "" },
-//  { 0x1267D, "" },
+    { 0x12679, "transitionpulsefxin" }, // AUTOADDED
+    { 0x1267A, "transitionreset" }, // AUTOADDED
+    { 0x1267B, "transitions" }, // AUTOADDED
+    { 0x1267C, "transitionslidein" }, // AUTOADDED
+    { 0x1267D, "transitionslideout" }, // AUTOADDED
 //  { 0x1267E, "" },
 //  { 0x1267F, "" },
 //  { 0x12680, "" },
 //  { 0x12681, "" },
 //  { 0x12682, "" },
-//  { 0x12683, "" },
-//  { 0x12684, "" },
+    { 0x12683, "transitionzoomin" }, // AUTOADDED
+    { 0x12684, "transitionzoomout" }, // AUTOADDED
 //  { 0x12685, "" },
 //  { 0x12686, "" },
 //  { 0x12687, "" },
@@ -75468,7 +75468,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x126BF, "" },
 //  { 0x126C0, "" },
 //  { 0x126C1, "" },
-//  { 0x126C2, "" },
+    { 0x126C2, "traveltonode" }, // AUTOADDED
 //  { 0x126C3, "" },
 //  { 0x126C4, "" },
 //  { 0x126C5, "" },
@@ -75655,7 +75655,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x1277A, "trigger_on" },
     { 0x1277B, "trigger_on_proc" },
 //  { 0x1277C, "" },
-//  { 0x1277D, "" },
+    { 0x1277D, "trigger_parse_parameters" }, // AUTOADDED
 //  { 0x1277E, "" },
 //  { 0x1277F, "" },
 //  { 0x12780, "" },
@@ -75733,10 +75733,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x127C8, "" },
 //  { 0x127C9, "" },
 //  { 0x127CA, "" },
-//  { 0x127CB, "" },
+    { 0x127CB, "triggertype" }, // AUTOADDED
 //  { 0x127CC, "" },
 //  { 0x127CD, "" },
-//  { 0x127CE, "" },
+    { 0x127CE, "trigunderwater" }, // AUTOADDED
 //  { 0x127CF, "" },
 //  { 0x127D0, "" },
 //  { 0x127D1, "" },
@@ -75864,7 +75864,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1284B, "" },
 //  { 0x1284C, "" },
 //  { 0x1284D, "" },
-//  { 0x1284E, "" },
+    { 0x1284E, "try_clear_hide_goal" }, // AUTOADDED
 //  { 0x1284F, "" },
 //  { 0x12850, "" },
 //  { 0x12851, "" },
@@ -75893,7 +75893,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12868, "" },
 //  { 0x12869, "" },
 //  { 0x1286A, "" },
-//  { 0x1286B, "" },
+    { 0x1286B, "try_place_global_badplace" }, // AUTOADDED
 //  { 0x1286C, "" },
 //  { 0x1286D, "" },
 //  { 0x1286E, "" },
@@ -76013,7 +76013,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x128E0, "" },
 //  { 0x128E1, "" },
 //  { 0x128E2, "" },
-//  { 0x128E3, "" },
+    { 0x128E3, "tryusedronehive" }, // AUTOADDED
 //  { 0x128E4, "" },
 //  { 0x128E5, "" },
 //  { 0x128E6, "" },
@@ -76032,7 +76032,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x128F3, "" },
     { 0x128F4, "tryuseperkstreak" },
 //  { 0x128F5, "" },
-//  { 0x128F6, "" },
+    { 0x128F6, "tryusepredatormissile" }, // AUTOADDED
 //  { 0x128F7, "" },
 //  { 0x128F8, "" },
 //  { 0x128F9, "" },
@@ -76137,7 +76137,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1295C, "" },
 //  { 0x1295D, "" },
 //  { 0x1295E, "" },
-//  { 0x1295F, "" },
+    { 0x1295F, "turn_off_light_bar_on_death" }, // AUTOADDED
 //  { 0x12960, "" },
 //  { 0x12961, "" },
 //  { 0x12962, "" },
@@ -76227,7 +76227,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x129B6, "" },
 //  { 0x129B7, "" },
 //  { 0x129B8, "" },
-//  { 0x129B9, "" },
+    { 0x129B9, "turret" }, // AUTOADDED
 //  { 0x129BA, "" },
 //  { 0x129BB, "" },
 //  { 0x129BC, "" },
@@ -76257,7 +76257,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x129D4, "" },
 //  { 0x129D5, "" },
 //  { 0x129D6, "" },
-//  { 0x129D7, "" },
+    { 0x129D7, "turret_coolmonitor" }, // AUTOADDED
 //  { 0x129D8, "" },
 //  { 0x129D9, "" },
 //  { 0x129DA, "" },
@@ -76297,8 +76297,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x129FC, "" },
 //  { 0x129FD, "" },
 //  { 0x129FE, "" },
-//  { 0x129FF, "" },
-//  { 0x12A00, "" },
+    { 0x129FF, "turret_handleuse" }, // AUTOADDED
+    { 0x12A00, "turret_heatmonitor" }, // AUTOADDED
 //  { 0x12A01, "" },
 //  { 0x12A02, "" },
 //  { 0x12A03, "" },
@@ -76324,7 +76324,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12A17, "" },
 //  { 0x12A18, "" },
 //  { 0x12A19, "" },
-//  { 0x12A1A, "" },
+    { 0x12A1A, "turret_overheat_bar" }, // AUTOADDED
 //  { 0x12A1B, "" },
 //  { 0x12A1C, "" },
 //  { 0x12A1D, "" },
@@ -76447,7 +76447,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12A92, "" },
 //  { 0x12A93, "" },
 //  { 0x12A94, "" },
-//  { 0x12A95, "" },
+    { 0x12A95, "turrettarget" }, // AUTOADDED
 //  { 0x12A96, "" },
 //  { 0x12A97, "" },
 //  { 0x12A98, "" },
@@ -76548,7 +76548,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x12AF7, "uavsettings" },
 //  { 0x12AF8, "" },
 //  { 0x12AF9, "" },
-//  { 0x12AFA, "" },
+    { 0x12AFA, "uavtype" }, // AUTOADDED
 //  { 0x12AFB, "" },
 //  { 0x12AFC, "" },
 //  { 0x12AFD, "" },
@@ -76574,7 +76574,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12B11, "" },
 //  { 0x12B12, "" },
 //  { 0x12B13, "" },
-//  { 0x12B14, "" },
+    { 0x12B14, "ugvs" }, // AUTOADDED
 //  { 0x12B15, "" },
 //  { 0x12B16, "" },
 //  { 0x12B17, "" },
@@ -76595,7 +76595,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12B26, "" },
 //  { 0x12B27, "" },
 //  { 0x12B28, "" },
-//  { 0x12B29, "" },
+    { 0x12B29, "uiparent" }, // AUTOADDED
 //  { 0x12B2A, "" },
 //  { 0x12B2B, "" },
 //  { 0x12B2C, "" },
@@ -76709,7 +76709,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12B98, "" },
 //  { 0x12B99, "" },
 //  { 0x12B9A, "" },
-//  { 0x12B9B, "" },
+    { 0x12B9B, "unfreezecontrols" }, // AUTOADDED
 //  { 0x12B9C, "" },
 //  { 0x12B9D, "" },
 //  { 0x12B9E, "" },
@@ -76784,14 +76784,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12BE3, "" },
 //  { 0x12BE4, "" },
 //  { 0x12BE5, "" },
-//  { 0x12BE6, "" },
+    { 0x12BE6, "unresolved_collision_damage" }, // AUTOADDED
 //  { 0x12BE7, "" },
 //  { 0x12BE8, "" },
 //  { 0x12BE9, "" },
 //  { 0x12BEA, "" },
 //  { 0x12BEB, "" },
 //  { 0x12BEC, "" },
-//  { 0x12BED, "" },
+    { 0x12BED, "unresolved_collision_owner_damage" }, // AUTOADDED
 //  { 0x12BEE, "" },
 //  { 0x12BEF, "" },
 //  { 0x12BF0, "" },
@@ -76919,7 +76919,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12C6A, "" },
 //  { 0x12C6B, "" },
 //  { 0x12C6C, "" },
-//  { 0x12C6D, "" },
+    { 0x12C6D, "unsetaffinityspeedboost" }, // AUTOADDED
 //  { 0x12C6E, "" },
 //  { 0x12C6F, "" },
 //  { 0x12C70, "" },
@@ -76928,14 +76928,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12C73, "" },
 //  { 0x12C74, "" },
 //  { 0x12C75, "" },
-//  { 0x12C76, "" },
+    { 0x12C76, "unsetautospot" }, // AUTOADDED
 //  { 0x12C77, "" },
 //  { 0x12C78, "" },
 //  { 0x12C79, "" },
 //  { 0x12C7A, "" },
 //  { 0x12C7B, "" },
 //  { 0x12C7C, "" },
-//  { 0x12C7D, "" },
+    { 0x12C7D, "unsetbattleslideshield" }, // AUTOADDED
 //  { 0x12C7E, "" },
 //  { 0x12C7F, "" },
 //  { 0x12C80, "" },
@@ -76946,7 +76946,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12C85, "" },
 //  { 0x12C86, "" },
 //  { 0x12C87, "" },
-//  { 0x12C88, "" },
+    { 0x12C88, "unsetbulletoutline" }, // AUTOADDED
 //  { 0x12C89, "" },
 //  { 0x12C8A, "" },
 //  { 0x12C8B, "" },
@@ -76956,18 +76956,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12C8F, "" },
 //  { 0x12C90, "" },
 //  { 0x12C91, "" },
-//  { 0x12C92, "" },
-//  { 0x12C93, "" },
+    { 0x12C92, "unsetcombathigh" }, // AUTOADDED
+    { 0x12C93, "unsetcombathighondeath" }, // AUTOADDED
 //  { 0x12C94, "" },
-//  { 0x12C95, "" },
+    { 0x12C95, "unsetcombatspeed" }, // AUTOADDED
 //  { 0x12C96, "" },
 //  { 0x12C97, "" },
 //  { 0x12C98, "" },
 //  { 0x12C99, "" },
 //  { 0x12C9A, "" },
 //  { 0x12C9B, "" },
-//  { 0x12C9C, "" },
-//  { 0x12C9D, "" },
+    { 0x12C9C, "unsetcustomjuicedondeath" }, // AUTOADDED
+    { 0x12C9D, "unsetcustomjuicedonmatchend" }, // AUTOADDED
 //  { 0x12C9E, "" },
 //  { 0x12C9F, "" },
 //  { 0x12CA0, "" },
@@ -76978,9 +76978,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12CA5, "" },
 //  { 0x12CA6, "" },
 //  { 0x12CA7, "" },
-//  { 0x12CA8, "" },
+    { 0x12CA8, "unsetdoubleload" }, // AUTOADDED
 //  { 0x12CA9, "" },
-//  { 0x12CAA, "" },
+    { 0x12CAA, "unsetendgame" }, // AUTOADDED
 //  { 0x12CAB, "" },
 //  { 0x12CAC, "" },
 //  { 0x12CAD, "" },
@@ -76989,11 +76989,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12CB0, "" },
 //  { 0x12CB1, "" },
 //  { 0x12CB2, "" },
-//  { 0x12CB3, "" },
+    { 0x12CB3, "unsetextraammo" }, // AUTOADDED
 //  { 0x12CB4, "" },
-//  { 0x12CB5, "" },
-//  { 0x12CB6, "" },
-//  { 0x12CB7, "" },
+    { 0x12CB5, "unsetextradeadly" }, // AUTOADDED
+    { 0x12CB6, "unsetextradodge" }, // AUTOADDED
+    { 0x12CB7, "unsetextraequipment" }, // AUTOADDED
 //  { 0x12CB8, "" },
 //  { 0x12CB9, "" },
 //  { 0x12CBA, "" },
@@ -77010,9 +77010,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12CC5, "" },
 //  { 0x12CC6, "" },
 //  { 0x12CC7, "" },
-//  { 0x12CC8, "" },
-//  { 0x12CC9, "" },
-//  { 0x12CCA, "" },
+    { 0x12CC8, "unsetgroundpoundboost" }, // AUTOADDED
+    { 0x12CC9, "unsetgroundpoundshield" }, // AUTOADDED
+    { 0x12CCA, "unsetgroundpoundshock" }, // AUTOADDED
 //  { 0x12CCB, "" },
 //  { 0x12CCC, "" },
 //  { 0x12CCD, "" },
@@ -77031,14 +77031,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12CDA, "" },
 //  { 0x12CDB, "" },
 //  { 0x12CDC, "" },
-//  { 0x12CDD, "" },
-//  { 0x12CDE, "" },
+    { 0x12CDD, "unsetjuicedondeath" }, // AUTOADDED
+    { 0x12CDE, "unsetjuicedonmatchend" }, // AUTOADDED
 //  { 0x12CDF, "" },
 //  { 0x12CE0, "" },
 //  { 0x12CE1, "" },
 //  { 0x12CE2, "" },
 //  { 0x12CE3, "" },
-//  { 0x12CE4, "" },
+    { 0x12CE4, "unsetlifepack" }, // AUTOADDED
 //  { 0x12CE5, "" },
 //  { 0x12CE6, "" },
 //  { 0x12CE7, "" },
@@ -77046,7 +77046,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12CE9, "" },
 //  { 0x12CEA, "" },
 //  { 0x12CEB, "" },
-//  { 0x12CEC, "" },
+    { 0x12CEC, "unsetmarksman" }, // AUTOADDED
 //  { 0x12CED, "" },
 //  { 0x12CEE, "" },
 //  { 0x12CEF, "" },
@@ -77059,7 +77059,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12CF6, "" },
 //  { 0x12CF7, "" },
 //  { 0x12CF8, "" },
-//  { 0x12CF9, "" },
+    { 0x12CF9, "unsetonemanarmy" }, // AUTOADDED
 //  { 0x12CFA, "" },
 //  { 0x12CFB, "" },
 //  { 0x12CFC, "" },
@@ -77092,11 +77092,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12D17, "" },
 //  { 0x12D18, "" },
 //  { 0x12D19, "" },
-//  { 0x12D1A, "" },
+    { 0x12D1A, "unsetrevenge" }, // AUTOADDED
 //  { 0x12D1B, "" },
 //  { 0x12D1C, "" },
-//  { 0x12D1D, "" },
-//  { 0x12D1E, "" },
+    { 0x12D1D, "unsetrshieldradar" }, // AUTOADDED
+    { 0x12D1E, "unsetrshieldscrambler" }, // AUTOADDED
 //  { 0x12D1F, "" },
 //  { 0x12D20, "" },
 //  { 0x12D21, "" },
@@ -77107,7 +77107,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12D26, "" },
 //  { 0x12D27, "" },
 //  { 0x12D28, "" },
-//  { 0x12D29, "" },
+    { 0x12D29, "unsetsharpfocus" }, // AUTOADDED
 //  { 0x12D2A, "" },
 //  { 0x12D2B, "" },
 //  { 0x12D2C, "" },
@@ -77118,10 +77118,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12D31, "" },
 //  { 0x12D32, "" },
 //  { 0x12D33, "" },
-//  { 0x12D34, "" },
+    { 0x12D34, "unsetspawnview" }, // AUTOADDED
 //  { 0x12D35, "" },
 //  { 0x12D36, "" },
-//  { 0x12D37, "" },
+    { 0x12D37, "unsetsteadyaimpro" }, // AUTOADDED
 //  { 0x12D38, "" },
 //  { 0x12D39, "" },
 //  { 0x12D3A, "" },
@@ -77132,7 +77132,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12D3F, "" },
 //  { 0x12D40, "" },
 //  { 0x12D41, "" },
-//  { 0x12D42, "" },
+    { 0x12D42, "unsettagger" }, // AUTOADDED
 //  { 0x12D43, "" },
 //  { 0x12D44, "" },
 //  { 0x12D45, "" },
@@ -77141,13 +77141,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12D48, "" },
 //  { 0x12D49, "" },
 //  { 0x12D4A, "" },
-//  { 0x12D4B, "" },
+    { 0x12D4B, "unsetthruster" }, // AUTOADDED
 //  { 0x12D4C, "" },
-//  { 0x12D4D, "" },
+    { 0x12D4D, "unsettoughenup" }, // AUTOADDED
 //  { 0x12D4E, "" },
 //  { 0x12D4F, "" },
 //  { 0x12D50, "" },
-//  { 0x12D51, "" },
+    { 0x12D51, "unsettriggerhappy" }, // AUTOADDED
 //  { 0x12D52, "" },
 //  { 0x12D53, "" },
 //  { 0x12D54, "" },
@@ -77170,7 +77170,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12D65, "" },
 //  { 0x12D66, "" },
 //  { 0x12D67, "" },
-//  { 0x12D68, "" },
+    { 0x12D68, "unsetweaponlaser" }, // AUTOADDED
 //  { 0x12D69, "" },
 //  { 0x12D6A, "" },
 //  { 0x12D6B, "" },
@@ -77338,7 +77338,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12E0D, "" },
 //  { 0x12E0E, "" },
 //  { 0x12E0F, "" },
-//  { 0x12E10, "" },
+    { 0x12E10, "update_player_threat" }, // AUTOADDED
 //  { 0x12E11, "" },
 //  { 0x12E12, "" },
 //  { 0x12E13, "" },
@@ -77421,24 +77421,24 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12E60, "" },
 //  { 0x12E61, "" },
 //  { 0x12E62, "" },
-//  { 0x12E63, "" },
-//  { 0x12E64, "" },
+    { 0x12E63, "updatebar" }, // AUTOADDED
+    { 0x12E64, "updatebarscale" }, // AUTOADDED
 //  { 0x12E65, "" },
 //  { 0x12E66, "" },
 //  { 0x12E67, "" },
 //  { 0x12E68, "" },
-//  { 0x12E69, "" },
+    { 0x12E69, "updatebpm" }, // AUTOADDED
 //  { 0x12E6A, "" },
 //  { 0x12E6B, "" },
 //  { 0x12E6C, "" },
 //  { 0x12E6D, "" },
-//  { 0x12E6E, "" },
+    { 0x12E6E, "updatecapsperminute" }, // AUTOADDED
 //  { 0x12E6F, "" },
 //  { 0x12E70, "" },
 //  { 0x12E71, "" },
 //  { 0x12E72, "" },
 //  { 0x12E73, "" },
-//  { 0x12E74, "" },
+    { 0x12E74, "updatechildren" }, // AUTOADDED
 //  { 0x12E75, "" },
 //  { 0x12E76, "" },
 //  { 0x12E77, "" },
@@ -77449,7 +77449,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12E7C, "" },
 //  { 0x12E7D, "" },
 //  { 0x12E7E, "" },
-//  { 0x12E7F, "" },
+    { 0x12E7F, "updatecpm" }, // AUTOADDED
 //  { 0x12E80, "" },
 //  { 0x12E81, "" },
 //  { 0x12E82, "" },
@@ -77472,9 +77472,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12E93, "" },
 //  { 0x12E94, "" },
 //  { 0x12E95, "" },
-//  { 0x12E96, "" },
-//  { 0x12E97, "" },
-//  { 0x12E98, "" },
+    { 0x12E96, "updatefriendicons" }, // AUTOADDED
+    { 0x12E97, "updatefriendiconsettings" }, // AUTOADDED
+    { 0x12E98, "updatefrontline" }, // AUTOADDED
 //  { 0x12E99, "" },
 //  { 0x12E9A, "" },
 //  { 0x12E9B, "" },
@@ -77501,7 +77501,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12EB0, "" },
 //  { 0x12EB1, "" },
 //  { 0x12EB2, "" },
-//  { 0x12EB3, "" },
+    { 0x12EB3, "updateinflictorstat" }, // AUTOADDED
 //  { 0x12EB4, "" },
 //  { 0x12EB5, "" },
 //  { 0x12EB6, "" },
@@ -77540,7 +77540,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12ED7, "" },
 //  { 0x12ED8, "" },
 //  { 0x12ED9, "" },
-//  { 0x12EDA, "" },
+    { 0x12EDA, "nuke_updatevisiononhostmigration" }, // AUTOADDED
 //  { 0x12EDB, "" },
 //  { 0x12EDC, "" },
 //  { 0x12EDD, "" },
@@ -77549,7 +77549,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12EE0, "" },
 //  { 0x12EE1, "" },
 //  { 0x12EE2, "" },
-//  { 0x12EE3, "" },
+    { 0x12EE3, "updateorigin" }, // AUTOADDED
 //  { 0x12EE4, "" },
 //  { 0x12EE5, "" },
 //  { 0x12EE6, "" },
@@ -77585,24 +77585,24 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12F04, "" },
 //  { 0x12F05, "" },
 //  { 0x12F06, "" },
-//  { 0x12F07, "" },
+    { 0x12F07, "updateroundendreasontext" }, // AUTOADDED
 //  { 0x12F08, "" },
 //  { 0x12F09, "" },
 //  { 0x12F0A, "" },
 //  { 0x12F0B, "" },
 //  { 0x12F0C, "" },
 //  { 0x12F0D, "" },
-//  { 0x12F0E, "" },
+    { 0x12F0E, "updatescoutpingvalues" }, // AUTOADDED
 //  { 0x12F0F, "" },
 //  { 0x12F10, "" },
 //  { 0x12F11, "" },
 //  { 0x12F12, "" },
 //  { 0x12F13, "" },
 //  { 0x12F14, "" },
-//  { 0x12F15, "" },
+    { 0x12F15, "updateselfvohistory" }, // AUTOADDED
 //  { 0x12F16, "" },
 //  { 0x12F17, "" },
-//  { 0x12F18, "" },
+    { 0x12F18, "updateserversettings" }, // AUTOADDED
     { 0x12F19, "updatesessionstate" },
 //  { 0x12F1A, "" },
 //  { 0x12F1B, "" },
@@ -77611,7 +77611,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12F1E, "" },
 //  { 0x12F1F, "" },
 //  { 0x12F20, "" },
-//  { 0x12F21, "" },
+    { 0x12F21, "updatespectatesettings" }, // AUTOADDED
 //  { 0x12F22, "" },
 //  { 0x12F23, "" },
 //  { 0x12F24, "" },
@@ -77634,13 +77634,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12F35, "" },
 //  { 0x12F36, "" },
 //  { 0x12F37, "" },
-//  { 0x12F38, "" },
+    { 0x12F38, "updateteambalancedvar" }, // AUTOADDED
 //  { 0x12F39, "" },
 //  { 0x12F3A, "" },
 //  { 0x12F3B, "" },
-//  { 0x12F3C, "" },
+    { 0x12F3C, "updateteamscores" }, // AUTOADDED
 //  { 0x12F3D, "" },
-//  { 0x12F3E, "" },
+    { 0x12F3E, "updateteamtime" }, // AUTOADDED
 //  { 0x12F3F, "" },
 //  { 0x12F40, "" },
 //  { 0x12F41, "" },
@@ -77667,7 +77667,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12F56, "" },
 //  { 0x12F57, "" },
 //  { 0x12F58, "" },
-//  { 0x12F59, "" },
+    { 0x12F59, "updatevisibilityaccordingtoradar" }, // AUTOADDED
 //  { 0x12F5A, "" },
 //  { 0x12F5B, "" },
 //  { 0x12F5C, "" },
@@ -77753,9 +77753,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x12FAC, "" },
 //  { 0x12FAD, "" },
 //  { 0x12FAE, "" },
-//  { 0x12FAF, "" },
+    { 0x12FAF, "use_box" }, // AUTOADDED
 //  { 0x12FB0, "" },
-//  { 0x12FB1, "" },
+    { 0x12FB1, "use_button_stopped_notify" }, // AUTOADDED
 //  { 0x12FB2, "" },
 //  { 0x12FB3, "" },
 //  { 0x12FB4, "" },
@@ -77883,10 +77883,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1302E, "" },
 //  { 0x1302F, "" },
 //  { 0x13030, "" },
-//  { 0x13031, "" },
+    { 0x13031, "use_time" }, // AUTOADDED
 //  { 0x13032, "" },
 //  { 0x13033, "" },
-//  { 0x13034, "" },
+    { 0x13034, "use_triggers" }, // AUTOADDED
 //  { 0x13035, "" },
 //  { 0x13036, "" },
 //  { 0x13037, "" },
@@ -77956,7 +77956,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13077, "" },
 //  { 0x13078, "" },
 //  { 0x13079, "" },
-//  { 0x1307A, "" },
+    { 0x1307A, "usedlocations" }, // AUTOADDED
 //  { 0x1307B, "" },
 //  { 0x1307C, "" },
 //  { 0x1307D, "" },
@@ -77978,10 +77978,10 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1308D, "" },
 //  { 0x1308E, "" },
 //  { 0x1308F, "" },
-//  { 0x13090, "" },
+    { 0x13090, "usehelicopter" }, // AUTOADDED
 //  { 0x13091, "" },
 //  { 0x13092, "" },
-//  { 0x13093, "" },
+    { 0x13093, "useholdthink" }, // AUTOADDED
 //  { 0x13094, "" },
 //  { 0x13095, "" },
 //  { 0x13096, "" },
@@ -78005,8 +78005,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x130A8, "" },
 //  { 0x130A9, "" },
 //  { 0x130AA, "" },
-//  { 0x130AB, "" },
-//  { 0x130AC, "" },
+    { 0x130AB, "usenormalscorelimit" }, // AUTOADDED
+    { 0x130AC, "useobj" }, // AUTOADDED
 //  { 0x130AD, "" },
 //  { 0x130AE, "" },
 //  { 0x130AF, "" },
@@ -78017,7 +78017,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x130B4, "" },
 //  { 0x130B5, "" },
 //  { 0x130B6, "" },
-//  { 0x130B7, "" },
+    { 0x130B7, "useoutline" }, // AUTOADDED
 //  { 0x130B8, "" },
 //  { 0x130B9, "" },
 //  { 0x130BA, "" },
@@ -78033,12 +78033,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x130C4, "" },
 //  { 0x130C5, "" },
 //  { 0x130C6, "" },
-//  { 0x130C7, "" },
+    { 0x130C7, "userate" }, // AUTOADDED
 //  { 0x130C8, "" },
 //  { 0x130C9, "" },
 //  { 0x130CA, "" },
 //  { 0x130CB, "" },
-//  { 0x130CC, "" },
+    { 0x130CC, "useremoteuav" }, // AUTOADDED
 //  { 0x130CD, "" },
 //  { 0x130CE, "" },
 //  { 0x130CF, "" },
@@ -78054,7 +78054,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x130D9, "" },
 //  { 0x130DA, "" },
 //  { 0x130DB, "" },
-//  { 0x130DC, "" },
+    { 0x130DC, "usesremaining" }, // AUTOADDED
 //  { 0x130DD, "" },
 //  { 0x130DE, "" },
 //  { 0x130DF, "" },
@@ -78072,7 +78072,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x130EB, "" },
 //  { 0x130EC, "" },
 //  { 0x130ED, "" },
-//  { 0x130EE, "" },
+    { 0x130EE, "usetime" }, // AUTOADDED
 //  { 0x130EF, "" },
 //  { 0x130F0, "" },
 //  { 0x130F1, "" },
@@ -78096,7 +78096,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13103, "" },
 //  { 0x13104, "" },
 //  { 0x13105, "" },
-//  { 0x13106, "" },
+    { 0x13106, "using_remote_tank" }, // AUTOADDED
 //  { 0x13107, "" },
 //  { 0x13108, "" },
 //  { 0x13109, "" },
@@ -78110,11 +78110,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13111, "" },
     { 0x13112, "usingmg" },
 //  { 0x13113, "" },
-//  { 0x13114, "" },
+    { 0x13114, "usingonlinedataoffline" }, // AUTOADDED
     { 0x13115, "usingpistol" },
 //  { 0x13116, "" },
 //  { 0x13117, "" },
-//  { 0x13118, "" },
+    { 0x13118, "usingremote" }, // AUTOADDED
 //  { 0x13119, "" },
     { 0x1311A, "usingriflelikeweapon" },
     { 0x1311B, "usingrocketlauncher" },
@@ -78138,7 +78138,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1312D, "" },
 //  { 0x1312E, "" },
 //  { 0x1312F, "" },
-//  { 0x13130, "" },
+    { 0x13130, "valid_for_vanguard" }, // AUTOADDED
 //  { 0x13131, "" },
 //  { 0x13132, "" },
 //  { 0x13133, "" },
@@ -78148,9 +78148,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13137, "" },
 //  { 0x13138, "" },
 //  { 0x13139, "" },
-//  { 0x1313A, "" },
+    { 0x1313A, "validatearchetype" }, // AUTOADDED
 //  { 0x1313B, "" },
-//  { 0x1313C, "" },
+    { 0x1313C, "validateattacker" }, // AUTOADDED
 //  { 0x1313D, "" },
 //  { 0x1313E, "" },
 //  { 0x1313F, "" },
@@ -78161,19 +78161,19 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13144, "" },
 //  { 0x13145, "" },
 //  { 0x13146, "" },
-//  { 0x13147, "" },
+    { 0x13147, "validatestreaks" }, // AUTOADDED
 //  { 0x13148, "" },
 //  { 0x13149, "" },
 //  { 0x1314A, "" },
 //  { 0x1314B, "" },
 //  { 0x1314C, "" },
-//  { 0x1314D, "" },
+    { 0x1314D, "validationerror" }, // AUTOADDED
 //  { 0x1314E, "" },
 //  { 0x1314F, "" },
 //  { 0x13150, "" },
 //  { 0x13151, "" },
 //  { 0x13152, "" },
-//  { 0x13153, "" },
+    { 0x13153, "value" }, // AUTOADDED
     { 0x13154, "value_hudelem" },
 //  { 0x13155, "" },
 //  { 0x13156, "" },
@@ -78183,8 +78183,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1315A, "" },
 //  { 0x1315B, "" },
 //  { 0x1315C, "" },
-//  { 0x1315D, "" },
-//  { 0x1315E, "" },
+    { 0x1315D, "vanguard_allowed" }, // AUTOADDED
+    { 0x1315E, "vanguard_control_aiming" }, // AUTOADDED
 //  { 0x1315F, "" },
 //  { 0x13160, "" },
 //  { 0x13161, "" },
@@ -78192,9 +78192,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13163, "" },
 //  { 0x13164, "" },
 //  { 0x13165, "" },
-//  { 0x13166, "" },
+    { 0x13166, "vanguard_is_outside" }, // AUTOADDED
 //  { 0x13167, "" },
-//  { 0x13168, "" },
+    { 0x13168, "vanguard_missile_radius" }, // AUTOADDED
 //  { 0x13169, "" },
 //  { 0x1316A, "" },
 //  { 0x1316B, "" },
@@ -78203,8 +78203,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1316E, "" },
 //  { 0x1316F, "" },
 //  { 0x13170, "" },
-//  { 0x13171, "" },
-//  { 0x13172, "" },
+    { 0x13171, "vanguard_origin" }, // AUTOADDED
+    { 0x13172, "vanguard_pick_node" }, // AUTOADDED
 //  { 0x13173, "" },
 //  { 0x13174, "" },
 //  { 0x13175, "" },
@@ -78229,7 +78229,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13188, "" },
 //  { 0x13189, "" },
 //  { 0x1318A, "" },
-//  { 0x1318B, "" },
+    { 0x1318B, "variantid" }, // AUTOADDED
 //  { 0x1318C, "" },
 //  { 0x1318D, "" },
 //  { 0x1318E, "" },
@@ -78237,7 +78237,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x13190, "vdir" },
 //  { 0x13191, "" },
 //  { 0x13192, "" },
-//  { 0x13193, "" },
+    { 0x13193, "vecscale" }, // AUTOADDED
     { 0x13194, "vector2d" },
 //  { 0x13195, "" },
 //  { 0x13196, "" },
@@ -78271,7 +78271,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x131B2, "" },
 //  { 0x131B3, "" },
 //  { 0x131B4, "" },
-//  { 0x131B5, "" },
+    { 0x131B5, "vehicle_controlling" }, // AUTOADDED
 //  { 0x131B6, "" },
 //  { 0x131B7, "" },
 //  { 0x131B8, "" },
@@ -78436,7 +78436,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13257, "" },
 //  { 0x13258, "" },
 //  { 0x13259, "" },
-//  { 0x1325A, "" },
+    { 0x1325A, "vehicle_would_exceed_limit" }, // AUTOADDED
 //  { 0x1325B, "" },
 //  { 0x1325C, "" },
 //  { 0x1325D, "" },
@@ -78990,7 +78990,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13481, "" },
 //  { 0x13482, "" },
 //  { 0x13483, "" },
-//  { 0x13484, "" },
+    { 0x13484, "visited" }, // AUTOADDED
 //  { 0x13485, "" },
 //  { 0x13486, "" },
 //  { 0x13487, "" },
@@ -79150,7 +79150,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13521, "" },
 //  { 0x13522, "" },
 //  { 0x13523, "" },
-//  { 0x13524, "" },
+    { 0x13524, "vogone" }, // AUTOADDED
     { 0x13525, "voice" },
 //  { 0x13526, "" },
 //  { 0x13527, "" },
@@ -79198,7 +79198,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13551, "" },
 //  { 0x13552, "" },
 //  { 0x13553, "" },
-//  { 0x13554, "" },
+    { 0x13554, "votimeout" }, // AUTOADDED
 //  { 0x13555, "" },
 //  { 0x13556, "" },
     { 0x13557, "vpoint" },
@@ -79251,7 +79251,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13586, "" },
 //  { 0x13587, "" },
 //  { 0x13588, "" },
-//  { 0x13589, "" },
+    { 0x13589, "wait_and_delete" }, // AUTOADDED
 //  { 0x1358A, "" },
 //  { 0x1358B, "" },
 //  { 0x1358C, "" },
@@ -79484,7 +79484,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1366F, "" },
 //  { 0x13670, "" },
 //  { 0x13671, "" },
-//  { 0x13672, "" },
+    { 0x13672, "wait_till_agent_funcs_defined" }, // AUTOADDED
 //  { 0x13673, "" },
 //  { 0x13674, "" },
 //  { 0x13675, "" },
@@ -79530,7 +79530,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1369D, "" },
 //  { 0x1369E, "" },
 //  { 0x1369F, "" },
-//  { 0x136A0, "" },
+    { 0x136A0, "waitballlongdurationwithgameendtimeupdate" }, // AUTOADDED
 //  { 0x136A1, "" },
 //  { 0x136A2, "" },
 //  { 0x136A3, "" },
@@ -79595,7 +79595,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x136DE, "" },
 //  { 0x136DF, "" },
 //  { 0x136E0, "" },
-//  { 0x136E1, "" },
+    { 0x136E1, "waitforreset" }, // AUTOADDED
 //  { 0x136E2, "" },
 //  { 0x136E3, "" },
 //  { 0x136E4, "" },
@@ -79623,7 +79623,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x136FA, "" },
 //  { 0x136FB, "" },
 //  { 0x136FC, "" },
-//  { 0x136FD, "" },
+    { 0x136FD, "waitingtodeactivate" }, // AUTOADDED
 //  { 0x136FE, "" },
     { 0x136FF, "waitingtospawn" },
 //  { 0x13700, "" },
@@ -79632,15 +79632,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13703, "" },
 //  { 0x13704, "" },
 //  { 0x13705, "" },
-//  { 0x13706, "" },
-//  { 0x13707, "" },
+    { 0x13706, "waitloadoutdone" }, // AUTOADDED
+    { 0x13707, "waitlongdurationwithgameendtimeupdate" }, // AUTOADDED
     { 0x13708, "waitlongdurationwithhostmigrationpause" },
 //  { 0x13709, "" },
 //  { 0x1370A, "" },
 //  { 0x1370B, "" },
 //  { 0x1370C, "" },
 //  { 0x1370D, "" },
-//  { 0x1370E, "" },
+    { 0x1370E, "waitrespawnbutton" }, // AUTOADDED
 //  { 0x1370F, "" },
 //  { 0x13710, "" },
 //  { 0x13711, "" },
@@ -79653,7 +79653,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13718, "" },
 //  { 0x13719, "" },
 //  { 0x1371A, "" },
-//  { 0x1371B, "" },
+    { 0x1371B, "waitsuppresstimeout" }, // AUTOADDED
 //  { 0x1371C, "" },
 //  { 0x1371D, "" },
 //  { 0x1371E, "" },
@@ -79683,7 +79683,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x13736, "waittill_any_timeout" },
     { 0x13737, "waittill_any_timeout_no_endon_death" },
 //  { 0x13738, "" },
-//  { 0x13739, "" },
+    { 0x13739, "waittill_any_triggered_return_triggerer" }, // AUTOADDED
 //  { 0x1373A, "" },
 //  { 0x1373B, "" },
 //  { 0x1373C, "" },
@@ -79810,7 +79810,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x137B5, "" },
 //  { 0x137B6, "" },
     { 0x137B7, "waittill_notify_or_timeout" },
-//  { 0x137B8, "" },
+    { 0x137B8, "waittill_notify_or_timeout_hostmigration_pause" }, // AUTOADDED
     { 0x137B9, "waittill_notify_or_timeout_return" },
 //  { 0x137BA, "" },
 //  { 0x137BB, "" },
@@ -79923,7 +79923,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13826, "" },
 //  { 0x13827, "" },
 //  { 0x13828, "" },
-//  { 0x13829, "" },
+    { 0x13829, "waittillballhostmigrationstarts" }, // AUTOADDED
 //  { 0x1382A, "" },
 //  { 0x1382B, "" },
 //  { 0x1382C, "" },
@@ -79935,7 +79935,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13832, "" },
 //  { 0x13833, "" },
     { 0x13834, "waittillhostmigrationdone" },
-//  { 0x13835, "" },
+    { 0x13835, "waittillhostmigrationstarts" }, // AUTOADDED
 //  { 0x13836, "" },
     { 0x13837, "waittillmatch_any_return" },
     { 0x13838, "waittillmatch_notify" },
@@ -80162,14 +80162,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13915, "" },
 //  { 0x13916, "" },
 //  { 0x13917, "" },
-//  { 0x13918, "" },
+    { 0x13918, "wasonlyround" }, // AUTOADDED
     { 0x13919, "waspartjustdismembered" },
 //  { 0x1391A, "" },
 //  { 0x1391B, "" },
 //  { 0x1391C, "" },
 //  { 0x1391D, "" },
 //  { 0x1391E, "" },
-//  { 0x1391F, "" },
+    { 0x1391F, "waswinning" }, // AUTOADDED
 //  { 0x13920, "" },
 //  { 0x13921, "" },
 //  { 0x13922, "" },
@@ -80181,7 +80181,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13928, "" },
 //  { 0x13929, "" },
 //  { 0x1392A, "" },
-//  { 0x1392B, "" },
+    { 0x1392B, "watch_bot_died_during_crate" }, // AUTOADDED
 //  { 0x1392C, "" },
 //  { 0x1392D, "" },
 //  { 0x1392E, "" },
@@ -80194,7 +80194,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13935, "" },
 //  { 0x13936, "" },
 //  { 0x13937, "" },
-//  { 0x13938, "" },
+    { 0x13938, "watch_end_switchblade" }, // AUTOADDED
 //  { 0x13939, "" },
 //  { 0x1393A, "" },
 //  { 0x1393B, "" },
@@ -80224,15 +80224,15 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13953, "" },
 //  { 0x13954, "" },
 //  { 0x13955, "" },
-//  { 0x13956, "" },
+    { 0x13956, "watch_goal_aborted" }, // AUTOADDED
 //  { 0x13957, "" },
 //  { 0x13958, "" },
 //  { 0x13959, "" },
 //  { 0x1395A, "" },
 //  { 0x1395B, "" },
 //  { 0x1395C, "" },
-//  { 0x1395D, "" },
-//  { 0x1395E, "" },
+    { 0x1395D, "watch_node_chance" }, // AUTOADDED
+    { 0x1395E, "watch_nodes" }, // AUTOADDED
 //  { 0x1395F, "" },
 //  { 0x13960, "" },
 //  { 0x13961, "" },
@@ -80242,7 +80242,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13965, "" },
 //  { 0x13966, "" },
 //  { 0x13967, "" },
-//  { 0x13968, "" },
+    { 0x13968, "watch_players_connecting" }, // AUTOADDED
 //  { 0x13969, "" },
 //  { 0x1396A, "" },
 //  { 0x1396B, "" },
@@ -80321,7 +80321,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x139B4, "" },
 //  { 0x139B5, "" },
 //  { 0x139B6, "" },
-//  { 0x139B7, "" },
+    { 0x139B7, "watchbulletoutlinecleanup" }, // AUTOADDED
 //  { 0x139B8, "" },
 //  { 0x139B9, "" },
 //  { 0x139BA, "" },
@@ -80407,7 +80407,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13A0A, "" },
 //  { 0x13A0B, "" },
 //  { 0x13A0C, "" },
-//  { 0x13A0D, "" },
+    { 0x13A0D, "watchearlyexit" }, // AUTOADDED
 //  { 0x13A0E, "" },
 //  { 0x13A0F, "" },
 //  { 0x13A10, "" },
@@ -80443,9 +80443,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13A2E, "" },
 //  { 0x13A2F, "" },
 //  { 0x13A30, "" },
-//  { 0x13A31, "" },
+    { 0x13A31, "watchforbasicplayerevents" }, // AUTOADDED
 //  { 0x13A32, "" },
-//  { 0x13A33, "" },
+    { 0x13A33, "watchforconnectedplayers" }, // AUTOADDED
 //  { 0x13A34, "" },
 //  { 0x13A35, "" },
 //  { 0x13A36, "" },
@@ -80454,7 +80454,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13A39, "" },
 //  { 0x13A3A, "" },
 //  { 0x13A3B, "" },
-//  { 0x13A3C, "" },
+    { 0x13A3C, "watchforendgame" }, // AUTOADDED
 //  { 0x13A3D, "" },
 //  { 0x13A3E, "" },
 //  { 0x13A3F, "" },
@@ -80486,7 +80486,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13A59, "" },
 //  { 0x13A5A, "" },
 //  { 0x13A5B, "" },
-//  { 0x13A5C, "" },
+    { 0x13A5C, "watchforplayermovementevents" }, // AUTOADDED
 //  { 0x13A5D, "" },
 //  { 0x13A5E, "" },
 //  { 0x13A5F, "" },
@@ -80520,7 +80520,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13A7B, "" },
 //  { 0x13A7C, "" },
 //  { 0x13A7D, "" },
-//  { 0x13A7E, "" },
+    { 0x13A7E, "watchforusermessageevents" }, // AUTOADDED
 //  { 0x13A7F, "" },
 //  { 0x13A80, "" },
 //  { 0x13A81, "" },
@@ -80528,17 +80528,17 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13A83, "" },
 //  { 0x13A84, "" },
 //  { 0x13A85, "" },
-//  { 0x13A86, "" },
+    { 0x13A86, "watchgameendleave" }, // AUTOADDED
 //  { 0x13A87, "" },
 //  { 0x13A88, "" },
-//  { 0x13A89, "" },
+    { 0x13A89, "watchgametimer" }, // AUTOADDED
 //  { 0x13A8A, "" },
 //  { 0x13A8B, "" },
 //  { 0x13A8C, "" },
 //  { 0x13A8D, "" },
 //  { 0x13A8E, "" },
 //  { 0x13A8F, "" },
-//  { 0x13A90, "" },
+    { 0x13A90, "watchgrenadedeath" }, // AUTOADDED
 //  { 0x13A91, "" },
 //  { 0x13A92, "" },
 //  { 0x13A93, "" },
@@ -80549,13 +80549,13 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13A98, "" },
 //  { 0x13A99, "" },
 //  { 0x13A9A, "" },
-//  { 0x13A9B, "" },
+    { 0x13A9B, "watchgrenadeusage" }, // AUTOADDED
 //  { 0x13A9C, "" },
 //  { 0x13A9D, "" },
 //  { 0x13A9E, "" },
 //  { 0x13A9F, "" },
 //  { 0x13AA0, "" },
-//  { 0x13AA1, "" },
+    { 0x13AA1, "watchhostmigration" }, // AUTOADDED
 //  { 0x13AA2, "" },
 //  { 0x13AA3, "" },
 //  { 0x13AA4, "" },
@@ -80564,7 +80564,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13AA7, "" },
 //  { 0x13AA8, "" },
 //  { 0x13AA9, "" },
-//  { 0x13AAA, "" },
+    { 0x13AAA, "watchinvalidweaponswitchduringdisableweapon" }, // AUTOADDED
 //  { 0x13AAB, "" },
 //  { 0x13AAC, "" },
 //  { 0x13AAD, "" },
@@ -80573,7 +80573,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13AB0, "" },
 //  { 0x13AB1, "" },
 //  { 0x13AB2, "" },
-//  { 0x13AB3, "" },
+    { 0x13AB3, "watchlethaldelaycancel" }, // AUTOADDED
 //  { 0x13AB4, "" },
 //  { 0x13AB5, "" },
 //  { 0x13AB6, "" },
@@ -80584,11 +80584,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13ABB, "" },
 //  { 0x13ABC, "" },
 //  { 0x13ABD, "" },
-//  { 0x13ABE, "" },
-//  { 0x13ABF, "" },
+    { 0x13ABE, "watchlifepacklifetime" }, // AUTOADDED
+    { 0x13ABF, "watchlifepackoutlinestate" }, // AUTOADDED
 //  { 0x13AC0, "" },
-//  { 0x13AC1, "" },
-//  { 0x13AC2, "" },
+    { 0x13AC1, "watchlifepackuse" }, // AUTOADDED
+    { 0x13AC2, "watchlifepackuserdeath" }, // AUTOADDED
 //  { 0x13AC3, "" },
 //  { 0x13AC4, "" },
 //  { 0x13AC5, "" },
@@ -80626,8 +80626,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13AE5, "" },
 //  { 0x13AE6, "" },
 //  { 0x13AE7, "" },
-//  { 0x13AE8, "" },
-//  { 0x13AE9, "" },
+    { 0x13AE8, "watchpainted" }, // AUTOADDED
+    { 0x13AE9, "watchpaintedagain" }, // AUTOADDED
 //  { 0x13AEA, "" },
 //  { 0x13AEB, "" },
 //  { 0x13AEC, "" },
@@ -80643,8 +80643,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13AF6, "" },
 //  { 0x13AF7, "" },
 //  { 0x13AF8, "" },
-//  { 0x13AF9, "" },
-//  { 0x13AFA, "" },
+    { 0x13AF9, "watchplayerconnect" }, // AUTOADDED
+    { 0x13AFA, "watchplayerconnected" }, // AUTOADDED
 //  { 0x13AFB, "" },
 //  { 0x13AFC, "" },
 //  { 0x13AFD, "" },
@@ -80652,18 +80652,18 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13AFF, "" },
 //  { 0x13B00, "" },
 //  { 0x13B01, "" },
-//  { 0x13B02, "" },
+    { 0x13B02, "watchplayerkillstreakdisconnect" }, // AUTOADDED
 //  { 0x13B03, "" },
-//  { 0x13B04, "" },
-//  { 0x13B05, "" },
-//  { 0x13B06, "" },
-//  { 0x13B07, "" },
+    { 0x13B04, "watchplayerkillstreakemp" }, // AUTOADDED
+    { 0x13B05, "watchplayerkillstreakend" }, // AUTOADDED
+    { 0x13B06, "watchplayerkillstreakswitchteam" }, // AUTOADDED
+    { 0x13B07, "watchplayerkillstreaktimeout" }, // AUTOADDED
 //  { 0x13B08, "" },
 //  { 0x13B09, "" },
 //  { 0x13B0A, "" },
 //  { 0x13B0B, "" },
 //  { 0x13B0C, "" },
-//  { 0x13B0D, "" },
+    { 0x13B0D, "watchplayersspawning" }, // AUTOADDED
 //  { 0x13B0E, "" },
 //  { 0x13B0F, "" },
 //  { 0x13B10, "" },
@@ -80693,24 +80693,24 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13B28, "" },
 //  { 0x13B29, "" },
 //  { 0x13B2A, "" },
-//  { 0x13B2B, "" },
-//  { 0x13B2C, "" },
-//  { 0x13B2D, "" },
+    { 0x13B2B, "watchrevengedisconnected" }, // AUTOADDED
+    { 0x13B2C, "watchrevengekill" }, // AUTOADDED
+    { 0x13B2D, "watchrevengevictimdisconnected" }, // AUTOADDED
 //  { 0x13B2E, "" },
 //  { 0x13B2F, "" },
-//  { 0x13B30, "" },
+    { 0x13B30, "watchsamproximity" }, // AUTOADDED
 //  { 0x13B31, "" },
 //  { 0x13B32, "" },
 //  { 0x13B33, "" },
 //  { 0x13B34, "" },
 //  { 0x13B35, "" },
 //  { 0x13B36, "" },
-//  { 0x13B37, "" },
+    { 0x13B37, "watchsentryshockpickup" }, // AUTOADDED
 //  { 0x13B38, "" },
 //  { 0x13B39, "" },
 //  { 0x13B3A, "" },
 //  { 0x13B3B, "" },
-//  { 0x13B3C, "" },
+    { 0x13B3C, "watchshockdamage" }, // AUTOADDED
 //  { 0x13B3D, "" },
 //  { 0x13B3E, "" },
 //  { 0x13B3F, "" },
@@ -80720,12 +80720,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13B43, "" },
 //  { 0x13B44, "" },
 //  { 0x13B45, "" },
-//  { 0x13B46, "" },
+    { 0x13B46, "watchslowmo" }, // AUTOADDED
 //  { 0x13B47, "" },
 //  { 0x13B48, "" },
 //  { 0x13B49, "" },
 //  { 0x13B4A, "" },
-//  { 0x13B4B, "" },
+    { 0x13B4B, "watchsniperboltactionkills_ondeath" }, // AUTOADDED
 //  { 0x13B4C, "" },
 //  { 0x13B4D, "" },
 //  { 0x13B4E, "" },
@@ -80745,20 +80745,20 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13B5C, "" },
 //  { 0x13B5D, "" },
 //  { 0x13B5E, "" },
-//  { 0x13B5F, "" },
+    { 0x13B5F, "watchstingerproximity" }, // AUTOADDED
 //  { 0x13B60, "" },
 //  { 0x13B61, "" },
 //  { 0x13B62, "" },
 //  { 0x13B63, "" },
-//  { 0x13B64, "" },
+    { 0x13B64, "watchstoprevenge" }, // AUTOADDED
 //  { 0x13B65, "" },
 //  { 0x13B66, "" },
 //  { 0x13B67, "" },
 //  { 0x13B68, "" },
-//  { 0x13B69, "" },
+    { 0x13B69, "watchstuckinnozone" }, // AUTOADDED
 //  { 0x13B6A, "" },
 //  { 0x13B6B, "" },
-//  { 0x13B6C, "" },
+    { 0x13B6C, "watchsuperdelaycancel" }, // AUTOADDED
 //  { 0x13B6D, "" },
 //  { 0x13B6E, "" },
 //  { 0x13B6F, "" },
@@ -80786,9 +80786,9 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13B85, "" },
 //  { 0x13B86, "" },
 //  { 0x13B87, "" },
-//  { 0x13B88, "" },
-//  { 0x13B89, "" },
-//  { 0x13B8A, "" },
+    { 0x13B88, "watchtoughenupgameend" }, // AUTOADDED
+    { 0x13B89, "watchtoughenuplifetime" }, // AUTOADDED
+    { 0x13B8A, "watchtoughenuplightarmorend" }, // AUTOADDED
 //  { 0x13B8B, "" },
 //  { 0x13B8C, "" },
 //  { 0x13B8D, "" },
@@ -80836,7 +80836,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13BB7, "" },
 //  { 0x13BB8, "" },
 //  { 0x13BB9, "" },
-//  { 0x13BBA, "" },
+    { 0x13BBA, "waterdeletez" }, // AUTOADDED
 //  { 0x13BBB, "" },
 //  { 0x13BBC, "" },
 //  { 0x13BBD, "" },
@@ -80872,14 +80872,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13BDB, "" },
 //  { 0x13BDC, "" },
 //  { 0x13BDD, "" },
-//  { 0x13BDE, "" },
+    { 0x13BDE, "wavedelay" }, // AUTOADDED
 //  { 0x13BDF, "" },
 //  { 0x13BE0, "" },
 //  { 0x13BE1, "" },
 //  { 0x13BE2, "" },
 //  { 0x13BE3, "" },
 //  { 0x13BE4, "" },
-//  { 0x13BE5, "" },
+    { 0x13BE5, "wavespawnindex" }, // AUTOADDED
 //  { 0x13BE6, "" },
 //  { 0x13BE7, "" },
 //  { 0x13BE8, "" },
@@ -80952,7 +80952,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13C2B, "" },
 //  { 0x13C2C, "" },
 //  { 0x13C2D, "" },
-//  { 0x13C2E, "" },
+    { 0x13C2E, "weapon_name" }, // AUTOADDED
 //  { 0x13C2F, "" },
 //  { 0x13C30, "" },
 //  { 0x13C31, "" },
@@ -81018,11 +81018,11 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13C6D, "" },
 //  { 0x13C6E, "" },
 //  { 0x13C6F, "" },
-//  { 0x13C70, "" },
+    { 0x13C70, "weaponaffinityspeedboost" }, // AUTOADDED
 //  { 0x13C71, "" },
 //  { 0x13C72, "" },
-//  { 0x13C73, "" },
-//  { 0x13C74, "" },
+    { 0x13C73, "weaponarray" }, // AUTOADDED
+    { 0x13C74, "weaponasset" }, // AUTOADDED
 //  { 0x13C75, "" },
 //  { 0x13C76, "" },
 //  { 0x13C77, "" },
@@ -81056,7 +81056,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13C93, "" },
 //  { 0x13C94, "" },
 //  { 0x13C95, "" },
-//  { 0x13C96, "" },
+    { 0x13C96, "weaponhaspassive" }, // AUTOADDED
 //  { 0x13C97, "" },
 //  { 0x13C98, "" },
 //  { 0x13C99, "" },
@@ -81066,14 +81066,14 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13C9D, "" },
 //  { 0x13C9E, "" },
 //  { 0x13C9F, "" },
-//  { 0x13CA0, "" },
+    { 0x13CA0, "weaponlist" }, // AUTOADDED
 //  { 0x13CA1, "" },
 //  { 0x13CA2, "" },
 //  { 0x13CA3, "" },
 //  { 0x13CA4, "" },
 //  { 0x13CA5, "" },
 //  { 0x13CA6, "" },
-//  { 0x13CA7, "" },
+    { 0x13CA7, "weaponmaxval" }, // AUTOADDED
 //  { 0x13CA8, "" },
 //  { 0x13CA9, "" },
 //  { 0x13CAA, "" },
@@ -81082,7 +81082,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13CAD, "" },
 //  { 0x13CAE, "" },
 //  { 0x13CAF, "" },
-//  { 0x13CB0, "" },
+    { 0x13CB0, "weaponpassives" }, // AUTOADDED
 //  { 0x13CB1, "" },
 //  { 0x13CB2, "" },
 //  { 0x13CB3, "" },
@@ -81095,8 +81095,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x13CBA, "weaponpos" },
 //  { 0x13CBB, "" },
 //  { 0x13CBC, "" },
-//  { 0x13CBD, "" },
-//  { 0x13CBE, "" },
+    { 0x13CBD, "weaponranktable" }, // AUTOADDED
+    { 0x13CBE, "weaponrankxpmultipliers" }, // AUTOADDED
 //  { 0x13CBF, "" },
 //  { 0x13CC0, "" },
 //  { 0x13CC1, "" },
@@ -81119,7 +81119,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13CD2, "" },
 //  { 0x13CD3, "" },
 //  { 0x13CD4, "" },
-//  { 0x13CD5, "" },
+    { 0x13CD5, "weaponsused" }, // AUTOADDED
 //  { 0x13CD6, "" },
 //  { 0x13CD7, "" },
 //  { 0x13CD8, "" },
@@ -81127,12 +81127,12 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13CDA, "" },
 //  { 0x13CDB, "" },
 //  { 0x13CDC, "" },
-//  { 0x13CDD, "" },
+    { 0x13CDD, "weapontweaks" }, // AUTOADDED
 //  { 0x13CDE, "" },
 //  { 0x13CDF, "" },
 //  { 0x13CE0, "" },
 //  { 0x13CE1, "" },
-//  { 0x13CE2, "" },
+    { 0x13CE2, "weaponxpearned" }, // AUTOADDED
 //  { 0x13CE3, "" },
 //  { 0x13CE4, "" },
 //  { 0x13CE5, "" },
@@ -81286,7 +81286,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13D79, "" },
 //  { 0x13D7A, "" },
 //  { 0x13D7B, "" },
-//  { 0x13D7C, "" },
+    { 0x13D7C, "wingamebytype" }, // AUTOADDED
 //  { 0x13D7D, "" },
 //  { 0x13D7E, "" },
 //  { 0x13D7F, "" },
@@ -81299,7 +81299,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13D86, "" },
 //  { 0x13D87, "" },
 //  { 0x13D88, "" },
-//  { 0x13D89, "" },
+    { 0x13D89, "winlimit" }, // AUTOADDED
 //  { 0x13D8A, "" },
 //  { 0x13D8B, "" },
 //  { 0x13D8C, "" },
@@ -81421,8 +81421,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13E00, "" },
     { 0x13E01, "write_log" },
 //  { 0x13E02, "" },
-//  { 0x13E03, "" },
-//  { 0x13E04, "" },
+    { 0x13E03, "writebestscores" }, // AUTOADDED
+    { 0x13E04, "writebufferedstats" }, // AUTOADDED
 //  { 0x13E05, "" },
 //  { 0x13E06, "" },
 //  { 0x13E07, "" },
@@ -81443,7 +81443,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13E16, "" },
 //  { 0x13E17, "" },
 //  { 0x13E18, "" },
-//  { 0x13E19, "" },
+    { 0x13E19, "xoffset" }, // AUTOADDED
 //  { 0x13E1A, "" },
 //  { 0x13E1B, "" },
 //  { 0x13E1C, "" },
@@ -81458,8 +81458,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13E25, "" },
 //  { 0x13E26, "" },
 //  { 0x13E27, "" },
-//  { 0x13E28, "" },
-//  { 0x13E29, "" },
+    { 0x13E28, "xpscoreevent" }, // AUTOADDED
+    { 0x13E29, "xptonextrank" }, // AUTOADDED
 //  { 0x13E2A, "" },
 //  { 0x13E2B, "" },
 //  { 0x13E2C, "" },
@@ -81490,7 +81490,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13E45, "" },
 //  { 0x13E46, "" },
 //  { 0x13E47, "" },
-//  { 0x13E48, "" },
+    { 0x13E48, "yaw" }, // AUTOADDED
 //  { 0x13E49, "" },
 //  { 0x13E4A, "" },
 //  { 0x13E4B, "" },
@@ -81508,7 +81508,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13E57, "" },
 //  { 0x13E58, "" },
 //  { 0x13E59, "" },
-//  { 0x13E5A, "" },
+    { 0x13E5A, "yoffset" }, // AUTOADDED
 //  { 0x13E5B, "" },
 //  { 0x13E5C, "" },
 //  { 0x13E5D, "" },
@@ -81684,7 +81684,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x13F07, "" },
 //  { 0x13F08, "" },
 //  { 0x13F09, "" },
-//  { 0x13F0A, "" },
+    { 0x13F0A, "zoffset" }, // AUTOADDED
 //  { 0x13F0B, "" },
 //  { 0x13F0C, "" },
 //  { 0x13F0D, "" },
@@ -81853,24 +81853,24 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x13FB0, "zone" },
 //  { 0x13FB1, "" },
 //  { 0x13FB2, "" },
-//  { 0x13FB3, "" },
-//  { 0x13FB4, "" },
-//  { 0x13FB5, "" },
+    { 0x13FB3, "zone_oncontested" }, // AUTOADDED
+    { 0x13FB4, "zone_onuncontested" }, // AUTOADDED
+    { 0x13FB5, "zone_onunoccupied" }, // AUTOADDED
 //  { 0x13FB6, "" },
-//  { 0x13FB7, "" },
-//  { 0x13FB8, "" },
+    { 0x13FB7, "zone_onusebegin" }, // AUTOADDED
+    { 0x13FB8, "zone_onuseupdate" }, // AUTOADDED
 //  { 0x13FB9, "" },
 //  { 0x13FBA, "" },
 //  { 0x13FBB, "" },
 //  { 0x13FBC, "" },
-//  { 0x13FBD, "" },
-//  { 0x13FBE, "" },
+    { 0x13FBD, "zonecount" }, // AUTOADDED
+    { 0x13FBE, "zonedestroyedbytimer" }, // AUTOADDED
 //  { 0x13FBF, "" },
 //  { 0x13FC0, "" },
 //  { 0x13FC1, "" },
-//  { 0x13FC2, "" },
+    { 0x13FC2, "zonemovetime" }, // AUTOADDED
 //  { 0x13FC3, "" },
-//  { 0x13FC4, "" },
+    { 0x13FC4, "zones" }, // AUTOADDED
 //  { 0x13FC5, "" },
 //  { 0x13FC6, "" },
 //  { 0x13FC7, "" },
