@@ -671,7 +671,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x293, "_func_293" }, // 0x140B42ED0
     { 0x294, "_func_294" }, // 0x140B43860
     { 0x295, "_func_295" }, // 0x140AF4F70
-    { 0x296, "_func_296" }, // 0x140AF3180
+    { 0x296, "getislosdatafileloaded" }, // 0x140AF3180
     { 0x297, "_func_297" }, // 0x140B37D60
     { 0x298, "physics_charactercast" }, // 0x140563C90
     { 0x299, "physics_getclosestpointtocharacter" }, // 0x140566A80
@@ -711,7 +711,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2BB, "_func_2BB" }, // 0x1403E1230
     { 0x2BC, "_func_2BC" }, // 0x1403E0FD0
     { 0x2BD, "_func_2BD" }, // 0x1403E1260
-    { 0x2BE, "_func_2BE" }, // 0x140B45040
+    { 0x2BE, "weaponisbeam" }, // 0x140B45040
     { 0x2BF, "_func_2BF" }, // 0x140442A60
     { 0x2C0, "_func_2C0" }, // 0x140B38EE0
     { 0x2C1, "_func_2C1" }, // 0x140B39620
