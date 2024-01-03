@@ -8422,7 +8422,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x20D9, "" },
 //  { 0x20DA, "" },
 //  { 0x20DB, "" },
-//  { 0x20DC, "" },
+    { 0x20DC, "applyspawnprotection" },
 //  { 0x20DD, "" },
 //  { 0x20DE, "" },
 //  { 0x20DF, "" },
@@ -10145,7 +10145,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x2794, "ball_goal_can_use" }, // AUTOADDED
     { 0x2795, "ball_goal_fx" }, // AUTOADDED
     { 0x2796, "ball_goal_fx_for_player" }, // AUTOADDED
-//  { 0x2797, "" },
+    { 0x2797, "ball_goal_useobject" },
     { 0x2798, "ball_goals" }, // AUTOADDED
 //  { 0x2799, "" },
     { 0x279A, "ball_impact_sounds" }, // AUTOADDED
@@ -14497,7 +14497,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3894, "" },
 //  { 0x3895, "" },
     { 0x3896, "canconcat" }, // AUTOADDED
-//  { 0x3897, "" },
+    { 0x3897, "cancontestclaim" },
 //  { 0x3898, "" },
 //  { 0x3899, "" },
 //  { 0x389A, "" },
@@ -14660,7 +14660,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3937, "" },
 //  { 0x3938, "" },
 //  { 0x3939, "" },
-//  { 0x393A, "" },
+    { 0x393A, "canuseobject" },
 //  { 0x393B, "" },
 //  { 0x393C, "" },
 //  { 0x393D, "" },
@@ -15094,7 +15094,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x3AE9, "" },
 //  { 0x3AEA, "" },
 //  { 0x3AEB, "" },
-//  { 0x3AEC, "" },
+    { 0x3AEC, "carrierarmor" },
     { 0x3AED, "carrierbonusscore" }, // AUTOADDED
     { 0x3AEE, "carrierbonustime" }, // AUTOADDED
     { 0x3AEF, "carriergivescore" }, // AUTOADDED
@@ -22732,7 +22732,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x58BF, "dogtagenemyonusecb" }, // AUTOADDED
     { 0x58C0, "dogtags" },
 //  { 0x58C1, "" },
-//  { 0x58C2, "" },
+//  { 0x58C2, "dogtagsenabled" },
     { 0x58C3, "dogtagsicon" },
     { 0x58C4, "dogtagsplayer" }, // AUTOADDED
     { 0x58C5, "dogtagstext" }, // AUTOADDED
@@ -33203,7 +33203,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x81A6, "" },
     { 0x81A7, "getteamdompoints" }, // AUTOADDED
 //  { 0x81A8, "" },
-//  { 0x81A9, "" },
+    { 0x81A9, "getteamfallbackspawnpoints" },
 //  { 0x81AA, "" },
 //  { 0x81AB, "" },
 //  { 0x81AC, "" },
@@ -33239,7 +33239,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x81CA, "" },
 //  { 0x81CB, "" },
 //  { 0x81CC, "" },
-//  { 0x81CD, "" },
+    { 0x81CD, "gettimeremaining" },
 //  { 0x81CE, "" },
     { 0x81CF, "gettimesincedompointcapture" }, // AUTOADDED
 //  { 0x81D0, "" },
@@ -33310,7 +33310,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8211, "" },
 //  { 0x8212, "" },
 //  { 0x8213, "" },
-//  { 0x8214, "" },
+    { 0x8214, "getwatcheddvar" },
     { 0x8215, "getweaponassetfromrootweapon" }, // AUTOADDED
 //  { 0x8216, "" },
 //  { 0x8217, "" },
@@ -36594,7 +36594,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x8EE5, "" },
 //  { 0x8EE6, "" },
 //  { 0x8EE7, "" },
-//  { 0x8EE8, "" },
+    { 0x8EE8, "highestspawndistratio" },
 //  { 0x8EE9, "" },
 //  { 0x8EEA, "" },
 //  { 0x8EEB, "" },
@@ -40673,7 +40673,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x9ED4, "" },
 //  { 0x9ED5, "" },
 //  { 0x9ED6, "" },
-//  { 0x9ED7, "" },
+    { 0x9ED7, "ispathdataavailable" },
 //  { 0x9ED8, "" },
 //  { 0x9ED9, "" },
 //  { 0x9EDA, "" },
@@ -44214,7 +44214,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0xACA9, "lightarmor_set" }, // AUTOADDED
 //  { 0xACAA, "" },
 //  { 0xACAB, "" },
-//  { 0xACAC, "" },
+    { 0xACAC, "lightarmor_unset" },
 //  { 0xACAD, "" },
     { 0xACAE, "lightarmorhp" }, // AUTOADDED
 //  { 0xACAF, "" },
@@ -45820,7 +45820,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xB2EF, "" },
 //  { 0xB2F0, "" },
 //  { 0xB2F1, "" },
-//  { 0xB2F2, "" },
+    { 0xB2F2, "managespawnprotection" },
 //  { 0xB2F3, "" },
 //  { 0xB2F4, "" },
 //  { 0xB2F5, "" },
@@ -52277,7 +52277,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xCC28, "" },
 //  { 0xCC29, "" },
 //  { 0xCC2A, "" },
-//  { 0xCC2B, "" },
+    { 0xCC2B, "placeuplinkgoal" },
     { 0xCC2C, "placeweaponon" },
     { 0xCC2D, "placingitemstreakname" },
 //  { 0xCC2E, "" },
@@ -55216,7 +55216,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xD7A3, "" },
 //  { 0xD7A4, "" },
 //  { 0xD7A5, "" },
-//  { 0xD7A6, "" },
+    { 0xD7A6, "practicemode" },
     { 0xD7A7, "practicenotify" }, // AUTOADDED
 //  { 0xD7A8, "" },
 //  { 0xD7A9, "" },
@@ -57111,7 +57111,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0xDF0A, "registerscoreinfo" }, // AUTOADDED
     { 0xDF0B, "registerscorelimitdvar" },
 //  { 0xDF0C, "" },
-//  { 0xDF0D, "" },
+    { 0xDF0D, "registerspawnpoints" },
 //  { 0xDF0E, "" },
 //  { 0xDF0F, "" },
 //  { 0xDF10, "" },
@@ -57723,7 +57723,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE16E, "" },
 //  { 0xE16F, "" },
 //  { 0xE170, "" },
-//  { 0xE171, "" },
+   { 0xE171, "removespawnprotection" },
 //  { 0xE172, "" },
     { 0xE173, "removespeaker" },
 //  { 0xE174, "" },
@@ -57747,7 +57747,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE186, "" },
 //  { 0xE187, "" },
 //  { 0xE188, "" },
-//  { 0xE189, "" },
+    { 0xE189, "removeuplinkgoal" },
 //  { 0xE18A, "" },
 //  { 0xE18B, "" },
 //  { 0xE18C, "" },
@@ -59366,7 +59366,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xE7D9, "" },
 //  { 0xE7DA, "" },
 //  { 0xE7DB, "" },
-//  { 0xE7DC, "" },
+    { 0xE7DC, "run_ball" },
 //  { 0xE7DD, "" },
 //  { 0xE7DE, "" },
 //  { 0xE7DF, "" },
@@ -60487,7 +60487,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0xEC3A, "scoreinfo" }, // AUTOADDED
 //  { 0xEC3B, "" },
 //  { 0xEC3C, "" },
-//  { 0xEC3D, "" },
+    { 0xEC3D, "scoremod" },
 //  { 0xEC3E, "" },
 //  { 0xEC3F, "" },
 //  { 0xEC40, "" },
@@ -60505,7 +60505,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xEC4C, "" },
 //  { 0xEC4D, "" },
 //  { 0xEC4E, "" },
-//  { 0xEC4F, "" },
+    { 0xEC4F, "scorethrow" },
 //  { 0xEC50, "" },
 //  { 0xEC51, "" },
 //  { 0xEC52, "" },
@@ -63348,7 +63348,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xF767, "" },
 //  { 0xF768, "" },
 //  { 0xF769, "" },
-//  { 0xF76A, "" },
+    { 0xF76A, "setkeyobject" },
 //  { 0xF76B, "" },
 //  { 0xF76C, "" },
     { 0xF76D, "setkillcamkilledbyitemomnvars" }, // AUTOADDED
@@ -65420,7 +65420,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0xFF7F, "" },
 //  { 0xFF80, "" },
 //  { 0xFF81, "" },
-//  { 0xFF82, "" },
+    { 0xFF82, "should_record_final_score_cam" },
 //  { 0xFF83, "" },
 //  { 0xFF84, "" },
 //  { 0xFF85, "" },
@@ -67829,7 +67829,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x108E8, "" },
 //  { 0x108E9, "" },
 //  { 0x108EA, "" },
-//  { 0x108EB, "" },
+    { 0x108EB, "spawnnodetype" },
 //  { 0x108EC, "" },
 //  { 0x108ED, "" },
 //  { 0x108EE, "" },
@@ -67852,7 +67852,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x108FF, "" },
 //  { 0x10900, "" },
 //  { 0x10901, "" },
-//  { 0x10902, "" },
+    { 0x10902, "spawnprotection" },
 //  { 0x10903, "" },
 //  { 0x10904, "" },
 //  { 0x10905, "" },
@@ -75721,7 +75721,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x127BC, "" },
 //  { 0x127BD, "" },
 //  { 0x127BE, "" },
-//  { 0x127BF, "" },
+    { 0x127BF, "ball_score_event" },
 //  { 0x127C0, "" },
 //  { 0x127C1, "" },
 //  { 0x127C2, "" },
@@ -75729,8 +75729,8 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x127C4, "" },
 //  { 0x127C5, "" },
 //  { 0x127C6, "" },
-//  { 0x127C7, "" },
-//  { 0x127C8, "" },
+    { 0x127C7, "ball_touch_goal_watch" },
+    { 0x127C8, "ball_touched_goal" },
 //  { 0x127C9, "" },
 //  { 0x127CA, "" },
     { 0x127CB, "triggertype" }, // AUTOADDED
@@ -78007,7 +78007,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x130AA, "" },
     { 0x130AB, "usenormalscorelimit" }, // AUTOADDED
     { 0x130AC, "useobj" }, // AUTOADDED
-//  { 0x130AD, "" },
+    { 0x130AD, "useobject" },
 //  { 0x130AE, "" },
 //  { 0x130AF, "" },
 //  { 0x130B0, "" },
@@ -80630,7 +80630,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x13AE9, "watchpaintedagain" }, // AUTOADDED
 //  { 0x13AEA, "" },
 //  { 0x13AEB, "" },
-    { 0x13AEC, "carrierarmor" },
+//  { 0x13AEC, "" },
 //  { 0x13AED, "" },
 //  { 0x13AEE, "" },
 //  { 0x13AEF, "" },

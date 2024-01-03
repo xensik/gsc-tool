@@ -325,7 +325,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8138, "getlinkedparent" }, // 0x140B4D580
     { 0x8139, "_meth_8139" }, // 0x14049DDA0
     { 0x813A, "_meth_813A" }, // 0x140C1C340
-    { 0x813B, "_meth_813B" }, // 0x140B0C250
+    { 0x813B, "getmlgspectatorteam" }, // 0x140B0C250
     { 0x813C, "_meth_813C" }, // 0x140B0C1D0
     { 0x813D, "_meth_813D" }, // 0x140B5B3D0
     { 0x813E, "_meth_813E" }, // 0x140C1C470
@@ -540,7 +540,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x820F, "moveto" }, // 0x140B5EE40
     { 0x8210, "_meth_8210" }, // 0x140B5F540
     { 0x8211, "_meth_8211" }, // 0x140B5F550
-    { 0x8212, "_meth_8212" }, // 0x140B5F570
+    { 0x8212, "movez" }, // 0x140B5F570
     { 0x8213, "_meth_8213" }, // 0x140473B30
     { 0x8214, "_meth_8214" }, // 0x140473B80
     { 0x8215, "_meth_8215" }, // 0x140B37430
