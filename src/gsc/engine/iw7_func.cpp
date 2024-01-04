@@ -32,7 +32,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x014, "_func_014" }, // 0x140B353B0
     { 0x015, "averagenormal" }, // 0x140B47180
     { 0x016, "averagepoint" }, // 0x140B46E70
-    { 0x017, "_func_017" }, // 0x140B3B020
+    { 0x017, "axistoangles" }, // 0x140B3B020
     { 0x018, "_func_018" }, // 0x140B4B7F0
     { 0x019, "_func_019" }, // 0x140B4C010
     { 0x01A, "badplace_cylinder" }, // 0x140B4AEC0
@@ -41,7 +41,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x01D, "bbprint" }, // 0x140CD40F0
     { 0x01E, "blockteamradar" }, // 0x140B559C0
     { 0x01F, "botautoconnectenabled" }, // 0x140C48010
-    { 0x020, "_func_020" }, // nullptr
+    { 0x020, "botdebugdrawtrigger" }, // nullptr
     { 0x021, "botflagmemoryevents" }, // 0x140C48030
     { 0x022, "botgetclosestnavigablepoint" }, // 0x140C48260
     { 0x023, "botgetmemoryevents" }, // 0x140C48310
@@ -57,9 +57,9 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x02D, "bullettrace" }, // 0x140B4A000
     { 0x02E, "bullettracepassed" }, // 0x140B4AD70
     { 0x02F, "_func_02F" }, // 0x140498880
-    { 0x030, "_func_030" }, // 0x140B3B840
-    { 0x031, "_func_031" }, // 0x140B3B0D0
-    { 0x032, "_func_032" }, // 0x140B3B440
+    { 0x030, "calccsplinecorridor" }, // 0x140B3B840
+    { 0x031, "calccsplineposition" }, // 0x140B3B0D0
+    { 0x032, "calccsplinetangent" }, // 0x140B3B440
     { 0x033, "_func_033" }, // nullptr
     { 0x034, "_func_034" }, // 0x140B3CB30
     { 0x035, "canspawn" }, // 0x140B52930
@@ -95,7 +95,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x053, "_func_053" }, // 0x140B3E520
     { 0x054, "_func_054" }, // 0x140499C70
     { 0x055, "_func_055" }, // 0x140499DF0
-    { 0x056, "_func_056" }, // 0x140B3F630
+    { 0x056, "disablepaspeaker" }, // 0x140B3F630
     { 0x057, "_func_057" }, // 0x140B49AB0
     { 0x058, "distance" }, // 0x140B377A0
     { 0x059, "distance2d" }, // 0x140B37A10
@@ -107,11 +107,11 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x05F, "_func_05F" }, // 0x140499B90
     { 0x060, "_func_060" }, // 0x140499B70
     { 0x061, "_func_061" }, // 0x140499C90
-    { 0x062, "_func_062" }, // 0x140B3F4F0
+    { 0x062, "enablepaspeaker" }, // 0x140B3F4F0
     { 0x063, "endlobby" }, // 0x140B55C60
     { 0x064, "endparty" }, // nullptr
     { 0x065, "exitlevel" }, // 0x140B52E50
-    { 0x066, "_func_066" }, // 0x140B35DA0
+    { 0x066, "exp" }, // 0x140B35DA0
     { 0x067, "findentrances" }, // 0x140AF2F20
     { 0x068, "float" }, // 0x140B35660
     { 0x069, "floor" }, // 0x140B35D10
@@ -388,7 +388,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x178, "_func_178" }, // 0x14049AB50
     { 0x179, "pointonsegmentnearesttopoint" }, // 0x140B36AF0
     { 0x17A, "positionwouldtelefrag" }, // 0x140B5B8C0
-    { 0x17B, "_func_17B" }, // 0x140B361A0
+    { 0x17B, "pow" }, // 0x140B361A0
     { 0x17C, "_func_17C" }, // 0x140496D70
     { 0x17D, "_func_17D" }, // nullptr
     { 0x17E, "precacheheadicon" }, // 0x140B48A30
@@ -629,7 +629,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x269, "_func_269" }, // 0x140B41C00
     { 0x26A, "_func_26A" }, // nullptr
     { 0x26B, "_func_26B" }, // nullptr
-    { 0x26C, "_func_26C" }, // 0x140B55130
+    { 0x26C, "sysprint" }, // 0x140B55130
     { 0x26D, "_func_26D" }, // 0x140B3EC10
     { 0x26E, "physics_getbodylinvel" }, // 0x1405636A0
     { 0x26F, "_func_26F" }, // 0x140563760
@@ -642,7 +642,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x276, "getclosestpointonnavmesh" }, // 0x140442030
     { 0x277, "_func_277" }, // 0x1404417C0
     { 0x278, "_func_278" }, // 0x140441A90
-    { 0x279, "_func_279" }, // 0x1404429D0
+    { 0x279, "ispointonnavmesh" }, // 0x1404429D0
     { 0x27A, "_func_27A" }, // 0x140441440
     { 0x27B, "_func_27B" }, // 0x1404415D0
     { 0x27C, "_func_27C" }, // 0x140441A70

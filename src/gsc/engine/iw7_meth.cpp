@@ -101,7 +101,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8058, "cameralinkto" }, // 0x140B4EAB0
     { 0x8059, "cameraunlink" }, // 0x140B34530
     { 0x805A, "canattackenemynode" }, // 0x140B380E0
-    { 0x805B, "_meth_805B" }, // 0x140B092B0
+    { 0x805B, "cancelmantle" }, // 0x140B092B0
     { 0x805C, "_meth_805C" }, // 0x140B08E00
     { 0x805D, "canplayerplacesentry" }, // 0x140B07A70
     { 0x805E, "_meth_805E" }, // 0x140B07F80
@@ -153,7 +153,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x808C, "connectpaths" }, // 0x140B496A0
     { 0x808D, "_meth_808D" }, // 0x140B349E0
     { 0x808E, "_meth_808E" }, // 0x140B34F80
-    { 0x808F, "_meth_808F" }, // 0x140B4CAA0
+    { 0x808F, "damageconetrace" }, // 0x140B4CAA0
     { 0x8090, "_meth_8090" }, // nullptr
     { 0x8091, "_meth_8091" }, // nullptr
     { 0x8092, "_meth_8092" }, // nullptr
@@ -244,7 +244,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x80E7, "_meth_80E7" }, // 0x14046FD70
     { 0x80E8, "_meth_80E8" }, // 0x1403E2AD0
     { 0x80E9, "finishagentdamage" }, // 0x140C1AC10
-    { 0x80EA, "_meth_80EA" }, // 0x140B0F3D0
+    { 0x80EA, "finishplayerdamage" }, // 0x140B0F3D0
     { 0x80EB, "fireweapon" }, // 0x14042CCC0
     { 0x80EC, "_meth_80EC" }, // 0x14046FF80
     { 0x80ED, "_meth_80ED" }, // 0x14049A700
@@ -254,7 +254,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x80F1, "_meth_80F1" }, // 0x140472280
     { 0x80F2, "forcethirdpersonwhenfollowing" }, // 0x140B56FC0
     { 0x80F3, "forceusehintoff" }, // 0x140B427A0
-    { 0x80F4, "_meth_80F4" }, // 0x140B3FF80
+    { 0x80F4, "forceusehinton" }, // 0x140B3FF80
     { 0x80F5, "_meth_80F5" }, // 0x140480630
     { 0x80F6, "fragbuttonpressed" }, // 0x140B04B20
     { 0x80F7, "_meth_80F7" }, // 0x1405ED180
@@ -405,7 +405,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8188, "_meth_8188" }, // 0x140B49D10
     { 0x8189, "_meth_8189" }, // 0x140B49960
     { 0x818A, "_meth_818A" }, // 0x14047F7B0
-    { 0x818B, "_meth_818B" }, // 0x140B47A70
+    { 0x818B, "hudoutlinedisable" }, // 0x140B47A70
     { 0x818C, "hudoutlinedisableforclient" }, // 0x140B46150
     { 0x818D, "_meth_818D" }, // 0x140B47110
     { 0x818E, "_meth_818E" }, // 0x140B47500
@@ -440,7 +440,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x81AB, "islinked" }, // 0x140B4D2E0
     { 0x81AC, "_meth_81AC" }, // 0x14047FC10
     { 0x81AD, "_meth_81AD" }, // 0x140B09310
-    { 0x81AE, "_meth_81AE" }, // 0x140B07960
+    { 0x81AE, "ismeleeing" }, // 0x140B07960
     { 0x81AF, "ismlgspectator" }, // 0x140B0BF90
     { 0x81B0, "_meth_81B0" }, // 0x140480AB0
     { 0x81B1, "_meth_81B1" }, // 0x1404724C0
@@ -455,12 +455,12 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x81BA, "issplitscreenplayer" }, // 0x140B0D530
     { 0x81BB, "isreloading" }, // 0x140B0D570
     { 0x81BC, "_meth_81BC" }, // 0x140B0D5B0
-    { 0x81BD, "_meth_81BD" }, // 0x140B04000
+    { 0x81BD, "issprinting" }, // 0x140B04000
     { 0x81BE, "issprintsliding" }, // 0x140B08F30
     { 0x81BF, "_meth_81BF" }, // 0x1403E2D10
     { 0x81C0, "issuppressed" }, // 0x1403E2A70
     { 0x81C1, "_meth_81C1" }, // 0x140472480
-    { 0x81C2, "_meth_81C2" }, // 0x140B020D0
+    { 0x81C2, "isswitchingweapon" }, // 0x140B020D0
     { 0x81C3, "israisingweapon" }, // 0x140B022C0
     { 0x81C4, "isdroppingweapon" }, // 0x140B02570
     { 0x81C5, "_meth_81C5" }, // 0x140B0B980
@@ -499,7 +499,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x81E6, "_meth_81E6" }, // 0x140B0E180
     { 0x81E7, "localtoworldcoords" }, // 0x140B3BD00
     { 0x81E8, "_meth_81E8" }, // 0x140B5BA10
-    { 0x81E9, "_meth_81E9" }, // 0x140B53350
+    { 0x81E9, "logclientmatchdatadeath" }, // 0x140B53350
     { 0x81EA, "_meth_81EA" }, // 0x140B5A6B0
     { 0x81EB, "_meth_81EB" }, // 0x140B5ACB0
     { 0x81EC, "_meth_81EC" }, // nullptr
@@ -656,8 +656,8 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8283, "_meth_8283" }, // 0x140C1CCF0
     { 0x8284, "_meth_8284" }, // 0x140C1CD90
     { 0x8285, "_meth_8285" }, // 0x140C1CE20
-    { 0x8286, "setgoalpos" }, // 0x140C1CEB0
-    { 0x8287, "_meth_8287" }, // 0x140C1D010
+    { 0x8286, "scragentsetgoalpos" }, // 0x140C1CEB0
+    { 0x8287, "scragentsetgoalradius" }, // 0x140C1D010
     { 0x8288, "_meth_8288" }, // 0x140C1D090
     { 0x8289, "orientmode" }, // 0x140C1D110
     { 0x828A, "_meth_828A" }, // 0x140C1D260
@@ -765,8 +765,8 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x82F0, "_meth_82F0" }, // 0x1403E3010
     { 0x82F1, "_meth_82F1" }, // 0x1403E30D0
     { 0x82F2, "setgoalyaw" }, // 0x14042BCF0
-    { 0x82F3, "_meth_82F3" }, // 0x140B59690
-    { 0x82F4, "_meth_82F4" }, // 0x140B58FD0
+    { 0x82F3, "setgrenadecookscale" }, // 0x140B59690
+    { 0x82F4, "setgrenadethrowscale" }, // 0x140B58FD0
     { 0x82F5, "sethintstring" }, // 0x140B3BED0
     { 0x82F6, "sethoverparams" }, // 0x14042F690
     { 0x82F7, "_meth_82F7" }, // 0x14049B5F0
@@ -857,7 +857,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x834C, "_meth_834C" }, // 0x140B16C30
     { 0x834D, "settext" }, // 0x140B16470
     { 0x834E, "setthreatbiasgroup" }, // 0x1405ECD90
-    { 0x834F, "_meth_834F" }, // 0x140B16850
+    { 0x834F, "settimer" }, // 0x140B16850
     { 0x8350, "_meth_8350" }, // 0x140B16A40
     { 0x8351, "_meth_8351" }, // 0x140B16950
     { 0x8352, "_meth_8352" }, // 0x14047FBD0
@@ -970,7 +970,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x83BD, "thermalvisionfofoverlayoff" }, // 0x140B485E0
     { 0x83BE, "_meth_83BE" }, // 0x140B47F90
     { 0x83BF, "thermalvisionoff" }, // 0x140B443B0
-    { 0x83C0, "_meth_83C0" }, // 0x140B43950
+    { 0x83C0, "thermalvisionon" }, // 0x140B43950
     { 0x83C1, "_meth_83C1" }, // 0x140B440C0
     { 0x83C2, "_meth_83C2" }, // 0x140C1D960
     { 0x83C3, "_meth_83C3" }, // 0x140B46580
@@ -992,7 +992,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x83D3, "_meth_83D3" }, // 0x140B55370
     { 0x83D4, "_meth_83D4" }, // 0x1403E2920
     { 0x83D5, "_meth_83D5" }, // 0x1404803E0
-    { 0x83D6, "_meth_83D6" }, // 0x140B3F550
+    { 0x83D6, "usetriggerrequirelookat" }, // 0x140B3F550
     { 0x83D7, "_meth_83D7" }, // 0x140472A00
     { 0x83D8, "usinggamepad" }, // 0x140B04F40
     { 0x83D9, "vehicle_canturrettargetpoint" }, // 0x14042C410
@@ -1052,11 +1052,11 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x840F, "_meth_840F" }, // nullptr
     { 0x8410, "_meth_8410" }, // nullptr
     { 0x8411, "_meth_8411" }, // nullptr
-    { 0x8412, "_meth_8412" }, // 0x140B02D10
+    { 0x8412, "allowdodge" }, // 0x140B02D10
     { 0x8413, "allowhighjump" }, // nullptr
     { 0x8414, "allowboostjump" }, // nullptr
     { 0x8415, "isjumping" }, // 0x140B09400
-    { 0x8416, "_meth_8416" }, // 0x140B096F0
+    { 0x8416, "ishighjumping" }, // 0x140B096F0
     { 0x8417, "_meth_8417" }, // 0x140B49730
     { 0x8418, "_meth_8418" }, // 0x140567220
     { 0x8419, "physics_getbodyid" }, // 0x14055EA30
@@ -1065,7 +1065,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x841C, "_meth_841C" }, // 0x14055FC50
     { 0x841D, "_meth_841D" }, // 0x140560950
     { 0x841E, "_meth_841E" }, // 0x140C1C5C0
-    { 0x841F, "_meth_841F" }, // 0x140C1BF20
+    { 0x841F, "clearpath" }, // 0x140C1BF20
     { 0x8420, "_meth_8420" }, // nullptr
     { 0x8421, "_meth_8421" }, // 0x140B03180
     { 0x8422, "allowdoublejump" }, // 0x140B01DA0
@@ -1077,7 +1077,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8428, "_meth_8428" }, // 0x140441D20
     { 0x8429, "hidefromplayer" }, // 0x140B58440
     { 0x842A, "_meth_842A" }, // 0x140560CA0
-    { 0x842B, "_meth_842B" }, // 0x140B05E70
+    { 0x842B, "energy_getenergy" }, // 0x140B05E70
     { 0x842C, "energy_setenergy" }, // 0x140B06070
     { 0x842D, "energy_getmax" }, // 0x140B04C00
     { 0x842E, "energy_setmax" }, // 0x140B04E60
@@ -1085,7 +1085,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8430, "energy_setresttimems" }, // 0x140B05A10
     { 0x8431, "_meth_8431" }, // 0x140B05780
     { 0x8432, "_meth_8432" }, // 0x140B055B0
-    { 0x8433, "_meth_8433" }, // 0x140B051D0
+    { 0x8433, "energy_getrestorerate" }, // 0x140B051D0
     { 0x8434, "energy_setrestorerate" }, // 0x140B05390
     { 0x8435, "physics_getcharactercollisioncapsule" }, // 0x140560E40
     { 0x8436, "_meth_8436" }, // 0x140B49E40
@@ -1101,11 +1101,11 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8440, "_meth_8440" }, // 0x140562230
     { 0x8441, "_meth_8441" }, // 0x140B43CC0
     { 0x8442, "stopgestureviewmodel" }, // 0x140B45FE0
-    { 0x8443, "_meth_8443" }, // 0x140B46A10
+    { 0x8443, "getgestureanimlength" }, // 0x140B46A10
     { 0x8444, "_meth_8444" }, // 0x140402490
     { 0x8445, "_meth_8445" }, // 0x1404024C0
     { 0x8446, "iswallrunning" }, // 0x140B097D0
-    { 0x8447, "_meth_8447" }, // 0x140B580D0
+    { 0x8447, "playershow" }, // 0x140B580D0
     { 0x8448, "_meth_8448" }, // 0x140B05250
     { 0x8449, "_meth_8449" }, // 0x140B58B40
     { 0x844A, "_meth_844A" }, // 0x140C455F0
@@ -1199,7 +1199,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x84A2, "_meth_84A2" }, // 0x140B3D670
     { 0x84A3, "_meth_84A3" }, // 0x140B3D850
     { 0x84A4, "_meth_84A4" }, // 0x140B3CE60
-    { 0x84A5, "_meth_84A5" }, // 0x140B3E280
+    { 0x84A5, "setusefov" }, // 0x140B3E280
     { 0x84A6, "_meth_84A6" }, // 0x140B3D0A0
     { 0x84A7, "_meth_84A7" }, // 0x140B3D270
     { 0x84A8, "_meth_84A8" }, // 0x140B3F910
@@ -1266,7 +1266,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x84E5, "_meth_84E5" }, // 0x1403E34B0
     { 0x84E6, "_meth_84E6" }, // 0x1403E3520
     { 0x84E7, "_meth_84E7" }, // 0x140B43480
-    { 0x84E8, "_meth_84E8" }, // 0x140B04AC0
+    { 0x84E8, "assignweaponmeleeslot" }, // 0x140B04AC0
     { 0x84E9, "_meth_84E9" }, // 0x1405ECE70
     { 0x84EA, "_meth_84EA" }, // 0x1405ECEE0
     { 0x84EB, "_meth_84EB" }, // 0x140B44120
@@ -1324,7 +1324,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x851F, "_meth_851F" }, // 0x14049BCA0
     { 0x8520, "_meth_8520" }, // 0x140C45900
     { 0x8521, "_meth_8521" }, // 0x140499330
-    { 0x8522, "_meth_8522" }, // 0x140B54FD0
+    { 0x8522, "setplayerghost" }, // 0x140B54FD0
     { 0x8523, "_meth_8523" }, // 0x140B54E40
     { 0x8524, "_meth_8524" }, // 0x140B04D80
     { 0x8525, "_meth_8525" }, // 0x140480170
