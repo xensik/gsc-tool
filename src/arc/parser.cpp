@@ -5746,7 +5746,7 @@ std::unordered_map<std::string_view, parser::token::token_kind_type> const keywo
     { "endon", parser::token::ENDON },
     { "notify", parser::token::NOTIFY },
     { "wait", parser::token::WAIT },
-    { "waitrealtime", parser::token::WAITREALTIME}
+    { "waitrealtime", parser::token::WAITREALTIME},
     { "waittill", parser::token::WAITTILL },
     { "waittillmatch", parser::token::WAITTILLMATCH },
     { "waittillframeend", parser::token::WAITTILLFRAMEEND },
