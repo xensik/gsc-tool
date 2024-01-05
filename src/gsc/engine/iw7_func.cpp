@@ -637,8 +637,8 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x271, "_func_271" }, // 0x140441C20
     { 0x272, "_func_272" }, // 0x140442E40
     { 0x273, "_func_273" }, // 0x140442CB0
-    { 0x274, "_func_274" }, // 0x140442570
-    { 0x275, "_func_275" }, // 0x140442700
+    { 0x274, "getrandomnavpoint" }, // 0x140442570
+    { 0x275, "getrandomnavpoints" }, // 0x140442700
     { 0x276, "getclosestpointonnavmesh" }, // 0x140442030
     { 0x277, "_func_277" }, // 0x1404417C0
     { 0x278, "_func_278" }, // 0x140441A90
@@ -757,7 +757,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2E9, "_func_2E9" }, // 0x1404A2480
     { 0x2EA, "_func_2EA" }, // 0x140B5B060
     { 0x2EB, "_func_2EB" }, // 0x140B5B130
-    { 0x2EC, "_func_2EC" }, // 0x140B3A430
+    { 0x2EC, "anglelerpquatfrac" }, // 0x140B3A430
     { 0x2ED, "_func_2ED" }, // 0x140B40850
     { 0x2EE, "_func_2EE" }, // 0x140B40A10
     { 0x2EF, "_func_2EF" }, // 0x140B41CD0
