@@ -37,17 +37,32 @@ namespace fs = std::filesystem;
 namespace xsk
 {
 
-enum class encd { _, source, assembly, binary };
+enum class result : i32 { success = 0, failure = 1 };
+enum class fenc { _, source, assembly, binary, src_bin };
 enum class mode { _, assemble, disassemble, compile, decompile, parse, rename };
 enum class game { _, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9 };
 enum class mach { _, pc, ps3, ps4, ps5, xb2, xb3, xb4, wiiu };
 
-std::unordered_map<std::string_view, encd> const exts =
+std::unordered_map<std::string_view, fenc> const gsc_exts =
 {
-    { ".gsc", encd::source },
-    { ".cgsc", encd::binary },
-    { ".gscbin", encd::binary },
-    { ".gscasm", encd::assembly },
+    { ".gsc", fenc::source },
+    { ".csc", fenc::source },
+    { ".cgsc", fenc::binary },
+    { ".ccsc", fenc::binary },
+    { ".gscbin", fenc::binary },
+    { ".cscbin", fenc::binary },
+    { ".gscasm", fenc::assembly },
+    { ".cscasm", fenc::assembly },
+};
+
+std::unordered_map<std::string_view, fenc> const arc_exts =
+{
+    { ".gsc", fenc::src_bin },
+    { ".csc", fenc::src_bin },
+    { ".gscc", fenc::binary },
+    { ".cscc", fenc::binary },
+    { ".gscasm", fenc::assembly },
+    { ".cscasm", fenc::assembly },
 };
 
 std::unordered_map<std::string_view, mode> const modes =
@@ -108,13 +123,10 @@ std::unordered_map<std::string_view, mach> const machs =
     { "wiiu", mach::wiiu },
 };
 
-std::map<mode, encd> const encds =
+auto operator |=(result& lhs, result rhs) -> void
 {
-    { mode::assemble, encd::assembly },
-    { mode::disassemble, encd::binary },
-    { mode::compile, encd::source },
-    { mode::decompile, encd::binary },
-};
+    lhs = static_cast<result>(static_cast<i32>(lhs) | static_cast<i32>(rhs));
+}
 
 auto overwrite_prompt(std::string const& file) -> bool
 {
@@ -146,16 +158,13 @@ namespace gsc
 {
 
 std::map<game, std::map<mach, std::unique_ptr<context>>> contexts;
-std::map<mode, std::function<void(game game, mach mach, fs::path file, fs::path rel)>> funcs;
+std::map<mode, std::function<result(game game, mach mach, fs::path file, fs::path rel)>> funcs;
 bool zonetool = false;
 
-auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> void
+auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
 {
     try
     {
-        if (file.extension() != ".gscasm")
-            throw std::runtime_error("expected .gscasm file");
-
         rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((zonetool ? ".cgsc" : ".gscbin"));
 
         auto data = utils::file::read(file);
@@ -183,23 +192,26 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> void
                 std::memcpy(script.buffer.data(), outbin.second.data, script.buffer.size());
                 script.buffer = utils::zlib::compress(script.buffer);
 
-                script.len = static_cast<std::uint32_t>(outbin.second.size);
-                script.compressedLen = static_cast<std::uint32_t>(script.buffer.size());
-                script.bytecodeLen = static_cast<std::uint32_t>(script.bytecode.size());
+                script.len = static_cast<u32>(outbin.second.size);
+                script.compressedLen = static_cast<u32>(script.buffer.size());
+                script.bytecodeLen = static_cast<u32>(script.bytecode.size());
 
                 auto result = script.serialize();
                 utils::file::save(fs::path{ "assembled" } / rel, result);
                 std::cout << fmt::format("assembled {}\n", rel.generic_string());
             }
         }
+
+        return result::success;
     }
     catch (std::exception const& e)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        return result::failure;
     }
 }
 
-auto disassemble_file(game game, mach mach, fs::path file, fs::path rel) -> void
+auto disassemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
 {
     try
     {
@@ -219,10 +231,7 @@ auto disassemble_file(game game, mach mach, fs::path file, fs::path rel) -> void
         }
         else
         {
-            if (file.extension() != ".gscbin")
-                throw std::runtime_error("expected .gscbin file");
-
-            rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension(".gscasm");
+            rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension(file.extension() == ".gscbin" ? ".gscasm" : ".cscasm");
 
             auto data = utils::file::read(file);
 
@@ -238,20 +247,19 @@ auto disassemble_file(game game, mach mach, fs::path file, fs::path rel) -> void
 
         utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
         std::cout << fmt::format("disassembled {}\n", rel.generic_string());
+        return result::success;
     }
     catch (std::exception const& e)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        return result::failure;
     }
 }
 
-auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> void
+auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
 {
     try
     {
-        if (file.extension() != ".gsc")
-            throw std::runtime_error("expected .gsc file");
-
         rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((zonetool ? ".cgsc" : ".gscbin"));
 
         auto data = utils::file::read(file);
@@ -288,25 +296,28 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> void
                 std::cout << fmt::format("compiled {}\n", rel.generic_string());
             }
         }
+
+        return result::success;
     }
     catch (std::exception const& e)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        return result::failure;
     }
 }
 
-auto decompile_file(game game, mach mach, fs::path file, fs::path rel) -> void
+auto decompile_file(game game, mach mach, fs::path file, fs::path rel) -> result
 {
     try
     {
         auto script = std::vector<std::uint8_t>{};
         auto stack = std::vector<std::uint8_t>{};
-    
+
         if (zonetool)
         {
             if (file.extension() != ".cgsc")
                 throw std::runtime_error("expected .cgsc file");
-            
+
             auto fbuf = file;
             rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension(".gsc");
 
@@ -315,10 +326,7 @@ auto decompile_file(game game, mach mach, fs::path file, fs::path rel) -> void
         }
         else
         {
-            if (file.extension() != ".gscbin")
-                throw std::runtime_error("expected .gscbin file");
-
-            rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension(".gsc");
+            rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((file.extension() == ".gscbin" ? ".gsc" : ".csc"));
 
             auto data = utils::file::read(file);
 
@@ -335,20 +343,19 @@ auto decompile_file(game game, mach mach, fs::path file, fs::path rel) -> void
 
         utils::file::save(fs::path{ "decompiled" } / rel, outsrc);
         std::cout << fmt::format("decompiled {}\n", rel.generic_string());
+        return result::success;
     }
     catch (std::exception const& e)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        return result::failure;
     }
 }
 
-auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> void
+auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
 {
     try
     {
-        if (file.extension() != ".gsc")
-            throw std::runtime_error("expected .gsc file");
-
         rel = fs::path{ games_rev.at(game) } / rel / file.filename();
 
         auto data = utils::file::read(file);
@@ -356,26 +363,28 @@ auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> void
         auto prog = contexts[game][mach]->source().parse_program(file.string(), data);
         utils::file::save(fs::path{ "parsed" } / rel, contexts[game][mach]->source().dump(*prog));
         std::cout << fmt::format("parsed {}\n", rel.generic_string());
+        return result::success;
     }
     catch (std::exception const& e)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        return result::failure;
     }
 }
 
-auto rename_file(game game, mach mach, fs::path file, fs::path rel) -> void
+auto rename_file(game game, mach mach, fs::path file, fs::path rel) -> result
 {
     try
     {
         if (file.extension() != ".cgsc" && file.extension() != ".gsc" && file.extension() != ".csc" && file.extension() != ".gscbin" && file.extension() != ".cscbin")
-            return;
+            return result::success;
 
         auto ext = file.extension();
         auto zt = file.extension() == ".cgsc";
 
         if (game == game::iw9)
         {
-            return;
+            return result::success;
         }
         else
         {
@@ -411,10 +420,13 @@ auto rename_file(game game, mach mach, fs::path file, fs::path rel) -> void
             utils::file::save(fs::path{ "renamed" } / rel.replace_extension(".cgsc.stack"), stack);
             std::cout << fmt::format("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
         }
+
+        return result::success;
     }
     catch (std::exception const& e)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        return result::failure;
     }
 }
 
@@ -686,17 +698,14 @@ namespace arc
 {
 
 std::map<game, std::map<mach, std::unique_ptr<context>>> contexts;
-std::map<mode, std::function<void(game game, mach mach, fs::path const& file, fs::path rel)>> funcs;
+std::map<mode, std::function<result(game game, mach mach, fs::path const& file, fs::path rel)>> funcs;
 
-void assemble_file(game game, mach mach, fs::path const& file, fs::path rel)
+auto assemble_file(game game, mach mach, fs::path const& file, fs::path rel) -> result
 {
     try
     {
         if (game != game::t6)
             throw std::runtime_error("not implemented");
-
-        if (file.extension() != ".gscasm" && file.extension() != ".cscasm")
-            throw std::runtime_error("expected .gscasm or .cscasm file");
 
         rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((file.extension() == ".gscasm" ? ".gsc" : ".csc"));
 
@@ -706,21 +715,20 @@ void assemble_file(game game, mach mach, fs::path const& file, fs::path rel)
 
         utils::file::save(fs::path{ "assembled" } / rel, outbin.data, outbin.size);
         std::cout << fmt::format("assembled {}\n", rel.generic_string());
+        return result::success;
     }
     catch (std::exception const& e)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        return result::failure;
     }
 }
 
-void disassemble_file(game game, mach mach, fs::path const& file, fs::path rel)
+auto disassemble_file(game game, mach mach, fs::path const& file, fs::path rel) -> result
 {
     try
     {
-        if (file.extension() != ".gsc" && file.extension() != ".csc" && file.extension() != ".gscc" && file.extension() != ".cscc")
-            throw std::runtime_error("expected .gsc or .csc file");
-
-        rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((file.extension() == ".gsc" ? ".gscasm" : ".cscasm"));
+        rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((file.extension().string().starts_with(".gsc") ? ".gscasm" : ".cscasm"));
 
         auto data = utils::file::read(file.string());
         auto outasm = contexts[game][mach]->disassembler().disassemble(data);
@@ -728,45 +736,50 @@ void disassemble_file(game game, mach mach, fs::path const& file, fs::path rel)
 
         utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
         std::cout << fmt::format("disassembled {}\n", rel.generic_string());
+        return result::success;
     }
     catch (std::exception const& e)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        return result::failure;
     }
 }
 
-void compile_file(game game, mach mach, fs::path const& file, fs::path rel)
+auto compile_file(game game, mach mach, fs::path const& file, fs::path rel) -> result
 {
     try
     {
         if (game != game::t6)
             throw std::runtime_error("not implemented");
 
-        if (file.extension() != ".gsc" && file.extension() != ".csc")
-            throw std::runtime_error("expected .gsc or .csc file");
-
         rel = fs::path{ games_rev.at(game) } / rel / file.filename();
 
         auto data = utils::file::read(file);
+
+        if (!std::memcmp(&data[0], "\x80GSC", 4))
+        {
+            std::cerr << fmt::format("{} at {}\n", "already compiled", file.generic_string());
+            return result::success;
+        }
+
         auto outasm = contexts[game][mach]->compiler().compile(file.string(), data);
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
         utils::file::save(fs::path{ "compiled" } / rel, outbin.data, outbin.size);
         std::cout << fmt::format("compiled {}\n", rel.generic_string());
+        return result::success;
     }
     catch (std::exception const& e)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        return result::failure;
     }
 }
 
-void decompile_file(game game, mach mach, fs::path const& file, fs::path rel)
+auto decompile_file(game game, mach mach, fs::path const& file, fs::path rel) -> result
 {
     try
     {
-        if (file.extension() != ".gsc" && file.extension() != ".csc" && file.extension() != ".gscc" && file.extension() != ".cscc")
-            throw std::runtime_error("expected .gsc or .csc file");
-
         rel = fs::path{ games_rev.at(game) } / rel / file.filename();
 
         auto data = utils::file::read(file);
@@ -777,21 +790,25 @@ void decompile_file(game game, mach mach, fs::path const& file, fs::path rel)
 
         utils::file::save(fs::path{ "decompiled" } / rel, output);
         std::cout << fmt::format("decompiled {}\n", rel.generic_string());
+        return result::success;
     }
     catch (std::exception const& e)
     {
         std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        return result::failure;
     }
 }
 
-void parse_file(game, mach, fs::path const&, fs::path)
+auto parse_file(game, mach, fs::path const&, fs::path) -> result
 {
     std::cerr << fmt::format("not implemented for treyarch\n");
+    return result::failure;
 }
 
-void rename_file(game, mach, fs::path const&, fs::path)
+auto rename_file(game, mach, fs::path const&, fs::path) -> result
 {
     std::cerr << fmt::format("not implemented for treyarch\n");
+    return result::failure;
 }
 
 auto fs_read(std::string const& name) -> std::vector<u8>
@@ -915,36 +932,68 @@ auto init(game game, mach mach) -> void
 
 } // namespace xsk::arc
 
-auto execute(mode mode, game game, mach mach, fs::path const& path) -> void
+auto extension_match(fs::path const& ext, mode mode, game game) -> bool
+{
+    auto enc = fenc::_;
+
+    if (game < game::t6 && gsc_exts.contains(ext.string()))
+        enc = gsc_exts.at(ext.string());
+    else if (arc_exts.contains(ext.string()))
+        enc = arc_exts.at(ext.string());
+
+    switch (mode)
+    {
+        case mode::assemble:    return enc == fenc::assembly;
+        case mode::disassemble: return enc == fenc::binary || enc == fenc::src_bin;
+        case mode::compile:     return enc == fenc::source || enc == fenc::src_bin;
+        case mode::decompile:   return enc == fenc::binary || enc == fenc::src_bin;
+        case mode::parse:       return enc == fenc::source || enc == fenc::src_bin;
+        case mode::rename:      return enc != fenc::_;
+        default:                return false;
+    }
+}
+
+auto execute(mode mode, game game, mach mach, fs::path const& path) -> result
 {
     gsc::init(game, mach);
     arc::init(game, mach);
 
     if (fs::is_directory(path))
     {
+        auto exit_code = result::success;
+
         for (auto const& entry : fs::recursive_directory_iterator(path))
         {
-            if (entry.is_regular_file() && entry.path().extension() != ".stack")
+            if (entry.is_regular_file() && extension_match(entry.path().extension(), mode, game))
             {
                 auto rel = fs::relative(entry, path).remove_filename();
 
                 if (game < game::t6)
-                    gsc::funcs[mode](game, mach, entry.path().generic_string(), rel);
+                    exit_code |= gsc::funcs[mode](game, mach, entry.path().generic_string(), rel);
                 else
-                    arc::funcs[mode](game, mach, fs::path{ entry.path().generic_string(), fs::path::format::generic_format }, rel);
+                    exit_code |= arc::funcs[mode](game, mach, fs::path{ entry.path().generic_string(), fs::path::format::generic_format }, rel);
             }
         }
+
+        return exit_code;
     }
     else if (fs::is_regular_file(path))
     {
+        if (!extension_match(path.extension(), mode, game))
+        {
+            std::cerr << fmt::format("bad extension '{}'\n", path.extension().string());
+            return result::failure;
+        }
+
         if (game < game::t6)
-            gsc::funcs[mode](game, mach, path, fs::path{});
+            return gsc::funcs[mode](game, mach, path, fs::path{});
         else
-            arc::funcs[mode](game, mach, fs::path(path, fs::path::format::generic_format), fs::path{});
+            return arc::funcs[mode](game, mach, fs::path(path, fs::path::format::generic_format), fs::path{});
     }
     else
     {
         std::cerr << fmt::format("bad path '{}'\n", path.generic_string());
+        return result::failure;
     }
 }
 
@@ -1008,7 +1057,7 @@ auto parse_flags(u32 argc, char** argv, mode& mode, game& game, mach& mach, fs::
     return true;
 }
 
-auto print_usage() -> void
+auto usage() -> void
 {
     std::cout << "usage: gsc-tool <mode> <game> <system> <path>\n";
     std::cout << "\t* mode: asm, disasm, comp, decomp, parse, rename\n";
@@ -1022,7 +1071,7 @@ auto branding() -> void
     std::cout << fmt::format("GSC Tool {} created by xensik\n\n", XSK_VERSION_STR);
 }
 
-auto main(u32 argc, char** argv) -> void
+auto main(u32 argc, char** argv) -> result
 {
     auto path = fs::path{};
     auto mode = mode::_;
@@ -1033,16 +1082,16 @@ auto main(u32 argc, char** argv) -> void
 
     if (!parse_flags(argc, argv, mode, game, mach, path))
     {
-        return print_usage();
+        usage();
+        return result::failure;
     }
 
-    execute(mode, game, mach, path);
+    return execute(mode, game, mach, path);
 }
 
 } // namespace xsk
 
 int main(int argc, char** argv)
 {
-    xsk::main(argc, argv);
-    return 0;
+    return static_cast<int>(xsk::main(argc, argv));
 }
