@@ -1377,7 +1377,7 @@ auto source::dump_expr_angleclamp180(expr_angleclamp180 const& exp) -> void
 
 auto source::dump_expr_vectortoangles(expr_vectortoangles const& exp) -> void
 {
-    fmt::format_to(std::back_inserter(buf_), "vectorangles( ");
+    fmt::format_to(std::back_inserter(buf_), "vectortoangles( ");
     dump_expr(*exp.arg);
     fmt::format_to(std::back_inserter(buf_), " )");
 }
