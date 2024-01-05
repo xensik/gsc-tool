@@ -298,7 +298,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x11E, "_func_11E" }, // 0x140B476A0
     { 0x11F, "_func_11F" }, // 0x140B47980
     { 0x120, "kick" }, // 0x140B53720
-    { 0x121, "_func_121" }, // 0x140B383D0
+    { 0x121, "killfxontag" }, // 0x140B383D0
     { 0x122, "_func_122" }, // 0x140498030
     { 0x123, "length" }, // 0x140B37F60
     { 0x124, "length2d" }, // 0x140B382C0
@@ -458,7 +458,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x1BE, "_func_1BE" }, // nullptr
     { 0x1BF, "setomnvar" }, // 0x140B3E2D0
     { 0x1C0, "setomnvarforallclients" }, // 0x140B55470
-    { 0x1C1, "_func_1C1" }, // 0x140B3E580
+    { 0x1C1, "setomnvarbit" }, // 0x140B3E580
     { 0x1C2, "_func_1C2" }, // 0x140B4C420
     { 0x1C3, "setplayerteamrank" }, // 0x140B58AC0
     { 0x1C4, "_func_1C4" }, // 0x140B344A0
@@ -545,7 +545,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x215, "_func_215" }, // 0x14040E020
     { 0x216, "_func_216" }, // 0x14040E030
     { 0x217, "_func_217" }, // 0x14049F520
-    { 0x218, "_func_218" }, // 0x1405ECBC0
+    { 0x218, "threatbiasgroupexists" }, // 0x1405ECBC0
     { 0x219, "tolower" }, // 0x140B3DE50
     { 0x21A, "_func_21A" }, // 0x140B4DEB0
     { 0x21B, "_func_21B" }, // 0x140B4D790
@@ -640,12 +640,12 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x274, "getrandomnavpoint" }, // 0x140442570
     { 0x275, "getrandomnavpoints" }, // 0x140442700
     { 0x276, "getclosestpointonnavmesh" }, // 0x140442030
-    { 0x277, "_func_277" }, // 0x1404417C0
-    { 0x278, "_func_278" }, // 0x140441A90
+    { 0x277, "createnavrepulsor" }, // 0x1404417C0
+    { 0x278, "destroynavrepulsor" }, // 0x140441A90
     { 0x279, "ispointonnavmesh" }, // 0x1404429D0
-    { 0x27A, "_func_27A" }, // 0x140441440
+    { 0x27A, "createnavobstaclebybounds" }, // 0x140441440
     { 0x27B, "_func_27B" }, // 0x1404415D0
-    { 0x27C, "_func_27C" }, // 0x140441A70
+    { 0x27C, "destroynavobstacle" }, // 0x140441A70
     { 0x27D, "isnumber" }, // 0x140B363C0
     { 0x27E, "_func_27E" }, // 0x140C70010
     { 0x27F, "_func_27F" }, // 0x140B4DF50
@@ -684,7 +684,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2A0, "_func_2A0" }, // 0x14049DAB0
     { 0x2A1, "triggerportableradarpingteam" }, // 0x140B5A520
     { 0x2A2, "isvfxfile" }, // 0x140B4E9D0
-    { 0x2A3, "_func_2A3" }, // 0x140B43740
+    { 0x2A3, "setimpactfx" }, // 0x140B43740
     { 0x2A4, "_func_2A4" }, // 0x140B4E9A0
     { 0x2A5, "_func_2A5" }, // 0x140B4EB90
     { 0x2A6, "_func_2A6" }, // 0x140B4EBB0
