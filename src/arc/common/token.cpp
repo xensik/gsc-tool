@@ -83,6 +83,7 @@ auto token::to_string() -> std::string
         case token::ENDON: return "endon";
         case token::NOTIFY: return "notify";
         case token::WAIT: return "wait";
+        case token::WAITREALTIME: return "waitrealtime";
         case token::WAITTILL: return "waittill";
         case token::WAITTILLMATCH: return "waittillmatch";
         case token::WAITTILLFRAMEEND: return "waittillframeend";

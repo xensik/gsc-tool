@@ -2037,14 +2037,14 @@ auto decompiler::process_stmt(stmt& stm) -> void
         case node::stmt_wait:
             process_stmt_wait(stm.as<stmt_wait>());
             break;
+        case node::stmt_waitrealtime:
+            process_stmt_waitrealtime(stm.as<stmt_waitrealtime>());
+            break;
         case node::stmt_waittill:
             process_stmt_waittill(stm.as<stmt_waittill>());
             break;
         case node::stmt_waittillmatch:
             process_stmt_waittillmatch(stm.as<stmt_waittillmatch>());
-            break;
-        case node::stmt_waitrealtime:
-            process_stmt_waitrealtime(stm.as<stmt_waitrealtime>());
             break;
         case node::stmt_if:
             process_stmt_if(stm.as<stmt_if>());
@@ -2135,6 +2135,11 @@ auto decompiler::process_stmt_wait(stmt_wait& stm) -> void
     process_expr(stm.time);
 }
 
+auto decompiler::process_stmt_waitrealtime(stmt_waitrealtime& stm) -> void
+{
+    process_expr(stm.time);
+}
+
 auto decompiler::process_stmt_waittill(stmt_waittill& stm) -> void
 {
     process_expr(stm.event);
@@ -2151,11 +2156,6 @@ auto decompiler::process_stmt_waittillmatch(stmt_waittillmatch& stm) -> void
     process_expr_arguments(*stm.args);
     process_expr(stm.event);
     process_expr(stm.obj);
-}
-
-auto decompiler::process_stmt_waitrealtime(stmt_waitrealtime& stm) -> void
-{
-    process_expr(stm.time);
 }
 
 auto decompiler::process_stmt_if(stmt_if& stm) -> void
