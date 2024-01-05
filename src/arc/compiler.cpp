@@ -161,6 +161,9 @@ auto compiler::emit_stmt(stmt const& stm) -> void
         case node::stmt_wait:
             emit_stmt_wait(stm.as<stmt_wait>());
             break;
+        case node::stmt_waitrealtime:
+            emit_stmt_waitrealtime(stm.as<stmt_waitrealtime>());
+            break;
         case node::stmt_waittill:
             emit_stmt_waittill(stm.as<stmt_waittill>());
             break;
@@ -292,6 +295,12 @@ auto compiler::emit_stmt_wait(stmt_wait const& stm) -> void
 {
     emit_expr(*stm.time);
     emit_opcode(opcode::OP_Wait);
+}
+
+auto compiler::emit_stmt_waitrealtime(stmt_waitrealtime const& stm) -> void
+{
+    emit_expr(*stm.time);
+    emit_opcode(opcode::OP_RealWait);
 }
 
 auto compiler::emit_stmt_waittill(stmt_waittill const& stm) -> void

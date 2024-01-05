@@ -49,10 +49,10 @@ private:
     auto dump_stmt_endon(stmt_endon const& stm) -> void;
     auto dump_stmt_notify(stmt_notify const& stm) -> void;
     auto dump_stmt_wait(stmt_wait const& stm) -> void;
+    auto dump_stmt_waitrealtime(stmt_waitrealtime const& stm) -> void;
     auto dump_stmt_waittill(stmt_waittill const& stm) -> void;
     auto dump_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void;
     auto dump_stmt_waittillframeend(stmt_waittillframeend const& stm) -> void;
-    auto dump_stmt_waitrealtime(stmt_waitrealtime const& stm) -> void;
     auto dump_stmt_if(stmt_if const& stm) -> void;
     auto dump_stmt_ifelse(stmt_ifelse const& stm) -> void;
     auto dump_stmt_while(stmt_while const& stm) -> void;

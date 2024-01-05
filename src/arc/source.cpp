@@ -309,6 +309,9 @@ auto source::dump_stmt(stmt const& stm) -> void
         case node::stmt_wait:
             dump_stmt_wait(stm.as<stmt_wait>());
             break;
+        case node::stmt_waitrealtime:
+            dump_stmt_waitrealtime(stm.as<stmt_waitrealtime>());
+            break;
         case node::stmt_waittill:
             dump_stmt_waittill(stm.as<stmt_waittill>());
             break;
@@ -317,9 +320,6 @@ auto source::dump_stmt(stmt const& stm) -> void
             break;
         case node::stmt_waittillframeend:
             dump_stmt_waittillframeend(stm.as<stmt_waittillframeend>());
-            break;
-        case node::stmt_waitrealtime:
-            dump_stmt_waitrealtime(stm.as<stmt_waitrealtime>());
             break;
         case node::stmt_if:
             dump_stmt_if(stm.as<stmt_if>());
@@ -521,6 +521,22 @@ auto source::dump_stmt_wait(stmt_wait const& stm) -> void
     }
 }
 
+auto source::dump_stmt_waitrealtime(stmt_waitrealtime const& stm) -> void
+{
+    if (stm.time->is<expr_paren>())
+    {
+        fmt::format_to(std::back_inserter(buf_), "waitrealtime");
+        dump_expr(*stm.time);
+        fmt::format_to(std::back_inserter(buf_), ";");
+    }
+    else
+    {
+        fmt::format_to(std::back_inserter(buf_), "waitrealtime( ");
+        dump_expr(*stm.time);
+        fmt::format_to(std::back_inserter(buf_), " );");
+    }
+}
+
 auto source::dump_stmt_waittill(stmt_waittill const& stm) -> void
 {
     dump_expr(*stm.obj);
@@ -562,22 +578,6 @@ auto source::dump_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void
 auto source::dump_stmt_waittillframeend(stmt_waittillframeend const&) -> void
 {
     fmt::format_to(std::back_inserter(buf_), "waittillframeend;");
-}
-
-auto source::dump_stmt_waitrealtime(stmt_waitrealtime const& stm) -> void
-{
-    if (stm.time->is<expr_paren>())
-    {
-        fmt::format_to(std::back_inserter(buf_), "waitrealtime");
-        dump_expr(*stm.time);
-        fmt::format_to(std::back_inserter(buf_), ";");
-    }
-    else
-    {
-        fmt::format_to(std::back_inserter(buf_), "waitrealtime( ");
-        dump_expr(*stm.time);
-        fmt::format_to(std::back_inserter(buf_), " );");
-    }
 }
 
 auto source::dump_stmt_if(stmt_if const& stm) -> void

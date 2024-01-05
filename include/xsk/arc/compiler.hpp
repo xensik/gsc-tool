@@ -45,6 +45,7 @@ private:
     auto emit_stmt_endon(stmt_endon const& stm) -> void;
     auto emit_stmt_notify(stmt_notify const& stm) -> void;
     auto emit_stmt_wait(stmt_wait const& stm) -> void;
+    auto emit_stmt_waitrealtime(stmt_waitrealtime const& stm) -> void;
     auto emit_stmt_waittill(stmt_waittill const& stm) -> void;
     auto emit_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void;
     auto emit_stmt_waittillframeend(stmt_waittillframeend const& stm) -> void;

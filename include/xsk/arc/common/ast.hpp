@@ -88,10 +88,10 @@ struct node
         stmt_endon,
         stmt_notify,
         stmt_wait,
+        stmt_waitrealtime,
         stmt_waittill,
         stmt_waittillmatch,
         stmt_waittillframeend,
-        stmt_waitrealtime,
         stmt_if,
         stmt_ifelse,
         stmt_while,
@@ -1001,6 +1001,16 @@ struct stmt_wait : public stmt
     XSK_ARC_AST_MAKE(stmt_wait)
 };
 
+struct stmt_waitrealtime : public stmt
+{
+    using ptr = std::unique_ptr<stmt_waitrealtime>;
+
+    expr::ptr time;
+
+    stmt_waitrealtime(location const& loc, expr::ptr time);
+    XSK_ARC_AST_MAKE(stmt_waitrealtime)
+};
+
 struct stmt_waittill : public stmt
 {
     using ptr = std::unique_ptr<stmt_waittill>;
@@ -1031,16 +1041,6 @@ struct stmt_waittillframeend : public stmt
 
     stmt_waittillframeend(location const& loc);
     XSK_ARC_AST_MAKE(stmt_waittillframeend)
-};
-
-struct stmt_waitrealtime : public stmt
-{
-    using ptr = std::unique_ptr<stmt_waitrealtime>;
-
-    expr::ptr time;
-
-    stmt_waitrealtime(location const& loc, expr::ptr time);
-    XSK_ARC_AST_MAKE(stmt_waitrealtime)
 };
 
 struct stmt_if : public stmt
