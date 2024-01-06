@@ -432,16 +432,44 @@ auto rename_file(game game, mach mach, fs::path file, fs::path rel) -> result
 
 std::unordered_map<std::string, std::vector<std::uint8_t>> files;
 
-auto fs_read(std::string const& name) -> std::pair<buffer, std::vector<u8>>
+auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, std::vector<u8>>
 {
-    auto data = utils::file::read(fs::path{ name });
+    auto path = fs::path{ name };
+
+    if (!utils::file::exists(path))
+    {
+        path.replace_extension("");
+
+        auto id = ctx->token_id(path.string());
+        if (id > 0)
+        {
+            path = fs::path{ std::to_string(id) + ".gscbin" };
+        }
+
+        if (!utils::file::exists(path))
+        {
+            path = fs::path{ path.string() + ".gscbin" };
+        }
+
+        if (!utils::file::exists(path))
+        {
+            path = fs::path{ path.string() + ".gsh" };
+        }
+
+        if (!utils::file::exists(path))
+        {
+            path = fs::path{ path.string() + ".gsc" };
+        }
+    }
+
+    auto data = utils::file::read(path);
     
-    if(name.ends_with(".gscbin") || (!name.ends_with(".gsh") && !name.ends_with(".gsc")))
+    if (path.extension().string() == ".gscbin" || (path.extension().string() != ".gsh" && path.extension().string() != ".gsc"))
     {
         asset s;
         s.deserialize(data);
         auto stk = utils::zlib::decompress(s.buffer, s.len);
-        auto res = files.insert({ name, std::move(s.bytecode) });
+        auto res = files.insert({ path.filename().string(), std::move(s.bytecode)});
 
         if (res.second)
         {
