@@ -432,7 +432,7 @@ auto rename_file(game game, mach mach, fs::path file, fs::path rel) -> result
 
 std::unordered_map<std::string, std::vector<std::uint8_t>> files;
 
-auto fs_read(std::string const& name, context& ctx) -> std::pair<buffer, std::vector<u8>>
+auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, std::vector<u8>>
 {
     auto path = fs::path{ name };
 

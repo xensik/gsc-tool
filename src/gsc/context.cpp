@@ -682,7 +682,7 @@ auto context::load_header(std::string const& name) -> std::tuple<std::string con
         return { &itr->first, reinterpret_cast<char const*>(itr->second.data()), itr->second.size() };
     }
 
-    auto data = fs_callback_(name, *this);
+    auto data = fs_callback_(this, name);
 
     if (data.first.data == nullptr && data.first.size == 0 && !data.second.empty())
     {
@@ -700,7 +700,7 @@ auto context::load_header(std::string const& name) -> std::tuple<std::string con
 auto context::load_include(std::string const& name) -> bool
 {
     try
-    { 
+    {
         if (includes_.contains(name))
         {
             return false;
@@ -711,7 +711,10 @@ auto context::load_include(std::string const& name) -> bool
         if (include_cache_.contains(name))
             return true;
 
-        auto file = fs_callback_(name, *this);
+        auto filename = name;
+        filename += (instance_ == gsc::instance::server) ? ".gsc" : ".csc";
+
+        auto file = fs_callback_(this, filename);
 
         if ((file.first.data == nullptr || file.first.size == 0) && file.second.empty())
             throw std::runtime_error("empty file");
