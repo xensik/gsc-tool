@@ -436,9 +436,11 @@ auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, s
 {
     auto path = fs::path{ name };
 
-    if (!utils::file::exists(path) && !path.has_extension())
+    if (!utils::file::exists(path))
     {
-        auto id = ctx.token_id(name);
+        path.replace_extension("");
+
+        auto id = ctx->token_id(path.string());
         if (id > 0)
         {
             path = fs::path{ std::to_string(id) + ".gscbin" };
@@ -446,17 +448,17 @@ auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, s
 
         if (!utils::file::exists(path))
         {
-            path = fs::path{ name + ".gscbin" };
+            path = fs::path{ path.string() + ".gscbin" };
         }
 
         if (!utils::file::exists(path))
         {
-            path = fs::path{ name + ".gsh" };
+            path = fs::path{ path.string() + ".gsh" };
         }
 
         if (!utils::file::exists(path))
         {
-            path = fs::path{ name + ".gsc" };
+            path = fs::path{ path.string() + ".gsc" };
         }
     }
 
