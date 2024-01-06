@@ -180,7 +180,7 @@ jobs:
         run: |
           for dir in */; do
             if [[ $dir == *"windows"* ]]; then
-              zip -r "${dir%/}.zip" "$dir*"
+              cd "$dir" && zip -r "../${dir%/}.zip" . && cd ..
             else
               tar -czvf "${dir%/}.tar.gz" -C "$dir" .
             fi
