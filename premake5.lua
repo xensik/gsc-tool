@@ -161,6 +161,7 @@ project "xsk-tool"
     dependson "xsk-gsc"
 
     files {
+        "./include/*.hpp",
         "./src/tool/**.h",
         "./src/tool/**.hpp",
         "./src/tool/**.cpp"
@@ -176,6 +177,7 @@ project "xsk-tool"
         "./include",
     }
 
+    cxxopts:link()
     fmt:link()
     zlib:link()
 

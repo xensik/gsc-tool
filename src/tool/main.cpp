@@ -31,6 +31,7 @@
 #include "xsk/arc/engine/t8.hpp"
 #include "xsk/arc/engine/t9.hpp"
 #include "xsk/version.hpp"
+#include "cxxopts.hpp"
 
 namespace fs = std::filesystem;
 
