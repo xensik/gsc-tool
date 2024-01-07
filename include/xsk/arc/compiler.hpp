@@ -20,6 +20,7 @@ class compiler
     std::vector<scope> scopes_;
     std::unordered_map<std::string, expr const*> constants_;
     std::string animtree_;
+    sourcepos debug_pos_;
     u32 index_;
     u32 label_idx_;
     bool can_break_;

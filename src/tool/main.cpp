@@ -176,8 +176,8 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
             if (zonetool)
             {
                 auto path = fs::path{ "assembled" } / rel;
-                utils::file::save(path, outbin.first.data, outbin.first.size);
-                utils::file::save(path.replace_extension(".cgsc.stack"), outbin.second.data, outbin.second.size);
+                utils::file::save(path, std::get<0>(outbin).data, std::get<0>(outbin).size);
+                utils::file::save(path.replace_extension(".cgsc.stack"), std::get<1>(outbin).data, std::get<1>(outbin).size);
                 std::cout << fmt::format("assembled {}\n", rel.generic_string());
             }
             else
@@ -185,14 +185,14 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
                 asset script;
                 script.name = "GSC"s;
                 
-                script.bytecode.resize(outbin.first.size);
-                std::memcpy(script.bytecode.data(), outbin.first.data, script.bytecode.size());
+                script.bytecode.resize(std::get<0>(outbin).size);
+                std::memcpy(script.bytecode.data(), std::get<0>(outbin).data, script.bytecode.size());
 
-                script.buffer.resize(outbin.second.size);
-                std::memcpy(script.buffer.data(), outbin.second.data, script.buffer.size());
+                script.buffer.resize(std::get<1>(outbin).size);
+                std::memcpy(script.buffer.data(), std::get<1>(outbin).data, script.buffer.size());
                 script.buffer = utils::zlib::compress(script.buffer);
 
-                script.len = static_cast<u32>(outbin.second.size);
+                script.len = static_cast<u32>(std::get<1>(outbin).size);
                 script.compressedLen = static_cast<u32>(script.buffer.size());
                 script.bytecodeLen = static_cast<u32>(script.bytecode.size());
 
@@ -271,8 +271,8 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
             if (zonetool)
             {
                 auto path = fs::path{ "compiled" } / rel;
-                utils::file::save(path, outbin.first.data, outbin.first.size);
-                utils::file::save(path.replace_extension(".cgsc.stack"), outbin.second.data, outbin.second.size);
+                utils::file::save(path, std::get<0>(outbin).data, std::get<0>(outbin).size);
+                utils::file::save(path.replace_extension(".cgsc.stack"), std::get<1>(outbin).data, std::get<1>(outbin).size);
                 std::cout << fmt::format("compiled {}\n", rel.generic_string());
             }
             else
@@ -280,20 +280,23 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
                 asset script;
                 script.name = "GSC"s;
                 
-                script.bytecode.resize(outbin.first.size);
-                std::memcpy(script.bytecode.data(), outbin.first.data, script.bytecode.size());
+                script.bytecode.resize(std::get<0>(outbin).size);
+                std::memcpy(script.bytecode.data(), std::get<0>(outbin).data, script.bytecode.size());
 
-                script.buffer.resize(outbin.second.size);
-                std::memcpy(script.buffer.data(), outbin.second.data, script.buffer.size());
+                script.buffer.resize(std::get<1>(outbin).size);
+                std::memcpy(script.buffer.data(), std::get<1>(outbin).data, script.buffer.size());
                 script.buffer = utils::zlib::compress(script.buffer);
 
-                script.len = static_cast<std::uint32_t>(outbin.second.size);
+                script.len = static_cast<std::uint32_t>(std::get<1>(outbin).size);
                 script.compressedLen = static_cast<std::uint32_t>(script.buffer.size());
                 script.bytecodeLen = static_cast<std::uint32_t>(script.bytecode.size());
 
                 auto result = script.serialize();
                 utils::file::save(fs::path{ "compiled" } / rel, result);
                 std::cout << fmt::format("compiled {}\n", rel.generic_string());
+
+                utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension(".gscmap"), std::get<2>(outbin).data, std::get<2>(outbin).size);
+                std::cout << fmt::format("saved developer map {}\n", rel.generic_string());
             }
         }
 
@@ -741,7 +744,7 @@ auto assemble_file(game game, mach mach, fs::path const& file, fs::path rel) -> 
         auto outasm = contexts[game][mach]->source().parse_assembly(data);
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
-        utils::file::save(fs::path{ "assembled" } / rel, outbin.data, outbin.size);
+        utils::file::save(fs::path{ "assembled" } / rel, outbin.first.data, outbin.first.size);
         std::cout << fmt::format("assembled {}\n", rel.generic_string());
         return result::success;
     }
@@ -793,8 +796,12 @@ auto compile_file(game game, mach mach, fs::path const& file, fs::path rel) -> r
         auto outasm = contexts[game][mach]->compiler().compile(file.string(), data);
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
-        utils::file::save(fs::path{ "compiled" } / rel, outbin.data, outbin.size);
+        utils::file::save(fs::path{ "compiled" } / rel, outbin.first.data, outbin.first.size);
         std::cout << fmt::format("compiled {}\n", rel.generic_string());
+
+        utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension(".gscmap"), outbin.second.data, outbin.second.size);
+        std::cout << fmt::format("saved developer map {}\n", rel.generic_string());
+
         return result::success;
     }
     catch (std::exception const& e)

@@ -12,7 +12,7 @@ class position
 {
 public:
     typedef const std::string filename_type;
-    typedef int counter_type;
+    typedef u16 counter_type;
 
     filename_type *filename;
     counter_type line;

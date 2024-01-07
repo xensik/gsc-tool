@@ -33,6 +33,7 @@ auto compiler::emit_program(program const& prog) -> void
     developer_thread_ = false;
     animtree_ = {};
     index_ = 0;
+    debug_pos_ = { 0, 0 };
 
     for (auto const& include : prog.includes)
     {
@@ -138,6 +139,8 @@ auto compiler::emit_decl_function(decl_function const& func) -> void
 
 auto compiler::emit_stmt(stmt const& stm) -> void
 {
+    debug_pos_ = { stm.loc().begin.line, stm.loc().begin.column };
+
     switch (stm.kind())
     {
         case node::stmt_list:
@@ -695,6 +698,8 @@ auto compiler::emit_stmt_prof_end(stmt_prof_end const&) -> void
 
 auto compiler::emit_expr(expr const& exp) -> void
 {
+    debug_pos_ = { exp.loc().begin.line, exp.loc().begin.column };
+
     switch (exp.kind())
     {
         case node::expr_paren:
@@ -1875,6 +1880,7 @@ auto compiler::emit_opcode(opcode op) -> void
     inst->opcode = op;
     inst->size = ctx_->opcode_size(op);
     inst->index = index_;
+    inst->pos = debug_pos_;
 
     index_ += inst->size;
 }
@@ -1888,6 +1894,7 @@ auto compiler::emit_opcode(opcode op, std::string const& data) -> void
     inst->size = ctx_->opcode_size(op);
     inst->index = index_;
     inst->data.push_back(data);
+    inst->pos = debug_pos_;
 
     index_ += inst->size;
 }
@@ -1901,6 +1908,7 @@ auto compiler::emit_opcode(opcode op, std::vector<std::string> const& data) -> v
     inst->size = ctx_->opcode_size(op);
     inst->index = index_;
     inst->data = data;
+    inst->pos = debug_pos_;
 
     index_ += inst->size;
 }

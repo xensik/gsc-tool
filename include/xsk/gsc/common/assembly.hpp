@@ -220,12 +220,19 @@ enum class opcode : u8
     OP_count,
 };
 
+struct sourcepos
+{
+    u16 line;
+    u16 column;
+};
+
 struct instruction
 {
     using ptr = std::unique_ptr<instruction>;
 
     u32 index;
     u32 size;
+    sourcepos pos;
     opcode opcode;
     std::vector<std::string> data;
 
