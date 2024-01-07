@@ -17,13 +17,13 @@ class assembler
     function const* func_;
     assembly const* assembly_;
     utils::writer script_;
-    utils::writer dev_map_;
-    u32 dev_map_inst_count_;
+    utils::writer devmap_;
     std::unordered_map<std::string, u16> strpool_;
     std::vector<export_ref> exports_;
     std::vector<import_ref> imports_;
     std::vector<string_ref> strings_;
     std::vector<animtree_ref> anims_;
+    u32 devmap_count_;
 
 public:
     assembler(context const* ctx);

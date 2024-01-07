@@ -295,8 +295,8 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
                 utils::file::save(fs::path{ "compiled" } / rel, result);
                 std::cout << fmt::format("compiled {}\n", rel.generic_string());
 
-                utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel, std::get<2>(outbin).data, std::get<2>(outbin).size);
-                std::cout << fmt::format("wrote developer map {}\n", rel.generic_string());
+                utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension(".gscmap"), std::get<2>(outbin).data, std::get<2>(outbin).size);
+                std::cout << fmt::format("saved developer map {}\n", rel.generic_string());
             }
         }
 
@@ -799,8 +799,8 @@ auto compile_file(game game, mach mach, fs::path const& file, fs::path rel) -> r
         utils::file::save(fs::path{ "compiled" } / rel, outbin.first.data, outbin.first.size);
         std::cout << fmt::format("compiled {}\n", rel.generic_string());
 
-        utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel, outbin.second.data, outbin.second.size);
-        std::cout << fmt::format("wrote developer map {}\n", rel.generic_string());
+        utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension(".gscmap"), outbin.second.data, outbin.second.size);
+        std::cout << fmt::format("saved developer map {}\n", rel.generic_string());
 
         return result::success;
     }

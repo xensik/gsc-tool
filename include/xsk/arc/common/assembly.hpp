@@ -158,15 +158,21 @@ enum class opcode : u8
     OP_Count,
 };
 
+struct sourcepos
+{
+    u16 line;
+    u16 column;
+};
+
 struct instruction
 {
     using ptr = std::unique_ptr<instruction>;
 
     u32 index;
     u32 size;
+    sourcepos pos;
     opcode opcode;
     std::vector<std::string> data;
-    std::pair<position::counter_type, position::counter_type> pos;
 
     static auto make() -> instruction::ptr
     {

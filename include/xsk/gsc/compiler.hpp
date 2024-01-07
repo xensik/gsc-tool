@@ -22,13 +22,13 @@ class compiler
     std::vector<scope*> break_blks_;
     std::vector<scope*> continue_blks_;
     std::string animname_;
+    sourcepos debug_pos_;
     u32 index_;
     u32 label_idx_;
     bool can_break_;
     bool can_continue_;
     bool developer_thread_;
     bool animload_;
-    std::pair<position::counter_type, position::counter_type> debug_pos_;
 
 public:
     compiler(context* ctx);

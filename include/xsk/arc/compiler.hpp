@@ -20,12 +20,12 @@ class compiler
     std::vector<scope> scopes_;
     std::unordered_map<std::string, expr const*> constants_;
     std::string animtree_;
+    sourcepos debug_pos_;
     u32 index_;
     u32 label_idx_;
     bool can_break_;
     bool can_continue_;
     bool developer_thread_;
-    std::pair<position::counter_type, position::counter_type> debug_pos_;
 
 public:
     compiler(context* ctx);

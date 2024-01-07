@@ -18,8 +18,8 @@ class assembler
     assembly const* assembly_;
     utils::writer script_;
     utils::writer stack_;
-    utils::writer dev_map_;
-    u32 dev_map_inst_count_;
+    utils::writer devmap_;
+    u32 devmap_count_;
 
 public:
     assembler(context const* ctx);

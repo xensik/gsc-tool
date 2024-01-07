@@ -18,16 +18,16 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
 {
     assembly_ = &data;
     script_.clear();
-    dev_map_.clear();
+    devmap_.clear();
     strpool_.clear();
     exports_.clear();
     imports_.clear();
     strings_.clear();
     anims_.clear();
-    dev_map_inst_count_ = 0;
+    devmap_count_ = 0;
     auto head = header{};
 
-    dev_map_.pos(sizeof(u32));
+    devmap_.pos(sizeof(u32));
     script_.pos((ctx_->props() & props::headerxx) ? 0 : (ctx_->props() & props::header72) ? 72 : 64);
     process_string(name);
 
@@ -188,7 +188,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     head.flags = 0;
     head.name = resolve_string(name);
 
-    auto endpos = script_.pos();
+    auto const endpos = script_.pos();
 
     script_.pos(0);
     script_.write<u64>(ctx_->magic());
@@ -226,12 +226,12 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     script_.write<u8>(head.flags);
     script_.pos(endpos);
 
-    auto const dev_endpos = dev_map_.pos();
-    dev_map_.pos(0);
-    dev_map_.write<u32>(dev_map_inst_count_);
-    dev_map_.pos(dev_endpos);
+    auto const dev_endpos = devmap_.pos();
+    devmap_.pos(0);
+    devmap_.write<u32>(devmap_count_);
+    devmap_.pos(dev_endpos);
 
-    return { buffer{ script_.data(), script_.pos() }, buffer{ dev_map_.data(), dev_map_.pos() } };
+    return { buffer{ script_.data(), script_.pos() }, buffer{ devmap_.data(), devmap_.pos() } };
 }
 
 auto assembler::assemble_function(function& func) -> void
@@ -278,11 +278,10 @@ auto assembler::assemble_function(function& func) -> void
 
 auto assembler::assemble_instruction(instruction const& inst) -> void
 {
-    dev_map_inst_count_++;
-    dev_map_.write<u32>(script_.pos());
-    dev_map_.write<position::counter_type>(inst.pos.first);
-    dev_map_.write<position::counter_type>(inst.pos.second);
-
+    devmap_count_++;
+    devmap_.write<u32>(script_.pos());
+    devmap_.write<u16>(inst.pos.line);
+    devmap_.write<u16>(inst.pos.column);
     script_.write<u8>(static_cast<u8>(ctx_->opcode_id(inst.opcode)));
 
     switch (inst.opcode)
