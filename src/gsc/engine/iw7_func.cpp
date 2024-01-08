@@ -398,7 +398,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x182, "_func_182" }, // 0x140497070
     { 0x183, "precachemodel" }, // 0x140B3F7D0
     { 0x184, "precachempanim" }, // 0x140B539E0
-    { 0x185, "precachestring" }, // 0x140496C40
+    { 0x185, "precachenightvisioncodeassets" }, // 0x140496C40
     { 0x186, "precacherumble" }, // 0x140B491B0
     { 0x187, "precacheshader" }, // 0x140B487B0
     { 0x188, "precacheshellshock" }, // 0x140B3FC90
@@ -408,8 +408,8 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x18C, "precachetag" }, // nullptr
     { 0x18D, "precacheturret" }, // 0x140B3FF30
     { 0x18E, "precachevehicle" }, // 0x14042FFE0
-    { 0x18F, "_func_18F" }, // 0x140B5B500
-    { 0x190, "_func_190" }, // 0x140B566F0
+    { 0x18F, "preloadcinematicforall" }, // 0x140B5B500
+    { 0x190, "queuedialog" }, // 0x140B566F0
     { 0x191, "radiusdamage" }, // 0x140B4B590
     { 0x192, "randomfloat" }, // 0x140B34790
     { 0x193, "randomfloatrange" }, // 0x140B34AD0
@@ -815,6 +815,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x323, "_func_323" }, // 0x140560F30
     { 0x324, "_func_324" }, // 0x140561070
     { 0x325, "_func_325" }, // 0x140561280
+    { 0x326, "_func_326" }, // 0x140B5B8A0
 }};
 
 } // namespace xsk::gsc::iw7

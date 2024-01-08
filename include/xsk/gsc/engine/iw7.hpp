@@ -12,7 +12,7 @@ namespace xsk::gsc::iw7
 {
 
 constexpr usize code_count = 153;
-constexpr usize func_count = 805;
+constexpr usize func_count = 806;
 constexpr usize meth_count = 1483;
 constexpr usize token_count = 9444;
 constexpr u32 max_string_id = 0x13FCC;
