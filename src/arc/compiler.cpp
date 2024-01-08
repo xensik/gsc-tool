@@ -1962,6 +1962,7 @@ auto compiler::process_stmt(stmt const& stm) -> void
         case node::stmt_endon:
         case node::stmt_notify:
         case node::stmt_wait:
+        case node::stmt_waitrealtime:
         case node::stmt_waittillmatch:
         case node::stmt_waittillframeend:
         case node::stmt_case:
