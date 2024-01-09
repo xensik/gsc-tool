@@ -375,7 +375,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x16B, "_func_16B" }, // 0x140B3A770
     { 0x16C, "_func_16C" }, // 0x140B39FB0
     { 0x16D, "physicstrace" }, // 0x140B4BA40
-    { 0x16E, "_func_16E" }, // 0x140B5B440
+    { 0x16E, "playcinematicforall" }, // 0x140B5B440
     { 0x16F, "playerphysicstrace" }, // 0x140B4BBE0
     { 0x170, "playfx" }, // 0x140B357C0
     { 0x171, "playfxontag" }, // 0x140B368B0
@@ -635,7 +635,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x26F, "_func_26F" }, // 0x140563760
     { 0x270, "_func_270" }, // 0x140563870
     { 0x271, "_func_271" }, // 0x140441C20
-    { 0x272, "_func_272" }, // 0x140442E40
+    { 0x272, "navtrace" }, // 0x140442E40
     { 0x273, "_func_273" }, // 0x140442CB0
     { 0x274, "getrandomnavpoint" }, // 0x140442570
     { 0x275, "getrandomnavpoints" }, // 0x140442700
@@ -672,10 +672,10 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x294, "_func_294" }, // 0x140B43860
     { 0x295, "_func_295" }, // 0x140AF4F70
     { 0x296, "getislosdatafileloaded" }, // 0x140AF3180
-    { 0x297, "_func_297" }, // 0x140B37D60
+    { 0x297, "stopfxontagforclients" }, // 0x140B37D60
     { 0x298, "physics_charactercast" }, // 0x140563C90
     { 0x299, "physics_getclosestpointtocharacter" }, // 0x140566A80
-    { 0x29A, "_func_29A" }, // 0x140B5A270
+    { 0x29A, "playfxontagforteam" }, // 0x140B5A270
     { 0x29B, "_func_29B" }, // 0x140560260
     { 0x29C, "_func_29C" }, // 0x140560B20
     { 0x29D, "_func_29D" }, // 0x140560B70
@@ -746,7 +746,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2DE, "_func_2DE" }, // 0x140B4E8B0
     { 0x2DF, "playfxontagsbetweenclients" }, // 0x140B38A70
     { 0x2E0, "playfxbetweenpoints" }, // 0x140B390B0
-    { 0x2E1, "_func_2E1" }, // 0x140560D40
+    { 0x2E1, "physics_volumecreate" }, // 0x140560D40
     { 0x2E2, "_func_2E2" }, // nullptr
     { 0x2E3, "_func_2E3" }, // 0x1404A2240
     { 0x2E4, "_func_2E4" }, // 0x1404A2180
