@@ -287,7 +287,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8112, "_meth_8112" }, // 0x140B565B0
     { 0x8113, "_meth_8113" }, // 0x140B56DC0
     { 0x8114, "_meth_8114" }, // 0x1403E2C00
-    { 0x8115, "_meth_8115" }, // 0x140B06E10
+    { 0x8115, "getcurrentoffhand" }, // 0x140B06E10
     { 0x8116, "getcurrentprimaryweapon" }, // 0x140B0CBC0
     { 0x8117, "getcurrentweapon" }, // 0x140B0CBA0
     { 0x8118, "getcurrentweaponclipammo" }, // 0x140B06BA0
@@ -567,7 +567,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x822A, "_meth_822A" }, // nullptr
     { 0x822B, "_meth_822B" }, // 0x140B55A80
     { 0x822C, "_meth_822C" }, // 0x140B01B20
-    { 0x822D, "_meth_822D" }, // 0x140B01A10
+    { 0x822D, "player_recoilscaleon" }, // 0x140B01A10
     { 0x822E, "playerads" }, // 0x140B05720
     { 0x822F, "_meth_822F" }, // 0x14049C330
     { 0x8230, "_meth_8230" }, // 0x140B58D10
@@ -660,8 +660,8 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8287, "scragentsetgoalradius" }, // 0x140C1D010
     { 0x8288, "_meth_8288" }, // 0x140C1D090
     { 0x8289, "orientmode" }, // 0x140C1D110
-    { 0x828A, "_meth_828A" }, // 0x140C1D260
-    { 0x828B, "_meth_828B" }, // 0x140C1D3B0
+    { 0x828A, "scragentsetphysicsmode" }, // 0x140C1D260
+    { 0x828B, "scragentsetscripted" }, // 0x140C1D3B0
     { 0x828C, "_meth_828C" }, // 0x140C1D410
     { 0x828D, "_meth_828D" }, // 0x140C1D4F0
     { 0x828E, "_meth_828E" }, // 0x140C1D560
@@ -882,7 +882,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8365, "setvehweapon" }, // 0x14042C910
     { 0x8366, "setvelocity" }, // 0x140B03090
     { 0x8367, "_meth_8367" }, // 0x140B39370
-    { 0x8368, "_meth_8368" }, // 0x140B02700
+    { 0x8368, "setviewkickscale" }, // 0x140B02700
     { 0x8369, "setviewmodel" }, // 0x140B0C940
     { 0x836A, "_meth_836A" }, // 0x14049C480
     { 0x836B, "_meth_836B" }, // 0x140B49350
@@ -1107,7 +1107,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8446, "iswallrunning" }, // 0x140B097D0
     { 0x8447, "playershow" }, // 0x140B580D0
     { 0x8448, "_meth_8448" }, // 0x140B05250
-    { 0x8449, "_meth_8449" }, // 0x140B58B40
+    { 0x8449, "launchgrenade" }, // 0x140B58B40
     { 0x844A, "_meth_844A" }, // 0x140C455F0
     { 0x844B, "assignweaponoffhandprimary" }, // 0x140B03270
     { 0x844C, "assignweaponoffhandsecondary" }, // 0x140B03560
@@ -1124,7 +1124,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8457, "_meth_8457" }, // 0x14042B110
     { 0x8458, "_meth_8458" }, // 0x14042ADB0
     { 0x8459, "_meth_8459" }, // 0x14042AE30
-    { 0x845A, "_meth_845A" }, // 0x140B04930
+    { 0x845A, "setsuit" }, // 0x140B04930
     { 0x845B, "_meth_845B" }, // 0x140B05980
     { 0x845C, "_meth_845C" }, // 0x140472070
     { 0x845D, "_meth_845D" }, // 0x1403E1AC0
