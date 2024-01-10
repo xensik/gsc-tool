@@ -182,7 +182,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x0AA, "_func_0AA" }, // 0x140498820
     { 0x0AB, "_func_0AB" }, // 0x1404989D0
     { 0x0AC, "_func_0AC" }, // 0x140498A70
-    { 0x0AD, "_func_0AD" }, // 0x140B590A0
+    { 0x0AD, "getmatchdata" }, // 0x140B590A0
     { 0x0AE, "getmatchrulesdata" }, // 0x140B537D0
     { 0x0AF, "getmaxagents" }, // 0x140C1DD90
     { 0x0B0, "getmissileowner" }, // 0x140B3AA50
