@@ -439,35 +439,35 @@ auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, s
 {
     auto path = fs::path{ name };
 
+    auto bin_ext = ".gscbin";
+    auto gsc_ext = ".gsc";
+    auto gsh_ext = ".gsh";
+
+    if (ctx->instance() == gsc::instance::client)
+    {
+        bin_ext = ".cscbin";
+        gsc_ext = ".csc";
+    }
+
     if (!utils::file::exists(path))
     {
-        path.replace_extension("");
+        auto const name_noext = path.replace_extension("").string();
 
-        auto id = ctx->token_id(path.string());
+        auto id = ctx->token_id(name_noext);
         if (id > 0)
         {
-            path = fs::path{ std::to_string(id) + ".gscbin" };
+            path = fs::path{ std::to_string(id) + bin_ext };
         }
 
         if (!utils::file::exists(path))
         {
-            path = fs::path{ path.string() + ".gscbin" };
-        }
-
-        if (!utils::file::exists(path))
-        {
-            path = fs::path{ path.string() + ".gsh" };
-        }
-
-        if (!utils::file::exists(path))
-        {
-            path = fs::path{ path.string() + ".gsc" };
+            path = fs::path{ name_noext + bin_ext };
         }
     }
 
     auto data = utils::file::read(path);
     
-    if (path.extension().string() == ".gscbin" || (path.extension().string() != ".gsh" && path.extension().string() != ".gsc"))
+    if (path.extension().string() == bin_ext || (path.extension().string() != gsh_ext && path.extension().string() != gsc_ext))
     {
         asset s;
         s.deserialize(data);
