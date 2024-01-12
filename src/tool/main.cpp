@@ -447,7 +447,6 @@ auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, s
     {
         bin_ext = ".cscbin";
         gsc_ext = ".csc";
-        gsh_ext = ".csh";
     }
 
     if (!utils::file::exists(path))
