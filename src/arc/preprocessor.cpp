@@ -13,11 +13,12 @@ namespace xsk::arc
 preprocessor::preprocessor(context* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, curr_expr_{ 0 }, expand_{ 0 }, skip_{ false }
 {
     lexer_.push(lexer{ ctx, name, data, size });
-    defines_.reserve(4);
+    defines_.reserve(5);
     defines_.insert({ "__FILE__", { define::BUILTIN,/* false,*/ {}, {} }});
     defines_.insert({ "__LINE__", { define::BUILTIN,/* false,*/ {}, {} }});
     defines_.insert({ "__DATE__", { define::BUILTIN,/* false,*/ {}, {} }});
     defines_.insert({ "__TIME__", { define::BUILTIN,/* false,*/ {}, {} }});
+    defines_.insert({ std::string(ctx->engine_name()), { define::BUILTIN,/* false,*/ {}, {} }});
     directives_.reserve(15);
     directives_.insert({ "if", directive::IF });
     directives_.insert({ "ifdef", directive::IFDEF });
