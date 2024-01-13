@@ -296,8 +296,11 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
                 utils::file::save(fs::path{ "compiled" } / rel, result);
                 std::cout << fmt::format("compiled {}\n", rel.generic_string());
 
-                utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension(".gscmap"), std::get<2>(outbin).data, std::get<2>(outbin).size);
-                std::cout << fmt::format("saved developer map {}\n", rel.generic_string());
+                if (contexts[game][mach]->build() == build::dev)
+                {
+                    utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension(".gscmap"), std::get<2>(outbin).data, std::get<2>(outbin).size);
+                    std::cout << fmt::format("saved developer map {}\n", rel.generic_string());
+                }
             }
         }
 
@@ -488,7 +491,7 @@ auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, s
     throw std::runtime_error("file read error");
 }
 
-auto init_iw5(mach mach) -> void
+auto init_iw5(mach mach, bool dev) -> void
 {
     if (contexts[game::iw5].contains(mach)) return;
 
@@ -497,19 +500,19 @@ auto init_iw5(mach mach) -> void
         case mach::pc:
         {
             contexts[game::iw5][mach] = std::make_unique<iw5_pc::context>();
-            contexts[game::iw5][mach]->init(build::prod, fs_read);
+            contexts[game::iw5][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::ps3:
         {
             contexts[game::iw5][mach] = std::make_unique<iw5_ps::context>();
-            contexts[game::iw5][mach]->init(build::prod, fs_read);
+            contexts[game::iw5][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::xb2:
         {
             contexts[game::iw5][mach] = std::make_unique<iw5_xb::context>();
-            contexts[game::iw5][mach]->init(build::prod, fs_read);
+            contexts[game::iw5][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -517,7 +520,7 @@ auto init_iw5(mach mach) -> void
     }
 }
 
-auto init_iw6(mach mach) -> void
+auto init_iw6(mach mach, bool dev) -> void
 {
     if (contexts[game::iw6].contains(mach)) return;
 
@@ -526,19 +529,19 @@ auto init_iw6(mach mach) -> void
         case mach::pc:
         {
             contexts[game::iw6][mach] = std::make_unique<iw6_pc::context>();
-            contexts[game::iw6][mach]->init(build::prod, fs_read);
+            contexts[game::iw6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::ps3:
         {
             contexts[game::iw6][mach] = std::make_unique<iw6_ps::context>();
-            contexts[game::iw6][mach]->init(build::prod, fs_read);
+            contexts[game::iw6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::xb2:
         {
             contexts[game::iw6][mach] = std::make_unique<iw6_xb::context>();
-            contexts[game::iw6][mach]->init(build::prod, fs_read);
+            contexts[game::iw6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -546,7 +549,7 @@ auto init_iw6(mach mach) -> void
     }
 }
 
-auto init_iw7(mach mach) -> void
+auto init_iw7(mach mach, bool dev) -> void
 {
     if (contexts[game::iw7].contains(mach)) return;
 
@@ -555,7 +558,7 @@ auto init_iw7(mach mach) -> void
         case mach::pc:
         {
             contexts[game::iw7][mach] = std::make_unique<iw7::context>();
-            contexts[game::iw7][mach]->init(build::prod, fs_read);
+            contexts[game::iw7][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -563,7 +566,7 @@ auto init_iw7(mach mach) -> void
     }
 }
 
-auto init_iw8(mach mach) -> void
+auto init_iw8(mach mach, bool dev) -> void
 {
     if (contexts[game::iw8].contains(mach)) return;
 
@@ -572,7 +575,7 @@ auto init_iw8(mach mach) -> void
         case mach::pc:
         {
             contexts[game::iw8][mach] = std::make_unique<iw8::context>();
-            contexts[game::iw8][mach]->init(build::prod, fs_read);
+            contexts[game::iw8][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -580,7 +583,7 @@ auto init_iw8(mach mach) -> void
     }
 }
 
-auto init_iw9(mach mach) -> void
+auto init_iw9(mach mach, bool dev) -> void
 {
     if (contexts[game::iw9].contains(mach)) return;
 
@@ -589,7 +592,7 @@ auto init_iw9(mach mach) -> void
         case mach::pc:
         {
             contexts[game::iw9][mach] = std::make_unique<iw9::context>();
-            contexts[game::iw9][mach]->init(build::prod, fs_read);
+            contexts[game::iw9][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -597,7 +600,7 @@ auto init_iw9(mach mach) -> void
     }
 }
 
-auto init_s1(mach mach) -> void
+auto init_s1(mach mach, bool dev) -> void
 {
     if (contexts[game::s1].contains(mach)) return;
 
@@ -606,19 +609,19 @@ auto init_s1(mach mach) -> void
         case mach::pc:
         {
             contexts[game::s1][mach] = std::make_unique<s1_pc::context>();
-            contexts[game::s1][mach]->init(build::prod, fs_read);
+            contexts[game::s1][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::ps3:
         {
             contexts[game::s1][mach] = std::make_unique<s1_ps::context>();
-            contexts[game::s1][mach]->init(build::prod, fs_read);
+            contexts[game::s1][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::xb2:
         {
             contexts[game::s1][mach] = std::make_unique<s1_xb::context>();
-            contexts[game::s1][mach]->init(build::prod, fs_read);
+            contexts[game::s1][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -626,7 +629,7 @@ auto init_s1(mach mach) -> void
     }
 }
 
-auto init_s2(mach mach) -> void
+auto init_s2(mach mach, bool dev) -> void
 {
     if (contexts[game::s2].contains(mach)) return;
 
@@ -635,7 +638,7 @@ auto init_s2(mach mach) -> void
         case mach::pc:
         {
             contexts[game::s2][mach] = std::make_unique<s2::context>();
-            contexts[game::s2][mach]->init(build::prod, fs_read);
+            contexts[game::s2][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -643,7 +646,7 @@ auto init_s2(mach mach) -> void
     }
 }
 
-auto init_s4(mach mach) -> void
+auto init_s4(mach mach, bool dev) -> void
 {
     if (contexts[game::s4].contains(mach)) return;
 
@@ -652,7 +655,7 @@ auto init_s4(mach mach) -> void
         case mach::pc:
         {
             contexts[game::s4][mach] = std::make_unique<s4::context>();
-            contexts[game::s4][mach]->init(build::prod, fs_read);
+            contexts[game::s4][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -660,7 +663,7 @@ auto init_s4(mach mach) -> void
     }
 }
 
-auto init_h1(mach mach) -> void
+auto init_h1(mach mach, bool dev) -> void
 {
     if (contexts[game::h1].contains(mach)) return;
 
@@ -669,7 +672,7 @@ auto init_h1(mach mach) -> void
         case mach::pc:
         {
             contexts[game::h1][mach] = std::make_unique<h1::context>();
-            contexts[game::h1][mach]->init(build::prod, fs_read);
+            contexts[game::h1][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -677,7 +680,7 @@ auto init_h1(mach mach) -> void
     }
 }
 
-auto init_h2(mach mach) -> void
+auto init_h2(mach mach, bool dev) -> void
 {
     if (contexts[game::h2].contains(mach)) return;
 
@@ -686,7 +689,7 @@ auto init_h2(mach mach) -> void
         case mach::pc:
         {
             contexts[game::h2][mach] = std::make_unique<h2::context>();
-            contexts[game::h2][mach]->init(build::prod, fs_read);
+            contexts[game::h2][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -694,7 +697,7 @@ auto init_h2(mach mach) -> void
     }
 }
 
-auto init(game game, mach mach) -> void
+auto init(game game, mach mach, bool dev) -> void
 {
     funcs[mode::assemble] = assemble_file;
     funcs[mode::disassemble] = disassemble_file;
@@ -710,16 +713,16 @@ auto init(game game, mach mach) -> void
 
     switch (game)
     {
-        case game::iw5: init_iw5(mach); break;
-        case game::iw6: init_iw6(mach); break;
-        case game::iw7: init_iw7(mach); break;
-        case game::iw8: init_iw8(mach); break;
-        case game::iw9: init_iw9(mach); break;
-        case game::s1:  init_s1(mach);  break;
-        case game::s2:  init_s2(mach);  break;
-        case game::s4:  init_s4(mach);  break;
-        case game::h1:  init_h1(mach);  break;
-        case game::h2:  init_h2(mach);  break;
+        case game::iw5: init_iw5(mach, dev); break;
+        case game::iw6: init_iw6(mach, dev); break;
+        case game::iw7: init_iw7(mach, dev); break;
+        case game::iw8: init_iw8(mach, dev); break;
+        case game::iw9: init_iw9(mach, dev); break;
+        case game::s1:  init_s1(mach, dev);  break;
+        case game::s2:  init_s2(mach, dev);  break;
+        case game::s4:  init_s4(mach, dev);  break;
+        case game::h1:  init_h1(mach, dev);  break;
+        case game::h2:  init_h2(mach, dev);  break;
         default: break;
     }
 }
@@ -800,8 +803,11 @@ auto compile_file(game game, mach mach, fs::path const& file, fs::path rel) -> r
         utils::file::save(fs::path{ "compiled" } / rel, outbin.first.data, outbin.first.size);
         std::cout << fmt::format("compiled {}\n", rel.generic_string());
 
-        utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension(".gscmap"), outbin.second.data, outbin.second.size);
-        std::cout << fmt::format("saved developer map {}\n", rel.generic_string());
+        if (contexts[game][mach]->build() == build::dev)
+        {
+            utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension((rel.extension().string().starts_with(".gsc") ? ".gscmap" : ".cscmap")), outbin.second.data, outbin.second.size);
+            std::cout << fmt::format("saved developer map {}\n", rel.generic_string());
+        }
 
         return result::success;
     }
@@ -852,7 +858,7 @@ auto fs_read(std::string const& name) -> std::vector<u8>
     return utils::file::read(fs::path{ name });
 }
 
-auto init_t6(mach mach) -> void
+auto init_t6(mach mach, bool dev) -> void
 {
     if (contexts[game::t6].contains(mach)) return;
 
@@ -861,25 +867,25 @@ auto init_t6(mach mach) -> void
         case mach::pc:
         {
             contexts[game::t6][mach] = std::make_unique<t6::pc::context>();
-            contexts[game::t6][mach]->init(build::prod, fs_read);
+            contexts[game::t6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::ps3:
         {
             contexts[game::t6][mach] = std::make_unique<t6::ps3::context>();
-            contexts[game::t6][mach]->init(build::prod, fs_read);
+            contexts[game::t6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::xb2:
         {
             contexts[game::t6][mach] = std::make_unique<t6::xb2::context>();
-            contexts[game::t6][mach]->init(build::prod, fs_read);
+            contexts[game::t6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::wiiu:
         {
             contexts[game::t6][mach] = std::make_unique<t6::wiiu::context>();
-            contexts[game::t6][mach]->init(build::prod, fs_read);
+            contexts[game::t6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -887,7 +893,7 @@ auto init_t6(mach mach) -> void
     }
 }
 
-auto init_t7(mach mach) -> void
+auto init_t7(mach mach, bool dev) -> void
 {
     if (contexts[game::t7].contains(mach)) return;
 
@@ -896,7 +902,7 @@ auto init_t7(mach mach) -> void
         case mach::pc:
         {
             contexts[game::t7][mach] = std::make_unique<t7::context>();
-            contexts[game::t7][mach]->init(build::prod, fs_read);
+            contexts[game::t7][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
@@ -904,7 +910,7 @@ auto init_t7(mach mach) -> void
     }
 }
 
-auto init_t8(mach /*mach*/) -> void
+auto init_t8(mach /*mach*/, bool /*dev*/) -> void
 {
     throw std::runtime_error("not implemented");
 
@@ -923,7 +929,7 @@ auto init_t8(mach /*mach*/) -> void
     // }
 }
 
-auto init_t9(mach /*mach*/) -> void
+auto init_t9(mach /*mach*/, bool /*dev*/) -> void
 {
     throw std::runtime_error("not implemented");
 
@@ -942,7 +948,7 @@ auto init_t9(mach /*mach*/) -> void
     // }
 }
 
-auto init(game game, mach mach) -> void
+auto init(game game, mach mach, bool dev) -> void
 {
     funcs[mode::assemble] = assemble_file;
     funcs[mode::disassemble] = disassemble_file;
@@ -958,10 +964,10 @@ auto init(game game, mach mach) -> void
 
     switch (game)
     {
-        case game::t6: init_t6(mach); break;
-        case game::t7: init_t7(mach); break;
-        case game::t8: init_t8(mach); break;
-        case game::t9: init_t9(mach); break;
+        case game::t6: init_t6(mach, dev); break;
+        case game::t7: init_t7(mach, dev); break;
+        case game::t8: init_t8(mach, dev); break;
+        case game::t9: init_t9(mach, dev); break;
         default: break;
     }
 }
@@ -989,10 +995,10 @@ auto extension_match(fs::path const& ext, mode mode, game game) -> bool
     }
 }
 
-auto execute(mode mode, game game, mach mach, fs::path const& path) -> result
+auto execute(mode mode, game game, mach mach, fs::path const& path, bool dev) -> result
 {
-    gsc::init(game, mach);
-    arc::init(game, mach);
+    gsc::init(game, mach, dev);
+    arc::init(game, mach, dev);
 
     if (fs::is_directory(path))
     {
@@ -1033,96 +1039,158 @@ auto execute(mode mode, game game, mach mach, fs::path const& path) -> result
     }
 }
 
-auto parse_flags(u32 argc, char** argv, mode& mode, game& game, mach& mach, fs::path& path) -> bool
+auto parse_mode(std::string const& arg, mode& out) -> bool
 {
-    if (argc != 5) return false;
+    auto mode = utils::string::to_lower(arg);
 
-    auto arg = utils::string::to_lower(argv[1]);
+    auto const it = modes.find(mode);
 
-    if (arg.at(0) == 'z')
+    if (it != modes.end())
     {
-        arg.erase(arg.begin());
-        gsc::zonetool = true;
+        out = it->second;
+        return true;
     }
 
-    auto const it1 = modes.find(arg);
-
-    if (it1 != modes.end())
-    {
-        mode = it1->second;
-    }
-    else
-    {
-        std::cout << "[ERROR] unknown mode '" << argv[1] << "'.\n\n";
-        return false;
-    }
-
-    arg = utils::string::to_lower(argv[2]);
-
-    auto const it2 = games.find(arg);
-
-    if (it2 != games.end())
-    {
-        game = it2->second;
-    }
-    else
-    {
-        std::cout << "[ERROR] unknown game '" << argv[2] << "'.\n\n";
-        return false;
-    }
-
-    arg = utils::string::to_lower(argv[3]);
-
-    auto const it3 = machs.find(arg);
-
-    if (it3 != machs.end())
-    {
-        mach = it3->second;
-
-        if (mach == mach::ps4 || mach == mach::ps5 || mach == mach::xb3 || mach == mach::xb4)
-            mach = mach::pc;
-    }
-    else
-    {
-        std::cout << "[ERROR] unknown system '" << argv[3] << "'.\n\n";
-        return false;
-    }
-
-    path = fs::path{ utils::string::fordslash(argv[4]), fs::path::format::generic_format };
-
-    return true;
+    return false;
 }
 
-auto usage() -> void
+auto parse_game(std::string const& arg, game& out) -> bool
 {
-    std::cout << "usage: gsc-tool <mode> <game> <system> <path>\n";
-    std::cout << "\t* mode: asm, disasm, comp, decomp, parse, rename\n";
-    std::cout << "\t* game: iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9\n";
-    std::cout << "\t* system: pc, ps3, ps4, ps5, xb2 (360), xb3 (One), xb4 (Series X|S), wiiu\n";
-    std::cout << "\t* path: file or directory (recursive)\n";
+    auto game = utils::string::to_lower(arg);
+
+    auto const it = games.find(game);
+
+    if (it != games.end())
+    {
+        out = it->second;
+        return true;
+    }
+
+    return false;
 }
 
-auto branding() -> void
+auto parse_system(std::string const& arg, mach& out) -> bool
 {
-    std::cout << fmt::format("GSC Tool {} created by xensik\n\n", XSK_VERSION_STR);
+    auto mach = utils::string::to_lower(arg);
+
+    auto const it = machs.find(mach);
+
+    if (it != machs.end())
+    {
+        out = it->second;
+
+        if (out == mach::ps4 || out == mach::ps5 || out == mach::xb3 || out == mach::xb4)
+            out = mach::pc;
+
+        return true;
+    }
+
+    return false;
+}
+
+auto branding() -> std::string
+{
+    return fmt::format("GSC Tool {} created by xensik\n", XSK_VERSION_STR);
 }
 
 auto main(u32 argc, char** argv) -> result
 {
-    auto path = fs::path{};
-    auto mode = mode::_;
-    auto game = game::_;
-    auto mach = mach::_;
+    cxxopts::Options options("gsc-tool", branding());
+    options.custom_help("[OPTIONS...]");
+    options.positional_help("<path>");
+    options.set_width(120);
 
-    branding();
+    options.add_options()
+        ("m,mode","[REQUIRED] one of: asm, disasm, comp, decomp, parse, rename", cxxopts::value<std::string>(), "<mode>")
+        ("g,game", "[REQUIRED] one of: iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9", cxxopts::value<std::string>(), "<game>")
+        ("s,system", "[REQUIRED] one of: pc, ps3, ps4, ps5, xb2 (360), xb3 (One), xb4 (Series X|S), wiiu", cxxopts::value<std::string>(), "<system>")
+        ("p,path", "File or directory to process.", cxxopts::value<std::string>())
+        ("d,dev", "Enable developer mode (generate bytecode map).", cxxopts::value<bool>()->implicit_value("true"))
+        ("z,zonetool", "Enable zonetool mode (use .cgsc files).", cxxopts::value<bool>()->implicit_value("true"))
+        ("h,help", "Display help.")
+        ("v,version", "Display version.");
 
-    if (!parse_flags(argc, argv, mode, game, mach, path))
+    options.parse_positional({ "path" });
+
+    try
     {
-        usage();
+        auto result = options.parse(argc, argv);
+
+        if (argc == 1 || result.count("help"))
+        {
+            std::cout << options.help() << std::endl;
+            return result::success;
+        }
+
+        if (result.count("version"))
+        {
+            std::cout << branding();
+            return result::success;
+        }
+
+        if(!result.count("mode"))
+        {
+            std::cerr << "[ERROR] missing required argument <mode>\n";
+            return result::failure;
+        }
+
+        if (!result.count("game"))
+        {
+            std::cerr << "[ERROR] missing required argument <game>\n";
+            return result::failure;
+        }
+
+        if (!result.count("system"))
+        {
+            std::cerr << "[ERROR] missing required argument <system>\n";
+            return result::failure;
+        }
+
+        if (!result.count("path"))
+        {
+            std::cerr << "[ERROR] missing required argument <path>\n";
+            return result::failure;
+        }
+
+        auto mode_arg = utils::string::to_lower(result["mode"].as<std::string>());
+        auto game_arg = utils::string::to_lower(result["game"].as<std::string>());
+        auto mach_arg = utils::string::to_lower(result["system"].as<std::string>());
+        auto path_arg = result["path"].as<std::string>();
+        auto path = fs::path{};
+        auto mode = mode::_;
+        auto game = game::_;
+        auto mach = mach::_;
+        auto dev = result["dev"].as<bool>();
+        gsc::zonetool = result["zonetool"].as<bool>();
+
+        if(!parse_mode(mode_arg, mode))
+        {
+            std::cerr << "[ERROR] unknown mode '" << mode_arg << "'\n";
+            return result::failure;
+        }
+
+        if (!parse_game(game_arg, game))
+        {
+            std::cerr << "[ERROR] unknown game '" << game_arg << "'\n";
+            return result::failure;
+        }
+
+        if (!parse_system(mach_arg, mach))
+        {
+            std::cerr << "[ERROR] unknown system '" << mach_arg << "'\n";
+            return result::failure;
+        }
+
+        path = fs::path{ utils::string::fordslash(path_arg), fs::path::format::generic_format };
+
+        std::cout << branding();
+        return execute(mode, game, mach, path, dev);
+    }
+    catch (std::exception const& e)
+    {
+        std::cerr << "[ERROR] " << e.what() << std::endl;
         return result::failure;
     }
-
-    return execute(mode, game, mach, path);
 }
 
 } // namespace xsk
