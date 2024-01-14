@@ -37,6 +37,9 @@ jobs:
       with:
         version: ${{ env.PREMAKE_VERSION }}
 
+    - name: Set up problem matching
+      uses: ammaraskar/gcc-problem-matcher@master
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
@@ -46,9 +49,9 @@ jobs:
 
     - name: Build
       run: ./build.sh
-      env:
-        CC: clang
-        CXX: clang++
+      # env:
+        # CC: clang
+        # CXX: clang++
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
