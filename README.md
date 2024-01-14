@@ -24,18 +24,27 @@ A utility to compile & decompile IW engine game scripts.
 - **T9** *(Call of Duty: Black Ops Cold War)* ***\*WIP\****
 
 ## Usage
-``./gsc-tool.exe <mode> <game> <system> <path>``
+``gsc-tool [OPTIONS..] <path>``
 
-**mode**: `asm`, `disasm`, `comp`, `decomp`, `parse`
-- *note:* zonetool files (*.cgsc*, *.cgsc.stack*) use: `zasm`, `zdisasm`, `zcomp`, `zdecomp` modes
+- **path**: file or directory to process
 
-**game**: `iw5`, `iw6`, `iw7`, `iw8`, `iw9`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6` `t7` `t8` `t9`
+- **options:**
 
-**system**: `pc`, `ps3`, `ps4`, `ps5`, `xb2` (*360*), `xb3` (*One*), `xb4` (*Series X|S*), `wiiu`
+    ``-m, --mode <mode>``  [REQUIRED] one of: `asm`, `disasm`, `comp`, `decomp`, `parse`
 
-**path**: `file` or `directory` (recursive process all files inside the directory)
+    ``-g, --game <game>`` [REQUIRED] one of: `iw5`, `iw6`, `iw7`, `iw8`, `iw9`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6` `t7` `t8` `t9`
 
-Example: ``./gsc-tool.exe comp iw5 pc ./data/iw5/my_fancy_script.gsc``
+    ``-s, --system <system>`` [REQUIRED] one of: `pc`, `ps3`, `ps4`, `ps5`, `xb2` (*360*), `xb3` (*One*), `xb4` (*Series X|S*), `wiiu`
+
+    ``-d, --dev`` Enable developer mode (generate bytecode map).
+
+    ``-z, --zonetool`` Enable zonetool mode (use .cgsc files).
+
+    ``-h, --help`` Display help.
+
+    ``-v, --version`` Display version.
+
+Example: ``gsc-tool -m comp -g iw5 -s pc ./data/iw5/my_fancy_script.gsc``
 
 | Mode     |Description                | Output      |
 |:---------|:--------------------------|:------------|
@@ -48,13 +57,14 @@ Example: ``./gsc-tool.exe comp iw5 pc ./data/iw5/my_fancy_script.gsc``
 ## File Format
 If you need to extract scripts from fastfiles or game memory, use [Zonetool](https://github.com/ZoneTool/zonetool) or [Jekyll](https://github.com/EthanC/Jekyll).
 
-- gsc-tool `.gscbin` format is a serialized ScriptFile struct: <br/>
-***name***: null-terminated string <br/>
-***compressedLen***: 4 byte uint <br/>
-***len***: 4 byte uint <br/>
-***bytecodeLen***: 4 byte uint <br/>
-***buffer***: byte array[compressedLen] <br/>
-***bytecode***: byte array[bytecodeLen] <br/>
+- gsc-tool `.gscbin` binary format is a serialized ScriptFile struct: <br/>
+
+  - ***magic***: `"GSC\0"` 4 byte <br/>
+  - ***compressedLen***: 4 byte usigned integer <br/>
+  - ***len***: 4 byte usigned integer <br/>
+  - ***bytecodeLen***: 4 byte usigned integer <br/>
+  - ***buffer***: byte array[compressedLen] <br/>
+  - ***bytecode***: byte array[bytecodeLen] <br/>
 
 note: for PS3 & Xbox 360 `.gscbin` files *(compressedLen, len, bytecodeLen)* are saved as little-endian!!
 
