@@ -60,22 +60,17 @@ jobs:
         upload: false
         output: sarif-results
 
-    - name: debug
-      run: |
-        ls -la
-        ls -la sarif-results
-
     - name: Filter SARIF results
       uses: advanced-security/filter-sarif@v1
       with:
         patterns: |
           -**/*
-          deps/**/*
-        input: sarif-results/${{ matrix.language }}.sarif
-        output: sarif-results/${{ matrix.language }}.sarif
+          src/**/*
+        input: sarif-results/cpp.sarif
+        output: sarif-results/cpp.sarif
 
     - name: Upload SARIF results
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: sarif-results/${{ matrix.language }}.sarif
+        sarif_file: sarif-results/cpp.sarif
         category: "/language:${{matrix.language}}"
