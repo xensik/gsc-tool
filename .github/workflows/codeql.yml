@@ -37,8 +37,8 @@ jobs:
       with:
         version: ${{ env.PREMAKE_VERSION }}
 
-    - name: Set up problem matching
-      uses: ammaraskar/gcc-problem-matcher@master
+    - name: Generate project files
+      run: premake5 gmake2
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
@@ -48,7 +48,9 @@ jobs:
         debug: true
 
     - name: Build
-      run: ./build.sh
+      run: |
+        pushd build
+        make config=x64_release
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
