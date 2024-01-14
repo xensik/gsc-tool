@@ -42,6 +42,7 @@ jobs:
       with:
         languages: ${{ matrix.language }}
         queries: security-and-quality
+        debug: true
 
     - name: Build
       run: ./build.sh
