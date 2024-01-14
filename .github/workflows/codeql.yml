@@ -49,9 +49,6 @@ jobs:
 
     - name: Build
       run: ./build.sh
-      # env:
-        # CC: clang
-        # CXX: clang++
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
@@ -66,7 +63,6 @@ jobs:
           -**/*
           include/**/*
           src/**/*
-          deps/**/*
         input: sarif-results/cpp.sarif
         output: sarif-results/cpp.sarif
 
