@@ -129,33 +129,33 @@ auto operator |=(result& lhs, result rhs) -> void
     lhs = static_cast<result>(static_cast<i32>(lhs) | static_cast<i32>(rhs));
 }
 
-auto overwrite_prompt(std::string const& file) -> bool
-{
-    auto overwrite = true;
+// auto overwrite_prompt(std::string const& file) -> bool
+// {
+//     auto overwrite = true;
 
-    if (utils::file::exists(file))
-    {
-        do
-        {
-            std::cout << "File \"" << file << "\" already exists, overwrite? [Y/n]: ";
-            auto result = std::getchar();
+//     if (utils::file::exists(file))
+//     {
+//         do
+//         {
+//             std::cout << "File \"" << file << "\" already exists, overwrite? [Y/n]: ";
+//             auto result = std::getchar();
 
-            if (result == '\n' || result == 'Y' || result == 'y')
-            {
-                break;
-            }
-            else if (result == 'N' || result == 'n')
-            {
-                overwrite = false;
-                break;
-            }
-        } while (true);
-    }
+//             if (result == '\n' || result == 'Y' || result == 'y')
+//             {
+//                 break;
+//             }
+//             else if (result == 'N' || result == 'n')
+//             {
+//                 overwrite = false;
+//                 break;
+//             }
+//         } while (true);
+//     }
 
-    return overwrite;
-}
+//     return overwrite;
+// }
 
-namespace gsc
+// namespace gsc
 {
 
 std::map<game, std::map<mach, std::unique_ptr<context>>> contexts;

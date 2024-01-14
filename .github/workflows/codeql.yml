@@ -17,12 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     permissions:
-      # required for all workflows
       security-events: write
-
-      # only required for workflows in private repositories
-      actions: read
-      contents: read
 
     strategy:
       fail-fast: false
@@ -65,6 +60,7 @@ jobs:
       with:
         patterns: |
           -**/*
+          include/**/*
           src/**/*
         input: sarif-results/cpp.sarif
         output: sarif-results/cpp.sarif
