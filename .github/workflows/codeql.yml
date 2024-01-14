@@ -60,6 +60,11 @@ jobs:
         upload: false
         output: sarif-results
 
+    - name: debug
+      run: |
+        ls -la
+        ls -la sarif-results
+
     - name: Filter SARIF results
       uses: advanced-security/filter-sarif@v1
       with:
