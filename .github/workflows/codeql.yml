@@ -50,7 +50,7 @@ jobs:
     - name: Build
       run: |
         pushd build
-        make config=x64_release
+        make config=release_x64
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
