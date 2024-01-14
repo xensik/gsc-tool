@@ -155,7 +155,7 @@ auto operator |=(result& lhs, result rhs) -> void
 //     return overwrite;
 // }
 
-// namespace gsc
+namespace gsc
 {
 
 std::map<game, std::map<mach, std::unique_ptr<context>>> contexts;
