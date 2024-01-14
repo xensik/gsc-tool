@@ -19,6 +19,9 @@ on:
   schedule:
     - cron: '40 20 * * 1'
 
+env:
+  PREMAKE_VERSION: "5.0.0-beta2"
+
 jobs:
   analyze:
     name: Analyze
@@ -49,6 +52,15 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        submodules: true
+        fetch-depth: 0
+        lfs: false
+
+    - name: Add premake5 to PATH
+      uses: abel0b/setup-premake@v2.3
+      with:
+        version: ${{ env.PREMAKE_VERSION }}
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -65,8 +77,8 @@ jobs:
 
     # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
     # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+    # - name: Autobuild
+    #   uses: github/codeql-action/autobuild@v3
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
@@ -77,6 +89,11 @@ jobs:
     # - run: |
     #     echo "Run, Build Application using script"
     #     ./location_of_script_within_repo/buildscript.sh
+    - name: Build with Premake
+      run: build.sh
+      env:
+        CC: clang
+        CXX: clang++
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
