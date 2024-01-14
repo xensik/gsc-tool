@@ -90,7 +90,7 @@ jobs:
     #     echo "Run, Build Application using script"
     #     ./location_of_script_within_repo/buildscript.sh
     - name: Build with Premake
-      run: build.sh
+      run: ./build.sh
       env:
         CC: clang
         CXX: clang++
