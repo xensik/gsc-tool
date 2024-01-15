@@ -241,7 +241,12 @@ auto compiler::emit_stmt_comp(stmt_comp const& stm) -> void
 
 auto compiler::emit_stmt_dev(stmt_dev const& stm) -> void
 {
+    auto end = create_label();
+    developer_thread_ = true;
+    emit_opcode(opcode::OP_DevblockBegin, end);
     emit_stmt_list(*stm.block);
+    insert_label(end);
+    developer_thread_ = false;
 }
 
 auto compiler::emit_stmt_expr(stmt_expr const& stm) -> void
