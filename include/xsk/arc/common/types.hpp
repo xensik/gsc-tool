@@ -71,7 +71,7 @@ struct props
 {
     enum values : u32
     {
-        none     = 0 << 0,
+        none     = 0,
         v2       = 1 << 0,
         v3       = 1 << 1,
         header64 = 1 << 2,

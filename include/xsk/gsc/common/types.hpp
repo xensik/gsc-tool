@@ -72,7 +72,7 @@ struct props
 {
     enum values : u32
     {
-        none       = 0 << 0,
+        none       = 0,
         str4       = 1 << 0,  // strings size 4
         tok4       = 1 << 1,  // tokenid size 4
         waitframe  = 1 << 2,  // waitframe opcode

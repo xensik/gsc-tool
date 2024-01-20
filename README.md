@@ -1,6 +1,7 @@
 [![build](https://github.com/xensik/gsc-tool/workflows/Build/badge.svg)](https://github.com/xensik/gsc-tool/actions)
-![license](https://img.shields.io/github/license/xensik/gsc-tool.svg)
+[![sonar](https://sonarcloud.io/api/project_badges/measure?project=xensik_gsc-tool&metric=alert_status)](https://sonarcloud.io/summary/overall?id=xensik_gsc-tool)
 [![issues](https://img.shields.io/github/issues/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/issues)
+[![license](https://img.shields.io/github/license/xensik/gsc-tool.svg)](https://github.com/xensik/gsc-tool/blob/dev/LICENSE)
 [![releases](https://img.shields.io/github/v/release/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/releases)
 [![paypal](https://img.shields.io/badge/PayPal-support-blue.svg?logo=paypal)](https://www.paypal.me/xensik)
 

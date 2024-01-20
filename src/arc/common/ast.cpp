@@ -104,7 +104,6 @@ auto node::is_boolean() -> bool
                 default:
                     return false;
             }
-            return false;
         default:
             return false;
     }
