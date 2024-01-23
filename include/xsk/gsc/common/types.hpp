@@ -29,9 +29,17 @@ enum class instance : u8
 
 enum class build : u8
 {
-    dev,
-    prod,
+    prod       = 0 << 0,
+    dev_blocks = 1 << 0,
+    dev_maps   = 1 << 1,
+    
+    dev        = dev_blocks | dev_maps,
 };
+
+inline build operator&(build lhs, build rhs)
+{
+    return static_cast<build>(static_cast<std::underlying_type<build>::type>(lhs) & static_cast<std::underlying_type<build>::type>(rhs));
+}
 
 enum class endian : u8
 {

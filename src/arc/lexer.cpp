@@ -77,7 +77,7 @@ auto lexer::lex() -> token
                     if (indev_)
                         throw comp_error(loc_, "cannot recurse devblock ('/#')");
 
-                    if (ctx_->build() == build::dev)
+                    if ((ctx_->build() & build::dev_blocks) != build::prod)
                     {
                         indev_ = true;
                         return token{ token::DEVBEGIN, spacing_, loc_ };
