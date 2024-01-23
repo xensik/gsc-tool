@@ -70,10 +70,14 @@ auto assembler::assemble_function(function const& func) -> void
 auto assembler::assemble_instruction(instruction const& inst) -> void
 {
     script_.write<u8>(ctx_->opcode_id(inst.opcode));
-    devmap_.write<u32>(script_.pos());
-    devmap_.write<u16>(inst.pos.line);
-    devmap_.write<u16>(inst.pos.column);
-    devmap_count_++;
+
+    if ((ctx_->build() & build::dev_maps) != build::prod)
+    {
+        devmap_.write<u32>(script_.pos());
+        devmap_.write<u16>(inst.pos.line);
+        devmap_.write<u16>(inst.pos.column);
+        devmap_count_++;
+    }
 
     switch (inst.opcode)
     {
