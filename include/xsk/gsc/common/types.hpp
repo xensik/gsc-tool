@@ -29,10 +29,9 @@ enum class instance : u8
 
 enum class build : u8
 {
-    prod       = 0 << 0,
+    prod       = 0,
     dev_blocks = 1 << 0,
     dev_maps   = 1 << 1,
-    
     dev        = dev_blocks | dev_maps,
 };
 
@@ -72,7 +71,7 @@ struct props
 {
     enum values : u32
     {
-        none       = 0 << 0,
+        none       = 0,
         str4       = 1 << 0,  // strings size 4
         tok4       = 1 << 1,  // tokenid size 4
         waitframe  = 1 << 2,  // waitframe opcode
