@@ -1105,7 +1105,7 @@ auto main(u32 argc, char** argv) -> result
         ("g,game", "[REQUIRED] one of: iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9", cxxopts::value<std::string>(), "<game>")
         ("s,system", "[REQUIRED] one of: pc, ps3, ps4, ps5, xb2 (360), xb3 (One), xb4 (Series X|S), wiiu", cxxopts::value<std::string>(), "<system>")
         ("p,path", "File or directory to process.", cxxopts::value<std::string>())
-        ("d,dev", "Enable developer mode (generate bytecode map).", cxxopts::value<bool>()->implicit_value("true"))
+        ("d,dev", "Enable developer mode (dev blocks & generate bytecode map).", cxxopts::value<bool>()->implicit_value("true"))
         ("z,zonetool", "Enable zonetool mode (use .cgsc files).", cxxopts::value<bool>()->implicit_value("true"))
         ("h,help", "Display help.")
         ("v,version", "Display version.");
