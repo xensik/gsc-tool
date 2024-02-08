@@ -970,7 +970,21 @@ auto preprocessor::evaluate() -> bool
         }
         else if (tok.type == token::NAME)
         {
-            if (tok.data == "defined")
+            if (tok.data == "true")
+            {
+                last_def = false;
+                last_paren = false;
+                tok.type = token::TRUE;
+                expr_.push_back(std::move(tok));
+            }
+            else if (tok.data == "false")
+            {
+                last_def = false;
+                last_paren = false;
+                tok.type = token::FALSE;
+                expr_.push_back(std::move(tok));
+            }
+            else if (tok.data == "defined")
             {
                 last_def = true;
                 tok.type = token::DEFINED;
@@ -1314,16 +1328,16 @@ auto preprocessor::eval_expr_primary() -> i32
 {
     if (eval_match(token::TRUE))
         return 1;
-    
+
     if (eval_match(token::FALSE))
         return 0;
-    
+
     if (eval_match(token::FLT))
         return static_cast<i32>(std::stof(eval_prev().data));
-    
+
     if (eval_match(token::INT))
         return static_cast<i32>(std::stoi(eval_prev().data));
-    
+
     if (eval_match(token::LPAREN))
     {
         auto val = eval_expr();

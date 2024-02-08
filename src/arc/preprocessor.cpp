@@ -987,7 +987,21 @@ auto preprocessor::evaluate() -> bool
         }
         else if (tok.type == token::NAME)
         {
-            if (tok.data == "defined")
+                        if (tok.data == "true")
+            {
+                last_def = false;
+                last_paren = false;
+                tok.type = token::TRUE;
+                expr_.push_back(std::move(tok));
+            }
+            else if (tok.data == "false")
+            {
+                last_def = false;
+                last_paren = false;
+                tok.type = token::FALSE;
+                expr_.push_back(std::move(tok));
+            }
+            else if (tok.data == "defined")
             {
                 last_def = true;
                 tok.type = token::DEFINED;
