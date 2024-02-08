@@ -987,7 +987,7 @@ auto preprocessor::evaluate() -> bool
         }
         else if (tok.type == token::NAME)
         {
-                        if (tok.data == "true")
+            if (tok.data == "true")
             {
                 last_def = false;
                 last_paren = false;
