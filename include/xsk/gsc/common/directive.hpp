@@ -14,6 +14,7 @@ struct directive
 
     kind type;
     bool skip;
+    bool exec;
 };
 
 } // namespace xsk::gsc
