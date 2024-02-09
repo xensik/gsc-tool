@@ -258,7 +258,7 @@ auto preprocessor::read_directive(token& tok) -> void
 auto preprocessor::read_directive_if(token&) -> void
 {
     auto skip = !evaluate();
-    indents_.push({ directive::IF, skip });
+    indents_.push({ directive::IF, skip, !skip });
     skip_ += skip ? 1 : 0;
 }
 
@@ -283,7 +283,7 @@ auto preprocessor::read_directive_ifdef(token&) -> void
         skip = !defines_.contains(name);
     }
 
-    indents_.push({ directive::IFDEF, skip });
+    indents_.push({ directive::IFDEF, skip, !skip });
     skip_ += skip ? 1 : 0;
 }
 
@@ -308,7 +308,7 @@ auto preprocessor::read_directive_ifndef(token&) -> void
         skip = defines_.contains(name);
     }
 
-    indents_.push({ directive::IFNDEF, skip });
+    indents_.push({ directive::IFNDEF, skip, !skip });
     skip_ += skip ? 1 : 0;
 }
 
@@ -328,8 +328,8 @@ auto preprocessor::read_directive_elif(token& tok) -> void
         throw ppr_error(tok.pos, "#elif after #else");
     }
 
-    auto skip = !evaluate();
-    indents_.push({ directive::ELIF, skip });
+    auto skip = !evaluate() || dir.exec;
+    indents_.push({ directive::ELIF, skip, !skip || dir.exec });
     skip_ += skip ? 1 : 0;
 }
 
@@ -365,10 +365,10 @@ auto preprocessor::read_directive_elifdef(token& tok) -> void
         next = read_token();
         expect(next, token::NEWLINE);
 
-        skip = !defines_.contains(name);
+        skip = !defines_.contains(name) || dir.exec;
     }
 
-    indents_.push({ directive::ELIFDEF, skip });
+    indents_.push({ directive::ELIFDEF, skip, !skip || dir.exec });
     skip_ += skip ? 1 : 0;
 }
 
@@ -404,10 +404,10 @@ auto preprocessor::read_directive_elifndef(token& tok) -> void
         next = read_token();
         expect(next, token::NEWLINE);
 
-        skip = defines_.contains(name);
+        skip = defines_.contains(name) || dir.exec;
     }
 
-    indents_.push({ directive::ELIFNDEF, skip });
+    indents_.push({ directive::ELIFNDEF, skip, !skip || dir.exec });
     skip_ += skip ? 1 : 0;
 }
 
@@ -430,8 +430,8 @@ auto preprocessor::read_directive_else(token& tok) -> void
         throw ppr_error(tok.pos, "#else after #else");
     }
 
-    auto skip = !dir.skip;
-    indents_.push({ directive::ELSE, skip });
+    auto skip = dir.exec;
+    indents_.push({ directive::ELSE, skip, dir.exec });
     skip_ += skip ? 1 : 0;
 }
 
