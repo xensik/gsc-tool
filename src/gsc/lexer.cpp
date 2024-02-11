@@ -327,7 +327,7 @@ auto lexer::lex() -> token
                 else if (last == '_' || (last >= 'A' && last <= 'Z') || (last >= 'a' && last <= 'z'))
                     goto lex_name;
 
-                throw comp_error(loc_, fmt::format("bad token: '{}'", last));
+                throw comp_error(loc_, std::format("bad token: '{}'", last));
         }
 
 lex_string:

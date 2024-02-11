@@ -2,9 +2,6 @@
 	path = deps/zlib
 	url = https://github.com/madler/zlib
 	branch = master
-[submodule "deps/fmt"]
-	path = deps/fmt
-	url = https://github.com/fmtlib/fmt
 [submodule "deps/cxxopts"]
 	path = deps/cxxopts
 	url = https://github.com/jarro2783/cxxopts.git

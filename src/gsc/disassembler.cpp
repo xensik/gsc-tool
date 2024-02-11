@@ -153,21 +153,21 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
             break;
         case opcode::OP_GetByte:
         case opcode::OP_GetNegByte:
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
             break;
         case opcode::OP_GetUnsignedShort:
         case opcode::OP_GetNegUnsignedShort:
-            inst.data.push_back(fmt::format("{}", script_.read<u16>()));
+            inst.data.push_back(std::format("{}", script_.read<u16>()));
             break;
         case opcode::OP_GetUnsignedInt:
         case opcode::OP_GetNegUnsignedInt:
-            inst.data.push_back(fmt::format("{}", script_.read<u32>()));
+            inst.data.push_back(std::format("{}", script_.read<u32>()));
             break;
         case opcode::OP_GetInteger:
-            inst.data.push_back(fmt::format("{}", script_.read<i32>()));
+            inst.data.push_back(std::format("{}", script_.read<i32>()));
             break;
         case opcode::OP_GetInteger64:
-            inst.data.push_back(fmt::format("{}", script_.read<i64>()));
+            inst.data.push_back(std::format("{}", script_.read<i64>()));
             break;
         case opcode::OP_GetFloat:
             inst.data.push_back(utils::string::float_string(script_.read<f32>()));
@@ -193,15 +193,15 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
             inst.data.push_back(decrypt_string(stack_.read_cstr()));
             break;
         case opcode::OP_GetUnkxHash: // xhash : only used on unittests
-            inst.data.push_back(fmt::format("{:08X}", script_.read<u32>()));
+            inst.data.push_back(std::format("{:08X}", script_.read<u32>()));
             break;
         case opcode::OP_GetStatHash: // xhash : "kill" -> 0xEF9582D72160F199
         case opcode::OP_GetEnumHash: // xhash : "WEAPON/AMMO_SLUGS" -> 0x6AA606A18241AD16  c++ enum ??
         case opcode::OP_GetDvarHash: // xhash : #d"mapname" -> 0x687FB8F9B7A23245
-            inst.data.push_back(fmt::format("{:016X}", script_.read<u64>()));
+            inst.data.push_back(std::format("{:016X}", script_.read<u64>()));
             break;
         case opcode::OP_waittillmatch:
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
             break;
         case opcode::OP_ClearLocalVariableFieldCached:
         case opcode::OP_SetLocalVariableFieldCached:
@@ -213,13 +213,13 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
         case opcode::OP_SafeSetWaittillVariableFieldCached:
         case opcode::OP_EvalLocalVariableObjectCached:
         case opcode::OP_EvalLocalArrayCached:
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
             break;
         case opcode::OP_CreateLocalVariable:
         case opcode::OP_EvalNewLocalArrayRefCached0:
         case opcode::OP_SafeCreateVariableFieldCached:
         case opcode::OP_SetNewLocalVariableFieldCached0:
-            inst.data.push_back((ctx_->props() & props::hash) ? ctx_->hash_name(script_.read<u64>()) : fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back((ctx_->props() & props::hash) ? ctx_->hash_name(script_.read<u64>()) : std::format("{}", script_.read<u8>()));
             break;
         case opcode::OP_EvalSelfFieldVariable:
         case opcode::OP_SetLevelFieldVariableField:
@@ -241,7 +241,7 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
         case opcode::OP_ScriptChildThreadCallPointer:
         case opcode::OP_ScriptMethodThreadCallPointer:
         case opcode::OP_ScriptMethodChildThreadCallPointer:
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
             break;
         case opcode::OP_GetLocalFunction:
         case opcode::OP_ScriptLocalFunctionCall2:
@@ -313,7 +313,7 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
             disassemble_formal_params(inst);
             break;
         default:
-            throw disasm_error(fmt::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
+            throw disasm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
 }
 
@@ -321,7 +321,7 @@ auto disassembler::disassemble_builtin_call(instruction& inst, bool method, bool
 {
     if (args)
     {
-        inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+        inst.data.push_back(std::format("{}", script_.read<u8>()));
     }
 
     if (ctx_->props() & props::hash)
@@ -350,11 +350,11 @@ auto disassembler::disassemble_local_call(instruction& inst, bool thread) -> voi
 {
     auto const offs = disassemble_offset();
 
-    inst.data.push_back(fmt::format("{}", inst.index + 1 + offs));
+    inst.data.push_back(std::format("{}", inst.index + 1 + offs));
 
     if (thread)
     {
-        inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+        inst.data.push_back(std::format("{}", script_.read<u8>()));
     }
 }
 
@@ -366,7 +366,7 @@ auto disassembler::disassemble_far_call(instruction& inst, bool thread) -> void
 
         if (thread)
         {
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
         }
 
         auto file = stack_.read<u64>();
@@ -374,7 +374,7 @@ auto disassembler::disassemble_far_call(instruction& inst, bool thread) -> void
 
         if (file == 0)
         {
-            inst.data.emplace(inst.data.begin(), fmt::format("{}", inst.index + 1 + offs));
+            inst.data.emplace(inst.data.begin(), std::format("{}", inst.index + 1 + offs));
             inst.data.emplace(inst.data.begin(), "");
         }
         else
@@ -396,7 +396,7 @@ auto disassembler::disassemble_far_call(instruction& inst, bool thread) -> void
 
         if (thread)
         {
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
         }
 
         auto const file_id = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
@@ -412,7 +412,7 @@ auto disassembler::disassemble_far_call(instruction& inst, bool thread) -> void
 auto disassembler::disassemble_switch(instruction& inst) -> void
 {
     auto const addr = inst.index + 4 + script_.read<i32>();
-    auto const label = fmt::format("loc_{:X}", addr);
+    auto const label = std::format("loc_{:X}", addr);
 
     inst.data.push_back(label);
     func_->labels.insert({ addr, label });
@@ -422,7 +422,7 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
 {
     auto const count = script_.read<u16>();
 
-    inst.data.push_back(fmt::format("{}", count));
+    inst.data.push_back(std::format("{}", count));
 
     auto type = switch_type::none;
     auto index = inst.index + 3u;
@@ -439,13 +439,13 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
             if (byte == 1)
             {
                 inst.data.push_back("case");
-                inst.data.push_back(fmt::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::integer)));
-                inst.data.push_back(fmt::format("{}", data));
+                inst.data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::integer)));
+                inst.data.push_back(std::format("{}", data));
             }
             else if (byte == 2)
             {
                 inst.data.push_back("case");
-                inst.data.push_back(fmt::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::string)));
+                inst.data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::string)));
                 inst.data.push_back(stack_.read_cstr());
             }
             else // byte == 0
@@ -455,7 +455,7 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
             }
 
             auto const addr = index + 4 + offs;
-            auto const label = fmt::format("loc_{:X}", addr);
+            auto const label = std::format("loc_{:X}", addr);
 
             inst.data.push_back(label);
             func_->labels.insert({ addr, label });
@@ -488,11 +488,11 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
 
                 type = switch_type::integer;
                 inst.data.push_back("case");
-                inst.data.push_back(fmt::format("{}", (value - 0x800000) & 0xFFFFFF));
+                inst.data.push_back(std::format("{}", (value - 0x800000) & 0xFFFFFF));
             }
 
             auto const addr = index + 4 + disassemble_offset();
-            auto const label = fmt::format("loc_{:X}", addr);
+            auto const label = std::format("loc_{:X}", addr);
 
             inst.data.push_back(label);
             func_->labels.insert({ addr, label });
@@ -502,7 +502,7 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
         }
     }
 
-    inst.data.push_back(fmt::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
+    inst.data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
 }
 
 auto disassembler::disassemble_field_variable(instruction& inst) -> void
@@ -519,7 +519,7 @@ auto disassembler::disassemble_field_variable(instruction& inst) -> void
         if (id > ctx_->str_count())
         {
             auto const temp = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
-            name = (temp == 0) ? decrypt_string(stack_.read_cstr()) : fmt::format("{}", temp);
+            name = (temp == 0) ? decrypt_string(stack_.read_cstr()) : std::format("{}", temp);
         }
         else
         {
@@ -535,11 +535,11 @@ auto disassembler::disassemble_formal_params(instruction& inst) -> void
     auto const count = script_.read<u8>();
 
     inst.size += (ctx_->props() & props::hash) ? count * 8 : count;
-    inst.data.push_back(fmt::format("{}", count));
+    inst.data.push_back(std::format("{}", count));
 
     for (auto i = 0u; i < count; i++)
     {
-        inst.data.push_back((ctx_->props() & props::hash) ? ctx_->hash_name(script_.read<u64>()) : fmt::format("{}", script_.read<u8>()));
+        inst.data.push_back((ctx_->props() & props::hash) ? ctx_->hash_name(script_.read<u64>()) : std::format("{}", script_.read<u8>()));
     }
 }
 
@@ -560,7 +560,7 @@ auto disassembler::disassemble_jump(instruction& inst, bool expr, bool back) -> 
         addr = inst.index + 5 + script_.read<i32>();
     }
 
-    auto const label = fmt::format("loc_{:X}", addr);
+    auto const label = std::format("loc_{:X}", addr);
 
     inst.data.push_back(label);
     func_->labels.insert({ addr, label });
@@ -639,7 +639,7 @@ auto disassembler::resolve_function(std::string const& index) -> std::string
         }
     }
 
-    throw disasm_error(fmt::format("couldn't resolve function name at index 0x{}", index));
+    throw disasm_error(std::format("couldn't resolve function name at index 0x{}", index));
 }
 
 auto disassembler::decrypt_string(std::string const& str) -> std::string
@@ -652,7 +652,7 @@ auto disassembler::decrypt_string(std::string const& str) -> std::string
 
         for (auto i = 0u; i < str.size(); i++)
         {
-            data += fmt::format("{:02X}", static_cast<u8>(str[i]));
+            data += std::format("{:02X}", static_cast<u8>(str[i]));
         }
 
         return data;

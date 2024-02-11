@@ -206,7 +206,7 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_GetVector:
             return (props_ & props::size64) ? 14 : 13;
         default:
-            throw error(fmt::format("couldn't resolve instruction size for '{}'", opcode_name(op)));
+            throw error(std::format("couldn't resolve instruction size for '{}'", opcode_name(op)));
     }
 }
 
@@ -219,7 +219,7 @@ auto context::opcode_id(opcode op) const -> u16
         return itr->second;
     }
 
-    throw error(fmt::format("couldn't resolve opcode id for '{}'", opcode_name(op)));
+    throw error(std::format("couldn't resolve opcode id for '{}'", opcode_name(op)));
 }
 
 auto context::opcode_name(opcode op) const -> std::string
@@ -231,7 +231,7 @@ auto context::opcode_name(opcode op) const -> std::string
         return std::string{ itr->second };
     }
 
-    throw std::runtime_error(fmt::format("couldn't resolve opcode string for enum '{}'", static_cast<std::underlying_type_t<opcode>>(op)));
+    throw std::runtime_error(std::format("couldn't resolve opcode string for enum '{}'", static_cast<std::underlying_type_t<opcode>>(op)));
 }
 
 auto context::opcode_enum(std::string const& name) const -> opcode
@@ -243,7 +243,7 @@ auto context::opcode_enum(std::string const& name) const -> opcode
         return itr->second;
     }
 
-    throw std::runtime_error(fmt::format("couldn't resolve opcode enum for name '{}'", name));
+    throw std::runtime_error(std::format("couldn't resolve opcode enum for name '{}'", name));
 }
 
 auto context::opcode_enum(u16 id) const -> opcode
@@ -302,7 +302,7 @@ auto context::hash_name(u32 id) const -> std::string
         return std::string(itr->second);
     }
 
-    return fmt::format("_id_{:08X}", id);
+    return std::format("_id_{:08X}", id);
 }
 
 auto context::make_token(std::string_view str) const -> std::string
@@ -344,7 +344,7 @@ auto context::load_header(std::string const& name) -> std::tuple<std::string con
         }
     }
 
-    throw error(fmt::format("couldn't open gsh file '{}'", name));
+    throw error(std::format("couldn't open gsh file '{}'", name));
 }
 
 extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcode_list

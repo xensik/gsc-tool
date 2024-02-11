@@ -69,7 +69,7 @@ jobs:
 
   build-macos:
     name: Build macOS
-    runs-on: macos-latest
+    runs-on: macos-13
     strategy:
       fail-fast: false
       matrix:
@@ -85,6 +85,16 @@ jobs:
           submodules: true
           fetch-depth: 0
           lfs: false
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install LLVM
+        run: brew install llvm
+
+      - name: Add LLVM to PATH
+        run: |
+          echo "/usr/local/opt/llvm/bin" >> $GITHUB_PATH
 
       - name: Add premake5 to PATH
         uses: abel0b/setup-premake@v2.3
@@ -119,7 +129,7 @@ jobs:
           - release
         arch:
           - x64
-          - arm64
+          # - arm64
     steps:
       - name: Check out files
         uses: actions/checkout@v4
@@ -128,11 +138,15 @@ jobs:
           fetch-depth: 0
           lfs: false
 
-      - name: Install dependencies (arm64)
-        if: matrix.arch == 'arm64'
+      - name: Install LLVM
         run: |
-          sudo apt-get update
-          sudo apt-get install crossbuild-essential-arm64 -y
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 17
+
+      # - name: Install dependencies (arm64)
+      #   if: matrix.arch == 'arm64'
+      #   run: sudo apt-get install crossbuild-essential-arm64 -y
 
       - name: Add premake5 to PATH
         uses: abel0b/setup-premake@v2.3
@@ -150,8 +164,8 @@ jobs:
           pushd build
           make config=${{matrix.config}}_${{matrix.arch}} -j$(nproc)
         env:
-         CC: clang
-         CXX: clang++
+         CC: clang-17
+         CXX: clang++-17
 
       - name: Upload ${{matrix.arch}} ${{matrix.config}} binaries
         uses: actions/upload-artifact@v3.1.3

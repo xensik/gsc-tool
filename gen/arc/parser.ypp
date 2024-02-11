@@ -517,13 +517,13 @@ stmt_for
 stmt_foreach
     : FOREACH LPAREN expr_identifier IN expr RPAREN stmt
         {
-            auto array = expr_identifier::make(@$, fmt::format("_a{}", ++index));
-            auto key = expr_identifier::make(@$, fmt::format("_k{}", ++index));
+            auto array = expr_identifier::make(@$, std::format("_a{}", ++index));
+            auto key = expr_identifier::make(@$, std::format("_k{}", ++index));
             $$ = stmt_foreach::make(@$, std::move($5), std::move($3), std::move(array), std::move(key), std::move($7), false);
         }
     | FOREACH LPAREN expr_identifier COMMA expr_identifier IN expr RPAREN stmt
         {
-            auto array = expr_identifier::make(@$, fmt::format("_a{}", ++index));
+            auto array = expr_identifier::make(@$, std::format("_a{}", ++index));
             $$ = stmt_foreach::make(@$, std::move($7), std::move($5), std::move(array), std::move($3), std::move($9), true);
         }
     ;
@@ -1161,7 +1161,7 @@ auto map_token(context const* ctx_, token& tok) -> parser::symbol_type
         }
     }
 
-    throw error(fmt::format("unmapped token! {}", (u8)tok.type));
+    throw error(std::format("unmapped token! {}", (u8)tok.type));
 }
 
 auto ARClex(context const* ctx_, preprocessor& ppr) -> parser::symbol_type

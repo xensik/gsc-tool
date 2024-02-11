@@ -179,7 +179,7 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
                 auto path = fs::path{ "assembled" } / rel;
                 utils::file::save(path, std::get<0>(outbin).data, std::get<0>(outbin).size);
                 utils::file::save(path.replace_extension(".cgsc.stack"), std::get<1>(outbin).data, std::get<1>(outbin).size);
-                std::cout << fmt::format("assembled {}\n", rel.generic_string());
+                std::cout << std::format("assembled {}\n", rel.generic_string());
             }
             else
             {
@@ -199,7 +199,7 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
 
                 auto result = script.serialize();
                 utils::file::save(fs::path{ "assembled" } / rel, result);
-                std::cout << fmt::format("assembled {}\n", rel.generic_string());
+                std::cout << std::format("assembled {}\n", rel.generic_string());
             }
         }
 
@@ -207,7 +207,7 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
     }
     catch (std::exception const& e)
     {
-        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        std::cerr << std::format("{} at {}\n", e.what(), file.generic_string());
         return result::failure;
     }
 }
@@ -247,12 +247,12 @@ auto disassemble_file(game game, mach mach, fs::path file, fs::path rel) -> resu
         auto outsrc = contexts[game][mach]->source().dump(*outasm);
 
         utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
-        std::cout << fmt::format("disassembled {}\n", rel.generic_string());
+        std::cout << std::format("disassembled {}\n", rel.generic_string());
         return result::success;
     }
     catch (std::exception const& e)
     {
-        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        std::cerr << std::format("{} at {}\n", e.what(), file.generic_string());
         return result::failure;
     }
 }
@@ -274,7 +274,7 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
                 auto path = fs::path{ "compiled" } / rel;
                 utils::file::save(path, std::get<0>(outbin).data, std::get<0>(outbin).size);
                 utils::file::save(path.replace_extension(".cgsc.stack"), std::get<1>(outbin).data, std::get<1>(outbin).size);
-                std::cout << fmt::format("compiled {}\n", rel.generic_string());
+                std::cout << std::format("compiled {}\n", rel.generic_string());
             }
             else
             {
@@ -294,12 +294,12 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
 
                 auto result = script.serialize();
                 utils::file::save(fs::path{ "compiled" } / rel, result);
-                std::cout << fmt::format("compiled {}\n", rel.generic_string());
+                std::cout << std::format("compiled {}\n", rel.generic_string());
 
                 if ((contexts[game][mach]->build() & build::dev_maps) != build::prod)
                 {
                     utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension(".gscmap"), std::get<2>(outbin).data, std::get<2>(outbin).size);
-                    std::cout << fmt::format("saved developer map {}\n", rel.generic_string());
+                    std::cout << std::format("saved developer map {}\n", rel.generic_string());
                 }
             }
         }
@@ -308,7 +308,7 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
     }
     catch (std::exception const& e)
     {
-        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        std::cerr << std::format("{} at {}\n", e.what(), file.generic_string());
         return result::failure;
     }
 }
@@ -349,12 +349,12 @@ auto decompile_file(game game, mach mach, fs::path file, fs::path rel) -> result
         auto outsrc = contexts[game][mach]->source().dump(*outast);
 
         utils::file::save(fs::path{ "decompiled" } / rel, outsrc);
-        std::cout << fmt::format("decompiled {}\n", rel.generic_string());
+        std::cout << std::format("decompiled {}\n", rel.generic_string());
         return result::success;
     }
     catch (std::exception const& e)
     {
-        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        std::cerr << std::format("{} at {}\n", e.what(), file.generic_string());
         return result::failure;
     }
 }
@@ -369,12 +369,12 @@ auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
 
         auto prog = contexts[game][mach]->source().parse_program(file.string(), data);
         utils::file::save(fs::path{ "parsed" } / rel, contexts[game][mach]->source().dump(*prog));
-        std::cout << fmt::format("parsed {}\n", rel.generic_string());
+        std::cout << std::format("parsed {}\n", rel.generic_string());
         return result::success;
     }
     catch (std::exception const& e)
     {
-        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        std::cerr << std::format("{} at {}\n", e.what(), file.generic_string());
         return result::failure;
     }
 }
@@ -419,20 +419,20 @@ auto rename_file(game game, mach mach, fs::path file, fs::path rel) -> result
 
         auto data = utils::file::read(file);
         utils::file::save(fs::path{ "renamed" } / rel, data);
-        std::cout << fmt::format("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
+        std::cout << std::format("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
 
         if (zt)
         {
             auto stack = utils::file::read(file.replace_extension(".cgsc.stack"));
             utils::file::save(fs::path{ "renamed" } / rel.replace_extension(".cgsc.stack"), stack);
-            std::cout << fmt::format("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
+            std::cout << std::format("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
         }
 
         return result::success;
     }
     catch (std::exception const& e)
     {
-        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        std::cerr << std::format("{} at {}\n", e.what(), file.generic_string());
         return result::failure;
     }
 }
@@ -749,12 +749,12 @@ auto assemble_file(game game, mach mach, fs::path const& file, fs::path rel) -> 
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
         utils::file::save(fs::path{ "assembled" } / rel, outbin.first.data, outbin.first.size);
-        std::cout << fmt::format("assembled {}\n", rel.generic_string());
+        std::cout << std::format("assembled {}\n", rel.generic_string());
         return result::success;
     }
     catch (std::exception const& e)
     {
-        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        std::cerr << std::format("{} at {}\n", e.what(), file.generic_string());
         return result::failure;
     }
 }
@@ -770,12 +770,12 @@ auto disassemble_file(game game, mach mach, fs::path const& file, fs::path rel) 
         auto outsrc = contexts[game][mach]->source().dump(*outasm);
 
         utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
-        std::cout << fmt::format("disassembled {}\n", rel.generic_string());
+        std::cout << std::format("disassembled {}\n", rel.generic_string());
         return result::success;
     }
     catch (std::exception const& e)
     {
-        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        std::cerr << std::format("{} at {}\n", e.what(), file.generic_string());
         return result::failure;
     }
 }
@@ -793,7 +793,7 @@ auto compile_file(game game, mach mach, fs::path const& file, fs::path rel) -> r
 
         if (!std::memcmp(&data[0], "\x80GSC", 4))
         {
-            std::cerr << fmt::format("{} at {}\n", "already compiled", file.generic_string());
+            std::cerr << std::format("{} at {}\n", "already compiled", file.generic_string());
             return result::success;
         }
 
@@ -801,19 +801,19 @@ auto compile_file(game game, mach mach, fs::path const& file, fs::path rel) -> r
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
         utils::file::save(fs::path{ "compiled" } / rel, outbin.first.data, outbin.first.size);
-        std::cout << fmt::format("compiled {}\n", rel.generic_string());
+        std::cout << std::format("compiled {}\n", rel.generic_string());
 
         if ((contexts[game][mach]->build() & build::dev_maps) != build::prod)
         {
             utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension((rel.extension().string().starts_with(".gsc") ? ".gscmap" : ".cscmap")), outbin.second.data, outbin.second.size);
-            std::cout << fmt::format("saved developer map {}\n", rel.generic_string());
+            std::cout << std::format("saved developer map {}\n", rel.generic_string());
         }
 
         return result::success;
     }
     catch (std::exception const& e)
     {
-        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        std::cerr << std::format("{} at {}\n", e.what(), file.generic_string());
         return result::failure;
     }
 }
@@ -831,25 +831,25 @@ auto decompile_file(game game, mach mach, fs::path const& file, fs::path rel) ->
         auto output = contexts[game][mach]->source().dump(*outsrc);
 
         utils::file::save(fs::path{ "decompiled" } / rel, output);
-        std::cout << fmt::format("decompiled {}\n", rel.generic_string());
+        std::cout << std::format("decompiled {}\n", rel.generic_string());
         return result::success;
     }
     catch (std::exception const& e)
     {
-        std::cerr << fmt::format("{} at {}\n", e.what(), file.generic_string());
+        std::cerr << std::format("{} at {}\n", e.what(), file.generic_string());
         return result::failure;
     }
 }
 
 auto parse_file(game, mach, fs::path const&, fs::path) -> result
 {
-    std::cerr << fmt::format("not implemented for treyarch\n");
+    std::cerr << std::format("not implemented for treyarch\n");
     return result::failure;
 }
 
 auto rename_file(game, mach, fs::path const&, fs::path) -> result
 {
-    std::cerr << fmt::format("not implemented for treyarch\n");
+    std::cerr << std::format("not implemented for treyarch\n");
     return result::failure;
 }
 
@@ -1023,7 +1023,7 @@ auto execute(mode mode, game game, mach mach, fs::path const& path, bool dev) ->
     {
         if (!extension_match(path.extension(), mode, game))
         {
-            std::cerr << fmt::format("bad extension '{}'\n", path.extension().string());
+            std::cerr << std::format("bad extension '{}'\n", path.extension().string());
             return result::failure;
         }
 
@@ -1034,7 +1034,7 @@ auto execute(mode mode, game game, mach mach, fs::path const& path, bool dev) ->
     }
     else
     {
-        std::cerr << fmt::format("bad path '{}'\n", path.generic_string());
+        std::cerr << std::format("bad path '{}'\n", path.generic_string());
         return result::failure;
     }
 }
@@ -1090,7 +1090,7 @@ auto parse_system(std::string const& arg, mach& out) -> bool
 
 auto branding() -> std::string
 {
-    return fmt::format("GSC Tool {} created by xensik\n", XSK_VERSION_STR);
+    return std::format("GSC Tool {} created by xensik\n", XSK_VERSION_STR);
 }
 
 auto main(u32 argc, char** argv) -> result

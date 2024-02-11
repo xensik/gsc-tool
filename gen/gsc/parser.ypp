@@ -321,7 +321,7 @@ decl_constant
     : expr_identifier ASSIGN expr SEMICOLON
         {
             ppr.ban_header(@$); $$ = decl_constant::make(@$, std::move($1), std::move($3)); 
-            printf("%s" , fmt::format("{}: constants deprecated, use #define instead\n", @$.print()).data());
+            printf("%s" , std::format("{}: constants deprecated, use #define instead\n", @$.print()).data());
         }
     ;
 
@@ -496,14 +496,14 @@ stmt_for
 stmt_foreach
     : FOREACH LPAREN expr_identifier IN expr RPAREN stmt
         {
-            auto array = expr_identifier::make(@$, fmt::format("_temp_{}", ++index));
-            auto key = expr_identifier::make(@$, fmt::format("_temp_{}", ++index));
+            auto array = expr_identifier::make(@$, std::format("_temp_{}", ++index));
+            auto key = expr_identifier::make(@$, std::format("_temp_{}", ++index));
             $$ = stmt_foreach::make(@$, std::move($5), std::move($3), expr_empty::make(@$), std::move(array), std::move(key), std::move($7), false);
         }
     | FOREACH LPAREN expr_identifier COMMA expr_identifier IN expr RPAREN stmt
         {
-            auto array = expr_identifier::make(@$, fmt::format("_temp_{}", ++index));
-            expr::ptr key = (ctx_->props() & props::foreach) ? expr_identifier::make(@$, fmt::format("_temp_{}", ++index)) : std::move($3);
+            auto array = expr_identifier::make(@$, std::format("_temp_{}", ++index));
+            expr::ptr key = (ctx_->props() & props::foreach) ? expr_identifier::make(@$, std::format("_temp_{}", ++index)) : std::move($3);
             $$ = stmt_foreach::make(@$, std::move($7), std::move($5), (ctx_->props() & props::foreach) ? std::move($3) : (expr::ptr)expr_empty::make(@$), std::move(array), std::move(key), std::move($9), true);
         }
     ;
@@ -821,7 +821,7 @@ expr_tuple
     : LBRACKET expr_tuple_arguments RBRACKET
         {
             $$ = std::move($2);
-            $$->as<expr_tuple>().temp = expr_identifier::make($$->loc(), fmt::format("_temp_{}", ++index));
+            $$->as<expr_tuple>().temp = expr_identifier::make($$->loc(), std::format("_temp_{}", ++index));
         }
     ;
 
@@ -1088,7 +1088,7 @@ auto map_token(context const* ctx_, token& tok) -> parser::symbol_type
         }
     }
 
-    throw error(fmt::format("unmapped token! {}", (u8)tok.type));
+    throw error(std::format("unmapped token! {}", (u8)tok.type));
 }
 
 auto GSClex(context const* ctx_, preprocessor& ppr) -> parser::symbol_type

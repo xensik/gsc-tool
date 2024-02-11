@@ -17,7 +17,7 @@ auto file::read(std::filesystem::path const& file) -> std::vector<u8>
 
     if (!stream.good() && !stream.is_open())
     {
-        throw std::runtime_error(fmt::format("couldn't open file {}", file.string()));
+        throw std::runtime_error(std::format("couldn't open file {}", file.string()));
     }
 
     stream.seekg(0, std::ios::end);

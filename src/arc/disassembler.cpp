@@ -476,17 +476,17 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
             break;
         case opcode::OP_GetByte:
         case opcode::OP_GetNegByte:
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
             break;
         case opcode::OP_GetUnsignedShort:
         case opcode::OP_GetNegUnsignedShort:
             inst.size += script_.align(2);
-            inst.data.push_back(fmt::format("{}", script_.read<u16>()));
+            inst.data.push_back(std::format("{}", script_.read<u16>()));
             break;
         case opcode::OP_GetInteger:
             inst.size += script_.align(4);
             disassemble_animtree(inst);
-            inst.data.push_back(fmt::format("{}", script_.read<i32>()));
+            inst.data.push_back(std::format("{}", script_.read<i32>()));
             break;
         case opcode::OP_GetFloat:
             inst.size += script_.align(4);
@@ -496,7 +496,7 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
         //case opcode::OP_ProfileStart:
         case opcode::OP_GetAPIFunction:
             inst.size += script_.align(8);
-            inst.data.push_back(fmt::format("0x{:016X}", script_.read<u64>()));
+            inst.data.push_back(std::format("0x{:016X}", script_.read<u64>()));
             break;
         case opcode::OP_GetVector:
             inst.size += script_.align(4);
@@ -512,10 +512,10 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
             disassemble_animation(inst);
             break;
         case opcode::OP_WaitTillMatch:
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
             break;
         case opcode::OP_VectorConstant:
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
             break;
         case opcode::OP_GetHash:
             inst.size += script_.align(4);
@@ -535,7 +535,7 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
         case opcode::OP_EvalLocalArrayRefCached:
         case opcode::OP_SafeSetWaittillVariableFieldCached:
         case opcode::OP_EvalLocalVariableRefCached:
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
             break;
         case opcode::OP_EvalFieldVariable:
         case opcode::OP_EvalFieldVariableRef:
@@ -553,7 +553,7 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
         case opcode::OP_ScriptMethodCallPointer:
         case opcode::OP_ScriptThreadCallPointer:
         case opcode::OP_ScriptMethodThreadCallPointer:
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
             break;
         case opcode::OP_GetFunction:
             disassemble_import(inst);
@@ -583,7 +583,7 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
             disassemble_end_switch(inst);
             break;
         default:
-            throw disasm_error(fmt::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
+            throw disasm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
 }
 
@@ -606,7 +606,7 @@ auto disassembler::disassemble_name(instruction& inst) -> void
             return;
         }
 
-        throw disasm_error(fmt::format("string reference not found at index {:04X}", inst.index));
+        throw disasm_error(std::format("string reference not found at index {:04X}", inst.index));
     }
 }
 
@@ -620,7 +620,7 @@ auto disassembler::disassemble_params(instruction& inst) -> void
         {
             inst.size += script_.align(4) + 5;
             inst.data.push_back(ctx_->hash_name(script_.read<u32>()));
-            inst.data.push_back(fmt::format("{}", script_.read<u8>()));
+            inst.data.push_back(std::format("{}", script_.read<u8>()));
         }
         else
         {
@@ -644,7 +644,7 @@ auto disassembler::disassemble_import(instruction& inst) -> void
         return;
     }
 
-    throw disasm_error(fmt::format("import reference not found at index {:04X}", inst.index));
+    throw disasm_error(std::format("import reference not found at index {:04X}", inst.index));
 }
 
 auto disassembler::disassemble_string(instruction& inst) -> void
@@ -660,7 +660,7 @@ auto disassembler::disassemble_string(instruction& inst) -> void
         return;
     }
 
-    throw disasm_error(fmt::format("string reference not found at index {:04X}", inst.index));
+    throw disasm_error(std::format("string reference not found at index {:04X}", inst.index));
 }
 
 auto disassembler::disassemble_animtree(instruction& inst) -> void
@@ -695,7 +695,7 @@ auto disassembler::disassemble_animation(instruction& inst) -> void
         }
     }
 
-    throw disasm_error(fmt::format("animation reference not found at index {:04X}", inst.index));
+    throw disasm_error(std::format("animation reference not found at index {:04X}", inst.index));
 }
 
 auto disassembler::disassemble_jump(instruction& inst) -> void
@@ -709,7 +709,7 @@ auto disassembler::disassemble_jump(instruction& inst) -> void
     else
         addr = script_.read<i16>() + script_.pos();
 
-    auto const label = fmt::format("loc_{:X}", addr);
+    auto const label = std::format("loc_{:X}", addr);
 
     inst.data.push_back(label);
     func_->labels.insert({ addr, label });
@@ -720,7 +720,7 @@ auto disassembler::disassemble_switch(instruction& inst) -> void
     inst.size += script_.align(4);
 
     auto const addr = script_.read<i32>() + script_.pos();
-    auto const label = fmt::format("loc_{:X}", addr);
+    auto const label = std::format("loc_{:X}", addr);
 
     inst.data.push_back(label);
     func_->labels.insert({ addr, label });
@@ -738,7 +738,7 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
         {
             if (entry->opcode == opcode::OP_Switch && entry->data[0] == itr->second)
             {
-                auto const label = fmt::format("loc_{:X}", inst.index);
+                auto const label = std::format("loc_{:X}", inst.index);
                 entry->data[0] = label;
                 func_->labels.erase(script_.pos());
 
@@ -754,7 +754,7 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
 
     auto type = switch_type::none;
     auto const count = script_.read<u32>();
-    inst.data.push_back(fmt::format("{}", count));
+    inst.data.push_back(std::format("{}", count));
 
     for (auto i = 0u; i < count; i++)
     {
@@ -777,7 +777,7 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
             {
                 type = switch_type::integer;
                 inst.data.push_back("case");
-                inst.data.push_back(fmt::format("{}", value));
+                inst.data.push_back(std::format("{}", value));
             }
         }
         else
@@ -798,12 +798,12 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
             {
                 type = switch_type::integer;
                 inst.data.push_back("case");
-                inst.data.push_back(fmt::format("{}", (value - 0x800000) & 0xFFFFFF));
+                inst.data.push_back(std::format("{}", (value - 0x800000) & 0xFFFFFF));
             }
         }
 
         auto const addr = script_.read<i32>() + script_.pos();
-        auto const label = fmt::format("loc_{:X}", addr);
+        auto const label = std::format("loc_{:X}", addr);
 
         inst.data.push_back(label);
         func_->labels.insert({ addr, label });
@@ -811,7 +811,7 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
         inst.size += 8;
     }
 
-    inst.data.push_back(fmt::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
+    inst.data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
 }
 
 } // namespace xsk::arc
