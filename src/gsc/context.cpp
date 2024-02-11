@@ -279,7 +279,7 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_iw9_144:
         case opcode::OP_iw9_166:
         default:
-            throw error(fmt::format("couldn't resolve instruction size for '{}'", opcode_name(op)));
+            throw error(std::format("couldn't resolve instruction size for '{}'", opcode_name(op)));
     }
 }
 
@@ -292,7 +292,7 @@ auto context::opcode_id(opcode op) const -> u8
         return itr->second;
     }
 
-    throw error(fmt::format("couldn't resolve opcode id for '{}'", opcode_name(op)));
+    throw error(std::format("couldn't resolve opcode id for '{}'", opcode_name(op)));
 }
 
 auto context::opcode_name(opcode op) const -> std::string
@@ -304,7 +304,7 @@ auto context::opcode_name(opcode op) const -> std::string
         return std::string{ itr->second };
     }
 
-    throw std::runtime_error(fmt::format("couldn't resolve opcode string for enum '{}'", static_cast<std::underlying_type_t<opcode>>(op)));
+    throw std::runtime_error(std::format("couldn't resolve opcode string for enum '{}'", static_cast<std::underlying_type_t<opcode>>(op)));
 }
 
 auto context::opcode_enum(std::string const& name) const -> opcode
@@ -316,7 +316,7 @@ auto context::opcode_enum(std::string const& name) const -> opcode
         return itr->second;
     }
 
-    throw std::runtime_error(fmt::format("couldn't resolve opcode enum for name '{}'", name));
+    throw std::runtime_error(std::format("couldn't resolve opcode enum for name '{}'", name));
 }
 
 auto context::opcode_enum(u8 id) const -> opcode
@@ -328,7 +328,7 @@ auto context::opcode_enum(u8 id) const -> opcode
         return itr->second;
     }
 
-    throw error(fmt::format("couldn't resolve opcode enum for '{:02X}'", id));
+    throw error(std::format("couldn't resolve opcode enum for '{:02X}'", id));
 }
 
 auto context::func_id(std::string const& name) const -> u16
@@ -345,7 +345,7 @@ auto context::func_id(std::string const& name) const -> u16
         return itr->second;
     }
 
-    throw error(fmt::format("couldn't resolve builtin function id for {}", name));
+    throw error(std::format("couldn't resolve builtin function id for {}", name));
 }
 
 auto context::func_name(u16 id) const -> std::string
@@ -357,7 +357,7 @@ auto context::func_name(u16 id) const -> std::string
         return std::string{ itr->second };
     }
 
-    return fmt::format("_func_{:04X}", id);
+    return std::format("_func_{:04X}", id);
 }
 
 auto context::func2_id(std::string const& name) const -> u64
@@ -394,7 +394,7 @@ auto context::func2_name(u64 id) const -> std::string
         return std::string{ itr->second };
     }
 
-    return fmt::format("_func_{:16X}", id);
+    return std::format("_func_{:16X}", id);
 }
 
 auto context::func_exists(std::string const& name) const -> bool
@@ -417,7 +417,7 @@ auto context::func_add(std::string const& name, u16 id) -> void
 
     if (itr != func_map_rev_.end())
     {
-        throw error(fmt::format("builtin function '{}' already defined", name));
+        throw error(std::format("builtin function '{}' already defined", name));
     }
 
     auto const str = new_func_map_.find(name);
@@ -453,7 +453,7 @@ auto context::meth_id(std::string const& name) const -> u16
         return itr->second;
     }
 
-    throw error(fmt::format("couldn't resolve builtin method id for {}", name));
+    throw error(std::format("couldn't resolve builtin method id for {}", name));
 }
 
 auto context::meth_name(u16 id) const -> std::string
@@ -465,7 +465,7 @@ auto context::meth_name(u16 id) const -> std::string
         return std::string{ itr->second };
     }
 
-    return fmt::format("_meth_{:04X}", id);
+    return std::format("_meth_{:04X}", id);
 }
 
 auto context::meth2_id(std::string const& name) const -> u64
@@ -502,7 +502,7 @@ auto context::meth2_name(u64 id) const -> std::string
         return std::string{ itr->second };
     }
 
-    return fmt::format("_meth_{:16X}", id);
+    return std::format("_meth_{:16X}", id);
 }
 
 
@@ -526,7 +526,7 @@ auto context::meth_add(std::string const& name, u16 id) -> void
 
     if (itr != meth_map_rev_.end())
     {
-        throw error(fmt::format("builtin method '{}' already defined", name));
+        throw error(std::format("builtin method '{}' already defined", name));
     }
 
     auto const str = new_meth_map_.find(name);
@@ -574,7 +574,7 @@ auto context::token_name(u32 id) const -> std::string
         return std::string{ itr->second };
     }
 
-    return fmt::format("_id_{:04X}", id);
+    return std::format("_id_{:04X}", id);
 }
 
 auto context::path_id(std::string const& name) const -> u64
@@ -615,7 +615,7 @@ auto context::path_name(u64 id) const -> std::string
         return std::string{ itr->second };
     }
 
-    return fmt::format("_id_{:016X}", id);
+    return std::format("_id_{:016X}", id);
 }
 
 auto context::hash_id(std::string const& name) const -> u64
@@ -652,7 +652,7 @@ auto context::hash_name(u64 id) const -> std::string
         return std::string{ itr->second };
     }
 
-    return fmt::format("_id_{:016X}", id);
+    return std::format("_id_{:016X}", id);
 }
 
 auto context::make_token(std::string_view str) const -> std::string
@@ -694,7 +694,7 @@ auto context::load_header(std::string const& name) -> std::tuple<std::string con
         }
     }
 
-    throw error(fmt::format("couldn't open gsh file '{}'", name));
+    throw error(std::format("couldn't open gsh file '{}'", name));
 }
 
 auto context::load_include(std::string const& name) -> bool
@@ -755,7 +755,7 @@ auto context::load_include(std::string const& name) -> bool
     }
     catch (std::exception const& e)
     {
-        throw error(fmt::format("parsing include file '{}': {}", name, e.what()));
+        throw error(std::format("parsing include file '{}': {}", name, e.what()));
     }
 }
 

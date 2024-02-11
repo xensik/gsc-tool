@@ -86,7 +86,7 @@ auto decompiler::decompile_function(function const& func) -> void
     }
 
     auto& list = func_->body->block->list;
-    locs_.end = fmt::format("loc_{:X}", list.back()->loc().begin.line + 1);
+    locs_.end = std::format("loc_{:X}", list.back()->loc().begin.line + 1);
 
     decompile_statements(*func_->body->block);
 
@@ -1137,7 +1137,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_EvalLocalVariableCachedDebug:
         case opcode::OP_EvalLocalVariableRefCachedDebug:
         default:
-            throw decomp_error(fmt::format("unhandled opcode {}", ctx_->opcode_name(inst.opcode)));
+            throw decomp_error(std::format("unhandled opcode {}", ctx_->opcode_name(inst.opcode)));
     }
 }
 
@@ -1933,7 +1933,7 @@ auto decompiler::find_location_index(stmt_list const& stm, std::string const& lo
         index++;
     }
 
-    throw decomp_error(fmt::format("location '{}' not found", loc));
+    throw decomp_error(std::format("location '{}' not found", loc));
 }
 
 auto decompiler::last_location_index(stmt_list const& stm, usize index) -> bool
@@ -1992,7 +1992,7 @@ auto decompiler::resolve_label(std::string const& name) -> u32
         }
     }
 
-    throw decomp_error(fmt::format("couldn't resolve label address of '{}'", name));
+    throw decomp_error(std::format("couldn't resolve label address of '{}'", name));
 }
 
 auto decompiler::process_function(decl_function& func) -> void

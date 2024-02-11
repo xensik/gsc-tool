@@ -45,7 +45,7 @@ auto compiler::emit_program(program const& prog) -> void
 
         if (!ctx_->load_include(path))
         {
-            throw error(fmt::format("duplicated include file {}", path));
+            throw error(std::format("duplicated include file {}", path));
         }
     }
 
@@ -57,13 +57,13 @@ auto compiler::emit_program(program const& prog) -> void
 
             if (ctx_->func_exists(name) || ctx_->meth_exists(name))
             {
-                throw comp_error(dec->loc(), fmt::format("function name '{}' already defined as builtin", name));
+                throw comp_error(dec->loc(), std::format("function name '{}' already defined as builtin", name));
             }
 
             for (auto const& entry : localfuncs_)
             {
                 if (entry == name)
-                    throw comp_error(dec->loc(), fmt::format("function name '{}' already defined as local function", name));
+                    throw comp_error(dec->loc(), std::format("function name '{}' already defined as local function", name));
             }
 
             localfuncs_.push_back(dec->as<decl_function>().name->value);
@@ -114,7 +114,7 @@ auto compiler::emit_decl_constant(decl_constant const& constant) -> void
     auto const it = constants_.find(constant.name->value);
 
     if (it != constants_.end())
-        throw comp_error(constant.loc(), fmt::format("duplicated constant '{}'", constant.name->value));
+        throw comp_error(constant.loc(), std::format("duplicated constant '{}'", constant.name->value));
 
     constants_.insert({ constant.name->value, constant.value.get() });
 }
@@ -323,7 +323,7 @@ auto compiler::emit_stmt_waittill(stmt_waittill const& stm, scope& scp) -> void
 
     for (auto const& entry : stm.args->list)
     {
-        emit_opcode(opcode::OP_SafeSetWaittillVariableFieldCached, fmt::format("{}", variable_create(entry->as<expr_identifier>(), scp)));
+        emit_opcode(opcode::OP_SafeSetWaittillVariableFieldCached, std::format("{}", variable_create(entry->as<expr_identifier>(), scp)));
     }
 
     emit_opcode(opcode::OP_clearparams);
@@ -334,7 +334,7 @@ auto compiler::emit_stmt_waittillmatch(stmt_waittillmatch const& stm, scope& scp
     emit_expr_arguments(*stm.args, scp);
     emit_expr(*stm.event, scp);
     emit_expr(*stm.obj, scp);
-    emit_opcode(opcode::OP_waittillmatch, fmt::format("{}", stm.args->list.size()));
+    emit_opcode(opcode::OP_waittillmatch, std::format("{}", stm.args->list.size()));
     emit_opcode(opcode::OP_waittillmatch2);
     emit_opcode(opcode::OP_clearparams);
 }
@@ -676,7 +676,7 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
     can_continue_ = true;
 
     emit_expr_variable(*stm.key, *scp_body);
-    emit_opcode(opcode::OP_EvalLocalArrayCached, fmt::format("{}", variable_access(stm.array->as<expr_identifier>(), *scp_body)));
+    emit_opcode(opcode::OP_EvalLocalArrayCached, std::format("{}", variable_access(stm.array->as<expr_identifier>(), *scp_body)));
     emit_expr_variable_ref(*stm.value, *scp_body, true);
 
     if (ctx_->props() & props::foreach && stm.use_key)
@@ -734,7 +734,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
     can_break_ = true;
 
     auto data = std::vector<std::string>{};
-    data.push_back(fmt::format("{}", stm.body->block->list.size()));
+    data.push_back(std::format("{}", stm.body->block->list.size()));
 
     auto type = switch_type::none;
     auto loc_default = std::string{};
@@ -753,7 +753,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
             {
                 if (ctx_->engine() == engine::iw9)
                 {
-                    data.push_back(fmt::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::integer)));
+                    data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::integer)));
                 }
                 else
                 {
@@ -772,7 +772,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
             {
                 if (ctx_->engine() == engine::iw9)
                 {
-                    data.push_back(fmt::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::string)));
+                    data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::string)));
                 }
                 else
                 {
@@ -834,7 +834,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
         scp.init(break_blks_);
     }
 
-    data.push_back(fmt::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
+    data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
 
     insert_label(table_loc);
 
@@ -1128,7 +1128,7 @@ auto compiler::emit_expr_clear_local(expr_identifier const& exp, scope& scp) -> 
     if (index == 0)
         emit_opcode(opcode::OP_ClearLocalVariableFieldCached0);
     else
-        emit_opcode(opcode::OP_ClearLocalVariableFieldCached, fmt::format("{}", index));
+        emit_opcode(opcode::OP_ClearLocalVariableFieldCached, std::format("{}", index));
 }
 
 auto compiler::emit_expr_increment(expr_increment const& exp, scope& scp, bool is_stmt) -> void
@@ -1323,7 +1323,7 @@ auto compiler::emit_expr_call_pointer(expr_pointer const& exp, scope& scp, bool 
     emit_expr_arguments(*exp.args, scp);
     emit_expr(*exp.func, scp);
 
-    auto argcount = fmt::format("{}", exp.args->list.size());
+    auto argcount = std::format("{}", exp.args->list.size());
 
     switch (exp.mode)
     {
@@ -1360,7 +1360,7 @@ auto compiler::emit_expr_call_function(expr_function const& exp, scope& scp, boo
 
     emit_expr_arguments(*exp.args, scp);
 
-    auto argcount = fmt::format("{}", exp.args->list.size());
+    auto argcount = std::format("{}", exp.args->list.size());
 
     if (type == call::type::local)
     {
@@ -1465,7 +1465,7 @@ auto compiler::emit_expr_method_pointer(expr_pointer const& exp, expr const& obj
     emit_expr(obj, scp);
     emit_expr(*exp.func, scp);
 
-    auto argcount = fmt::format("{}", exp.args->list.size());
+    auto argcount = std::format("{}", exp.args->list.size());
 
     switch (exp.mode)
     {
@@ -1503,7 +1503,7 @@ auto compiler::emit_expr_method_function(expr_function const& exp, expr const& o
     emit_expr_arguments(*exp.args, scp);
     emit_expr(obj, scp);
 
-    auto argcount = fmt::format("{}", exp.args->list.size());
+    auto argcount = std::format("{}", exp.args->list.size());
 
     if (type == call::type::local)
     {
@@ -1605,12 +1605,12 @@ auto compiler::emit_expr_parameters(expr_parameters const& exp, scope& scp) -> v
             auto data = std::vector<std::string>{};
             auto size = (ctx_->props() & props::hash) ? num * 8 : num;
 
-            data.push_back(fmt::format("{}", num));
+            data.push_back(std::format("{}", num));
 
             for (auto const& entry : exp.list)
             {
                 auto index = variable_initialize(*entry, scp);
-                data.push_back((ctx_->props() & props::hash) ? entry->value : fmt::format("{}", index));
+                data.push_back((ctx_->props() & props::hash) ? entry->value : std::format("{}", index));
             }
 
             emit_opcode(opcode::OP_FormalParams, data);
@@ -1626,7 +1626,7 @@ auto compiler::emit_expr_parameters(expr_parameters const& exp, scope& scp) -> v
     {
         for (auto const& entry : exp.list)
         {
-            emit_opcode(opcode::OP_SafeCreateVariableFieldCached, fmt::format("{}", variable_initialize(*entry, scp)));
+            emit_opcode(opcode::OP_SafeCreateVariableFieldCached, std::format("{}", variable_initialize(*entry, scp)));
         }
 
         emit_opcode(opcode::OP_checkclearparams);
@@ -1698,11 +1698,11 @@ auto compiler::emit_expr_tuple(expr_tuple const& exp, scope& scp) -> void
         if (index == 0)
             emit_opcode(opcode::OP_GetZero);
         else
-            emit_opcode(opcode::OP_GetByte, fmt::format("{}", index));
+            emit_opcode(opcode::OP_GetByte, std::format("{}", index));
 
         index++;
 
-        emit_opcode(opcode::OP_EvalLocalArrayCached, fmt::format("{}", variable_access(exp.temp->as<expr_identifier>(), scp)));
+        emit_opcode(opcode::OP_EvalLocalArrayCached, std::format("{}", variable_access(exp.temp->as<expr_identifier>(), scp)));
 
         emit_expr_variable_ref(*entry, scp, true);
     }
@@ -1750,7 +1750,7 @@ auto compiler::emit_expr_array_ref(expr_array const& exp, scope& scp, bool set) 
             if (!variable_initialized(exp.obj->as<expr_identifier>(), scp))
             {
                 auto index = variable_initialize(exp.obj->as<expr_identifier>(), scp);
-                emit_opcode(opcode::OP_EvalNewLocalArrayRefCached0, (ctx_->props() & props::hash) ? exp.obj->as<expr_identifier>().value : fmt::format("{}", index));
+                emit_opcode(opcode::OP_EvalNewLocalArrayRefCached0, (ctx_->props() & props::hash) ? exp.obj->as<expr_identifier>().value : std::format("{}", index));
 
                 if (!set) throw comp_error(exp.loc(), "INTERNAL: VAR CREATED BUT NOT SET");
             }
@@ -1761,7 +1761,7 @@ auto compiler::emit_expr_array_ref(expr_array const& exp, scope& scp, bool set) 
                 if (index == 0)
                     emit_opcode(opcode::OP_EvalLocalArrayRefCached0);
                 else
-                    emit_opcode(opcode::OP_EvalLocalArrayRefCached, fmt::format("{}", index));
+                    emit_opcode(opcode::OP_EvalLocalArrayRefCached, std::format("{}", index));
             }
 
             if (set) emit_opcode(opcode::OP_SetVariableField);
@@ -1802,7 +1802,7 @@ auto compiler::emit_expr_field_ref(expr_field const& exp, scope& scp, bool set) 
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, fmt::format("{}", variable_access(exp.obj->as<expr_identifier>(), scp)));
+            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, std::format("{}", variable_access(exp.obj->as<expr_identifier>(), scp)));
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
@@ -1829,7 +1829,7 @@ auto compiler::emit_expr_local_ref(expr_identifier const& exp, scope& scp, bool 
 
     if (it != constants_.end())
     {
-        throw comp_error(exp.loc(), fmt::format("variable name already defined as constant '{}'", exp.value));
+        throw comp_error(exp.loc(), std::format("variable name already defined as constant '{}'", exp.value));
     }
 
     if (set)
@@ -1837,7 +1837,7 @@ auto compiler::emit_expr_local_ref(expr_identifier const& exp, scope& scp, bool 
         if (!variable_initialized(exp, scp))
         {
             auto index = variable_initialize(exp, scp);
-            emit_opcode(opcode::OP_SetNewLocalVariableFieldCached0, (ctx_->props() & props::hash) ? exp.value : fmt::format("{}", index));
+            emit_opcode(opcode::OP_SetNewLocalVariableFieldCached0, (ctx_->props() & props::hash) ? exp.value : std::format("{}", index));
         }
         else
         {
@@ -1846,7 +1846,7 @@ auto compiler::emit_expr_local_ref(expr_identifier const& exp, scope& scp, bool 
             if (index == 0)
                 emit_opcode(opcode::OP_SetLocalVariableFieldCached0);
             else
-                emit_opcode(opcode::OP_SetLocalVariableFieldCached, fmt::format("{}", index));
+                emit_opcode(opcode::OP_SetLocalVariableFieldCached, std::format("{}", index));
         }
     }
     else
@@ -1856,7 +1856,7 @@ auto compiler::emit_expr_local_ref(expr_identifier const& exp, scope& scp, bool 
         if (index == 0)
             emit_opcode(opcode::OP_EvalLocalVariableRefCached0);
         else
-            emit_opcode(opcode::OP_EvalLocalVariableRefCached, fmt::format("{}", index));
+            emit_opcode(opcode::OP_EvalLocalVariableRefCached, std::format("{}", index));
     }
 }
 
@@ -1884,7 +1884,7 @@ auto compiler::emit_expr_array(expr_array const& exp, scope& scp) -> void
 
     if (exp.obj->is<expr_identifier>())
     {
-        emit_opcode(opcode::OP_EvalLocalArrayCached, fmt::format("{}", variable_access(exp.obj->as<expr_identifier>(), scp)));
+        emit_opcode(opcode::OP_EvalLocalArrayCached, std::format("{}", variable_access(exp.obj->as<expr_identifier>(), scp)));
     }
     else
     {
@@ -1929,7 +1929,7 @@ auto compiler::emit_expr_field(expr_field const& exp, scope& scp) -> void
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, fmt::format("{}", variable_access(exp.obj->as<expr_identifier>(), scp)));
+            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, std::format("{}", variable_access(exp.obj->as<expr_identifier>(), scp)));
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         default:
@@ -1971,7 +1971,7 @@ auto compiler::emit_expr_local(expr_identifier const& exp, scope& scp) -> void
             emit_opcode(opcode::OP_EvalLocalVariableCached5);
             break;
         default:
-            emit_opcode(opcode::OP_EvalLocalVariableCached, fmt::format("{}", index));
+            emit_opcode(opcode::OP_EvalLocalVariableCached, std::format("{}", index));
             break;
     }
 }
@@ -2006,7 +2006,7 @@ auto compiler::emit_expr_object(expr const& exp, scope& scp) -> void
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, fmt::format("{}", variable_access(exp.as<expr_identifier>(), scp)));
+            emit_opcode(opcode::OP_EvalLocalVariableObjectCached, std::format("{}", variable_access(exp.as<expr_identifier>(), scp)));
             break;
         default:
             throw comp_error(exp.loc(), "not an object");
@@ -2173,7 +2173,7 @@ auto compiler::emit_create_local_vars(scope& scp) -> void
     {
         for (auto i = scp.create_count; i < scp.public_count; i++)
         {
-            emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->props() & props::hash) ? scp.vars[i].name : fmt::format("{}", scp.vars[i].create));
+            emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->props() & props::hash) ? scp.vars[i].name : std::format("{}", scp.vars[i].create));
             scp.vars[i].init = true;
         }
 
@@ -2189,7 +2189,7 @@ auto compiler::emit_remove_local_vars(scope& scp) -> void
 
         if (count > 0)
         {
-            emit_opcode(opcode::OP_RemoveLocalVariables, fmt::format("{}", count));
+            emit_opcode(opcode::OP_RemoveLocalVariables, std::format("{}", count));
         }
     }
 }
@@ -2726,7 +2726,7 @@ auto compiler::variable_initialized(expr_identifier const& exp, scope& scp) -> b
         }
     }
 
-   throw comp_error(exp.loc(), fmt::format("local variable '{}' not found", exp.value));
+   throw comp_error(exp.loc(), std::format("local variable '{}' not found", exp.value));
 }
 
 auto compiler::variable_initialize(expr_identifier const& exp, scope& scp) -> u8
@@ -2742,7 +2742,7 @@ auto compiler::variable_initialize(expr_identifier const& exp, scope& scp) -> u8
                     if (!scp.vars[j].init)
                     {
                         scp.vars[j].init = true;
-                        emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->props() & props::hash) ? scp.vars[j].name : fmt::format("{}", scp.vars[j].create));
+                        emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->props() & props::hash) ? scp.vars[j].name : std::format("{}", scp.vars[j].create));
                     }
                 }
 
@@ -2753,7 +2753,7 @@ auto compiler::variable_initialize(expr_identifier const& exp, scope& scp) -> u8
         }
     }
 
-    throw comp_error(exp.loc(), fmt::format("local variable '{}' not found", exp.value));
+    throw comp_error(exp.loc(), std::format("local variable '{}' not found", exp.value));
 }
 
 auto compiler::variable_create(expr_identifier const& exp, scope& scp) -> u8
@@ -2766,7 +2766,7 @@ auto compiler::variable_create(expr_identifier const& exp, scope& scp) -> u8
         {
             if (!var.init)
             {
-                emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->props() & props::hash) ? var.name : fmt::format("{}", var.create));
+                emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->props() & props::hash) ? var.name : std::format("{}", var.create));
                 var.init = true;
                 scp.create_count++;
             }
@@ -2775,7 +2775,7 @@ auto compiler::variable_create(expr_identifier const& exp, scope& scp) -> u8
         }
     }
 
-    throw comp_error(exp.loc(), fmt::format("local variable '{}' not found", exp.value));
+    throw comp_error(exp.loc(), std::format("local variable '{}' not found", exp.value));
 }
 
 auto compiler::variable_access(expr_identifier const& exp, scope& scp) -> u8
@@ -2789,11 +2789,11 @@ auto compiler::variable_access(expr_identifier const& exp, scope& scp) -> u8
                 return static_cast<u8>(scp.create_count - 1 - i);
             }
 
-            throw comp_error(exp.loc(), fmt::format("local variable '{}' not initialized", exp.value));
+            throw comp_error(exp.loc(), std::format("local variable '{}' not initialized", exp.value));
         }
     }
 
-    throw comp_error(exp.loc(), fmt::format("local variable '{}' not found", exp.value));
+    throw comp_error(exp.loc(), std::format("local variable '{}' not found", exp.value));
 }
 
 auto compiler::resolve_function_type(expr_function const& exp, std::string& path) -> call::type
@@ -2922,7 +2922,7 @@ auto compiler::insert_label() -> std::string
     else
     {
         label_idx_++;
-        auto name = fmt::format("loc_{}", label_idx_);
+        auto name = std::format("loc_{}", label_idx_);
         function_->labels.insert({ index_, name });
         return name;
     }
@@ -2931,7 +2931,7 @@ auto compiler::insert_label() -> std::string
 auto compiler::create_label() -> std::string
 {
     label_idx_++;
-    return fmt::format("loc_{}", label_idx_);
+    return std::format("loc_{}", label_idx_);
 }
 
 } // namespace xsk::gsc

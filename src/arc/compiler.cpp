@@ -49,7 +49,7 @@ auto compiler::emit_program(program const& prog) -> void
             for (auto const& entry : localfuncs_)
             {
                 if (entry == name)
-                    throw comp_error(dec->loc(), fmt::format("function name '{}' already defined as local function", name));
+                    throw comp_error(dec->loc(), std::format("function name '{}' already defined as local function", name));
             }
 
             localfuncs_.push_back(dec->as<decl_function>().name->value);
@@ -70,7 +70,7 @@ auto compiler::emit_include(include const& inc) -> void
     {
         if (entry == path)
         {
-            throw comp_error(inc.loc(), fmt::format("duplicated include file {}", path));
+            throw comp_error(inc.loc(), std::format("duplicated include file {}", path));
         }
     }
 
@@ -322,7 +322,7 @@ auto compiler::emit_stmt_waittill(stmt_waittill const& stm) -> void
         if (entry->is<expr_undefined>())
             emit_opcode(opcode::OP_SafeDecTop);
         else
-            emit_opcode(opcode::OP_SafeSetWaittillVariableFieldCached, fmt::format("{}", variable_access(entry->as<expr_identifier>())));
+            emit_opcode(opcode::OP_SafeSetWaittillVariableFieldCached, std::format("{}", variable_access(entry->as<expr_identifier>())));
     }
 
     emit_opcode(opcode::OP_ClearParams);
@@ -333,7 +333,7 @@ auto compiler::emit_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void
     emit_expr_arguments(*stm.args);
     emit_expr(*stm.event);
     emit_expr(*stm.obj);
-    emit_opcode(opcode::OP_WaitTillMatch, fmt::format("{}", stm.args->list.size()));
+    emit_opcode(opcode::OP_WaitTillMatch, std::format("{}", stm.args->list.size()));
     emit_opcode(opcode::OP_ClearParams);
 }
 
@@ -527,7 +527,7 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm) -> void
     can_continue_ = true;
 
     emit_expr_variable(*stm.key);
-    emit_opcode(opcode::OP_EvalLocalVariableCached, fmt::format("{}", variable_access(stm.array->as<expr_identifier>())));
+    emit_opcode(opcode::OP_EvalLocalVariableCached, std::format("{}", variable_access(stm.array->as<expr_identifier>())));
     emit_opcode(opcode::OP_EvalArray);
     emit_expr_variable_ref(*stm.value, true);
 
@@ -565,7 +565,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
     can_break_ = true;
 
     auto data = std::vector<std::string>{};
-    data.push_back(fmt::format("{}", stm.body->block->list.size()));
+    data.push_back(std::format("{}", stm.body->block->list.size()));
     
     auto type = switch_type::none;
     auto loc_default = std::string{};
@@ -635,7 +635,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
         data.push_back(loc_default);
     }
 
-    data.push_back(fmt::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
+    data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
 
     insert_label(table_loc);
     emit_opcode(opcode::OP_EndSwitch, data);
@@ -863,10 +863,10 @@ auto compiler::emit_expr_const(expr_const const& exp) -> void
     auto const itr = constants_.find(exp.lvalue->value);
 
     if (itr != constants_.end())
-        throw comp_error(exp.loc(), fmt::format("duplicated constant '{}'", exp.lvalue->value));
+        throw comp_error(exp.loc(), std::format("duplicated constant '{}'", exp.lvalue->value));
 
     if (std::find(stackframe_.begin(), stackframe_.end(), exp.lvalue->value) != stackframe_.end())
-        throw comp_error(exp.loc(), fmt::format("constant already defined as local variable '{}'", exp.lvalue->value));
+        throw comp_error(exp.loc(), std::format("constant already defined as local variable '{}'", exp.lvalue->value));
 
     constants_.insert({ exp.lvalue->value, exp.rvalue.get() });
 }
@@ -1120,7 +1120,7 @@ auto compiler::emit_expr_call_pointer(expr_pointer const& exp, bool is_stmt) -> 
     emit_expr_arguments(*exp.args);
     emit_expr(*exp.func);
 
-    auto argcount = fmt::format("{}", exp.args->list.size());
+    auto argcount = std::format("{}", exp.args->list.size());
 
     switch (exp.mode)
     {
@@ -1173,18 +1173,18 @@ auto compiler::emit_expr_call_function(expr_function const& exp, bool is_stmt) -
     emit_opcode(opcode::OP_PreScriptCall);
     emit_expr_arguments(*exp.args);
 
-    auto argcount = fmt::format("{}", exp.args->list.size());
+    auto argcount = std::format("{}", exp.args->list.size());
     auto flags = developer_thread_ ? static_cast<u8>(import_flags::developer) : 0;
 
     switch (exp.mode)
     {
         case call::mode::normal:
             flags |= static_cast<u8>(import_flags::func_call);
-            emit_opcode(opcode::OP_ScriptFunctionCall, { exp.path->value, exp.name->value, argcount, fmt::format("{}", flags) });
+            emit_opcode(opcode::OP_ScriptFunctionCall, { exp.path->value, exp.name->value, argcount, std::format("{}", flags) });
             break;
         case call::mode::thread:
             flags |= static_cast<u8>(import_flags::func_call_thread);
-            emit_opcode(opcode::OP_ScriptThreadCall, { exp.path->value, exp.name->value, argcount, fmt::format("{}", flags) });
+            emit_opcode(opcode::OP_ScriptThreadCall, { exp.path->value, exp.name->value, argcount, std::format("{}", flags) });
             break;
         default:
             break;
@@ -1217,7 +1217,7 @@ auto compiler::emit_expr_method_pointer(expr_pointer const& exp, expr const& obj
     emit_expr(obj);
     emit_expr(*exp.func);
 
-    auto argcount = fmt::format("{}", exp.args->list.size());
+    auto argcount = std::format("{}", exp.args->list.size());
 
     switch (exp.mode)
     {
@@ -1260,18 +1260,18 @@ auto compiler::emit_expr_method_function(expr_function const& exp, expr const& o
     emit_expr_arguments(*exp.args);
     emit_expr(obj);
 
-    auto argcount = fmt::format("{}", exp.args->list.size());
+    auto argcount = std::format("{}", exp.args->list.size());
     auto flags = developer_thread_ ? static_cast<u8>(import_flags::developer) : 0;
 
     switch (exp.mode)
     {
         case call::mode::normal:
             flags |= static_cast<u8>(import_flags::meth_call);
-            emit_opcode(opcode::OP_ScriptMethodCall, { exp.path->value, exp.name->value, argcount, fmt::format("{}", flags) });
+            emit_opcode(opcode::OP_ScriptMethodCall, { exp.path->value, exp.name->value, argcount, std::format("{}", flags) });
             break;
         case call::mode::thread:
             flags |= static_cast<u8>(import_flags::meth_call_thread);
-            emit_opcode(opcode::OP_ScriptMethodThreadCall, { exp.path->value, exp.name->value, argcount, fmt::format("{}", flags) });
+            emit_opcode(opcode::OP_ScriptMethodThreadCall, { exp.path->value, exp.name->value, argcount, std::format("{}", flags) });
             break;
         default:
             break;
@@ -1456,7 +1456,7 @@ auto compiler::emit_expr_reference(expr_reference const& exp) -> void
     auto flags = developer_thread_ ? static_cast<u8>(import_flags::developer) : 0;
     flags |= static_cast<u8>(import_flags::func_reference);
 
-    emit_opcode(opcode::OP_GetFunction, { exp.path->value, exp.name->value, "0", fmt::format("{}", flags) });
+    emit_opcode(opcode::OP_GetFunction, { exp.path->value, exp.name->value, "0", std::format("{}", flags) });
 }
 
 auto compiler::emit_expr_size(expr_size const& exp) -> void
@@ -1542,7 +1542,7 @@ auto compiler::emit_expr_field_ref(expr_field const& exp, bool set) -> void
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableCached, fmt::format("{}", variable_access(exp.obj->as<expr_identifier>())));
+            emit_opcode(opcode::OP_EvalLocalVariableCached, std::format("{}", variable_access(exp.obj->as<expr_identifier>())));
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
@@ -1570,10 +1570,10 @@ auto compiler::emit_expr_local_ref(expr_identifier const& exp, bool set) -> void
 
     if (it != constants_.end())
     {
-        throw comp_error(exp.loc(), fmt::format("variable name already defined as constant '{}'", exp.value));
+        throw comp_error(exp.loc(), std::format("variable name already defined as constant '{}'", exp.value));
     }
 
-    emit_opcode(opcode::OP_EvalLocalVariableRefCached, fmt::format("{}", variable_access(exp)));
+    emit_opcode(opcode::OP_EvalLocalVariableRefCached, std::format("{}", variable_access(exp)));
 
     if (set)
     {
@@ -1645,7 +1645,7 @@ auto compiler::emit_expr_field(expr_field const& exp) -> void
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableCached, fmt::format("{}", variable_access(exp.obj->as<expr_identifier>())));
+            emit_opcode(opcode::OP_EvalLocalVariableCached, std::format("{}", variable_access(exp.obj->as<expr_identifier>())));
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
@@ -1661,7 +1661,7 @@ auto compiler::emit_expr_local(expr_identifier const& exp) -> void
     if (it != constants_.end())
         emit_expr(*it->second);
     else
-        emit_opcode(opcode::OP_EvalLocalVariableCached, fmt::format("{}", variable_access(exp)));
+        emit_opcode(opcode::OP_EvalLocalVariableCached, std::format("{}", variable_access(exp)));
 }
 
 auto compiler::emit_expr_object(expr const& exp) -> void
@@ -1694,7 +1694,7 @@ auto compiler::emit_expr_object(expr const& exp) -> void
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableCached, fmt::format("{}", variable_access(exp.as<expr_identifier>())));
+            emit_opcode(opcode::OP_EvalLocalVariableCached, std::format("{}", variable_access(exp.as<expr_identifier>())));
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         default:
@@ -1785,7 +1785,7 @@ auto compiler::emit_expr_vector(expr_vector const& exp) -> void
 
     if (isconst)
     {
-        emit_opcode(opcode::OP_VectorConstant, fmt::format("{}", flags));
+        emit_opcode(opcode::OP_VectorConstant, std::format("{}", flags));
     }
     else
     {
@@ -2156,7 +2156,7 @@ auto compiler::variable_access(expr_identifier const& exp) -> u8
         }
     }
 
-    throw comp_error(exp.loc(), fmt::format("local variable '{}' not found", exp.value));
+    throw comp_error(exp.loc(), std::format("local variable '{}' not found", exp.value));
 }
 
 auto compiler::is_constant_condition(expr const& exp) -> bool
@@ -2227,7 +2227,7 @@ auto compiler::insert_label() -> std::string
     else
     {
         label_idx_++;
-        auto name = fmt::format("loc_{}", label_idx_);
+        auto name = std::format("loc_{}", label_idx_);
         function_->labels.insert({ index_, name });
         return name;
     }
@@ -2236,7 +2236,7 @@ auto compiler::insert_label() -> std::string
 auto compiler::create_label() -> std::string
 {
     label_idx_++;
-    return fmt::format("loc_{}", label_idx_);
+    return std::format("loc_{}", label_idx_);
 }
 
 } // namespace xsk::arc

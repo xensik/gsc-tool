@@ -1807,7 +1807,7 @@ namespace xsk { namespace arc {
     int yylen = 0;
 
     // Error handling.
-    int yynerrs_ = 0;
+    [[maybe_unused]] int yynerrs_ = 0;
     int yyerrstatus_ = 0;
 
     /// The lookahead symbol.
@@ -2836,8 +2836,8 @@ namespace xsk { namespace arc {
   case 87: // stmt_foreach: "foreach" "(" expr_identifier "in" expr ")" stmt
 #line 519 "parser.ypp"
         {
-            auto array = expr_identifier::make(yylhs.location, fmt::format("_a{}", ++index));
-            auto key = expr_identifier::make(yylhs.location, fmt::format("_k{}", ++index));
+            auto array = expr_identifier::make(yylhs.location, std::format("_a{}", ++index));
+            auto key = expr_identifier::make(yylhs.location, std::format("_k{}", ++index));
             yylhs.value.as < stmt_foreach::ptr > () = stmt_foreach::make(yylhs.location, std::move(yystack_[2].value.as < expr::ptr > ()), std::move(yystack_[4].value.as < expr_identifier::ptr > ()), std::move(array), std::move(key), std::move(yystack_[0].value.as < stmt::ptr > ()), false);
         }
 #line 2850 "parser.cpp"
@@ -2846,7 +2846,7 @@ namespace xsk { namespace arc {
   case 88: // stmt_foreach: "foreach" "(" expr_identifier "," expr_identifier "in" expr ")" stmt
 #line 525 "parser.ypp"
         {
-            auto array = expr_identifier::make(yylhs.location, fmt::format("_a{}", ++index));
+            auto array = expr_identifier::make(yylhs.location, std::format("_a{}", ++index));
             yylhs.value.as < stmt_foreach::ptr > () = stmt_foreach::make(yylhs.location, std::move(yystack_[2].value.as < expr::ptr > ()), std::move(yystack_[4].value.as < expr_identifier::ptr > ()), std::move(array), std::move(yystack_[6].value.as < expr_identifier::ptr > ()), std::move(yystack_[0].value.as < stmt::ptr > ()), true);
         }
 #line 2859 "parser.cpp"
@@ -5609,7 +5609,7 @@ auto map_token(context const* ctx_, token& tok) -> parser::symbol_type
         }
     }
 
-    throw error(fmt::format("unmapped token! {}", (u8)tok.type));
+    throw error(std::format("unmapped token! {}", (u8)tok.type));
 }
 
 auto ARClex(context const* ctx_, preprocessor& ppr) -> parser::symbol_type

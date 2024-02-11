@@ -1238,7 +1238,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         }
         case opcode::OP_SafeCreateVariableFieldCached:
         {
-            auto name = (ctx_->props() & props::hash) ? inst.data[0] : fmt::format("var_{}", inst.data[0]);
+            auto name = (ctx_->props() & props::hash) ? inst.data[0] : std::format("var_{}", inst.data[0]);
             func_->params->list.push_back(expr_identifier::make(loc, name));
             break;
         }
@@ -1456,7 +1456,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
 
             for (auto i = 1; i <= count; i++)
             {
-                auto name = (ctx_->props() & props::hash) ? inst.data[i] : fmt::format("var_{}", inst.data[i]);
+                auto name = (ctx_->props() & props::hash) ? inst.data[i] : std::format("var_{}", inst.data[i]);
                 func_->params->list.push_back(expr_identifier::make(loc, name));
             }
             break;
@@ -1481,22 +1481,22 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         }
         case opcode::OP_GetStatHash:
         {
-            stack_.push(expr_string::make(loc, fmt::format("stat_{}", inst.data[0])));
+            stack_.push(expr_string::make(loc, std::format("stat_{}", inst.data[0])));
             break;
         }
         case opcode::OP_GetUnkxHash:
         {
-            stack_.push(expr_string::make(loc, fmt::format("hunk_{}", inst.data[0])));
+            stack_.push(expr_string::make(loc, std::format("hunk_{}", inst.data[0])));
             break;
         }
         case opcode::OP_GetEnumHash:
         {
-            stack_.push(expr_string::make(loc, fmt::format("enum_{}", inst.data[0])));
+            stack_.push(expr_string::make(loc, std::format("enum_{}", inst.data[0])));
             break;
         }
         case opcode::OP_GetDvarHash:
         {
-            stack_.push(expr_string::make(loc, fmt::format("dvar_{}", inst.data[0])));
+            stack_.push(expr_string::make(loc, std::format("dvar_{}", inst.data[0])));
             break;
         }
         case opcode::OP_waittillmatch2:
@@ -1505,7 +1505,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         case opcode::OP_CastBool:
             break;
         default:
-            throw decomp_error(fmt::format("unhandled opcode {}", ctx_->opcode_name(inst.opcode)));
+            throw decomp_error(std::format("unhandled opcode {}", ctx_->opcode_name(inst.opcode)));
     }
 }
 
@@ -1782,7 +1782,7 @@ auto decompiler::decompile_aborts(stmt_list& stm) -> void
             }
             else
             {
-                std::cout << fmt::format("WARNING: unresolved jump to '{}', maybe incomplete for loop\n", jmp);
+                std::cout << std::format("WARNING: unresolved jump to '{}', maybe incomplete for loop\n", jmp);
             }
         }
     }
@@ -2396,7 +2396,7 @@ auto decompiler::find_location_index(stmt_list const& stm, std::string const& lo
         index++;
     }
 
-    throw decomp_error(fmt::format("location '{}' not found", loc));
+    throw decomp_error(std::format("location '{}' not found", loc));
 }
 
 auto decompiler::last_location_index(stmt_list const& stm, usize index) -> bool
@@ -2817,7 +2817,7 @@ auto decompiler::process_stmt_return(stmt_return& stm, scope& scp) -> void
 
 auto decompiler::process_stmt_create(stmt_create& stm, scope& scp) -> void
 {
-    auto var = (ctx_->props() & props::hash) ? stm.index : fmt::format("var_{}", stm.index);
+    auto var = (ctx_->props() & props::hash) ? stm.index : std::format("var_{}", stm.index);
     scp.vars.push_back({ var, static_cast<u8>(scp.create_count), true });
     scp.create_count++;
 }
@@ -3103,12 +3103,12 @@ auto decompiler::process_expr_var_create(expr::ptr& exp, scope& scp) -> void
 {
     for (auto const& entry : exp->as<expr_var_create>().vars)
     {
-        auto var = (ctx_->props() & props::hash) ? entry : fmt::format("var_{}", entry);
+        auto var = (ctx_->props() & props::hash) ? entry : std::format("var_{}", entry);
         scp.vars.push_back({ var, static_cast<u8>(scp.create_count), true });
         scp.create_count++;
     }
 
-    auto var = (ctx_->props() & props::hash) ? exp->as<expr_var_create>().index : fmt::format("var_{}", exp->as<expr_var_create>().index);
+    auto var = (ctx_->props() & props::hash) ? exp->as<expr_var_create>().index : std::format("var_{}", exp->as<expr_var_create>().index);
     scp.vars.push_back({ var, static_cast<u8>(scp.create_count), true });
     scp.create_count++;
 
@@ -3121,7 +3121,7 @@ auto decompiler::process_expr_var_access(expr::ptr& exp, scope& scp) -> void
 
     if (scp.vars.size() <= index)
     {
-        std::cout << fmt::format("WARNING: bad local var access\n");
+        std::cout << std::format("WARNING: bad local var access\n");
     }
     else
     {

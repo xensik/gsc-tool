@@ -1642,7 +1642,7 @@ namespace xsk { namespace gsc {
     int yylen = 0;
 
     // Error handling.
-    int yynerrs_ = 0;
+    [[maybe_unused]] int yynerrs_ = 0;
     int yyerrstatus_ = 0;
 
     /// The lookahead symbol.
@@ -2229,7 +2229,7 @@ namespace xsk { namespace gsc {
 #line 322 "parser.ypp"
         {
             ppr.ban_header(yylhs.location); yylhs.value.as < decl_constant::ptr > () = decl_constant::make(yylhs.location, std::move(yystack_[3].value.as < expr_identifier::ptr > ()), std::move(yystack_[1].value.as < expr::ptr > ())); 
-            printf("%s" , fmt::format("{}: constants deprecated, use #define instead\n", yylhs.location.print()).data());
+            printf("%s" , std::format("{}: constants deprecated, use #define instead\n", yylhs.location.print()).data());
         }
 #line 2242 "parser.cpp"
     break;
@@ -2645,8 +2645,8 @@ namespace xsk { namespace gsc {
   case 89: // stmt_foreach: "foreach" "(" expr_identifier "in" expr ")" stmt
 #line 498 "parser.ypp"
         {
-            auto array = expr_identifier::make(yylhs.location, fmt::format("_temp_{}", ++index));
-            auto key = expr_identifier::make(yylhs.location, fmt::format("_temp_{}", ++index));
+            auto array = expr_identifier::make(yylhs.location, std::format("_temp_{}", ++index));
+            auto key = expr_identifier::make(yylhs.location, std::format("_temp_{}", ++index));
             yylhs.value.as < stmt_foreach::ptr > () = stmt_foreach::make(yylhs.location, std::move(yystack_[2].value.as < expr::ptr > ()), std::move(yystack_[4].value.as < expr_identifier::ptr > ()), expr_empty::make(yylhs.location), std::move(array), std::move(key), std::move(yystack_[0].value.as < stmt::ptr > ()), false);
         }
 #line 2660 "parser.cpp"
@@ -2655,8 +2655,8 @@ namespace xsk { namespace gsc {
   case 90: // stmt_foreach: "foreach" "(" expr_identifier "," expr_identifier "in" expr ")" stmt
 #line 504 "parser.ypp"
         {
-            auto array = expr_identifier::make(yylhs.location, fmt::format("_temp_{}", ++index));
-            expr::ptr key = (ctx_->props() & props::foreach) ? expr_identifier::make(yylhs.location, fmt::format("_temp_{}", ++index)) : std::move(yystack_[6].value.as < expr_identifier::ptr > ());
+            auto array = expr_identifier::make(yylhs.location, std::format("_temp_{}", ++index));
+            expr::ptr key = (ctx_->props() & props::foreach) ? expr_identifier::make(yylhs.location, std::format("_temp_{}", ++index)) : std::move(yystack_[6].value.as < expr_identifier::ptr > ());
             yylhs.value.as < stmt_foreach::ptr > () = stmt_foreach::make(yylhs.location, std::move(yystack_[2].value.as < expr::ptr > ()), std::move(yystack_[4].value.as < expr_identifier::ptr > ()), (ctx_->props() & props::foreach) ? std::move(yystack_[6].value.as < expr_identifier::ptr > ()) : (expr::ptr)expr_empty::make(yylhs.location), std::move(array), std::move(key), std::move(yystack_[0].value.as < stmt::ptr > ()), true);
         }
 #line 2670 "parser.cpp"
@@ -3374,7 +3374,7 @@ namespace xsk { namespace gsc {
 #line 822 "parser.ypp"
         {
             yylhs.value.as < expr::ptr > () = std::move(yystack_[1].value.as < expr_tuple::ptr > ());
-            yylhs.value.as < expr::ptr > ()->as<expr_tuple>().temp = expr_identifier::make(yylhs.value.as < expr::ptr > ()->loc(), fmt::format("_temp_{}", ++index));
+            yylhs.value.as < expr::ptr > ()->as<expr_tuple>().temp = expr_identifier::make(yylhs.value.as < expr::ptr > ()->loc(), std::format("_temp_{}", ++index));
         }
 #line 3387 "parser.cpp"
     break;
@@ -5048,7 +5048,7 @@ auto map_token(context const* ctx_, token& tok) -> parser::symbol_type
         }
     }
 
-    throw error(fmt::format("unmapped token! {}", (u8)tok.type));
+    throw error(std::format("unmapped token! {}", (u8)tok.type));
 }
 
 auto GSClex(context const* ctx_, preprocessor& ppr) -> parser::symbol_type

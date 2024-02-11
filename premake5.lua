@@ -84,7 +84,7 @@ workspace "gsc-tool"
 
     configurations { "debug", "release" }
 
-    if os.istarget("linux") or os.istarget("darwin") then
+    if os.istarget("linux") or os.istarget("macosx") then
         platforms { "x64", "arm64" }
     else
         platforms { "x86", "x64", "arm64" }
@@ -119,23 +119,18 @@ workspace "gsc-tool"
     staticruntime "On"
     warnings "Extra"
 
-    filter { "system:linux", "system:macosx" }
-        buildoptions "-pthread"
-        linkoptions "-pthread"
+    filter "system:linux"
+        linkoptions "-fuse-ld=lld"
     filter {}
 
-    if os.istarget("linux") then
-        filter { "platforms:arm64" }
-            buildoptions "--target=arm64-linux-gnu"
-            linkoptions "--target=arm64-linux-gnu"
-        filter {}
-
-        linkoptions "-fuse-ld=lld"
-    end
+    filter { "system:linux", "platforms:arm64" }
+        buildoptions "--target=arm64-linux-gnu"
+        linkoptions "--target=arm64-linux-gnu"
+    filter {}
 
     filter { "system:macosx", "platforms:arm64" }
-            buildoptions "-arch arm64"
-            linkoptions "-arch arm64"
+        buildoptions "-arch arm64"
+        linkoptions "-arch arm64"
     filter {}
 
     filter "configurations:release"
@@ -178,7 +173,6 @@ project "xsk-tool"
     }
 
     cxxopts:link()
-    fmt:link()
     zlib:link()
 
 project "xsk-utils"
@@ -195,7 +189,6 @@ project "xsk-utils"
         "./include",
     }
 
-    fmt:include()
     zlib:include()
 
 project "xsk-arc"
@@ -212,8 +205,6 @@ project "xsk-arc"
         "./include",
     }
 
-    fmt:include()
-
 project "xsk-gsc"
     kind "StaticLib"
     language "C++"
@@ -228,8 +219,5 @@ project "xsk-gsc"
         "./include",
     }
 
-    fmt:include()
-
 group "Dependencies"
     zlib:project()
-    fmt:project()

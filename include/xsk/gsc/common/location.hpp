@@ -119,12 +119,12 @@ public:
 
     auto print() const -> std::string
     {
-        return fmt::format("{}:{}:{}", *begin.filename, begin.line, begin.column);
+        return std::format("{}:{}:{}", *begin.filename, begin.line, begin.column);
     }
 
     auto label() const -> std::string
     {
-        return fmt::format("loc_{:X}", begin.line);
+        return std::format("loc_{:X}", begin.line);
     }
 };
 

@@ -97,12 +97,12 @@ auto preprocessor::push_header(std::string const& file) -> void
 {
     try
     {
-        auto name = fmt::format("{}.gsh", file);
+        auto name = std::format("{}.gsh", file);
 
         for (auto& inc : includes_)
         {
             if (inc == name)
-                throw ppr_error(location{}, fmt::format("recursive header inclusion {} at {}", name, includes_.back()));
+                throw ppr_error(location{}, std::format("recursive header inclusion {} at {}", name, includes_.back()));
         }
 
         auto data = ctx_->load_header(name);
@@ -112,7 +112,7 @@ auto preprocessor::push_header(std::string const& file) -> void
     }
     catch (std::exception const& e)
     {
-        throw error(fmt::format("parsing header file '{}': {}", file, e.what()));
+        throw error(std::format("parsing header file '{}': {}", file, e.what()));
     }
 }
 
@@ -252,7 +252,7 @@ auto preprocessor::read_directive(token& tok) -> void
         }
     }
 
-    throw ppr_error(next.pos, fmt::format("invalid preprocessing directive '{}'", next.data));
+    throw ppr_error(next.pos, std::format("invalid preprocessing directive '{}'", next.data));
 }
 
 auto preprocessor::read_directive_if(token&) -> void
@@ -746,7 +746,7 @@ auto preprocessor::expand(token& tok, define& def) -> void
         }
         else if (tok.data == "__LINE__")
         {
-            tokens_.push_front(token{ token::STRING, tok.space, tok.pos, fmt::format("{}", tok.pos.begin.line) });
+            tokens_.push_front(token{ token::STRING, tok.space, tok.pos, std::format("{}", tok.pos.begin.line) });
         }
         else if (tok.data == "__DATE__")
         {
@@ -925,7 +925,7 @@ auto preprocessor::expect(token& tok, token::kind expected, spacing) -> void
 {
     if (tok.type != expected)
     {
-        throw ppr_error(tok.pos, fmt::format("expected {} found {}", (u8)expected, (u8)tok.type));
+        throw ppr_error(tok.pos, std::format("expected {} found {}", (u8)expected, (u8)tok.type));
     }
 }
 
@@ -1078,7 +1078,7 @@ auto preprocessor::eval_consume(token::kind type, std::string_view msg)
 {
     if (eval_check(type)) return eval_next();
 
-    throw ppr_error(eval_peek().pos, fmt::format("{}", msg));
+    throw ppr_error(eval_peek().pos, std::format("{}", msg));
 }
 
 auto preprocessor::eval_expr() -> i32

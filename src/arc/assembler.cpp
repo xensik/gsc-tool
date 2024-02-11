@@ -467,7 +467,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             assemble_end_switch(inst);
             break;
         default:
-            throw asm_error(fmt::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
+            throw asm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
 }
 
@@ -533,7 +533,7 @@ auto assembler::assemble_end_switch(instruction const& inst) -> void
         }
         else
         {
-            throw asm_error(fmt::format("invalid switch case {}", inst.data[1 + (3 * i)]));
+            throw asm_error(std::format("invalid switch case {}", inst.data[1 + (3 * i)]));
         }
     }
 }
@@ -846,7 +846,7 @@ auto assembler::align_instruction(instruction& inst) -> void
             break;
         }
         default:
-            throw asm_error(fmt::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
+            throw asm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
 }
 
@@ -860,7 +860,7 @@ auto assembler::resolve_label(std::string const& name) -> i32
         }
     }
 
-    throw asm_error(fmt::format("couldn't resolve label address of {}", name));
+    throw asm_error(std::format("couldn't resolve label address of {}", name));
 }
 
 auto assembler::resolve_string(std::string const& name) -> u16
@@ -872,7 +872,7 @@ auto assembler::resolve_string(std::string const& name) -> u16
         return itr->second;
     }
 
-    throw asm_error(fmt::format("couldn't resolve string address of {}", name));
+    throw asm_error(std::format("couldn't resolve string address of {}", name));
 }
 
 void assembler::add_stringref(std::string const& str, string_type type, u32 ref)

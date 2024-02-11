@@ -207,7 +207,7 @@ auto reader::read_bytes(u32 pos, u32 count) -> std::string
 
     for (auto i = pos; i < pos + count; i++)
     {
-        fmt::format_to(std::back_insert_iterator(data), "{:02X} ", *reinterpret_cast<u8 const*>(data_ + i));
+        std::format_to(std::back_insert_iterator(data), "{:02X} ", *reinterpret_cast<u8 const*>(data_ + i));
     }
 
     data.pop_back();

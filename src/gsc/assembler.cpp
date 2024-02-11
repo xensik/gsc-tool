@@ -326,7 +326,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             assemble_formal_params(inst);
             break;
         default:
-            throw asm_error(fmt::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
+            throw asm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
 }
 
@@ -339,7 +339,7 @@ auto assembler::assemble_builtin_call(instruction const& inst, bool method, bool
 
     if (ctx_->props() & props::hash)
     {
-        stack_.write_cstr(fmt::format("#xS{:x}", ctx_->hash_id(inst.data[0])));
+        stack_.write_cstr(std::format("#xS{:x}", ctx_->hash_id(inst.data[0])));
         script_.write<u16>(0);
     }
     else
@@ -477,7 +477,7 @@ auto assembler::assemble_end_switch(instruction const& inst) -> void
             }
             else
             {
-                throw asm_error(fmt::format("invalid switch case {}", inst.data[1 + (4 * i)]));
+                throw asm_error(std::format("invalid switch case {}", inst.data[1 + (4 * i)]));
             }
         }
         else
@@ -513,7 +513,7 @@ auto assembler::assemble_end_switch(instruction const& inst) -> void
             }
             else
             {
-                throw asm_error(fmt::format("invalid switch case {}", inst.data[1 + (3 * i)]));
+                throw asm_error(std::format("invalid switch case {}", inst.data[1 + (3 * i)]));
             }
         }
     }
@@ -619,7 +619,7 @@ auto assembler::resolve_function(std::string const& name) -> std::int32_t
         }
     }
 
-    throw asm_error(fmt::format("couldn't resolve local function address of {}", name));
+    throw asm_error(std::format("couldn't resolve local function address of {}", name));
 }
 
 auto assembler::resolve_label(std::string const& name) -> std::int32_t
@@ -632,7 +632,7 @@ auto assembler::resolve_label(std::string const& name) -> std::int32_t
         }
     }
 
-    throw asm_error(fmt::format("couldn't resolve label address of {}", name));
+    throw asm_error(std::format("couldn't resolve label address of {}", name));
 }
 
 auto assembler::encrypt_string(std::string const& str) -> std::string
