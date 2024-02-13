@@ -1,0 +1,25 @@
+root = true
+
+# C/C++/Lua settings
+[*.{h,hpp,c,cpp,lua}]
+
+# File encoding
+charset = utf-8
+
+# Indentation and spacing
+tab_width = 4
+indent_size = 4
+indent_style = space
+
+# New line preferences
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Markdown settings
+[*.{md,mdx}]
+trim_trailing_whitespace = false
+
+# yaml/json settings
+[*.{json,yaml,yml}]
+indent_size = 2
