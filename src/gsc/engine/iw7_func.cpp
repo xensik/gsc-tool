@@ -476,7 +476,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x1D0, "_func_1D0" }, // 0x140B4AD50
     { 0x1D1, "_func_1D1" }, // 0x1405ECC60
     { 0x1D2, "_func_1D2" }, // 0x1405ECCE0
-    { 0x1D3, "_func_1D3" }, // 0x14049F500
+    { 0x1D3, "settimescale" }, // 0x14049F500
     { 0x1D4, "_func_1D4" }, // 0x140AF52B0
     { 0x1D5, "_func_1D5" }, // 0x140B35190
     { 0x1D6, "setwinningteam" }, // 0x140B57B00

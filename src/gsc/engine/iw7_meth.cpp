@@ -407,10 +407,10 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x818A, "_meth_818A" }, // 0x14047F7B0
     { 0x818B, "hudoutlinedisable" }, // 0x140B47A70
     { 0x818C, "hudoutlinedisableforclient" }, // 0x140B46150
-    { 0x818D, "_meth_818D" }, // 0x140B47110
+    { 0x818D, "hudoutlinedisableforclients" }, // 0x140B47110
     { 0x818E, "hudoutlineenable" }, // 0x140B47500
     { 0x818F, "hudoutlineenableforclient" }, // 0x140B45B40
-    { 0x8190, "_meth_8190" }, // 0x140B46BE0
+    { 0x8190, "hudoutlineenableforclients" }, // 0x140B46BE0
     { 0x8191, "_meth_8191" }, // 0x140B3FAB0
     { 0x8192, "_meth_8192" }, // 0x140B40050
     { 0x8193, "_meth_8193" }, // 0x14046F3F0
@@ -570,7 +570,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x822D, "player_recoilscaleon" }, // 0x140B01A10
     { 0x822E, "playerads" }, // 0x140B05720
     { 0x822F, "_meth_822F" }, // 0x14049C330
-    { 0x8230, "_meth_8230" }, // 0x140B58D10
+    { 0x8230, "playlocalsound" }, // 0x140B58D10
     { 0x8231, "_meth_8231" }, // 0x140B56EC0
     { 0x8232, "playerhide" }, // 0x140B58040
     { 0x8233, "_meth_8233" }, // 0x140B35EA0
@@ -1064,7 +1064,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x841B, "_meth_841B" }, // 0x14055F450
     { 0x841C, "_meth_841C" }, // 0x14055FC50
     { 0x841D, "_meth_841D" }, // 0x140560950
-    { 0x841E, "_meth_841E" }, // 0x140C1C5C0
+    { 0x841E, "pathdisttogoal" }, // 0x140C1C5C0
     { 0x841F, "clearpath" }, // 0x140C1BF20
     { 0x8420, "_meth_8420" }, // nullptr
     { 0x8421, "_meth_8421" }, // 0x140B03180
@@ -1127,7 +1127,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x845A, "setsuit" }, // 0x140B04930
     { 0x845B, "_meth_845B" }, // 0x140B05980
     { 0x845C, "_meth_845C" }, // 0x140472070
-    { 0x845D, "_meth_845D" }, // 0x1403E1AC0
+    { 0x845D, "getposonpath" }, // 0x1403E1AC0
     { 0x845E, "_meth_845E" }, // 0x140B0E420
     { 0x845F, "_meth_845F" }, // 0x14042AC50
     { 0x8460, "_meth_8460" }, // 0x140B3ACD0
@@ -1472,7 +1472,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x85B3, "setseatedanimconditional" }, // 0x140B54520
     { 0x85B4, "istrialversion" }, // 0x140B5A3C0
     { 0x85B5, "_meth_85B5" }, // 0x140B39520
-    { 0x85B6, "_meth_85B6" }, // 0x1403E0A60
+    { 0x85B6, "setnavlayer" }, // 0x1403E0A60
     { 0x85B7, "setethereal" }, // 0x140C1B8A0
     { 0x85B8, "isethereal" }, // 0x140C1B4F0
     { 0x85B9, "setinteractwithethereal" }, // 0x140B0CBE0
