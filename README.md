@@ -1,5 +1,5 @@
-[![build](https://github.com/xensik/gsc-tool/workflows/Build/badge.svg)](https://github.com/xensik/gsc-tool/actions)
 [![sonar](https://sonarcloud.io/api/project_badges/measure?project=xensik_gsc-tool&metric=alert_status)](https://sonarcloud.io/summary/overall?id=xensik_gsc-tool)
+[![build](https://github.com/xensik/gsc-tool/workflows/Build/badge.svg)](https://github.com/xensik/gsc-tool/actions)
 [![issues](https://img.shields.io/github/issues/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/issues)
 [![license](https://img.shields.io/github/license/xensik/gsc-tool.svg)](https://github.com/xensik/gsc-tool/blob/dev/LICENSE)
 [![releases](https://img.shields.io/github/v/release/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/releases)
@@ -23,6 +23,7 @@ A utility to compile & decompile IW engine game scripts.
 - **T7** *(Call of Duty: Black Ops III)* `PC` *(Decompiler)*
 - **T8** *(Call of Duty: Black Ops 4)* ***\*WIP\****
 - **T9** *(Call of Duty: Black Ops Cold War)* ***\*WIP\****
+- **JUP** *(Call of Duty: Modern Warfare III (2023)* ***\*WIP\****
 
 ## Usage
 ``gsc-tool [OPTIONS..] <path>``
@@ -33,11 +34,11 @@ A utility to compile & decompile IW engine game scripts.
 
     ``-m, --mode <mode>``  [REQUIRED] one of: `asm`, `disasm`, `comp`, `decomp`, `parse`
 
-    ``-g, --game <game>`` [REQUIRED] one of: `iw5`, `iw6`, `iw7`, `iw8`, `iw9`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6` `t7` `t8` `t9`
+    ``-g, --game <game>`` [REQUIRED] one of: `iw5`, `iw6`, `iw7`, `iw8`, `iw9`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6` `t7` `t8` `t9` `jup`
 
     ``-s, --system <system>`` [REQUIRED] one of: `pc`, `ps3`, `ps4`, `ps5`, `xb2` (*360*), `xb3` (*One*), `xb4` (*Series X|S*), `wiiu`
 
-    ``-d, --dev`` Enable developer mode (generate bytecode map).
+    ``-d, --dev`` Enable developer mode (dev blocks & generate bytecode map).
 
     ``-z, --zonetool`` Enable zonetool mode (use .cgsc files).
 

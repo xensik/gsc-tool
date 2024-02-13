@@ -30,6 +30,7 @@
 #include "xsk/arc/engine/t7.hpp"
 #include "xsk/arc/engine/t8.hpp"
 #include "xsk/arc/engine/t9.hpp"
+#include "xsk/arc/engine/jup.hpp"
 #include "xsk/version.hpp"
 #include "cxxopts.hpp"
 
@@ -41,7 +42,7 @@ namespace xsk
 enum class result : i32 { success = 0, failure = 1 };
 enum class fenc { _, source, assembly, binary, src_bin };
 enum class mode { _, assemble, disassemble, compile, decompile, parse, rename };
-enum class game { _, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9 };
+enum class game { _, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9, jup };
 enum class mach { _, pc, ps3, ps4, ps5, xb2, xb3, xb4, wiiu };
 
 std::unordered_map<std::string_view, fenc> const gsc_exts =
@@ -92,6 +93,7 @@ std::unordered_map<std::string_view, game> const games =
     { "t7", game::t7 },
     { "t8", game::t8 },
     { "t9", game::t9 },
+    { "jup", game::jup },
 };
 
 std::map<game, std::string_view> const games_rev =
@@ -110,6 +112,7 @@ std::map<game, std::string_view> const games_rev =
     { game::t7, "t7" },
     { game::t8, "t8" },
     { game::t9, "t9" },
+    { game::jup, "jup" },
 };
 
 std::unordered_map<std::string_view, mach> const machs =
@@ -763,6 +766,9 @@ auto disassemble_file(game game, mach mach, fs::path const& file, fs::path rel) 
 {
     try
     {
+        if (game > game::t7)
+            throw std::runtime_error("not implemented");
+
         rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((file.extension().string().starts_with(".gsc") ? ".gscasm" : ".cscasm"));
 
         auto data = utils::file::read(file.string());
@@ -822,6 +828,9 @@ auto decompile_file(game game, mach mach, fs::path const& file, fs::path rel) ->
 {
     try
     {
+        if (game > game::t7)
+            throw std::runtime_error("not implemented");
+
         rel = fs::path{ games_rev.at(game) } / rel / file.filename();
 
         auto data = utils::file::read(file);
@@ -841,10 +850,33 @@ auto decompile_file(game game, mach mach, fs::path const& file, fs::path rel) ->
     }
 }
 
-auto parse_file(game, mach, fs::path const&, fs::path) -> result
+auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
 {
-    std::cerr << std::format("not implemented for treyarch\n");
-    return result::failure;
+    try
+    {
+        if (game != game::t6)
+            throw std::runtime_error("not implemented");
+
+        rel = fs::path{ games_rev.at(game) } / rel / file.filename();
+
+        auto data = utils::file::read(file);
+
+        if (!std::memcmp(&data[0], "\x80GSC", 4))
+        {
+            std::cerr << std::format("{} at {}\n", "already compiled", file.generic_string());
+            return result::success;
+        }
+
+        auto prog = contexts[game][mach]->source().parse_program(file.string(), data);
+        utils::file::save(fs::path{ "parsed" } / rel, contexts[game][mach]->source().dump(*prog));
+        std::cout << std::format("parsed {}\n", rel.generic_string());
+        return result::success;
+    }
+    catch (std::exception const& e)
+    {
+        std::cerr << std::format("{} at {}\n", e.what(), file.generic_string());
+        return result::failure;
+    }
 }
 
 auto rename_file(game, mach, fs::path const&, fs::path) -> result
@@ -910,42 +942,55 @@ auto init_t7(mach mach, bool dev) -> void
     }
 }
 
-auto init_t8(mach /*mach*/, bool /*dev*/) -> void
+auto init_t8(mach mach, bool dev) -> void
 {
-    throw std::runtime_error("not implemented");
+    if (contexts[game::t8].contains(mach)) return;
 
-    // if (contexts[game::t8].contains(mach)) return;
-
-    // switch (mach)
-    // {
-    //     case mach::pc:
-    //     {
-    //         contexts[game::t8][mach] = std::make_unique<t8::context>();
-    //         contexts[game::t8][mach]->init(build::prod, fs_read);
-    //         break;
-    //     }
-    //     default:
-    //         throw std::runtime_error("not implemented");
-    // }
+    switch (mach)
+    {
+        case mach::pc:
+        {
+            contexts[game::t8][mach] = std::make_unique<t8::context>();
+            contexts[game::t8][mach]->init(dev ? build::dev : build::prod, fs_read);
+            break;
+        }
+        default:
+            throw std::runtime_error("not implemented");
+    }
 }
 
-auto init_t9(mach /*mach*/, bool /*dev*/) -> void
+auto init_t9(mach mach, bool dev) -> void
 {
-    throw std::runtime_error("not implemented");
+    if (contexts[game::t9].contains(mach)) return;
 
-    // if (contexts[game::t9].contains(mach)) return;
+    switch (mach)
+    {
+        case mach::pc:
+        {
+            contexts[game::t9][mach] = std::make_unique<t9::context>();
+            contexts[game::t9][mach]->init(dev ? build::dev : build::prod, fs_read);
+            break;
+        }
+        default:
+            throw std::runtime_error("not implemented");
+    }
+}
 
-    // switch (mach)
-    // {
-    //     case mach::pc:
-    //     {
-    //         contexts[game::t9][mach] = std::make_unique<t9::context>();
-    //         contexts[game::t9][mach]->init(build::prod, fs_read);
-    //         break;
-    //     }
-    //     default:
-    //         throw std::runtime_error("not implemented");
-    // }
+auto init_jup(mach mach, bool dev) -> void
+{
+    if (contexts[game::jup].contains(mach)) return;
+
+    switch (mach)
+    {
+        case mach::pc:
+        {
+            contexts[game::jup][mach] = std::make_unique<jup::context>();
+            contexts[game::jup][mach]->init(dev ? build::dev : build::prod, fs_read);
+            break;
+        }
+        default:
+            throw std::runtime_error("not implemented");
+    }
 }
 
 auto init(game game, mach mach, bool dev) -> void
@@ -968,6 +1013,7 @@ auto init(game game, mach mach, bool dev) -> void
         case game::t7: init_t7(mach, dev); break;
         case game::t8: init_t8(mach, dev); break;
         case game::t9: init_t9(mach, dev); break;
+        case game::jup: init_jup(mach, dev); break;
         default: break;
     }
 }
@@ -1102,7 +1148,7 @@ auto main(u32 argc, char** argv) -> result
 
     options.add_options()
         ("m,mode","[REQUIRED] one of: asm, disasm, comp, decomp, parse, rename", cxxopts::value<std::string>(), "<mode>")
-        ("g,game", "[REQUIRED] one of: iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9", cxxopts::value<std::string>(), "<game>")
+        ("g,game", "[REQUIRED] one of: iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9, jup", cxxopts::value<std::string>(), "<game>")
         ("s,system", "[REQUIRED] one of: pc, ps3, ps4, ps5, xb2 (360), xb3 (One), xb4 (Series X|S), wiiu", cxxopts::value<std::string>(), "<system>")
         ("p,path", "File or directory to process.", cxxopts::value<std::string>())
         ("d,dev", "Enable developer mode (dev blocks & generate bytecode map).", cxxopts::value<bool>()->implicit_value("true"))

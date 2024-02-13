@@ -64,6 +64,7 @@ enum class engine : u8
     t7,
     t8,
     t9,
+    jup
 };
 
 struct props
