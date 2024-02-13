@@ -244,7 +244,12 @@ auto compiler::emit_stmt_dev(stmt_dev const& stm) -> void
     auto end = create_label();
     developer_thread_ = true;
     emit_opcode(opcode::OP_DevblockBegin, end);
+
+    auto& paren = scopes_.back();
+    scopes_.push_back(scope(paren.brk, paren.cnt));
     emit_stmt_list(*stm.block);
+    scopes_.pop_back();
+
     insert_label(end);
     developer_thread_ = false;
 }
