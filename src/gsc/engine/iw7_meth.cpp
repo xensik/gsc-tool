@@ -151,8 +151,8 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x808A, "_meth_808A" }, // 0x140473640
     { 0x808B, "_meth_808B" }, // 0x140B49A30
     { 0x808C, "connectpaths" }, // 0x140B496A0
-    { 0x808D, "_meth_808D" }, // 0x140B349E0
-    { 0x808E, "_meth_808E" }, // 0x140B34F80
+    { 0x808D, "controlslinkto" }, // 0x140B349E0
+    { 0x808E, "controlsunlink" }, // 0x140B34F80
     { 0x808F, "damageconetrace" }, // 0x140B4CAA0
     { 0x8090, "_meth_8090" }, // nullptr
     { 0x8091, "_meth_8091" }, // nullptr
@@ -584,7 +584,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x823B, "_meth_823B" }, // 0x140B34C70
     { 0x823C, "_meth_823C" }, // 0x140B37070
     { 0x823D, "playerlinktodelta" }, // 0x140B34B20
-    { 0x823E, "_meth_823E" }, // 0x140B34BF0
+    { 0x823E, "playerlinkweaponviewtodelta" }, // 0x140B34BF0
     { 0x823F, "_meth_823F" }, // 0x140B57A40
     { 0x8240, "_meth_8240" }, // 0x14049C2B0
     { 0x8241, "_meth_8241" }, // 0x140B014D0
@@ -713,7 +713,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x82BC, "setclientdvars" }, // 0x140B0ABF0
     { 0x82BD, "setclientomnvar" }, // 0x140B08530
     { 0x82BE, "setclientomnvarbit" }, // 0x140B08840
-    { 0x82BF, "_meth_82BF" }, // 0x140B585C0
+    { 0x82BF, "setclientowner" }, // 0x140B585C0
     { 0x82C0, "_meth_82C0" }, // 0x140B3B340
     { 0x82C1, "_meth_82C1" }, // 0x140B3C460
     { 0x82C2, "_meth_82C2" }, // 0x140B3E210
@@ -966,9 +966,9 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x83B9, "_meth_83B9" }, // 0x140472270
     { 0x83BA, "_meth_83BA" }, // 0x1404971E0
     { 0x83BB, "_meth_83BB" }, // 0x140B44960
-    { 0x83BC, "_meth_83BC" }, // 0x140B44830
+    { 0x83BC, "thermaldrawenable" }, // 0x140B44830
     { 0x83BD, "thermalvisionfofoverlayoff" }, // 0x140B485E0
-    { 0x83BE, "_meth_83BE" }, // 0x140B47F90
+    { 0x83BE, "thermalvisionfofoverlayon" }, // 0x140B47F90
     { 0x83BF, "thermalvisionoff" }, // 0x140B443B0
     { 0x83C0, "thermalvisionon" }, // 0x140B43950
     { 0x83C1, "_meth_83C1" }, // 0x140B440C0
@@ -1027,7 +1027,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x83F6, "viewkick" }, // 0x140B49570
     { 0x83F7, "_meth_83F7" }, // 0x14046F200
     { 0x83F8, "visionsetfadetoblackforplayer" }, // 0x140B54D00
-    { 0x83F9, "_meth_83F9" }, // 0x140B54640
+    { 0x83F9, "visionsetmissilecamforplayer" }, // 0x140B54640
     { 0x83FA, "visionsetnakedforplayer" }, // 0x140B53F50
     { 0x83FB, "_meth_83FB" }, // 0x140B54620
     { 0x83FC, "_meth_83FC" }, // 0x140B54930
