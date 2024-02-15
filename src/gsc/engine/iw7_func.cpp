@@ -27,14 +27,14 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x00F, "anglestoright" }, // 0x140B3B760
     { 0x010, "anglestoup" }, // 0x140B3B2E0
     { 0x011, "animhasnotetrack" }, // 0x140B475D0
-    { 0x012, "asin" }, // 0x140B57D80
-    { 0x013, "atan" }, // 0x140B350E0
-    { 0x014, "_func_014" }, // 0x140B353B0
+    { 0x012, "announcement" }, // 0x140B57D80
+    { 0x013, "asin" }, // 0x140B350E0
+    { 0x014, "atan" }, // 0x140B353B0
     { 0x015, "averagenormal" }, // 0x140B47180
     { 0x016, "averagepoint" }, // 0x140B46E70
     { 0x017, "axistoangles" }, // 0x140B3B020
-    { 0x018, "_func_018" }, // 0x140B4B7F0
-    { 0x019, "_func_019" }, // 0x140B4C010
+    { 0x018, "badplace_arc" }, // 0x140B4B7F0
+    { 0x019, "badplace_brush" }, // 0x140B4C010
     { 0x01A, "badplace_cylinder" }, // 0x140B4AEC0
     { 0x01B, "badplace_delete" }, // 0x140B4AA00
     { 0x01C, "badplace_global" }, // 0x140B4C910
@@ -56,57 +56,57 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x02C, "bulletspread" }, // 0x140B49B30
     { 0x02D, "bullettrace" }, // 0x140B4A000
     { 0x02E, "bullettracepassed" }, // 0x140B4AD70
-    { 0x02F, "_func_02F" }, // 0x140498880
+    { 0x02F, "bullettracer" }, // 0x140498880
     { 0x030, "calccsplinecorridor" }, // 0x140B3B840
     { 0x031, "calccsplineposition" }, // 0x140B3B0D0
     { 0x032, "calccsplinetangent" }, // 0x140B3B440
-    { 0x033, "_func_033" }, // nullptr
-    { 0x034, "_func_034" }, // 0x140B3CB30
+    { 0x033, "calcrockingangles" }, // nullptr
+    { 0x034, "calculatestartorientation" }, // 0x140B3CB30
     { 0x035, "canspawn" }, // 0x140B52930
     { 0x036, "canspawnturret" }, // 0x140B3FE20
     { 0x037, "capsuletracepassed" }, // 0x140B52A10
     { 0x038, "ceil" }, // 0x140B35D50
-    { 0x039, "_func_039" }, // 0x140497090
-    { 0x03A, "_func_03A" }, // 0x1404974D0
-    { 0x03B, "_func_03B" }, // 0x140497890
-    { 0x03C, "_func_03C" }, // 0x1404979F0
-    { 0x03D, "_func_03D" }, // 0x140497610
-    { 0x03E, "_func_03E" }, // 0x1404976B0
-    { 0x03F, "_func_03F" }, // 0x140497700
-    { 0x040, "_func_040" }, // nullptr
+    { 0x039, "changelevel" }, // 0x140497090
+    { 0x03A, "cinematic" }, // 0x1404974D0
+    { 0x03B, "cinematicgetframe" }, // 0x140497890
+    { 0x03C, "cinematicgettimeinmsec" }, // 0x1404979F0
+    { 0x03D, "cinematicingame" }, // 0x140497610
+    { 0x03E, "cinematicingameloop" }, // 0x1404976B0
+    { 0x03F, "cinematicingameloopresident" }, // 0x140497700
+    { 0x040, "cinematicingamesync" }, // nullptr
     { 0x041, "clamp" }, // 0x140B36150
-    { 0x042, "_func_042" }, // 0x140499E10
-    { 0x043, "_func_043" }, // 0x14049ADC0
-    { 0x044, "_func_044" }, // 0x140B598A0
-    { 0x045, "_func_045" }, // 0x140B57E40
-    { 0x046, "_func_046" }, // 0x140B538A0
-    { 0x047, "_func_047" }, // 0x140B385E0
-    { 0x048, "_func_048" }, // 0x140B3BE10
-    { 0x049, "_func_049" }, // 0x14049DD00
-    { 0x04A, "_func_04A" }, // 0x14049E110
-    { 0x04B, "_func_04B" }, // 0x140B4A380
+    { 0x042, "clearallcorpses" }, // 0x140499E10
+    { 0x043, "clearlocalizedstrings" }, // 0x14049ADC0
+    { 0x044, "clearmatchdata" }, // 0x140B598A0
+    { 0x045, "clientannouncement" }, // 0x140B57E40
+    { 0x046, "clientprint" }, // 0x140B538A0
+    { 0x047, "closer" }, // 0x140B385E0
+    { 0x048, "combineangles" }, // 0x140B3BE10
+    { 0x049, "commitsave" }, // 0x14049DD00
+    { 0x04A, "commitwouldbevalid" }, // 0x14049E110
+    { 0x04B, "connectnodepair" }, // 0x140B4A380
     { 0x04C, "cos" }, // 0x140B34C40
     { 0x04D, "createnavlink" }, // 0x140441170
     { 0x04E, "createthreatbiasgroup" }, // 0x1405ECB90
-    { 0x04F, "_func_04F" }, // 0x140B48310
-    { 0x050, "_func_050" }, // 0x140B47DD0
-    { 0x051, "_func_051" }, // 0x140441A40
-    { 0x052, "_func_052" }, // nullptr
-    { 0x053, "_func_053" }, // 0x140B3E520
-    { 0x054, "_func_054" }, // 0x140499C70
-    { 0x055, "_func_055" }, // 0x140499DF0
+    { 0x04F, "deleteglass" }, // 0x140B48310
+    { 0x050, "destroyglass" }, // 0x140B47DD0
+    { 0x051, "destroynavlink" }, // 0x140441A40
+    { 0x052, "devsetminimapdvarsettings" }, // nullptr
+    { 0x053, "disableaudiotrigger" }, // 0x140B3E520
+    { 0x054, "disableforcedsunshadows" }, // 0x140499C70
+    { 0x055, "disableouterspacemodellighting" }, // 0x140499DF0
     { 0x056, "disablepaspeaker" }, // 0x140B3F630
-    { 0x057, "_func_057" }, // 0x140B49AB0
+    { 0x057, "disconnectnodepair" }, // 0x140B49AB0
     { 0x058, "distance" }, // 0x140B377A0
     { 0x059, "distance2d" }, // 0x140B37A10
     { 0x05A, "distance2dsquared" }, // 0x140B37B80
     { 0x05B, "distancesquared" }, // 0x140B37EE0
     { 0x05C, "drawcompassfriendlies" }, // 0x140497B50
     { 0x05D, "earthquake" }, // 0x140B3C6F0
-    { 0x05E, "_func_05E" }, // 0x140B3E4C0
-    { 0x05F, "_func_05F" }, // 0x140499B90
-    { 0x060, "_func_060" }, // 0x140499B70
-    { 0x061, "_func_061" }, // 0x140499C90
+    { 0x05E, "enableaudiotrigger" }, // 0x140B3E4C0
+    { 0x05F, "enableforcednosunshadows" }, // 0x140499B90
+    { 0x060, "enableforcedsunshadows" }, // 0x140499B70
+    { 0x061, "enableouterspacemodellighting" }, // 0x140499C90
     { 0x062, "enablepaspeaker" }, // 0x140B3F4F0
     { 0x063, "endlobby" }, // 0x140B55C60
     { 0x064, "endparty" }, // nullptr
@@ -115,73 +115,73 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x067, "findentrances" }, // 0x140AF2F20
     { 0x068, "float" }, // 0x140B35660
     { 0x069, "floor" }, // 0x140B35D10
-    { 0x06A, "_func_06A" }, // 0x14049F1D0
-    { 0x06B, "_func_06B" }, // nullptr
-    { 0x06C, "_func_06C" }, // nullptr
-    { 0x06D, "_func_06D" }, // nullptr
-    { 0x06E, "_func_06E" }, // nullptr
-    { 0x06F, "_func_06F" }, // nullptr
-    { 0x070, "_func_070" }, // nullptr
+    { 0x06A, "forcesharedammo" }, // 0x14049F1D0
+    { 0x06B, "gamedvrprohibitrecording" }, // nullptr
+    { 0x06C, "gamedvrprohibitscreenshots" }, // nullptr
+    { 0x06D, "gamedvrsetscreenshotmetadata" }, // nullptr
+    { 0x06E, "gamedvrsetvideometadata" }, // nullptr
+    { 0x06F, "gamedvrstartrecording" }, // nullptr
+    { 0x070, "gamedvrstoprecording" }, // nullptr
     { 0x071, "getactiveclientcount" }, // 0x140B5AAF0
-    { 0x072, "_func_072" }, // 0x14049D320
-    { 0x073, "_func_073" }, // 0x14049D110
-    { 0x074, "_func_074" }, // 0x14049D410
-    { 0x075, "_func_075" }, // 0x14049D6F0
+    { 0x072, "getaiarray" }, // 0x14049D320
+    { 0x073, "getaicount" }, // 0x14049D110
+    { 0x074, "getaispeciesarray" }, // 0x14049D410
+    { 0x075, "getaiunittypearray" }, // 0x14049D6F0
     { 0x076, "getallnodes" }, // 0x140AF3010
-    { 0x077, "_func_077" }, // 0x1404268A0
-    { 0x078, "_func_078" }, // 0x140B4E110
-    { 0x079, "_func_079" }, // 0x140B4E450
+    { 0x077, "getallvehiclenodes" }, // 0x1404268A0
+    { 0x078, "getangledelta" }, // 0x140B4E110
+    { 0x079, "getangledelta3d" }, // 0x140B4E450
     { 0x07A, "getanimlength" }, // 0x140B47310
     { 0x07B, "getarraykeys" }, // 0x140B4B270
-    { 0x07C, "_func_07C" }, // 0x140B58DB0
-    { 0x07D, "_func_07D" }, // 0x1404481F0
+    { 0x07C, "getassignedteam" }, // 0x140B58DB0
+    { 0x07D, "getbrushmodelcenter" }, // 0x1404481F0
     { 0x07E, "getbuildnumber" }, // 0x140B53E00
     { 0x07F, "getbuildversion" }, // 0x140B53DF0
     { 0x080, "getclientmatchdata" }, // 0x140B58E90
     { 0x081, "getclosestnodeinsight" }, // 0x140AF30E0
-    { 0x082, "_func_082" }, // 0x14049EA10
-    { 0x083, "_func_083" }, // 0x14049D9E0
-    { 0x084, "_func_084" }, // 0x140B57530
+    { 0x082, "getcorpsearray" }, // 0x14049EA10
+    { 0x083, "getcorpsearrayinradius" }, // 0x14049D9E0
+    { 0x084, "getcountertotal" }, // 0x140B57530
     { 0x085, "getcsplinecount" }, // 0x140B36CE0
-    { 0x086, "_func_086" }, // 0x140B373D0
-    { 0x087, "_func_087" }, // 0x140B3A510
-    { 0x088, "_func_088" }, // 0x140B36F70
-    { 0x089, "_func_089" }, // 0x140B3AB80
-    { 0x08A, "_func_08A" }, // 0x140B37E50
-    { 0x08B, "_func_08B" }, // 0x140B38320
+    { 0x086, "getcsplinelength" }, // 0x140B373D0
+    { 0x087, "getcsplinepointcorridordims" }, // 0x140B3A510
+    { 0x088, "getcsplinepointcount" }, // 0x140B36F70
+    { 0x089, "getcsplinepointdisttonextpoint" }, // 0x140B3AB80
+    { 0x08A, "getcsplinepointid" }, // 0x140B37E50
+    { 0x08B, "getcsplinepointlabel" }, // 0x140B38320
     { 0x08C, "getcsplinepointposition" }, // 0x140B39E50
     { 0x08D, "getcsplinepointtangent" }, // 0x140B3A6C0
-    { 0x08E, "_func_08E" }, // 0x140B39870
-    { 0x08F, "_func_08F" }, // 0x140498700
-    { 0x090, "_func_090" }, // 0x14047CC80
+    { 0x08E, "getcsplinepointtension" }, // 0x140B39870
+    { 0x08F, "getculldist" }, // 0x140498700
+    { 0x090, "getcycleoriginoffset" }, // 0x14047CC80
     { 0x091, "getdvar" }, // 0x140B41F80
     { 0x092, "getdvarfloat" }, // 0x140B42DB0
     { 0x093, "getdvarint" }, // 0x140B42680
-    { 0x094, "_func_094" }, // 0x140B42B10
-    { 0x095, "_func_095" }, // 0x140B433A0
+    { 0x094, "getgamebattlematchreportstate" }, // 0x140B42B10
+    { 0x095, "getdvarvector" }, // 0x140B433A0
     { 0x096, "getenemysquaddata" }, // nullptr
-    { 0x097, "_func_097" }, // 0x140B58A70
+    { 0x097, "getenemysquaddogtype" }, // 0x140B58A70
     { 0x098, "getent" }, // 0x140B34EA0
     { 0x099, "getentarray" }, // 0x140B35220
-    { 0x09A, "_func_09A" }, // 0x140B49210
-    { 0x09B, "_func_09B" }, // 0x140B491F0
+    { 0x09A, "getentchannelname" }, // 0x140B49210
+    { 0x09B, "getentchannelscount" }, // 0x140B491F0
     { 0x09C, "getfirstarraykey" }, // 0x140B4B420
-    { 0x09D, "_func_09D" }, // 0x14049D100
-    { 0x09E, "_func_09E" }, // 0x140497BB0
-    { 0x09F, "_func_09F" }, // 0x140B577B0
+    { 0x09D, "getfreeaicount" }, // 0x14049D100
+    { 0x09E, "getfxvisibility" }, // 0x140497BB0
+    { 0x09F, "getgametypeindex" }, // 0x140B577B0
     { 0x0A0, "getglass" }, // 0x140B474B0
-    { 0x0A1, "_func_0A1" }, // 0x140B47630
-    { 0x0A2, "_func_0A2" }, // 0x140B47AC0
+    { 0x0A1, "getglassarray" }, // 0x140B47630
+    { 0x0A2, "getglassorigin" }, // 0x140B47AC0
     { 0x0A3, "getgroundposition" }, // 0x140B4D9F0
-    { 0x0A4, "_func_0A4" }, // 0x140B3CF80
-    { 0x0A5, "_func_0A5" }, // 0x14049E980
-    { 0x0A6, "_func_0A6" }, // 0x140B4B560
+    { 0x0A4, "getindexforluincstring" }, // 0x140B3CF80
+    { 0x0A5, "getkeybinding" }, // 0x14049E980
+    { 0x0A6, "getlastarraykey" }, // 0x140B4B560
     { 0x0A7, "getlinkednodes" }, // 0x140AF31A0
-    { 0x0A8, "_func_0A8" }, // 0x140499220
-    { 0x0A9, "_func_0A9" }, // 0x140499030
-    { 0x0AA, "_func_0AA" }, // 0x140498820
-    { 0x0AB, "_func_0AB" }, // 0x1404989D0
-    { 0x0AC, "_func_0AC" }, // 0x140498A70
+    { 0x0A8, "getmapsunangles" }, // 0x140499220
+    { 0x0A9, "getmapsundirection" }, // 0x140499030
+    { 0x0AA, "getmapsunlight" }, // 0x140498820
+    { 0x0AB, "getmapsuncolorraw" }, // 0x1404989D0
+    { 0x0AC, "getmapsuncolorandintensity" }, // 0x140498A70
     { 0x0AD, "getmatchdata" }, // 0x140B590A0
     { 0x0AE, "getmatchrulesdata" }, // 0x140B537D0
     { 0x0AF, "getmaxagents" }, // 0x140C1DD90
@@ -197,27 +197,27 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x0B9, "getnodezone" }, // 0x140AF3670
     { 0x0BA, "getnorthyaw" }, // 0x140B4E860
     { 0x0BB, "getnotetracktimes" }, // 0x140B47780
-    { 0x0BC, "_func_0BC" }, // 0x140B3CAE0
-    { 0x0BD, "_func_0BD" }, // 0x14042FE90
+    { 0x0BC, "getnumparts" }, // 0x140B3CAE0
+    { 0x0BD, "getnumvehicles" }, // 0x14042FE90
     { 0x0BE, "getomnvar" }, // 0x140B3EF90
-    { 0x0BF, "_func_0BF" }, // 0x140B3CCD0
+    { 0x0BF, "getpartname" }, // 0x140B3CCD0
     { 0x0C0, "getpathdist" }, // 0x140B57840
     { 0x0C1, "getplaylistid" }, // 0x140B5AA10
     { 0x0C2, "getplaylistversion" }, // 0x140B5A9F0
     { 0x0C3, "getpredictedentityposition" }, // 0x140B58850
-    { 0x0C4, "_func_0C4" }, // 0x140B4B640
-    { 0x0C5, "getentitylessscriptablearrayinradius" }, // 0x140B355A0
+    { 0x0C4, "getprevarraykey" }, // 0x140B4B640
+    { 0x0C5, "getscriptablearray" }, // 0x140B355A0
     { 0x0C6, "getspawnarray" }, // 0x140B5B220
-    { 0x0C7, "_func_0C7" }, // 0x14049DC10
-    { 0x0C8, "_func_0C8" }, // 0x14049DED0
-    { 0x0C9, "_func_0C9" }, // 0x14049E1C0
-    { 0x0CA, "_func_0CA" }, // 0x140B58A70
-    { 0x0CB, "_func_0CB" }, // 0x140B58A70
-    { 0x0CC, "_func_0CC" }, // 0x140B58A70
-    { 0x0CD, "_func_0CD" }, // 0x14047CE00
-    { 0x0CE, "_func_0CE" }, // 0x14047CF10
-    { 0x0CF, "_func_0CF" }, // 0x140B52BA0
-    { 0x0D0, "_func_0D0" }, // 0x14049EA40
+    { 0x0C7, "getspawner" }, // 0x14049DC10
+    { 0x0C8, "getspawnerarray" }, // 0x14049DED0
+    { 0x0C9, "getspawnerteamarray" }, // 0x14049E1C0
+    { 0x0CA, "getsquadassaultelo" }, // 0x140B58A70
+    { 0x0CB, "getsquadassaultenemyprestige" }, // 0x140B58A70
+    { 0x0CC, "getsquadassaultsquadindex" }, // 0x140B58A70
+    { 0x0CD, "getstartangles" }, // 0x14047CE00
+    { 0x0CE, "getstartorigin" }, // 0x14047CF10
+    { 0x0CF, "getstarttime" }, // 0x140B52BA0
+    { 0x0D0, "getsticksconfig" }, // 0x14049EA40
     { 0x0D1, "getsubstr" }, // 0x140B3D720
     { 0x0D2, "getsystemtime" }, // 0x140B53E20
     { 0x0D3, "getteamplayersalive" }, // 0x140B586D0
@@ -253,16 +253,16 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x0F1, "getzoneorigin" }, // 0x140AF42D0
     { 0x0F2, "getzonepath" }, // 0x140AF4380
     { 0x0F3, "glassradiusdamage" }, // 0x140B4B700
-    { 0x0F4, "_func_0F4" }, // 0x1404984D0
+    { 0x0F4, "hidemayhem" }, // 0x1404984D0
     { 0x0F5, "incrementcounter" }, // 0x140B57390
-    { 0x0F6, "_func_0F6" }, // nullptr
+    { 0x0F6, "instantlylogusageanalysisdata" }, // nullptr
     { 0x0F7, "int" }, // 0x140B354B0
     { 0x0F8, "invertangles" }, // 0x140B3C3E0
     { 0x0F9, "iprintln" }, // 0x140B3CD40
     { 0x0FA, "iprintlnbold" }, // 0x140B3CE50
     { 0x0FB, "isagent" }, // 0x140B58F80
     { 0x0FC, "isai" }, // 0x140B577E0
-    { 0x0FD, "_func_0FD" }, // 0x140B347C0
+    { 0x0FD, "isaircraft" }, // 0x140B347C0
     { 0x0FE, "isalive" }, // 0x140B53B20
     { 0x0FF, "isarray" }, // 0x140B4E830
     { 0x100, "isbot" }, // 0x140C48C40
@@ -274,45 +274,45 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x106, "isenemyteam" }, // 0x1405ECF80
     { 0x107, "isexplosivedamagemod" }, // 0x140B4A400
     { 0x108, "isglassdestroyed" }, // 0x140B47C30
-    { 0x109, "_func_109" }, // 0x14049CA40
-    { 0x10A, "_func_10A" }, // nullptr
-    { 0x10B, "_func_10B" }, // 0x140498070
-    { 0x10C, "_func_10C" }, // 0x140AF45C0
+    { 0x109, "isgodmode" }, // 0x14049CA40
+    { 0x10A, "ishairrunning" }, // nullptr
+    { 0x10B, "ismayhem" }, // 0x140498070
+    { 0x10C, "isnodeoccupied" }, // 0x140AF45C0
     { 0x10D, "isplayer" }, // 0x140B3E9F0
     { 0x10E, "isplayernumber" }, // 0x140B578C0
     { 0x10F, "ispointinvolume" }, // 0x140B374B0
-    { 0x110, "_func_110" }, // 0x14049DBF0
-    { 0x111, "_func_111" }, // 0x14049DBD0
+    { 0x110, "issaverecentlyloaded" }, // 0x14049DBF0
+    { 0x111, "issavesuccessful" }, // 0x14049DBD0
     { 0x112, "issentient" }, // 0x140B3C9D0
-    { 0x113, "_func_113" }, // 0x140B53BD0
-    { 0x114, "_func_114" }, // 0x140B58A70
-    { 0x115, "_func_115" }, // 0x140B58A70
+    { 0x113, "isspawner" }, // 0x140B53BD0
+    { 0x114, "issplitscreen" }, // 0x140B58A70
+    { 0x115, "issquadsmode" }, // 0x140B58A70
     { 0x116, "isstring" }, // 0x140B3C8A0
     { 0x117, "issubstr" }, // 0x140B3D420
-    { 0x118, "_func_118" }, // 0x140B55B90
-    { 0x119, "_func_119" }, // 0x140C71720
-    { 0x11A, "_func_11A" }, // 0x140C71790
-    { 0x11B, "_func_11B" }, // 0x14049E180
+    { 0x118, "isteamradarblocked" }, // 0x140B55B90
+    { 0x119, "istransientloaded" }, // 0x140C71720
+    { 0x11A, "istransientqueued" }, // 0x140C71790
+    { 0x11B, "isturretactive" }, // 0x14049E180
     { 0x11C, "isusingmatchrulesdata" }, // 0x140B53950
     { 0x11D, "isvalidmissile" }, // 0x140B3C370
-    { 0x11E, "_func_11E" }, // 0x140B476A0
-    { 0x11F, "_func_11F" }, // 0x140B47980
+    { 0x11E, "isweaponcliponly" }, // 0x140B476A0
+    { 0x11F, "isweapondetonationtimed" }, // 0x140B47980
     { 0x120, "kick" }, // 0x140B53720
     { 0x121, "killfxontag" }, // 0x140B383D0
-    { 0x122, "_func_122" }, // 0x140498030
+    { 0x122, "killmayhem" }, // 0x140498030
     { 0x123, "length" }, // 0x140B37F60
     { 0x124, "length2d" }, // 0x140B382C0
     { 0x125, "length2dsquared" }, // 0x140B38500
     { 0x126, "lengthsquared" }, // 0x140B384A0
-    { 0x127, "_func_127" }, // 0x140499870
-    { 0x128, "_func_128" }, // 0x1404994A0
-    { 0x129, "_func_129" }, // 0x14049D290
-    { 0x12A, "_func_12A" }, // nullptr
-    { 0x12B, "_func_12B" }, // nullptr
+    { 0x127, "lerpsunangles" }, // 0x140499870
+    { 0x128, "lerpsundirection" }, // 0x1404994A0
+    { 0x129, "levelsoundfade" }, // 0x14049D290
+    { 0x12A, "livestreamingenable" }, // nullptr
+    { 0x12B, "livestreamingsetbitrate" }, // nullptr
     { 0x12C, "loadfx" }, // 0x140B34830
-    { 0x12D, "_func_12D" }, // 0x14049EBF0
-    { 0x12E, "_func_12E" }, // 0x140C71980
-    { 0x12F, "_func_12F" }, // 0x140C71BA0
+    { 0x12D, "loadluifile" }, // 0x14049EBF0
+    { 0x12E, "loadstartpointtransients" }, // 0x140C71980
+    { 0x12F, "loadtransient" }, // 0x140C71BA0
     { 0x130, "log" }, // 0x140B35F10
     { 0x131, "logprint" }, // nullptr
     { 0x132, "logstring" }, // nullptr
@@ -321,10 +321,10 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x135, "magicgrenade" }, // 0x140498100
     { 0x136, "magicgrenademanual" }, // 0x140498600
     { 0x137, "map_restart" }, // 0x140B52BB0
-    { 0x138, "_func_138" }, // 0x140B536E0
-    { 0x139, "_func_139" }, // 0x140AF4600
-    { 0x13A, "_func_13A" }, // 0x140AF46A0
-    { 0x13B, "_func_13B" }, // nullptr
+    { 0x138, "mapexists" }, // 0x140B536E0
+    { 0x139, "markdangerousnodes" }, // 0x140AF4600
+    { 0x13A, "markdangerousnodesintrigger" }, // 0x140AF46A0
+    { 0x13B, "matchend" }, // nullptr
     { 0x13C, "max" }, // 0x140B35C10
     { 0x13D, "min" }, // 0x140B35BE0
     { 0x13E, "missile_createattractorent" }, // 0x140B2EDB0
@@ -332,10 +332,10 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x140, "missile_createrepulsorent" }, // 0x140B2EFA0
     { 0x141, "missile_createrepulsororigin" }, // 0x140B2F090
     { 0x142, "missile_deleteattractor" }, // 0x140B2F180
-    { 0x143, "_func_143" }, // 0x140497490
-    { 0x144, "_func_144" }, // 0x140497460
-    { 0x145, "_func_145" }, // 0x14049CE90
-    { 0x146, "_func_146" }, // 0x14049D040
+    { 0x143, "missionfailed" }, // 0x140497490
+    { 0x144, "missionsuccess" }, // 0x140497460
+    { 0x145, "musicplay" }, // 0x14049CE90
+    { 0x146, "musicstop" }, // 0x14049D040
     { 0x147, "newclienthudelem" }, // 0x140B18A70
     { 0x148, "newhudelem" }, // 0x140B18AF0
     { 0x149, "newteamhudelem" }, // 0x140448590
@@ -343,12 +343,12 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x14B, "nodesvisible" }, // 0x140AF4D30
     { 0x14C, "notifyoncommand" }, // 0x14049ADE0
     { 0x14D, "obituary" }, // 0x140B5B620
-    { 0x14E, "_func_14E" }, // 0x140B631B0
-    { 0x14F, "_func_14F" }, // 0x1404A1E80
-    { 0x150, "_func_150" }, // 0x1404A1820
-    { 0x151, "_func_151" }, // 0x1404A1D20
-    { 0x152, "_func_152" }, // 0x140B63690
-    { 0x153, "_func_153" }, // 0x1404A1E70
+    { 0x14E, "objective_add" }, // 0x140B631B0
+    { 0x14F, "objective_additionalcurrent" }, // 0x1404A1E80
+    { 0x150, "objective_additionalentity" }, // 0x1404A1820
+    { 0x151, "objective_additionalposition" }, // 0x1404A1D20
+    { 0x152, "objective_current" }, // 0x140B63690
+    { 0x153, "objective_current_nomessage" }, // 0x1404A1E70
     { 0x154, "objective_delete" }, // 0x140B63320
     { 0x155, "objective_icon" }, // 0x140B63430
     { 0x156, "objective_onentity" }, // 0x140B635D0
@@ -361,19 +361,19 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x15D, "objective_playermask_showtoall" }, // 0x140B63A60
     { 0x15E, "objective_playerteam" }, // 0x140B63870
     { 0x15F, "objective_position" }, // 0x140B63530
-    { 0x160, "_func_160" }, // 0x1404A1FB0
-    { 0x161, "_func_161" }, // 0x1404A2080
+    { 0x160, "objective_ring" }, // 0x1404A1FB0
+    { 0x161, "objective_setpointertextoverride" }, // 0x1404A2080
     { 0x162, "objective_state" }, // 0x140B63390
-    { 0x163, "_func_163" }, // 0x1404A1B10
-    { 0x164, "_func_164" }, // 0x1404A1B20
-    { 0x165, "_func_165" }, // 0x1404A1B30
+    { 0x163, "objective_state_nomessage" }, // 0x1404A1B10
+    { 0x164, "objective_string" }, // 0x1404A1B20
+    { 0x165, "objective_string_nomessage" }, // 0x1404A1B30
     { 0x166, "objective_team" }, // 0x140B63770
-    { 0x167, "_func_167" }, // 0x140497A50
-    { 0x168, "_func_168" }, // 0x140498330
-    { 0x169, "_func_169" }, // nullptr
+    { 0x167, "pausecinematicingame" }, // 0x140497A50
+    { 0x168, "pausemayhem" }, // 0x140498330
+    { 0x169, "perlinnoise2d" }, // nullptr
     { 0x16A, "physicsexplosionsphere" }, // 0x140B39AB0
-    { 0x16B, "_func_16B" }, // 0x140B3A770
-    { 0x16C, "_func_16C" }, // 0x140B39FB0
+    { 0x16B, "physicsjitter" }, // 0x140B3A770
+    { 0x16C, "physicsjolt" }, // 0x140B39FB0
     { 0x16D, "physicstrace" }, // 0x140B4BA40
     { 0x16E, "playcinematicforall" }, // 0x140B5B440
     { 0x16F, "playerphysicstrace" }, // 0x140B4BBE0
@@ -381,16 +381,16 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x171, "playfxontag" }, // 0x140B368B0
     { 0x172, "playfxontagforclients" }, // 0x140B36A00
     { 0x173, "playloopedfx" }, // 0x140B5A6C0
-    { 0x174, "_func_174" }, // 0x1404982F0
-    { 0x175, "_func_175" }, // 0x140B41B30
-    { 0x176, "playrumbleonentity" }, // 0x140B41940
-    { 0x177, "playloopsound" }, // 0x140B55F20
-    { 0x178, "_func_178" }, // 0x14049AB50
+    { 0x174, "playmayhem" }, // 0x1404982F0
+    { 0x175, "playrumblelooponposition" }, // 0x140B41B30
+    { 0x176, "playrumbleonposition" }, // 0x140B41940
+    { 0x177, "playsoundatpos" }, // 0x140B55F20
+    { 0x178, "playworldsound" }, // 0x14049AB50
     { 0x179, "pointonsegmentnearesttopoint" }, // 0x140B36AF0
     { 0x17A, "positionwouldtelefrag" }, // 0x140B5B8C0
     { 0x17B, "pow" }, // 0x140B361A0
     { 0x17C, "_func_17C" }, // 0x140496D70
-    { 0x17D, "_func_17D" }, // nullptr
+    { 0x17D, "precachefxontag" }, // nullptr
     { 0x17E, "precacheheadicon" }, // 0x140B48A30
     { 0x17F, "precacheitem" }, // 0x140B484A0
     { 0x180, "precacheleaderboards" }, // 0x140B48990
@@ -415,155 +415,155 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x193, "randomfloatrange" }, // 0x140B34AD0
     { 0x194, "randomint" }, // 0x140B34590
     { 0x195, "randomintrange" }, // 0x140B34910
-    { 0x196, "_func_196" }, // nullptr
-    { 0x197, "_func_197" }, // nullptr
-    { 0x198, "_func_198" }, // nullptr
-    { 0x199, "_func_199" }, // nullptr
-    { 0x19A, "_func_19A" }, // 0x140499B00
-    { 0x19B, "_func_19B" }, // 0x140B57AD0
-    { 0x19C, "_func_19C" }, // 0x140C0C3C0
+    { 0x196, "reconevent" }, // nullptr
+    { 0x197, "reconspatialevent" }, // nullptr
+    { 0x198, "remapstage" }, // nullptr
+    { 0x199, "resetscriptusageanalysisdata" }, // nullptr
+    { 0x19A, "resetsundirection" }, // 0x140499B00
+    { 0x19B, "resetsunlight" }, // 0x140B57AD0
+    { 0x19C, "resettimeout" }, // 0x140C0C3C0
     { 0x19D, "rotatepointaroundvector" }, // 0x140B3CFD0
     { 0x19E, "rotatevector" }, // 0x140B3CD50
     { 0x19F, "rotatevectorinverted" }, // 0x140B3C8C0
-    { 0x1A0, "_func_1A0" }, // 0x14049D520
-    { 0x1A1, "_func_1A1" }, // 0x14049D870
-    { 0x1A2, "_func_1A2" }, // 0x14049E3A0
+    { 0x1A0, "savegame" }, // 0x14049D520
+    { 0x1A1, "savegamenocommit" }, // 0x14049D870
+    { 0x1A2, "screenshake" }, // 0x14049E3A0
     { 0x1A3, "sendclientmatchdata" }, // 0x140B53C20
     { 0x1A4, "sendmatchdata" }, // 0x140B591A0
-    { 0x1A5, "_func_1A5" }, // nullptr
-    { 0x1A6, "_func_1A6" }, // nullptr
-    { 0x1A7, "_func_1A7" }, // 0x14049CD90
+    { 0x1A5, "sendscriptusageanalysisdata" }, // nullptr
+    { 0x1A6, "setac130ambience" }, // nullptr
+    { 0x1A7, "setblur" }, // 0x14049CD90
     { 0x1A8, "setclientmatchdata" }, // 0x140B598D0
     { 0x1A9, "setclientmatchdatadef" }, // 0x140B53210
     { 0x1AA, "setclientnamemode" }, // 0x140B58210
-    { 0x1AB, "_func_1AB" }, // 0x1404985B0
+    { 0x1AB, "setculldist" }, // 0x1404985B0
     { 0x1AC, "setdvar" }, // 0x140B402B0
     { 0x1AD, "setdvarifuninitialized" }, // 0x140B41970
     { 0x1AE, "setdynamicdvar" }, // 0x140B408E0
     { 0x1AF, "setgameendtime" }, // 0x140B55340
-    { 0x1B0, "_func_1B0" }, // 0x140B4AE60
-    { 0x1B1, "_func_1B1" }, // nullptr
+    { 0x1B0, "setglaregrimematerial" }, // 0x140B4AE60
+    { 0x1B1, "sethalfresparticles" }, // nullptr
     { 0x1B2, "setignoremegroup" }, // 0x1405ECD30
-    { 0x1B3, "_func_1B3" }, // 0x14049AF90
+    { 0x1B3, "setlasermaterial" }, // 0x14049AF90
     { 0x1B4, "setmapcenter" }, // 0x140B55290
     { 0x1B5, "setmatchclientip" }, // 0x140B599A0
     { 0x1B6, "setmatchdata" }, // 0x140B52F70
     { 0x1B7, "setmatchdatadef" }, // 0x140B530C0
     { 0x1B8, "setmatchdataid" }, // 0x140B59330
     { 0x1B9, "setminimap" }, // 0x140B4A7D0
-    { 0x1BA, "_func_1BA" }, // 0x140B3D0F0
-    { 0x1BB, "_func_1BB" }, // 0x140AF5210
+    { 0x1BA, "setmusicstate" }, // 0x140B3D0F0
+    { 0x1BB, "setnodepriority" }, // 0x140AF5210
     { 0x1BC, "setnojipscore" }, // 0x140B5AAA0
     { 0x1BD, "setnojiptime" }, // 0x140B5AB30
-    { 0x1BE, "_func_1BE" }, // nullptr
+    { 0x1BE, "setocclusionpreset" }, // nullptr
     { 0x1BF, "setomnvar" }, // 0x140B3E2D0
     { 0x1C0, "setomnvarforallclients" }, // 0x140B55470
     { 0x1C1, "setomnvarbit" }, // 0x140B3E580
-    { 0x1C2, "_func_1C2" }, // 0x140B4C420
+    { 0x1C2, "setplayerignoreradiusdamage" }, // 0x140B4C420
     { 0x1C3, "setplayerteamrank" }, // 0x140B58AC0
-    { 0x1C4, "_func_1C4" }, // 0x140B344A0
-    { 0x1C5, "_func_1C5" }, // 0x14049CB20
+    { 0x1C4, "doentitiessharehierarchy" }, // 0x140B344A0
+    { 0x1C5, "setsaveddvar" }, // 0x14049CB20
     { 0x1C6, "setslowmotion" }, // 0x140B48640
-    { 0x1C7, "_func_1C7" }, // 0x140496C60
-    { 0x1C8, "_func_1C8" }, // 0x1404993B0
-    { 0x1C9, "_func_1C9" }, // 0x14049B780
-    { 0x1CA, "_func_1CA" }, // 0x140B579B0
-    { 0x1CB, "_func_1CB" }, // 0x140498C90
+    { 0x1C7, "setslowmotionview" }, // 0x140496C60
+    { 0x1C8, "setsundirection" }, // 0x1404993B0
+    { 0x1C9, "setsunflareposition" }, // 0x14049B780
+    { 0x1CA, "setsunlight" }, // 0x140B579B0
+    { 0x1CB, "setsuncolorandintensity" }, // 0x140498C90
     { 0x1CC, "setteammode" }, // 0x140B57F30
     { 0x1CD, "setteamradar" }, // 0x140B55520
     { 0x1CE, "setteamradarstrength" }, // 0x140B555F0
     { 0x1CF, "setteamscore" }, // 0x140B58080
-    { 0x1D0, "_func_1D0" }, // 0x140B4AD50
-    { 0x1D1, "_func_1D1" }, // 0x1405ECC60
-    { 0x1D2, "_func_1D2" }, // 0x1405ECCE0
+    { 0x1D0, "setthermalbodymaterial" }, // 0x140B4AD50
+    { 0x1D1, "setthreatbias" }, // 0x1405ECC60
+    { 0x1D2, "setthreatbiasagainstall" }, // 0x1405ECCE0
     { 0x1D3, "settimescale" }, // 0x14049F500
-    { 0x1D4, "_func_1D4" }, // 0x140AF52B0
-    { 0x1D5, "_func_1D5" }, // 0x140B35190
+    { 0x1D4, "setturretnode" }, // 0x140AF52B0
+    { 0x1D5, "setumbraportalstate" }, // 0x140B35190
     { 0x1D6, "setwinningteam" }, // 0x140B57B00
-    { 0x1D7, "_func_1D7" }, // 0x140498510
+    { 0x1D7, "showmayhem" }, // 0x140498510
     { 0x1D8, "sighttracepassed" }, // 0x140B4B2A0
     { 0x1D9, "sin" }, // 0x140B34C10
     { 0x1DA, "sortbydistance" }, // 0x140B4C1C0
     { 0x1DB, "soundexists" }, // 0x140B48A70
-    { 0x1DC, "_func_1DC" }, // 0x14049D200
-    { 0x1DD, "_func_1DD" }, // 0x140B3F7A0
+    { 0x1DC, "soundfade" }, // 0x14049D200
+    { 0x1DD, "soundresettimescale" }, // 0x140B3F7A0
     { 0x1DE, "soundsettimescalefactor" }, // 0x140B3F450
     { 0x1DF, "spawn" }, // 0x140B3EA60
     { 0x1E0, "spawnfx" }, // 0x140B59740
     { 0x1E1, "spawnfxforclient" }, // 0x140B59E40
     { 0x1E2, "spawnhelicopter" }, // 0x140B549D0
     { 0x1E3, "spawnloopingsound" }, // 0x140C139B0
-    { 0x1E4, "_func_1E4" }, // 0x140497E10
+    { 0x1E4, "spawnmayhem" }, // 0x140497E10
     { 0x1E5, "spawnplane" }, // 0x140B546E0
     { 0x1E6, "spawnragdollconstraint" }, // 0x140B40460
     { 0x1E7, "spawnsighttrace" }, // 0x140B52C00
     { 0x1E8, "spawnstruct" }, // 0x140C0A6E0
     { 0x1E9, "spawnturret" }, // 0x140B3FBA0
     { 0x1EA, "spawnvehicle" }, // 0x140430020
-    { 0x1EB, "_func_1EB" }, // nullptr
-    { 0x1EC, "_func_1EC" }, // nullptr
+    { 0x1EB, "speechenable" }, // nullptr
+    { 0x1EC, "speechenablegrammar" }, // nullptr
     { 0x1ED, "sqrt" }, // 0x140B35F30
     { 0x1EE, "squared" }, // 0x140B360A0
-    { 0x1EF, "_func_1EF" }, // 0x140B425D0
-    { 0x1F0, "_func_1F0" }, // 0x140B5B540
-    { 0x1F1, "_func_1F1" }, // 0x140497A10
+    { 0x1EF, "stopallrumbles" }, // 0x140B425D0
+    { 0x1F0, "stopcinematicforall" }, // 0x140B5B540
+    { 0x1F1, "stopcinematicingame" }, // 0x140497A10
     { 0x1F2, "stopfxontag" }, // 0x140B37940
     { 0x1F3, "stricmp" }, // 0x140B3F400
     { 0x1F4, "strtok" }, // 0x140B3E7C0
-    { 0x1F5, "_func_1F5" }, // 0x140C71D80
-    { 0x1F6, "_func_1F6" }, // 0x140B3DE00
+    { 0x1F5, "synctransients" }, // 0x140C71D80
+    { 0x1F6, "tableexists" }, // 0x140B3DE00
     { 0x1F7, "tablelookup" }, // 0x140B3D1C0
     { 0x1F8, "tablelookupbyrow" }, // 0x140B3EB80
     { 0x1F9, "tablelookupistring" }, // 0x140B3D460
-    { 0x1FA, "_func_1FA" }, // 0x140B3EB80
+    { 0x1FA, "tablelookupistringbyrow" }, // 0x140B3EB80
     { 0x1FB, "tablelookuprownum" }, // 0x140B3DBD0
-    { 0x1FC, "_func_1FC" }, // 0x140B34F20
-    { 0x1FD, "_func_1FD" }, // 0x14040C390
-    { 0x1FE, "_func_1FE" }, // 0x14040C3B0
-    { 0x1FF, "_func_1FF" }, // 0x14040C3E0
-    { 0x200, "_func_200" }, // 0x14040C800
-    { 0x201, "_func_201" }, // 0x14040C930
-    { 0x202, "_func_202" }, // 0x14040CAA0
-    { 0x203, "_func_203" }, // 0x14040CB30
-    { 0x204, "_func_204" }, // 0x14040CC20
-    { 0x205, "_func_205" }, // 0x14040CBA0
-    { 0x206, "_func_206" }, // 0x14040CC80
-    { 0x207, "_func_207" }, // 0x14040CC90
-    { 0x208, "_func_208" }, // 0x14040CD00
-    { 0x209, "_func_209" }, // 0x14040CD90
-    { 0x20A, "_func_20A" }, // 0x14040CF70
-    { 0x20B, "_func_20B" }, // 0x14040CFB0
-    { 0x20C, "_func_20C" }, // 0x14040CFD0
-    { 0x20D, "_func_20D" }, // 0x14040D120
-    { 0x20E, "_func_20E" }, // 0x14040D2E0
-    { 0x20F, "_func_20F" }, // 0x14040D500
-    { 0x210, "_func_210" }, // 0x14040D650
-    { 0x211, "_func_211" }, // 0x14040D780
-    { 0x212, "_func_212" }, // 0x14040D8F0
-    { 0x213, "_func_213" }, // 0x14040DD90
-    { 0x214, "_func_214" }, // 0x14040DEE0
-    { 0x215, "_func_215" }, // 0x14040E020
-    { 0x216, "_func_216" }, // 0x14040E030
-    { 0x217, "_func_217" }, // 0x14049F520
+    { 0x1FC, "tan" }, // 0x140B34F20
+    { 0x1FD, "target_alloc" }, // 0x14040C390
+    { 0x1FE, "target_clearreticlelockon" }, // 0x14040C3B0
+    { 0x1FF, "target_drawcornersonly" }, // 0x14040C3E0
+    { 0x200, "target_drawsingle" }, // 0x14040C800
+    { 0x201, "target_drawsquare" }, // 0x14040C930
+    { 0x202, "target_flush" }, // 0x14040CAA0
+    { 0x203, "target_getarray" }, // 0x14040CB30
+    { 0x204, "target_gettargetatindex" }, // 0x14040CC20
+    { 0x205, "target_getindexoftarget" }, // 0x14040CBA0
+    { 0x206, "target_hidefromplayer" }, // 0x14040CC80
+    { 0x207, "target_isincircle" }, // 0x14040CC90
+    { 0x208, "target_isinrect" }, // 0x14040CD00
+    { 0x209, "target_istarget" }, // 0x14040CD90
+    { 0x20A, "target_remove" }, // 0x14040CF70
+    { 0x20B, "target_set" }, // 0x14040CFB0
+    { 0x20C, "target_setattackmode" }, // 0x14040CFD0
+    { 0x20D, "target_setcolor" }, // 0x14040D120
+    { 0x20E, "target_setdelay" }, // 0x14040D2E0
+    { 0x20F, "target_setjavelinonly" }, // 0x14040D500
+    { 0x210, "target_setmaxsize" }, // 0x14040D650
+    { 0x211, "target_setminsize" }, // 0x14040D780
+    { 0x212, "target_setoffscreenshader" }, // 0x14040D8F0
+    { 0x213, "target_setscaledrendermode" }, // 0x14040DD90
+    { 0x214, "target_setshader" }, // 0x14040DEE0
+    { 0x215, "target_showtoplayer" }, // 0x14040E020
+    { 0x216, "target_startreticlelockon" }, // 0x14040E030
+    { 0x217, "teleportscene" }, // 0x14049F520
     { 0x218, "threatbiasgroupexists" }, // 0x1405ECBC0
     { 0x219, "tolower" }, // 0x140B3DE50
-    { 0x21A, "_func_21A" }, // 0x140B4DEB0
-    { 0x21B, "_func_21B" }, // 0x140B4D790
-    { 0x21C, "_func_21C" }, // 0x140B4DC60
-    { 0x21D, "_func_21D" }, // 0x140B4E5E0
-    { 0x21E, "_func_21E" }, // 0x140B4E340
-    { 0x21F, "_func_21F" }, // 0x140B4E070
+    { 0x21A, "trajectorycalculateexitangle" }, // 0x140B4DEB0
+    { 0x21B, "trajectorycalculateinitialvelocity" }, // 0x140B4D790
+    { 0x21C, "trajectorycalculateminimumvelocity" }, // 0x140B4DC60
+    { 0x21D, "trajectorycanattemptaccuratejump" }, // 0x140B4E5E0
+    { 0x21E, "trajectorycomputedeltaheightattime" }, // 0x140B4E340
+    { 0x21F, "trajectoryestimatedesiredinairtime" }, // 0x140B4E070
     { 0x220, "transformmove" }, // 0x140B3C100
     { 0x221, "triggerfx" }, // 0x140B5A470
     { 0x222, "triggerportableradarping" }, // 0x140B5A130
     { 0x223, "triggeroneoffradarsweep" }, // 0x140B5A030
     { 0x224, "unblockteamradar" }, // 0x140B55A20
-    { 0x225, "_func_225" }, // 0x140C71DF0
-    { 0x226, "_func_226" }, // 0x140C71F10
-    { 0x227, "_func_227" }, // 0x140AF55C0
-    { 0x228, "_func_228" }, // 0x140B584C0
-    { 0x229, "_func_229" }, // 0x14049A2A0
-    { 0x22A, "_func_22A" }, // 0x14049A350
+    { 0x225, "unloadalltransients" }, // 0x140C71DF0
+    { 0x226, "unloadtransient" }, // 0x140C71F10
+    { 0x227, "unsetturretnode" }, // 0x140AF55C0
+    { 0x228, "updateclientnames" }, // 0x140B584C0
+    { 0x229, "updategamerprofile" }, // 0x14049A2A0
+    { 0x22A, "updategamerprofileall" }, // 0x14049A350
     { 0x22B, "vectorcross" }, // 0x140B38D50
     { 0x22C, "vectordot" }, // 0x140B38C30
     { 0x22D, "vectorfromlinetopoint" }, // 0x140B36720
@@ -598,45 +598,45 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x24A, "weaponmaxdist" }, // 0x14049E330
     { 0x24B, "weaponstartammo" }, // 0x140B46740
     { 0x24C, "weapontype" }, // 0x140B45EE0
-    { 0x24D, "_func_24D" }, // 0x140B5B5A0
-    { 0x24E, "_func_24E" }, // nullptr
-    { 0x24F, "_func_24F" }, // 0x140B3BCC0
-    { 0x250, "_func_250" }, // 0x140B3BCC0
-    { 0x251, "_func_251" }, // 0x1404481F0
-    { 0x252, "_func_252" }, // nullptr
-    { 0x253, "_func_253" }, // nullptr
-    { 0x254, "_func_254" }, // nullptr
-    { 0x255, "_func_255" }, // nullptr
-    { 0x256, "_func_256" }, // nullptr
-    { 0x257, "_func_257" }, // nullptr
-    { 0x258, "_func_258" }, // nullptr
-    { 0x259, "_func_259" }, // nullptr
-    { 0x25A, "_func_25A" }, // nullptr
-    { 0x25B, "_func_25B" }, // 0x140B439D0
-    { 0x25C, "_func_25C" }, // nullptr
-    { 0x25D, "_func_25D" }, // 0x140B3C010
-    { 0x25E, "_func_25E" }, // nullptr
-    { 0x25F, "_func_25F" }, // nullptr
-    { 0x260, "_func_260" }, // nullptr
-    { 0x261, "_func_261" }, // nullptr
-    { 0x262, "_func_262" }, // 0x140B3A6B0
-    { 0x263, "_func_263" }, // nullptr
-    { 0x264, "_func_264" }, // 0x140B3A6B0
-    { 0x265, "_func_265" }, // nullptr
-    { 0x266, "_func_266" }, // nullptr
-    { 0x267, "_func_267" }, // nullptr
-    { 0x268, "_func_268" }, // 0x140B41610
-    { 0x269, "_func_269" }, // 0x140B41C00
-    { 0x26A, "_func_26A" }, // nullptr
-    { 0x26B, "_func_26B" }, // nullptr
+    { 0x24D, "worldentnumber" }, // 0x140B5B5A0
+    { 0x24E, "adddebugcommand" }, // nullptr
+    { 0x24F, "assert" }, // 0x140B3BCC0
+    { 0x250, "assertex" }, // 0x140B3BCC0
+    { 0x251, "assertmsg" }, // 0x1404481F0
+    { 0x252, "box" }, // nullptr
+    { 0x253, "closefile" }, // nullptr
+    { 0x254, "createprintchannel" }, // nullptr
+    { 0x255, "cylinder" }, // nullptr
+    { 0x256, "drawsoundshape" }, // nullptr
+    { 0x257, "fgetarg" }, // nullptr
+    { 0x258, "fprintfields" }, // nullptr
+    { 0x259, "fprintln" }, // nullptr
+    { 0x25A, "freadln" }, // nullptr
+    { 0x25B, "getentbynum" }, // 0x140B439D0
+    { 0x25C, "getreflectionlocs" }, // nullptr
+    { 0x25D, "getsystemtimeinmicroseconds" }, // 0x140B3C010
+    { 0x25E, "getunarchiveddebugdvar" }, // nullptr
+    { 0x25F, "line" }, // nullptr
+    { 0x260, "openfile" }, // nullptr
+    { 0x261, "orientedbox" }, // nullptr
+    { 0x262, "print" }, // 0x140B3A6B0
+    { 0x263, "print3d" }, // nullptr
+    { 0x264, "println" }, // 0x140B3A6B0
+    { 0x265, "printtoscreen2d" }, // nullptr
+    { 0x266, "setdebugangles" }, // nullptr
+    { 0x267, "setdebugorigin" }, // nullptr
+    { 0x268, "setdevdvar" }, // 0x140B41610
+    { 0x269, "setdevdvarifuninitialized" }, // 0x140B41C00
+    { 0x26A, "setprintchannel" }, // nullptr
+    { 0x26B, "sphere" }, // nullptr
     { 0x26C, "sysprint" }, // 0x140B55130
     { 0x26D, "_func_26D" }, // 0x140B3EC10
     { 0x26E, "physics_getbodylinvel" }, // 0x1405636A0
-    { 0x26F, "_func_26F" }, // 0x140563760
-    { 0x270, "_func_270" }, // 0x140563870
-    { 0x271, "_func_271" }, // 0x140441C20
+    { 0x26F, "physics_getbodyangvel" }, // 0x140563760
+    { 0x270, "physics_getbodylinangvel" }, // 0x140563870
+    { 0x271, "findpath3d" }, // 0x140441C20
     { 0x272, "navtrace" }, // 0x140442E40
-    { 0x273, "_func_273" }, // 0x140442CB0
+    { 0x273, "navtrace3d" }, // 0x140442CB0
     { 0x274, "getrandomnavpoint" }, // 0x140442570
     { 0x275, "getrandomnavpoints" }, // 0x140442700
     { 0x276, "getclosestpointonnavmesh" }, // 0x140442030
@@ -644,16 +644,16 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x278, "destroynavrepulsor" }, // 0x140441A90
     { 0x279, "ispointonnavmesh" }, // 0x1404429D0
     { 0x27A, "createnavobstaclebybounds" }, // 0x140441440
-    { 0x27B, "_func_27B" }, // 0x1404415D0
+    { 0x27B, "createnavobstaclebyent" }, // 0x1404415D0
     { 0x27C, "destroynavobstacle" }, // 0x140441A70
     { 0x27D, "isnumber" }, // 0x140B363C0
-    { 0x27E, "_func_27E" }, // 0x140C70010
-    { 0x27F, "_func_27F" }, // 0x140B4DF50
+    { 0x27E, "preloadzones" }, // 0x140C70010
+    { 0x27F, "physics_setgravity" }, // 0x140B4DF50
     { 0x280, "isbotmatchmakingenabled" }, // 0x140B53170
     { 0x281, "addmpbottoteam" }, // 0x140B531A0
-    { 0x282, "_func_282" }, // 0x140C6FFA0
-    { 0x283, "_func_283" }, // 0x1405639D0
-    { 0x284, "_func_284" }, // nullptr
+    { 0x282, "ispreloadzonescomplete" }, // 0x140C6FFA0
+    { 0x283, "physics_getbulletmissilecontents" }, // 0x1405639D0
+    { 0x284, "assertdemo" }, // nullptr
     { 0x285, "physics_aabbbroadphasequery" }, // 0x1405647C0
     { 0x286, "physics_aabbquery" }, // 0x14055F5C0
     { 0x287, "physics_raycast" }, // 0x1405602B0
@@ -666,45 +666,45 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x28E, "physics_getclosestpoint" }, // 0x14055EE10
     { 0x28F, "physics_createcontents" }, // 0x1405639E0
     { 0x290, "physics_getsurfacetypefromflags" }, // 0x14055FF80
-    { 0x291, "_func_291" }, // 0x140AF4E00
-    { 0x292, "_func_292" }, // 0x140AF49A0
-    { 0x293, "_func_293" }, // 0x140B42ED0
-    { 0x294, "_func_294" }, // 0x140B43860
-    { 0x295, "_func_295" }, // 0x140AF4F70
+    { 0x291, "pathsighttestfast" }, // 0x140AF4E00
+    { 0x292, "nodetoentitysighttest" }, // 0x140AF49A0
+    { 0x293, "weapongetdamagemax" }, // 0x140B42ED0
+    { 0x294, "weapongetdamagemin" }, // 0x140B43860
+    { 0x295, "precomputedlosdatatest" }, // 0x140AF4F70
     { 0x296, "getislosdatafileloaded" }, // 0x140AF3180
     { 0x297, "stopfxontagforclients" }, // 0x140B37D60
     { 0x298, "physics_charactercast" }, // 0x140563C90
     { 0x299, "physics_getclosestpointtocharacter" }, // 0x140566A80
     { 0x29A, "playfxontagforteam" }, // 0x140B5A270
-    { 0x29B, "_func_29B" }, // 0x140560260
-    { 0x29C, "_func_29C" }, // 0x140560B20
-    { 0x29D, "_func_29D" }, // 0x140560B70
-    { 0x29E, "_func_29E" }, // 0x140560BF0
+    { 0x29B, "physics_getbodymass" }, // 0x140560260
+    { 0x29C, "physics_getbodydynamicmass" }, // 0x140560B20
+    { 0x29D, "physics_getbodycenterofmass" }, // 0x140560B70
+    { 0x29E, "physics_setbodycenterofmassnormal" }, // 0x140560BF0
     { 0x29F, "cachespawnpathnodesincode" }, // 0x140AF2D40
-    { 0x2A0, "_func_2A0" }, // 0x14049DAB0
+    { 0x2A0, "getaccuracyfraction" }, // 0x14049DAB0
     { 0x2A1, "triggerportableradarpingteam" }, // 0x140B5A520
     { 0x2A2, "isvfxfile" }, // 0x140B4E9D0
     { 0x2A3, "setimpactfx" }, // 0x140B43740
-    { 0x2A4, "_func_2A4" }, // 0x140B4E9A0
-    { 0x2A5, "_func_2A5" }, // 0x140B4EB90
-    { 0x2A6, "_func_2A6" }, // 0x140B4EBB0
+    { 0x2A4, "isstruct" }, // 0x140B4E9A0
+    { 0x2A5, "isvector" }, // 0x140B4EB90
+    { 0x2A6, "isent" }, // 0x140B4EBB0
     { 0x2A7, "isnode" }, // 0x140B34450
-    { 0x2A8, "_func_2A8" }, // 0x140B345E0
+    { 0x2A8, "isnonentspawner" }, // 0x140B345E0
     { 0x2A9, "setglobalsoundcontext" }, // 0x140B3E6E0
-    { 0x2AA, "_func_2AA" }, // 0x140B3DC50
-    { 0x2AB, "_func_2AB" }, // 0x14049F040
+    { 0x2AA, "setaudiotriggerstate" }, // 0x140B3DC50
+    { 0x2AB, "finishplayerdeath" }, // 0x14049F040
     { 0x2AC, "_func_2AC" }, // 0x140442B40
-    { 0x2AD, "_func_2AD" }, // 0x140B3FEE0
-    { 0x2AE, "_func_2AE" }, // 0x140B364B0
-    { 0x2AF, "_func_2AF" }, // 0x140B54B20
-    { 0x2B0, "_func_2B0" }, // 0x140C71530
-    { 0x2B1, "_func_2B1" }, // 0x140C716A0
-    { 0x2B2, "_func_2B2" }, // 0x140C715E0
-    { 0x2B3, "_func_2B3" }, // 0x140441F70
-    { 0x2B4, "_func_2B4" }, // 0x140442910
-    { 0x2B5, "_func_2B5" }, // 0x140C70200
-    { 0x2B6, "_func_2B6" }, // 0x140B38950
-    { 0x2B7, "_func_2B7" }, // 0x140B3BC00
+    { 0x2AD, "precachesuit" }, // 0x140B3FEE0
+    { 0x2AE, "getcsplineid" }, // 0x140B364B0
+    { 0x2AF, "spawnimpulsefield" }, // 0x140B54B20
+    { 0x2B0, "clearstartpointtransients" }, // 0x140C71530
+    { 0x2B1, "isloadingsavegame" }, // 0x140C716A0
+    { 0x2B2, "getsavegametransients" }, // 0x140C715E0
+    { 0x2B3, "getclosestpointonnavmesh3d" }, // 0x140441F70
+    { 0x2B4, "ispointonnavmesh3d" }, // 0x140442910
+    { 0x2B5, "waspreloadzonesstarted" }, // 0x140C70200
+    { 0x2B6, "getcsplinepointstring" }, // 0x140B38950
+    { 0x2B7, "calccsplineclosestpoint" }, // 0x140B3BC00
     { 0x2B8, "_func_2B8" }, // 0x1403E1000
     { 0x2B9, "_func_2B9" }, // 0x1403E1100
     { 0x2BA, "_func_2BA" }, // 0x1403E1200
@@ -712,38 +712,38 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2BC, "_func_2BC" }, // 0x1403E0FD0
     { 0x2BD, "_func_2BD" }, // 0x1403E1260
     { 0x2BE, "weaponisbeam" }, // 0x140B45040
-    { 0x2BF, "_func_2BF" }, // 0x140442A60
-    { 0x2C0, "_func_2C0" }, // 0x140B38EE0
-    { 0x2C1, "_func_2C1" }, // 0x140B39620
-    { 0x2C2, "_func_2C2" }, // 0x140B378D0
+    { 0x2BF, "navisstraightlinereachable3d" }, // 0x140442A60
+    { 0x2C0, "getcsplinepointtargetname" }, // 0x140B38EE0
+    { 0x2C1, "getcsplinepointtarget" }, // 0x140B39620
+    { 0x2C2, "getcsplinetargetname" }, // 0x140B378D0
     { 0x2C3, "getweaponloottable" }, // 0x140B46860
     { 0x2C4, "getweaponvariantindex" }, // 0x140B46CC0
-    { 0x2C5, "_func_2C5" }, // 0x140441110
-    { 0x2C6, "_func_2C6" }, // 0x140B363E0
-    { 0x2C7, "_func_2C7" }, // 0x140B42FC0
-    { 0x2C8, "_func_2C8" }, // 0x140B432B0
-    { 0x2C9, "_func_2C9" }, // 0x140B43650
-    { 0x2CA, "_func_2CA" }, // 0x140B366B0
-    { 0x2CB, "_func_2CB" }, // 0x140AF5320
-    { 0x2CC, "_func_2CC" }, // 0x140AF2E90
-    { 0x2CD, "_func_2CD" }, // 0x140B3EF20
-    { 0x2CE, "_func_2CE" }, // 0x140B5AC30
+    { 0x2C5, "areanynavvolumesloaded" }, // 0x140441110
+    { 0x2C6, "projectileintercept" }, // 0x140B363E0
+    { 0x2C7, "getgrenadefusetime" }, // 0x140B42FC0
+    { 0x2C8, "getgrenadefusetimeai" }, // 0x140B432B0
+    { 0x2C9, "getgrenadedamageradius" }, // 0x140B43650
+    { 0x2CA, "getcsplineidarray" }, // 0x140B366B0
+    { 0x2CB, "spawncovernode" }, // 0x140AF5320
+    { 0x2CC, "despawncovernode" }, // 0x140AF2E90
+    { 0x2CD, "spawnscriptitem" }, // 0x140B3EF20
+    { 0x2CE, "areworldweaponsloaded" }, // 0x140B5AC30
     { 0x2CF, "getmaxclients" }, // 0x140B3EC00
-    { 0x2D0, "_func_2D0" }, // 0x140C71C80
+    { 0x2D0, "settransientvisibility" }, // 0x140C71C80
     { 0x2D1, "vectortopitch" }, // 0x140B3AAD0
     { 0x2D2, "getserverhostname" }, // 0x140B53F10
     { 0x2D3, "anglestoleft" }, // 0x140B3B7B0
-    { 0x2D4, "_func_2D4" }, // 0x140B3F970
-    { 0x2D5, "_func_2D5" }, // nullptr
-    { 0x2D6, "_func_2D6" }, // 0x140B3F290
+    { 0x2D4, "weaponusesenergybullets" }, // 0x140B3F970
+    { 0x2D5, "testbrushedgesforgrapple" }, // nullptr
+    { 0x2D6, "spawncoverwall" }, // 0x140B3F290
     { 0x2D7, "generateaxisanglesfromforwardvector" }, // 0x140B396D0
-    { 0x2D8, "_func_2D8" }, // 0x1403E13A0
+    { 0x2D8, "btregistertree" }, // 0x1403E13A0
     { 0x2D9, "isenumvaluevalid" }, // 0x140B57450
-    { 0x2DA, "_func_2DA" }, // 0x140C71D30
-    { 0x2DB, "_func_2DB" }, // 0x140C717E0
-    { 0x2DC, "_func_2DC" }, // 0x140B4E3C0
-    { 0x2DD, "_func_2DD" }, // 0x140B4E6F0
-    { 0x2DE, "_func_2DE" }, // 0x140B4E8B0
+    { 0x2DA, "switchtransientset" }, // 0x140C71D30
+    { 0x2DB, "loadstartpointtransientset" }, // 0x140C717E0
+    { 0x2DC, "physics_setgravityragdollscalar" }, // 0x140B4E3C0
+    { 0x2DD, "physics_setgravitydynentscalar" }, // 0x140B4E6F0
+    { 0x2DE, "physics_setgravityparticlescalar" }, // 0x140B4E8B0
     { 0x2DF, "playfxontagsbetweenclients" }, // 0x140B38A70
     { 0x2E0, "playfxbetweenpoints" }, // 0x140B390B0
     { 0x2E1, "physics_volumecreate" }, // 0x140560D40
@@ -752,46 +752,46 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2E4, "_func_2E4" }, // 0x1404A2180
     { 0x2E5, "_func_2E5" }, // 0x1404A2300
     { 0x2E6, "_func_2E6" }, // 0x1404A23C0
-    { 0x2E7, "_func_2E7" }, // 0x140B397D0
-    { 0x2E8, "_func_2E8" }, // 0x140B39D60
+    { 0x2E7, "generateaxisanglesfromupvector" }, // 0x140B397D0
+    { 0x2E8, "anglelerpquat" }, // 0x140B39D60
     { 0x2E9, "_func_2E9" }, // 0x1404A2480
-    { 0x2EA, "_func_2EA" }, // 0x140B5B060
-    { 0x2EB, "_func_2EB" }, // 0x140B5B130
+    { 0x2EA, "loadworldweapons" }, // 0x140B5B060
+    { 0x2EB, "clearworldweapons" }, // 0x140B5B130
     { 0x2EC, "anglelerpquatfrac" }, // 0x140B3A430
     { 0x2ED, "_func_2ED" }, // 0x140B40850
     { 0x2EE, "_func_2EE" }, // 0x140B40A10
     { 0x2EF, "_func_2EF" }, // 0x140B41CD0
     { 0x2F0, "_func_2F0" }, // 0x140B42050
     { 0x2F1, "_func_2F1" }, // 0x140B35060
-    { 0x2F2, "_func_2F2" }, // 0x140B5B4B0
-    { 0x2F3, "_func_2F3" }, // 0x14040C540
-    { 0x2F4, "_func_2F4" }, // 0x14040DBB0
-    { 0x2F5, "_func_2F5" }, // 0x14040CE10
-    { 0x2F6, "_func_2F6" }, // 0x14040C6A0
+    { 0x2F2, "computeweaponclientloadout" }, // 0x140B5B4B0
+    { 0x2F3, "target_drawonradar" }, // 0x14040C540
+    { 0x2F4, "target_setradarcenter" }, // 0x14040DBB0
+    { 0x2F5, "target_offsetlocalspace" }, // 0x14040CE10
+    { 0x2F6, "target_drawrotated" }, // 0x14040C6A0
     { 0x2F7, "_func_2F7" }, // 0x1404A2540
-    { 0x2F8, "_func_2F8" }, // 0x1403E13C0
+    { 0x2F8, "getangleindices" }, // 0x1403E13C0
     { 0x2F9, "getangleindex" }, // 0x1403E1460
-    { 0x2FA, "_func_2FA" }, // 0x1403E14B0
-    { 0x2FB, "_func_2FB" }, // nullptr
+    { 0x2FA, "hasroomtoplaypeekout" }, // 0x1403E14B0
+    { 0x2FB, "getdobjcount" }, // nullptr
     { 0x2FC, "frontendscenecamerafade" }, // 0x140B35450
     { 0x2FD, "frontendscenecamerafov" }, // 0x140B35760
     { 0x2FE, "frontendscenegetactivesection" }, // 0x140B36110
     { 0x2FF, "frontendscenecameracharacters" }, // 0x140B35A90
     { 0x300, "_func_300" }, // 0x140441490
     { 0x301, "_func_301" }, // 0x1404416B0
-    { 0x302, "_func_302" }, // 0x140C716F0
+    { 0x302, "isspleveltransient" }, // 0x140C716F0
     { 0x303, "isgamebattlematch" }, // 0x140B5B570
-    { 0x304, "_func_304" }, // 0x140B4EC00
-    { 0x305, "_func_305" }, // 0x140497B70
+    { 0x304, "physics_setgravityitemscalar" }, // 0x140B4EC00
+    { 0x305, "setsettletime" }, // 0x140497B70
     { 0x306, "bbreportspawnfactors" }, // 0x140CD4CD0
     { 0x307, "bbreportspawntypes" }, // 0x140CD5110
     { 0x308, "bbreportspawnplayerdetails" }, // 0x140CD4FB0
-    { 0x309, "_func_309" }, // 0x140497BA0
-    { 0x30A, "_func_30A" }, // 0x140C701A0
-    { 0x30B, "_func_30B" }, // 0x140B47940
-    { 0x30C, "_func_30C" }, // 0x140B44410
+    { 0x309, "setstreamsynconnextlevel" }, // 0x140497BA0
+    { 0x30A, "setpreloadimageprimeset" }, // 0x140C701A0
+    { 0x30B, "animisleaf" }, // 0x140B47940
+    { 0x30C, "getweaponviewmodel" }, // 0x140B44410
     { 0x30D, "startpodium" }, // 0x140B54070
-    { 0x30E, "_func_30E" }, // 0x140B5B480
+    { 0x30E, "playcinematicforalllooping" }, // 0x140B5B480
     { 0x30F, "frontendscenecameracinematic" }, // 0x140B35E40
     { 0x310, "setcodcasterclientmatchdata" }, // 0x140B56BB0
     { 0x311, "getcodcasterclientmatchdata" }, // 0x140B56CF0
@@ -800,21 +800,21 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x314, "_func_314" }, // 0x140441150
     { 0x315, "_func_315" }, // 0x140441140
     { 0x316, "_func_316" }, // 0x140441160
-    { 0x317, "_func_317" }, // 0x140C71FE0
-    { 0x318, "_func_318" }, // 0x140C72040
-    { 0x319, "_func_319" }, // 0x140C71660
-    { 0x31A, "_func_31A" }, // 0x140B3DF60
+    { 0x317, "waitforalltransients" }, // 0x140C71FE0
+    { 0x318, "waitfortransient" }, // 0x140C72040
+    { 0x319, "isloadinganytransients" }, // 0x140C71660
+    { 0x31A, "getmlgsettings" }, // 0x140B3DF60
     { 0x31B, "_func_31B" }, // 0x140441450
     { 0x31C, "_func_31C" }, // 0x1404415E0
     { 0x31D, "setintrocameraactive" }, // 0x140B53F30
     { 0x31E, "removeallcorpses" }, // 0x140B55450
-    { 0x31F, "_func_31F" }, // 0x140B63470
-    { 0x320, "_func_320" }, // 0x140B634D0
+    { 0x31F, "objective_icon_backgroundtype" }, // 0x140B63470
+    { 0x320, "objective_icon_colortype" }, // 0x140B634D0
     { 0x321, "stopspectateplayer" }, // 0x140B5B7D0
     { 0x322, "weaponispreferreddrop" }, // 0x140B48110
-    { 0x323, "_func_323" }, // 0x140560F30
-    { 0x324, "_func_324" }, // 0x140561070
-    { 0x325, "_func_325" }, // 0x140561280
+    { 0x323, "physics_setbodylinvel" }, // 0x140560F30
+    { 0x324, "physics_setbodyangvel" }, // 0x140561070
+    { 0x325, "physics_setbodylinangvel" }, // 0x140561280
     { 0x326, "_func_326" }, // 0x140B5B8A0
 }};
 
