@@ -56,7 +56,10 @@ private:
     auto read_directive_line(token& tok) -> void;
     auto read_directive_include(token& hash, token& name) -> void;
     auto read_directive_inline(token& hash, token& name) -> void;
+    auto read_directive_insert(token& hash, token& name) -> void;
+    auto read_directive_using(token& hash, token& name) -> void;
     auto read_directive_usingtree(token& hash, token& name) -> void;
+    auto read_directive_namespace(token& hash, token& name) -> void;
     auto read_hashtoken(token& hash) -> void;
     auto read_hashtoken_animtree(token& hash, token& name) -> void;
     auto read_hashtoken_hashstr(token& hash, token& name) -> void;

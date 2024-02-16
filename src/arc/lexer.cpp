@@ -228,7 +228,12 @@ auto lexer::lex() -> token
                     return token{ token::ASSIGN, spacing_, loc_ };
 
                 advance();
-                return token{ token::EQ, spacing_, loc_ };
+
+                if (curr != '=' || !(ctx_->props() & props::size64))
+                    return token{ token::EQ, spacing_, loc_ };
+
+                advance();
+                return token{ token::SEQ, spacing_, loc_ };
             case '+':
                 if (curr != '+' && curr != '=')
                     return token{ token::PLUS, spacing_, loc_ };
@@ -291,7 +296,12 @@ auto lexer::lex() -> token
                     return token{ token::BANG, spacing_, loc_ };
 
                 advance();
-                return token{ token::NE, spacing_, loc_ };
+
+                if (curr != '=' || !(ctx_->props() & props::size64))
+                    return token{ token::NE, spacing_, loc_ };
+
+                advance();
+                return token{ token::SNE, spacing_, loc_ };
             case '~':
                 return token{ token::TILDE, spacing_, loc_ };
             case '<':

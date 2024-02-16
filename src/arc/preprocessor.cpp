@@ -19,7 +19,7 @@ preprocessor::preprocessor(context* ctx, std::string const& name, char const* da
     defines_.insert({ "__DATE__", { define::BUILTIN,/* false,*/ {}, {} }});
     defines_.insert({ "__TIME__", { define::BUILTIN,/* false,*/ {}, {} }});
     defines_.insert({ std::string(ctx->engine_name()), { define::BUILTIN,/* false,*/ {}, {} }});
-    directives_.reserve(15);
+    directives_.reserve(18);
     directives_.insert({ "if", directive::IF });
     directives_.insert({ "ifdef", directive::IFDEF });
     directives_.insert({ "ifndef", directive::IFNDEF });
@@ -37,6 +37,14 @@ preprocessor::preprocessor(context* ctx, std::string const& name, char const* da
     directives_.insert({ "include", directive::INCLUDE });
     directives_.insert({ "inline", directive::INLINE });
     directives_.insert({ "using_animtree", directive::USINGTREE });
+
+    if (ctx_->props() & props::size64)
+    {
+
+        directives_.insert({ "using", directive::USING });
+        directives_.insert({ "insert", directive::INSERT });
+        directives_.insert({ "namespace", directive::NAMESPACE });
+    }
 
     std::tm l_time = {};
     get_local_time(l_time);
@@ -244,8 +252,17 @@ auto preprocessor::read_directive(token& tok) -> void
             case directive::INLINE:
                 read_directive_inline(tok, next);
                 return;
+            case directive::INSERT:
+                read_directive_insert(tok, next);
+                return;
+            case directive::USING:
+                read_directive_using(tok, next);
+                return;
             case directive::USINGTREE:
                 read_directive_usingtree(tok, next);
+                return;
+            case directive::NAMESPACE:
+                read_directive_namespace(tok, next);
                 return;
             default:
                 break;
@@ -689,12 +706,36 @@ auto preprocessor::read_directive_inline(token& hash, token& name) -> void
     tokens_.push_front(token{ token::INLINE, spacing::none, name.pos });
 }
 
+auto preprocessor::read_directive_insert(token& hash, token& name) -> void
+{
+    if (skip_) return;
+
+    name.pos.begin = hash.pos.begin;
+    tokens_.push_front(token{ token::INSERT, spacing::none, name.pos });
+}
+
+auto preprocessor::read_directive_using(token& hash, token& name) -> void
+{
+    if (skip_) return;
+
+    name.pos.begin = hash.pos.begin;
+    tokens_.push_front(token{ token::USING, spacing::none, name.pos });
+}
+
 auto preprocessor::read_directive_usingtree(token& hash, token& name) -> void
 {
     if (skip_) return;
 
     name.pos.begin = hash.pos.begin;
     tokens_.push_front(token{ token::USINGTREE, spacing::none, name.pos });
+}
+
+auto preprocessor::read_directive_namespace(token& hash, token& name) -> void
+{
+    if (skip_) return;
+
+    name.pos.begin = hash.pos.begin;
+    tokens_.push_front(token{ token::NAMESPACE, spacing::none, name.pos });
 }
 
 auto preprocessor::read_hashtoken(token& tok) -> void

@@ -9,6 +9,7 @@
 #include "xsk/arc/context.hpp"
 #include "xsk/arc/preprocessor.hpp"
 #include "xsk/arc/parser.hpp"
+#include "xsk/arc/parser2.hpp"
 
 namespace xsk::arc
 {
@@ -46,12 +47,25 @@ auto source::parse_program(std::string const& name, u8 const* data, usize size) 
 {
     auto res = program::ptr{ nullptr };
     auto ppr = preprocessor{ ctx_, name, reinterpret_cast<char const*>(data), size };
-    auto psr = parser{ ctx_, ppr, res, 0 };
 
-    if (!psr.parse() && res != nullptr)
-        return res;
+    if (ctx_->props() & props::size64)
+    {
+        auto psr = parser2{ ctx_, ppr, res, 0 };
 
-    throw error{ std::format("an unknown error ocurred while parsing script {}", name) };   
+        if (!psr.parse() && res != nullptr)
+            return res;
+
+        throw error{ std::format("an unknown error ocurred while parsing script {}", name) };  
+    }
+    else
+    {
+        auto psr = parser{ ctx_, ppr, res, 0 };
+
+        if (!psr.parse() && res != nullptr)
+            return res;
+
+        throw error{ std::format("an unknown error ocurred while parsing script {}", name) }; 
+    } 
 }
 
 auto source::dump(assembly const& data) -> std::vector<u8>
