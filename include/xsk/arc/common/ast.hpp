@@ -116,6 +116,9 @@ struct node
         stmt_jmp_endswitch,
         stmt_jmp_dev,
         decl_empty,
+        decl_list,
+        decl_class,
+        decl_variable,
         decl_function,
         decl_usingtree,
         decl_namespace,
@@ -1296,6 +1299,38 @@ struct decl_empty : public decl
     XSK_ARC_AST_MAKE(decl_empty)
 };
 
+struct decl_list : public decl
+{
+    using ptr = std::unique_ptr<decl_list>;
+
+    std::vector<decl::ptr> list;
+
+    decl_list(location const& loc);
+    XSK_ARC_AST_MAKE(decl_list)
+};
+
+struct decl_class : public decl
+{
+    using ptr = std::unique_ptr<decl_class>;
+
+    expr_identifier::ptr name;
+    expr_identifier::ptr base;
+    decl_list::ptr body;
+
+    decl_class(location const& loc, expr_identifier::ptr name, expr_identifier::ptr base, decl_list::ptr body);
+    XSK_ARC_AST_MAKE(decl_class)
+};
+
+struct decl_variable : public decl
+{
+    using ptr = std::unique_ptr<decl_variable>;
+
+    expr_identifier::ptr name;
+
+    decl_variable(location const& loc, expr_identifier::ptr name);
+    XSK_ARC_AST_MAKE(decl_variable)
+};
+
 struct decl_function : public decl
 {
     using ptr = std::unique_ptr<decl_function>;
@@ -1324,9 +1359,9 @@ struct decl_namespace : public decl
 {
     using ptr = std::unique_ptr<decl_namespace>;
 
-    expr_string::ptr name;
+    expr_identifier::ptr name;
 
-    decl_namespace(location const& loc, expr_string::ptr name);
+    decl_namespace(location const& loc, expr_identifier::ptr name);
     XSK_ARC_AST_MAKE(decl_namespace)
 };
 

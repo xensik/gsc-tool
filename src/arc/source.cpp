@@ -229,6 +229,15 @@ auto source::dump_decl(decl const& dec) -> void
         case node::decl_function:
             dump_decl_function(dec.as<decl_function>());
             break;
+        case node::decl_variable:
+            dump_decl_variable(dec.as<decl_variable>());
+            break;
+        case node::decl_class:
+            dump_decl_class(dec.as<decl_class>());
+            break;
+        case node::decl_list:
+            dump_decl_list(dec.as<decl_list>());
+            break;
         case node::decl_empty:
             dump_decl_empty(dec.as<decl_empty>());
             break;
@@ -250,7 +259,7 @@ auto source::dump_decl_dev_end(decl_dev_end const&) -> void
 auto source::dump_decl_namespace(decl_namespace const& dec) -> void
 {
     std::format_to(std::back_inserter(buf_), "#namespace ");
-    dump_expr_string(*dec.name);
+    dump_expr_identifier(*dec.name);
     std::format_to(std::back_inserter(buf_), ";\n");
 }
 
@@ -291,6 +300,46 @@ auto source::dump_decl_function(decl_function const& dec) -> void
     std::format_to(std::back_inserter(buf_), ")\n");
     dump_stmt_comp(*dec.body);
     std::format_to(std::back_inserter(buf_), "\n");
+}
+
+auto source::dump_decl_variable(decl_variable const& dec) -> void
+{
+    std::format_to(std::back_inserter(buf_), "var ");
+    dump_expr_identifier(*dec.name);
+    std::format_to(std::back_inserter(buf_), ";");
+}
+
+auto source::dump_decl_class(decl_class const& dec) -> void
+{
+    indent_ = 0;
+
+    std::format_to(std::back_inserter(buf_), "class ");
+    dump_expr_identifier(*dec.name);
+
+    if (!dec.base->value.empty())
+    {
+        std::format_to(std::back_inserter(buf_), " : ", dec.base->value);
+    }
+
+    std::format_to(std::back_inserter(buf_), "\n");
+    std::format_to(std::back_inserter(buf_), "{: >{}}\n", "{", indent_ + 1);
+    dump_decl_list(*dec.body);
+    std::format_to(std::back_inserter(buf_), "\n{: >{}}", "}", indent_ + 1);
+    std::format_to(std::back_inserter(buf_), "\n");
+}
+
+auto source::dump_decl_list(decl_list const& dec) -> void
+{
+    indent_ += 4;
+
+    for (auto const& entry : dec.list)
+    {
+        std::format_to(std::back_inserter(buf_), "{: >{}}", "", indent_);
+        dump_decl(*entry);
+        std::format_to(std::back_inserter(buf_), "\n");
+    }
+
+    indent_ -= 4;
 }
 
 auto source::dump_decl_empty(decl_empty const&) -> void

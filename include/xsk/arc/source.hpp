@@ -39,6 +39,9 @@ private:
     auto dump_decl_namespace(decl_namespace const& dec) -> void;
     auto dump_decl_usingtree(decl_usingtree const& dec) -> void;
     auto dump_decl_function(decl_function const& dec) -> void;
+    auto dump_decl_variable(decl_variable const& dec) -> void;
+    auto dump_decl_class(decl_class const& dec) -> void;
+    auto dump_decl_list(decl_list const& dec) -> void;
     auto dump_decl_empty(decl_empty const& dec) -> void;
     auto dump_stmt(stmt const& stm) -> void;
     auto dump_stmt_empty(stmt_empty const& stm) -> void;

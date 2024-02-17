@@ -245,13 +245,16 @@ auto lexer::lex() -> token
 
                 return token{ token::PLUSEQ, spacing_, loc_ };
             case '-':
-                if (curr != '-' && curr != '=')
+                if (curr != '-' && curr != '=' && (curr != '>' && ctx_->props() & props::size64))
                     return token{ token::MINUS, spacing_, loc_ };
 
                 advance();
 
                 if (last == '-')
                     return token{ token::DEC, spacing_, loc_ };
+
+                if (last == '>')
+                    return token{ token::ARROW, spacing_, loc_ };
 
                 return token{ token::MINUSEQ, spacing_, loc_ };
             case '%':

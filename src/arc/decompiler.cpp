@@ -2005,7 +2005,7 @@ auto decompiler::process_function(decl_function& func) -> void
         if (namespace_ != func.space->value)
         {
             namespace_ = func.space->value;
-            program_->declarations.push_back(decl_namespace::make(func.loc(), expr_string::make(func.loc(), func.space->value)));
+            program_->declarations.push_back(decl_namespace::make(func.loc(), expr_identifier::make(func.loc(), func.space->value)));
         }
     }
 

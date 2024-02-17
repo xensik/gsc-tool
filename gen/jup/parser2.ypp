@@ -61,6 +61,10 @@ namespace xsk::arc
 %token USINGTREE        "#using_animtree"
 %token NAMESPACE        "#namespace"
 %token ANIMTREE         "#animtree"
+%token VAR              "var"
+%token CLASS            "class"
+%token CONSTRUCTOR      "constructor"
+%token DESTRUCTOR       "destructor"
 %token FUNCTION         "function"
 %token AUTOEXEC         "autoexec"
 %token CODECALL         "codecall"
@@ -184,6 +188,10 @@ namespace xsk::arc
 %type <decl_namespace::ptr>        decl_namespace
 %type <decl_usingtree::ptr>        decl_usingtree
 %type <decl_function::ptr>         decl_function
+%type <decl_variable::ptr>         decl_variable
+%type <decl_class::ptr>            decl_class
+%type <decl_list::ptr>             decl_list
+%type <expr_identifier::ptr>       opt_class_base
 %type <stmt::ptr>                  stmt
 %type <stmt::ptr>                  stmt_or_dev
 %type <stmt_list::ptr>             stmt_list
@@ -226,10 +234,12 @@ namespace xsk::arc
 %type <expr_complement::ptr>       expr_complement
 %type <expr_negate::ptr>           expr_negate
 %type <expr_not::ptr>              expr_not
+%type <expr_new::ptr>              expr_new
 %type <expr_call::ptr>             expr_call
 %type <expr_method::ptr>           expr_method
 %type <call::ptr>                  expr_function
 %type <call::ptr>                  expr_pointer
+%type <call::ptr>                  expr_member
 %type <expr_parameters::ptr>       expr_parameters
 %type <expr::ptr>                  expr_parameters_default
 %type <expr_arguments::ptr>        expr_arguments
@@ -306,11 +316,11 @@ namespace xsk::arc
 %precedence PREINC PREDEC
 %precedence POSTINC POSTDEC
 
-%start root
+%start main
 
 %%
 
-root
+main
     : program { ast = std::move($1); }
     |         { ast = program::make(@$); }
     ;
@@ -366,10 +376,11 @@ declaration
     | decl_namespace    { $$ = std::move($1); }
     | decl_usingtree    { $$ = std::move($1); }
     | decl_function     { $$ = std::move($1); }
+    | decl_class        { $$ = std::move($1); }
     ;
 
 decl_namespace
-    : NAMESPACE expr_string SEMICOLON
+    : NAMESPACE expr_identifier SEMICOLON
         { ppr.ban_header(@$); $$ = decl_namespace::make(@$, std::move($2)); }
     ;
 
@@ -387,6 +398,36 @@ decl_function
         { ppr.ban_header(@$); $$ = decl_function::make(@$, expr_identifier::make(@$, ""), std::move($3), std::move($5), std::move($7), export_flags::export_codecall); }
     | FUNCTION PRIVATE expr_identifier LPAREN expr_parameters RPAREN stmt_comp
         { ppr.ban_header(@$); $$ = decl_function::make(@$, expr_identifier::make(@$, ""), std::move($3), std::move($5), std::move($7), export_flags::export_private); }
+    ;
+
+decl_variable
+    : VAR expr_identifier SEMICOLON
+        { $$ = decl_variable::make(@$, std::move($2)); }
+    ;
+
+decl_class
+    : CLASS expr_identifier opt_class_base LBRACE decl_list RBRACE
+        { ppr.ban_header(@$); $$ = decl_class::make(@$, std::move($2), std::move($3), std::move($5)); }
+    ;
+
+decl_list
+    : decl_list CONSTRUCTOR LPAREN RPAREN stmt_comp
+        { $$ = std::move($1); $$->list.push_back(decl_function::make(@$, expr_identifier::make(@$, ""), expr_identifier::make(@$, "constructor"), expr_parameters::make(@$), std::move($5), export_flags::export_none)); }
+    | decl_list DESTRUCTOR LPAREN RPAREN stmt_comp
+        { $$ = std::move($1); $$->list.push_back(decl_function::make(@$, expr_identifier::make(@$, ""), expr_identifier::make(@$, "destructor"), expr_parameters::make(@$), std::move($5), export_flags::export_none)); }
+    | decl_list decl_function
+        { $$ = std::move($1); $$->list.push_back(std::move($2)); }
+    | decl_list decl_variable
+        { $$ = std::move($1); $$->list.push_back(std::move($2)); }
+    |
+        { $$ = decl_list::make(@$); }
+    ;
+
+opt_class_base
+    : COLON expr_identifier
+        { $$ = std::move($2); }
+    |
+        { $$ = expr_identifier::make(@$, ""); }
     ;
 
 stmt
@@ -714,6 +755,7 @@ expr_primitive
     : expr_complement        { $$ = std::move($1); }
     | expr_negate            { $$ = std::move($1); }
     | expr_not               { $$ = std::move($1); }
+    | expr_new               { $$ = std::move($1); }
     | expr_call              { $$ = std::move($1); }
     | expr_method            { $$ = std::move($1); }
     | expr_getnextarraykey   { $$ = std::move($1); }
@@ -780,9 +822,15 @@ expr_not
         { $$ = expr_not::make(@$, std::move($2)); }
     ;
 
+expr_new
+    : NEW expr_identifier LPAREN RPAREN
+        { $$ = expr_new::make(@$, std::move($2)); }
+    ;
+
 expr_call
     : expr_function                { $$ = expr_call::make(@$, std::move($1)); }
     | expr_pointer                 { $$ = expr_call::make(@$, std::move($1)); }
+    | expr_member                  { $$ = expr_call::make(@$, std::move($1)); }
     ;
 
 expr_method
@@ -794,6 +842,13 @@ expr_method
             $$ = expr_method::make(@$, std::move($1), std::move($2));
         }
     | expr_object expr_pointer
+        {
+            if ($1->loc().begin.line != $2->loc().begin.line)
+                error($2->loc(), "missing ';' ?");
+
+            $$ = expr_method::make(@$, std::move($1), std::move($2));
+        }
+    | expr_object expr_member
         {
             if ($1->loc().begin.line != $2->loc().begin.line)
                 error($2->loc(), "missing ';' ?");
@@ -818,6 +873,13 @@ expr_pointer
         { $$ = expr_pointer::make(@$, std::move($3), std::move($7), call::mode::normal); }
     | THREAD LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
         { $$ = expr_pointer::make(@$, std::move($4), std::move($8), call::mode::thread); }
+    ;
+
+expr_member
+    : LBRACKET LBRACKET expr RBRACKET RBRACKET ARROW expr_identifier LPAREN expr_arguments RPAREN
+        { $$ = expr_member::make(@$, std::move($3), std::move($7), std::move($9), call::mode::normal); }
+    | THREAD LBRACKET LBRACKET expr RBRACKET RBRACKET ARROW expr_identifier LPAREN expr_arguments RPAREN
+        { $$ = expr_member::make(@$, std::move($4), std::move($8), std::move($10), call::mode::thread); }
     ;
 
 expr_parameters
@@ -1306,6 +1368,10 @@ std::unordered_map<token::kind, parser2::token::token_kind_type> const tok_to_pa
     { token::NAMESPACE, parser2::token::NAMESPACE },
     { token::USINGTREE, parser2::token::USINGTREE },
     { token::ANIMTREE, parser2::token::ANIMTREE },
+    { token::VAR, parser2::token::VAR },
+    { token::CLASS, parser2::token::CLASS },
+    { token::CONSTRUCTOR, parser2::token::CONSTRUCTOR },
+    { token::DESTRUCTOR, parser2::token::DESTRUCTOR },
     { token::FUNCTION, parser2::token::FUNCTION },
     { token::AUTOEXEC, parser2::token::AUTOEXEC },
     { token::CODECALL, parser2::token::CODECALL },
@@ -1370,6 +1436,10 @@ std::unordered_map<token::kind, parser2::token::token_kind_type> const tok_to_pa
 
 std::unordered_map<std::string_view, parser2::token::token_kind_type> const keyword_map2
 {{
+    { "var", parser2::token::VAR },
+    { "class", parser2::token::CLASS },
+    { "constructor", parser2::token::CONSTRUCTOR },
+    { "destructor", parser2::token::DESTRUCTOR },
     { "function", parser2::token::FUNCTION },
     { "autoexec", parser2::token::AUTOEXEC },
     { "codecall", parser2::token::CODECALL },
