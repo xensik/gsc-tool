@@ -1,6 +1,4 @@
-FROM alpine:3.19
-
-RUN apk add --no-cache gcompat libstdc++
+FROM ubuntu:24.04
 
 COPY --chmod=755 ./linux-x64-release/gsc-tool /usr/local/bin/
 
