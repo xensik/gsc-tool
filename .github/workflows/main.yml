@@ -249,7 +249,7 @@ jobs:
             xensik/gsc-tool
             ghcr.io/xensik/gsc-tool
           tags: |
-            ${{ github.ref == 'refs/tags/' && github.ref_name || github.ref }}
+            ${{ github.ref_name }}
             latest
 
       - name: Build and Push Docker Image
