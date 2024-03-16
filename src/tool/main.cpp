@@ -45,6 +45,8 @@ enum class mode { _, assemble, disassemble, compile, decompile, parse, rename };
 enum class game { _, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9, jup };
 enum class mach { _, pc, ps3, ps4, ps5, xb2, xb3, xb4, wiiu };
 
+auto dry_run = false;
+
 std::unordered_map<std::string_view, fenc> const gsc_exts =
 {
     { ".gsc", fenc::source },
@@ -180,8 +182,13 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
             if (zonetool)
             {
                 auto path = fs::path{ "assembled" } / rel;
-                utils::file::save(path, std::get<0>(outbin).data, std::get<0>(outbin).size);
-                utils::file::save(path.replace_extension(".cgsc.stack"), std::get<1>(outbin).data, std::get<1>(outbin).size);
+
+                if (!dry_run)
+                {
+                    utils::file::save(path, std::get<0>(outbin).data, std::get<0>(outbin).size);
+                    utils::file::save(path.replace_extension(".cgsc.stack"), std::get<1>(outbin).data, std::get<1>(outbin).size);
+                }
+
                 std::cout << std::format("assembled {}\n", rel.generic_string());
             }
             else
@@ -201,7 +208,10 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
                 script.bytecodeLen = static_cast<u32>(script.bytecode.size());
 
                 auto result = script.serialize();
-                utils::file::save(fs::path{ "assembled" } / rel, result);
+
+                if (!dry_run)
+                    utils::file::save(fs::path{ "assembled" } / rel, result);
+
                 std::cout << std::format("assembled {}\n", rel.generic_string());
             }
         }
@@ -249,7 +259,9 @@ auto disassemble_file(game game, mach mach, fs::path file, fs::path rel) -> resu
         auto outasm = contexts[game][mach]->disassembler().disassemble(script, stack);
         auto outsrc = contexts[game][mach]->source().dump(*outasm);
 
-        utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
+        if (!dry_run)
+            utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
+
         std::cout << std::format("disassembled {}\n", rel.generic_string());
         return result::success;
     }
@@ -275,8 +287,13 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
             if (zonetool)
             {
                 auto path = fs::path{ "compiled" } / rel;
-                utils::file::save(path, std::get<0>(outbin).data, std::get<0>(outbin).size);
-                utils::file::save(path.replace_extension(".cgsc.stack"), std::get<1>(outbin).data, std::get<1>(outbin).size);
+
+                if (!dry_run)
+                {
+                    utils::file::save(path, std::get<0>(outbin).data, std::get<0>(outbin).size);
+                    utils::file::save(path.replace_extension(".cgsc.stack"), std::get<1>(outbin).data, std::get<1>(outbin).size);
+                }
+
                 std::cout << std::format("compiled {}\n", rel.generic_string());
             }
             else
@@ -296,12 +313,17 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
                 script.bytecodeLen = static_cast<std::uint32_t>(script.bytecode.size());
 
                 auto result = script.serialize();
-                utils::file::save(fs::path{ "compiled" } / rel, result);
+
+                if (!dry_run)
+                    utils::file::save(fs::path{ "compiled" } / rel, result);
+
                 std::cout << std::format("compiled {}\n", rel.generic_string());
 
                 if ((contexts[game][mach]->build() & build::dev_maps) != build::prod)
                 {
-                    utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension(".gscmap"), std::get<2>(outbin).data, std::get<2>(outbin).size);
+                    if (!dry_run)
+                        utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension(".gscmap"), std::get<2>(outbin).data, std::get<2>(outbin).size);
+
                     std::cout << std::format("saved developer map {}\n", rel.generic_string());
                 }
             }
@@ -351,7 +373,9 @@ auto decompile_file(game game, mach mach, fs::path file, fs::path rel) -> result
         auto outast = contexts[game][mach]->decompiler().decompile(*outasm);
         auto outsrc = contexts[game][mach]->source().dump(*outast);
 
-        utils::file::save(fs::path{ "decompiled" } / rel, outsrc);
+        if (!dry_run)
+            utils::file::save(fs::path{ "decompiled" } / rel, outsrc);
+
         std::cout << std::format("decompiled {}\n", rel.generic_string());
         return result::success;
     }
@@ -371,7 +395,10 @@ auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
         auto data = utils::file::read(file);
 
         auto prog = contexts[game][mach]->source().parse_program(file.string(), data);
-        utils::file::save(fs::path{ "parsed" } / rel, contexts[game][mach]->source().dump(*prog));
+
+        if (!dry_run)
+            utils::file::save(fs::path{ "parsed" } / rel, contexts[game][mach]->source().dump(*prog));
+
         std::cout << std::format("parsed {}\n", rel.generic_string());
         return result::success;
     }
@@ -421,13 +448,19 @@ auto rename_file(game game, mach mach, fs::path file, fs::path rel) -> result
         }
 
         auto data = utils::file::read(file);
-        utils::file::save(fs::path{ "renamed" } / rel, data);
+
+        if (!dry_run)
+            utils::file::save(fs::path{ "renamed" } / rel, data);
+
         std::cout << std::format("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
 
         if (zt)
         {
             auto stack = utils::file::read(file.replace_extension(".cgsc.stack"));
-            utils::file::save(fs::path{ "renamed" } / rel.replace_extension(".cgsc.stack"), stack);
+
+            if (!dry_run)
+                utils::file::save(fs::path{ "renamed" } / rel.replace_extension(".cgsc.stack"), stack);
+
             std::cout << std::format("renamed {} -> {}\n", file.filename().generic_string(), rel.generic_string());
         }
 
@@ -751,7 +784,9 @@ auto assemble_file(game game, mach mach, fs::path const& file, fs::path rel) -> 
         auto outasm = contexts[game][mach]->source().parse_assembly(data);
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
-        utils::file::save(fs::path{ "assembled" } / rel, outbin.first.data, outbin.first.size);
+        if (!dry_run)
+            utils::file::save(fs::path{ "assembled" } / rel, outbin.first.data, outbin.first.size);
+
         std::cout << std::format("assembled {}\n", rel.generic_string());
         return result::success;
     }
@@ -775,7 +810,9 @@ auto disassemble_file(game game, mach mach, fs::path const& file, fs::path rel) 
         auto outasm = contexts[game][mach]->disassembler().disassemble(data);
         auto outsrc = contexts[game][mach]->source().dump(*outasm);
 
-        utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
+        if (!dry_run)
+            utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
+
         std::cout << std::format("disassembled {}\n", rel.generic_string());
         return result::success;
     }
@@ -806,12 +843,16 @@ auto compile_file(game game, mach mach, fs::path const& file, fs::path rel) -> r
         auto outasm = contexts[game][mach]->compiler().compile(file.string(), data);
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
-        utils::file::save(fs::path{ "compiled" } / rel, outbin.first.data, outbin.first.size);
+        if (!dry_run)
+            utils::file::save(fs::path{ "compiled" } / rel, outbin.first.data, outbin.first.size);
+
         std::cout << std::format("compiled {}\n", rel.generic_string());
 
         if ((contexts[game][mach]->build() & build::dev_maps) != build::prod)
         {
-            utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension((rel.extension().string().starts_with(".gsc") ? ".gscmap" : ".cscmap")), outbin.second.data, outbin.second.size);
+            if (!dry_run)
+                utils::file::save(fs::path{ "compiled" } / fs::path{ "developer_maps" } / rel.replace_extension((rel.extension().string().starts_with(".gsc") ? ".gscmap" : ".cscmap")), outbin.second.data, outbin.second.size);
+
             std::cout << std::format("saved developer map {}\n", rel.generic_string());
         }
 
@@ -839,7 +880,9 @@ auto decompile_file(game game, mach mach, fs::path const& file, fs::path rel) ->
         auto outsrc = contexts[game][mach]->decompiler().decompile(*outasm);
         auto output = contexts[game][mach]->source().dump(*outsrc);
 
-        utils::file::save(fs::path{ "decompiled" } / rel, output);
+        if (!dry_run)
+            utils::file::save(fs::path{ "decompiled" } / rel, output);
+
         std::cout << std::format("decompiled {}\n", rel.generic_string());
         return result::success;
     }
@@ -868,7 +911,10 @@ auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
         }
 
         auto prog = contexts[game][mach]->source().parse_program(file.string(), data);
-        utils::file::save(fs::path{ "parsed" } / rel, contexts[game][mach]->source().dump(*prog));
+
+        if (!dry_run)
+            utils::file::save(fs::path{ "parsed" } / rel, contexts[game][mach]->source().dump(*prog));
+
         std::cout << std::format("parsed {}\n", rel.generic_string());
         return result::success;
     }
@@ -1151,6 +1197,7 @@ auto main(u32 argc, char** argv) -> result
         ("g,game", "[REQUIRED] one of: iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9, jup", cxxopts::value<std::string>(), "<game>")
         ("s,system", "[REQUIRED] one of: pc, ps3, ps4, ps5, xb2 (360), xb3 (One), xb4 (Series X|S), wiiu", cxxopts::value<std::string>(), "<system>")
         ("p,path", "File or directory to process.", cxxopts::value<std::string>())
+        ("y,dry", "Dry run (do not write files).", cxxopts::value<bool>()->implicit_value("true")
         ("d,dev", "Enable developer mode (dev blocks & generate bytecode map).", cxxopts::value<bool>()->implicit_value("true"))
         ("z,zonetool", "Enable zonetool mode (use .cgsc files).", cxxopts::value<bool>()->implicit_value("true"))
         ("h,help", "Display help.")
@@ -1208,6 +1255,7 @@ auto main(u32 argc, char** argv) -> result
         auto mach = mach::_;
         auto dev = result["dev"].as<bool>();
         gsc::zonetool = result["zonetool"].as<bool>();
+        dry_run = result["dry"].as<bool>();
 
         if(!parse_mode(mode_arg, mode))
         {
