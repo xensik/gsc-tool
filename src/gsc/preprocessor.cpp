@@ -10,9 +10,10 @@
 namespace xsk::gsc
 {
 
-preprocessor::preprocessor(context* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, curr_expr_{ 0 }, expand_{ 0 }, skip_{ false }
+preprocessor::preprocessor(context* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, curr_expr_{ 0 }, expand_{ 0 }, skip_{ 0 }
 {
     lexer_.push(lexer{ ctx, name, data, size });
+    indents_.push({});
     defines_.reserve(5);
     defines_.insert({ "__FILE__", { define::BUILTIN,/* false,*/ {}, {} }});
     defines_.insert({ "__LINE__", { define::BUILTIN,/* false,*/ {}, {} }});
@@ -108,6 +109,7 @@ auto preprocessor::push_header(std::string const& file) -> void
         auto data = ctx_->load_header(name);
 
         includes_.push_back(*std::get<0>(data));
+        indents_.push({});
         lexer_.push(lexer{ ctx_, *std::get<0>(data), std::get<1>(data), std::get<2>(data) });
     }
     catch (std::exception const& e)
@@ -121,6 +123,7 @@ auto preprocessor::pop_header() -> void
     if (lexer_.size() > 1)
     {
         lexer_.pop();
+        indents_.pop();
         includes_.erase(includes_.end() - 1);
     }
     else
@@ -164,13 +167,13 @@ auto preprocessor::read_token() -> token
 
     if (tok.type == token::EOS)
     {
-        if (!indents_.empty())
+        if (!indents_.top().empty())
         {
             skip_ = 0;
             // clear indents
             throw ppr_error(tok.pos, "missing #endif");
         }
-        
+
         if (lexer_.size() > 1)
         {
             pop_header();
@@ -258,7 +261,7 @@ auto preprocessor::read_directive(token& tok) -> void
 auto preprocessor::read_directive_if(token&) -> void
 {
     auto skip = !evaluate();
-    indents_.push({ directive::IF, skip, !skip });
+    indents_.top().push({ directive::IF, skip, !skip });
     skip_ += skip ? 1 : 0;
 }
 
@@ -283,7 +286,7 @@ auto preprocessor::read_directive_ifdef(token&) -> void
         skip = !defines_.contains(name);
     }
 
-    indents_.push({ directive::IFDEF, skip, !skip });
+    indents_.top().push({ directive::IFDEF, skip, !skip });
     skip_ += skip ? 1 : 0;
 }
 
@@ -308,19 +311,19 @@ auto preprocessor::read_directive_ifndef(token&) -> void
         skip = defines_.contains(name);
     }
 
-    indents_.push({ directive::IFNDEF, skip, !skip });
+    indents_.top().push({ directive::IFNDEF, skip, !skip });
     skip_ += skip ? 1 : 0;
 }
 
 auto preprocessor::read_directive_elif(token& tok) -> void
 {
-    if (indents_.empty())
+    if (indents_.top().empty())
     {
         throw ppr_error(tok.pos, "#elif without #if");
     }
 
-    auto dir = indents_.top();
-    indents_.pop();
+    auto dir = indents_.top().top();
+    indents_.top().pop();
     skip_ -= dir.skip ? 1 : 0;
 
     if (dir.type == directive::ELSE)
@@ -329,19 +332,19 @@ auto preprocessor::read_directive_elif(token& tok) -> void
     }
 
     auto skip = !evaluate() || dir.exec;
-    indents_.push({ directive::ELIF, skip, !skip || dir.exec });
+    indents_.top().push({ directive::ELIF, skip, !skip || dir.exec });
     skip_ += skip ? 1 : 0;
 }
 
 auto preprocessor::read_directive_elifdef(token& tok) -> void
 {
-    if (indents_.empty())
+    if (indents_.top().empty())
     {
         throw ppr_error(tok.pos, "#elifdef without #if");
     }
 
-    auto dir = indents_.top();
-    indents_.pop();
+    auto dir = indents_.top().top();
+    indents_.top().pop();
     skip_ -= dir.skip ? 1 : 0;
 
     if (dir.type == directive::ELSE)
@@ -368,19 +371,19 @@ auto preprocessor::read_directive_elifdef(token& tok) -> void
         skip = !defines_.contains(name) || dir.exec;
     }
 
-    indents_.push({ directive::ELIFDEF, skip, !skip || dir.exec });
+    indents_.top().push({ directive::ELIFDEF, skip, !skip || dir.exec });
     skip_ += skip ? 1 : 0;
 }
 
 auto preprocessor::read_directive_elifndef(token& tok) -> void
 {
-    if (indents_.empty())
+    if (indents_.top().empty())
     {
         throw ppr_error(tok.pos, "#elifdef without #if");
     }
 
-    auto dir = indents_.top();
-    indents_.pop();
+    auto dir = indents_.top().top();
+    indents_.top().pop();
     skip_ -= dir.skip ? 1 : 0;
 
     if (dir.type == directive::ELSE)
@@ -407,7 +410,7 @@ auto preprocessor::read_directive_elifndef(token& tok) -> void
         skip = defines_.contains(name) || dir.exec;
     }
 
-    indents_.push({ directive::ELIFNDEF, skip, !skip || dir.exec });
+    indents_.top().push({ directive::ELIFNDEF, skip, !skip || dir.exec });
     skip_ += skip ? 1 : 0;
 }
 
@@ -416,13 +419,13 @@ auto preprocessor::read_directive_else(token& tok) -> void
     auto next = read_token();
     expect(next, token::NEWLINE);
 
-    if (indents_.empty())
+    if (indents_.top().empty())
     {
         throw ppr_error(tok.pos, "#else without #if");
     }
 
-    auto dir = indents_.top();
-    indents_.pop();
+    auto dir = indents_.top().top();
+    indents_.top().pop();
     skip_ -= dir.skip ? 1 : 0;
 
     if (dir.type == directive::ELSE)
@@ -431,7 +434,7 @@ auto preprocessor::read_directive_else(token& tok) -> void
     }
 
     auto skip = dir.exec;
-    indents_.push({ directive::ELSE, skip, dir.exec });
+    indents_.top().push({ directive::ELSE, skip, dir.exec });
     skip_ += skip ? 1 : 0;
 }
 
@@ -440,13 +443,13 @@ auto preprocessor::read_directive_endif(token& tok) -> void
     auto next = read_token();
     expect(next, token::NEWLINE);
 
-    if (indents_.empty())
+    if (indents_.top().empty())
     {
         throw ppr_error(tok.pos, "#endif without #if");
     }
 
-    auto dir = indents_.top();
-    indents_.pop();
+    auto dir = indents_.top().top();
+    indents_.top().pop();
     skip_ -= dir.skip ? 1 : 0;
 }
 
@@ -655,21 +658,29 @@ auto preprocessor::read_directive_undef(token& tok) -> void
 
 auto preprocessor::read_directive_pragma(token& tok) -> void
 {
+    if (skip_) return skip_line();
+
     throw ppr_error(tok.pos, "#pragma directive not supported");
 }
 
 auto preprocessor::read_directive_warning(token& tok) -> void
 {
+    if (skip_) return skip_line();
+
     throw ppr_error(tok.pos, "#warning directive not supported");
 }
 
 auto preprocessor::read_directive_error(token& tok) -> void
 {
+    if (skip_) return skip_line();
+
     throw ppr_error(tok.pos, "#error directive not supported");
 }
 
 auto preprocessor::read_directive_line(token& tok) -> void
 {
+    if (skip_) return skip_line();
+
     throw ppr_error(tok.pos, "#line directive not supported");
 }
 
@@ -791,7 +802,9 @@ auto preprocessor::expand(token& tok, define& def) -> void
                 {
                     if (def.args[n].data == name)
                     {
-                        for (auto t : args.at(n)) exp.push_back(t);
+                        for (auto t : args.at(n))
+                            exp.push_back(token{ t.type, t.space, def.exp[i].pos, t.data });
+
                         break;
                     }
                 }

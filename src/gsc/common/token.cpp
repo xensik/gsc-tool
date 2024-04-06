@@ -58,10 +58,10 @@ auto token::to_string() -> std::string
         case token::ELLIPSIS: return "...";
         case token::SEMICOLON: return ";";
         case token::DOUBLECOLON: return "::";
-        case token::LBRACKET: return "{";
-        case token::RBRACKET: return "}";
-        case token::LBRACE: return "[";
-        case token::RBRACE: return "]";
+        case token::LBRACKET: return "[";
+        case token::RBRACKET: return "]";
+        case token::LBRACE: return "{";
+        case token::RBRACE: return "}";
         case token::LPAREN: return "(";
         case token::RPAREN: return ")";
         case token::NAME: return data;
