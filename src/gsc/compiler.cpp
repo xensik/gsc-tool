@@ -132,7 +132,7 @@ auto compiler::emit_decl_function(decl_function const& func) -> void
     function_ = function::make();
     function_->index = index_;
     function_->name = func.name->value;
-    function_->id = ctx_->token_id(function_->name);
+    function_->id = (ctx_->props() & props::hash) ? 0 : ctx_->token_id(function_->name);
 
     process_function(func);
 
