@@ -47,7 +47,7 @@ jobs:
           lfs: false
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.3.1
+        uses: microsoft/setup-msbuild@v2
 
       - name: Add premake5 to PATH
         uses: abel0b/setup-premake@v2.3
@@ -64,7 +64,7 @@ jobs:
         run: msbuild /m /v:minimal /p:Configuration=${{matrix.config}} /p:Platform=${{matrix.platform}} build/gsc-tool.sln
 
       - name: Upload ${{matrix.arch}} ${{matrix.config}} binaries
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.3.3
         with:
           name: windows-${{matrix.arch}}-${{matrix.config}}
           path: |
@@ -116,7 +116,7 @@ jobs:
           make config=${{matrix.config}}_${{matrix.arch}} -j$(sysctl -n hw.logicalcpu)
 
       - name: Upload ${{matrix.arch}} ${{matrix.config}} binaries
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.3.3
         with:
           name: macos-${{matrix.arch}}-${{matrix.config}}
           path: |
@@ -145,7 +145,7 @@ jobs:
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 17
+          sudo ./llvm.sh 18
 
       # - name: Install dependencies (arm64)
       #   if: matrix.arch == 'arm64'
@@ -167,11 +167,11 @@ jobs:
           pushd build
           make config=${{matrix.config}}_${{matrix.arch}} -j$(nproc)
         env:
-         CC: clang-17
-         CXX: clang++-17
+         CC: clang-18
+         CXX: clang++-18
 
       - name: Upload ${{matrix.arch}} ${{matrix.config}} binaries
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.3.3
         with:
           name: linux-${{matrix.arch}}-${{matrix.config}}
           path: |
@@ -192,7 +192,7 @@ jobs:
           sparse-checkout-cone-mode: false
 
       - name: Download Binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
 
       - name: Compress Binaries
         run: |
