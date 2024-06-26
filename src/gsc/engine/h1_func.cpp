@@ -757,7 +757,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2E9, "getinventoryitemtype" },
     { 0x2EA, "getweaponmodelbounds" },
     { 0x2EB, "weaponitemplayidleanim" },
-    { 0x2EC, "_func_2EC" },
+    { 0x2EC, "getrankforxp" },
     { 0x2ED, "getstaticmodelcount" },
     { 0x2EE, "getstaticmodelname" },
     { 0x2EF, "getstaticmodelbounds" },
@@ -769,25 +769,25 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2F5, "getentitymodelname" },
     { 0x2F6, "getentitymodelbounds" },
     { 0x2F7, "findentitywithmodelindex" },
-    { 0x2F8, "_func_2F8" },
-    { 0x2F9, "_func_2F9" },
-    { 0x2FA, "_func_2FA" },
-    { 0x2FB, "_func_2FB" },
-    { 0x2FC, "_func_2FC" },
-    { 0x2FD, "_func_2FD" },
-    { 0x2FE, "_func_2FE" },
-    { 0x2FF, "_func_2FF" },
-    { 0x300, "_func_300" },
-    { 0x301, "_func_301" },
-    { 0x302, "_func_302" },
-    { 0x303, "_func_303" },
-    { 0x304, "_func_304" },
-    { 0x305, "_func_305" },
+    { 0x2F8, "getattachmentsforweapon" },
+    { 0x2F9, "getcacplayerdata" },
+    { 0x2FA, "getcacplayerdataforgroup" },
+    { 0x2FB, "isweaponsilenced" },
+    { 0x2FC, "_func_2FC" }, // related to comscore.proto ( comscore tracking )
+    { 0x2FD, "_func_2FD" }, // related to recording comscore events
+    { 0x2FE, "_func_2FE" }, // save comscore event
+    { 0x2FF, "_func_2FF" }, 
+    { 0x300, "_func_300" }, // nullsub - but called with controller
+    { 0x301, "_func_301" }, // nullsub
+    { 0x302, "getnumberofclients" },
+    { 0x303, "_func_303" }, // same as tablelookup?
+    { 0x304, "_func_304" }, // same as TableLookupRowNum?
+    { 0x305, "_func_305" }, // currency ( depot/codpoints )
     { 0x306, "_func_306" },
     { 0x307, "_func_307" },
-    { 0x308, "_func_308" },
-    { 0x309, "_func_309" },
-    { 0x30A, "_func_30A" },
+    { 0x308, "setplayerdataforgroup" },
+    { 0x309, "inpartywithotherplayers" },
+    { 0x30A, "getglasspieces" },
 }};
 
 } // namespace xsk::gsc::h1
