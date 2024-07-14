@@ -283,8 +283,8 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
     if ((ctx_->build() & build::dev_maps) != build::prod)
     {
         devmap_.write<u32>(script_.pos());
-        devmap_.write<u16>(inst.pos.line);
-        devmap_.write<u16>(inst.pos.column);
+        devmap_.write<u16>(static_cast<u16>(inst.pos.line));
+        devmap_.write<u16>(static_cast<u16>(inst.pos.column));
         devmap_count_++;
     }
 
