@@ -160,8 +160,8 @@ enum class opcode : u8
 
 struct sourcepos
 {
-    u32 line;
-    u32 column;
+    i32 line;
+    i32 column;
 };
 
 struct instruction
