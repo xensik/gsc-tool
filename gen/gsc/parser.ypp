@@ -920,6 +920,8 @@ expr_animtree
 expr_identifier_nosize
     : IDENTIFIER
         { $$ = expr_identifier::make(@$, $1); };
+    | WAIT
+        { $$ = expr_identifier::make(@$, "wait"); };
     ;
 
 expr_identifier
