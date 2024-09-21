@@ -2618,6 +2618,7 @@ auto compiler::process_stmt_switch(stmt_switch const& stm, scope& scp) -> void
         if (default_ctx->abort == scope::abort_none)
         {
             break_blks_.push_back(default_ctx);
+            childs.push_back(default_ctx);
 
             if (scp.abort == scope::abort_none)
                 scp.abort = abort;
