@@ -1562,7 +1562,10 @@ auto source::dump_expr_classes(expr_classes const&) -> void
 
 auto source::dump_expr_animation(expr_animation const& exp) -> void
 {
-    std::format_to(std::back_inserter(buf_), "%{}", exp.value);
+    if (exp.space != "")
+        std::format_to(std::back_inserter(buf_), "%{}::{}", exp.space, exp.value);
+    else
+        std::format_to(std::back_inserter(buf_), "%{}", exp.value);
 }
 
 auto source::dump_expr_animtree(expr_animtree const&) -> void

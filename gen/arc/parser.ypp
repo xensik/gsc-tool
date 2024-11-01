@@ -992,7 +992,9 @@ expr_level
 
 expr_animation
     : MOD IDENTIFIER %prec ANIMREF
-        { $$ = expr_animation::make(@$, $2); };
+        { $$ = expr_animation::make(@$, "", $2); };
+    | MOD IDENTIFIER DOUBLECOLON IDENTIFIER %prec ANIMREF
+        { $$ = expr_animation::make(@$, $2, $4); };
     ;
 
 expr_animtree

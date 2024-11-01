@@ -241,23 +241,40 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_GetAnimation:
         {
             auto found = false;
+            auto space = ""s;
 
             for (auto i = program_->declarations.rbegin(); i != program_->declarations.rend(); i++)
             {
                 if ((*i)->is<decl_usingtree>())
                 {
                     found = (*i)->as<decl_usingtree>().name->value == inst.data[0];
+                    space = (*i)->as<decl_usingtree>().name->value;
                     break;
                 }
             }
 
             if (!found)
             {
-                auto dec = decl_usingtree::make(loc, expr_string::make(loc, inst.data[0]));
-                program_->declarations.push_back(std::move(dec));
+                if (space == "")
+                {
+                    auto dec = decl_usingtree::make(loc, expr_string::make(loc, inst.data[0]));
+                    program_->declarations.push_back(std::move(dec));
+                    stack_.push(expr_animation::make(loc, "", inst.data[1]));
+                }
+                else
+                {
+                    stack_.push(expr_animation::make(loc, inst.data[0], inst.data[1]));
+                }
+            }
+            else if (space == inst.data[0])
+            {
+                stack_.push(expr_animation::make(loc, "", inst.data[1]));
+            }
+            else
+            {
+                stack_.push(expr_animation::make(loc, inst.data[0], inst.data[1]));
             }
 
-            stack_.push(expr_animation::make(loc, inst.data[1]));
             break;
         }
         case opcode::OP_GetFunction:
@@ -1462,7 +1479,9 @@ auto decompiler::decompile_devblocks(stmt_list& stm) -> void
 
                 if (st->as<stmt_expr>().value->is<expr_call>() && st->as<stmt_expr>().value->as<expr_call>().value->is<expr_function>())
                 {
-                    if (st->as<stmt_expr>().value->as<expr_call>().value->as<expr_function>().name->value == "assert")
+                    auto func = st->as<stmt_expr>().value->as<expr_call>().value->as<expr_function>().name->value;
+
+                    if (func == "assert" || func == "assertmsg")
                     {
                         stm.list.insert(stm.list.begin() + i, std::move(list_stmt->list.at(0)));
                         continue;

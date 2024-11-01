@@ -1167,7 +1167,7 @@ auto compiler::emit_expr_call_function(expr_function const& exp, bool is_stmt) -
     bool as_dev = false;
     std::string end;
 
-    if (!developer_thread_ && is_stmt && exp.name->value == "assert")
+    if (!developer_thread_ && is_stmt && (exp.name->value == "assert" || exp.name->value == "assertmsg"))
     {
         as_dev = true;
         developer_thread_ = true;
@@ -1804,12 +1804,15 @@ auto compiler::emit_expr_vector(expr_vector const& exp) -> void
 
 auto compiler::emit_expr_animation(expr_animation const& exp) -> void
 {
-    if (animtree_.empty())
+    if (exp.space == "" && animtree_.empty())
     {
         throw comp_error(exp.loc(), "trying to use animation without specified using animtree");
     }
 
-    emit_opcode(opcode::OP_GetAnimation, { animtree_, exp.value });
+    if (exp.space != "")
+        emit_opcode(opcode::OP_GetAnimation, { exp.space, exp.value });
+    else
+        emit_opcode(opcode::OP_GetAnimation, { animtree_, exp.value });
 }
 
 auto compiler::emit_expr_animtree(expr_animtree const& exp) -> void

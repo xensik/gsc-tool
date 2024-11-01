@@ -505,7 +505,7 @@ expr_animtree::expr_animtree(location const& loc) : expr{ type::expr_animtree, l
 {
 }
 
-expr_animation::expr_animation(location const& loc, std::string const& value) : expr{ type::expr_animation, loc }, value{ value }
+expr_animation::expr_animation(location const& loc, std::string const& space, std::string const& value) : expr{ type::expr_animation, loc }, space{ space }, value{ value }
 {
 }
 
@@ -986,7 +986,7 @@ auto operator==(expr_animtree const&, expr_animtree const&) -> bool
 
 auto operator==(expr_animation const& lhs, expr_animation const& rhs) -> bool
 {
-    return lhs.value == rhs.value;
+    return lhs.space == rhs.space && lhs.value == rhs.value;
 }
 
 auto operator==(expr_classes const&, expr_classes const&) -> bool
