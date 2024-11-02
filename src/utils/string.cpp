@@ -93,45 +93,24 @@ auto string::to_code(std::string const& input) -> std::string
 
 auto string::to_literal(std::string const& input) -> std::string
 {
-    auto data = std::string{ input.begin(), input.end() };
-    auto pos = usize{ 0 };
+    std::ostringstream oss;
+    oss << '\"';
 
-    while ((pos = data.find('\n')) != std::string::npos)
+    for (char ch : input)
     {
-        data = data.replace(pos, 1, "n");
-        data.insert(data.begin() + pos, '\\');
-    }
-
-    while ((pos = data.find('\t')) != std::string::npos)
-    {
-        data = data.replace(pos, 1, "t");
-        data.insert(data.begin() + pos, '\\');
-    }
-
-    while ((pos = data.find('\r')) != std::string::npos)
-    {
-        data = data.replace(pos, 1, "r");
-        data.insert(data.begin() + pos, '\\');
-    }
-
-    for (pos = 0; pos < data.size(); pos++)
-    {
-        if (data.at(pos) == '\\')
+        switch (ch)
         {
-            data.insert(data.begin() + pos, '\\');
-            pos += 2;
-        }
-        else if (data.at(pos) == '\"')
-        {
-            data.insert(data.begin() + pos, '\\');
-            pos += 2;
+            case '\n': oss << "\\n"; break;
+            case '\t': oss << "\\t"; break;
+            case '\r': oss << "\\r"; break;
+            case '\"': oss << "\\\""; break;
+            case '\\': oss << "\\\\"; break;
+            default: oss << ch; break;
         }
     }
 
-    data.insert(data.begin(), '\"');
-    data.insert(data.end(), '\"');
-
-    return data;
+    oss << '\"';
+    return oss.str();
 }
 
 auto string::fordslash(std::string const& s) -> std::string
