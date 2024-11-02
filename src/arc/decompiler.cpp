@@ -1381,7 +1381,15 @@ auto decompiler::decompile_ifelses(stmt_list& stm) -> void
                 }
                 else
                 {
-                    decompile_ifelse(stm, i, j);
+                    // fix treyarch compiler bug: breaks outside loops or switches
+                    auto out_of_scope = stm.list.at(stm.list.size() - 1)->loc().begin.line < std::stol(stm.list.at(j)->as<stmt_jmp>().value.substr(4), 0, 16);
+                    
+                    if (locs_.brk == "" && out_of_scope)
+                        decompile_if(stm, i, j);
+                    else
+                        decompile_ifelse(stm, i, j);
+
+                    //decompile_ifelse(stm, i, j);
                 }
             }
             else
@@ -1413,19 +1421,26 @@ auto decompiler::decompile_aborts(stmt_list& stm) -> void
             }
             else
             {
-                // fix for treyarch compiler bug: nested switch break locs are not preserved
-                if (jmp != locs_.end)
+                // fix treyarch compiler bug: breaks outside loops or switches
+                if (locs_.brk == "")
                 {
-                    auto j = find_location_index(stm, jmp);
-
-                    if (stm.list.at(j)->is<stmt_break>())
-                    {
-                        stm.list.erase(stm.list.begin() + i);
-                        stm.list.insert(stm.list.begin() + i, stmt_break::make(loc));
-
-                        continue;
-                    }
+                    stm.list.erase(stm.list.begin() + i);
+                    stm.list.insert(stm.list.begin() + i, stmt_break::make(loc));
                 }
+                // fix treyarch compiler bug: nested switch break locs are not preserved
+                else if (jmp != locs_.end && stm.list.at(find_location_index(stm, jmp))->is<stmt_break>())
+                {
+                    stm.list.erase(stm.list.begin() + i);
+                    stm.list.insert(stm.list.begin() + i, stmt_break::make(loc));
+                    continue;
+                }
+                else if (locs_.is_switch && stm.list.at(stm.list.size() - 1)->is<stmt_switch>())
+                {
+                    stm.list.erase(stm.list.begin() + i);
+                    stm.list.insert(stm.list.begin() + i, stmt_break::make(loc));
+                    continue;
+                }
+
                 std::cout << "WARNING: unresolved jump to '" + jmp + "', maybe incomplete for loop\n";
             }
         }
@@ -1853,6 +1868,7 @@ auto decompiler::decompile_switch(stmt_list& stm, usize begin, usize end) -> voi
     auto save = locs_;
     locs_.brk = last_location_index(stm, end) ? locs_.end : stm.list[end + 1]->label();
     locs_.end = stm.list[begin]->as<stmt_jmp_switch>().value;
+    locs_.is_switch = true;
 
     auto loc = stm.list[begin]->loc();
     auto test = std::move(stm.list[begin]->as<stmt_jmp_switch>().test);

@@ -119,6 +119,7 @@ struct locjmp
     std::string cnt;
     std::string brk;
     bool is_dev;
+    bool is_switch;
 };
 
 // fordward decl for modules ref

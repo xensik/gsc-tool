@@ -23,6 +23,7 @@ A utility to compile & decompile IW engine game scripts.
 - **T7** *(Call of Duty: Black Ops III)* `PC` *(Decompiler)*
 - **T8** *(Call of Duty: Black Ops 4)* ***\*WIP\****
 - **T9** *(Call of Duty: Black Ops Cold War)* ***\*WIP\****
+- **T10** *(Call of Duty: Black Ops 6)* ***\*WIP\****
 - **JUP** *(Call of Duty: Modern Warfare III (2023)* ***\*WIP\****
 
 ## Usage
