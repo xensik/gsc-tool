@@ -10,10 +10,7 @@ namespace xsk::utils
 
 struct zlib
 {
-    struct error : public std::runtime_error
-    {
-        explicit error(std::string const& message) : std::runtime_error(message) {}
-    };
+    using error = std::runtime_error;
 
     static auto compress(std::vector<u8> const& data) -> std::vector<u8>;
     static auto decompress(std::vector<u8> const& data, u32 length) -> std::vector<u8>;

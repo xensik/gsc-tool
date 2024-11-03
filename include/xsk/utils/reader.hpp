@@ -11,11 +11,7 @@ namespace xsk::utils
 struct reader
 {
     using ptr = std::unique_ptr<reader>;
-
-    struct error : public std::runtime_error
-    {
-        explicit error(std::string const& message) : std::runtime_error(message) {}
-    };
+    using error = std::runtime_error;
 
 private:
     u8 const* data_;
