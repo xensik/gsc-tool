@@ -8,9 +8,13 @@
 namespace xsk::utils
 {
 
-class file
+struct file
 {
-public:
+    struct error : public std::runtime_error
+    {
+        explicit error(std::string const& message) : std::runtime_error(message) {}
+    };
+
     static auto read(std::filesystem::path const& file) -> std::vector<u8>;
     static auto save(std::filesystem::path const& file, std::vector<u8> const& data) -> void;
     static auto save(std::filesystem::path const& file, u8 const* data, usize size) -> void;

@@ -17,7 +17,7 @@ auto file::read(std::filesystem::path const& file) -> std::vector<u8>
 
     if (!stream.good() && !stream.is_open())
     {
-        throw std::runtime_error(std::format("couldn't open file {}", file.string()));
+        throw error(std::format("couldn't open file {}", file.string()));
     }
 
     stream.seekg(0, std::ios::end);
@@ -42,24 +42,17 @@ auto file::save(std::filesystem::path const& file, std::vector<u8> const& data) 
 
 auto file::save(std::filesystem::path const& file, u8 const* data, usize size) -> void
 {
-    auto path = file;
+    std::filesystem::create_directories(file.parent_path());
 
-    std::filesystem::create_directories(path.remove_filename());
-
-    auto stream = std::ofstream{ file, std::ios::binary | std::ofstream::out };
-
-    if (stream.is_open())
+    if (auto stream = std::ofstream{ file, std::ios::binary | std::ofstream::out }; stream)
     {
         stream.write(reinterpret_cast<char const*>(data), size);
-        stream.close();
     }
 }
 
 auto file::length(std::filesystem::path const& file) -> usize
 {
-    auto stream = std::ifstream{ file, std::ios::binary };
-
-    if (stream.good())
+    if (auto stream = std::ifstream{ file, std::ios::binary }; stream.good())
     {
         stream.seekg(0, std::ios::end);
         return static_cast<usize>(stream.tellg());

@@ -338,7 +338,7 @@ auto disassembler::disassemble_function(function& func) -> void
             if ((index & 0x4000) == 0)
                 inst->opcode = ctx_->opcode_enum(index);
             else
-                throw disasm_error(utils::string::va("invalid opcode index 0x%X at pos '%04X'!", index, inst->index));
+                throw disasm_error(std::format("invalid opcode index 0x{:X} at pos '{:04X}'!", index, inst->index));
         }
         else
         {

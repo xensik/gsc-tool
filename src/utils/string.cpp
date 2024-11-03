@@ -33,31 +33,31 @@ auto string::iequals(std::string const& a, std::string const& b) -> bool
         });
 }
 
-auto string::is_number(std::string const& s) -> bool
+auto string::is_number(std::string const& str) -> bool
 {
-    return !s.empty() && std::all_of(s.begin(), s.end(), isdigit);
+    return !str.empty() && std::all_of(str.begin(), str.end(), isdigit);
 }
 
-auto string::is_hex_number(std::string const& s) -> bool
+auto string::is_hex_number(std::string const& str) -> bool
 {
-    return !s.empty() && std::all_of(s.begin(), s.end(), isxdigit);
+    return !str.empty() && std::all_of(str.begin(), str.end(), isxdigit);
 }
 
-auto string::to_lower(std::string const& input) -> std::string
+auto string::to_lower(std::string const& str) -> std::string
 {
-    auto data = std::string{ input.begin(), input.end() };
+    auto data = std::string{ str.begin(), str.end() };
 
     for (auto i = 0u; i < data.size(); i++)
     {
-        data[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(input[i])));
+        data[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(str[i])));
     }
 
     return data;
 }
 
-auto string::to_code(std::string const& input) -> std::string
+auto string::to_code(std::string const& str) -> std::string
 {
-    auto data = input.substr(1, input.size() - 2);
+    auto data = str.substr(1, str.size() - 2);
     auto pos = usize{ 0 };
 
     while ((pos = data.find("\\n")) != std::string::npos)
@@ -91,12 +91,12 @@ auto string::to_code(std::string const& input) -> std::string
     return data;
 }
 
-auto string::to_literal(std::string const& input) -> std::string
+auto string::to_literal(std::string const& str) -> std::string
 {
     std::ostringstream oss;
     oss << '\"';
 
-    for (char ch : input)
+    for (char ch : str)
     {
         switch (ch)
         {
@@ -113,9 +113,9 @@ auto string::to_literal(std::string const& input) -> std::string
     return oss.str();
 }
 
-auto string::fordslash(std::string const& s) -> std::string
+auto string::fordslash(std::string const& str) -> std::string
 {
-    auto data = std::string{ s.begin(), s.end() };
+    auto data = std::string{ str.begin(), str.end() };
 
     for (auto i = 0u; i < data.size(); i++)
     {
@@ -125,9 +125,9 @@ auto string::fordslash(std::string const& s) -> std::string
     return data;
 }
 
-auto string::backslash(std::string const& s) -> std::string
+auto string::backslash(std::string const& str) -> std::string
 {
-    auto data = std::string{ s.begin(), s.end() };
+    auto data = std::string{ str.begin(), str.end() };
 
     for (auto i = 0u; i < data.size(); i++)
     {
@@ -137,9 +137,9 @@ auto string::backslash(std::string const& s) -> std::string
     return data;
 }
 
-auto string::quote(std::string const& s, bool single) -> std::string
+auto string::quote(std::string const& str, bool single) -> std::string
 {
-    auto data = std::string{ s.begin(), s.end() };
+    auto data = std::string{ str.begin(), str.end() };
 
     if (single)
     {
@@ -155,12 +155,12 @@ auto string::quote(std::string const& s, bool single) -> std::string
     return data;
 }
 
-auto string::unquote(std::string const& s) -> std::string
+auto string::unquote(std::string const& str) -> std::string
 {
-    if (s.at(0) == '\'' || s.at(0) == '\"')
-        return s.substr(1, s.size() - 2);
+    if (str.at(0) == '\'' || str.at(0) == '\"')
+        return str.substr(1, str.size() - 2);
 
-    return s;
+    return str;
 }
 
 auto string::split(std::string& str, char delimiter) -> std::vector<std::string>
@@ -221,7 +221,7 @@ auto string::float_string(float value, bool toint) -> std::string
 {
     enum flags_t : u8 { none = 0, negative = 1, integer = 2, has_exp = 4, exp_neg = 8 };
 
-    auto str = utils::string::va("%g", value);
+    auto str = std::format("{:g}", value);
 
     auto flags = integer | (str[0] == '-' ? negative : none);
 

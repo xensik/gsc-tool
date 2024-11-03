@@ -25,7 +25,7 @@ auto zlib::compress(std::vector<u8> const& data) -> std::vector<u8>
         return output;
     }
 
-    throw std::runtime_error(std::format("zlib compress error {}", result));
+    throw error(std::format("zlib compress error {}", result));
 }
 
 auto zlib::decompress(std::vector<u8> const& data, u32 length) -> std::vector<u8>
@@ -38,7 +38,7 @@ auto zlib::decompress(std::vector<u8> const& data, u32 length) -> std::vector<u8
     if (result == Z_OK)
         return output;
 
-    throw std::runtime_error(std::format("zlib decompress error {}", result));
+    throw error(std::format("zlib decompress error {}", result));
 }
 
 } // namespace xsk::uitls

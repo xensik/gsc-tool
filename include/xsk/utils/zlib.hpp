@@ -8,9 +8,13 @@
 namespace xsk::utils
 {
 
-class zlib
+struct zlib
 {
-public:
+    struct error : public std::runtime_error
+    {
+        explicit error(std::string const& message) : std::runtime_error(message) {}
+    };
+
     static auto compress(std::vector<u8> const& data) -> std::vector<u8>;
     static auto decompress(std::vector<u8> const& data, u32 length) -> std::vector<u8>;
 };

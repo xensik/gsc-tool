@@ -9,22 +9,22 @@
 namespace xsk::utils
 {
 
-reader::reader(bool swap) : data_{ nullptr }, size_ { 0 }, pos_{ 0 }, swap_{ swap }
+reader::reader(bool swap) : data_{ nullptr }, size_ { 0 }, swap_{ swap }
 {
 }
 
-reader::reader(std::vector<u8> const& data, bool swap) : data_{ data.data() }, size_{ static_cast<u32>(data.size()) }, pos_{ 0 }, swap_{ swap }
+reader::reader(std::vector<u8> const& data, bool swap) : data_{ data.data() }, size_{ static_cast<u32>(data.size()) }, swap_{ swap }
 {
 }
 
-reader::reader(u8 const* data, u32 size, bool swap) : data_{ data }, size_{ size }, pos_{ 0 }, swap_{ swap }
+reader::reader(u8 const* data, u32 size, bool swap) : data_{ data }, size_{ size }, swap_{ swap }
 {
 }
 
 template<> auto reader::read() -> i8
 {
     if (pos_ + 1 > size_)
-        throw std::runtime_error("reader: out of bounds");
+        throw error("reader: out of bounds");
 
     auto value = *reinterpret_cast<i8 const*>(data_ + pos_);
     pos_ += 1;
@@ -34,7 +34,7 @@ template<> auto reader::read() -> i8
 template<> auto reader::read() -> u8
 {
     if (pos_ + 1 > size_)
-        throw std::runtime_error("reader: out of bounds");
+        throw error("reader: out of bounds");
 
     auto value = *reinterpret_cast<u8 const*>(data_ + pos_);
     pos_ += 1;
@@ -44,7 +44,7 @@ template<> auto reader::read() -> u8
 template<> auto reader::read() -> i16
 {
     if (pos_ + 2 > size_)
-        throw std::runtime_error("reader: out of bounds");
+        throw error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -63,7 +63,7 @@ template<> auto reader::read() -> i16
 template<> auto reader::read() -> u16
 {
     if (pos_ + 2 > size_)
-        throw std::runtime_error("reader: out of bounds");
+        throw error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -82,7 +82,7 @@ template<> auto reader::read() -> u16
 template<> auto reader::read() -> i32
 {
     if (pos_ + 4 > size_)
-        throw std::runtime_error("reader: out of bounds");
+        throw error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -103,7 +103,7 @@ template<> auto reader::read() -> i32
 template<> auto reader::read() -> u32
 {
     if (pos_ + 4 > size_)
-        throw std::runtime_error("reader: out of bounds");
+        throw error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -124,7 +124,7 @@ template<> auto reader::read() -> u32
 template<> auto reader::read() -> i64
 {
     if (pos_ + 8 > size_)
-        throw std::runtime_error("reader: out of bounds");
+        throw error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -149,7 +149,7 @@ template<> auto reader::read() -> i64
 template<> auto reader::read() -> u64
 {
     if (pos_ + 8 > size_)
-        throw std::runtime_error("reader: out of bounds");
+        throw error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -174,7 +174,7 @@ template<> auto reader::read() -> u64
 template<> auto reader::read() -> f32
 {
     if (pos_ + 4 > size_)
-        throw std::runtime_error("reader: out of bounds");
+        throw error("reader: out of bounds");
 
     if (!swap_)
     {
@@ -215,9 +215,9 @@ auto reader::read_bytes(u32 pos, u32 count) -> std::string
     return data;
 }
 
-auto reader::is_avail() -> bool
+auto reader::is_avail() const -> bool
 {
-    return (pos_ < size_) ? true : false;
+    return pos_ < size_;
 }
 
 auto reader::seek(u32 size) -> void
@@ -227,7 +227,7 @@ auto reader::seek(u32 size) -> void
 
 auto reader::seek_neg(u32 size) -> void
 {
-    if (pos_ - size >= 0) pos_ -= size;
+    if (pos_ >= size) pos_ -= size;
 }
 
 auto reader::align(u32 size) -> u32
@@ -239,27 +239,24 @@ auto reader::align(u32 size) -> u32
     return pos_ - pos;
 }
 
-auto reader::data() -> u8 const*
+auto reader::data() const -> u8 const*
 {
     return data_;
 }
 
-auto reader::size() -> u32
+auto reader::size() const -> u32
 {
     return size_;
 }
 
-auto reader::pos() -> u32
+auto reader::pos() const -> u32
 {
     return pos_;
 }
 
 auto reader::pos(u32 pos) -> void
 {
-    if (pos >= 0 && pos <= size_)
-    {
-        pos_ = pos;
-    }
+    if (pos <= size_) pos_ = pos;
 }
 
 } // namespace xsk::utils

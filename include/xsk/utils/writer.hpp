@@ -8,19 +8,28 @@
 namespace xsk::utils
 {
 
-class writer
+struct writer
 {
-public:
     using ptr = std::unique_ptr<writer>;
 
+    struct error : public std::runtime_error
+    {
+        explicit error(std::string const& message) : std::runtime_error(message) {}
+    };
+
 private:
+    static constexpr u32 default_size = 0x100000;
     u8* data_;
     u32 size_;
-    u32 pos_;
+    u32 pos_ = 0;
     bool swap_;
 
 public:
-    writer(bool swap = false);
+    writer(writer const&) = delete;
+    writer(writer&&) = delete;
+    auto operator=(writer const&) -> writer& = delete;
+    auto operator=(writer&&) -> writer& = delete;
+    explicit writer(bool swap = false);
     writer(u32 size, bool swap = false);
     ~writer();
     auto clear() -> void;
@@ -28,13 +37,13 @@ public:
     auto write(T data) -> void;
     auto write_string(std::string const& data) -> void;
     auto write_cstr(std::string const& data) -> void;
-    auto is_avail() -> bool;
+    auto is_avail() const -> bool;
     auto seek(u32 size) -> void;
     auto seek_neg(u32 size) -> void;
     auto align(u32 size) -> u32;
-    auto data() -> u8 const*;
-    auto size() -> u32;
-    auto pos() -> u32;
+    auto data() const -> u8 const*;
+    auto size() const -> u32;
+    auto pos() const -> u32;
     auto pos(u32 pos) -> void;
 };
 
