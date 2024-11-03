@@ -128,7 +128,7 @@ auto compiler::emit_decl_function(decl_function const& func) -> void
     emit_expr_parameters(*func.params);
     emit_stmt_comp(*func.body);
 
-    if (scopes_.back().abort == scope::abort_none)
+    if (scopes_.back().abort == scope::abort_none || function_->labels.find(index_) != function_->labels.end())
         emit_opcode(opcode::OP_End);
 
     scopes_.pop_back();
