@@ -29,7 +29,7 @@ class preprocessor
     u32 skip_;
 
 public:
-    preprocessor(context* ctx, std::string const& name, char const* data, usize size);
+    preprocessor(context* ctx, std::string const& name, u8 const* data, usize size);
     auto process() -> token;
     auto push_header(std::string const& file) -> void;
     auto pop_header() -> void;

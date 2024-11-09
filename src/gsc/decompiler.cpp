@@ -2248,54 +2248,36 @@ auto decompiler::decompile_foreach(stmt_list& stm, usize begin, usize end) -> vo
 auto decompiler::decompile_switch(stmt_list& stm, usize begin, usize end) -> void
 {
     auto const& data = stm.list[end]->as<stmt_jmp_endswitch>().data;
-    auto const count = std::stoul(data[0]);
+    auto count = std::stoul(data[0]);
+    auto index = 1u;
 
-    if (count)
+    for (auto i = 0u; i < count; i++)
     {
-        auto type = static_cast<switch_type>(std::stoul(data.back()));
-        auto index = 1u;
-
-        for (auto i = 0u; i < count; i++)
+        if (data[index] == "case")
         {
-            if (data[index] == "case")
-            {
-                if (ctx_->engine() == engine::iw9)
-                {
-                    type = static_cast<switch_type>(std::stoul(data[index + 1])); 
-                    auto j = find_location_index(stm, data[index + 3]);
-                    auto loc = stm.list[j]->loc();
-                    auto exp = (type == switch_type::integer) ? expr::ptr{ expr_integer::make(loc, data[index + 2]) } : expr::ptr{ expr_string::make(loc, data[index + 2]) };
-                    while (stm.list[j]->is<stmt_case>()) j++;
-                    stm.list.insert(stm.list.begin() + j, stmt_case::make(loc, std::move(exp), stmt_list::make(loc)));
-                    index += 4; 
-                }
-                else
-                {
-                    auto j = find_location_index(stm, data[index + 2]);
-                    auto loc = stm.list[j]->loc();
-                    auto exp = (type == switch_type::integer) ? expr::ptr{ expr_integer::make(loc, data[index + 1]) } : expr::ptr{ expr_string::make(loc, data[index + 1]) };
-                    while (stm.list[j]->is<stmt_case>()) j++;
-                    stm.list.insert(stm.list.begin() + j, stmt_case::make(loc, std::move(exp), stmt_list::make(loc)));
-                    index += 3;
-                }
-                
-            }
-            else if (data[index] == "default")
-            {
-                auto j = find_location_index(stm, data[index + 1]);
-                auto loc = stm.list[j]->loc();
-                while (stm.list[j]->is<stmt_case>()) j++;
-                stm.list.insert(stm.list.begin() + j, stmt_default::make(loc, stmt_list::make(loc)));
-                index += 2;
-            }
-            else
-            {
-                decomp_error("malformed endswitch statement");
-            }
+            auto type = static_cast<switch_type>(std::stoul(data[index + 1])); 
+            auto pos = find_location_index(stm, data[index + 3]);
+            auto loc = stm.list[pos]->loc();
+            auto exp = (type == switch_type::integer) ? expr::ptr{ expr_integer::make(loc, data[index + 2]) } : expr::ptr{ expr_string::make(loc, data[index + 2]) };
+            while (stm.list[pos]->is<stmt_case>()) pos++;
+            stm.list.insert(stm.list.begin() + pos, stmt_case::make(loc, std::move(exp), stmt_list::make(loc)));
+            index += 4;                
         }
-
-        end += count;
+        else if (data[index] == "default")
+        {
+            auto pos = find_location_index(stm, data[index + 1]);
+            auto loc = stm.list[pos]->loc();
+            while (stm.list[pos]->is<stmt_case>()) pos++;
+            stm.list.insert(stm.list.begin() + pos, stmt_default::make(loc, stmt_list::make(loc)));
+            index += 2;
+        }
+        else
+        {
+            decomp_error("malformed endswitch statement");
+        }
     }
+
+    end += count;
 
     auto save = locs_;
     locs_.last = false;

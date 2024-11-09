@@ -24,7 +24,7 @@ struct string
     static auto quote(std::string const& str, bool single = true) -> std::string;
     static auto unquote(std::string const& str) -> std::string;
     static auto split(std::string& str, char delimiter) -> std::vector<std::string>;
-    static auto clean_buffer_lines(std::vector<u8>& buffer) -> std::vector<std::string>;
+    static auto clean_buffer_lines(u8 const* data, usize size) -> std::vector<std::string>;
     static auto parse_code(std::string& line) -> std::vector<std::string>;
     static auto float_string(float value, bool toint = false) -> std::string;
 };

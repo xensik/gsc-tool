@@ -13,7 +13,7 @@
 namespace xsk::gsc
 {
 
-source::source(context* ctx) : ctx_{ ctx }, indent_{ 0 }
+source::source(context* ctx) : ctx_{ ctx }
 {
 }
 
@@ -29,102 +29,86 @@ auto source::parse_assembly(std::vector<u8> const& data) -> assembly::ptr
 
 auto source::parse_assembly(u8 const* data, usize size) -> assembly::ptr
 {
-    auto buffer = std::vector<u8>{};
-    buffer.resize(size);
-    std::memcpy(buffer.data(), data, buffer.size());
-
-    auto lines = utils::string::clean_buffer_lines(buffer);
+    auto lines = utils::string::clean_buffer_lines(data, size);
     auto assembly = assembly::make();
     auto func = function::ptr{ nullptr };
-    u32 index = 1;
-    u16 switchnum = 0;
+    auto index = u32{ 1 };
+    auto count = u16{ 0 };
 
     for (auto& line : lines)
     {
-        if (line == "" || line.substr(0, 2) == "//")
-        {
+        if (line == "" || line.starts_with("//"))
             continue;
-        }
-        else if (line.substr(0, 4) == "sub:")
+
+        if (line.starts_with("sub:"))
         {
             func = function::make();
             func->index = index;
             func->name = line.substr(4);
             func->id = ctx_->token_id(func->name);
+            continue;
         }
-        else if (line.substr(0, 4) == "end:")
+
+        if (line.starts_with("end:") && func != nullptr)
         {
-            if (func != nullptr)
-            {
-                func->size = index - func->index;
-                assembly->functions.push_back(std::move(func));
-            }
+            func->size = index - func->index;
+            assembly->functions.push_back(std::move(func));
+            continue;
         }
-        else if (line.substr(0, 4) == "loc_")
+
+        if (line.starts_with("loc_"))
         {
             func->labels[index] = line;
+            continue;
         }
-        else
+
+        auto opdata = utils::string::parse_code(line);
+
+        if (count)
         {
-            auto opdata = utils::string::parse_code(line);
-
-            if (switchnum)
-            {
-                if (opdata[0] == "case" || opdata[0] == "default")
-                {
-                    for (auto& entry : opdata)
-                    {
-                        func->instructions.back()->data.push_back(entry);
-                    }
-                    switchnum--;
-                    continue;
-                }
-
+            if (opdata[0] != "case" && opdata[0] != "default")
                 throw asm_error("invalid instruction inside endswitch \""s + line + "\"");
-            }
-            else
-            {
-                auto inst = instruction::make();
-                inst->index = index;
-                inst->opcode = ctx_->opcode_enum(opdata[0]);
-                inst->size = ctx_->opcode_size(inst->opcode);
-                opdata.erase(opdata.begin());
-                inst->data = std::move(opdata);
 
-                switch (inst->opcode)
-                {
-                    case opcode::OP_GetVector:
-                    {
-                        if (ctx_->endian() == endian::big)
-                        {
-                            auto base = inst->index + 1;
-                            auto algn = (base + 3) & ~3;
-                            inst->size += (algn - base);
-                        }
-                        break;
-                    }
-                    case opcode::OP_GetLocalFunction:
-                    case opcode::OP_ScriptLocalFunctionCall:
-                    case opcode::OP_ScriptLocalFunctionCall2:
-                    case opcode::OP_ScriptLocalMethodCall:
-                    case opcode::OP_ScriptLocalThreadCall:
-                    case opcode::OP_ScriptLocalChildThreadCall:
-                    case opcode::OP_ScriptLocalMethodThreadCall:
-                    case opcode::OP_ScriptLocalMethodChildThreadCall:
-                        inst->data[0] = inst->data[0].substr(4);
-                        break;
-                    case opcode::OP_endswitch:
-                        switchnum = static_cast<std::uint16_t>(std::stoi(inst->data[0]));
-                        inst->size += 7 * switchnum;
-                        break;
-                    default:
-                        break;
-                }
+            for (auto const& entry : opdata)
+                func->instructions.back()->data.push_back(entry);
 
-                index += inst->size;
-                func->instructions.push_back(std::move(inst));
-            }
+            count--;
+            continue; 
         }
+
+        auto inst = instruction::make();
+        inst->index = index;
+        inst->opcode = ctx_->opcode_enum(opdata[0]);
+        inst->size = ctx_->opcode_size(inst->opcode);
+        opdata.erase(opdata.begin());
+        inst->data = std::move(opdata);
+
+        switch (inst->opcode)
+        {
+            case opcode::OP_GetVector:
+                if (ctx_->endian() == endian::big)
+                    inst->size += ((inst->index + 4) & ~3) - (inst->index + 1);
+                break;
+            case opcode::OP_GetLocalFunction:
+            case opcode::OP_ScriptLocalFunctionCall:
+            case opcode::OP_ScriptLocalFunctionCall2:
+            case opcode::OP_ScriptLocalMethodCall:
+            case opcode::OP_ScriptLocalThreadCall:
+            case opcode::OP_ScriptLocalChildThreadCall:
+            case opcode::OP_ScriptLocalMethodThreadCall:
+            case opcode::OP_ScriptLocalMethodChildThreadCall:
+                inst->data[0] = inst->data[0].substr(4);
+                break;
+            case opcode::OP_endswitch:
+                count = static_cast<u16>(std::stoul(inst->data[0]));
+                inst->size += 7 * count;
+                break;
+            default:
+                break;
+        }
+
+        index += inst->size;
+        func->instructions.push_back(std::move(inst));
     }
 
     return assembly;
@@ -143,7 +127,7 @@ auto source::parse_program(std::string const& name, std::vector<u8> const& data)
 auto source::parse_program(std::string const& name, u8 const* data, usize size) -> program::ptr
 {
     auto res = program::ptr{ nullptr };
-    auto ppr = preprocessor{ ctx_, name, reinterpret_cast<char const*>(data), size };
+    auto ppr = preprocessor{ ctx_, name, data, size };
     auto psr = parser{ ctx_, ppr, res, 0 };
 
     if (!psr.parse() && res != nullptr)
@@ -192,9 +176,7 @@ auto source::dump_function(function const& func) -> void
 
     for (auto const& inst : func.instructions)
     {
-        auto const itr = func.labels.find(inst->index);
-
-        if (itr != func.labels.end())
+        if (auto const itr = func.labels.find(inst->index); itr != func.labels.end())
         {
             std::format_to(std::back_inserter(buf_), "\t{}\n", itr->second);
         }
@@ -214,27 +196,15 @@ auto source::dump_instruction(instruction const& inst) -> void
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
         case opcode::OP_GetAnimTree:
-            std::format_to(std::back_inserter(buf_), " \"{}\"", inst.data[0]);
+            std::format_to(std::back_inserter(buf_), " {}", utils::string::to_literal(inst.data[0]));
             break;
         case opcode::OP_GetAnimation:
-            std::format_to(std::back_inserter(buf_), " \"{}\" \"{}\"", inst.data[0], inst.data[1]);
-            break;
-        case opcode::OP_GetLocalFunction:
-        case opcode::OP_ScriptLocalFunctionCall:
-        case opcode::OP_ScriptLocalFunctionCall2:
-        case opcode::OP_ScriptLocalMethodCall:
-            std::format_to(std::back_inserter(buf_), " {}", inst.data[0]);
-            break;
-        case opcode::OP_ScriptLocalThreadCall:
-        case opcode::OP_ScriptLocalChildThreadCall:
-        case opcode::OP_ScriptLocalMethodThreadCall:
-        case opcode::OP_ScriptLocalMethodChildThreadCall:
-            std::format_to(std::back_inserter(buf_), " {} {}\n", inst.data[0], inst.data[1]);
+            std::format_to(std::back_inserter(buf_), " {}", utils::string::to_literal(inst.data[0]));
+            std::format_to(std::back_inserter(buf_), " {}", utils::string::to_literal(inst.data[1]));
             break;
         case opcode::OP_endswitch:
         {
             auto count = static_cast<u32>(std::stoul(inst.data[0]));
-            auto type = static_cast<switch_type>(std::stoul(inst.data.back()));
             auto index = 1;
 
             std::format_to(std::back_inserter(buf_), " {}\n", count);
@@ -243,25 +213,17 @@ auto source::dump_instruction(instruction const& inst) -> void
             {
                 if (inst.data[index] == "case")
                 {
-                    if (ctx_->engine() == engine::iw9)
-                    {
-                        type = static_cast<switch_type>(std::stoul(inst.data[index + 1]));
-                        auto data = (type == switch_type::integer) ? std::format("{}", inst.data[index + 2]) : std::format("\"{}\"", inst.data[index + 2]); 
-                        std::format_to(std::back_inserter(buf_), "\t\t\t{} {} {}", inst.data[index], data, inst.data[index + 3]);
-                        index += 4;
-                    }
-                    else
-                    {
-                        auto data = (type == switch_type::integer) ? std::format("{}", inst.data[index + 1]) : std::format("\"{}\"", inst.data[index + 1]);
-                        std::format_to(std::back_inserter(buf_), "\t\t\t{} {} {}", inst.data[index], data, inst.data[index + 2]);
-                        index += 3;
-                    }     
+                    auto type = static_cast<switch_type>(std::stoul(inst.data[index + 1]));
+                    auto data = (type == switch_type::integer) ? std::format("{}", inst.data[index + 2]) : utils::string::to_literal(inst.data[index + 2]); 
+                    std::format_to(std::back_inserter(buf_), "\t\t\t{} {} {}", inst.data[index], data, inst.data[index + 3]);
+                    index += 4;    
                 }
                 else if (inst.data[index] == "default")
                 {
                     std::format_to(std::back_inserter(buf_), "\t\t\t{} {}", inst.data[index], inst.data[index + 1]);
                     index += 2;
                 }
+
                 if (i != count - 1)
                 {
                     std::format_to(std::back_inserter(buf_), "\n");
@@ -560,8 +522,9 @@ auto source::dump_stmt_expr(stmt_expr const& stm) -> void
             dump_expr_method(stm.value->as<expr_method>());
             break;
         case node::expr_empty:
-        default:
             break;
+        default:
+            break; // throw error
     }
 
     std::format_to(std::back_inserter(buf_), ";");
@@ -581,7 +544,7 @@ auto source::dump_stmt_notify(stmt_notify const& stm) -> void
     std::format_to(std::back_inserter(buf_), " notify( ");
     dump_expr(*stm.event);
 
-    if (stm.args->list.size() > 0)
+    if (!stm.args->list.empty())
     {
         std::format_to(std::back_inserter(buf_), ",");
         dump_expr_arguments(*stm.args);
@@ -622,7 +585,7 @@ auto source::dump_stmt_waittill(stmt_waittill const& stm) -> void
     std::format_to(std::back_inserter(buf_), " waittill( ");
     dump_expr(*stm.event);
 
-    if (stm.args->list.size() > 0)
+    if (!stm.args->list.empty())
     {
         std::format_to(std::back_inserter(buf_), ",");
         dump_expr_arguments(*stm.args);
@@ -641,7 +604,7 @@ auto source::dump_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void
     std::format_to(std::back_inserter(buf_), " waittillmatch( ");
     dump_expr(*stm.event);
 
-    if (stm.args->list.size() > 0)
+    if (!stm.args->list.empty())
     {
         std::format_to(std::back_inserter(buf_), ",");
         dump_expr_arguments(*stm.args);
@@ -853,7 +816,7 @@ auto source::dump_stmt_case(stmt_case const& stm) -> void
     dump_expr(*stm.value);
     std::format_to(std::back_inserter(buf_), ":");
 
-    if (stm.body != nullptr && stm.body->list.size() > 0)
+    if (stm.body != nullptr && !stm.body->list.empty())
     {
         std::format_to(std::back_inserter(buf_), "\n");
         dump_stmt_list(*stm.body);
@@ -864,7 +827,7 @@ auto source::dump_stmt_default(stmt_default const& stm) -> void
 {
     std::format_to(std::back_inserter(buf_), "default:");
 
-    if (stm.body != nullptr && stm.body->list.size() > 0)
+    if (stm.body != nullptr && !stm.body->list.empty())
     {
         std::format_to(std::back_inserter(buf_), "\n");
         dump_stmt_list(*stm.body);

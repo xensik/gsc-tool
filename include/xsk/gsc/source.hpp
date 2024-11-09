@@ -14,7 +14,7 @@ class source
 {
     context* ctx_;
     std::vector<u8> buf_;
-    u32 indent_;
+    u32 indent_ = 0;
 
 public:
     source(context* ctx);

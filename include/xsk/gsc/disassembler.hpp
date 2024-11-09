@@ -28,14 +28,16 @@ public:
 private:
     auto dissasemble_function(function& func) -> void;
     auto dissasemble_instruction(instruction& inst) -> void;
-    auto disassemble_builtin_call(instruction& inst, bool method, bool args) -> void;
-    auto disassemble_local_call(instruction& inst, bool thread) -> void;
-    auto disassemble_far_call(instruction& inst, bool thread) -> void;
-    auto disassemble_switch(instruction& inst) -> void;
-    auto disassemble_end_switch(instruction& inst) -> void;
-    auto disassemble_field_variable(instruction& inst) -> void;
-    auto disassemble_formal_params(instruction& inst) -> void;
+    auto disassemble_field(instruction& inst) -> void;
+    auto disassemble_params(instruction& inst) -> void;
+    auto disassemble_call_far(instruction& inst, bool thread) -> void;
+    auto disassemble_call_far2(instruction& inst, bool thread) -> void;
+    auto disassemble_call_local(instruction& inst, bool thread) -> void;
+    auto disassemble_call_builtin(instruction& inst, bool method, bool args) -> void;
+    auto disassemble_call_builtin2(instruction& inst, bool method, bool args) -> void;
     auto disassemble_jump(instruction& inst, bool expr, bool back) -> void;
+    auto disassemble_switch(instruction& inst) -> void;
+    auto disassemble_switch_table(instruction& inst) -> void;
     auto disassemble_offset() -> i32;
     auto resolve_functions() -> void;
     auto resolve_function(std::string const& index) -> std::string;

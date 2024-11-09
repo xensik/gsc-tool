@@ -177,29 +177,25 @@ auto string::split(std::string& str, char delimiter) -> std::vector<std::string>
     return tokens;
 }
 
-auto string::clean_buffer_lines(std::vector<u8>& buffer) -> std::vector<std::string>
+auto string::clean_buffer_lines(u8 const* data, usize size) -> std::vector<std::string>
 {
-    auto data = std::string{ reinterpret_cast<char*>(buffer.data()), buffer.size() };
-    auto pos = usize{ 0 };
-
-    while ((pos = data.find("\t")) != std::string::npos)
-    {
-        data = data.replace(pos, 1, "");
-    }
-
-    while ((pos = data.find("\r")) != std::string::npos)
-    {
-        data = data.replace(pos, 1, "");
-    }
-
     auto lines = std::vector<std::string>{};
-    auto ss = std::stringstream{ data };
-    auto tok = std::string{};
+    auto current = std::string{};
 
-    while (std::getline(ss, tok, '\n'))
+    for (auto i = 0u; i < size; ++i)
     {
-        lines.push_back(tok);
+        auto c = data[i];
+        if (c == '\n')
+        {
+            lines.push_back(current);
+            current.clear();
+        }
+        else if (c != '\t' && c != '\r')
+            current += c;
     }
+
+    if (!current.empty())
+        lines.push_back(current);
 
     return lines;
 }

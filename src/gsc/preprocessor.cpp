@@ -10,9 +10,9 @@
 namespace xsk::gsc
 {
 
-preprocessor::preprocessor(context* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, curr_expr_{ 0 }, expand_{ 0 }, skip_{ 0 }
+preprocessor::preprocessor(context* ctx, std::string const& name, u8 const* data, usize size) : ctx_{ ctx }, curr_expr_{ 0 }, expand_{ 0 }, skip_{ 0 }
 {
-    lexer_.push(lexer{ ctx, name, data, size });
+    lexer_.push(lexer{ ctx, name, reinterpret_cast<char const*>(data), size });
     indents_.push({});
     defines_.reserve(5);
     defines_.insert({ "__FILE__", { define::BUILTIN,/* false,*/ {}, {} }});

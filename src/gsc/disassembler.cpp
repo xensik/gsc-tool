@@ -27,8 +27,8 @@ auto disassembler::disassemble(std::vector<u8> const& script, std::vector<u8> co
 
 auto disassembler::disassemble(u8 const* script, usize script_size, u8 const* stack, usize stack_size) -> assembly::ptr
 {
-    stack_ = utils::reader{ stack, static_cast<u32>(stack_size), ctx_->endian() == endian::big };
-    script_ = utils::reader{ script, static_cast<u32>(script_size), ctx_->endian() == endian::big };
+    stack_ = utils::reader{ stack, stack_size, ctx_->endian() == endian::big };
+    script_ = utils::reader{ script, script_size, ctx_->endian() == endian::big };
     assembly_ = assembly::make();
 
     script_.seek(1);
@@ -53,7 +53,7 @@ auto disassembler::disassemble(u8 const* script, usize script_size, u8 const* st
 
 auto disassembler::dissasemble_function(function& func) -> void
 {
-    auto size = static_cast<i32>(func.size);
+    auto size = func.size;
 
     while (size > 0)
     {
@@ -64,10 +64,10 @@ auto disassembler::dissasemble_function(function& func) -> void
 
         dissasemble_instruction(*inst);
 
-        size -= inst->size;
-
-        if (size < 0 || inst->index + inst->size != script_.pos())
+        if (inst->size > size || inst->index + inst->size != script_.pos())
             throw disasm_error("bad instruction size");
+
+        size -= inst->size;
 
         func.instructions.push_back(std::move(inst));
     }
@@ -233,7 +233,7 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
         case opcode::OP_EvalLevelFieldVariableRef:
         case opcode::OP_EvalAnimFieldVariable:
         case opcode::OP_EvalSelfFieldVariableRef:
-            disassemble_field_variable(inst);
+            disassemble_field(inst);
             break;
         case opcode::OP_CallBuiltinPointer:
         case opcode::OP_CallBuiltinMethodPointer:
@@ -247,31 +247,31 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
         case opcode::OP_ScriptLocalFunctionCall2:
         case opcode::OP_ScriptLocalFunctionCall:
         case opcode::OP_ScriptLocalMethodCall:
-            disassemble_local_call(inst, false);
+            disassemble_call_local(inst, false);
             break;
         case opcode::OP_ScriptLocalThreadCall:
         case opcode::OP_ScriptLocalChildThreadCall:
         case opcode::OP_ScriptLocalMethodThreadCall:
         case opcode::OP_ScriptLocalMethodChildThreadCall:
-            disassemble_local_call(inst, true);
+            disassemble_call_local(inst, true);
             break;
         case opcode::OP_GetFarFunction:
         case opcode::OP_ScriptFarFunctionCall2:
         case opcode::OP_ScriptFarFunctionCall:
         case opcode::OP_ScriptFarMethodCall:
-            disassemble_far_call(inst, false);
+            disassemble_call_far(inst, false);
             break;
         case opcode::OP_ScriptFarThreadCall:
         case opcode::OP_ScriptFarChildThreadCall:
         case opcode::OP_ScriptFarMethodThreadCall:
         case opcode::OP_ScriptFarMethodChildThreadCall:
-            disassemble_far_call(inst, true);
+            disassemble_call_far(inst, true);
             break;
         case opcode::OP_CallBuiltin:
-            disassemble_builtin_call(inst, false, true);
+            disassemble_call_builtin(inst, false, true);
             break;
         case opcode::OP_CallBuiltinMethod:
-            disassemble_builtin_call(inst, true, true);
+            disassemble_call_builtin(inst, true, true);
             break;
         case opcode::OP_GetBuiltinFunction:
         case opcode::OP_CallBuiltin0:
@@ -280,7 +280,7 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
         case opcode::OP_CallBuiltin3:
         case opcode::OP_CallBuiltin4:
         case opcode::OP_CallBuiltin5:
-            disassemble_builtin_call(inst, false, false);
+            disassemble_call_builtin(inst, false, false);
             break;
         case opcode::OP_GetBuiltinMethod:
         case opcode::OP_CallBuiltinMethod0:
@@ -289,7 +289,7 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
         case opcode::OP_CallBuiltinMethod3:
         case opcode::OP_CallBuiltinMethod4:
         case opcode::OP_CallBuiltinMethod5:
-            disassemble_builtin_call(inst, true, false);
+            disassemble_call_builtin(inst, true, false);
             break;
         case opcode::OP_JumpOnFalse:
         case opcode::OP_JumpOnTrue:
@@ -307,232 +307,35 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
             disassemble_switch(inst);
             break;
         case opcode::OP_endswitch:
-            disassemble_end_switch(inst);
+            disassemble_switch_table(inst);
             break;
         case opcode::OP_FormalParams:
-            disassemble_formal_params(inst);
+            disassemble_params(inst);
             break;
         default:
             throw disasm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
 }
 
-auto disassembler::disassemble_builtin_call(instruction& inst, bool method, bool args) -> void
-{
-    if (args)
-    {
-        inst.data.push_back(std::format("{}", script_.read<u8>()));
-    }
-
-    if (ctx_->props() & props::hash)
-    {
-        auto name = stack_.read_cstr();
-
-        if (name.starts_with("#xS"))
-        {
-            auto const id = std::stoull(name.substr(3), 0, 16);
-            name = method ? ctx_->meth2_name(id) : ctx_->func2_name(id);
-        }
-
-        script_.seek(2);
-        inst.data.emplace(inst.data.begin(), name);
-    }
-    else
-    {
-        auto const id = script_.read<u16>();
-        auto const name = method ? ctx_->meth_name(id) : ctx_->func_name(id);
-
-        inst.data.emplace(inst.data.begin(), name);
-    }
-}
-
-auto disassembler::disassemble_local_call(instruction& inst, bool thread) -> void
-{
-    auto const offs = disassemble_offset();
-
-    inst.data.push_back(std::format("{}", inst.index + 1 + offs));
-
-    if (thread)
-    {
-        inst.data.push_back(std::format("{}", script_.read<u8>()));
-    }
-}
-
-auto disassembler::disassemble_far_call(instruction& inst, bool thread) -> void
-{
-    if (ctx_->props() & props::farcall)
-    {
-        auto offs = script_.read<u32>();
-
-        if (thread)
-        {
-            inst.data.push_back(std::format("{}", script_.read<u8>()));
-        }
-
-        auto file = stack_.read<u64>();
-        auto name = stack_.read<u64>();
-
-        if (file == 0)
-        {
-            inst.data.emplace(inst.data.begin(), std::format("{}", inst.index + 1 + offs));
-            inst.data.emplace(inst.data.begin(), "");
-        }
-        else
-        {
-            auto path = ctx_->path_name(file);
-
-            if (!path.starts_with("_id_"))
-            {
-                path.resize(path.size() - 4);
-            }
-
-            inst.data.emplace(inst.data.begin(), ctx_->hash_name(name));
-            inst.data.emplace(inst.data.begin(), path);
-        }
-    }
-    else
-    {
-        script_.seek(3);
-
-        if (thread)
-        {
-            inst.data.push_back(std::format("{}", script_.read<u8>()));
-        }
-
-        auto const file_id = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
-        auto const file_name = file_id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(file_id);
-        auto const func_id = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
-        auto const func_name = func_id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(func_id);
-
-        inst.data.emplace(inst.data.begin(), func_name);
-        inst.data.emplace(inst.data.begin(), file_name);
-    }
-}
-
-auto disassembler::disassemble_switch(instruction& inst) -> void
-{
-    auto const addr = inst.index + 4 + script_.read<i32>();
-    auto const label = std::format("loc_{:X}", addr);
-
-    inst.data.push_back(label);
-    func_->labels.insert({ addr, label });
-}
-
-auto disassembler::disassemble_end_switch(instruction& inst) -> void
-{
-    auto const count = script_.read<u16>();
-
-    inst.data.push_back(std::format("{}", count));
-
-    auto type = switch_type::none;
-    auto index = inst.index + 3u;
-
-    for (auto i = count; i > 0; i--)
-    {
-        if (ctx_->engine() == engine::iw9)
-        {
-            auto const data = script_.read<u32>();
-            auto const offs = script_.read<i16>();
-            script_.seek(1);
-            auto const byte = script_.read<u8>();
-
-            if (byte == 1)
-            {
-                inst.data.push_back("case");
-                inst.data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::integer)));
-                inst.data.push_back(std::format("{}", data));
-            }
-            else if (byte == 2)
-            {
-                inst.data.push_back("case");
-                inst.data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::string)));
-                inst.data.push_back(stack_.read_cstr());
-            }
-            else // byte == 0
-            {
-                // default -> data = 0, byte = 0, i = 1 
-                inst.data.push_back("default");
-            }
-
-            auto const addr = index + 4 + offs;
-            auto const label = std::format("loc_{:X}", addr);
-
-            inst.data.push_back(label);
-            func_->labels.insert({ addr, label });
-
-            index += 8;
-            inst.size += 8;
-        }
-        else
-        {
-            auto const value = script_.read<u32>();
-
-            if (value == 0)
-            {
-                inst.data.push_back("default");
-                stack_.read_cstr(); // this should be always [0x01 0x00] unencrypted
-            }
-            else if (value < 0x100000)
-            {
-                if (type == switch_type::integer)
-                    throw disasm_error("endswitch type mismatch");
-
-                type = switch_type::string;
-                inst.data.push_back("case");
-                inst.data.push_back(decrypt_string(stack_.read_cstr()));
-            } 
-            else
-            {
-                if (type == switch_type::string)
-                    throw disasm_error("endswitch type mismatch");
-
-                type = switch_type::integer;
-                inst.data.push_back("case");
-                inst.data.push_back(std::format("{}", (value - 0x800000) & 0xFFFFFF));
-            }
-
-            auto const addr = index + 4 + disassemble_offset();
-            auto const label = std::format("loc_{:X}", addr);
-
-            inst.data.push_back(label);
-            func_->labels.insert({ addr, label });
-
-            index += 7;
-            inst.size += 7;
-        }
-    }
-
-    inst.data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
-}
-
-auto disassembler::disassemble_field_variable(instruction& inst) -> void
+auto disassembler::disassemble_field(instruction& inst) -> void
 {
     if (ctx_->props() & props::hash)
     {
-        inst.data.push_back(ctx_->hash_name(script_.read<u64>()));
+        return inst.data.push_back(ctx_->hash_name(script_.read<u64>()));
     }
-    else
+
+    if (auto id = (ctx_->props() & props::tok4) ? script_.read<u32>() : script_.read<u16>(); id <= ctx_->str_count())
     {
-        auto const id = (ctx_->props() & props::tok4) ? script_.read<u32>() : script_.read<u16>();
-        auto name = std::string{};
-
-        if (id > ctx_->str_count())
-        {
-            auto const temp = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
-            name = (temp == 0) ? decrypt_string(stack_.read_cstr()) : std::format("{}", temp);
-        }
-        else
-        {
-            name = ctx_->token_name(id);
-        }
-
-        inst.data.push_back(name);
+        return inst.data.push_back(ctx_->token_name(id));
     }
+
+    auto temp = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
+    inst.data.push_back(temp == 0 ? decrypt_string(stack_.read_cstr()) : std::format("{}", temp));
 }
 
-auto disassembler::disassemble_formal_params(instruction& inst) -> void
+auto disassembler::disassemble_params(instruction& inst) -> void
 {
-    auto const count = script_.read<u8>();
+    auto count = script_.read<u8>();
 
     inst.size += (ctx_->props() & props::hash) ? count * 8 : count;
     inst.data.push_back(std::format("{}", count));
@@ -543,53 +346,198 @@ auto disassembler::disassemble_formal_params(instruction& inst) -> void
     }
 }
 
-auto disassembler::disassemble_jump(instruction& inst, bool expr, bool back) -> void
+auto disassembler::disassemble_call_far(instruction& inst, bool thread) -> void
 {
-    auto addr = i32{};
-
-    if (expr)
+    if (ctx_->props() & props::farcall)
     {
-        addr = inst.index + 3 + script_.read<i16>();
+        return disassemble_call_far2(inst, thread);
     }
-    else if (back)
+
+    auto file_id = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
+    auto file_name = file_id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(file_id);
+    auto func_id = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
+    auto func_name = func_id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(func_id);
+
+    inst.data.push_back(std::move(file_name));
+    inst.data.push_back(std::move(func_name));
+
+    script_.seek(3);
+
+    if (thread)
     {
-        addr = inst.index + 3 - script_.read<u16>();
+        inst.data.push_back(std::format("{}", script_.read<u8>()));
+    }
+}
+
+auto disassembler::disassemble_call_far2(instruction& inst, bool thread) -> void
+{
+    auto offs = script_.read<u32>();
+    auto file = stack_.read<u64>();
+    auto name = stack_.read<u64>();
+
+    if (file == 0)
+    {
+        inst.data.push_back("");
+        inst.data.push_back(std::format("{}", inst.index + 1 + offs));
     }
     else
     {
-        addr = inst.index + 5 + script_.read<i32>();
+        auto path = ctx_->path_name(file);
+
+        if (!path.starts_with("_id_"))
+        {
+            path.resize(path.size() - 4);
+        }
+
+        inst.data.push_back(path);
+        inst.data.push_back(ctx_->hash_name(name));
     }
 
-    auto const label = std::format("loc_{:X}", addr);
+    if (thread)
+    {
+        inst.data.push_back(std::format("{}", script_.read<u8>()));
+    }
+}
 
-    inst.data.push_back(label);
+auto disassembler::disassemble_call_local(instruction& inst, bool thread) -> void
+{
+    auto offset = disassemble_offset();
+
+    inst.data.push_back(std::format("{}", inst.index + 1 + offset));
+
+    if (thread)
+    {
+        inst.data.push_back(std::format("{}", script_.read<u8>()));
+    }
+}
+
+auto disassembler::disassemble_call_builtin(instruction& inst, bool method, bool args) -> void
+{
+    if (ctx_->props() & props::hash)
+    {
+        return disassemble_call_builtin2(inst, method, args);
+    }
+
+    auto count = args ? script_.read<u8>() : 0;
+    auto id = script_.read<u16>();
+    auto name = method ? ctx_->meth_name(id) : ctx_->func_name(id);
+
+    inst.data.push_back(std::move(name));
+
+    if (args)
+    {
+        inst.data.push_back(std::format("{}", count));
+    }
+}
+
+auto disassembler::disassemble_call_builtin2(instruction& inst, bool method, bool args) -> void
+{
+    auto name = stack_.read_cstr();
+
+    if (name.starts_with("#xS"))
+    {
+        auto id = std::stoull(name.substr(3), 0, 16);
+        name = method ? ctx_->meth2_name(id) : ctx_->func2_name(id);
+    }
+
+    inst.data.push_back(std::move(name));
+
+    if (args)
+    {
+        inst.data.push_back(std::format("{}", script_.read<u8>()));
+    }
+
+    script_.seek(2);
+}
+
+auto disassembler::disassemble_jump(instruction& inst, bool expr, bool back) -> void
+{
+    auto addr = inst.index + (expr ? 3 + script_.read<i16>() : back ? 3 - script_.read<u16>() : 5 + script_.read<i32>());
+    auto label = std::format("loc_{:X}", addr);
+
+    inst.data.emplace_back(label);
     func_->labels.insert({ addr, label });
+}
+
+auto disassembler::disassemble_switch(instruction& inst) -> void
+{
+    auto addr = inst.index + 4 + script_.read<i32>();
+    auto label = std::format("loc_{:X}", addr);
+
+    inst.data.emplace_back(label);
+    func_->labels.insert({ addr, label });
+}
+
+auto disassembler::disassemble_switch_table(instruction& inst) -> void
+{
+    auto count = script_.read<u16>();
+    auto index = inst.index + 3u;
+
+    inst.data.push_back(std::format("{}", count));
+
+    for (auto i = count; i > 0; i--)
+    {
+        auto data = script_.read<u32>();
+        auto offs = (ctx_->engine() == engine::iw9) ? script_.read<i16>() : disassemble_offset();
+        auto size = (ctx_->engine() == engine::iw9) ? 8 : 7;
+
+        if (ctx_->engine() == engine::iw9)
+        {
+            script_.seek(1); // skip byte 0xFF
+            auto type = script_.read<u8>();
+
+            if (type == 0)
+            {
+                inst.data.push_back("default"); // data:0 type:0 i:1 
+            }
+            else if (type == 1)
+            {
+                inst.data.push_back("case");
+                inst.data.push_back(std::format("{}", static_cast<int>(switch_type::integer)));
+                inst.data.push_back(std::format("{}", data));
+            }
+            else if (type == 2)
+            {
+                inst.data.push_back("case");
+                inst.data.push_back(std::format("{}", static_cast<int>(switch_type::string)));
+                inst.data.push_back(stack_.read_cstr());
+            }
+        }
+        else
+        {
+            if (data == 0)
+            {
+                stack_.read_cstr(); // [0x01 0x00] unencrypted
+                inst.data.push_back("default");
+            }
+            else if (data < 0x100000)
+            {
+                inst.data.push_back("case");
+                inst.data.push_back(std::format("{}", static_cast<int>(switch_type::string)));
+                inst.data.push_back(decrypt_string(stack_.read_cstr()));
+            } 
+            else
+            {
+                inst.data.push_back("case");
+                inst.data.push_back(std::format("{}", static_cast<int>(switch_type::integer)));
+                inst.data.push_back(std::format("{}", (data - 0x800000) & 0xFFFFFF));
+            }
+        }
+
+        auto addr = index + 4 + offs;
+        auto label = std::format("loc_{:X}", addr);
+
+        inst.data.emplace_back(label);
+        func_->labels.insert({ addr, label });
+
+        index += size;
+        inst.size += size;
+    }
 }
 
 auto disassembler::disassemble_offset() -> i32
 {
-    auto bytes = std::array<u8, 4>{};
-
-    if (ctx_->endian() == endian::little)
-    {
-        bytes[0] = script_.read<u8>();
-        bytes[1] = script_.read<u8>();
-        bytes[2] = script_.read<u8>();
-    }
-    else
-    {
-        bytes[2] = script_.read<u8>();
-        bytes[1] = script_.read<u8>();
-        bytes[0] = script_.read<u8>();
-    }
-
-    auto offs = *reinterpret_cast<i32*>(bytes.data());
-
-    auto shift = (ctx_->props() & props::offs8) ? 8 : (ctx_->props() & props::offs9) ? 9 : 10;
-
-    offs = (offs << 8) >> shift;
-
-    return offs;
+    return (script_.read_i24() << 8) >> ((ctx_->props() & props::offs8) ? 8 : (ctx_->props() & props::offs9) ? 9 : 10);
 }
 
 auto disassembler::resolve_functions() -> void
@@ -631,11 +579,11 @@ auto disassembler::resolve_function(std::string const& index) -> std::string
 {
     auto addr = static_cast<u32>(std::stoul(index));
 
-    for (auto const& entry : assembly_->functions)
+    for (auto const& func : assembly_->functions)
     {
-        if (entry->index == addr)
+        if (func->index == addr)
         {
-            return entry->name;
+            return func->name;
         }
     }
 
@@ -644,21 +592,21 @@ auto disassembler::resolve_function(std::string const& index) -> std::string
 
 auto disassembler::decrypt_string(std::string const& str) -> std::string
 {
-    if (str.size() > 0 && ((static_cast<u8>(str[0]) & 0xC0) == 0x80))
+    if (str.empty() || ((static_cast<u8>(str[0]) & 0xC0) != 0x80))
     {
-        auto data = std::string{ "_encstr_" };
-
-        data.reserve(str.size() * 2);
-
-        for (auto i = 0u; i < str.size(); i++)
-        {
-            data += std::format("{:02X}", static_cast<u8>(str[i]));
-        }
-
-        return data;
+        return str;
     }
 
-    return std::move(str);
+    auto data = "_encstr_"s;
+
+    data.reserve(str.size() * 2);
+
+    for (auto i = 0u; i < str.size(); i++)
+    {
+        data += std::format("{:02X}", static_cast<u8>(str[i]));
+    }
+
+    return data;
 }
 
 } // namespace xsk::gsc
