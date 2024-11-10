@@ -49,7 +49,8 @@ auto decompiler::decompile_function(function const& func) -> void
 
     if (!stack_.empty())
     {
-        throw decomp_error("stack isn't empty at function end");
+        std::cout << std::format("[WRN]: orphan stack data at function {}\n", func.name);
+        //throw decomp_error("stack isn't empty at function end");
     }
 
     locs_.last = true;
@@ -1782,7 +1783,7 @@ auto decompiler::decompile_aborts(stmt_list& stm) -> void
             }
             else
             {
-                std::cout << std::format("WARNING: unresolved jump to '{}', maybe incomplete for loop\n", jmp);
+                std::cout << std::format("[WRN]: unresolved jump to '{}', maybe incomplete for loop at {}\n", jmp, func_->name->value);
             }
         }
     }
@@ -2279,10 +2280,13 @@ auto decompiler::decompile_switch(stmt_list& stm, usize begin, usize end) -> voi
 
     end += count;
 
+    // check if last case is empty and shift location
+    auto last = find_location_index(stm, stm.list[begin]->as<stmt_jmp_switch>().value);
+
     auto save = locs_;
     locs_.last = false;
     locs_.brk = last_location_index(stm, end) ? locs_.end : stm.list[end + 1]->label();
-    locs_.end = stm.list[begin]->as<stmt_jmp_switch>().value;
+    locs_.end = (last == end) ? stm.list[begin]->as<stmt_jmp_switch>().value : std::format("loc_{:X}", stm.list[end]->as<stmt_jmp_endswitch>().loc().begin.line + 1);
 
     auto loc = stm.list[begin]->loc();
     auto test = std::move(stm.list[begin]->as<stmt_jmp_switch>().test);
@@ -3103,7 +3107,7 @@ auto decompiler::process_expr_var_access(expr::ptr& exp, scope& scp) -> void
 
     if (scp.vars.size() <= index)
     {
-        std::cout << std::format("WARNING: bad local var access\n");
+        std::cout << std::format("[WRN]: bad local var access\n");
     }
     else
     {

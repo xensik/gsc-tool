@@ -89,16 +89,6 @@ auto source::parse_assembly(u8 const* data, usize size) -> assembly::ptr
                 if (ctx_->endian() == endian::big)
                     inst->size += ((inst->index + 4) & ~3) - (inst->index + 1);
                 break;
-            case opcode::OP_GetLocalFunction:
-            case opcode::OP_ScriptLocalFunctionCall:
-            case opcode::OP_ScriptLocalFunctionCall2:
-            case opcode::OP_ScriptLocalMethodCall:
-            case opcode::OP_ScriptLocalThreadCall:
-            case opcode::OP_ScriptLocalChildThreadCall:
-            case opcode::OP_ScriptLocalMethodThreadCall:
-            case opcode::OP_ScriptLocalMethodChildThreadCall:
-                inst->data[0] = inst->data[0].substr(4);
-                break;
             case opcode::OP_endswitch:
                 count = static_cast<u16>(std::stoul(inst->data[0]));
                 inst->size += 7 * count;

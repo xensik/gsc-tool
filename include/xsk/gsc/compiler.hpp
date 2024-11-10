@@ -142,6 +142,7 @@ private:
     auto variable_register(expr_identifier const& exp, scope& scp) -> void;
     auto variable_initialized(expr_identifier const& exp, scope& scp) -> bool;
     auto variable_initialize(expr_identifier const& exp, scope& scp) -> u8;
+    auto variable_reinitialize(expr_identifier const& exp, scope& scp) -> u8;
     auto variable_create(expr_identifier const& exp, scope& scp) -> u8;
     auto variable_access(expr_identifier const& exp, scope& scp) -> u8;
     auto resolve_function_type(expr_function const& exp, std::string& path) -> call::type;

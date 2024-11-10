@@ -207,6 +207,8 @@ namespace xsk::gsc
 %type <call::ptr>                  expr_function
 %type <call::ptr>                  expr_pointer
 %type <expr_add_array::ptr>        expr_add_array
+%type <expr::ptr>                  expr_bracket_double
+%type <expr::ptr>                  expr_bracket_comma
 %type <expr_parameters::ptr>       expr_parameters
 %type <expr_arguments::ptr>        expr_arguments
 %type <expr_arguments::ptr>        expr_arguments_no_empty
@@ -244,6 +246,7 @@ namespace xsk::gsc
 %nonassoc SIZEOF
 %nonassoc ADD_ARRAY
 %nonassoc RBRACKET
+%nonassoc COMMA
 %nonassoc THEN
 %nonassoc ELSE
 %nonassoc INCREMENT DECREMENT
@@ -762,8 +765,8 @@ expr_function
     ;
 
 expr_pointer
-    : LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
-        { $$ = expr_pointer::make(@$, std::move($3), std::move($7), call::mode::normal); }
+    : expr_bracket_double LPAREN expr_arguments RPAREN
+        { $$ = expr_pointer::make(@$, std::move($1), std::move($3), call::mode::normal); }
     | THREAD LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
         { $$ = expr_pointer::make(@$, std::move($4), std::move($8), call::mode::thread); }
     | CHILDTHREAD LBRACKET LBRACKET expr RBRACKET RBRACKET LPAREN expr_arguments RPAREN
@@ -773,8 +776,32 @@ expr_pointer
     ;
 
 expr_add_array
-    : LBRACKET expr_arguments_no_empty RBRACKET
+    : expr_bracket_double
+        {
+            auto args1 = expr_arguments::make(@$); args1->list.push_back(std::move($1));
+            auto array = expr_add_array::make(@$, std::move(args1));
+            auto args2 = expr_arguments::make(@$); args2->list.push_back(std::move(array));
+            $$ = expr_add_array::make(@$, std::move(args2));
+        }
+    | expr_bracket_comma expr_arguments_no_empty RBRACKET
+        {
+            auto args1 = expr_arguments::make(@$); args1->list.push_back(std::move($1));
+            auto array = expr_add_array::make(@$, std::move(args1));
+            auto args2 = std::move($2); args2->list.emplace(args2->list.begin(), std::move(array));
+            $$ = expr_add_array::make(@$, std::move(args2));
+        }
+    | LBRACKET expr_arguments_no_empty RBRACKET
         { $$ = expr_add_array::make(@$, std::move($2)); }
+    ;
+
+expr_bracket_double
+    : LBRACKET LBRACKET expr RBRACKET RBRACKET
+        { $$ = std::move($3); }
+    ;
+
+expr_bracket_comma
+    : LBRACKET LBRACKET expr RBRACKET COMMA
+        { $$ = std::move($3); }
     ;
 
 expr_parameters
@@ -794,7 +821,7 @@ expr_arguments
     ;
 
 expr_arguments_no_empty
-    : expr_arguments COMMA expr
+    : expr_arguments_no_empty COMMA expr
         { $$ = std::move($1); $$->list.push_back(std::move($3)); }
     | expr %prec ADD_ARRAY
         { $$ = expr_arguments::make(@$); $$->list.push_back(std::move($1)); }

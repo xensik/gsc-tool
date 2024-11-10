@@ -446,6 +446,8 @@ namespace xsk { namespace gsc {
       // expr_ternary
       // expr_binary
       // expr_primitive
+      // expr_bracket_double
+      // expr_bracket_comma
       // expr_tuple
       // expr_tuple_types
       // expr_object
@@ -1014,39 +1016,41 @@ namespace xsk { namespace gsc {
         S_expr_function = 169,                   // expr_function
         S_expr_pointer = 170,                    // expr_pointer
         S_expr_add_array = 171,                  // expr_add_array
-        S_expr_parameters = 172,                 // expr_parameters
-        S_expr_arguments = 173,                  // expr_arguments
-        S_expr_arguments_no_empty = 174,         // expr_arguments_no_empty
-        S_expr_isdefined = 175,                  // expr_isdefined
-        S_expr_istrue = 176,                     // expr_istrue
-        S_expr_reference = 177,                  // expr_reference
-        S_expr_tuple = 178,                      // expr_tuple
-        S_expr_tuple_arguments = 179,            // expr_tuple_arguments
-        S_expr_tuple_types = 180,                // expr_tuple_types
-        S_expr_array = 181,                      // expr_array
-        S_expr_field = 182,                      // expr_field
-        S_expr_size = 183,                       // expr_size
-        S_expr_paren = 184,                      // expr_paren
-        S_expr_object = 185,                     // expr_object
-        S_expr_thisthread = 186,                 // expr_thisthread
-        S_expr_empty_array = 187,                // expr_empty_array
-        S_expr_undefined = 188,                  // expr_undefined
-        S_expr_game = 189,                       // expr_game
-        S_expr_self = 190,                       // expr_self
-        S_expr_anim = 191,                       // expr_anim
-        S_expr_level = 192,                      // expr_level
-        S_expr_animation = 193,                  // expr_animation
-        S_expr_animtree = 194,                   // expr_animtree
-        S_expr_identifier_nosize = 195,          // expr_identifier_nosize
-        S_expr_identifier = 196,                 // expr_identifier
-        S_expr_path = 197,                       // expr_path
-        S_expr_istring = 198,                    // expr_istring
-        S_expr_string = 199,                     // expr_string
-        S_expr_vector = 200,                     // expr_vector
-        S_expr_float = 201,                      // expr_float
-        S_expr_integer = 202,                    // expr_integer
-        S_expr_false = 203,                      // expr_false
-        S_expr_true = 204                        // expr_true
+        S_expr_bracket_double = 172,             // expr_bracket_double
+        S_expr_bracket_comma = 173,              // expr_bracket_comma
+        S_expr_parameters = 174,                 // expr_parameters
+        S_expr_arguments = 175,                  // expr_arguments
+        S_expr_arguments_no_empty = 176,         // expr_arguments_no_empty
+        S_expr_isdefined = 177,                  // expr_isdefined
+        S_expr_istrue = 178,                     // expr_istrue
+        S_expr_reference = 179,                  // expr_reference
+        S_expr_tuple = 180,                      // expr_tuple
+        S_expr_tuple_arguments = 181,            // expr_tuple_arguments
+        S_expr_tuple_types = 182,                // expr_tuple_types
+        S_expr_array = 183,                      // expr_array
+        S_expr_field = 184,                      // expr_field
+        S_expr_size = 185,                       // expr_size
+        S_expr_paren = 186,                      // expr_paren
+        S_expr_object = 187,                     // expr_object
+        S_expr_thisthread = 188,                 // expr_thisthread
+        S_expr_empty_array = 189,                // expr_empty_array
+        S_expr_undefined = 190,                  // expr_undefined
+        S_expr_game = 191,                       // expr_game
+        S_expr_self = 192,                       // expr_self
+        S_expr_anim = 193,                       // expr_anim
+        S_expr_level = 194,                      // expr_level
+        S_expr_animation = 195,                  // expr_animation
+        S_expr_animtree = 196,                   // expr_animtree
+        S_expr_identifier_nosize = 197,          // expr_identifier_nosize
+        S_expr_identifier = 198,                 // expr_identifier
+        S_expr_path = 199,                       // expr_path
+        S_expr_istring = 200,                    // expr_istring
+        S_expr_string = 201,                     // expr_string
+        S_expr_vector = 202,                     // expr_vector
+        S_expr_float = 203,                      // expr_float
+        S_expr_integer = 204,                    // expr_integer
+        S_expr_false = 205,                      // expr_false
+        S_expr_true = 206                        // expr_true
       };
     };
 
@@ -1112,6 +1116,8 @@ namespace xsk { namespace gsc {
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_bracket_double: // expr_bracket_double
+      case symbol_kind::S_expr_bracket_comma: // expr_bracket_comma
       case symbol_kind::S_expr_tuple: // expr_tuple
       case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
@@ -2495,6 +2501,8 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_bracket_double: // expr_bracket_double
+      case symbol_kind::S_expr_bracket_comma: // expr_bracket_comma
       case symbol_kind::S_expr_tuple: // expr_tuple
       case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
@@ -4981,8 +4989,8 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2429,     ///< Last index in yytable_.
-      yynnts_ = 92,  ///< Number of nonterminal symbols.
+      yylast_ = 2515,     ///< Last index in yytable_.
+      yynnts_ = 94,  ///< Number of nonterminal symbols.
       yyfinal_ = 23 ///< Termination state number.
     };
 
@@ -5040,6 +5048,8 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_bracket_double: // expr_bracket_double
+      case symbol_kind::S_expr_bracket_comma: // expr_bracket_comma
       case symbol_kind::S_expr_tuple: // expr_tuple
       case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
@@ -5385,6 +5395,8 @@ switch (yykind)
       case symbol_kind::S_expr_ternary: // expr_ternary
       case symbol_kind::S_expr_binary: // expr_binary
       case symbol_kind::S_expr_primitive: // expr_primitive
+      case symbol_kind::S_expr_bracket_double: // expr_bracket_double
+      case symbol_kind::S_expr_bracket_comma: // expr_bracket_comma
       case symbol_kind::S_expr_tuple: // expr_tuple
       case symbol_kind::S_expr_tuple_types: // expr_tuple_types
       case symbol_kind::S_expr_object: // expr_object
@@ -5737,7 +5749,7 @@ switch (yykind)
 
 #line 13 "parser.ypp"
 } } // xsk::gsc
-#line 5741 "parser.hpp"
+#line 5753 "parser.hpp"
 
 
 

@@ -862,23 +862,31 @@ auto compiler::emit_stmt_default(stmt_default const& stm, scope&) -> void
 
 auto compiler::emit_stmt_break(stmt_break const& stm, scope& scp) -> void
 {
-    if (!can_break_ || scp.abort != scope::abort_none || scp.loc_break == "")
+    if (!can_break_ /*|| scp.abort != scope::abort_none*/ || scp.loc_break == "")
         throw comp_error(stm.loc(), "illegal break statement");
 
-    break_blks_.push_back(&scp);
-    emit_remove_local_vars(scp);
-    scp.abort = scope::abort_break;
+    if (scp.abort == scope::abort_none)
+    {
+        break_blks_.push_back(&scp);
+        emit_remove_local_vars(scp);
+        scp.abort = scope::abort_break;
+    }
+
     emit_opcode(opcode::OP_jump, scp.loc_break);
 }
 
 auto compiler::emit_stmt_continue(stmt_continue const& stm, scope& scp) -> void
 {
-    if (!can_continue_ || scp.abort != scope::abort_none || scp.loc_cont == "")
+    if (!can_continue_ /*|| scp.abort != scope::abort_none*/ || scp.loc_cont == "")
         throw comp_error(stm.loc(), "illegal continue statement");
+    
+    if (scp.abort == scope::abort_none)
+    {
+        continue_blks_.push_back(&scp);
+        emit_remove_local_vars(scp);
+        scp.abort = scope::abort_continue;
+    }
 
-    continue_blks_.push_back(&scp);
-    emit_remove_local_vars(scp);
-    scp.abort = scope::abort_continue;
     emit_opcode(opcode::OP_jump, scp.loc_cont);
 }
 
@@ -1626,7 +1634,19 @@ auto compiler::emit_expr_parameters(expr_parameters const& exp, scope& scp) -> v
     {
         for (auto const& entry : exp.list)
         {
-            emit_opcode(opcode::OP_SafeCreateVariableFieldCached, std::format("{}", variable_initialize(*entry, scp)));
+            //if (!variable_initialized(*entry, scp))
+            {
+                emit_opcode(opcode::OP_SafeCreateVariableFieldCached, std::format("{}", variable_initialize(*entry, scp)));
+            }
+            /*else
+            {
+                auto index = variable_reinitialize(*entry, scp);
+
+                if (index == 0)
+                    emit_opcode(opcode::OP_SafeSetVariableFieldCached0);
+                else
+                    emit_opcode(opcode::OP_SafeSetVariableFieldCached, std::format("{}", index));
+            }*/
         }
 
         emit_opcode(opcode::OP_checkclearparams);
@@ -1752,7 +1772,8 @@ auto compiler::emit_expr_array_ref(expr_array const& exp, scope& scp, bool set) 
                 auto index = variable_initialize(exp.obj->as<expr_identifier>(), scp);
                 emit_opcode(opcode::OP_EvalNewLocalArrayRefCached0, (ctx_->props() & props::hash) ? exp.obj->as<expr_identifier>().value : std::format("{}", index));
 
-                if (!set) throw comp_error(exp.loc(), "INTERNAL: VAR CREATED BUT NOT SET");
+                // trigger if nested array for lvalue 'var[1][2] = 3;' set is in outer array
+                //if (!set) throw comp_error(exp.loc(), "INTERNAL: VAR CREATED BUT NOT SET");
             }
             else
             {
@@ -2751,10 +2772,41 @@ auto compiler::variable_initialize(expr_identifier const& exp, scope& scp) -> u8
                 scp.create_count = i + 1;
                 return scp.vars[i].create;
             }
+
+            throw comp_error(exp.loc(), std::format("local variable '{}' already initialized", exp.value));
         }
     }
 
     throw comp_error(exp.loc(), std::format("local variable '{}' not found", exp.value));
+}
+
+auto compiler::variable_reinitialize(expr_identifier const& exp, scope& scp) -> u8
+{
+    for (auto i = 0u; i < scp.vars.size(); i++)
+    {
+        if (scp.vars[i].name == exp.value)
+        {
+            if (scp.vars[i].init)
+            {
+                for (auto j = 0u; j < i; j++)
+                {
+                    if (!scp.vars[j].init)
+                    {
+                        scp.vars[j].init = true;
+                        emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->props() & props::hash) ? scp.vars[j].name : std::format("{}", scp.vars[j].create));
+                    }
+                }
+
+                scp.vars[i].init = true;
+                scp.create_count = i + 1;
+                return scp.vars[i].create;
+            }
+            
+            throw comp_error(exp.loc(), std::format("local variable '{}' not initialized", exp.value));
+        }
+    }
+
+   throw comp_error(exp.loc(), std::format("local variable '{}' not found", exp.value));
 }
 
 auto compiler::variable_create(expr_identifier const& exp, scope& scp) -> u8
