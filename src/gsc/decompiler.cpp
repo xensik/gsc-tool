@@ -1253,12 +1253,19 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         }
         case opcode::OP_SafeSetVariableFieldCached0:
         {
-            func_->params->list.push_back(expr_identifier::make(loc, "var_0"));
+            if (func_->params->list.size() == 0)
+                func_->params->list.push_back(expr_identifier::make(loc, "¡ERROR!"));
+            else
+                func_->params->list.push_back(expr_identifier::make(loc, func_->params->list.at(func_->params->list.size() - 1)->as<expr_identifier>().value));
             break;
         }
         case opcode::OP_SafeSetVariableFieldCached:
         {
-            func_->params->list.push_back(expr_identifier::make(loc, "var_" + inst.data[0]));
+            auto index = func_->params->list.size() - 1 - std::stoul(inst.data[0]);
+            if (index < 0 || index > func_->params->list.size())
+                func_->params->list.push_back(expr_identifier::make(loc, "¡ERROR!"));
+            else
+                func_->params->list.push_back(expr_identifier::make(loc, func_->params->list.at(index)->as<expr_identifier>().value));                
             break;
         }
         case opcode::OP_EvalLocalVariableRefCached0:
@@ -2396,8 +2403,11 @@ auto decompiler::process_function(decl_function& func) -> void
 
     for (auto const& entry : func.params->list)
     {
-        scp_body->vars.push_back({ entry->value, static_cast<u8>(scp_body->create_count), true });
-        scp_body->create_count++;
+        if (scp_body->find(0, entry->value) == -1)
+        {
+            scp_body->vars.push_back({ entry->value, static_cast<u8>(scp_body->create_count), true });
+            scp_body->create_count++;
+        }
     }
 
     process_stmt_comp(*func.body, *scp_body);
@@ -3107,7 +3117,7 @@ auto decompiler::process_expr_var_access(expr::ptr& exp, scope& scp) -> void
 
     if (scp.vars.size() <= index)
     {
-        std::cout << std::format("[WRN]: bad local var access\n");
+        std::cout << std::format("[WRN]: bad variable access {} at {} \n", index, func_->name->value);
     }
     else
     {

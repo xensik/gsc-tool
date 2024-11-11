@@ -1634,19 +1634,19 @@ auto compiler::emit_expr_parameters(expr_parameters const& exp, scope& scp) -> v
     {
         for (auto const& entry : exp.list)
         {
-            //if (!variable_initialized(*entry, scp))
+            if (!variable_initialized(*entry, scp))
             {
                 emit_opcode(opcode::OP_SafeCreateVariableFieldCached, std::format("{}", variable_initialize(*entry, scp)));
             }
-            /*else
+            else
             {
-                auto index = variable_reinitialize(*entry, scp);
+                auto index = variable_access(*entry, scp);
 
                 if (index == 0)
                     emit_opcode(opcode::OP_SafeSetVariableFieldCached0);
                 else
                     emit_opcode(opcode::OP_SafeSetVariableFieldCached, std::format("{}", index));
-            }*/
+            }
         }
 
         emit_opcode(opcode::OP_checkclearparams);
@@ -2778,35 +2778,6 @@ auto compiler::variable_initialize(expr_identifier const& exp, scope& scp) -> u8
     }
 
     throw comp_error(exp.loc(), std::format("local variable '{}' not found", exp.value));
-}
-
-auto compiler::variable_reinitialize(expr_identifier const& exp, scope& scp) -> u8
-{
-    for (auto i = 0u; i < scp.vars.size(); i++)
-    {
-        if (scp.vars[i].name == exp.value)
-        {
-            if (scp.vars[i].init)
-            {
-                for (auto j = 0u; j < i; j++)
-                {
-                    if (!scp.vars[j].init)
-                    {
-                        scp.vars[j].init = true;
-                        emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->props() & props::hash) ? scp.vars[j].name : std::format("{}", scp.vars[j].create));
-                    }
-                }
-
-                scp.vars[i].init = true;
-                scp.create_count = i + 1;
-                return scp.vars[i].create;
-            }
-            
-            throw comp_error(exp.loc(), std::format("local variable '{}' not initialized", exp.value));
-        }
-    }
-
-   throw comp_error(exp.loc(), std::format("local variable '{}' not found", exp.value));
 }
 
 auto compiler::variable_create(expr_identifier const& exp, scope& scp) -> u8
