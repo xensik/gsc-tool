@@ -219,7 +219,7 @@ auto reader::read_cstr() -> std::string
     return ret;
 }
 
-auto reader::read_bytes(u32 pos, u32 count) -> std::string
+auto reader::read_bytes(usize pos, usize count) -> std::string
 {
     auto data = std::string{};
 
@@ -240,17 +240,17 @@ auto reader::is_avail() const -> bool
     return pos_ < size_;
 }
 
-auto reader::seek(u32 size) -> void
+auto reader::seek(usize size) -> void
 {
     if (pos_ + size <= size_) pos_ += size;
 }
 
-auto reader::seek_neg(u32 size) -> void
+auto reader::seek_neg(usize size) -> void
 {
     if (pos_ >= size) pos_ -= size;
 }
 
-auto reader::align(u32 size) -> u32
+auto reader::align(usize size) -> usize
 {
     auto pos = pos_;
 

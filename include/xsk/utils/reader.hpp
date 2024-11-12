@@ -27,11 +27,11 @@ public:
     auto read() -> T;
     auto read_i24() -> i32;
     auto read_cstr() -> std::string;
-    auto read_bytes(u32 pos, u32 count) -> std::string;
+    auto read_bytes(usize pos, usize count) -> std::string;
     auto is_avail() const -> bool;
-    auto seek(u32 size) -> void;
-    auto seek_neg(u32 size) -> void;
-    auto align(u32 size) -> u32;
+    auto seek(usize size) -> void;
+    auto seek_neg(usize size) -> void;
+    auto align(usize size) -> usize;
     auto data() const -> u8 const*;
     auto size() const -> usize;
     auto pos() const -> usize;

@@ -32,7 +32,7 @@ auto source::parse_assembly(u8 const* data, usize size) -> assembly::ptr
     auto lines = utils::string::clean_buffer_lines(data, size);
     auto assembly = assembly::make();
     auto func = function::ptr{ nullptr };
-    auto index = u32{ 1 };
+    auto index = usize{ 1 };
     auto count = u16{ 0 };
 
     for (auto& line : lines)
@@ -92,6 +92,10 @@ auto source::parse_assembly(u8 const* data, usize size) -> assembly::ptr
             case opcode::OP_endswitch:
                 count = static_cast<u16>(std::stoul(inst->data[0]));
                 inst->size += 7 * count;
+                break;
+            case opcode::OP_FormalParams:
+                count = static_cast<u8>(std::stoul(inst->data[0]));
+                inst->size += (ctx_->props() & props::hash) ? count * 8 : count;
                 break;
             default:
                 break;

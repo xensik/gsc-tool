@@ -55,7 +55,7 @@ public:
 
     auto engine_name() const -> std::string_view;
 
-    auto opcode_size(opcode op) const -> u32;
+    auto opcode_size(opcode op) const -> usize;
 
     auto opcode_id(opcode op) const -> u8;
 

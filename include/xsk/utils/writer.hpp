@@ -14,10 +14,10 @@ struct writer
     using error = std::runtime_error;
 
 private:
-    static constexpr u32 default_size = 0x100000;
+    static constexpr usize default_size = 0x100000;
     u8* data_;
-    u32 size_;
-    u32 pos_ = 0;
+    usize size_;
+    usize pos_ = 0;
     bool swap_;
 
 public:
@@ -26,21 +26,22 @@ public:
     auto operator=(writer const&) -> writer& = delete;
     auto operator=(writer&&) -> writer& = delete;
     explicit writer(bool swap = false);
-    writer(u32 size, bool swap = false);
+    writer(usize size, bool swap = false);
     ~writer();
     auto clear() -> void;
     template <typename T>
     auto write(T data) -> void;
+    auto write_i24(i32 data) -> void;
     auto write_string(std::string const& data) -> void;
     auto write_cstr(std::string const& data) -> void;
     auto is_avail() const -> bool;
-    auto seek(u32 size) -> void;
-    auto seek_neg(u32 size) -> void;
-    auto align(u32 size) -> u32;
+    auto seek(usize size) -> void;
+    auto seek_neg(usize size) -> void;
+    auto align(usize size) -> usize;
     auto data() const -> u8 const*;
-    auto size() const -> u32;
-    auto pos() const -> u32;
-    auto pos(u32 pos) -> void;
+    auto size() const -> usize;
+    auto pos() const -> usize;
+    auto pos(usize pos) -> void;
 };
 
 } // namespace xsk::utils

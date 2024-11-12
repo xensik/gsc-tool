@@ -14,7 +14,7 @@ writer::writer(bool swap) : size_{ default_size }, swap_{ swap }
     data_ = new u8[size_]();
 }
 
-writer::writer(u32 size, bool swap) : size_{ size }, swap_{ swap }
+writer::writer(usize size, bool swap) : size_{ size }, swap_{ swap }
 {
     data_ = new u8[size_]();
 }
@@ -192,13 +192,32 @@ template<> auto writer::write(f32 data) -> void
     pos_ += 4;
 }
 
+auto writer::write_i24(i32 data) -> void
+{
+    if (pos_ + 3 > size_)
+        throw error("writer: out of bounds");
+    
+    if (!swap_)
+    {
+        *reinterpret_cast<i32*>(data_ + pos_) = data & 0xFFFFFF;
+    }
+    else
+    {
+        (data_ + pos_)[0] = reinterpret_cast<u8*>(&data)[2];
+        (data_ + pos_)[1] = reinterpret_cast<u8*>(&data)[1];
+        (data_ + pos_)[2] = reinterpret_cast<u8*>(&data)[0];
+    }
+
+    pos_ += 3;
+}
+
 auto writer::write_string(std::string const& data) -> void
 {
     if (pos_ + data.size() > size_)
         throw error("writer: out of bounds");
 
     std::memcpy(reinterpret_cast<void*>(data_ + pos_), data.data(), data.size());
-    pos_ += static_cast<u32>(data.size());
+    pos_ += data.size();
 }
 
 auto writer::write_cstr(std::string const& data) -> void
@@ -207,7 +226,7 @@ auto writer::write_cstr(std::string const& data) -> void
         throw error("writer: out of bounds");
 
     std::memcpy(reinterpret_cast<void*>(data_ + pos_), data.data(), data.size());
-    pos_ += static_cast<u32>(data.size() + 1);
+    pos_ += data.size() + 1;
 }
 
 auto writer::is_avail() const -> bool
@@ -215,17 +234,17 @@ auto writer::is_avail() const -> bool
     return pos_ < size_;
 }
 
-auto writer::seek(u32 size) -> void
+auto writer::seek(usize size) -> void
 {
     if (pos_ + size <= size_) pos_ += size;
 }
 
-auto writer::seek_neg(u32 size) -> void
+auto writer::seek_neg(usize size) -> void
 {
     if (pos_ >= size) pos_ -= size;
 }
 
-auto writer::align(u32 size) -> u32
+auto writer::align(usize size) -> usize
 {
     auto pos = pos_;
 
@@ -239,17 +258,17 @@ auto writer::data() const -> const u8*
     return data_;
 }
 
-auto writer::size() const -> u32
+auto writer::size() const -> usize
 {
     return size_;
 }
 
-auto writer::pos() const -> u32
+auto writer::pos() const -> usize
 {
     return pos_;
 }
 
-auto writer::pos(u32 pos) -> void
+auto writer::pos(usize pos) -> void
 {
     if (pos <= size_) pos_ = pos;
 }

@@ -28,17 +28,18 @@ public:
 private:
     auto assemble_function(function const& func) -> void;
     auto assemble_instruction(instruction const& inst) -> void;
-    auto assemble_builtin_call(instruction const& inst, bool method, bool args) -> void;
-    auto assemble_local_call(instruction const& inst, bool thread) -> void;
-    auto assemble_far_call(instruction const& inst, bool thread) -> void;
-    auto assemble_switch(instruction const& inst) -> void;
-    auto assemble_end_switch(instruction const& inst) -> void;
-    auto assemble_field_variable(instruction const& inst) -> void;
-    auto assemble_formal_params(instruction const& inst) -> void;
+    auto assemble_field(instruction const& inst) -> void;
+    auto assemble_params(instruction const& inst) -> void;
+    auto assemble_call_far(instruction const& inst, bool thread) -> void;
+    auto assemble_call_far2(instruction const& inst, bool thread) -> void;
+    auto assemble_call_local(instruction const& inst, bool thread) -> void;
+    auto assemble_call_builtin(instruction const& inst, bool method, bool args) -> void;
     auto assemble_jump(instruction const& inst, bool expr, bool back) -> void;
+    auto assemble_switch(instruction const& inst) -> void;
+    auto assemble_switch_table(instruction const& inst) -> void;
     auto assemble_offset(i32 offs) -> void;
-    auto resolve_function(std::string const& name) -> i32;
-    auto resolve_label(std::string const& name) -> i32;
+    auto resolve_function(std::string const& name) -> usize;
+    auto resolve_label(std::string const& name) -> usize;
     auto encrypt_string(std::string const& str) -> std::string;
 };
 

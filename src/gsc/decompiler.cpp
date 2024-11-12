@@ -36,7 +36,7 @@ auto decompiler::decompile_function(function const& func) -> void
     locs_ = {};
     stack_ = {};
 
-    auto loc = location{ nullptr, static_cast<location::counter_type>(func.index) };
+    auto loc = location{ nullptr, static_cast<i32>(func.index) };
     auto name = expr_identifier::make(loc, func.name);
     auto prms = expr_parameters::make(loc);
     auto body = stmt_comp::make(loc, stmt_list::make(loc));
@@ -67,7 +67,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
 {
     decompile_expressions(inst);
 
-    auto loc = location{ nullptr, static_cast<location::counter_type>(inst.index) };
+    auto loc = location{ nullptr, static_cast<i32>(inst.index) };
 
     switch (inst.opcode)
     {

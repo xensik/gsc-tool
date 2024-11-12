@@ -57,7 +57,7 @@ auto context::engine_name() const -> std::string_view
     return "";
 }
 
-auto context::opcode_size(opcode op) const -> u32
+auto context::opcode_size(opcode op) const -> usize
 {
     switch (op)
     {

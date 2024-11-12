@@ -475,7 +475,7 @@ auto disassembler::disassemble_switch_table(instruction& inst) -> void
 
     inst.data.push_back(std::format("{}", count));
 
-    for (auto i = count; i > 0; i--)
+    for (auto i = 0u; i < count; i++)
     {
         auto data = script_.read<u32>();
         auto offs = (ctx_->engine() == engine::iw9) ? script_.read<i16>() : disassemble_offset();
@@ -577,7 +577,7 @@ auto disassembler::resolve_functions() -> void
 
 auto disassembler::resolve_function(std::string const& index) -> std::string
 {
-    auto addr = static_cast<u32>(std::stoul(index));
+    auto addr = std::stoul(index);
 
     for (auto const& func : assembly_->functions)
     {

@@ -30,10 +30,10 @@ auto assembler::assemble(assembly const& data) -> std::tuple<buffer, buffer, buf
         assemble_function(*func);
     }
 
-    auto const dev_endpos = devmap_.pos();
+    auto save = devmap_.pos();
     devmap_.pos(0);
     devmap_.write<u32>(devmap_count_);
-    devmap_.pos(dev_endpos);
+    devmap_.pos(save);
 
     return { buffer{ script_.data(), script_.pos() }, buffer{ stack_.data(), stack_.pos() }, buffer{ devmap_.data(), devmap_.pos() } };
 }
@@ -42,7 +42,7 @@ auto assembler::assemble_function(function const& func) -> void
 {
     func_ = &func;
 
-    stack_.write<u32>(func.size);
+    stack_.write<u32>(static_cast<u32>(func.size));
 
     if (ctx_->props() & props::hash)
     {
@@ -73,7 +73,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
 
     if ((ctx_->build() & build::dev_maps) != build::prod)
     {
-        devmap_.write<u32>(script_.pos());
+        devmap_.write<u32>(static_cast<u32>(script_.pos()));
         devmap_.write<u16>(static_cast<u16>(inst.pos.line));
         devmap_.write<u16>(static_cast<u16>(inst.pos.column));
         devmap_count_++;
@@ -246,7 +246,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
         case opcode::OP_EvalLevelFieldVariableRef:
         case opcode::OP_EvalAnimFieldVariable:
         case opcode::OP_EvalSelfFieldVariableRef:
-            assemble_field_variable(inst);
+            assemble_field(inst);
             break;
         case opcode::OP_CallBuiltinPointer:
         case opcode::OP_CallBuiltinMethodPointer:
@@ -260,31 +260,31 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
         case opcode::OP_ScriptLocalFunctionCall2:
         case opcode::OP_ScriptLocalFunctionCall:
         case opcode::OP_ScriptLocalMethodCall:
-            assemble_local_call(inst, false);
+            assemble_call_local(inst, false);
             break;
         case opcode::OP_ScriptLocalThreadCall:
         case opcode::OP_ScriptLocalChildThreadCall:
         case opcode::OP_ScriptLocalMethodThreadCall:
         case opcode::OP_ScriptLocalMethodChildThreadCall:
-            assemble_local_call(inst, true);
+            assemble_call_local(inst, true);
             break;
         case opcode::OP_GetFarFunction:
         case opcode::OP_ScriptFarFunctionCall2:
         case opcode::OP_ScriptFarFunctionCall:
         case opcode::OP_ScriptFarMethodCall:
-            assemble_far_call(inst, false);
+            assemble_call_far(inst, false);
             break;
         case opcode::OP_ScriptFarThreadCall:
         case opcode::OP_ScriptFarChildThreadCall:
         case opcode::OP_ScriptFarMethodThreadCall:
         case opcode::OP_ScriptFarMethodChildThreadCall:
-            assemble_far_call(inst, true);
+            assemble_call_far(inst, true);
             break;
         case opcode::OP_CallBuiltin:
-            assemble_builtin_call(inst, false, true);
+            assemble_call_builtin(inst, false, true);
             break;
         case opcode::OP_CallBuiltinMethod:
-            assemble_builtin_call(inst, true, true);
+            assemble_call_builtin(inst, true, true);
             break;
         case opcode::OP_GetBuiltinFunction:
         case opcode::OP_CallBuiltin0:
@@ -293,7 +293,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
         case opcode::OP_CallBuiltin3:
         case opcode::OP_CallBuiltin4:
         case opcode::OP_CallBuiltin5:
-            assemble_builtin_call(inst, false, false);
+            assemble_call_builtin(inst, false, false);
             break;
         case opcode::OP_GetBuiltinMethod:
         case opcode::OP_CallBuiltinMethod0:
@@ -302,7 +302,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
         case opcode::OP_CallBuiltinMethod3:
         case opcode::OP_CallBuiltinMethod4:
         case opcode::OP_CallBuiltinMethod5:
-            assemble_builtin_call(inst, true, false);
+            assemble_call_builtin(inst, true, false);
             break;
         case opcode::OP_JumpOnFalseExpr:
         case opcode::OP_JumpOnTrueExpr:
@@ -320,17 +320,130 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             assemble_switch(inst);
             break;
         case opcode::OP_endswitch:
-            assemble_end_switch(inst);
+            assemble_switch_table(inst);
             break;
         case opcode::OP_FormalParams:
-            assemble_formal_params(inst);
+            assemble_params(inst);
             break;
         default:
             throw asm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
 }
 
-auto assembler::assemble_builtin_call(instruction const& inst, bool method, bool args) -> void
+auto assembler::assemble_field(instruction const& inst) -> void
+{
+    if (ctx_->props() & props::hash)
+    {
+        return script_.write<u64>(ctx_->hash_id(inst.data[0]));
+    }
+
+    auto id = ctx_->token_id(inst.data[0]);
+
+    if (id == 0) id = 0xFFFFFFFF;
+
+    if (ctx_->props() & props::tok4)
+        script_.write<u32>(id);
+    else
+        script_.write<u16>(static_cast<u16>(id));
+
+    if (id > ctx_->str_count())
+    {
+        if (ctx_->props() & props::tok4)
+            stack_.write<u32>(0);
+        else
+            stack_.write<u16>(0);
+
+        stack_.write_cstr(encrypt_string(inst.data[0]));
+    }
+}
+
+auto assembler::assemble_params(instruction const& inst) -> void
+{
+    auto count = std::stoul(inst.data[0]);
+
+    script_.write<u8>(static_cast<u8>(count));
+
+    for (auto i = 1u; i <= count; i++)
+    {
+        if (ctx_->props() & props::hash)
+            script_.write<u64>(ctx_->hash_id(inst.data[i]));
+        else
+            script_.write<u8>(static_cast<u8>(std::stoi(inst.data[i])));
+    }
+}
+
+auto assembler::assemble_call_far(instruction const& inst, bool thread) -> void
+{
+    if (ctx_->props() & props::farcall)
+    {
+        return assemble_call_far2(inst, thread);
+    }
+
+    auto file_id = ctx_->token_id(inst.data[0]);
+    auto func_id = ctx_->token_id(inst.data[1]);
+
+    if (ctx_->props() & props::tok4)
+        stack_.write<u32>(file_id);
+    else
+        stack_.write<u16>(static_cast<u16>(file_id));
+
+    if (file_id == 0)
+        stack_.write_cstr(encrypt_string(inst.data[0]));
+
+    if (ctx_->props() & props::tok4)
+        stack_.write<u32>(func_id);
+    else
+        stack_.write<u16>(static_cast<u16>(func_id));
+
+    if (func_id == 0)
+        stack_.write_cstr(encrypt_string(inst.data[1]));
+
+    script_.write<u8>(0);
+    script_.write<u16>(0);
+
+    if (thread)
+    {
+        script_.write<u8>(static_cast<u8>(std::stoi(inst.data[2])));
+    }
+}
+
+auto assembler::assemble_call_far2(instruction const& inst, bool thread) -> void
+{
+    if (inst.data[0].empty())
+    {
+        script_.write<i32>(static_cast<i32>(resolve_function(inst.data[1]) - inst.index - 1));
+        stack_.write<u64>(0);
+        stack_.write<u64>(0);
+    }
+    else
+    {
+        auto path = inst.data[0];
+
+        if (!path.starts_with("_id_"))
+            path.append(ctx_->instance() == instance::server ? ".gsc" : ".csc");
+
+        script_.write<u32>(0);
+        stack_.write<u64>(ctx_->path_id(path));
+        stack_.write<u64>(ctx_->hash_id(inst.data[1]));
+    }
+
+    if (thread)
+    {
+        script_.write<u8>(static_cast<u8>(std::stoi(inst.data[2])));
+    }
+}
+
+auto assembler::assemble_call_local(instruction const& inst, bool thread) -> void
+{
+    assemble_offset(static_cast<i32>(resolve_function(inst.data[0]) - inst.index - 1));
+
+    if (thread)
+    {
+        script_.write<u8>(static_cast<u8>(std::stoi(inst.data[1])));
+    }
+}
+
+auto assembler::assemble_call_builtin(instruction const& inst, bool method, bool args) -> void
 {
     if (args)
     {
@@ -344,272 +457,105 @@ auto assembler::assemble_builtin_call(instruction const& inst, bool method, bool
     }
     else
     {
-        auto const id = method ? ctx_->meth_id(inst.data[0]) : ctx_->func_id(inst.data[0]);
-
-        script_.write<u16>(id);
-    }
-}
-
-auto assembler::assemble_local_call(instruction const& inst, bool thread) -> void
-{
-    auto const addr = resolve_function(inst.data[0]);
-    auto const offset = static_cast<i32>(addr - inst.index - 1);
-
-    assemble_offset(offset);
-
-    if (thread)
-    {
-        script_.write<u8>(static_cast<u8>(std::stoi(inst.data[1])));
-    }
-}
-
-auto assembler::assemble_far_call(instruction const& inst, bool thread) -> void
-{
-    if (ctx_->props() & props::farcall)
-    {
-        if (inst.data[0].empty())
-        {
-            auto const addr = resolve_function(inst.data[1]);
-            auto const offset = static_cast<i32>(addr - inst.index - 1);
-
-            script_.write<i32>(static_cast<i32>(offset)); // unsigned?
-            stack_.write<u64>(0);
-            stack_.write<u64>(0);
-        }
-        else
-        {
-            auto path = inst.data[0];
-            if (!path.starts_with("_id_"))
-                path.append(ctx_->instance() == instance::server ? ".gsc" : ".csc");
-
-            script_.write<u32>(0);
-            stack_.write<u64>(ctx_->path_id(path));
-            stack_.write<u64>(ctx_->hash_id(inst.data[1]));
-        }
-
-        if (thread)
-        {
-            script_.write<u8>(static_cast<u8>(std::stoi(inst.data[2])));
-        }
-    }
-    else
-    {
-        script_.write<u8>(0);
-        script_.write<u16>(0);
-
-        if (thread)
-        {
-            script_.write<u8>(static_cast<u8>(std::stoi(inst.data[2])));
-        }
-
-        auto const file_id = ctx_->token_id(inst.data[0]);
-        auto const func_id = ctx_->token_id(inst.data[1]);
-
-        if (ctx_->props() & props::tok4)
-            stack_.write<u32>(file_id);
-        else
-            stack_.write<u16>(static_cast<u16>(file_id));
-
-        if (file_id == 0)
-            stack_.write_cstr(encrypt_string(inst.data[0]));
-
-        if (ctx_->props() & props::tok4)
-            stack_.write<u32>(func_id);
-        else
-            stack_.write<u16>(static_cast<u16>(func_id));
-
-        if (func_id == 0)
-            stack_.write_cstr(encrypt_string(inst.data[1]));     
-    }
-}
-
-auto assembler::assemble_switch(instruction const& inst) -> void
-{
-    auto const addr = resolve_label(inst.data[0]);
-
-    script_.write<i32>(addr - inst.index - 4);
-}
-
-auto assembler::assemble_end_switch(instruction const& inst) -> void
-{
-    auto const count = std::stoul(inst.data[0]);
-
-    script_.write<u16>(static_cast<u16>(count));
-
-    auto type = static_cast<switch_type>(std::stoul(inst.data.back()));
-    auto index = inst.index + 3u;
-
-    for (auto i = 0u; i < count; i++)
-    {
-        if (ctx_->engine() == engine::iw9)
-        {
-            if (inst.data[1 + (4 * i)] == "case")
-            {
-                type = static_cast<switch_type>(std::stoul(inst.data[1 + (4 * i) + 1]));
-
-                if (type == switch_type::integer)
-                {
-                    script_.write<u32>(std::stoi(inst.data[1 + (4 * i) + 2])); //signed?
-                }
-                else
-                {
-                    script_.write<u32>(0);
-                    stack_.write_cstr(inst.data[1 + (4 * i) + 2]);
-                }
-
-                auto const addr = resolve_label(inst.data[1 + (4 * i) + 3]);
-
-                script_.write<i16>(static_cast<i16>(addr - index - 4));
-                script_.write<u8>(0);
-                script_.write<u8>(static_cast<u8>(type));
-
-                index += 8;
-            }
-            else if (inst.data[1 + (4 * i)] == "default")
-            {
-                auto const addr = resolve_label(inst.data[1 + (4 * i) + 1]);
-
-                script_.write<u32>(0);
-                script_.write<i16>(static_cast<i16>(addr - index - 4));
-                script_.write<u16>(0);
-
-                index += 8;
-            }
-            else
-            {
-                throw asm_error(std::format("invalid switch case {}", inst.data[1 + (4 * i)]));
-            }
-        }
-        else
-        {
-            if (inst.data[1 + (3 * i)] == "case")
-            {
-                if (type == switch_type::integer)
-                {
-                    script_.write<u32>((std::stoi(inst.data[1 + (3 * i) + 1]) & 0xFFFFFF) + 0x800000);
-                }
-                else
-                {
-                    script_.write<u32>(i + 1);
-                    stack_.write_cstr(encrypt_string(inst.data[1 + (3 * i) + 1]));
-                }
-
-                auto const addr = resolve_label(inst.data[1 + (3 * i) + 2]);
-
-                assemble_offset(addr - index - 4);
-
-                index += 7;
-            }
-            else if (inst.data[1 + (3 * i)] == "default")
-            {
-                script_.write<u32>(0);
-                stack_.write_cstr("\x01");
-
-                auto const addr = resolve_label(inst.data[1 + (3 * i) + 1]);
-
-                assemble_offset(addr - index - 4);
-
-                index += 7;
-            }
-            else
-            {
-                throw asm_error(std::format("invalid switch case {}", inst.data[1 + (3 * i)]));
-            }
-        }
-    }
-}
-
-auto assembler::assemble_field_variable(instruction const& inst) -> void
-{
-    if (ctx_->props() & props::hash)
-    {
-        script_.write<u64>(ctx_->hash_id(inst.data[0]));
-    }
-    else
-    {
-        auto id = ctx_->token_id(inst.data[0]);
-
-        if (id == 0) id = 0xFFFFFFFF;
-
-        if (ctx_->props() & props::tok4)
-            script_.write<u32>(id);
-        else
-            script_.write<u16>(static_cast<u16>(id));
-
-        if (id > ctx_->str_count())
-        {
-            if (ctx_->props() & props::tok4)
-                stack_.write<u32>(0);
-            else
-                stack_.write<u16>(0);
-
-            stack_.write_cstr(encrypt_string(inst.data[0]));
-        }
-    }
-}
-
-auto assembler::assemble_formal_params(instruction const& inst) -> void
-{
-    auto const count = std::stoul(inst.data[0]);
-
-    script_.write<u8>(static_cast<u8>(count));
-
-    for (auto i = 1u; i <= count; i++)
-    {
-        if (ctx_->props() & props::hash)
-        {
-            script_.write<u64>(ctx_->hash_id(inst.data[i]));
-        }
-        else
-        {
-            script_.write<u8>(static_cast<u8>(std::stoi(inst.data[i])));
-        }
+        script_.write<u16>(method ? ctx_->meth_id(inst.data[0]) : ctx_->func_id(inst.data[0]));
     }
 }
 
 auto assembler::assemble_jump(instruction const& inst, bool expr, bool back) -> void
 {
-    auto const addr = resolve_label(inst.data[0]);
-
     if (expr)
     {
-        script_.write<i16>(static_cast<i16>(addr - inst.index - 3));
+        script_.write<i16>(static_cast<i16>(resolve_label(inst.data[0]) - inst.index - 3));
     }
     else if (back)
     {
-        script_.write<i16>(static_cast<i16>((inst.index + 3) - addr));
+        script_.write<i16>(static_cast<i16>((inst.index + 3) - resolve_label(inst.data[0])));
     }
     else
     {
-        script_.write<i32>(static_cast<i32>(addr - inst.index - 5));
+        script_.write<i32>(static_cast<i32>(resolve_label(inst.data[0]) - inst.index - 5));
+    }
+}
+
+auto assembler::assemble_switch(instruction const& inst) -> void
+{
+    script_.write<i32>(resolve_label(inst.data[0]) - inst.index - 4);
+}
+
+auto assembler::assemble_switch_table(instruction const& inst) -> void
+{
+    auto count = std::stoul(inst.data[0]);
+    auto index = inst.index + 3u;
+
+    script_.write<u16>(static_cast<u16>(count));
+
+    for (auto i = 0u; i < count; i++)
+    {
+        if (inst.data[1 + (4 * i)] == "case")
+        {
+            auto type = static_cast<switch_type>(std::stoul(inst.data[1 + (4 * i) + 1]));
+
+            if (type == switch_type::integer)
+            {
+                if (ctx_->engine() == engine::iw9)
+                    script_.write<u32>(std::stoi(inst.data[1 + (4 * i) + 2])); //signed?
+                else
+                    script_.write<u32>((std::stoi(inst.data[1 + (4 * i) + 2]) & 0xFFFFFF) + 0x800000);
+            }
+            else
+            {
+                script_.write<u32>((ctx_->engine() == engine::iw9) ? 0 : i + 1);
+                stack_.write_cstr(encrypt_string(inst.data[1 + (4 * i) + 2]));
+            }
+
+            auto addr = resolve_label(inst.data[1 + (4 * i) + 3]);
+
+            if (ctx_->engine() == engine::iw9)
+            {
+                script_.write<i16>(static_cast<i16>(addr - index - 4));
+                script_.write<u8>(0xFF);
+                script_.write<u8>(static_cast<u8>(type));
+                index += 8;
+            }
+            else
+            {
+                assemble_offset(addr - index - 4);
+                index += 7;
+            }
+        }
+        else if (inst.data[1 + (4 * i)] == "default")
+        {
+            auto addr = resolve_label(inst.data[1 + (4 * i) + 1]);
+
+            if (ctx_->engine() == engine::iw9)
+            {
+                script_.write<u32>(0);
+                script_.write<i16>(static_cast<i16>(addr - index - 4));
+                script_.write<u8>(0xFF);
+                script_.write<u8>(0);
+                index += 8;
+            }
+            else
+            {
+                script_.write<u32>(0);
+                stack_.write_cstr("\x01");
+                assemble_offset(addr - index - 4);
+                index += 7;
+            }
+        }
+        else
+        {
+            throw asm_error("malformed switch table");
+        }
     }
 }
 
 auto assembler::assemble_offset(i32 offs) -> void
 {
-    auto bytes = std::array<u8, 4>{};
-
-    auto const shift = (ctx_->props() & props::offs8) ? 8 : (ctx_->props() & props::offs9) ? 9 : 10;
-
-    offs = (offs << shift) >> 8;
-
-    *reinterpret_cast<i32*>(bytes.data()) = offs;
-
-    if (ctx_->endian() == endian::little)
-    {
-        script_.write<u8>(bytes[0]);
-        script_.write<u8>(bytes[1]);
-        script_.write<u8>(bytes[2]);
-    }
-    else
-    {
-        script_.write<u8>(bytes[2]);
-        script_.write<u8>(bytes[1]);
-        script_.write<u8>(bytes[0]);
-    }
+    script_.write_i24((offs << ((ctx_->props() & props::offs8) ? 8 : (ctx_->props() & props::offs9) ? 9 : 10)) >> 8);
 }
 
-auto assembler::resolve_function(std::string const& name) -> std::int32_t
+auto assembler::resolve_function(std::string const& name) -> usize
 {
     for (auto const& entry : assembly_->functions)
     {
@@ -622,7 +568,7 @@ auto assembler::resolve_function(std::string const& name) -> std::int32_t
     throw asm_error(std::format("couldn't resolve local function address of {}", name));
 }
 
-auto assembler::resolve_label(std::string const& name) -> std::int32_t
+auto assembler::resolve_label(std::string const& name) -> usize
 {
     for (auto const& entry : func_->labels)
     {
@@ -637,21 +583,21 @@ auto assembler::resolve_label(std::string const& name) -> std::int32_t
 
 auto assembler::encrypt_string(std::string const& str) -> std::string
 {
-    if (str.starts_with("_encstr_") && str.size() % 2 == 0)
+    if (!str.starts_with("_encstr_") || str.size() % 2 != 0)
     {
-        auto data = std::string{};
-
-        data.reserve(str.size() / 2);
-
-        for (auto i = 8u; i < str.size(); i += 2)
-        {
-            data += static_cast<char>(std::stoul(str.substr(i, 2), 0, 16));
-        }
-
-        return data;
+        return str;
     }
 
-    return str;
+    auto data = ""s;
+
+    data.reserve(str.size() / 2);
+
+    for (auto i = 8u; i < str.size(); i += 2)
+    {
+        data += static_cast<char>(std::stoul(str.substr(i, 2), 0, 16));
+    }
+
+    return data;
 }
 
 } // namespace xsk::gsc
