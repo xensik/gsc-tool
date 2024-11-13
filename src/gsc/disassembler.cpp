@@ -371,7 +371,7 @@ auto disassembler::disassemble_call_far(instruction& inst, bool thread) -> void
 
 auto disassembler::disassemble_call_far2(instruction& inst, bool thread) -> void
 {
-    auto offs = script_.read<u32>();
+    auto offs = script_.read<i32>();
     auto file = stack_.read<u64>();
     auto name = stack_.read<u64>();
 
@@ -577,7 +577,7 @@ auto disassembler::resolve_functions() -> void
 
 auto disassembler::resolve_function(std::string const& index) -> std::string
 {
-    auto addr = std::stoul(index);
+    auto addr = static_cast<usize>(std::stoul(index));
 
     for (auto const& func : assembly_->functions)
     {
