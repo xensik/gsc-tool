@@ -16,7 +16,7 @@ class decompiler
     program::ptr program_;
     decl_function::ptr func_;
     std::unordered_set<std::string> vars_;
-    std::unordered_map<u32, std::string> labels_;
+    std::unordered_map<usize, std::string> labels_;
     std::vector<std::string> expr_labels_;
     std::vector<std::string> tern_labels_;
     std::vector<std::string> locals_;
@@ -55,7 +55,7 @@ private:
     auto find_location_index(stmt_list const& stm, std::string const& loc) -> usize;
     auto last_location_index(stmt_list const& stm, usize index) -> bool;
     auto lvalues_match(stmt_expr const& stm1, stmt_expr const& stm2) -> bool;
-    auto resolve_label(std::string const& name) -> u32;
+    auto resolve_label(std::string const& name) -> usize;
     auto process_function(decl_function& func) -> void;
     auto process_stmt(stmt& stm) -> void;
     auto process_stmt_list(stmt_list& stm) -> void;

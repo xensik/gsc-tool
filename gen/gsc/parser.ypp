@@ -44,7 +44,7 @@ namespace xsk::gsc { class preprocessor; }
 #include "xsk/gsc/preprocessor.hpp"
 using namespace xsk::gsc;
 namespace xsk::gsc
-{ 
+{
     auto GSClex(context const* ctx_, preprocessor& ppr) -> parser::symbol_type;
     auto parse_switch(stmt_switch& stm) -> void;
 }
@@ -323,7 +323,7 @@ decl_usingtree
 decl_constant
     : expr_identifier ASSIGN expr SEMICOLON
         {
-            ppr.ban_header(@$); $$ = decl_constant::make(@$, std::move($1), std::move($3)); 
+            ppr.ban_header(@$); $$ = decl_constant::make(@$, std::move($1), std::move($3));
             printf("%s" , std::format("{}: constants deprecated, use #define instead\n", @$.print()).data());
         }
     ;
@@ -513,7 +513,7 @@ stmt_foreach
 
 stmt_switch
     : SWITCH LPAREN expr RPAREN stmt_comp
-        { $$ = stmt_switch::make(@$, std::move($3), std::move($5)); 
+        { $$ = stmt_switch::make(@$, std::move($3), std::move($5));
           parse_switch(*$$);
         }
     ;

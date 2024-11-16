@@ -1265,7 +1265,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
             if (index < 0 || index > func_->params->list.size())
                 func_->params->list.push_back(expr_identifier::make(loc, "¡ERROR!"));
             else
-                func_->params->list.push_back(expr_identifier::make(loc, func_->params->list.at(index)->as<expr_identifier>().value));                
+                func_->params->list.push_back(expr_identifier::make(loc, func_->params->list.at(index)->as<expr_identifier>().value));
             break;
         }
         case opcode::OP_EvalLocalVariableRefCached0:
@@ -1692,7 +1692,7 @@ auto decompiler::decompile_ifelses(stmt_list& stm) -> void
                             decompile_if(stm, i, j);
                         }
                     }
-                    else 
+                    else
                     {   // last if/else inside a loop still trigger this :(
                         decompile_if(stm, i, j);
                     }
@@ -2198,7 +2198,7 @@ auto decompiler::decompile_foreach(stmt_list& stm, usize begin, usize end) -> vo
     stm.list.erase(stm.list.begin() + begin);
 
     auto index = (use_index) ? std::move(stm.list[begin]->as<stmt_expr>().value->as<expr_assign>().lvalue) : expr_empty::make(location{});
-    
+
     if (use_index)
     {
         stm.list.erase(stm.list.begin() + begin);
@@ -2263,13 +2263,13 @@ auto decompiler::decompile_switch(stmt_list& stm, usize begin, usize end) -> voi
     {
         if (data[index] == "case")
         {
-            auto type = static_cast<switch_type>(std::stoul(data[index + 1])); 
+            auto type = static_cast<switch_type>(std::stoul(data[index + 1]));
             auto pos = find_location_index(stm, data[index + 3]);
             auto loc = stm.list[pos]->loc();
             auto exp = (type == switch_type::integer) ? expr::ptr{ expr_integer::make(loc, data[index + 2]) } : expr::ptr{ expr_string::make(loc, data[index + 2]) };
             while (stm.list[pos]->is<stmt_case>()) pos++;
             stm.list.insert(stm.list.begin() + pos, stmt_case::make(loc, std::move(exp), stmt_list::make(loc)));
-            index += 4;                
+            index += 4;
         }
         else if (data[index] == "default")
         {
@@ -2897,7 +2897,7 @@ auto decompiler::process_expr_assign(expr_assign::ptr& exp, scope& scp) -> void
 
     if (exp->oper != expr_assign::op::eq)
         return;
-    
+
     if (exp->rvalue->kind() != node::expr_binary)
         return;
 

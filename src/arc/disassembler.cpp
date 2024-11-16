@@ -27,7 +27,7 @@ auto disassembler::disassemble(std::vector<u8> const& data) -> assembly::ptr
 
 auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
 {
-    script_ = utils::reader{ data, static_cast<u32>(data_size), ctx_->endian() == endian::big };
+    script_ = utils::reader{ data, data_size, ctx_->endian() == endian::big };
     assembly_ = assembly::make();
     import_refs_.clear();
     string_refs_.clear();
@@ -80,7 +80,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
     header_.animtree_count = script_.read<u8>();
     header_.flags = script_.read<u8>();
 
-    auto string_pool = std::map<u32, std::string>{};
+    auto string_pool = std::map<usize, std::string>{};
     script_.pos((ctx_->props() & props::headerxx) ? header_size_v3 : (ctx_->props() & props::header72) ? header_size_v2 : header_size_v1);
 
     while (script_.pos() < header_.include_offset)
@@ -249,7 +249,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
 
         entry->params = script_.read<u8>();
         entry->flags = script_.read<u8>();
-        
+
         if (ctx_->props() & props::hashids)
             script_.seek(2);
 
@@ -368,8 +368,8 @@ auto disassembler::disassemble_function(function& func) -> void
     {
         if (func.instructions.size() - i <= 0)
             break;
-        
-        auto& inst = func.instructions.at(func.instructions.size() - i);
+
+        auto const& inst = func.instructions.at(func.instructions.size() - i);
 
         if (inst->opcode == opcode::OP_End ||  inst->opcode == opcode::OP_Return)
             last_idx = i;
@@ -593,26 +593,21 @@ auto disassembler::disassemble_name(instruction& inst) -> void
 
     if (ctx_->props() & props::hashids)
     {
-        inst.data.push_back(ctx_->hash_name(script_.read<u32>()));
+        return inst.data.push_back(ctx_->hash_name(script_.read<u32>()));
     }
-    else
+
+    if (auto const itr = string_refs_.find(script_.pos()); itr != string_refs_.end())
     {
-        auto const itr = string_refs_.find(script_.pos());
-
-        if (itr != string_refs_.end())
-        {
-            inst.data.push_back(itr->second->name);
-            script_.seek(2);
-            return;
-        }
-
-        throw disasm_error(std::format("string reference not found at index {:04X}", inst.index));
+        inst.data.push_back(itr->second->name);
+        return script_.seek(2);
     }
+
+    throw disasm_error(std::format("string reference not found at index {:04X}", inst.index));
 }
 
 auto disassembler::disassemble_params(instruction& inst) -> void
 {
-    auto const count = script_.read<u8>();
+    auto count = script_.read<u8>();
 
     for (auto i = 0u; i < count; i++)
     {
@@ -624,8 +619,8 @@ auto disassembler::disassemble_params(instruction& inst) -> void
         }
         else
         {
-            disassemble_string(inst);
             inst.size += 2;
+            disassemble_string(inst);
         }
     }
 }
@@ -633,15 +628,12 @@ auto disassembler::disassemble_params(instruction& inst) -> void
 auto disassembler::disassemble_import(instruction& inst) -> void
 {
     inst.size += script_.align((ctx_->props() & props::size64) ? 8 : 4);
-    script_.seek((ctx_->props() & props::size64) ? 8 : 4);
 
-    auto const itr = import_refs_.find(inst.index);
-
-    if (itr != import_refs_.end())
+    if (auto const itr = import_refs_.find(inst.index); itr != import_refs_.end())
     {
         inst.data.push_back(itr->second->space);
         inst.data.push_back(itr->second->name);
-        return;
+        return script_.seek((ctx_->props() & props::size64) ? 8 : 4);
     }
 
     throw disasm_error(std::format("import reference not found at index {:04X}", inst.index));
@@ -651,13 +643,10 @@ auto disassembler::disassemble_string(instruction& inst) -> void
 {
     inst.size += script_.align((ctx_->props() & props::size64) ? 4 : 2);
 
-    auto const itr = string_refs_.find(script_.pos());
-
-    if (itr != string_refs_.end())
+    if (auto const itr = string_refs_.find(script_.pos()); itr != string_refs_.end())
     {
         inst.data.push_back(itr->second->name);
-        script_.seek((ctx_->props() & props::size64) ? 4 : 2);
-        return;
+        return script_.seek((ctx_->props() & props::size64) ? 4 : 2);
     }
 
     throw disasm_error(std::format("string reference not found at index {:04X}", inst.index));
@@ -665,9 +654,7 @@ auto disassembler::disassemble_string(instruction& inst) -> void
 
 auto disassembler::disassemble_animtree(instruction& inst) -> void
 {
-    auto const itr = anim_refs_.find(script_.pos());
-
-    if (itr != anim_refs_.end())
+    if (auto const itr = anim_refs_.find(script_.pos()); itr != anim_refs_.end())
     {
         inst.data.push_back(itr->second->name);
     }
@@ -677,21 +664,19 @@ auto disassembler::disassemble_animation(instruction& inst) -> void
 {
     inst.size += script_.align((ctx_->props() & props::size64) ? 8 : 4);
 
-    auto const ref = script_.pos();
-    auto const itr = anim_refs_.find(ref);
+    auto ref = script_.pos();
 
-    if (itr != anim_refs_.end())
+    if (auto const itr = anim_refs_.find(ref); itr != anim_refs_.end())
     {
         inst.data.push_back(itr->second->name);
 
         for (auto const& anim : itr->second->anims)
         {
-            if (anim.ref == ref)
-            {
-                inst.data.push_back(anim.name);
-                script_.seek((ctx_->props() & props::size64) ? 8 : 4);
-                return;
-            }
+            if (anim.ref != ref)
+                continue;
+
+            inst.data.push_back(anim.name);
+            return script_.seek((ctx_->props() & props::size64) ? 8 : 4);
         }
     }
 
@@ -702,16 +687,10 @@ auto disassembler::disassemble_jump(instruction& inst) -> void
 {
     inst.size += script_.align(2);
 
-    auto addr = u32{};
+    auto addr = ((ctx_->props() & props::size64) ? ((script_.read<i16>() + 1) & ~(1)) : script_.read<i16>()) + script_.pos();
+    auto label = std::format("loc_{:X}", addr);
 
-    if (ctx_->props() & props::size64)
-        addr = ((script_.read<i16>() + 1) & ~(1)) + script_.pos();
-    else
-        addr = script_.read<i16>() + script_.pos();
-
-    auto const label = std::format("loc_{:X}", addr);
-
-    inst.data.push_back(label);
+    inst.data.emplace_back(label);
     func_->labels.insert({ addr, label });
 }
 
@@ -719,10 +698,10 @@ auto disassembler::disassemble_switch(instruction& inst) -> void
 {
     inst.size += script_.align(4);
 
-    auto const addr = script_.read<i32>() + script_.pos();
-    auto const label = std::format("loc_{:X}", addr);
+    auto addr = script_.read<i32>() + script_.pos();
+    auto label = std::format("loc_{:X}", addr);
 
-    inst.data.push_back(label);
+    inst.data.emplace_back(label);
     func_->labels.insert({ addr, label });
 }
 
@@ -730,88 +709,77 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
 {
     inst.size += script_.align(4);
 
-    auto const itr = func_->labels.find(script_.pos());
-
-    if (itr != func_->labels.end())
+    if (auto const itr = func_->labels.find(script_.pos()); itr != func_->labels.end())
     {
         for (auto const& entry : func_->instructions)
         {
-            if (entry->opcode == opcode::OP_Switch && entry->data[0] == itr->second)
+            if (entry->opcode != opcode::OP_Switch || entry->data[0] != itr->second)
+                continue;
+
+            entry->data[0] = std::format("loc_{:X}", inst.index);
+
+            if (func_->labels.erase(script_.pos()); !func_->labels.contains(inst.index))
             {
-                auto const label = std::format("loc_{:X}", inst.index);
-                entry->data[0] = label;
-                func_->labels.erase(script_.pos());
-
-                if (!func_->labels.contains(inst.index))
-                {
-                    func_->labels.insert({ inst.index, label });
-                }
-
-                break;
+                func_->labels.insert({ inst.index, std::string{ entry->data[0] } });
             }
+
+            break;
         }
     }
 
-    auto type = switch_type::none;
-    auto const count = script_.read<u32>();
+    auto count = script_.read<u32>();
     inst.data.push_back(std::format("{}", count));
 
     for (auto i = 0u; i < count; i++)
     {
+        auto value = script_.read<u32>();
+
         if (ctx_->props() & props::size64)
         {
-            const auto value = script_.read<u32>();
-            const auto str = string_refs_.find(script_.pos() - 4);
-
-            if (str != string_refs_.end())
+            if (auto const str = string_refs_.find(script_.pos() - 4); str != string_refs_.end())
             {
-                type = switch_type::string;
                 inst.data.push_back("case");
+                inst.data.push_back(std::format("{}", static_cast<i32>(switch_type::string)));
                 inst.data.push_back(str->second->name);
             }
-            else if (value == 0 && i == count - 1)
+            else if (value != 0 || i != count - 1)
             {
-                inst.data.push_back("default");
+                inst.data.push_back("case");
+                inst.data.push_back(std::format("{}", static_cast<i32>(switch_type::integer)));
+                inst.data.push_back(std::format("{}", value));
             }
             else
             {
-                type = switch_type::integer;
-                inst.data.push_back("case");
-                inst.data.push_back(std::format("{}", value));
+                inst.data.push_back("default");
             }
         }
         else
         {
-            auto const value = script_.read<u32>();
-
             if (value == 0)
             {
                 inst.data.push_back("default");
             }
             else if (value < 0x40000)
             {
-                type = switch_type::string;
                 inst.data.push_back("case");
+                inst.data.push_back(std::format("{}", static_cast<i32>(switch_type::string)));
                 inst.data.push_back(string_refs_.at(script_.pos() - 2)->name);
             }
             else
             {
-                type = switch_type::integer;
                 inst.data.push_back("case");
+                inst.data.push_back(std::format("{}", static_cast<i32>(switch_type::integer)));
                 inst.data.push_back(std::format("{}", (value - 0x800000) & 0xFFFFFF));
             }
         }
 
-        auto const addr = script_.read<i32>() + script_.pos();
-        auto const label = std::format("loc_{:X}", addr);
-
-        inst.data.push_back(label);
-        func_->labels.insert({ addr, label });
+        auto addr = script_.read<i32>() + script_.pos();
+        auto label = std::format("loc_{:X}", addr);
 
         inst.size += 8;
+        inst.data.emplace_back(label);
+        func_->labels.insert({ addr, label });
     }
-
-    inst.data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
 }
 
 } // namespace xsk::arc

@@ -488,7 +488,7 @@ auto disassembler::disassemble_switch_table(instruction& inst) -> void
 
             if (type == 0)
             {
-                inst.data.push_back("default"); // data:0 type:0 i:1 
+                inst.data.push_back("default"); // data:0 type:0 i:1
             }
             else if (type == 1)
             {
@@ -515,7 +515,7 @@ auto disassembler::disassemble_switch_table(instruction& inst) -> void
                 inst.data.push_back("case");
                 inst.data.push_back(std::format("{}", static_cast<int>(switch_type::string)));
                 inst.data.push_back(decrypt_string(stack_.read_cstr()));
-            } 
+            }
             else
             {
                 inst.data.push_back("case");

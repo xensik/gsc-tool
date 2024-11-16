@@ -57,7 +57,7 @@ template<> auto reader::read() -> i16
     bytes[0] = (data_ + pos_)[1];
     bytes[1] = (data_ + pos_)[0];
     pos_ += 2;
-    return *reinterpret_cast<i16*>(bytes.data());    
+    return *reinterpret_cast<i16*>(bytes.data());
 }
 
 template<> auto reader::read() -> u16
@@ -76,7 +76,7 @@ template<> auto reader::read() -> u16
     bytes[0] = (data_ + pos_)[1];
     bytes[1] = (data_ + pos_)[0];
     pos_ += 2;
-    return *reinterpret_cast<u16*>(bytes.data());    
+    return *reinterpret_cast<u16*>(bytes.data());
 }
 
 template<> auto reader::read() -> i32
@@ -97,7 +97,7 @@ template<> auto reader::read() -> i32
     bytes[2] = (data_ + pos_)[1];
     bytes[3] = (data_ + pos_)[0];
     pos_ += 4;
-    return *reinterpret_cast<i32*>(bytes.data());    
+    return *reinterpret_cast<i32*>(bytes.data());
 }
 
 template<> auto reader::read() -> u32
@@ -118,7 +118,7 @@ template<> auto reader::read() -> u32
     bytes[2] = (data_ + pos_)[1];
     bytes[3] = (data_ + pos_)[0];
     pos_ += 4;
-    return *reinterpret_cast<u32*>(bytes.data());    
+    return *reinterpret_cast<u32*>(bytes.data());
 }
 
 template<> auto reader::read() -> i64
@@ -143,7 +143,7 @@ template<> auto reader::read() -> i64
     bytes[6] = (data_ + pos_)[1];
     bytes[7] = (data_ + pos_)[0];
     pos_ += 8;
-    return *reinterpret_cast<i64*>(bytes.data());    
+    return *reinterpret_cast<i64*>(bytes.data());
 }
 
 template<> auto reader::read() -> u64
@@ -168,7 +168,7 @@ template<> auto reader::read() -> u64
     bytes[6] = (data_ + pos_)[1];
     bytes[7] = (data_ + pos_)[0];
     pos_ += 8;
-    return *reinterpret_cast<u64*>(bytes.data());    
+    return *reinterpret_cast<u64*>(bytes.data());
 }
 
 template<> auto reader::read() -> f32
@@ -189,7 +189,7 @@ template<> auto reader::read() -> f32
     bytes[2] = (data_ + pos_)[1];
     bytes[3] = (data_ + pos_)[0];
     pos_ += 4;
-    return *reinterpret_cast<f32*>(bytes.data());    
+    return *reinterpret_cast<f32*>(bytes.data());
 }
 
 auto reader::read_i24() -> i32
@@ -209,7 +209,7 @@ auto reader::read_i24() -> i32
     bytes[1] = (data_ + pos_)[1];
     bytes[2] = (data_ + pos_)[0];
     pos_ += 3;
-    return *reinterpret_cast<i32*>(bytes.data());    
+    return *reinterpret_cast<i32*>(bytes.data());
 }
 
 auto reader::read_cstr() -> std::string

@@ -195,7 +195,7 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
             {
                 asset script;
                 script.name = "GSC"s;
-                
+
                 script.bytecode.resize(std::get<0>(outbin).size);
                 std::memcpy(script.bytecode.data(), std::get<0>(outbin).data, script.bytecode.size());
 
@@ -236,7 +236,7 @@ auto disassemble_file(game game, mach mach, fs::path file, fs::path rel) -> resu
         {
             if (file.extension() != ".cgsc")
                 throw std::runtime_error("expected .cgsc file");
-            
+
             auto fbuf = file;
             rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension(".gsc");
 
@@ -300,7 +300,7 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
             {
                 asset script;
                 script.name = "GSC"s;
-                
+
                 script.bytecode.resize(std::get<0>(outbin).size);
                 std::memcpy(script.bytecode.data(), std::get<0>(outbin).data, script.bytecode.size());
 
@@ -435,7 +435,7 @@ auto rename_file(game game, mach mach, fs::path file, fs::path rel) -> result
             {
                 name = contexts[game][mach]->token_name(std::stoul(name, nullptr, 16));
             }
-            
+
             if (!name.starts_with("_id_"))
             {
                 rel = fs::path{ games_rev.at(game) } / rel / name;
@@ -506,7 +506,7 @@ auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, s
     }
 
     auto data = utils::file::read(path);
-    
+
     if (path.extension().string() == bin_ext || (path.extension().string() != gsh_ext && path.extension().string() != gsc_ext))
     {
         asset s;

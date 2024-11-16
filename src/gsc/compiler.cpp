@@ -639,7 +639,7 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
         emit_opcode(opcode::OP_CallBuiltin, { "getfirstarraykey"s, "1"s });
     else
         emit_opcode(opcode::OP_CallBuiltin1, "getfirstarraykey");
-    
+
     emit_expr_variable_ref(*stm.key, scp, true);
 
     if (ctx_->props() & props::foreach && stm.use_key)
@@ -849,7 +849,7 @@ auto compiler::emit_stmt_continue(stmt_continue const& stm, scope& scp) -> void
 {
     if (!can_continue_ /*|| scp.abort != scope::abort_none*/ || scp.loc_cont == "")
         throw comp_error(stm.loc(), "illegal continue statement");
-    
+
     if (scp.abort == scope::abort_none)
     {
         continue_blks_.push_back(&scp);
@@ -1260,7 +1260,7 @@ auto compiler::emit_expr_binary(expr_binary const& exp, scope& scp) -> void
                 break;
             default:
                 throw comp_error(exp.loc(), "unknown binary expression");
-        }       
+        }
     }
 }
 
@@ -1416,7 +1416,7 @@ auto compiler::emit_expr_call_function(expr_function const& exp, scope& scp, boo
                 default:
                     emit_opcode(opcode::OP_CallBuiltin, { exp.name->value, argcount });
                     break;
-            }        
+            }
         }
     }
 
@@ -2038,7 +2038,7 @@ auto compiler::emit_expr_vector(expr_vector const& exp, scope& scp) -> void
             emit_opcode(opcode::OP_GetVector, data);
             index_ += (algn - base);
             function_->instructions.back()->size += (algn - base);
-        }           
+        }
     }
     else
     {
@@ -2582,7 +2582,7 @@ auto compiler::process_stmt_switch(stmt_switch const& stm, scope& scp) -> void
         {
             auto ins = scopes_.insert({ entry->as<stmt_default>().body.get(), make_scope() });
             auto& scp_body = ins.first->second;
-    
+
             scp.copy(scp_body);
             process_stmt_list(*entry->as<stmt_default>().body, *scp_body);
             has_default = true;

@@ -44,7 +44,7 @@ namespace xsk::arc { class preprocessor; }
 #include "xsk/arc/preprocessor.hpp"
 using namespace xsk::arc;
 namespace xsk::arc
-{ 
+{
     auto ARClex(context const* ctx_, preprocessor& ppr) -> parser::symbol_type;
     auto parse_switch(stmt_switch& stm) -> void;
 }
@@ -530,7 +530,7 @@ stmt_foreach
 
 stmt_switch
     : SWITCH LPAREN expr RPAREN stmt_comp
-        { $$ = stmt_switch::make(@$, std::move($3), std::move($5)); 
+        { $$ = stmt_switch::make(@$, std::move($3), std::move($5));
           parse_switch(*$$);
         }
     ;

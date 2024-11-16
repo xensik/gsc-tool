@@ -776,7 +776,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2FC, "_func_2FC" }, // related to comscore.proto ( comscore tracking )
     { 0x2FD, "_func_2FD" }, // related to recording comscore events
     { 0x2FE, "_func_2FE" }, // save comscore event
-    { 0x2FF, "_func_2FF" }, 
+    { 0x2FF, "_func_2FF" },
     { 0x300, "_func_300" }, // nullsub - but called with controller
     { 0x301, "_func_301" }, // nullsub
     { 0x302, "getnumberofclients" },

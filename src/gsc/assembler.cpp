@@ -479,7 +479,7 @@ auto assembler::assemble_jump(instruction const& inst, bool expr, bool back) -> 
 
 auto assembler::assemble_switch(instruction const& inst) -> void
 {
-    script_.write<i32>(resolve_label(inst.data[0]) - inst.index - 4);
+    script_.write<i32>(static_cast<i32>(resolve_label(inst.data[0]) - inst.index - 4));
 }
 
 auto assembler::assemble_switch_table(instruction const& inst) -> void

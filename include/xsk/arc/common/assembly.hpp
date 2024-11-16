@@ -168,8 +168,8 @@ struct instruction
 {
     using ptr = std::unique_ptr<instruction>;
 
-    u32 index;
-    u32 size;
+    usize index;
+    usize size;
     sourcepos pos;
     opcode opcode;
     std::vector<std::string> data;
@@ -184,14 +184,14 @@ struct function
 {
     using ptr = std::unique_ptr<function>;
 
-    u32 index;
-    u32 size;
+    usize index;
+    usize size;
     u8 params;
     u8 flags;
     std::string name;
     std::string space;
     std::vector<instruction::ptr> instructions;
-    std::unordered_map<u32, std::string> labels;
+    std::unordered_map<usize, std::string> labels;
 
     static auto make() -> function::ptr
     {

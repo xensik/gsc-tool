@@ -42,7 +42,7 @@
 #include "xsk/arc/preprocessor.hpp"
 using namespace xsk::arc;
 namespace xsk::arc
-{ 
+{
     auto ARClex(context const* ctx_, preprocessor& ppr) -> parser::symbol_type;
     auto parse_switch(stmt_switch& stm) -> void;
 }
@@ -2854,7 +2854,7 @@ namespace xsk { namespace arc {
 
   case 89: // stmt_switch: "switch" "(" expr ")" stmt_comp
 #line 533 "parser.ypp"
-        { yylhs.value.as < stmt_switch::ptr > () = stmt_switch::make(yylhs.location, std::move(yystack_[2].value.as < expr::ptr > ()), std::move(yystack_[0].value.as < stmt_comp::ptr > ())); 
+        { yylhs.value.as < stmt_switch::ptr > () = stmt_switch::make(yylhs.location, std::move(yystack_[2].value.as < expr::ptr > ()), std::move(yystack_[0].value.as < stmt_comp::ptr > ()));
           parse_switch(*yylhs.value.as < stmt_switch::ptr > ());
         }
 #line 2867 "parser.cpp"

@@ -571,7 +571,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
 
     auto data = std::vector<std::string>{};
     data.push_back(std::format("{}", stm.body->block->list.size()));
-    
+
     auto type = switch_type::none;
     auto loc_default = std::string{};
     auto has_default = false;
@@ -592,7 +592,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
                 }
 
                 type = switch_type::integer;
-                
+
                 data.push_back(entry->as<stmt_case>().value->as<expr_integer>().value);
                 data.push_back(insert_label());
             }
@@ -1086,7 +1086,7 @@ auto compiler::emit_expr_binary(expr_binary const& exp) -> void
                 break;
             default:
                 throw comp_error(exp.loc(), "unknown binary expression");
-        }       
+        }
     }
 }
 
@@ -1728,7 +1728,7 @@ auto compiler::emit_expr_vector(expr_vector const& exp) -> void
         auto value = std::stof(exp.x->as<expr_float>().value.data());
         data.push_back(exp.x->as<expr_float>().value);
 
-        if (value != 1.0 && value != -1.0 && value != 0.0)        
+        if (value != 1.0 && value != -1.0 && value != 0.0)
             isconst = false;
         else
             flags |= (value == 1.0) ? 0x20 : (value == -1.0) ? 0x10 : 0;

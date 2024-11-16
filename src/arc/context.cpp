@@ -267,15 +267,15 @@ auto context::hash_id(std::string const& name) const -> u32
 
     if (props_ & props::hashids)
     {
-		auto* str = name.data();
-		auto hash = 16777619u * (std::tolower(static_cast<u8>(*str)) ^ 1268436527u);
+        auto* str = name.data();
+        auto hash = 16777619u * (std::tolower(static_cast<u8>(*str)) ^ 1268436527u);
 
-		while (*str++)
-		{
-			hash = 16777619u * (std::tolower(static_cast<u8>(*str)) ^ hash);
-		}
+        while (*str++)
+        {
+            hash = 16777619u * (std::tolower(static_cast<u8>(*str)) ^ hash);
+        }
 
-		return hash;
+        return hash;
     }
     else
     {

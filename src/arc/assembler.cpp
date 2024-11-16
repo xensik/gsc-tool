@@ -41,7 +41,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         process_string(incl);
     }
 
-    head.include_offset = script_.pos();
+    head.include_offset = static_cast<u32>(script_.pos());
     head.include_count = static_cast<u8>(assembly_->includes.size());
 
     for (auto const& entry : assembly_->includes)
@@ -49,7 +49,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         script_.write<u32>(resolve_string(entry));
     }
 
-    head.cseg_offset = script_.pos();
+    head.cseg_offset = static_cast<u32>(script_.pos());
 
     for (auto const& func : assembly_->functions)
     {
@@ -58,10 +58,10 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         assemble_function(*func);
     }
 
-    head.cseg_size = script_.pos() - head.cseg_offset;
+    head.cseg_size = static_cast<u32>(script_.pos() - head.cseg_offset);
     head.source_crc = 0;
 
-    head.exports_offset = script_.pos();
+    head.exports_offset = static_cast<u32>(script_.pos());
     head.exports_count = static_cast<u16>(exports_.size());
 
     for (auto const& entry : exports_)
@@ -86,7 +86,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
             script_.seek(2);
     }
 
-    head.imports_offset = script_.pos();
+    head.imports_offset = static_cast<u32>(script_.pos());
     head.imports_count = static_cast<u16>(imports_.size());
 
     for (auto const& entry : imports_)
@@ -112,7 +112,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         }
     }
 
-    head.animtree_offset = script_.pos();
+    head.animtree_offset = static_cast<u32>(script_.pos());
     head.animtree_count = static_cast<u8>(anims_.size());
 
     for (auto const& entry : anims_)
@@ -130,7 +130,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
             script_.write<u16>(static_cast<u16>(entry.anims.size()));
             script_.seek(2);
         }
-        
+
         for (auto const& ref : entry.refs)
         {
             script_.write<u32>(ref);
@@ -151,7 +151,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         }
     }
 
-    head.stringtablefixup_offset = script_.pos();
+    head.stringtablefixup_offset = static_cast<u32>(script_.pos());
     head.stringtablefixup_count = static_cast<u16>(strings_.size());
 
     for (auto const& entry : strings_)
@@ -175,18 +175,18 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
 
     if (ctx_->props() & props::devstr)
     {
-        head.stringtablefixup_offset = script_.pos();
+        head.stringtablefixup_offset = static_cast<u32>(script_.pos());
         head.stringtablefixup_count = 0;
     }
 
-    head.fixup_offset = script_.pos();
+    head.fixup_offset = static_cast<u32>(script_.pos());
     head.fixup_count = 0;
 
-    head.profile_offset = script_.pos();
+    head.profile_offset = static_cast<u32>(script_.pos());
     head.profile_count = 0;
 
     head.flags = 0;
-    head.name = resolve_string(name);
+    head.name = resolve_string(name); // hash id!
 
     auto const endpos = script_.pos();
 
@@ -236,7 +236,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
 
 auto assembler::assemble_function(function& func) -> void
 {
-    auto labels = std::unordered_map<u32, std::string>();
+    auto labels = std::unordered_map<usize, std::string>{};
     func.index = script_.pos();
     func.size = 0;
     func_ = &func;
@@ -250,9 +250,7 @@ auto assembler::assemble_function(function& func) -> void
 
         func.size += inst->size;
 
-        auto const itr = func.labels.find(old_idx);
-
-        if (itr != func.labels.end())
+        if (auto const itr = func.labels.find(old_idx); itr != func.labels.end())
         {
             labels.insert({ inst->index, itr->second });
         }
@@ -484,12 +482,11 @@ auto assembler::assemble_localvars(instruction const& inst) -> void
 
 auto assembler::assemble_jump(instruction const& inst) -> void
 {
-    auto const addr = static_cast<i16>(resolve_label(inst.data[0]) - inst.index - inst.size);
-
     script_.align(2);
-    script_.write<i16>(addr);
+    script_.write<i16>(static_cast<i16>(resolve_label(inst.data[0]) - inst.index - inst.size));
 }
 
+// continue from here TODO
 auto assembler::assemble_switch(instruction const& inst) -> void
 {
     const i32 addr = ((resolve_label(inst.data[0]) + 4) & 0xFFFFFFFC) - inst.index - inst.size;
@@ -768,7 +765,7 @@ auto assembler::align_instruction(instruction& inst) -> void
                 add_stringref(inst.data[i], string_type::canonical, script_.pos());
                 script_.seek(2);
             }
-    
+
             break;
         }
         case opcode::OP_RemoveLocalVariables:

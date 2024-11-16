@@ -520,7 +520,7 @@ auto preprocessor::read_directive_define(token&) -> void
                         // if (!last_comma || last_elips)
                         //     throw ppr_error(next.pos, "misplaced elipsis in macro param list");
 
-                        // last_elips = true; 
+                        // last_elips = true;
                         // last_comma = false;
                     }
                     else if (next.type == token::COMMA)
@@ -600,7 +600,7 @@ auto preprocessor::read_directive_define(token&) -> void
 
                     if (exp.back().type == token::PASTE)
                         throw ppr_error(next.pos, "'##' cannot appear at end of macro expansion");
-                    
+
                     if (exp.back().type == token::SHARP)
                         throw ppr_error(next.pos, "'#' is not followed by a macro parameter");
                 }
@@ -748,7 +748,7 @@ auto preprocessor::expand(token& tok, define& def) -> void
 {
     if (def.type == define::PLAIN)
         return;
-    
+
     if (def.type == define::BUILTIN)
     {
         if (tok.data == "__FILE__")
@@ -826,7 +826,7 @@ auto preprocessor::expand(token& tok, define& def) -> void
                 //
                 // if (!args.back().empty())
                 // {
-                //     // paste opt 
+                //     // paste opt
                 // }
             }
             else if (def.exp[i].type == token::STRINGIZE)
@@ -903,7 +903,7 @@ auto preprocessor::expand_params(token& tok, define& def) -> std::vector<std::ve
             {
                 nest_paren--;
                 args.back().push_back(next);
-            }       
+            }
         }
         else if (next.type == token::COMMA && nest_paren == 0 /*&& !(def.vararg && args.size() > def.args.size())*/)
         {
@@ -1022,7 +1022,7 @@ auto preprocessor::evaluate() -> bool
                 {
                     expr_.push_back(token{ token::FALSE, tok.space, tok.pos });
                 }
-            }   
+            }
         }
         else
         {
@@ -1372,7 +1372,7 @@ auto preprocessor::eval_expr_primary() -> i32
             {
                 val = eval_prev();
                 eval_consume(token::RPAREN, "expect ')' after defined( identifier.");
-                return defines_.contains(val.data); 
+                return defines_.contains(val.data);
             }
 
             throw ppr_error(eval_peek().pos, "expect identifier after defined(.");

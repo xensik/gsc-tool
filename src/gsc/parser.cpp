@@ -42,7 +42,7 @@
 #include "xsk/gsc/preprocessor.hpp"
 using namespace xsk::gsc;
 namespace xsk::gsc
-{ 
+{
     auto GSClex(context const* ctx_, preprocessor& ppr) -> parser::symbol_type;
     auto parse_switch(stmt_switch& stm) -> void;
 }
@@ -2238,7 +2238,7 @@ namespace xsk { namespace gsc {
   case 20: // decl_constant: expr_identifier "=" expr ";"
 #line 325 "parser.ypp"
         {
-            ppr.ban_header(yylhs.location); yylhs.value.as < decl_constant::ptr > () = decl_constant::make(yylhs.location, std::move(yystack_[3].value.as < expr_identifier::ptr > ()), std::move(yystack_[1].value.as < expr::ptr > ())); 
+            ppr.ban_header(yylhs.location); yylhs.value.as < decl_constant::ptr > () = decl_constant::make(yylhs.location, std::move(yystack_[3].value.as < expr_identifier::ptr > ()), std::move(yystack_[1].value.as < expr::ptr > ()));
             printf("%s" , std::format("{}: constants deprecated, use #define instead\n", yylhs.location.print()).data());
         }
 #line 2252 "parser.cpp"
@@ -2674,7 +2674,7 @@ namespace xsk { namespace gsc {
 
   case 91: // stmt_switch: "switch" "(" expr ")" stmt_comp
 #line 516 "parser.ypp"
-        { yylhs.value.as < stmt_switch::ptr > () = stmt_switch::make(yylhs.location, std::move(yystack_[2].value.as < expr::ptr > ()), std::move(yystack_[0].value.as < stmt_comp::ptr > ())); 
+        { yylhs.value.as < stmt_switch::ptr > () = stmt_switch::make(yylhs.location, std::move(yystack_[2].value.as < expr::ptr > ()), std::move(yystack_[0].value.as < stmt_comp::ptr > ()));
           parse_switch(*yylhs.value.as < stmt_switch::ptr > ());
         }
 #line 2688 "parser.cpp"

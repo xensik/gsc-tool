@@ -191,7 +191,7 @@ auto lexer::lex() -> token
 
                     if (curr != '.')
                         return token{ token::DOUBLEDOT, spacing_, loc_ };
- 
+
                     advance();
                     return token{ token::ELLIPSIS, spacing_, loc_ };
                 }

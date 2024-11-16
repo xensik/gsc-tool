@@ -196,7 +196,7 @@ auto writer::write_i24(i32 data) -> void
 {
     if (pos_ + 3 > size_)
         throw error("writer: out of bounds");
-    
+
     if (!swap_)
     {
         *reinterpret_cast<i32*>(data_ + pos_) = data & 0xFFFFFF;

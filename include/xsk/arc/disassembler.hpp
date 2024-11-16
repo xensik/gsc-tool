@@ -17,9 +17,9 @@ class disassembler
     function::ptr func_;
     assembly::ptr assembly_;
     utils::reader script_;
-    std::map<u32, import_ref::ptr> import_refs_;
-    std::map<u32, string_ref::ptr> string_refs_;
-    std::map<u32, animtree_ref::ptr> anim_refs_;
+    std::map<usize, import_ref::ptr> import_refs_;
+    std::map<usize, string_ref::ptr> string_refs_;
+    std::map<usize, animtree_ref::ptr> anim_refs_;
 
 public:
     disassembler(context const* ctx);

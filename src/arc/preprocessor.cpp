@@ -10,9 +10,9 @@
 namespace xsk::arc
 {
 
-preprocessor::preprocessor(context* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, curr_expr_{ 0 }, expand_{ 0 }, skip_{ 0 }
+preprocessor::preprocessor(context* ctx, std::string const& name, u8 const* data, usize size) : ctx_{ ctx }, curr_expr_{ 0 }, expand_{ 0 }, skip_{ 0 }
 {
-    lexer_.push(lexer{ ctx, name, data, size });
+    lexer_.push(lexer{ ctx, name, reinterpret_cast<char const*>(data), size });
     indents_.push({});
     defines_.reserve(5);
     defines_.insert({ "__FILE__", { define::BUILTIN,/* false,*/ {}, {} }});
@@ -173,7 +173,7 @@ auto preprocessor::read_token() -> token
             // clear indents
             throw ppr_error(tok.pos, "missing #endif");
         }
-        
+
         if (lexer_.size() > 1)
         {
             pop_header();
@@ -520,7 +520,7 @@ auto preprocessor::read_directive_define(token&) -> void
                         // if (!last_comma || last_elips)
                         //     throw ppr_error(next.pos, "misplaced elipsis in macro param list");
 
-                        // last_elips = true; 
+                        // last_elips = true;
                         // last_comma = false;
                     }
                     else if (next.type == token::COMMA)
@@ -600,7 +600,7 @@ auto preprocessor::read_directive_define(token&) -> void
 
                     if (exp.back().type == token::PASTE)
                         throw ppr_error(next.pos, "'##' cannot appear at end of macro expansion");
-                    
+
                     if (exp.back().type == token::SHARP)
                         throw ppr_error(next.pos, "'#' is not followed by a macro parameter");
                 }
@@ -754,7 +754,7 @@ auto preprocessor::read_hashtoken_hashstr(token& hash, token& name) -> void
         tokens_.push_front(token{ token::HASHSTR, spacing::none, name.pos, name.data });
     }
     else
-    {  
+    {
         // if '#  ""' return 2 tokens
         tokens_.push_front(std::move(name));
         tokens_.push_front(token{ token::HASH, hash.space, hash.pos });
@@ -765,7 +765,7 @@ auto preprocessor::expand(token& tok, define& def) -> void
 {
     if (def.type == define::PLAIN)
         return;
-    
+
     if (def.type == define::BUILTIN)
     {
         if (tok.data == "__FILE__")
@@ -843,7 +843,7 @@ auto preprocessor::expand(token& tok, define& def) -> void
                 //
                 // if (!args.back().empty())
                 // {
-                //     // paste opt 
+                //     // paste opt
                 // }
             }
             else if (def.exp[i].type == token::STRINGIZE)
@@ -920,7 +920,7 @@ auto preprocessor::expand_params(token& tok, define& def) -> std::vector<std::ve
             {
                 nest_paren--;
                 args.back().push_back(next);
-            }       
+            }
         }
         else if (next.type == token::COMMA && nest_paren == 0 /*&& !(def.vararg && args.size() > def.args.size())*/)
         {
@@ -1039,7 +1039,7 @@ auto preprocessor::evaluate() -> bool
                 {
                     expr_.push_back(token{ token::FALSE, tok.space, tok.pos });
                 }
-            }   
+            }
         }
         else
         {
@@ -1358,16 +1358,16 @@ auto preprocessor::eval_expr_primary() -> i32
 {
     if (eval_match(token::TRUE))
         return 1;
-    
+
     if (eval_match(token::FALSE))
         return 0;
-    
+
     if (eval_match(token::FLT))
         return static_cast<i32>(std::stof(eval_prev().data));
-    
+
     if (eval_match(token::INT))
         return static_cast<i32>(std::stoi(eval_prev().data));
-    
+
     if (eval_match(token::LPAREN))
     {
         auto val = eval_expr();
@@ -1389,7 +1389,7 @@ auto preprocessor::eval_expr_primary() -> i32
             {
                 val = eval_prev();
                 eval_consume(token::RPAREN, "expect ')' after defined( identifier.");
-                return defines_.contains(val.data); 
+                return defines_.contains(val.data);
             }
 
             throw ppr_error(eval_peek().pos, "expect identifier after defined(.");
