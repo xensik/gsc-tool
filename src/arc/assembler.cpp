@@ -106,7 +106,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         script_.write<u8>(entry.params);
         script_.write<u8>(entry.flags);
 
-        for (auto const& ref : entry.refs)
+        for (auto ref : entry.refs)
         {
             script_.write<u32>(ref);
         }
@@ -131,7 +131,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
             script_.seek(2);
         }
 
-        for (auto const& ref : entry.refs)
+        for (auto ref : entry.refs)
         {
             script_.write<u32>(ref);
         }
@@ -167,7 +167,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         if (ctx_->props() & props::size64)
             script_.seek(2);
 
-        for (auto const& ref : entry.refs)
+        for (auto ref : entry.refs)
         {
             script_.write<u32>(ref);
         }
@@ -188,7 +188,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     head.flags = 0;
     head.name = resolve_string(name); // hash id!
 
-    auto const endpos = script_.pos();
+    auto endpos = script_.pos();
 
     script_.pos(0);
     script_.write<u64>(ctx_->magic());
@@ -226,7 +226,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     script_.write<u8>(head.flags);
     script_.pos(endpos);
 
-    auto const dev_endpos = devmap_.pos();
+    auto dev_endpos = devmap_.pos();
     devmap_.pos(0);
     devmap_.write<u32>(devmap_count_);
     devmap_.pos(dev_endpos);
@@ -267,7 +267,7 @@ auto assembler::assemble_function(function& func) -> void
 
     export_ref entry;
     entry.checksum = 0;
-    entry.offset = func.index;
+    entry.offset = static_cast<u32>(func.index);
     entry.name = func.name;
     entry.params = func.params;
     entry.flags = func.flags;
@@ -280,7 +280,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
 
     if ((ctx_->build() & build::dev_maps) != build::prod)
     {
-        devmap_.write<u32>(script_.pos());
+        devmap_.write<u32>(static_cast<u32>(script_.pos()));
         devmap_.write<u16>(static_cast<u16>(inst.pos.line));
         devmap_.write<u16>(static_cast<u16>(inst.pos.column));
         devmap_count_++;
@@ -462,7 +462,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             assemble_switch(inst);
             break;
         case opcode::OP_EndSwitch:
-            assemble_end_switch(inst);
+            assemble_switch_table(inst);
             break;
         default:
             throw asm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
@@ -486,51 +486,36 @@ auto assembler::assemble_jump(instruction const& inst) -> void
     script_.write<i16>(static_cast<i16>(resolve_label(inst.data[0]) - inst.index - inst.size));
 }
 
-// continue from here TODO
 auto assembler::assemble_switch(instruction const& inst) -> void
 {
-    const i32 addr = ((resolve_label(inst.data[0]) + 4) & 0xFFFFFFFC) - inst.index - inst.size;
-
     script_.align(4);
-    script_.write<i32>(addr);
+    script_.write<i32>(static_cast<i32>(((resolve_label(inst.data[0]) + 4) & 0xFFFFFFFC) - inst.index - inst.size));
 }
 
-auto assembler::assemble_end_switch(instruction const& inst) -> void
+auto assembler::assemble_switch_table(instruction const& inst) -> void
 {
-    const auto count = std::stoul(inst.data[0]);
-    const auto type = static_cast<switch_type>(std::stoul(inst.data.back()));
+    auto count = std::stoul(inst.data[0]);
 
     script_.align(4);
     script_.write<u32>(count);
 
     for (auto i = 0u; i < count; i++)
     {
-        if (inst.data[1 + (3 * i)] == "case")
+        if (inst.data[1 + (4 * i)] == "case")
         {
-            if (type == switch_type::integer)
-            {
-                script_.write<u32>((std::stoi(inst.data[1 + (3 * i) + 1]) & 0xFFFFFF) + 0x800000);
-            }
-            else
-            {
-                script_.write<u32>(i + 1);
-            }
+            auto type = static_cast<switch_type>(std::stoul(inst.data[1 + (4 * i) + 1]));
 
-            const i32 addr = resolve_label(inst.data[1 + (3 * i) + 2]) - script_.pos() - 4;
-
-            script_.write<i32>(addr);
+            script_.write<u32>((type == switch_type::integer) ? ((std::stoi(inst.data[1 + (4 * i) + 2]) & 0xFFFFFF) + 0x800000) : i + 1);
+            script_.write<i32>(static_cast<i32>(resolve_label(inst.data[1 + (4 * i) + 3]) - script_.pos() - 4));
         }
-        else if (inst.data[1 + (3 * i)] == "default")
+        else if (inst.data[1 + (4 * i)] == "default")
         {
             script_.write<u32>(0);
-
-            const i32 addr = resolve_label(inst.data[1 + (3 * i) + 1]) - script_.pos() - 4;
-
-            script_.write<i32>(addr);
+            script_.write<i32>(static_cast<i32>(resolve_label(inst.data[1 + (4 * i) + 1]) - script_.pos() - 4));
         }
         else
         {
-            throw asm_error(std::format("invalid switch case {}", inst.data[1 + (3 * i)]));
+            throw asm_error(std::format("invalid switch case {}", inst.data[1 + (4 * i)]));
         }
     }
 }
@@ -600,17 +585,16 @@ auto assembler::process_instruction(instruction const& inst) -> void
             break;
         case opcode::OP_EndSwitch:
         {
-            const auto count = std::stoul(inst.data[0]);
-            const auto type = static_cast<switch_type>(std::stoul(inst.data.back()));
+            auto count = std::stoul(inst.data[0]);
 
             for (auto i = 0u; i < count; i++)
             {
-                if (inst.data[1 + (3 * i)] == "case")
+                if (inst.data[1 + (4 * i)] == "case")
                 {
+                    auto type = static_cast<switch_type>(std::stoul(inst.data[1 + (4 * i) + 1]));
+
                     if (type == switch_type::string)
-                    {
-                        process_string(inst.data[1 + (3 * i) + 1]);
-                    }
+                        process_string(inst.data[1 + (4 * i) + 2]);
                 }
             }
 
@@ -723,7 +707,7 @@ auto assembler::align_instruction(instruction& inst) -> void
         case opcode::OP_GetInteger:
             inst.size += script_.align(4);
             if (inst.data.size() == 2)
-                add_animref(inst.data, script_.pos());
+                add_animref(inst.data, static_cast<u32>(script_.pos()));
             script_.seek(4);
             break;
         case opcode::OP_GetFloat:
@@ -737,12 +721,12 @@ auto assembler::align_instruction(instruction& inst) -> void
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
             inst.size += script_.align(2);
-            add_stringref(inst.data[0], string_type::literal, script_.pos());
+            add_stringref(inst.data[0], string_type::literal, static_cast<u32>(script_.pos()));
             script_.seek(2);
             break;
         case opcode::OP_GetAnimation:
             inst.size += script_.align(4);
-            add_animref(inst.data, script_.pos());
+            add_animref(inst.data, static_cast<u32>(script_.pos()));
             script_.seek(4);
             break;
         case opcode::OP_WaitTillMatch:
@@ -762,7 +746,7 @@ auto assembler::align_instruction(instruction& inst) -> void
             for (auto i = 0u; i < inst.data.size(); i++)
             {
                 inst.size += script_.align(2) + 2;
-                add_stringref(inst.data[i], string_type::canonical, script_.pos());
+                add_stringref(inst.data[i], string_type::canonical, static_cast<u32>(script_.pos()));
                 script_.seek(2);
             }
 
@@ -779,7 +763,7 @@ auto assembler::align_instruction(instruction& inst) -> void
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_ClearFieldVariable:
             inst.size += script_.align(2);
-            add_stringref(inst.data[0], string_type::canonical, script_.pos());
+            add_stringref(inst.data[0], string_type::canonical, static_cast<u32>(script_.pos()));
             script_.seek(2);
             break;
         case opcode::OP_ScriptFunctionCallPointer:
@@ -791,7 +775,7 @@ auto assembler::align_instruction(instruction& inst) -> void
         case opcode::OP_GetFunction:
             inst.size += script_.align(4);
             script_.seek(4);
-            add_importref(inst.data, inst.index);
+            add_importref(inst.data, static_cast<u32>(inst.index));
             break;
         case opcode::OP_CallBuiltin:
         case opcode::OP_CallBuiltinMethod:
@@ -802,7 +786,7 @@ auto assembler::align_instruction(instruction& inst) -> void
             script_.seek(1);
             inst.size += script_.align(4);
             script_.seek(4);
-            add_importref(inst.data, inst.index);
+            add_importref(inst.data, static_cast<u32>(inst.index));
             break;
         case opcode::OP_JumpOnFalse:
         case opcode::OP_JumpOnTrue:
@@ -823,17 +807,13 @@ auto assembler::align_instruction(instruction& inst) -> void
             inst.size += script_.align(4);
             script_.seek(4);
 
-            const auto count = std::stoul(inst.data[0]);
-            const auto type = static_cast<switch_type>(std::stoul(inst.data.back()));
+            auto count = std::stoul(inst.data[0]);
 
             for (auto i = 0u; i < count; i++)
             {
-                if (inst.data[1 + (3 * i)] == "case")
+                if (inst.data[1 + (4 * i)] == "case" && static_cast<switch_type>(std::stoul(inst.data[1 + (4 * i) + 1])) == switch_type::string)
                 {
-                    if (type == switch_type::string)
-                    {
-                        add_stringref(inst.data[1 + (3 * i) + 1], string_type::literal, script_.pos() + 2);
-                    }
+                    add_stringref(inst.data[1 + (3 * i) + 1], string_type::literal, static_cast<u32>(script_.pos() + 2));
                 }
 
                 inst.size += 8;
@@ -847,7 +827,7 @@ auto assembler::align_instruction(instruction& inst) -> void
     }
 }
 
-auto assembler::resolve_label(std::string const& name) -> i32
+auto assembler::resolve_label(std::string const& name) -> usize
 {
     for (auto const& entry : func_->labels)
     {
@@ -862,9 +842,7 @@ auto assembler::resolve_label(std::string const& name) -> i32
 
 auto assembler::resolve_string(std::string const& name) -> u16
 {
-    auto const itr = strpool_.find(name);
-
-    if (itr != strpool_.end())
+    if (auto const itr = strpool_.find(name); itr != strpool_.end())
     {
         return itr->second;
     }
@@ -872,28 +850,26 @@ auto assembler::resolve_string(std::string const& name) -> u16
     throw asm_error(std::format("couldn't resolve string address of {}", name));
 }
 
-void assembler::add_stringref(std::string const& str, string_type type, u32 ref)
+auto assembler::add_stringref(std::string const& str, string_type type, u32 ref) -> void
 {
     for (auto& entry : strings_)
     {
         if (entry.name == str && entry.type == static_cast<u8>(type))
         {
-            entry.refs.push_back(ref);
-            return;
+            return entry.refs.push_back(ref);
         }
     }
 
     strings_.push_back({ str, u8(type), { ref } });
 }
 
-void assembler::add_importref(std::vector<std::string> const& data, u32 ref)
+auto assembler::add_importref(std::vector<std::string> const& data, u32 ref) -> void
 {
     for (auto& entry : imports_)
     {
         if (entry.space == data[0] && entry.name == data[1] && entry.params == std::stoi(data[2]) && entry.flags == std::stoi(data[3]))
         {
-            entry.refs.push_back(ref);
-            return;
+            return entry.refs.push_back(ref);
         }
     }
 
@@ -906,34 +882,24 @@ void assembler::add_importref(std::vector<std::string> const& data, u32 ref)
     imports_.push_back(std::move(new_entry));
 }
 
-void assembler::add_animref(std::vector<std::string> const& data, u32 ref)
+auto assembler::add_animref(std::vector<std::string> const& data, u32 ref) -> void
 {
     for (auto& entry : anims_)
     {
-        if (entry.name == data[0])
-        {
-            if (data[1] == "-1")
-            {
-                entry.refs.push_back(ref);
-            }
-            else
-            {
-                entry.anims.push_back({ data[1], ref });
-            }
-            return;
-        }
+        if (entry.name != data[0])
+            continue;
+
+        return (data[1] == "-1") ? entry.refs.push_back(ref) : entry.anims.push_back({ data[1], ref });
     }
 
     animtree_ref new_entry;
     new_entry.name = data[0];
+
     if (data[1] == "-1")
-    {
         new_entry.refs.push_back(ref);
-    }
     else
-    {
         new_entry.anims.push_back({ data[1], ref });
-    }
+
     anims_.push_back(std::move(new_entry));
 }
 

@@ -69,7 +69,6 @@ private:
     auto emit_expr_const(expr_const const& exp) -> void;
     auto emit_expr_assign(expr_assign const& exp) -> void;
     auto emit_expr_clear(expr const& exp) -> void;
-    auto emit_expr_clear_local(expr_identifier const& exp) -> void;
     auto emit_expr_increment(expr_increment const& exp, bool is_stmt) -> void;
     auto emit_expr_decrement(expr_decrement const& exp, bool is_stmt) -> void;
     auto emit_expr_ternary(expr_ternary const& exp) -> void;

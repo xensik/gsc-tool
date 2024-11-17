@@ -572,7 +572,6 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
     auto data = std::vector<std::string>{};
     data.push_back(std::format("{}", stm.body->block->list.size()));
 
-    auto type = switch_type::none;
     auto loc_default = std::string{};
     auto has_default = false;
 
@@ -586,25 +585,13 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
 
             if (entry->as<stmt_case>().value->is<expr_integer>())
             {
-                if (type == switch_type::string)
-                {
-                    throw comp_error(entry->loc(), "switch cases with different types");
-                }
-
-                type = switch_type::integer;
-
+                data.push_back(std::format("{}", static_cast<i32>(switch_type::integer)));
                 data.push_back(entry->as<stmt_case>().value->as<expr_integer>().value);
                 data.push_back(insert_label());
             }
             else if (entry->as<stmt_case>().value->is<expr_string>())
             {
-                if (type == switch_type::integer)
-                {
-                    throw comp_error(entry->loc(), "switch cases with different types");
-                }
-
-                type = switch_type::string;
-
+                data.push_back(std::format("{}", static_cast<i32>(switch_type::string)));
                 data.push_back(entry->as<stmt_case>().value->as<expr_string>().value);
                 data.push_back(insert_label());
             }
@@ -640,8 +627,6 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
         data.push_back(loc_default);
     }
 
-    data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(type)));
-
     insert_label(table_loc);
     emit_opcode(opcode::OP_EndSwitch, data);
     insert_label(break_loc);
@@ -661,19 +646,23 @@ auto compiler::emit_stmt_default(stmt_default const& stm) -> void
 
 auto compiler::emit_stmt_break(stmt_break const& stm) -> void
 {
-    if (!can_break_ || scopes_.back().abort != scope::abort_none || scopes_.back().brk == "")
+    if (!can_break_ /*|| scopes_.back().abort != scope::abort_none*/ || scopes_.back().brk == "")
         throw comp_error(stm.loc(), "illegal break statement");
 
-    scopes_.back().abort = scope::abort_break;
+    if (scopes_.back().abort == scope::abort_none)
+        scopes_.back().abort = scope::abort_break;
+
     emit_opcode(opcode::OP_Jump, scopes_.back().brk);
 }
 
 auto compiler::emit_stmt_continue(stmt_continue const& stm) -> void
 {
-    if (!can_continue_ || scopes_.back().abort != scope::abort_none || scopes_.back().cnt == "")
+    if (!can_continue_ /*|| scopes_.back().abort != scope::abort_none*/ || scopes_.back().cnt == "")
         throw comp_error(stm.loc(), "illegal continue statement");
 
-    scopes_.back().abort = scope::abort_continue;
+    if (scopes_.back().abort == scope::abort_none)
+        scopes_.back().abort = scope::abort_continue;
+
     emit_opcode(opcode::OP_Jump, scopes_.back().cnt);
 }
 

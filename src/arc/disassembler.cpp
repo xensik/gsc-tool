@@ -282,7 +282,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
                     script_.seek_neg(4);
                 }
 
-                entry->size -= end_pos - script_.pos();
+                entry->size -= static_cast<u32>(end_pos - script_.pos());
             }
             else if (script_.read<u32>() == 0)
             {
@@ -321,7 +321,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
 
 auto disassembler::disassemble_function(function& func) -> void
 {
-    auto size = static_cast<i32>(func.size);
+    auto size = func.size;
 
     while (size > 0)
     {
@@ -356,6 +356,9 @@ auto disassembler::disassemble_function(function& func) -> void
 
         if (ctx_->props() & props::size64)
             inst->size += script_.align(2);
+
+        if (inst->size > size || inst->index + inst->size != script_.pos())
+            throw disasm_error("bad instruction size");
 
         size -= inst->size;
 

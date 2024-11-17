@@ -519,7 +519,7 @@ auto assembler::assemble_switch_table(instruction const& inst) -> void
             }
             else
             {
-                assemble_offset(addr - index - 4);
+                assemble_offset(static_cast<i32>(addr - index - 4));
                 index += 7;
             }
         }
@@ -539,7 +539,7 @@ auto assembler::assemble_switch_table(instruction const& inst) -> void
             {
                 script_.write<u32>(0);
                 stack_.write_cstr("\x01");
-                assemble_offset(addr - index - 4);
+                assemble_offset(static_cast<i32>(addr - index - 4));
                 index += 7;
             }
         }

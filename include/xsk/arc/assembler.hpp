@@ -35,16 +35,16 @@ private:
     auto assemble_localvars(instruction const& inst) -> void;
     auto assemble_jump(instruction const& inst) -> void;
     auto assemble_switch(instruction const& inst) -> void;
-    auto assemble_end_switch(instruction const& inst) -> void;
+    auto assemble_switch_table(instruction const& inst) -> void;
     auto process_string(std::string const& data) -> void;
     auto process_function(function const& func) -> void;
     auto process_instruction(instruction const& inst) -> void;
     auto align_instruction(instruction& inst) -> void;
-    auto resolve_label(std::string const& name) -> i32;
+    auto resolve_label(std::string const& name) -> usize;
     auto resolve_string(std::string const& name) -> u16;
-    void add_stringref(std::string const& str, string_type type, u32 ref);
-    void add_importref(std::vector<std::string> const& data, u32 ref);
-    void add_animref(std::vector<std::string> const& data, u32 ref);
+    auto add_stringref(std::string const& str, string_type type, u32 ref) -> void;
+    auto add_importref(std::vector<std::string> const& data, u32 ref) -> void;
+    auto add_animref(std::vector<std::string> const& data, u32 ref) -> void;
 };
 
 } // namespace xsk::arc
