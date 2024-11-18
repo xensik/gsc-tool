@@ -152,26 +152,58 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     }
 
     head.stringtablefixup_offset = static_cast<u32>(script_.pos());
-    head.stringtablefixup_count = static_cast<u16>(strings_.size());
+    //head.stringtablefixup_count = static_cast<u16>(strings_.size());
+
+    auto stringtablecount = 0u;
 
     for (auto const& entry : strings_)
     {
-        if (ctx_->props() & props::size64)
-            script_.write<u32>(resolve_string(entry.name));
-        else
-            script_.write<u16>(resolve_string(entry.name));
-
-        script_.write<u8>(static_cast<u8>(entry.refs.size()));
-        script_.write<u8>(entry.type);
-
-        if (ctx_->props() & props::size64)
-            script_.seek(2);
-
-        for (auto ref : entry.refs)
+        if (entry.refs.size() > 0xFF)
         {
-            script_.write<u32>(ref);
+            auto count = static_cast<i32>(entry.refs.size());
+
+            for (auto i = 0; i < count; i++)
+            {
+                if (i % 0xFF == 0)
+                {
+                    stringtablecount++;
+                    if (ctx_->props() & props::size64)
+                        script_.write<u32>(resolve_string(entry.name));
+                    else
+                        script_.write<u16>(resolve_string(entry.name));
+
+                    script_.write<u8>(static_cast<u8>(std::min(0xFF, count - i)));
+                    script_.write<u8>(entry.type);
+
+                    if (ctx_->props() & props::size64)
+                        script_.seek(2);
+                }
+
+                script_.write<u32>(entry.refs[i]);
+            }
+        }
+        else
+        {
+            stringtablecount++;
+            if (ctx_->props() & props::size64)
+                script_.write<u32>(resolve_string(entry.name));
+            else
+                script_.write<u16>(resolve_string(entry.name));
+
+            script_.write<u8>(static_cast<u8>(entry.refs.size()));
+            script_.write<u8>(entry.type);
+
+            if (ctx_->props() & props::size64)
+                script_.seek(2);
+
+            for (auto ref : entry.refs)
+            {
+                script_.write<u32>(ref);
+            }
         }
     }
+
+    head.stringtablefixup_count = static_cast<u16>(stringtablecount);
 
     if (ctx_->props() & props::devstr)
     {
@@ -813,7 +845,7 @@ auto assembler::align_instruction(instruction& inst) -> void
             {
                 if (inst.data[1 + (4 * i)] == "case" && static_cast<switch_type>(std::stoul(inst.data[1 + (4 * i) + 1])) == switch_type::string)
                 {
-                    add_stringref(inst.data[1 + (3 * i) + 1], string_type::literal, static_cast<u32>(script_.pos() + 2));
+                    add_stringref(inst.data[1 + (4 * i) + 2], string_type::literal, static_cast<u32>(script_.pos() + 2));
                 }
 
                 inst.size += 8;
