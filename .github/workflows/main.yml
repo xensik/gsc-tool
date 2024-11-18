@@ -50,7 +50,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.3
+        uses: abel0b/setup-premake@v2.4
         with:
           version: ${{ env.PREMAKE_VERSION }}
 
@@ -100,7 +100,7 @@ jobs:
           echo "/usr/local/opt/llvm/bin" >> $GITHUB_PATH
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.3
+        uses: abel0b/setup-premake@v2.4
         with:
           version: ${{ env.PREMAKE_VERSION }}
 
@@ -152,7 +152,7 @@ jobs:
       #   run: sudo apt-get install crossbuild-essential-arm64 -y
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.3
+        uses: abel0b/setup-premake@v2.4
         with:
           version: ${{ env.PREMAKE_VERSION }}
 
