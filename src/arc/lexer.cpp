@@ -84,6 +84,8 @@ auto lexer::lex() -> token
                     }
                     else
                     {
+                        auto first = true;
+
                         while (true)
                         {
                             if (reader_.ended())
@@ -94,18 +96,21 @@ auto lexer::lex() -> token
                                 loc_.lines();
                                 loc_.step();
                             }
-                            else if (last == '#' && curr == '/')
+                            else if (last == '#' && curr == '/' && !first)
                             {
                                 advance();
                                 break;
                             }
 
                             advance();
+                            first = false;
                         }
                     }
                 }
                 else if (last == '@')
                 {
+                    auto first = true;
+
                     while (true)
                     {
                         if (reader_.ended())
@@ -116,17 +121,20 @@ auto lexer::lex() -> token
                             loc_.lines();
                             loc_.step();
                         }
-                        else if (last == '@' && curr == '/')
+                        else if (last == '@' && curr == '/' && !first)
                         {
                             advance();
                             break;
                         }
 
                         advance();
+                        first = false;
                     }
                 }
                 else if (last == '*')
                 {
+                    auto first = true;
+
                     while (true)
                     {
                         if (reader_.ended())
@@ -137,13 +145,14 @@ auto lexer::lex() -> token
                             loc_.lines();
                             loc_.step();
                         }
-                        else if (last  == '*' && curr == '/')
+                        else if (last  == '*' && curr == '/' && !first)
                         {
                             advance();
                             break;
                         }
 
                         advance();
+                        first = false;
                     }
                 }
                 else if (last == '/')

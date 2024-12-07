@@ -781,6 +781,13 @@ auto assemble_file(game game, mach mach, fs::path const& file, fs::path rel) -> 
         rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((file.extension() == ".gscasm" ? ".gsc" : ".csc"));
 
         auto data = utils::file::read(file);
+
+        if (data.size() >= 4 && !std::memcmp(&data[0], "\x80GSC", 4))
+        {
+            std::cerr << std::format("{} at {}\n", "already assembled", file.generic_string());
+            return result::success;
+        }
+
         auto outasm = contexts[game][mach]->source().parse_assembly(data);
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
@@ -834,7 +841,7 @@ auto compile_file(game game, mach mach, fs::path const& file, fs::path rel) -> r
 
         auto data = utils::file::read(file);
 
-        if (!std::memcmp(&data[0], "\x80GSC", 4))
+        if (data.size() >= 4 && !std::memcmp(&data[0], "\x80GSC", 4))
         {
             std::cerr << std::format("{} at {}\n", "already compiled", file.generic_string());
             return result::success;
@@ -904,7 +911,7 @@ auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
 
         auto data = utils::file::read(file);
 
-        if (!std::memcmp(&data[0], "\x80GSC", 4))
+        if (data.size() >= 4 && !std::memcmp(&data[0], "\x80GSC", 4))
         {
             std::cerr << std::format("{} at {}\n", "already compiled", file.generic_string());
             return result::success;
