@@ -1,4 +1,7 @@
-[![sonar](https://sonarcloud.io/api/project_badges/measure?project=xensik_gsc-tool&metric=alert_status)](https://sonarcloud.io/summary/overall?id=xensik_gsc-tool)
+<!---
+Javier111228/Javier111228 is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+You can click the Preview link to take a look at your changes.
+--->[![sonar](https://sonarcloud.io/api/project_badges/measure?project=xensik_gsc-tool&metric=alert_status)](https://sonarcloud.io/summary/overall?id=xensik_gsc-tool)
 [![build](https://github.com/xensik/gsc-tool/workflows/Build/badge.svg)](https://github.com/xensik/gsc-tool/actions)
 [![issues](https://img.shields.io/github/issues/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/issues)
 [![license](https://img.shields.io/github/license/xensik/gsc-tool.svg)](https://github.com/xensik/gsc-tool/blob/dev/LICENSE)
