@@ -770,6 +770,7 @@ namespace arc
 
 std::map<game, std::map<mach, std::unique_ptr<context>>> contexts;
 std::map<mode, std::function<result(game game, mach mach, fs::path const& file, fs::path rel)>> funcs;
+bool t6fixup = false;
 
 auto assemble_file(game game, mach mach, fs::path const& file, fs::path rel) -> result
 {
@@ -953,6 +954,7 @@ auto init_t6(mach mach, bool dev) -> void
         {
             contexts[game::t6][mach] = std::make_unique<t6::pc::context>();
             contexts[game::t6][mach]->init(dev ? build::dev : build::prod, fs_read);
+            contexts[game::t6][mach]->fixup(t6fixup);
             break;
         }
         case mach::ps3:
@@ -1207,6 +1209,7 @@ auto main(u32 argc, char** argv) -> result
         ("y,dry", "Dry run (do not write files).", cxxopts::value<bool>()->implicit_value("true"))
         ("d,dev", "Enable developer mode (dev blocks & generate bytecode map).", cxxopts::value<bool>()->implicit_value("true"))
         ("z,zonetool", "Enable zonetool mode (use .cgsc files).", cxxopts::value<bool>()->implicit_value("true"))
+        ("t6fixup", "Decompile t6 files from broken compilers", cxxopts::value<bool>()->implicit_value("true"))
         ("h,help", "Display help.")
         ("v,version", "Display version.");
 
@@ -1262,6 +1265,7 @@ auto main(u32 argc, char** argv) -> result
         auto mach = mach::_;
         auto dev = result["dev"].as<bool>();
         gsc::zonetool = result["zonetool"].as<bool>();
+        arc::t6fixup = result["t6fixup"].as<bool>();
         dry_run = result["dry"].as<bool>();
 
         if(!parse_mode(mode_arg, mode))

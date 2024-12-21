@@ -304,8 +304,23 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_EvalLocalVariableCached:
         {
-            stack_.push(expr_identifier::make(loc, locals_.at(std::stoi(inst.data[0]))));
-            break;
+            if (!ctx_->fixup())
+            {
+                stack_.push(expr_identifier::make(loc, locals_.at(std::stoi(inst.data[0]))));
+                break;
+            }
+            else // fix old compiler bug
+            {
+                try
+                {
+                    stack_.push(expr_identifier::make(loc, locals_.at(std::stoi(inst.data[0]))));
+                }
+                catch (const std::exception&)
+                {
+                    stack_.push(expr_identifier::make(loc, "broken_code!!"));
+                }
+                break;
+            }
         }
         case opcode::OP_EvalArray:
         {
@@ -1582,7 +1597,7 @@ auto decompiler::decompile_inf(stmt_list& stm, usize begin, usize end) -> void
     auto save = locs_;
     locs_.brk = last_location_index(stm, end) ? locs_.end : stm.list[end + 1]->label();
     locs_.end = stm.list[end]->label();
-    locs_.cnt = stm.list[end]->label();
+    locs_.cnt = stm.list[ctx_->fixup() ? begin : end]->label(); // fix old compiler bug
 
     auto loc = stm.list[begin]->loc();
 

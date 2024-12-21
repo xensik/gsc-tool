@@ -81,6 +81,13 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
     header_.flags = script_.read<u8>();
 
     auto string_pool = std::map<usize, std::string>{};
+
+    // fix old compiler bug
+    if (ctx_->fixup())
+    {
+        string_pool.insert({ 0x3E, "" });
+    }
+
     script_.pos((ctx_->props() & props::headerxx) ? header_size_v3 : (ctx_->props() & props::header72) ? header_size_v2 : header_size_v1);
 
     while (script_.pos() < header_.include_offset)
@@ -295,6 +302,10 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
                     entry->size--;
                 }
             }
+        }
+        else if (ctx_->fixup() && header_.cseg_size == 0) // fix old compiler bug
+        {
+            entry->size = (header_.imports_offset) - entry->offset;
         }
         else
         {
