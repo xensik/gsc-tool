@@ -12,7 +12,7 @@ namespace xsk::arc::t6::pc
 
 constexpr u64 header_magic = 0x06000A0D43534780;
 
-class context : public arc::context
+struct context : public arc::context
 {
 public:
     context();

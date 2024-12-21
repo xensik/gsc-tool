@@ -17,7 +17,7 @@ struct lookahead
 
     lookahead(char const* data, usize size);
     auto advance() -> void;
-    auto ended() { return available == 0; };
+    auto ended() const { return available == 0; };
 };
 
 } // namespace xsk::arc

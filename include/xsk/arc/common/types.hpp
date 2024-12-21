@@ -123,6 +123,6 @@ struct locjmp
 };
 
 // fordward decl for modules ref
-class context;
+struct context;
 
 } // namespace xsk::arc

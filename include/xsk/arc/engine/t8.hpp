@@ -15,7 +15,7 @@ constexpr usize code_count = 0;
 constexpr usize hash_count = 0;
 constexpr u64 header_magic = 0x36000A0D43534780;
 
-class context : public arc::context
+struct context : public arc::context
 {
 public:
     context();

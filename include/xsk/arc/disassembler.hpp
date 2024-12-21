@@ -11,8 +11,9 @@
 namespace xsk::arc
 {
 
-class disassembler
+struct disassembler
 {
+private:
     context const* ctx_;
     function::ptr func_;
     assembly::ptr assembly_;
@@ -22,7 +23,7 @@ class disassembler
     std::map<usize, animtree_ref::ptr> anim_refs_;
 
 public:
-    disassembler(context const* ctx);
+    explicit disassembler(context const* ctx);
     auto disassemble(buffer const& data) -> assembly::ptr;
     auto disassemble(std::vector<u8> const& data) -> assembly::ptr;
     auto disassemble(u8 const* data, usize data_size) -> assembly::ptr;

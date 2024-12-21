@@ -15,7 +15,7 @@
 namespace xsk::arc
 {
 
-class context
+struct context
 {
 public:
     using fs_callback = std::function<std::vector<u8>(std::string const&)>;

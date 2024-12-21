@@ -11,8 +11,9 @@
 namespace xsk::arc
 {
 
-class assembler
+struct assembler
 {
+private:
     context const* ctx_;
     function const* func_;
     assembly const* assembly_;
@@ -26,7 +27,7 @@ class assembler
     u32 devmap_count_;
 
 public:
-    assembler(context const* ctx);
+    explicit assembler(context const* ctx);
     auto assemble(assembly const& data, std::string const& name = {}) -> std::pair<buffer, buffer>;
 
 private:
