@@ -1253,7 +1253,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         }
         case opcode::OP_SafeSetVariableFieldCached0:
         {
-            if (func_->params->list.size() == 0)
+            if (func_->params->list.empty())
                 func_->params->list.push_back(expr_identifier::make(loc, "¡ERROR!"));
             else
                 func_->params->list.push_back(expr_identifier::make(loc, func_->params->list.at(func_->params->list.size() - 1)->as<expr_identifier>().value));
@@ -1261,8 +1261,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         }
         case opcode::OP_SafeSetVariableFieldCached:
         {
-            auto index = func_->params->list.size() - 1 - std::stoul(inst.data[0]);
-            if (index < 0 || index > func_->params->list.size())
+            if (auto index = func_->params->list.size() - 1 - std::stoul(inst.data[0]); index > func_->params->list.size())
                 func_->params->list.push_back(expr_identifier::make(loc, "¡ERROR!"));
             else
                 func_->params->list.push_back(expr_identifier::make(loc, func_->params->list.at(index)->as<expr_identifier>().value));

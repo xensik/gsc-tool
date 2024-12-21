@@ -11,8 +11,9 @@
 namespace xsk::gsc
 {
 
-class preprocessor
+struct preprocessor
 {
+private:
     context* ctx_;
     std::stack<lexer> lexer_;
     std::vector<std::string> includes_;

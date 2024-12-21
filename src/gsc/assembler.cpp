@@ -555,7 +555,7 @@ auto assembler::assemble_offset(i32 offs) -> void
     script_.write_i24((offs << ((ctx_->props() & props::offs8) ? 8 : (ctx_->props() & props::offs9) ? 9 : 10)) >> 8);
 }
 
-auto assembler::resolve_function(std::string const& name) -> usize
+auto assembler::resolve_function(std::string const& name) const -> usize
 {
     for (auto const& entry : assembly_->functions)
     {
@@ -568,7 +568,7 @@ auto assembler::resolve_function(std::string const& name) -> usize
     throw asm_error(std::format("couldn't resolve local function address of {}", name));
 }
 
-auto assembler::resolve_label(std::string const& name) -> usize
+auto assembler::resolve_label(std::string const& name) const -> usize
 {
     for (auto const& entry : func_->labels)
     {

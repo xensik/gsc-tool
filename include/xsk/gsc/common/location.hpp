@@ -8,7 +8,7 @@
 namespace xsk::gsc
 {
 
-class position
+struct position
 {
 public:
     typedef const std::string filename_type;
@@ -78,7 +78,7 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T> &ostr, const position &p
     return ostr << pos.line << '.' << pos.column;
 }
 
-class location
+struct location
 {
 public:
     typedef position::filename_type filename_type;

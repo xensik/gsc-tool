@@ -11,8 +11,9 @@
 namespace xsk::gsc
 {
 
-class disassembler
+struct disassembler
 {
+private:
     context const* ctx_;
     function::ptr func_;
     assembly::ptr assembly_;
@@ -20,7 +21,7 @@ class disassembler
     utils::reader stack_;
 
 public:
-    disassembler(context const* ctx);
+    explicit disassembler(context const* ctx);
     auto disassemble(buffer const& script, buffer const& stack) -> assembly::ptr;
     auto disassemble(std::vector<u8> const& script, std::vector<u8> const& stack) -> assembly::ptr;
     auto disassemble(u8 const* script, usize script_size, u8 const* stack, usize stack_size) -> assembly::ptr;

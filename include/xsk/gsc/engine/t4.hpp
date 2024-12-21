@@ -11,7 +11,7 @@
 namespace xsk::gsc::t4
 {
 
-enum class opcode : std::uint8_t
+enum class opcode : u8
 {
     OP_End = 0x0,
     OP_Return = 0x1,

@@ -859,7 +859,7 @@ auto assembler::align_instruction(instruction& inst) -> void
     }
 }
 
-auto assembler::resolve_label(std::string const& name) -> usize
+auto assembler::resolve_label(std::string const& name) const -> usize
 {
     for (auto const& entry : func_->labels)
     {

@@ -690,7 +690,7 @@ auto disassembler::disassemble_jump(instruction& inst) -> void
 {
     inst.size += script_.align(2);
 
-    auto addr = ((ctx_->props() & props::size64) ? ((script_.read<i16>() + 1) & ~(1)) : script_.read<i16>()) + script_.pos();
+    auto addr = ((ctx_->props() & props::size64) ? ((script_.read<i16>() + 1) & ~1) : script_.read<i16>()) + script_.pos();
     auto label = std::format("loc_{:X}", addr);
 
     inst.data.emplace_back(label);
@@ -723,7 +723,7 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
 
             if (func_->labels.erase(script_.pos()); !func_->labels.contains(inst.index))
             {
-                func_->labels.insert({ inst.index, std::string{ entry->data[0] } });
+                func_->labels.try_emplace(inst.index, std::string{ entry->data[0] });
             }
 
             break;

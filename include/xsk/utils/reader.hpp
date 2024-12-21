@@ -27,7 +27,7 @@ public:
     auto read() -> T;
     auto read_i24() -> i32;
     auto read_cstr() -> std::string;
-    auto read_bytes(usize pos, usize count) -> std::string;
+    auto read_bytes(usize pos, usize count) const -> std::string;
     auto is_avail() const -> bool;
     auto seek(usize size) -> void;
     auto seek_neg(usize size) -> void;

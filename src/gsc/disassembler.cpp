@@ -377,19 +377,19 @@ auto disassembler::disassemble_call_far2(instruction& inst, bool thread) -> void
 
     if (file == 0)
     {
-        inst.data.push_back("");
+        inst.data.push_back(""s);
         inst.data.push_back(std::format("{}", inst.index + 1 + offs));
     }
     else
     {
         auto path = ctx_->path_name(file);
 
-        if (!path.starts_with("_id_"))
+        if (!path.starts_with("_id_"s))
         {
             path.resize(path.size() - 4);
         }
 
-        inst.data.push_back(path);
+        inst.data.push_back(std::move(path));
         inst.data.push_back(ctx_->hash_name(name));
     }
 
@@ -434,9 +434,9 @@ auto disassembler::disassemble_call_builtin2(instruction& inst, bool method, boo
 {
     auto name = stack_.read_cstr();
 
-    if (name.starts_with("#xS"))
+    if (name.starts_with("#xS"s))
     {
-        auto id = std::stoull(name.substr(3), 0, 16);
+        auto id = std::stoull(name.substr(3), nullptr, 16);
         name = method ? ctx_->meth2_name(id) : ctx_->func2_name(id);
     }
 
@@ -488,7 +488,7 @@ auto disassembler::disassemble_switch_table(instruction& inst) -> void
 
             if (type == 0)
             {
-                inst.data.push_back("default"); // data:0 type:0 i:1
+                inst.data.push_back("default"s); // data:0 type:0 i:1
             }
             else if (type == 1)
             {

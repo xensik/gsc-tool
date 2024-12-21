@@ -219,7 +219,7 @@ auto reader::read_cstr() -> std::string
     return ret;
 }
 
-auto reader::read_bytes(usize pos, usize count) -> std::string
+auto reader::read_bytes(usize pos, usize count) const -> std::string
 {
     auto data = std::string{};
 

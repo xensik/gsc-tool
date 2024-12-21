@@ -112,7 +112,6 @@ enum class switch_type
     string,
 };
 
-// fordward decl for modules ref
-class context;
+struct context;
 
 } // namespace xsk::gsc

@@ -2013,7 +2013,7 @@ auto decompiler::lvalues_match(stmt_expr const& stm1, stmt_expr const& stm2) -> 
     return false;
 }
 
-auto decompiler::resolve_label(std::string const& name) -> usize
+auto decompiler::resolve_label(std::string const& name) const -> usize
 {
     for (auto const& entry : labels_)
     {

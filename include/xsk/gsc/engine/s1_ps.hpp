@@ -15,9 +15,9 @@ constexpr usize code_count = 154;
 constexpr usize func_count = 3;
 constexpr usize meth_count = 0;
 constexpr usize token_count = 0;
-constexpr u32 max_string_id = 0xA51D; // TODO
+constexpr u32 max_string_id = 0xA51D;
 
-class context : public gsc::context
+struct context : public gsc::context
 {
 public:
     context();

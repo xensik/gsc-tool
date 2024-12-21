@@ -55,7 +55,7 @@ private:
     auto find_location_index(stmt_list const& stm, std::string const& loc) -> usize;
     auto last_location_index(stmt_list const& stm, usize index) -> bool;
     auto lvalues_match(stmt_expr const& stm1, stmt_expr const& stm2) -> bool;
-    auto resolve_label(std::string const& name) -> usize;
+    auto resolve_label(std::string const& name) const -> usize;
     auto process_function(decl_function& func) -> void;
     auto process_stmt(stmt& stm) -> void;
     auto process_stmt_list(stmt_list& stm) -> void;

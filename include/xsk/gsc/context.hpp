@@ -15,7 +15,7 @@
 namespace xsk::gsc
 {
 
-class context
+struct context
 {
 public:
     using fs_callback = std::function<std::pair<buffer, std::vector<u8>>(context const*, std::string const&)>;

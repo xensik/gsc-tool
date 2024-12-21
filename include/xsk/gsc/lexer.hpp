@@ -10,8 +10,9 @@
 namespace xsk::gsc
 {
 
-class lexer
+struct lexer
 {
+private:
     context const* ctx_;
     lookahead reader_;
     location loc_;

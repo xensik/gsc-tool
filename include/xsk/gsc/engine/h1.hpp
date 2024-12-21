@@ -17,7 +17,7 @@ constexpr usize meth_count = 1415;
 constexpr usize token_count = 42947;
 constexpr u32 max_string_id = 42989;
 
-class context : public gsc::context
+struct context : public gsc::context
 {
 public:
     context();

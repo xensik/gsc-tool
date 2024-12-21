@@ -11,8 +11,9 @@
 namespace xsk::gsc
 {
 
-class assembler
+struct assembler
 {
+private:
     context const* ctx_;
     function const* func_;
     assembly const* assembly_;
@@ -22,7 +23,7 @@ class assembler
     u32 devmap_count_;
 
 public:
-    assembler(context const* ctx);
+    explicit assembler(context const* ctx);
     auto assemble(assembly const& data) -> std::tuple<buffer, buffer, buffer>;
 
 private:
@@ -38,8 +39,8 @@ private:
     auto assemble_switch(instruction const& inst) -> void;
     auto assemble_switch_table(instruction const& inst) -> void;
     auto assemble_offset(i32 offs) -> void;
-    auto resolve_function(std::string const& name) -> usize;
-    auto resolve_label(std::string const& name) -> usize;
+    auto resolve_function(std::string const& name) const -> usize;
+    auto resolve_label(std::string const& name) const -> usize;
     auto encrypt_string(std::string const& str) -> std::string;
 };
 

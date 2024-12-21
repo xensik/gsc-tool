@@ -10,8 +10,9 @@
 namespace xsk::gsc
 {
 
-class decompiler
+struct decompiler
 {
+private:
     context const* ctx_;
     program::ptr program_;
     decl_function::ptr func_;
@@ -23,7 +24,7 @@ class decompiler
     locjmp locs_;
 
 public:
-    decompiler(context const* ctx);
+    explicit decompiler(context const* ctx);
     auto decompile(assembly const& data) -> program::ptr;
 
 private:

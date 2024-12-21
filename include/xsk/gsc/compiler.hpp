@@ -10,8 +10,9 @@
 namespace xsk::gsc
 {
 
-class compiler
+struct compiler
 {
+private:
     context* ctx_;
     assembly::ptr assembly_;
     function::ptr function_;
@@ -31,7 +32,7 @@ class compiler
     bool animload_;
 
 public:
-    compiler(context* ctx);
+    explicit compiler(context* ctx);
     auto compile(program const& data) -> assembly::ptr;
     auto compile(std::string const& file, std::vector<u8>& data) -> assembly::ptr;
 
