@@ -52,7 +52,7 @@
 #pragma warning(disable:4127)
 #endif
 #include "context.hpp"
-namespace xsk::arc { class preprocessor; }
+namespace xsk::arc { struct preprocessor; }
 
 #line 58 "parser.hpp"
 
