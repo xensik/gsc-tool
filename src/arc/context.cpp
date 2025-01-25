@@ -11,8 +11,8 @@ namespace xsk::arc
 
 extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcode_list;
 
-context::context(arc::props props, arc::engine engine, arc::endian endian, arc::system system, u64 magic)
-    : props_{ props }, engine_{ engine }, endian_{ endian }, system_{ system }, instance_{ arc::instance::server }, magic_{ magic },
+context::context(arc::props props, arc::engine engine, arc::endian endian, arc::system system, arc::instance inst, u64 magic)
+    : props_{ props }, engine_{ engine }, endian_{ endian }, system_{ system }, instance_{ inst }, magic_{ magic },
       source_{ this }, assembler_{ this }, disassembler_{ this }, compiler_{ this }, decompiler_{ this }
 {
     opcode_map_.reserve(opcode_list.size());

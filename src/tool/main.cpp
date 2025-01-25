@@ -44,6 +44,7 @@ enum class fenc { _, source, assembly, binary, src_bin };
 enum class mode { _, assemble, disassemble, compile, decompile, parse, rename };
 enum class game { _, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9, jup };
 enum class mach { _, pc, ps3, ps4, ps5, xb2, xb3, xb4, wiiu };
+enum class inst { _, server, client };
 
 auto dry_run = false;
 
@@ -127,6 +128,12 @@ std::unordered_map<std::string_view, mach> const machs =
     { "xb3",  mach::xb3  },
     { "xb4",  mach::xb4  },
     { "wiiu", mach::wiiu },
+};
+
+std::unordered_map<std::string_view, inst> const insts =
+{
+    { "server", inst::server },
+    { "client", inst::client },
 };
 
 auto operator |=(result& lhs, result rhs) -> void
@@ -527,7 +534,7 @@ auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, s
     throw std::runtime_error("file read error");
 }
 
-auto init_iw5(mach mach, bool dev) -> void
+auto init_iw5(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::iw5].contains(mach)) return;
 
@@ -535,19 +542,19 @@ auto init_iw5(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::iw5][mach] = std::make_unique<iw5_pc::context>();
+            contexts[game::iw5][mach] = std::make_unique<iw5_pc::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw5][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::ps3:
         {
-            contexts[game::iw5][mach] = std::make_unique<iw5_ps::context>();
+            contexts[game::iw5][mach] = std::make_unique<iw5_ps::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw5][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::xb2:
         {
-            contexts[game::iw5][mach] = std::make_unique<iw5_xb::context>();
+            contexts[game::iw5][mach] = std::make_unique<iw5_xb::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw5][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -556,7 +563,7 @@ auto init_iw5(mach mach, bool dev) -> void
     }
 }
 
-auto init_iw6(mach mach, bool dev) -> void
+auto init_iw6(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::iw6].contains(mach)) return;
 
@@ -564,19 +571,19 @@ auto init_iw6(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::iw6][mach] = std::make_unique<iw6_pc::context>();
+            contexts[game::iw6][mach] = std::make_unique<iw6_pc::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::ps3:
         {
-            contexts[game::iw6][mach] = std::make_unique<iw6_ps::context>();
+            contexts[game::iw6][mach] = std::make_unique<iw6_ps::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::xb2:
         {
-            contexts[game::iw6][mach] = std::make_unique<iw6_xb::context>();
+            contexts[game::iw6][mach] = std::make_unique<iw6_xb::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -585,7 +592,7 @@ auto init_iw6(mach mach, bool dev) -> void
     }
 }
 
-auto init_iw7(mach mach, bool dev) -> void
+auto init_iw7(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::iw7].contains(mach)) return;
 
@@ -593,7 +600,7 @@ auto init_iw7(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::iw7][mach] = std::make_unique<iw7::context>();
+            contexts[game::iw7][mach] = std::make_unique<iw7::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw7][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -602,7 +609,7 @@ auto init_iw7(mach mach, bool dev) -> void
     }
 }
 
-auto init_iw8(mach mach, bool dev) -> void
+auto init_iw8(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::iw8].contains(mach)) return;
 
@@ -610,7 +617,7 @@ auto init_iw8(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::iw8][mach] = std::make_unique<iw8::context>();
+            contexts[game::iw8][mach] = std::make_unique<iw8::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw8][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -619,7 +626,7 @@ auto init_iw8(mach mach, bool dev) -> void
     }
 }
 
-auto init_iw9(mach mach, bool dev) -> void
+auto init_iw9(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::iw9].contains(mach)) return;
 
@@ -627,7 +634,7 @@ auto init_iw9(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::iw9][mach] = std::make_unique<iw9::context>();
+            contexts[game::iw9][mach] = std::make_unique<iw9::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw9][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -636,7 +643,7 @@ auto init_iw9(mach mach, bool dev) -> void
     }
 }
 
-auto init_s1(mach mach, bool dev) -> void
+auto init_s1(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::s1].contains(mach)) return;
 
@@ -644,19 +651,19 @@ auto init_s1(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::s1][mach] = std::make_unique<s1_pc::context>();
+            contexts[game::s1][mach] = std::make_unique<s1_pc::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::s1][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::ps3:
         {
-            contexts[game::s1][mach] = std::make_unique<s1_ps::context>();
+            contexts[game::s1][mach] = std::make_unique<s1_ps::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::s1][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::xb2:
         {
-            contexts[game::s1][mach] = std::make_unique<s1_xb::context>();
+            contexts[game::s1][mach] = std::make_unique<s1_xb::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::s1][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -665,7 +672,7 @@ auto init_s1(mach mach, bool dev) -> void
     }
 }
 
-auto init_s2(mach mach, bool dev) -> void
+auto init_s2(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::s2].contains(mach)) return;
 
@@ -673,7 +680,7 @@ auto init_s2(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::s2][mach] = std::make_unique<s2::context>();
+            contexts[game::s2][mach] = std::make_unique<s2::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::s2][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -682,7 +689,7 @@ auto init_s2(mach mach, bool dev) -> void
     }
 }
 
-auto init_s4(mach mach, bool dev) -> void
+auto init_s4(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::s4].contains(mach)) return;
 
@@ -690,7 +697,7 @@ auto init_s4(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::s4][mach] = std::make_unique<s4::context>();
+            contexts[game::s4][mach] = std::make_unique<s4::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::s4][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -699,7 +706,7 @@ auto init_s4(mach mach, bool dev) -> void
     }
 }
 
-auto init_h1(mach mach, bool dev) -> void
+auto init_h1(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::h1].contains(mach)) return;
 
@@ -707,7 +714,7 @@ auto init_h1(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::h1][mach] = std::make_unique<h1::context>();
+            contexts[game::h1][mach] = std::make_unique<h1::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::h1][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -716,7 +723,7 @@ auto init_h1(mach mach, bool dev) -> void
     }
 }
 
-auto init_h2(mach mach, bool dev) -> void
+auto init_h2(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::h2].contains(mach)) return;
 
@@ -724,7 +731,7 @@ auto init_h2(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::h2][mach] = std::make_unique<h2::context>();
+            contexts[game::h2][mach] = std::make_unique<h2::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::h2][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -733,7 +740,7 @@ auto init_h2(mach mach, bool dev) -> void
     }
 }
 
-auto init(game game, mach mach, bool dev) -> void
+auto init(game game, mach mach, inst inst, bool dev) -> void
 {
     funcs[mode::assemble] = assemble_file;
     funcs[mode::disassemble] = disassemble_file;
@@ -749,16 +756,16 @@ auto init(game game, mach mach, bool dev) -> void
 
     switch (game)
     {
-        case game::iw5: init_iw5(mach, dev); break;
-        case game::iw6: init_iw6(mach, dev); break;
-        case game::iw7: init_iw7(mach, dev); break;
-        case game::iw8: init_iw8(mach, dev); break;
-        case game::iw9: init_iw9(mach, dev); break;
-        case game::s1:  init_s1(mach, dev);  break;
-        case game::s2:  init_s2(mach, dev);  break;
-        case game::s4:  init_s4(mach, dev);  break;
-        case game::h1:  init_h1(mach, dev);  break;
-        case game::h2:  init_h2(mach, dev);  break;
+        case game::iw5: init_iw5(mach, inst, dev); break;
+        case game::iw6: init_iw6(mach, inst, dev); break;
+        case game::iw7: init_iw7(mach, inst, dev); break;
+        case game::iw8: init_iw8(mach, inst, dev); break;
+        case game::iw9: init_iw9(mach, inst, dev); break;
+        case game::s1:  init_s1(mach, inst, dev);  break;
+        case game::s2:  init_s2(mach, inst, dev);  break;
+        case game::s4:  init_s4(mach, inst, dev);  break;
+        case game::h1:  init_h1(mach, inst, dev);  break;
+        case game::h2:  init_h2(mach, inst, dev);  break;
         default: break;
     }
 }
@@ -944,7 +951,7 @@ auto fs_read(std::string const& name) -> std::vector<u8>
     return utils::file::read(fs::path{ name });
 }
 
-auto init_t6(mach mach, bool dev) -> void
+auto init_t6(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::t6].contains(mach)) return;
 
@@ -952,26 +959,26 @@ auto init_t6(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::t6][mach] = std::make_unique<t6::pc::context>();
+            contexts[game::t6][mach] = std::make_unique<t6::pc::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t6][mach]->init(dev ? build::dev : build::prod, fs_read);
             contexts[game::t6][mach]->fixup(t6fixup);
             break;
         }
         case mach::ps3:
         {
-            contexts[game::t6][mach] = std::make_unique<t6::ps3::context>();
+            contexts[game::t6][mach] = std::make_unique<t6::ps3::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::xb2:
         {
-            contexts[game::t6][mach] = std::make_unique<t6::xb2::context>();
+            contexts[game::t6][mach] = std::make_unique<t6::xb2::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         case mach::wiiu:
         {
-            contexts[game::t6][mach] = std::make_unique<t6::wiiu::context>();
+            contexts[game::t6][mach] = std::make_unique<t6::wiiu::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t6][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -980,7 +987,7 @@ auto init_t6(mach mach, bool dev) -> void
     }
 }
 
-auto init_t7(mach mach, bool dev) -> void
+auto init_t7(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::t7].contains(mach)) return;
 
@@ -988,7 +995,7 @@ auto init_t7(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::t7][mach] = std::make_unique<t7::context>();
+            contexts[game::t7][mach] = std::make_unique<t7::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t7][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -997,7 +1004,7 @@ auto init_t7(mach mach, bool dev) -> void
     }
 }
 
-auto init_t8(mach mach, bool dev) -> void
+auto init_t8(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::t8].contains(mach)) return;
 
@@ -1005,7 +1012,7 @@ auto init_t8(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::t8][mach] = std::make_unique<t8::context>();
+            contexts[game::t8][mach] = std::make_unique<t8::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t8][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -1014,7 +1021,7 @@ auto init_t8(mach mach, bool dev) -> void
     }
 }
 
-auto init_t9(mach mach, bool dev) -> void
+auto init_t9(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::t9].contains(mach)) return;
 
@@ -1022,7 +1029,7 @@ auto init_t9(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::t9][mach] = std::make_unique<t9::context>();
+            contexts[game::t9][mach] = std::make_unique<t9::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t9][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -1031,7 +1038,7 @@ auto init_t9(mach mach, bool dev) -> void
     }
 }
 
-auto init_jup(mach mach, bool dev) -> void
+auto init_jup(mach mach, inst inst, bool dev) -> void
 {
     if (contexts[game::jup].contains(mach)) return;
 
@@ -1039,7 +1046,7 @@ auto init_jup(mach mach, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::jup][mach] = std::make_unique<jup::context>();
+            contexts[game::jup][mach] = std::make_unique<jup::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::jup][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -1048,7 +1055,7 @@ auto init_jup(mach mach, bool dev) -> void
     }
 }
 
-auto init(game game, mach mach, bool dev) -> void
+auto init(game game, mach mach, inst inst, bool dev) -> void
 {
     funcs[mode::assemble] = assemble_file;
     funcs[mode::disassemble] = disassemble_file;
@@ -1064,11 +1071,11 @@ auto init(game game, mach mach, bool dev) -> void
 
     switch (game)
     {
-        case game::t6: init_t6(mach, dev); break;
-        case game::t7: init_t7(mach, dev); break;
-        case game::t8: init_t8(mach, dev); break;
-        case game::t9: init_t9(mach, dev); break;
-        case game::jup: init_jup(mach, dev); break;
+        case game::t6: init_t6(mach, inst, dev); break;
+        case game::t7: init_t7(mach, inst, dev); break;
+        case game::t8: init_t8(mach, inst, dev); break;
+        case game::t9: init_t9(mach, inst, dev); break;
+        case game::jup: init_jup(mach, inst, dev); break;
         default: break;
     }
 }
@@ -1096,10 +1103,10 @@ auto extension_match(fs::path const& ext, mode mode, game game) -> bool
     }
 }
 
-auto execute(mode mode, game game, mach mach, fs::path const& path, bool dev) -> result
+auto execute(mode mode, game game, mach mach, inst inst, fs::path const& path, bool dev) -> result
 {
-    gsc::init(game, mach, dev);
-    arc::init(game, mach, dev);
+    gsc::init(game, mach, inst, dev);
+    arc::init(game, mach, inst, dev);
 
     if (fs::is_directory(path))
     {
@@ -1189,6 +1196,21 @@ auto parse_system(std::string const& arg, mach& out) -> bool
     return false;
 }
 
+auto parse_instance(std::string const& arg, inst& out) -> bool
+{
+    auto inst = utils::string::to_lower(arg);
+
+    auto const it = insts.find(inst);
+
+    if (it != insts.end())
+    {
+        out = it->second;
+        return true;
+    }
+
+    return false;
+}
+
 auto branding() -> std::string
 {
     return std::format("GSC Tool {} created by xensik\n", XSK_VERSION_STR);
@@ -1205,6 +1227,7 @@ auto main(u32 argc, char** argv) -> result
         ("m,mode","[REQUIRED] one of: asm, disasm, comp, decomp, parse, rename", cxxopts::value<std::string>(), "<mode>")
         ("g,game", "[REQUIRED] one of: iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9, jup", cxxopts::value<std::string>(), "<game>")
         ("s,system", "[REQUIRED] one of: pc, ps3, ps4, ps5, xb2 (360), xb3 (One), xb4 (Series X|S), wiiu", cxxopts::value<std::string>(), "<system>")
+        ("i,instance", "Instance to use (client, server). default to server", cxxopts::value<std::string>()->default_value("server"))
         ("p,path", "File or directory to process.", cxxopts::value<std::string>())
         ("y,dry", "Dry run (do not write files).", cxxopts::value<bool>()->implicit_value("true"))
         ("d,dev", "Enable developer mode (dev blocks & generate bytecode map).", cxxopts::value<bool>()->implicit_value("true"))
@@ -1258,11 +1281,13 @@ auto main(u32 argc, char** argv) -> result
         auto mode_arg = utils::string::to_lower(result["mode"].as<std::string>());
         auto game_arg = utils::string::to_lower(result["game"].as<std::string>());
         auto mach_arg = utils::string::to_lower(result["system"].as<std::string>());
+        auto inst_arg = utils::string::to_lower(result["instance"].as<std::string>());
         auto path_arg = result["path"].as<std::string>();
         auto path = fs::path{};
         auto mode = mode::_;
         auto game = game::_;
         auto mach = mach::_;
+        auto inst = inst::_;
         auto dev = result["dev"].as<bool>();
         gsc::zonetool = result["zonetool"].as<bool>();
         arc::t6fixup = result["t6fixup"].as<bool>();
@@ -1286,10 +1311,16 @@ auto main(u32 argc, char** argv) -> result
             return result::failure;
         }
 
+        if (!parse_instance(inst_arg, inst))
+        {
+            std::cerr << "[ERROR] unknown instance '" << inst_arg << "'\n";
+            return result::failure;
+        }
+
         path = fs::path{ utils::string::fordslash(path_arg), fs::path::format::generic_format };
 
         std::cout << branding();
-        return execute(mode, game, mach, path, dev);
+        return execute(mode, game, mach, inst, path, dev);
     }
     catch (std::exception const& e)
     {

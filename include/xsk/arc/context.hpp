@@ -20,7 +20,7 @@ struct context
 public:
     using fs_callback = std::function<std::vector<u8>(std::string const&)>;
 
-    context(props props, engine engine, endian endian, system system, u64 magic);
+    context(props props, engine engine, endian endian, system system, instance inst, u64 magic);
 
     auto props() const -> props { return props_; }
     auto build() const -> build { return build_; }

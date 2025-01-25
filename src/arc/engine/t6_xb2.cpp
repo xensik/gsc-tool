@@ -16,7 +16,7 @@ extern std::array<std::pair<u32, char const*>, hash_count> const hash_list;
 namespace xsk::arc::t6::xb2
 {
 
-context::context() : arc::context(props::none, engine::t6, endian::big, system::xb2, header_magic)
+context::context(arc::instance inst) : arc::context(props::none, engine::t6, endian::big, system::xb2, inst, header_magic)
 {
     code_map_.reserve(code_list.size());
     code_map_rev_.reserve(code_list.size());
