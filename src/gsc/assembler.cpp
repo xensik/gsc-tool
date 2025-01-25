@@ -388,7 +388,12 @@ auto assembler::assemble_call_far(instruction const& inst, bool thread) -> void
         stack_.write<u16>(static_cast<u16>(file_id));
 
     if (file_id == 0)
-        stack_.write_cstr(encrypt_string(inst.data[0]));
+    {
+        if (ctx_->props() & props::extension)
+            stack_.write_cstr(encrypt_string(inst.data[0] + (ctx_->instance() == instance::server ? ".gsc" : ".csc")));
+        else
+            stack_.write_cstr(encrypt_string(inst.data[0]));
+    }
 
     if (ctx_->props() & props::tok4)
         stack_.write<u32>(func_id);
