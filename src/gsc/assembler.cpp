@@ -509,6 +509,7 @@ auto assembler::assemble_switch_table(instruction const& inst) -> void
             }
             else
             {
+                // TODO: Sledgehammer's shenanigans (string id == 0)
                 script_.write<u32>((ctx_->engine() == engine::iw9) ? 0 : i + 1);
                 stack_.write_cstr(encrypt_string(inst.data[1 + (4 * i) + 2]));
             }

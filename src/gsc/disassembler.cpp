@@ -512,8 +512,19 @@ auto disassembler::disassemble_switch_table(instruction& inst) -> void
         {
             if (data == 0)
             {
-                stack_.read_cstr(); // [0x01 0x00] unencrypted
-                inst.data.push_back("default");
+                auto str = stack_.read_cstr(); // [0x01 0x00] unencrypted
+
+                // Sledgehammer's shenanigans
+                if (ctx_->engine() == engine::s2 && str != "\x01")
+                {
+                    inst.data.push_back("case");
+                    inst.data.push_back(std::format("{}", static_cast<int>(switch_type::string)));
+                    inst.data.push_back(decrypt_string(str));
+                }
+                else
+                {
+                    inst.data.push_back("default");
+                }
             }
             else if (data < 0x100000)
             {
