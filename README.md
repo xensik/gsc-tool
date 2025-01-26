@@ -2,8 +2,8 @@
 [![build](https://github.com/xensik/gsc-tool/workflows/Build/badge.svg)](https://github.com/xensik/gsc-tool/actions)
 [![issues](https://img.shields.io/github/issues/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/issues)
 [![license](https://img.shields.io/github/license/xensik/gsc-tool.svg)](https://github.com/xensik/gsc-tool/blob/dev/LICENSE)
-[![releases](https://img.shields.io/github/v/release/xensik/gsc-tool)](https://github.com/xensik/gsc-tool/releases)
-[![paypal](https://img.shields.io/badge/PayPal-support-blue.svg?logo=paypal)](https://www.paypal.me/xensik)
+[![github sponsors](https://img.shields.io/github/sponsors/xensik)](https://github.com/sponsors/xensik)
+[![patreon](https://img.shields.io/badge/Patreon-Become_a_Patron-ff424d?logo=patreon)](https://patreon.com/xensik)
 
 # GSC Tool
 A utility to compile & decompile IW engine game scripts.
@@ -90,9 +90,9 @@ note: for PS3 & Xbox 360 `.gscbin` files *(compressedLen, len, bytecodeLen)* are
 ## Contribute
 If you like my work, consider sponsoring/donating! Would allow me to spend more time adding new features & fixing bugs.
 
-BTC: bc1qky7x9kpjlt6nsvt7pckc3wwzk8rk9pgtnmw98u\
-ETH: 0x6261BBE1a33F6Fec4b722DbCe2c28B4CC02c9C7B\
-[![pypl](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.me/xensik)   [![kofi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/xensik)
+BTC: ``bc1qky7x9kpjlt6nsvt7pckc3wwzk8rk9pgtnmw98u``
+
+[![github sponsors](https://img.shields.io/github/sponsors/xensik?style=for-the-badge&label=Github%20sponsors)](https://github.com/sponsors/xensik)    [![patreon](https://img.shields.io/badge/Patreon%20-be%20a%20Patron-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://patreon.com/xensik) 
 
 ## Credits
 This project is based on [*RektInator's* gsc-asm](https://github.com/ZoneTool/gsc-asm). Special thanks to **RektInator**, **JTAG** & **Dasfonia**.
