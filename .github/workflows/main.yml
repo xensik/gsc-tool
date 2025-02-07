@@ -72,14 +72,14 @@ jobs:
 
   build-macos:
     name: Build macOS
-    runs-on: macos-13
+    runs-on: macos-14
     strategy:
       fail-fast: false
       matrix:
         config:
           - release
         arch:
-          - x64
+          - amd64
           - arm64
     steps:
       - name: Check out files
@@ -93,7 +93,7 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Install LLVM
-        run: brew install llvm
+        run: brew install llvm lld
 
       - name: Add LLVM to PATH
         run: |
@@ -122,17 +122,9 @@ jobs:
           path: |
             build/bin/${{matrix.arch}}/${{matrix.config}}/gsc-tool
 
-  build-linux:
-    name: Build Linux
+  prebuild-linux:
+    name: Prebuild Linux
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - release
-        arch:
-          - x64
-          # - arm64
     steps:
       - name: Check out files
         uses: actions/checkout@v4
@@ -140,16 +132,6 @@ jobs:
           submodules: true
           fetch-depth: 0
           lfs: false
-
-      - name: Install LLVM
-        run: |
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 18
-
-      # - name: Install dependencies (arm64)
-      #   if: matrix.arch == 'arm64'
-      #   run: sudo apt-get install crossbuild-essential-arm64 -y
 
       - name: Add premake5 to PATH
         uses: abel0b/setup-premake@v2.4
@@ -159,8 +141,61 @@ jobs:
       - name: Generate project files
         run: premake5 gmake2
 
-      - name: Set up problem matching
-        uses: ammaraskar/gcc-problem-matcher@master
+      - name: Upload project files
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: linux-project-files
+          path: |
+            build/
+            include/xsk/version.hpp
+
+  build-linux:
+    name: Build Linux
+    runs-on: ${{ matrix.os }}
+    needs: prebuild-linux
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - release
+        arch:
+          - amd64
+          - arm64
+        include:
+          - arch: amd64
+            os: ubuntu-24.04
+          - arch: arm64
+            os: ubuntu-24.04-arm
+    steps:
+      - name: Check out files
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+          lfs: false
+
+      - name: Download project files
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: linux-project-files
+          path: ./
+
+      - name: Install LLVM
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 18
+
+      # - name: Add premake5 to PATH
+      #   uses: abel0b/setup-premake@v2.4
+      #   with:
+      #     version: ${{ env.PREMAKE_VERSION }}
+
+      # - name: Generate project files
+      #   run: premake5 gmake2
+
+      # - name: Set up problem matching
+      #   uses: ammaraskar/gcc-problem-matcher@master
 
       - name: Build ${{matrix.arch}} ${{matrix.config}} binaries
         run: |
@@ -196,6 +231,8 @@ jobs:
 
       - name: Compress Binaries
         run: |
+          rm -rf linux-project-files/
+
           for dir in */; do
             if [[ $dir == *"windows"* ]]; then
               cd "$dir" && zip -r "../${dir%/}.zip" . && cd ..
@@ -221,10 +258,8 @@ jobs:
       #   with:
       #     cosign-release: 'v2.1.1'
 
-      # - name: Setup QEMU
-      #   uses: docker/setup-qemu-action@v3.0.0
-      #   with:
-      #     platforms: linux/amd64,linux/arm64
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3.0.0
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3.0.0
@@ -257,7 +292,7 @@ jobs:
         uses: docker/build-push-action@v5.1.0
         with:
           context: .
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
