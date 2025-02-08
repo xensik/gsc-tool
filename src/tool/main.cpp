@@ -47,6 +47,7 @@ enum class mach { _, pc, ps3, ps4, ps5, xb2, xb3, xb4, wiiu };
 enum class inst { _, server, client };
 
 auto dry_run = false;
+auto workdir = fs::current_path();
 
 std::unordered_map<std::string_view, fenc> const gsc_exts =
 {
@@ -484,7 +485,7 @@ std::unordered_map<std::string, std::vector<std::uint8_t>> files;
 
 auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, std::vector<u8>>
 {
-    auto path = fs::path{ name };
+    auto path = workdir / fs::path{ name };
 
     auto bin_ext = ".gscbin";
     auto gsc_ext = ".gsc";
@@ -948,7 +949,14 @@ auto rename_file(game, mach, fs::path const&, fs::path) -> result
 
 auto fs_read(std::string const& name) -> std::vector<u8>
 {
-    return utils::file::read(fs::path{ name });
+    auto path = workdir / fs::path{ name };
+
+    if (!utils::file::exists(path))
+    {
+        throw std::runtime_error("file not found: " + path.string());
+    }
+
+    return utils::file::read(path);
 }
 
 auto init_t6(mach mach, inst inst, bool dev) -> void
@@ -1227,12 +1235,13 @@ auto main(u32 argc, char** argv) -> result
         ("m,mode","[REQUIRED] one of: asm, disasm, comp, decomp, parse, rename", cxxopts::value<std::string>(), "<mode>")
         ("g,game", "[REQUIRED] one of: iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9, jup", cxxopts::value<std::string>(), "<game>")
         ("s,system", "[REQUIRED] one of: pc, ps3, ps4, ps5, xb2 (360), xb3 (One), xb4 (Series X|S), wiiu", cxxopts::value<std::string>(), "<system>")
-        ("i,instance", "Instance to use (server, client)", cxxopts::value<std::string>()->default_value("server"), "<instance>")
+        ("i,instance", "Instance to use (server, client).", cxxopts::value<std::string>()->default_value("server"), "<instance>")
         ("p,path", "File or directory to process.", cxxopts::value<std::string>())
+        ("w,workdir", "Working directory for includes or headers.", cxxopts::value<std::string>()->default_value("."), "<path>")
         ("y,dry", "Dry run (do not write files).", cxxopts::value<bool>()->implicit_value("true"))
         ("d,dev", "Enable developer mode (dev blocks & generate bytecode map).", cxxopts::value<bool>()->implicit_value("true"))
         ("z,zonetool", "Enable zonetool mode (use .cgsc files).", cxxopts::value<bool>()->implicit_value("true"))
-        ("t6fixup", "Decompile t6 files from broken compilers", cxxopts::value<bool>()->implicit_value("true"))
+        ("t6fixup", "Decompile t6 files from broken compilers.", cxxopts::value<bool>()->implicit_value("true"))
         ("h,help", "Display help.")
         ("v,version", "Display version.");
 
@@ -1283,6 +1292,7 @@ auto main(u32 argc, char** argv) -> result
         auto mach_arg = utils::string::to_lower(result["system"].as<std::string>());
         auto inst_arg = utils::string::to_lower(result["instance"].as<std::string>());
         auto path_arg = result["path"].as<std::string>();
+        auto wdir_arg = result["workdir"].as<std::string>();
         auto path = fs::path{};
         auto mode = mode::_;
         auto game = game::_;
@@ -1318,6 +1328,12 @@ auto main(u32 argc, char** argv) -> result
         }
 
         path = fs::path{ utils::string::fordslash(path_arg), fs::path::format::generic_format };
+        workdir = fs::path{ utils::string::fordslash(wdir_arg), fs::path::format::generic_format };
+
+        if (!workdir.is_absolute())
+        {
+            workdir = fs::absolute(workdir);
+        }
 
         std::cout << branding();
         return execute(mode, game, mach, inst, path, dev);
