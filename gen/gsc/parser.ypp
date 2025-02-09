@@ -299,7 +299,7 @@ program
     ;
 
 inline
-    : INLINE expr_path SEMICOLON { ppr.push_header($2->value); }
+    : INLINE expr_path SEMICOLON { ppr.push_header(@$, $2->value); }
     ;
 
 include

@@ -32,7 +32,7 @@ private:
 public:
     preprocessor(context* ctx, std::string const& name, u8 const* data, usize size);
     auto process() -> token;
-    auto push_header(std::string const& file) -> void;
+    auto push_header(location const& loc, std::string const& file) -> void;
     auto pop_header() -> void;
     auto ban_header(location const& loc) -> void;
 

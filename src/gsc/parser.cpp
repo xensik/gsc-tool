@@ -2189,7 +2189,7 @@ namespace xsk { namespace gsc {
 
   case 12: // inline: "#inline" expr_path ";"
 #line 302 "parser.ypp"
-                                 { ppr.push_header(yystack_[1].value.as < expr_path::ptr > ()->value); }
+                                 { ppr.push_header(yylhs.location, yystack_[1].value.as < expr_path::ptr > ()->value); }
 #line 2201 "parser.cpp"
     break;
 
