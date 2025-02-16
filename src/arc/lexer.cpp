@@ -420,7 +420,7 @@ lex_name:
 
         return token{ token::NAME, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
 
-        lex_number:
+lex_number:
         if (last == '.' || last != '0' || (last == '0' && (curr != 'o' && curr != 'b' && curr != 'x')))
         {
             push(last);
