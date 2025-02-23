@@ -305,7 +305,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
         }
         else if (ctx_->fixup() && header_.cseg_size == 0) // fix old compiler bug
         {
-            entry->size = (header_.imports_offset) - entry->offset;
+            entry->size = (header_.exports_offset) - entry->offset;
         }
         else
         {
