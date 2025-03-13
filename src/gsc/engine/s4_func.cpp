@@ -112,6 +112,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x277, "weaponisauto" },
     { 0x27A, "weaponissemiauto" },
     { 0x27B, "weaponmaxammo" },
+    { 0x27E, "weapontype" },
     { 0x2BA, "isbotmatchmakingenabled" },
     { 0x2BB, "addmpbottoteam" },
     { 0x2C9, "physics_createcontents" },
