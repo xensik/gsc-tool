@@ -235,6 +235,8 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x8733, "disableoffhandthrowback" },
     { 0x8752, "reloadbuttonpressed" },
     { 0x8734, "enableoffhandthrowback" },
+    { 0x874F, "cancelreloading" },
+    { 0x8750, "reloadbuttonpressed" },
 }};
 
 } // namespace xsk::gsc::s4
