@@ -39,7 +39,9 @@ A utility to compile & decompile IW engine game scripts.
 
     ``-s, --system <system>`` [REQUIRED] one of: `pc`, `ps3`, `ps4`, `ps5`, `xb2` (*360*), `xb3` (*One*), `xb4` (*Series X|S*), `wiiu`
 
-    ``-i, --instance <instance>`` Instance to use on games with .gsc/.csc (server, client) (default: server)
+    ``-i, --instance <instance>`` Instance to use on games with .gsc/.csc (server, client). (default: server)
+
+    ``-w, --workdir <path>`` Working directory for includes or headers. (default: .)
 
     ``-y, --dry`` Dry run (do not write files).
 
@@ -47,7 +49,7 @@ A utility to compile & decompile IW engine game scripts.
 
     ``-z, --zonetool`` Enable zonetool mode (use .cgsc files).
 
-    ``--t6fixup`` Decompile t6 files from broken compilers
+    ``--t6fixup`` Decompile t6 files from broken compilers.
 
     ``-h, --help`` Display help.
 

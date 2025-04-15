@@ -2385,7 +2385,7 @@ namespace xsk { namespace arc {
 
   case 12: // inline: "#inline" expr_path ";"
 #line 323 "parser.ypp"
-                                 { ppr.push_header(yystack_[1].value.as < expr_path::ptr > ()->value); }
+                                 { ppr.push_header(yylhs.location, yystack_[1].value.as < expr_path::ptr > ()->value); }
 #line 2396 "parser.cpp"
     break;
 

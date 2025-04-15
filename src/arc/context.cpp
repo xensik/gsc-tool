@@ -33,6 +33,7 @@ auto context::init(arc::build build, fs_callback callback) -> void
 
 auto context::cleanup() -> void
 {
+    header_files_.clear();
 }
 
 auto context::engine_name() const -> std::string_view

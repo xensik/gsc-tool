@@ -81,11 +81,29 @@ workspace "gsc-tool"
     objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{prj.name}"
     targetdir "%{wks.location}/bin/%{cfg.platform}/%{cfg.buildcfg}"
     targetname "%{prj.name}"
+    cppdialect "C++20"
+    staticruntime "On"
+    warnings "Extra"
 
+    -- configurations
     configurations { "debug", "release" }
 
+    filter "configurations:debug"
+        optimize "Debug"
+        symbols "On"
+        defines { "DEBUG", "_DEBUG" }
+    filter {}
+
+    filter "configurations:release"
+        optimize "Full"
+        symbols "Off"
+        defines "NDEBUG"
+        flags "FatalCompileWarnings"
+    filter {}
+
+    -- platforms
     if os.istarget("linux") or os.istarget("macosx") then
-        platforms { "x64", "arm64" }
+        platforms { "arm64", "amd64" }
     else
         platforms { "x86", "x64", "arm64" }
     end
@@ -98,15 +116,15 @@ workspace "gsc-tool"
         architecture "x86_64"
     filter {}
 
+    filter "platforms:amd64"
+        architecture "x86_64"
+    filter {}
+
     filter "platforms:arm64"
         architecture "ARM64"
     filter {}
 
-    filter { "language:C++", "toolset:not msc*" }
-        buildoptions "-std=c++20"
-    filter {}
-
-    filter "toolset:msc*"
+    filter { "toolset:msc*" }
         buildoptions "/bigobj"
         buildoptions "/Zc:__cplusplus"
         buildoptions "/std:c++20"
@@ -116,34 +134,19 @@ workspace "gsc-tool"
         systemversion "latest"
     filter {}
 
-    staticruntime "On"
-    warnings "Extra"
-
-    filter "system:linux"
+    filter { "system:linux" }
+        toolset "clang"
         linkoptions "-fuse-ld=lld"
     filter {}
 
-    filter { "system:linux", "platforms:arm64" }
-        buildoptions "--target=arm64-linux-gnu"
-        linkoptions "--target=arm64-linux-gnu"
+    filter { "system:macosx", "platforms:amd64" }
+        buildoptions "-arch x86_64"
+        linkoptions "-arch x86_64"
     filter {}
 
     filter { "system:macosx", "platforms:arm64" }
         buildoptions "-arch arm64"
         linkoptions "-arch arm64"
-    filter {}
-
-    filter "configurations:release"
-        optimize "Full"
-        symbols "Off"
-        defines "NDEBUG"
-        flags "FatalCompileWarnings"
-    filter {}
-
-    filter "configurations:debug"
-        optimize "Debug"
-        symbols "On"
-        defines { "DEBUG", "_DEBUG" }
     filter {}
 
 project "xsk-tool"

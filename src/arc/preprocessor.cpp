@@ -94,7 +94,7 @@ auto preprocessor::process() -> token
     }
 }
 
-auto preprocessor::push_header(std::string const& file) -> void
+auto preprocessor::push_header(location const& loc, std::string const& file) -> void
 {
     try
     {
@@ -103,7 +103,7 @@ auto preprocessor::push_header(std::string const& file) -> void
         for (auto& inc : includes_)
         {
             if (inc == name)
-                throw ppr_error(location{}, std::format("recursive header inclusion {} at {}", name, includes_.back()));
+                throw ppr_error(loc, std::format("recursive header inclusion {} at {}", name, includes_.back()));
         }
 
         auto data = ctx_->load_header(name);
