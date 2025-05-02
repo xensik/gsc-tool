@@ -139,8 +139,8 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x07F, "getbuildversion" }, // 0x140B53DF0
     { 0x080, "getclientmatchdata" }, // 0x140B58E90
     { 0x081, "getclosestnodeinsight" }, // 0x140AF30E0
-    { 0x082, "getcorpsearray" }, // 0x14049EA10
-    { 0x083, "getcorpsearrayinradius" }, // 0x14049D9E0
+    { 0x082, "_func_082" }, // 0x14049EA10
+    { 0x083, "getcorpsearray" }, // 0x14049D9E0
     { 0x084, "getcountertotal" }, // 0x140B57530
     { 0x085, "getcsplinecount" }, // 0x140B36CE0
     { 0x086, "getcsplinelength" }, // 0x140B373D0
