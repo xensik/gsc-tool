@@ -123,7 +123,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2C9, "physics_createcontents" },
     { 0x2DF, "isvector" },
     { 0x2E0, "isent" },
-    { 0x2F1, "weaponisbeam" }, 
+    { 0x2F1, "weaponisbeam" },
     { 0x306, "anglestoleft" },
     { 0x32E, "isgamebattlematch" },
     { 0x351, "makeweapon" },
