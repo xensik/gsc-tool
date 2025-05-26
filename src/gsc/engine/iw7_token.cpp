@@ -5677,7 +5677,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x1620, "" },
 //  { 0x1621, "" },
 //  { 0x1622, "" },
-//  { 0x1623, "" },
+    { 0x1623, "active_camera" },
 //  { 0x1624, "" },
 //  { 0x1625, "" },
 //  { 0x1626, "" },
@@ -17725,7 +17725,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x4530, "connectedpostgame" },
 //  { 0x4531, "" },
 //  { 0x4532, "" },
-//  { 0x4533, "" },
+    { 0x4533, "connectingPlayers" },
 //  { 0x4534, "" },
     { 0x4535, "connectnewagent" }, // AUTOADDED
 //  { 0x4536, "" },
@@ -63658,7 +63658,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0xF89D, "settweakablevalue" }, // AUTOADDED
     { 0xF89E, "settweakabledvar" }, // AUTOADDED
     { 0xF89F, "setuav" }, // AUTOADDED
-//  { 0xF8A0, "" },
+    { 0xF8A0, "setuipostgamefade" },
 //  { 0xF8A1, "" },
 //  { 0xF8A2, "" },
 //  { 0xF8A3, "" },
@@ -68989,7 +68989,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x10D70, "" },
 //  { 0x10D71, "" },
 //  { 0x10D72, "" },
-//  { 0x10D73, "" },
+    { 0x10D73, "startbroshot" },
 //  { 0x10D74, "" },
 //  { 0x10D75, "" },
 //  { 0x10D76, "" },
