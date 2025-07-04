@@ -12,6 +12,6 @@ namespace xsk::arc::t6
 {
 
 constexpr usize code_count = 125;
-constexpr usize hash_count = 3783;
+constexpr usize hash_count = 3784;
 
 } // namespace xsk::arc::t6
