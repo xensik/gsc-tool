@@ -2598,6 +2598,7 @@ extern std::array<std::pair<u32, char const*>, hash_count> const hash_list
     { 0xE0FC7E63, "scr_showspawnid" },
     { 0x16553A29, "scr_showspawns" },
     { 0x472D7677, "scr_showstartspawns" },
+    { 0xF7D13E2C, "scr_shrink_ray_debug" },
     { 0x1C6DE858, "scr_shrp_debug_weapon" },
     { 0x55AE206D, "scr_sideBetTimer" },
     { 0xB6252E7C, "scr_sloth_debug" },
