@@ -6637,7 +6637,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
 //  { 0x19E0, "" },
 //  { 0x19E1, "" },
 //  { 0x19E2, "" },
-//  { 0x19E3, "" },
+    { 0x19E3, "vecscale" },
 //  { 0x19E4, "" },
 //  { 0x19E5, "" },
 //  { 0x19E6, "" },
