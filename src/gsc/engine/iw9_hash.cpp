@@ -10,6 +10,8 @@ namespace xsk::gsc::iw9
 
 extern std::array<std::pair<u64, char const*>, hash_count> const hash_list
 {{
+#ifndef XSK_NO_COMPILED_HASH
+
     { 0xAC0E9D4AC96B3934, "-" },
     { 0xAC0E2F4AC96A474A, "_" },
     { 0x7A01D32B5E35730B, "__ending_origin" },
@@ -73510,6 +73512,8 @@ extern std::array<std::pair<u64, char const*>, hash_count> const hash_list
     { 0xCA5FC0B4F8114CAC, "zpatrolpointscoring" },
     { 0x57970A7665AE52E9, "zuluinit" },
     { 0x4CA8EF8D936C1E3E, "zvelscale" },
+
+#endif // !XSK_NO_COMPILED_HASH
 }};
 
 } // namespace xsk::gsc::iw9

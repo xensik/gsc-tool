@@ -11,7 +11,12 @@
 namespace xsk::arc::t6
 {
 
-constexpr usize code_count = 125;
-constexpr usize hash_count = 3809;
+	constexpr usize code_count = 125;
+
+#ifdef XSK_NO_COMPILED_HASH
+	constexpr usize hash_count = 0;
+#else // !XSK_NO_COMPILED_HASH
+	constexpr usize hash_count = 3809;
+#endif // XSK_NO_COMPILED_HASH
 
 } // namespace xsk::arc::t6

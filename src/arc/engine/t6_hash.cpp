@@ -10,6 +10,8 @@ namespace xsk::arc::t6
 
 extern std::array<std::pair<u32, char const*>, hash_count> const hash_list
 {{
+#ifndef XSK_NO_COMPILED_HASH
+
     { 0x146F2C73, "ClickToContinue" },
     { 0x209FFF3B, "FriendXuidToJoinOnBoot" },
     { 0x586EB87C, "TestIntervalJitter" },
@@ -3819,6 +3821,8 @@ extern std::array<std::pair<u32, char const*>, hash_count> const hash_list
     { 0xD7BCDBE2, "zombies_perk_vulture_points_chance" },
     { 0x47A03A7E, "zombies_perk_vulture_spawn_stink_zombie_cooldown" },
     { 0x4918C38E, "zombies_perk_vulture_stink_chance" },
+
+#endif // !XSK_NO_COMPILED_HASH
 }};
 
 } // namespace xsk::arc::t6

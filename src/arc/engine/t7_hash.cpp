@@ -8,8 +8,11 @@
 namespace xsk::arc::t7
 {
 
+
 extern std::array<std::pair<u32, char const*>, hash_count> const hash_list
 {{
+#ifndef XSK_NO_COMPILED_HASH
+
     { 0x05C00BF0, "_" },
     { 0x5D7A7160, "_0" },
     { 0x6D3AFA7F, "_1h_rappel_start" },
@@ -178816,6 +178819,8 @@ extern std::array<std::pair<u32, char const*>, hash_count> const hash_list
     { 0xD04A6B04, "zurich" },
     { 0x0FEB9892, "zval" },
     { 0xEC2C073C, "zvar" },
+
+#endif // !XSK_NO_COMPILED_HASH
 }};
 
 } // namespace xsk::arc::t7

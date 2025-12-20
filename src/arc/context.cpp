@@ -296,6 +296,16 @@ auto context::hash_id(std::string const& name) const -> u32
 
 auto context::hash_name(u32 id) const -> std::string
 {
+    if (unhash_func_)
+    {
+        auto extracted = unhash_func_(id);
+
+        if (extracted)
+        {
+            return extracted;
+        }
+    }
+
     auto const itr = hash_map_.find(id);
 
     if (itr != hash_map_.end())
