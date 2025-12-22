@@ -14,13 +14,13 @@ extern std::array<std::pair<u64, char const*>, meth_count> const meth_list;
 extern std::array<std::pair<u64, char const*>, path_count> const path_list;
 extern std::array<std::pair<u64, char const*>, hash_count> const hash_list;
 
-context::context(gsc::instance inst) : gsc::context(props::str4| props::waitframe | props::params | props::boolfuncs | props::boolnotand | props::hash | props::farcall | props::foreach,
+context::context(gsc::instance inst) : gsc::context(feature::str4| feature::waitframe | feature::params | feature::boolfuncs | feature::boolnotand | feature::hash | feature::farcall | feature::foreach,
     engine::iw9, endian::little, system::pc, inst, 0)
 {
     code_map_.reserve(code_list.size());
     code_map_rev_.reserve(code_list.size());
-    func_map2_.reserve(func_list.size());
-    meth_map2_.reserve(meth_list.size());
+    func_map_v2_.reserve(func_list.size());
+    meth_map_v2_.reserve(meth_list.size());
     path_map_.reserve(path_list.size());
     hash_map_.reserve(hash_list.size());
 
@@ -32,12 +32,12 @@ context::context(gsc::instance inst) : gsc::context(props::str4| props::waitfram
 
     for (auto const& entry : func_list)
     {
-        func_map2_.insert({ entry.first, entry.second });
+        func_map_v2_.insert({ entry.first, entry.second });
     }
 
     for (auto const& entry : meth_list)
     {
-        meth_map2_.insert({ entry.first, entry.second });
+        meth_map_v2_.insert({ entry.first, entry.second });
     }
 
     for (auto const& entry : path_list)

@@ -2666,8 +2666,8 @@ namespace xsk { namespace gsc {
 #line 507 "parser.ypp"
         {
             auto array = expr_identifier::make(yylhs.location, std::format("_temp_{}", ++index));
-            expr::ptr key = (ctx_->props() & props::foreach) ? expr_identifier::make(yylhs.location, std::format("_temp_{}", ++index)) : std::move(yystack_[6].value.as < expr_identifier::ptr > ());
-            yylhs.value.as < stmt_foreach::ptr > () = stmt_foreach::make(yylhs.location, std::move(yystack_[2].value.as < expr::ptr > ()), std::move(yystack_[4].value.as < expr_identifier::ptr > ()), (ctx_->props() & props::foreach) ? std::move(yystack_[6].value.as < expr_identifier::ptr > ()) : (expr::ptr)expr_empty::make(yylhs.location), std::move(array), std::move(key), std::move(yystack_[0].value.as < stmt::ptr > ()), true);
+            expr::ptr key = (ctx_->features() & feature::foreach) ? expr_identifier::make(yylhs.location, std::format("_temp_{}", ++index)) : std::move(yystack_[6].value.as < expr_identifier::ptr > ());
+            yylhs.value.as < stmt_foreach::ptr > () = stmt_foreach::make(yylhs.location, std::move(yystack_[2].value.as < expr::ptr > ()), std::move(yystack_[4].value.as < expr_identifier::ptr > ()), (ctx_->features() & feature::foreach) ? std::move(yystack_[6].value.as < expr_identifier::ptr > ()) : (expr::ptr)expr_empty::make(yylhs.location), std::move(array), std::move(key), std::move(yystack_[0].value.as < stmt::ptr > ()), true);
         }
 #line 2680 "parser.cpp"
     break;
@@ -5093,12 +5093,12 @@ auto map_token(context const* ctx_, token& tok) -> parser::symbol_type
         {
             if (it->second == parser::token::WAITFRAME)
             {
-                if (ctx_->props() & props::waitframe)
+                if (ctx_->features() & feature::waitframe)
                     return parser::symbol_type(it->second, tok.pos);
             }
             else if (it->second == parser::token::ISDEFINED || it->second == parser::token::ISTRUE)
             {
-                if (ctx_->props() & props::boolfuncs)
+                if (ctx_->features() & feature::boolfuncs)
                 {
                     return parser::symbol_type(it->second, tok.pos);
                 }

@@ -132,7 +132,7 @@ auto compiler::emit_decl_function(decl_function const& func) -> void
     function_ = function::make();
     function_->index = index_;
     function_->name = func.name->value;
-    function_->id = (ctx_->props() & props::hash) ? 0 : ctx_->token_id(function_->name);
+    function_->id = (ctx_->features() & feature::hash) ? 0 : ctx_->token_id(function_->name);
 
     process_function(func);
 
@@ -635,14 +635,14 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
     emit_expr_variable_ref(*stm.array, scp, true);
     emit_expr_variable(*stm.array, scp);
 
-    if (ctx_->props() & props::farcall)
+    if (ctx_->features() & feature::farcall)
         emit_opcode(opcode::OP_CallBuiltin, { "getfirstarraykey"s, "1"s });
     else
         emit_opcode(opcode::OP_CallBuiltin1, "getfirstarraykey");
 
     emit_expr_variable_ref(*stm.key, scp, true);
 
-    if (ctx_->props() & props::foreach && stm.use_key)
+    if (ctx_->features() & feature::foreach && stm.use_key)
     {
         emit_opcode(opcode::OP_GetUndefined);
         emit_expr_variable_ref(*stm.index, scp, true);
@@ -665,7 +665,7 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
 
     emit_expr_variable(*stm.key, scp);
 
-    if (ctx_->props() & props::boolfuncs)
+    if (ctx_->features() & feature::boolfuncs)
         emit_opcode(opcode::OP_IsDefined);
     else
         emit_opcode(opcode::OP_CallBuiltin1, "isdefined");
@@ -679,7 +679,7 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
     emit_opcode(opcode::OP_EvalLocalArrayCached, std::format("{}", variable_access(stm.array->as<expr_identifier>(), *scp_body)));
     emit_expr_variable_ref(*stm.value, *scp_body, true);
 
-    if (ctx_->props() & props::foreach && stm.use_key)
+    if (ctx_->features() & feature::foreach && stm.use_key)
     {
         emit_expr_variable(*stm.key, *scp_body);
         emit_expr_variable_ref(*stm.index, *scp_body, true);
@@ -700,7 +700,7 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
     emit_expr_variable(*stm.key, *scp_iter);
     emit_expr_variable(*stm.array, *scp_iter);
 
-    if (ctx_->props() & props::farcall)
+    if (ctx_->features() & feature::farcall)
         emit_opcode(opcode::OP_CallBuiltin, { "getnextarraykey"s, "2"s });
     else
         emit_opcode(opcode::OP_CallBuiltin2, "getnextarraykey");
@@ -710,7 +710,7 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
 
     insert_label(break_loc);
     emit_expr_clear_local(stm.array->as<expr_identifier>(), scp);
-    if (ctx_->props() & props::foreach || !stm.use_key) emit_expr_clear_local(stm.key->as<expr_identifier>(), scp);
+    if (ctx_->features() & feature::foreach || !stm.use_key) emit_expr_clear_local(stm.key->as<expr_identifier>(), scp);
 
     can_break_ = old_break;
     can_continue_ = old_continue;
@@ -1170,7 +1170,7 @@ auto compiler::emit_expr_binary(expr_binary const& exp, scope& scp) -> void
         emit_expr(*exp.lvalue, scp);
         emit_opcode(opcode::OP_JumpOnFalseExpr, label);
 
-        if (exp.rvalue->is<expr_not>() && (ctx_->props() & props::boolnotand))
+        if (exp.rvalue->is<expr_not>() && (ctx_->features() & feature::boolnotand))
         {
             emit_expr(*exp.rvalue->as<expr_not>().rvalue, scp);
             emit_opcode(opcode::OP_BoolNotAfterAnd);
@@ -1190,7 +1190,7 @@ auto compiler::emit_expr_binary(expr_binary const& exp, scope& scp) -> void
         emit_expr(*exp.lvalue, scp);
         emit_opcode(opcode::OP_JumpOnTrueExpr, label);
 
-        if (exp.rvalue->is<expr_not>() && (ctx_->props() & props::boolnotand))
+        if (exp.rvalue->is<expr_not>() && (ctx_->features() & feature::boolnotand))
         {
             emit_expr(*exp.rvalue->as<expr_not>().rvalue, scp);
             emit_opcode(opcode::OP_BoolNotAfterAnd);
@@ -1328,12 +1328,12 @@ auto compiler::emit_expr_call_function(expr_function const& exp, scope& scp, boo
     auto path = std::string{};
     auto type = resolve_function_type(exp, path);
 
-    if (ctx_->props() & props::farcall && type == call::type::local)
+    if (ctx_->features() & feature::farcall && type == call::type::local)
     {
         type = call::type::far;
     }
 
-    if (type != call::type::builtin && exp.mode == call::mode::normal && (ctx_->props() & props::farcall || exp.args->list.size() > 0))
+    if (type != call::type::builtin && exp.mode == call::mode::normal && (ctx_->features() & feature::farcall || exp.args->list.size() > 0))
         emit_opcode(opcode::OP_PreScriptCall);
 
     emit_expr_arguments(*exp.args, scp);
@@ -1366,7 +1366,7 @@ auto compiler::emit_expr_call_function(expr_function const& exp, scope& scp, boo
         switch (exp.mode)
         {
             case call::mode::normal:
-                if (!(ctx_->props() & props::farcall) && exp.args->list.size() == 0)
+                if (!(ctx_->features() & feature::farcall) && exp.args->list.size() == 0)
                     emit_opcode(opcode::OP_ScriptFarFunctionCall2, { path, exp.name->value });
                 else
                     emit_opcode(opcode::OP_ScriptFarFunctionCall, { path, exp.name->value });
@@ -1387,7 +1387,7 @@ auto compiler::emit_expr_call_function(expr_function const& exp, scope& scp, boo
         if (exp.mode != call::mode::normal)
             throw comp_error(exp.loc(), "builtin calls can't be threaded");
 
-        if (ctx_->props() & props::farcall)
+        if (ctx_->features() & feature::farcall)
         {
             emit_opcode(opcode::OP_CallBuiltin, { exp.name->value, argcount });
         }
@@ -1470,7 +1470,7 @@ auto compiler::emit_expr_method_function(expr_function const& exp, expr const& o
     auto path = std::string{};
     auto type = resolve_function_type(exp, path);
 
-    if (ctx_->props() & props::farcall && type == call::type::local)
+    if (ctx_->features() & feature::farcall && type == call::type::local)
     {
         type = call::type::far;
     }
@@ -1524,7 +1524,7 @@ auto compiler::emit_expr_method_function(expr_function const& exp, expr const& o
         if (exp.mode != call::mode::normal)
             throw comp_error(exp.loc(), "builtin calls can't be threaded");
 
-        if (ctx_->props() & props::farcall)
+        if (ctx_->features() & feature::farcall)
         {
             emit_opcode(opcode::OP_CallBuiltinMethod, { exp.name->value, argcount });
         }
@@ -1574,21 +1574,21 @@ auto compiler::emit_expr_add_array(expr_add_array const& exp, scope& scp) -> voi
 
 auto compiler::emit_expr_parameters(expr_parameters const& exp, scope& scp) -> void
 {
-    if (ctx_->props() & props::params)
+    if (ctx_->features() & feature::params)
     {
         auto num = static_cast<u32>(exp.list.size());
 
         if (num)
         {
             auto data = std::vector<std::string>{};
-            auto size = (ctx_->props() & props::hash) ? num * 8 : num;
+            auto size = (ctx_->features() & feature::hash) ? num * 8 : num;
 
             data.push_back(std::format("{}", num));
 
             for (auto const& entry : exp.list)
             {
                 auto index = variable_initialize(*entry, scp);
-                data.push_back((ctx_->props() & props::hash) ? entry->value : std::format("{}", index));
+                data.push_back((ctx_->features() & feature::hash) ? entry->value : std::format("{}", index));
             }
 
             emit_opcode(opcode::OP_FormalParams, data);
@@ -1649,7 +1649,7 @@ auto compiler::emit_expr_reference(expr_reference const& exp, scope&) -> void
     auto path = std::string{};
     auto type = resolve_reference_type(exp, path, method);
 
-    if (ctx_->props() & props::farcall && type == call::type::local)
+    if (ctx_->features() & feature::farcall && type == call::type::local)
     {
         type = call::type::far;
     }
@@ -1740,7 +1740,7 @@ auto compiler::emit_expr_array_ref(expr_array const& exp, scope& scp, bool set) 
             if (!variable_initialized(exp.obj->as<expr_identifier>(), scp))
             {
                 auto index = variable_initialize(exp.obj->as<expr_identifier>(), scp);
-                emit_opcode(opcode::OP_EvalNewLocalArrayRefCached0, (ctx_->props() & props::hash) ? exp.obj->as<expr_identifier>().value : std::format("{}", index));
+                emit_opcode(opcode::OP_EvalNewLocalArrayRefCached0, (ctx_->features() & feature::hash) ? exp.obj->as<expr_identifier>().value : std::format("{}", index));
 
                 // trigger if nested array for lvalue 'var[1][2] = 3;' set is in outer array
                 //if (!set) throw comp_error(exp.loc(), "INTERNAL: VAR CREATED BUT NOT SET");
@@ -1828,7 +1828,7 @@ auto compiler::emit_expr_local_ref(expr_identifier const& exp, scope& scp, bool 
         if (!variable_initialized(exp, scp))
         {
             auto index = variable_initialize(exp, scp);
-            emit_opcode(opcode::OP_SetNewLocalVariableFieldCached0, (ctx_->props() & props::hash) ? exp.value : std::format("{}", index));
+            emit_opcode(opcode::OP_SetNewLocalVariableFieldCached0, (ctx_->features() & feature::hash) ? exp.value : std::format("{}", index));
         }
         else
         {
@@ -2164,7 +2164,7 @@ auto compiler::emit_create_local_vars(scope& scp) -> void
     {
         for (auto i = scp.create_count; i < scp.public_count; i++)
         {
-            emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->props() & props::hash) ? scp.vars[i].name : std::format("{}", scp.vars[i].create));
+            emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->features() & feature::hash) ? scp.vars[i].name : std::format("{}", scp.vars[i].create));
             scp.vars[i].init = true;
         }
 
@@ -2510,10 +2510,10 @@ auto compiler::process_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
 
     process_expr(*stm.array, scp);
 
-    if (ctx_->props() & props::foreach)
+    if (ctx_->features() & feature::foreach)
         process_expr(*stm.key, scp);
 
-    if (ctx_->props() & props::foreach && stm.use_key)
+    if (ctx_->features() & feature::foreach && stm.use_key)
         process_expr(*stm.index, scp);
 
     auto old_breaks = break_blks_;
@@ -2532,7 +2532,7 @@ auto compiler::process_stmt_foreach(stmt_foreach const& stm, scope& scp) -> void
     for (auto i = 0u; i < continue_blks_.size(); i++)
         scp.append({ continue_blks_.at(i) });
 
-    if (!(ctx_->props() & props::foreach))
+    if (!(ctx_->features() & feature::foreach))
         process_expr(*stm.key, *scp_iter);
 
     scp.append({ scp_iter.get() });
@@ -2734,7 +2734,7 @@ auto compiler::variable_initialize(expr_identifier const& exp, scope& scp) -> u8
                     if (!scp.vars[j].init)
                     {
                         scp.vars[j].init = true;
-                        emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->props() & props::hash) ? scp.vars[j].name : std::format("{}", scp.vars[j].create));
+                        emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->features() & feature::hash) ? scp.vars[j].name : std::format("{}", scp.vars[j].create));
                     }
                 }
 
@@ -2760,7 +2760,7 @@ auto compiler::variable_create(expr_identifier const& exp, scope& scp) -> u8
         {
             if (!var.init)
             {
-                emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->props() & props::hash) ? var.name : std::format("{}", var.create));
+                emit_opcode(opcode::OP_CreateLocalVariable, (ctx_->features() & feature::hash) ? var.name : std::format("{}", var.create));
                 var.init = true;
                 scp.create_count++;
             }

@@ -1239,7 +1239,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         }
         case opcode::OP_SafeCreateVariableFieldCached:
         {
-            auto name = (ctx_->props() & props::hash) ? inst.data[0] : std::format("var_{}", inst.data[0]);
+            auto name = (ctx_->features() & feature::hash) ? inst.data[0] : std::format("var_{}", inst.data[0]);
             func_->params->list.push_back(expr_identifier::make(loc, name));
             break;
         }
@@ -1463,7 +1463,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
 
             for (auto i = 1; i <= count; i++)
             {
-                auto name = (ctx_->props() & props::hash) ? inst.data[i] : std::format("var_{}", inst.data[i]);
+                auto name = (ctx_->features() & feature::hash) ? inst.data[i] : std::format("var_{}", inst.data[i]);
                 func_->params->list.push_back(expr_identifier::make(loc, name));
             }
             break;
@@ -2179,7 +2179,7 @@ auto decompiler::decompile_foreach(stmt_list& stm, usize begin, usize end) -> vo
 
     auto use_index = false;
 
-    if ((ctx_->props() & props::foreach) && stm.list[begin]->is<stmt_expr>() && stm.list[begin]->as<stmt_expr>().value->as<expr_assign>().rvalue->is<expr_undefined>())
+    if ((ctx_->features() & feature::foreach) && stm.list[begin]->is<stmt_expr>() && stm.list[begin]->as<stmt_expr>().value->as<expr_assign>().rvalue->is<expr_undefined>())
     {
         use_index = true;
         begin--;
@@ -2249,7 +2249,7 @@ auto decompiler::decompile_foreach(stmt_list& stm, usize begin, usize end) -> vo
     decompile_statements(*body);
     locs_ = save;
     body->list.insert(body->list.begin(), std::move(init));
-    stm.list.insert(stm.list.begin() + begin, stmt_foreach::make(loc, std::move(container), std::move(value), std::move(index), std::move(array), std::move(key), stmt_comp::make(loc, std::move(body)), (ctx_->props() & props::foreach) ? use_index : use_key));
+    stm.list.insert(stm.list.begin() + begin, stmt_foreach::make(loc, std::move(container), std::move(value), std::move(index), std::move(array), std::move(key), stmt_comp::make(loc, std::move(body)), (ctx_->features() & feature::foreach) ? use_index : use_key));
 }
 
 auto decompiler::decompile_switch(stmt_list& stm, usize begin, usize end) -> void
@@ -2714,7 +2714,7 @@ auto decompiler::process_stmt_foreach(stmt_foreach& stm, scope& scp) -> void
     process_expr(stm.array, scp);
     process_expr(stm.key, scp);
 
-    if ((ctx_->props() & props::foreach) && stm.use_key)
+    if ((ctx_->features() & feature::foreach) && stm.use_key)
     {
         process_expr(stm.index, scp);
     }
@@ -2812,7 +2812,7 @@ auto decompiler::process_stmt_return(stmt_return& stm, scope& scp) -> void
 
 auto decompiler::process_stmt_create(stmt_create& stm, scope& scp) -> void
 {
-    auto var = (ctx_->props() & props::hash) ? stm.index : std::format("var_{}", stm.index);
+    auto var = (ctx_->features() & feature::hash) ? stm.index : std::format("var_{}", stm.index);
     scp.vars.push_back({ var, static_cast<u8>(scp.create_count), true });
     scp.create_count++;
 }
@@ -3098,12 +3098,12 @@ auto decompiler::process_expr_var_create(expr::ptr& exp, scope& scp) -> void
 {
     for (auto const& entry : exp->as<expr_var_create>().vars)
     {
-        auto var = (ctx_->props() & props::hash) ? entry : std::format("var_{}", entry);
+        auto var = (ctx_->features() & feature::hash) ? entry : std::format("var_{}", entry);
         scp.vars.push_back({ var, static_cast<u8>(scp.create_count), true });
         scp.create_count++;
     }
 
-    auto var = (ctx_->props() & props::hash) ? exp->as<expr_var_create>().index : std::format("var_{}", exp->as<expr_var_create>().index);
+    auto var = (ctx_->features() & feature::hash) ? exp->as<expr_var_create>().index : std::format("var_{}", exp->as<expr_var_create>().index);
     scp.vars.push_back({ var, static_cast<u8>(scp.create_count), true });
     scp.create_count++;
 

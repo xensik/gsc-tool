@@ -20,9 +20,9 @@ struct context
 public:
     using fs_callback = std::function<std::vector<u8>(std::string const&)>;
 
-    context(props props, engine engine, endian endian, system system, instance inst, u64 magic);
+    context(feature features, engine engine, endian endian, system system, instance inst, u64 magic);
 
-    auto props() const -> props { return props_; }
+    auto features() const -> feature { return features_; }
     auto build() const -> build { return build_; }
     auto engine() const -> engine { return engine_; }
     auto endian() const -> endian { return endian_; }
@@ -53,7 +53,7 @@ public:
     auto load_header(std::string const& name) -> std::tuple<std::string const*, char const*, usize>;
 
 protected:
-    arc::props props_;
+    arc::feature features_;
     arc::build build_;
     arc::engine engine_;
     arc::endian endian_;

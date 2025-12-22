@@ -67,7 +67,7 @@ enum class engine : u8
     jup
 };
 
-struct props
+struct feature
 {
     enum values : u32
     {
@@ -86,20 +86,20 @@ struct props
         foreach  = 1 << 11,
     };
 
-    props(values value) : value_(value) {}
+    feature(values value) : value_(value) {}
     operator values() { return value_; }
     operator bool() { return value_ != values::none; }
-    props::values operator|(props::values rhs) const { return static_cast<props::values>(value_ | rhs); }
-    props::values operator&(props::values rhs) const { return static_cast<props::values>(value_ & rhs); }
+    feature::values operator|(feature::values rhs) const { return static_cast<feature::values>(value_ | rhs); }
+    feature::values operator&(feature::values rhs) const { return static_cast<feature::values>(value_ & rhs); }
 
-    friend props::values operator|(props::values lhs, props::values rhs)
+    friend feature::values operator|(feature::values lhs, feature::values rhs)
     {
-        return static_cast<props::values>(static_cast<std::underlying_type<props::values>::type>(lhs) | static_cast<std::underlying_type<props::values>::type>(rhs));
+        return static_cast<feature::values>(static_cast<std::underlying_type<feature::values>::type>(lhs) | static_cast<std::underlying_type<feature::values>::type>(rhs));
     }
 
-    friend props::values operator&(props::values lhs, props::values rhs)
+    friend feature::values operator&(feature::values lhs, feature::values rhs)
     {
-        return static_cast<props::values>(static_cast<std::underlying_type<props::values>::type>(lhs) & static_cast<std::underlying_type<props::values>::type>(rhs));
+        return static_cast<feature::values>(static_cast<std::underlying_type<feature::values>::type>(lhs) & static_cast<std::underlying_type<feature::values>::type>(rhs));
     }
 
 private:

@@ -13,9 +13,9 @@ struct asset
     using ptr = std::unique_ptr<asset>;
 
     std::string name;
-    u32 compressedLen;
-    u32 len;
-    u32 bytecodeLen;
+    u32 compressed_length;
+    u32 length;
+    u32 bytecode_length;
     std::vector<u8> buffer;
     std::vector<u8> bytecode;
 

@@ -9,11 +9,11 @@
 namespace xsk::gsc
 {
 
-lookahead::lookahead(char const* data, usize size) : buffer_pos{ 0 }, available{ 0 }, last_byte{ 0 }, curr_byte{ 0 }
+lookahead::lookahead(char const* data, usize size) : position{ 0 }, available{ 0 }, last_byte{ 0 }, curr_byte{ 0 }
 {
     if (data && size)
     {
-        buffer_pos = data;
+        position = data;
         available = size;
         last_byte = 0;
         curr_byte = *data;
@@ -22,7 +22,7 @@ lookahead::lookahead(char const* data, usize size) : buffer_pos{ 0 }, available{
 
 auto lookahead::advance() -> void
 {
-    ++buffer_pos;
+    ++position;
 
     if (available-- == 1)
     {
@@ -33,7 +33,7 @@ auto lookahead::advance() -> void
     else
     {
         last_byte = curr_byte;
-        curr_byte = *buffer_pos;
+        curr_byte = *position;
     }
 }
 
