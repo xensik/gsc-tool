@@ -682,7 +682,7 @@ auto source::dump_stmt_dowhile(stmt_dowhile const& stm) -> void
     }
     else
     {
-        std::format_to(std::back_inserter(buf_), "\n{: >{}}while (", "", indent_);
+        std::format_to(std::back_inserter(buf_), "\n{: >{}}while ( ", "", indent_);
         dump_expr(*stm.test);
         std::format_to(std::back_inserter(buf_), " );");
     }
