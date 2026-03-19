@@ -50,7 +50,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.4
+        uses: diamante0018/setup-premake@v0.0.4
         with:
           version: ${{ env.PREMAKE_VERSION }}
 
@@ -100,7 +100,7 @@ jobs:
           echo "/usr/local/opt/llvm/bin" >> $GITHUB_PATH
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.4
+        uses: diamante0018/setup-premake@v0.0.4
         with:
           version: ${{ env.PREMAKE_VERSION }}
 
@@ -134,7 +134,7 @@ jobs:
           lfs: false
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.4
+        uses: diamante0018/setup-premake@v0.0.4
         with:
           version: ${{ env.PREMAKE_VERSION }}
 
@@ -187,7 +187,7 @@ jobs:
           sudo ./llvm.sh 18
 
       # - name: Add premake5 to PATH
-      #   uses: abel0b/setup-premake@v2.4
+      #   uses: diamante0018/setup-premake@v0.0.4
       #   with:
       #     version: ${{ env.PREMAKE_VERSION }}
 
