@@ -40,7 +40,7 @@ jobs:
             platform: arm64
     steps:
       - name: Check out files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           fetch-depth: 0
@@ -64,7 +64,7 @@ jobs:
         run: msbuild /m /v:minimal /p:Configuration=${{matrix.config}} /p:Platform=${{matrix.platform}} build/gsc-tool.sln
 
       - name: Upload ${{matrix.arch}} ${{matrix.config}} binaries
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v7
         with:
           name: windows-${{matrix.arch}}-${{matrix.config}}
           path: |
@@ -83,7 +83,7 @@ jobs:
           - arm64
     steps:
       - name: Check out files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           fetch-depth: 0
@@ -116,7 +116,7 @@ jobs:
           make config=${{matrix.config}}_${{matrix.arch}} -j$(sysctl -n hw.logicalcpu)
 
       - name: Upload ${{matrix.arch}} ${{matrix.config}} binaries
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v7
         with:
           name: macos-${{matrix.arch}}-${{matrix.config}}
           path: |
@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           fetch-depth: 0
@@ -142,7 +142,7 @@ jobs:
         run: premake5 gmake
 
       - name: Upload project files
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v7
         with:
           name: linux-project-files
           path: |
@@ -168,14 +168,14 @@ jobs:
             os: ubuntu-24.04-arm
     steps:
       - name: Check out files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           fetch-depth: 0
           lfs: false
 
       - name: Download project files
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v8
         with:
           name: linux-project-files
           path: ./
@@ -206,7 +206,7 @@ jobs:
          CXX: clang++-18
 
       - name: Upload ${{matrix.arch}} ${{matrix.config}} binaries
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v7
         with:
           name: linux-${{matrix.arch}}-${{matrix.config}}
           path: |
@@ -219,7 +219,7 @@ jobs:
     if: github.ref_type == 'tag'
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             Dockerfile
@@ -227,7 +227,7 @@ jobs:
           sparse-checkout-cone-mode: false
 
       - name: Download Binaries
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v8
 
       - name: Compress Binaries
         run: |
