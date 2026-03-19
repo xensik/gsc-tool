@@ -98,6 +98,7 @@ workspace "gsc-tool"
         optimize "Full"
         symbols "Off"
         defines "NDEBUG"
+        fatalwarnings "All"
     filter {}
 
     -- platforms

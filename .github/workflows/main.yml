@@ -16,12 +16,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PREMAKE_VERSION: "5.0.0-beta2"
+  PREMAKE_VERSION: "5.0.0-beta8"
 
 jobs:
   build-windows:
     name: Build Windows
-    runs-on: windows-2022
+    runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
@@ -40,7 +40,7 @@ jobs:
             platform: arm64
     steps:
       - name: Check out files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           fetch-depth: 0
@@ -50,7 +50,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.4
+        uses: diamante0018/setup-premake@v0.0.4
         with:
           version: ${{ env.PREMAKE_VERSION }}
 
@@ -64,7 +64,7 @@ jobs:
         run: msbuild /m /v:minimal /p:Configuration=${{matrix.config}} /p:Platform=${{matrix.platform}} build/gsc-tool.sln
 
       - name: Upload ${{matrix.arch}} ${{matrix.config}} binaries
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v7
         with:
           name: windows-${{matrix.arch}}-${{matrix.config}}
           path: |
@@ -72,7 +72,7 @@ jobs:
 
   build-macos:
     name: Build macOS
-    runs-on: macos-14
+    runs-on: macos-26
     strategy:
       fail-fast: false
       matrix:
@@ -83,7 +83,7 @@ jobs:
           - arm64
     steps:
       - name: Check out files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           fetch-depth: 0
@@ -100,12 +100,12 @@ jobs:
           echo "/usr/local/opt/llvm/bin" >> $GITHUB_PATH
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.4
+        uses: diamante0018/setup-premake@v0.0.4
         with:
           version: ${{ env.PREMAKE_VERSION }}
 
       - name: Generate project files
-        run: premake5 gmake2
+        run: premake5 gmake
 
       - name: Set up problem matching
         uses: ammaraskar/gcc-problem-matcher@master
@@ -116,7 +116,7 @@ jobs:
           make config=${{matrix.config}}_${{matrix.arch}} -j$(sysctl -n hw.logicalcpu)
 
       - name: Upload ${{matrix.arch}} ${{matrix.config}} binaries
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v7
         with:
           name: macos-${{matrix.arch}}-${{matrix.config}}
           path: |
@@ -127,22 +127,22 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           fetch-depth: 0
           lfs: false
 
       - name: Add premake5 to PATH
-        uses: abel0b/setup-premake@v2.4
+        uses: diamante0018/setup-premake@v0.0.4
         with:
           version: ${{ env.PREMAKE_VERSION }}
 
       - name: Generate project files
-        run: premake5 gmake2
+        run: premake5 gmake
 
       - name: Upload project files
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v7
         with:
           name: linux-project-files
           path: |
@@ -168,14 +168,14 @@ jobs:
             os: ubuntu-24.04-arm
     steps:
       - name: Check out files
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
           fetch-depth: 0
           lfs: false
 
       - name: Download project files
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v8
         with:
           name: linux-project-files
           path: ./
@@ -187,7 +187,7 @@ jobs:
           sudo ./llvm.sh 18
 
       # - name: Add premake5 to PATH
-      #   uses: abel0b/setup-premake@v2.4
+      #   uses: diamante0018/setup-premake@v0.0.4
       #   with:
       #     version: ${{ env.PREMAKE_VERSION }}
 
@@ -206,7 +206,7 @@ jobs:
          CXX: clang++-18
 
       - name: Upload ${{matrix.arch}} ${{matrix.config}} binaries
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v7
         with:
           name: linux-${{matrix.arch}}-${{matrix.config}}
           path: |
@@ -219,7 +219,7 @@ jobs:
     if: github.ref_type == 'tag'
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: |
             Dockerfile
@@ -227,7 +227,7 @@ jobs:
           sparse-checkout-cone-mode: false
 
       - name: Download Binaries
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v8
 
       - name: Compress Binaries
         run: |
