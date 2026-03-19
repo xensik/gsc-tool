@@ -19,6 +19,7 @@ struct context
 {
 public:
     using fs_callback = std::function<std::pair<buffer, std::vector<u8>>(context const*, std::string const&)>;
+    using hash_callback = std::function<const char* (u64 hash)>;
 
     context(feature features, engine engine, endian endian, system system, instance inst, u32 string_count);
 
@@ -36,6 +37,9 @@ public:
     auto decompiler() -> decompiler& { return decompiler_; }
     auto func_map() const -> std::unordered_map<std::string_view, u16> const& { return func_map_rev_; }
     auto meth_map() const -> std::unordered_map<std::string_view, u16> const& { return meth_map_rev_; }
+
+    auto unhash_func(hash_callback value) -> void { unhash_func_ = value; }
+    auto unhash_func() const -> hash_callback { return unhash_func_; }
 
     auto init(gsc::build build, fs_callback callback) -> void;
     auto cleanup() -> void;
@@ -83,6 +87,7 @@ protected:
     gsc::disassembler disassembler_;
     gsc::compiler compiler_;
     gsc::decompiler decompiler_;
+    hash_callback unhash_func_{};
     fs_callback fs_callback_;
     std::unordered_map<opcode, std::string_view> opcode_map_;
     std::unordered_map<std::string_view, opcode> opcode_map_rev_;

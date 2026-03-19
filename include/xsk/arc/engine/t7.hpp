@@ -12,7 +12,13 @@ namespace xsk::arc::t7
 {
 
 constexpr usize code_count = 16384;
+
+#ifdef XSK_NO_COMPILED_HASH
+constexpr usize hash_count = 0;
+#else // !XSK_NO_COMPILED_HASH
 constexpr usize hash_count = 178806;
+#endif // XSK_NO_COMPILED_HASH
+
 constexpr u64 header_magic = 0x1C000A0D43534780;
 
 struct context : public arc::context

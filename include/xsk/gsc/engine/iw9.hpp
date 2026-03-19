@@ -15,7 +15,12 @@ constexpr usize code_count = 167;
 constexpr usize func_count = 905;
 constexpr usize meth_count = 1469;
 constexpr usize path_count = 1467;
+
+#ifdef XSK_NO_COMPILED_HASH
+constexpr usize hash_count = 0;
+#else // !XSK_NO_COMPILED_HASH
 constexpr usize hash_count = 73500;
+#endif // XSK_NO_COMPILED_HASH
 
 struct context : public gsc::context
 {

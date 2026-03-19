@@ -1,4 +1,13 @@
 -------------------------------------------------
+-- OPTIONS
+-------------------------------------------------
+
+newoption {
+   trigger = "no-compiled-hash",
+   description = "Remove hash compilation from the build."
+}
+
+-------------------------------------------------
 -- DEPENDENCIES
 -------------------------------------------------
 dependencies = { base = path.getrelative(os.getcwd(), path.getabsolute("deps")) }
@@ -147,6 +156,11 @@ workspace "gsc-tool"
     filter { "system:macosx", "platforms:arm64" }
         buildoptions "-arch arm64"
         linkoptions "-arch arm64"
+    filter {}
+
+    -- options
+    filter { "options:no-compiled-hash" }
+        defines { "XSK_NO_COMPILED_HASH" }
     filter {}
 
 project "xsk-tool"

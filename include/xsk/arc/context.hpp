@@ -19,6 +19,7 @@ struct context
 {
 public:
     using fs_callback = std::function<std::vector<u8>(std::string const&)>;
+    using hash_callback = std::function<const char* (u32 hash)>;
 
     context(feature features, engine engine, endian endian, system system, instance inst, u64 magic);
 
@@ -37,6 +38,9 @@ public:
 
     auto fixup(bool value) -> void { fixup_ = value; }
     auto fixup() const -> bool { return fixup_; }
+
+    auto unhash_func(hash_callback value) -> void { unhash_func_ = value; }
+    auto unhash_func() const -> hash_callback { return unhash_func_; }
 
     auto init(arc::build build, fs_callback callback) -> void;
     auto cleanup() -> void;
@@ -66,13 +70,14 @@ protected:
     arc::compiler compiler_;
     arc::decompiler decompiler_;
     bool fixup_{ false };
+    hash_callback unhash_func_{};
 
     fs_callback fs_callback_;
     std::unordered_map<opcode, std::string_view> opcode_map_;
     std::unordered_map<std::string_view, opcode> opcode_map_rev_;
     std::unordered_map<u16, opcode> code_map_;
     std::unordered_map<opcode, u16> code_map_rev_;
-    std::unordered_map<u32, std::string_view> hash_map_;
+    std::unordered_map<u64, std::string_view> hash_map_;
     std::unordered_map<std::string, std::vector<u8>> header_files_;
 };
 
