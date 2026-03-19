@@ -16,12 +16,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PREMAKE_VERSION: "5.0.0-beta2"
+  PREMAKE_VERSION: "5.0.0-beta8"
 
 jobs:
   build-windows:
     name: Build Windows
-    runs-on: windows-2022
+    runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
@@ -72,7 +72,7 @@ jobs:
 
   build-macos:
     name: Build macOS
-    runs-on: macos-14
+    runs-on: macos-26
     strategy:
       fail-fast: false
       matrix:
