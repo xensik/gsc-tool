@@ -105,7 +105,7 @@ jobs:
           version: ${{ env.PREMAKE_VERSION }}
 
       - name: Generate project files
-        run: premake5 gmake2
+        run: premake5 gmake
 
       - name: Set up problem matching
         uses: ammaraskar/gcc-problem-matcher@master
@@ -139,7 +139,7 @@ jobs:
           version: ${{ env.PREMAKE_VERSION }}
 
       - name: Generate project files
-        run: premake5 gmake2
+        run: premake5 gmake
 
       - name: Upload project files
         uses: actions/upload-artifact@v4.3.3
