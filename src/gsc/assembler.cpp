@@ -44,13 +44,13 @@ auto assembler::assemble_function(function const& func) -> void
 
     stack_.write<u32>(static_cast<u32>(func.size));
 
-    if (ctx_->props() & props::hash)
+    if (ctx_->features() & feature::hash)
     {
         stack_.write<u64>(ctx_->hash_id(func.name));
     }
     else
     {
-        if (ctx_->props() & props::tok4)
+        if (ctx_->features() & feature::tok4)
             stack_.write<u32>(func.id);
         else
             stack_.write<u16>(static_cast<u16>(func.id));
@@ -184,14 +184,14 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
-            if (ctx_->props() & props::str4)
+            if (ctx_->features() & feature::str4)
                 script_.write<u32>(0);
             else
                 script_.write<u16>(0);
             stack_.write_cstr(encrypt_string(inst.data[0]));
             break;
         case opcode::OP_GetAnimation:
-            if (ctx_->props() & props::str4)
+            if (ctx_->features() & feature::str4)
                 script_.write<u64>(0);
             else
                 script_.write<u32>(0);
@@ -229,7 +229,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
         case opcode::OP_EvalNewLocalArrayRefCached0:
         case opcode::OP_SafeCreateVariableFieldCached:
         case opcode::OP_SetNewLocalVariableFieldCached0:
-            if (ctx_->props() & props::hash)
+            if (ctx_->features() & feature::hash)
                 script_.write<u64>(ctx_->hash_id(inst.data[0]));
             else
                 script_.write<u8>(static_cast<u8>(std::stoul(inst.data[0])));
@@ -332,7 +332,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
 
 auto assembler::assemble_field(instruction const& inst) -> void
 {
-    if (ctx_->props() & props::hash)
+    if (ctx_->features() & feature::hash)
     {
         return script_.write<u64>(ctx_->hash_id(inst.data[0]));
     }
@@ -341,14 +341,14 @@ auto assembler::assemble_field(instruction const& inst) -> void
 
     if (id == 0) id = 0xFFFFFFFF;
 
-    if (ctx_->props() & props::tok4)
+    if (ctx_->features() & feature::tok4)
         script_.write<u32>(id);
     else
         script_.write<u16>(static_cast<u16>(id));
 
-    if (id > ctx_->str_count())
+    if (id > ctx_->string_count())
     {
-        if (ctx_->props() & props::tok4)
+        if (ctx_->features() & feature::tok4)
             stack_.write<u32>(0);
         else
             stack_.write<u16>(0);
@@ -365,7 +365,7 @@ auto assembler::assemble_params(instruction const& inst) -> void
 
     for (auto i = 1u; i <= count; i++)
     {
-        if (ctx_->props() & props::hash)
+        if (ctx_->features() & feature::hash)
             script_.write<u64>(ctx_->hash_id(inst.data[i]));
         else
             script_.write<u8>(static_cast<u8>(std::stoi(inst.data[i])));
@@ -374,28 +374,28 @@ auto assembler::assemble_params(instruction const& inst) -> void
 
 auto assembler::assemble_call_far(instruction const& inst, bool thread) -> void
 {
-    if (ctx_->props() & props::farcall)
+    if (ctx_->features() & feature::farcall)
     {
-        return assemble_call_far2(inst, thread);
+        return assemble_call_far_v2(inst, thread);
     }
 
     auto file_id = ctx_->token_id(inst.data[0]);
     auto func_id = ctx_->token_id(inst.data[1]);
 
-    if (ctx_->props() & props::tok4)
+    if (ctx_->features() & feature::tok4)
         stack_.write<u32>(file_id);
     else
         stack_.write<u16>(static_cast<u16>(file_id));
 
     if (file_id == 0)
     {
-        if (ctx_->props() & props::extension)
+        if (ctx_->features() & feature::extension)
             stack_.write_cstr(encrypt_string(inst.data[0] + (ctx_->instance() == instance::server ? ".gsc" : ".csc")));
         else
             stack_.write_cstr(encrypt_string(inst.data[0]));
     }
 
-    if (ctx_->props() & props::tok4)
+    if (ctx_->features() & feature::tok4)
         stack_.write<u32>(func_id);
     else
         stack_.write<u16>(static_cast<u16>(func_id));
@@ -412,7 +412,7 @@ auto assembler::assemble_call_far(instruction const& inst, bool thread) -> void
     }
 }
 
-auto assembler::assemble_call_far2(instruction const& inst, bool thread) -> void
+auto assembler::assemble_call_far_v2(instruction const& inst, bool thread) -> void
 {
     if (inst.data[0].empty())
     {
@@ -455,7 +455,7 @@ auto assembler::assemble_call_builtin(instruction const& inst, bool method, bool
         script_.write<u8>(static_cast<u8>(std::stoi(inst.data[1])));
     }
 
-    if (ctx_->props() & props::hash)
+    if (ctx_->features() & feature::hash)
     {
         stack_.write_cstr(std::format("#xS{:x}", ctx_->hash_id(inst.data[0])));
         script_.write<u16>(0);
@@ -558,7 +558,7 @@ auto assembler::assemble_switch_table(instruction const& inst) -> void
 
 auto assembler::assemble_offset(i32 offs) -> void
 {
-    script_.write_i24((offs << ((ctx_->props() & props::offs8) ? 8 : (ctx_->props() & props::offs9) ? 9 : 10)) >> 8);
+    script_.write_i24((offs << ((ctx_->features() & feature::offs8) ? 8 : (ctx_->features() & feature::offs9) ? 9 : 10)) >> 8);
 }
 
 auto assembler::resolve_function(std::string const& name) const -> usize

@@ -95,7 +95,7 @@ auto source::parse_assembly(u8 const* data, usize size) -> assembly::ptr
                 break;
             case opcode::OP_FormalParams:
                 count = static_cast<u8>(std::stoul(inst->data[0]));
-                inst->size += (ctx_->props() & props::hash) ? count * 8 : count;
+                inst->size += (ctx_->features() & feature::hash) ? count * 8 : count;
                 break;
             default:
                 break;
@@ -774,7 +774,7 @@ auto source::dump_stmt_foreach(stmt_foreach const& stm) -> void
 
     if (stm.use_key)
     {
-        dump_expr((ctx_->props() & props::foreach) ? *stm.index : *stm.key);
+        dump_expr((ctx_->features() & feature::foreach) ? *stm.index : *stm.key);
         std::format_to(std::back_inserter(buf_), ", ");
     }
 

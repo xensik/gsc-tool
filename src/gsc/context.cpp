@@ -11,8 +11,8 @@ namespace xsk::gsc
 
 extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcode_list;
 
-context::context(gsc::props props, gsc::engine engine, gsc::endian endian, gsc::system system, gsc::instance inst, u32 str_count)
-    : props_{ props }, engine_{ engine }, endian_{ endian }, system_{ system }, instance_{ inst }, str_count_{ str_count },
+context::context(gsc::feature features, gsc::engine engine, gsc::endian endian, gsc::system system, gsc::instance inst, u32 string_count)
+    : features_{ features }, engine_{ engine }, endian_{ endian }, system_{ system }, instance_{ inst }, string_count_{ string_count },
       source_{ this }, assembler_{ this }, disassembler_{ this }, compiler_{ this }, decompiler_{ this }
 {
     opcode_map_.reserve(opcode_list.size());
@@ -206,17 +206,17 @@ auto context::opcode_size(opcode op) const -> usize
         case opcode::OP_GetFarFunction:
         case opcode::OP_ScriptFarFunctionCall:
         case opcode::OP_ScriptFarMethodCall:
-            return (props_ & props::farcall) ? 5 : 4;
+            return (features_ & feature::farcall) ? 5 : 4;
         case opcode::OP_ScriptFarThreadCall:
         case opcode::OP_ScriptFarChildThreadCall:
         case opcode::OP_ScriptFarMethodThreadCall:
         case opcode::OP_ScriptFarMethodChildThreadCall:
-            return (props_ & props::farcall) ? 6 : 5;
+            return (features_ & feature::farcall) ? 6 : 5;
         case opcode::OP_CreateLocalVariable:
         case opcode::OP_EvalNewLocalArrayRefCached0:
         case opcode::OP_SafeCreateVariableFieldCached:
         case opcode::OP_SetNewLocalVariableFieldCached0:
-            return (props_ & props::hash) ? 9 : 2;
+            return (features_ & feature::hash) ? 9 : 2;
         case opcode::OP_EvalSelfFieldVariableRef:
         case opcode::OP_EvalAnimFieldVariable:
         case opcode::OP_EvalLevelFieldVariableRef:
@@ -229,12 +229,12 @@ auto context::opcode_size(opcode op) const -> usize
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_EvalLevelFieldVariable:
         case opcode::OP_EvalAnimFieldVariableRef:
-            return (props_ & props::hash) ? 9 : (props_ & props::tok4) ? 5 : 3;
+            return (features_ & feature::hash) ? 9 : (features_ & feature::tok4) ? 5 : 3;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
-            return (props_ & props::str4) ? 5 : 3;
+            return (features_ & feature::str4) ? 5 : 3;
         case opcode::OP_GetAnimation:
-            return (props_ & props::str4) ? 9 : 5;
+            return (features_ & feature::str4) ? 9 : 5;
         case opcode::OP_GetVector:
             return 13;
         case opcode::OP_ClearVariableField:
@@ -360,7 +360,7 @@ auto context::func_name(u16 id) const -> std::string
     return std::format("_func_{:04X}", id);
 }
 
-auto context::func2_id(std::string const& name) const -> u64
+auto context::func_id_v2(std::string const& name) const -> u64
 {
     if (name.starts_with("_func_"))
     {
@@ -385,11 +385,11 @@ auto context::func2_id(std::string const& name) const -> u64
     return hash;
 }
 
-auto context::func2_name(u64 id) const -> std::string
+auto context::func_name_v2(u64 id) const -> std::string
 {
-    auto const itr = func_map2_.find(id);
+    auto const itr = func_map_v2_.find(id);
 
-    if (itr != func_map2_.end())
+    if (itr != func_map_v2_.end())
     {
         return std::string{ itr->second };
     }
@@ -401,9 +401,9 @@ auto context::func_exists(std::string const& name) const -> bool
 {
     if (name.starts_with("_func_")) return true;
 
-    if (props_ & props::hash)
+    if (features_ & feature::hash)
     {
-        return func_map2_.contains(func2_id(name));
+        return func_map_v2_.contains(func_id_v2(name));
     }
     else
     {
@@ -468,7 +468,7 @@ auto context::meth_name(u16 id) const -> std::string
     return std::format("_meth_{:04X}", id);
 }
 
-auto context::meth2_id(std::string const& name) const -> u64
+auto context::meth_id_v2(std::string const& name) const -> u64
 {
     if (name.starts_with("_meth_"))
     {
@@ -493,11 +493,11 @@ auto context::meth2_id(std::string const& name) const -> u64
     return hash;
 }
 
-auto context::meth2_name(u64 id) const -> std::string
+auto context::meth_name_v2(u64 id) const -> std::string
 {
-    auto const itr = meth_map2_.find(id);
+    auto const itr = meth_map_v2_.find(id);
 
-    if (itr != meth_map2_.end())
+    if (itr != meth_map_v2_.end())
     {
         return std::string{ itr->second };
     }
@@ -510,9 +510,9 @@ auto context::meth_exists(std::string const& name) const -> bool
 {
     if (name.starts_with("_meth_")) return true;
 
-    if (props_ & props::hash)
+    if (features_ & feature::hash)
     {
-        return meth_map2_.contains(meth2_id(name));
+        return meth_map_v2_.contains(meth_id_v2(name));
     }
     else
     {

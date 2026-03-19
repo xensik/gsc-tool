@@ -28,7 +28,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     auto head = header{};
 
     devmap_.pos(sizeof(u32));
-    script_.pos((ctx_->props() & props::headerxx) ? 0 : (ctx_->props() & props::header72) ? 72 : 64);
+    script_.pos((ctx_->features() & feature::headerxx) ? 0 : (ctx_->features() & feature::header72) ? 72 : 64);
     process_string(name);
 
     for (auto const& func : assembly_->functions)
@@ -53,8 +53,8 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
 
     for (auto const& func : assembly_->functions)
     {
-        script_.align((ctx_->props() & props::size64) ? 8 : 4);
-        script_.seek((ctx_->props() & props::size64) ? 8 : 4);
+        script_.align((ctx_->features() & feature::size64) ? 8 : 4);
+        script_.seek((ctx_->features() & feature::size64) ? 8 : 4);
         assemble_function(*func);
     }
 
@@ -69,7 +69,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         script_.write<u32>(entry.checksum);
         script_.write<u32>(entry.offset);
 
-        if (ctx_->props() & props::hashids)
+        if (ctx_->features() & feature::hashids)
         {
             script_.write<u32>(ctx_->hash_id(entry.name));
             script_.write<u32>(ctx_->hash_id(entry.space));
@@ -82,7 +82,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         script_.write<u8>(entry.params);
         script_.write<u8>(entry.flags);
 
-        if (ctx_->props() & props::hashids)
+        if (ctx_->features() & feature::hashids)
             script_.seek(2);
     }
 
@@ -91,7 +91,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
 
     for (auto const& entry : imports_)
     {
-        if (ctx_->props() & props::hashids)
+        if (ctx_->features() & feature::hashids)
         {
             script_.write<u32>(ctx_->hash_id(entry.name));
             script_.write<u32>(ctx_->hash_id(entry.space));
@@ -117,7 +117,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
 
     for (auto const& entry : anims_)
     {
-        if (ctx_->props() & props::size64)
+        if (ctx_->features() & feature::size64)
         {
             script_.write<u32>(resolve_string(entry.name));
             script_.write<u16>(static_cast<u16>(entry.refs.size()));
@@ -138,7 +138,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
 
         for (auto const& anim : entry.anims)
         {
-            if (ctx_->props() & props::size64)
+            if (ctx_->features() & feature::size64)
             {
                 script_.write<u64>(resolve_string(anim.name));
                 script_.write<u64>(anim.ref);
@@ -167,7 +167,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
                 if (i % 0xFF == 0)
                 {
                     stringtablecount++;
-                    if (ctx_->props() & props::size64)
+                    if (ctx_->features() & feature::size64)
                         script_.write<u32>(resolve_string(entry.name));
                     else
                         script_.write<u16>(resolve_string(entry.name));
@@ -175,7 +175,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
                     script_.write<u8>(static_cast<u8>(std::min(0xFF, count - i)));
                     script_.write<u8>(entry.type);
 
-                    if (ctx_->props() & props::size64)
+                    if (ctx_->features() & feature::size64)
                         script_.seek(2);
                 }
 
@@ -185,7 +185,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         else
         {
             stringtablecount++;
-            if (ctx_->props() & props::size64)
+            if (ctx_->features() & feature::size64)
                 script_.write<u32>(resolve_string(entry.name));
             else
                 script_.write<u16>(resolve_string(entry.name));
@@ -193,7 +193,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
             script_.write<u8>(static_cast<u8>(entry.refs.size()));
             script_.write<u8>(entry.type);
 
-            if (ctx_->props() & props::size64)
+            if (ctx_->features() & feature::size64)
                 script_.seek(2);
 
             for (auto ref : entry.refs)
@@ -205,7 +205,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
 
     head.stringtablefixup_count = static_cast<u16>(stringtablecount);
 
-    if (ctx_->props() & props::devstr)
+    if (ctx_->features() & feature::devstr)
     {
         head.stringtablefixup_offset = static_cast<u32>(script_.pos());
         head.stringtablefixup_count = 0;
@@ -230,7 +230,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     script_.write<u32>(head.cseg_offset);
     script_.write<u32>(head.stringtablefixup_offset);
 
-    if (ctx_->props() & props::devstr)
+    if (ctx_->features() & feature::devstr)
         script_.write<u32>(head.devblock_stringtablefixup_offset);
 
     script_.write<u32>(head.exports_offset);
@@ -239,7 +239,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     script_.write<u32>(head.profile_offset);
     script_.write<u32>(head.cseg_size);
 
-    if (ctx_->props() & props::size64)
+    if (ctx_->features() & feature::size64)
         script_.write<u32>(head.name);
     else
         script_.write<u16>(static_cast<u16>(head.name));
@@ -250,7 +250,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     script_.write<u16>(head.fixup_count);
     script_.write<u16>(head.profile_count);
 
-    if (ctx_->props() & props::devstr)
+    if (ctx_->features() & feature::devstr)
         script_.write<u16>(head.devblock_stringtablefixup_count);
 
     script_.write<u8>(head.include_count);

@@ -506,8 +506,8 @@ stmt_foreach
     | FOREACH LPAREN expr_identifier COMMA expr_identifier IN expr RPAREN stmt
         {
             auto array = expr_identifier::make(@$, std::format("_temp_{}", ++index));
-            expr::ptr key = (ctx_->props() & props::foreach) ? expr_identifier::make(@$, std::format("_temp_{}", ++index)) : std::move($3);
-            $$ = stmt_foreach::make(@$, std::move($7), std::move($5), (ctx_->props() & props::foreach) ? std::move($3) : (expr::ptr)expr_empty::make(@$), std::move(array), std::move(key), std::move($9), true);
+            expr::ptr key = (ctx_->features() & feature::foreach) ? expr_identifier::make(@$, std::format("_temp_{}", ++index)) : std::move($3);
+            $$ = stmt_foreach::make(@$, std::move($7), std::move($5), (ctx_->features() & feature::foreach) ? std::move($3) : (expr::ptr)expr_empty::make(@$), std::move(array), std::move(key), std::move($9), true);
         }
     ;
 
@@ -1080,12 +1080,12 @@ auto map_token(context const* ctx_, token& tok) -> parser::symbol_type
         {
             if (it->second == parser::token::WAITFRAME)
             {
-                if (ctx_->props() & props::waitframe)
+                if (ctx_->features() & feature::waitframe)
                     return parser::symbol_type(it->second, tok.pos);
             }
             else if (it->second == parser::token::ISDEFINED || it->second == parser::token::ISTRUE)
             {
-                if (ctx_->props() & props::boolfuncs)
+                if (ctx_->features() & feature::boolfuncs)
                 {
                     return parser::symbol_type(it->second, tok.pos);
                 }

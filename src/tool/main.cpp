@@ -211,9 +211,9 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
                 std::memcpy(script.buffer.data(), std::get<1>(outbin).data, script.buffer.size());
                 script.buffer = utils::zlib::compress(script.buffer);
 
-                script.len = static_cast<u32>(std::get<1>(outbin).size);
-                script.compressedLen = static_cast<u32>(script.buffer.size());
-                script.bytecodeLen = static_cast<u32>(script.bytecode.size());
+                script.length = static_cast<u32>(std::get<1>(outbin).size);
+                script.compressed_length = static_cast<u32>(script.buffer.size());
+                script.bytecode_length = static_cast<u32>(script.bytecode.size());
 
                 auto result = script.serialize();
 
@@ -261,7 +261,7 @@ auto disassemble_file(game game, mach mach, fs::path file, fs::path rel) -> resu
             asset.deserialize(data);
 
             script = std::move(asset.bytecode);
-            stack = utils::zlib::decompress(asset.buffer, asset.len);
+            stack = utils::zlib::decompress(asset.buffer, asset.length);
         }
 
         auto outasm = contexts[game][mach]->disassembler().disassemble(script, stack);
@@ -316,9 +316,9 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
                 std::memcpy(script.buffer.data(), std::get<1>(outbin).data, script.buffer.size());
                 script.buffer = utils::zlib::compress(script.buffer);
 
-                script.len = static_cast<std::uint32_t>(std::get<1>(outbin).size);
-                script.compressedLen = static_cast<std::uint32_t>(script.buffer.size());
-                script.bytecodeLen = static_cast<std::uint32_t>(script.bytecode.size());
+                script.length = static_cast<std::uint32_t>(std::get<1>(outbin).size);
+                script.compressed_length = static_cast<std::uint32_t>(script.buffer.size());
+                script.bytecode_length = static_cast<std::uint32_t>(script.bytecode.size());
 
                 auto result = script.serialize();
 
@@ -374,7 +374,7 @@ auto decompile_file(game game, mach mach, fs::path file, fs::path rel) -> result
             asset.deserialize(data);
 
             script = std::move(asset.bytecode);
-            stack = utils::zlib::decompress(asset.buffer, asset.len);
+            stack = utils::zlib::decompress(asset.buffer, asset.length);
         }
 
         auto outasm = contexts[game][mach]->disassembler().disassemble(script, stack);
@@ -519,7 +519,7 @@ auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, s
     {
         asset s;
         s.deserialize(data);
-        auto stk = utils::zlib::decompress(s.buffer, s.len);
+        auto stk = utils::zlib::decompress(s.buffer, s.length);
         auto res = files.insert({ path.filename().string(), std::move(s.bytecode)});
 
         if (res.second)

@@ -180,7 +180,7 @@ auto source::dump_program(program const& data) -> void
 
 auto source::dump_include(include const& inc) -> void
 {
-    if (ctx_->props() & props::size64)
+    if (ctx_->features() & feature::size64)
         std::format_to(std::back_inserter(buf_), "#using ");
     else
         std::format_to(std::back_inserter(buf_), "#include ");
@@ -244,7 +244,7 @@ auto source::dump_decl_function(decl_function const& dec) -> void
 {
     indent_ = 0;
 
-    if (ctx_->props() & props::spaces)
+    if (ctx_->features() & feature::spaces)
         std::format_to(std::back_inserter(buf_), "function ");
 
     if (static_cast<u8>(dec.flags) & static_cast<u8>(export_flags::export_private))
@@ -259,7 +259,7 @@ auto source::dump_decl_function(decl_function const& dec) -> void
     if (static_cast<u8>(dec.flags) & static_cast<u8>(export_flags::export_codecall))
         std::format_to(std::back_inserter(buf_), "codecall ");
 
-    if ((ctx_->props() & props::spaces) && !dec.space->value.empty())
+    if ((ctx_->features() & feature::spaces) && !dec.space->value.empty())
     {
         std::format_to(std::back_inserter(buf_), "{}::", dec.space->value);
     }
@@ -1461,7 +1461,7 @@ auto source::dump_expr_getnextarraykey(expr_getnextarraykey const& exp) -> void
 
 auto source::dump_expr_reference(expr_reference const& exp) -> void
 {
-    if (ctx_->props() & props::refvarg)
+    if (ctx_->features() & feature::refvarg)
     {
         std::format_to(std::back_inserter(buf_), "&");
 

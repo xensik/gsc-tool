@@ -10,7 +10,7 @@ namespace xsk::gsc
 
 struct lookahead
 {
-    char const* buffer_pos;
+    char const* position;
     usize available;
     char last_byte;
     char curr_byte;

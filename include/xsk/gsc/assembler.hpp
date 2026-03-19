@@ -32,7 +32,7 @@ private:
     auto assemble_field(instruction const& inst) -> void;
     auto assemble_params(instruction const& inst) -> void;
     auto assemble_call_far(instruction const& inst, bool thread) -> void;
-    auto assemble_call_far2(instruction const& inst, bool thread) -> void;
+    auto assemble_call_far_v2(instruction const& inst, bool thread) -> void;
     auto assemble_call_local(instruction const& inst, bool thread) -> void;
     auto assemble_call_builtin(instruction const& inst, bool method, bool args) -> void;
     auto assemble_jump(instruction const& inst, bool expr, bool back) -> void;

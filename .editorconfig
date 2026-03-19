@@ -1,0 +1,53 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+tab_width = 4
+# max_line_length = 120
+
+[*.{h,hpp,hh,hxx,inl,ipp,cpp,cc,cxx,ixx}]
+# C++20 source & header files
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# Prefer LF in repos; allow editors to keep EOL consistent
+end_of_line = lf
+
+# Keep includes / macros readable
+# max_line_length = 120
+
+# Common C++ conventions
+# curly_bracket_next_line = false
+# space_around_operators = true
+# spaces_within_parentheses = false
+
+[*.{cmake,CMakeLists.txt}]
+indent_style = space
+indent_size = 2
+tab_width = 2
+
+[*.{md,markdown}]
+trim_trailing_whitespace = false
+max_line_length = off
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+tab_width = 2
+
+[*.{json,jsonc}]
+indent_style = space
+indent_size = 2
+tab_width = 2
+
+[*.{sh,bash}]
+indent_style = space
+indent_size = 2
+tab_width = 2
+end_of_line = lf

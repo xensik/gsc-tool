@@ -614,28 +614,28 @@ auto lexer::linewrap() -> void
         if (reader_.available == 1)
             throw comp_error(loc_, "invalid token ('\\')");
 
-        if (reader_.buffer_pos[1] != '\r' && reader_.buffer_pos[1] != '\n')
+        if (reader_.position[1] != '\r' && reader_.position[1] != '\n')
             break;
 
-        if (reader_.buffer_pos[1] == '\r')
+        if (reader_.position[1] == '\r')
         {
-            if (reader_.available <= 3 || reader_.buffer_pos[2] != '\n')
+            if (reader_.available <= 3 || reader_.position[2] != '\n')
                 throw comp_error(loc_, "invalid token ('\\')");
 
-            reader_.buffer_pos += 3;
+            reader_.position += 3;
             reader_.available -= 3;
         }
 
-        if ((reader_.buffer_pos[1] == '\n'))
+        if ((reader_.position[1] == '\n'))
         {
             if (reader_.available == 2)
                 throw comp_error(loc_, "invalid token ('\\')");
 
-            reader_.buffer_pos += 2;
+            reader_.position += 2;
             reader_.available -= 2;
         }
 
-        reader_.curr_byte = reader_.available ? *reader_.buffer_pos : 0;
+        reader_.curr_byte = reader_.available ? *reader_.position : 0;
 
         loc_.lines();
         loc_.step();

@@ -13,7 +13,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list;
 extern std::array<std::pair<u16, char const*>, meth_count> const meth_list;
 extern std::array<std::pair<u32, char const*>, token_count> const token_list;
 
-context::context(gsc::instance inst) : gsc::context(props::str4 | props::tok4 | props::waitframe | props::params | props::boolfuncs | props::boolnotand | props::offs8,
+context::context(gsc::instance inst) : gsc::context(feature::str4 | feature::tok4 | feature::waitframe | feature::params | feature::boolfuncs | feature::boolnotand | feature::offs8,
     engine::iw8, endian::little, system::pc, inst, max_string_id)
 {
     code_map_.reserve(code_list.size());

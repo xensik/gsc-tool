@@ -38,8 +38,8 @@ auto disassembler::disassemble(u8 const* script, usize script_size, u8 const* st
         func_ = function::make();
         func_->index = script_.pos();
         func_->size = stack_.read<u32>();
-        func_->id = (ctx_->props() & props::hash) ? 0 : (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
-        func_->name = (ctx_->props() & props::hash) ? ctx_->hash_name(stack_.read<u64>()) : func_->id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(func_->id);
+        func_->id = (ctx_->features() & feature::hash) ? 0 : (ctx_->features() & feature::tok4) ? stack_.read<u32>() : stack_.read<u16>();
+        func_->name = (ctx_->features() & feature::hash) ? ctx_->hash_name(stack_.read<u64>()) : func_->id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(func_->id);
 
         dissasemble_function(*func_);
 
@@ -180,11 +180,11 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
             break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
-            script_.seek((ctx_->props() & props::str4) ? 4 : 2);
+            script_.seek((ctx_->features() & feature::str4) ? 4 : 2);
             inst.data.push_back(decrypt_string(stack_.read_cstr()));
             break;
         case opcode::OP_GetAnimation:
-            script_.seek((ctx_->props() & props::str4) ? 8 : 4);
+            script_.seek((ctx_->features() & feature::str4) ? 8 : 4);
             inst.data.push_back(decrypt_string(stack_.read_cstr()));
             inst.data.push_back(decrypt_string(stack_.read_cstr()));
             break;
@@ -219,7 +219,7 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
         case opcode::OP_EvalNewLocalArrayRefCached0:
         case opcode::OP_SafeCreateVariableFieldCached:
         case opcode::OP_SetNewLocalVariableFieldCached0:
-            inst.data.push_back((ctx_->props() & props::hash) ? ctx_->hash_name(script_.read<u64>()) : std::format("{}", script_.read<u8>()));
+            inst.data.push_back((ctx_->features() & feature::hash) ? ctx_->hash_name(script_.read<u64>()) : std::format("{}", script_.read<u8>()));
             break;
         case opcode::OP_EvalSelfFieldVariable:
         case opcode::OP_SetLevelFieldVariableField:
@@ -319,17 +319,17 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
 
 auto disassembler::disassemble_field(instruction& inst) -> void
 {
-    if (ctx_->props() & props::hash)
+    if (ctx_->features() & feature::hash)
     {
         return inst.data.push_back(ctx_->hash_name(script_.read<u64>()));
     }
 
-    if (auto id = (ctx_->props() & props::tok4) ? script_.read<u32>() : script_.read<u16>(); id <= ctx_->str_count())
+    if (auto id = (ctx_->features() & feature::tok4) ? script_.read<u32>() : script_.read<u16>(); id <= ctx_->string_count())
     {
         return inst.data.push_back(ctx_->token_name(id));
     }
 
-    auto temp = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
+    auto temp = (ctx_->features() & feature::tok4) ? stack_.read<u32>() : stack_.read<u16>();
     inst.data.push_back(temp == 0 ? decrypt_string(stack_.read_cstr()) : std::format("{}", temp));
 }
 
@@ -337,28 +337,28 @@ auto disassembler::disassemble_params(instruction& inst) -> void
 {
     auto count = script_.read<u8>();
 
-    inst.size += (ctx_->props() & props::hash) ? count * 8 : count;
+    inst.size += (ctx_->features() & feature::hash) ? count * 8 : count;
     inst.data.push_back(std::format("{}", count));
 
     for (auto i = 0u; i < count; i++)
     {
-        inst.data.push_back((ctx_->props() & props::hash) ? ctx_->hash_name(script_.read<u64>()) : std::format("{}", script_.read<u8>()));
+        inst.data.push_back((ctx_->features() & feature::hash) ? ctx_->hash_name(script_.read<u64>()) : std::format("{}", script_.read<u8>()));
     }
 }
 
 auto disassembler::disassemble_call_far(instruction& inst, bool thread) -> void
 {
-    if (ctx_->props() & props::farcall)
+    if (ctx_->features() & feature::farcall)
     {
-        return disassemble_call_far2(inst, thread);
+        return disassemble_call_far_v2(inst, thread);
     }
 
-    auto file_id = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
+    auto file_id = (ctx_->features() & feature::tok4) ? stack_.read<u32>() : stack_.read<u16>();
     auto file_name = file_id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(file_id);
-    auto func_id = (ctx_->props() & props::tok4) ? stack_.read<u32>() : stack_.read<u16>();
+    auto func_id = (ctx_->features() & feature::tok4) ? stack_.read<u32>() : stack_.read<u16>();
     auto func_name = func_id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(func_id);
 
-    if (ctx_->props() & props::extension && file_id == 0)
+    if (ctx_->features() & feature::extension && file_id == 0)
     {
         file_name.resize(file_name.size() - 4);
     }
@@ -374,7 +374,7 @@ auto disassembler::disassemble_call_far(instruction& inst, bool thread) -> void
     }
 }
 
-auto disassembler::disassemble_call_far2(instruction& inst, bool thread) -> void
+auto disassembler::disassemble_call_far_v2(instruction& inst, bool thread) -> void
 {
     auto offs = script_.read<i32>();
     auto file = stack_.read<u64>();
@@ -418,9 +418,9 @@ auto disassembler::disassemble_call_local(instruction& inst, bool thread) -> voi
 
 auto disassembler::disassemble_call_builtin(instruction& inst, bool method, bool args) -> void
 {
-    if (ctx_->props() & props::hash)
+    if (ctx_->features() & feature::hash)
     {
-        return disassemble_call_builtin2(inst, method, args);
+        return disassemble_call_builtin_v2(inst, method, args);
     }
 
     auto count = args ? script_.read<u8>() : 0;
@@ -435,14 +435,14 @@ auto disassembler::disassemble_call_builtin(instruction& inst, bool method, bool
     }
 }
 
-auto disassembler::disassemble_call_builtin2(instruction& inst, bool method, bool args) -> void
+auto disassembler::disassemble_call_builtin_v2(instruction& inst, bool method, bool args) -> void
 {
     auto name = stack_.read_cstr();
 
     if (name.starts_with("#xS"s))
     {
         auto id = std::stoull(name.substr(3), nullptr, 16);
-        name = method ? ctx_->meth2_name(id) : ctx_->func2_name(id);
+        name = method ? ctx_->meth_name_v2(id) : ctx_->func_name_v2(id);
     }
 
     inst.data.push_back(std::move(name));
@@ -553,7 +553,7 @@ auto disassembler::disassemble_switch_table(instruction& inst) -> void
 
 auto disassembler::disassemble_offset() -> i32
 {
-    return (script_.read_i24() << 8) >> ((ctx_->props() & props::offs8) ? 8 : (ctx_->props() & props::offs9) ? 9 : 10);
+    return (script_.read_i24() << 8) >> ((ctx_->features() & feature::offs8) ? 8 : (ctx_->features() & feature::offs9) ? 9 : 10);
 }
 
 auto disassembler::resolve_functions() -> void
@@ -581,7 +581,7 @@ auto disassembler::resolve_functions() -> void
                 case opcode::OP_ScriptFarChildThreadCall:
                 case opcode::OP_ScriptFarMethodThreadCall:
                 case opcode::OP_ScriptFarMethodChildThreadCall:
-                    if ((ctx_->props() & props::farcall) && inst->data[0].empty())
+                    if ((ctx_->features() & feature::farcall) && inst->data[0].empty())
                         inst->data[1] = resolve_function(inst->data[1]);
                     break;
                 default:
