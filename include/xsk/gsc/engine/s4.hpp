@@ -12,9 +12,9 @@ namespace xsk::gsc::s4
 {
 
 constexpr usize code_count = 190;
-constexpr usize func_count = 691;
+constexpr usize func_count = 690;
 constexpr usize meth_count = 1445;
-constexpr usize token_count = 696;
+constexpr usize token_count = 699;
 constexpr u32 max_string_id = 0x110F4;
 
 struct context : public gsc::context
