@@ -857,7 +857,7 @@ auto compile_file(game game, mach mach, fs::path const& file, fs::path rel) -> r
         }
 
         auto outasm = contexts[game][mach]->compiler().compile(file.string(), data);
-        auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
+        auto outbin = contexts[game][mach]->assembler().assemble(*outasm, rel.string());
 
         if (!dry_run)
             utils::file::save(fs::path{ "compiled" } / rel, outbin.first.data, outbin.first.size);
