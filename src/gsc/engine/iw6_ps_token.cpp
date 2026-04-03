@@ -7,6 +7,7 @@
 
 namespace xsk::gsc::iw6_ps
 {
+
     extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { {
         { 0x0000, "" },
