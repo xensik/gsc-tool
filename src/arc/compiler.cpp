@@ -22,7 +22,7 @@ auto compiler::compile(program const& data) -> assembly::ptr
 
 auto compiler::compile(std::string const& file, std::vector<u8>& data) -> assembly::ptr
 {
-    auto prog = ctx_->source().parse_program(file, data);
+    auto prog = ctx_->parser().parse_source(file, data);
     return compile(*prog);
 }
 

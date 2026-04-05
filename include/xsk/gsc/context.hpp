@@ -6,7 +6,8 @@
 #pragma once
 
 #include "xsk/gsc/common/types.hpp"
-#include "xsk/gsc/source.hpp"
+#include "xsk/gsc/printer.hpp"
+#include "xsk/gsc/parser.hpp"
 #include "xsk/gsc/assembler.hpp"
 #include "xsk/gsc/disassembler.hpp"
 #include "xsk/gsc/compiler.hpp"
@@ -29,7 +30,8 @@ public:
     auto system() const -> system { return system_; }
     auto instance() const -> instance { return instance_; }
     auto string_count() const -> u32 { return string_count_; }
-    auto source() -> source& { return source_; }
+    auto printer() -> printer& { return printer_; }
+    auto parser() -> parser& { return parser_; }
     auto assembler() -> assembler& { return assembler_; }
     auto disassembler() -> disassembler& { return disassembler_; }
     auto compiler() -> compiler& { return compiler_; }
@@ -78,7 +80,8 @@ protected:
     gsc::system system_;
     gsc::instance instance_;
     u32 string_count_;
-    gsc::source source_;
+    gsc::printer printer_;
+    gsc::parser parser_;
     gsc::assembler assembler_;
     gsc::disassembler disassembler_;
     gsc::compiler compiler_;
