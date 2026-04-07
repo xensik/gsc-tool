@@ -13,7 +13,7 @@ extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcod
 
 context::context(arc::feature features, arc::engine engine, arc::endian endian, arc::system system, arc::instance inst, u64 magic)
     : features_{ features }, engine_{ engine }, endian_{ endian }, system_{ system }, instance_{ inst }, magic_{ magic },
-      source_{ this }, assembler_{ this }, disassembler_{ this }, compiler_{ this }, decompiler_{ this }
+      printer_{ this }, parser_{ this }, assembler_{ this }, disassembler_{ this }, compiler_{ this }, decompiler_{ this }
 {
     opcode_map_.reserve(opcode_list.size());
     opcode_map_rev_.reserve(opcode_list.size());

@@ -6,7 +6,8 @@
 #pragma once
 
 #include "xsk/arc/common/types.hpp"
-#include "xsk/arc/source.hpp"
+#include "xsk/arc/printer.hpp"
+#include "xsk/arc/parser.hpp"
 #include "xsk/arc/assembler.hpp"
 #include "xsk/arc/disassembler.hpp"
 #include "xsk/arc/compiler.hpp"
@@ -29,7 +30,8 @@ public:
     auto system() const -> system { return system_; }
     auto instance() const -> instance { return instance_; }
     auto magic() const -> u64 { return magic_; }
-    auto source() -> source& { return source_; }
+    auto printer() -> printer& { return printer_; }
+    auto parser() -> parser& { return parser_; }
     auto assembler() -> assembler& { return assembler_; }
     auto disassembler() -> disassembler& { return disassembler_; }
     auto compiler() -> compiler& { return compiler_; }
@@ -60,7 +62,8 @@ protected:
     arc::system system_;
     arc::instance instance_;
     u64 magic_;
-    arc::source source_;
+    arc::printer printer_;
+    arc::parser parser_;
     arc::assembler assembler_;
     arc::disassembler disassembler_;
     arc::compiler compiler_;

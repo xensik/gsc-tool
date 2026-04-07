@@ -13,7 +13,7 @@ extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcod
 
 context::context(gsc::feature features, gsc::engine engine, gsc::endian endian, gsc::system system, gsc::instance inst, u32 string_count)
     : features_{ features }, engine_{ engine }, endian_{ endian }, system_{ system }, instance_{ inst }, string_count_{ string_count },
-      source_{ this }, assembler_{ this }, disassembler_{ this }, compiler_{ this }, decompiler_{ this }
+      printer_{ this }, parser_{ this }, assembler_{ this }, disassembler_{ this }, compiler_{ this }, decompiler_{ this }
 {
     opcode_map_.reserve(opcode_list.size());
     opcode_map_rev_.reserve(opcode_list.size());
@@ -722,7 +722,7 @@ auto context::load_include(std::string const& name) -> bool
         if (file.first.data == nullptr && file.first.size == 0 && !file.second.empty())
         {
             // process RawFile
-            auto prog = source_.parse_program(name, file.second);
+            auto prog = parser_.parse_source(name, file.second);
 
             auto funcs = std::vector<std::string>{};
 

@@ -182,7 +182,7 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
         rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((zonetool ? ".cgsc" : ".gscbin"));
 
         auto data = utils::file::read(file);
-        auto outasm = contexts[game][mach]->source().parse_assembly(data);
+        auto outasm = contexts[game][mach]->parser().parse_assembly(data);
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
         if (true/*overwrite_prompt(file + (zonetool ? ".cgsc" : ".gscbin"))*/)
@@ -265,7 +265,7 @@ auto disassemble_file(game game, mach mach, fs::path file, fs::path rel) -> resu
         }
 
         auto outasm = contexts[game][mach]->disassembler().disassemble(script, stack);
-        auto outsrc = contexts[game][mach]->source().dump(*outasm);
+        auto outsrc = contexts[game][mach]->printer().print(*outasm);
 
         if (!dry_run)
             utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
@@ -379,7 +379,7 @@ auto decompile_file(game game, mach mach, fs::path file, fs::path rel) -> result
 
         auto outasm = contexts[game][mach]->disassembler().disassemble(script, stack);
         auto outast = contexts[game][mach]->decompiler().decompile(*outasm);
-        auto outsrc = contexts[game][mach]->source().dump(*outast);
+        auto outsrc = contexts[game][mach]->printer().print(*outast);
 
         if (!dry_run)
             utils::file::save(fs::path{ "decompiled" } / rel, outsrc);
@@ -402,10 +402,10 @@ auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
 
         auto data = utils::file::read(file);
 
-        auto prog = contexts[game][mach]->source().parse_program(file.string(), data);
+        auto prog = contexts[game][mach]->parser().parse_source(file.string(), data);
 
         if (!dry_run)
-            utils::file::save(fs::path{ "parsed" } / rel, contexts[game][mach]->source().dump(*prog));
+            utils::file::save(fs::path{ "parsed" } / rel, contexts[game][mach]->printer().print(*prog));
 
         std::cout << std::format("parsed {}\n", rel.generic_string());
         return result::success;
@@ -797,7 +797,7 @@ auto assemble_file(game game, mach mach, fs::path const& file, fs::path rel) -> 
             return result::success;
         }
 
-        auto outasm = contexts[game][mach]->source().parse_assembly(data);
+        auto outasm = contexts[game][mach]->parser().parse_assembly(data);
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
         if (!dry_run)
@@ -824,7 +824,7 @@ auto disassemble_file(game game, mach mach, fs::path const& file, fs::path rel) 
 
         auto data = utils::file::read(file.string());
         auto outasm = contexts[game][mach]->disassembler().disassemble(data);
-        auto outsrc = contexts[game][mach]->source().dump(*outasm);
+        auto outsrc = contexts[game][mach]->printer().print(*outasm);
 
         if (!dry_run)
             utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
@@ -894,7 +894,7 @@ auto decompile_file(game game, mach mach, fs::path const& file, fs::path rel) ->
 
         auto outasm = contexts[game][mach]->disassembler().disassemble(data);
         auto outsrc = contexts[game][mach]->decompiler().decompile(*outasm);
-        auto output = contexts[game][mach]->source().dump(*outsrc);
+        auto output = contexts[game][mach]->printer().print(*outsrc);
 
         if (!dry_run)
             utils::file::save(fs::path{ "decompiled" } / rel, output);
@@ -926,10 +926,10 @@ auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
             return result::success;
         }
 
-        auto prog = contexts[game][mach]->source().parse_program(file.string(), data);
+        auto prog = contexts[game][mach]->parser().parse_source(file.string(), data);
 
         if (!dry_run)
-            utils::file::save(fs::path{ "parsed" } / rel, contexts[game][mach]->source().dump(*prog));
+            utils::file::save(fs::path{ "parsed" } / rel, contexts[game][mach]->printer().print(*prog));
 
         std::cout << std::format("parsed {}\n", rel.generic_string());
         return result::success;
