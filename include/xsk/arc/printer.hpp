@@ -32,8 +32,12 @@ private:
     auto print_decl_dev_begin(decl_dev_begin const& dec) -> void;
     auto print_decl_dev_end(decl_dev_end const& dec) -> void;
     auto print_decl_namespace(decl_namespace const& dec) -> void;
+    auto print_decl_precache(decl_precache const& dec) -> void;
     auto print_decl_usingtree(decl_usingtree const& dec) -> void;
     auto print_decl_function(decl_function const& dec) -> void;
+    auto print_decl_variable(decl_variable const& dec) -> void;
+    auto print_decl_class(decl_class const& dec) -> void;
+    auto print_decl_list(decl_list const& dec) -> void;
     auto print_decl_empty(decl_empty const& dec) -> void;
     auto print_stmt(stmt const& stm) -> void;
     auto print_stmt_empty(stmt_empty const& stm) -> void;

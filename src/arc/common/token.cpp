@@ -131,6 +131,21 @@ auto token::to_string() const -> std::string
         case token::GETDVARCOLORALPHA: return "getdvarcoloralpha";
         case token::GETFIRSTARRAYKEY: return "getfirstarraykey";
         case token::GETNEXTARRAYKEY: return "getnextarraykey";
+        case token::SEQ: return "===";
+        case token::SNE: return "!==";
+        case token::ARROW: return "->";
+        case token::INSERT: return "#insert";
+        case token::USING: return "#using";
+        case token::PRECACHE: return "#precache";
+        case token::NAMESPACE: return "namespace";
+        case token::FUNCTION: return "function";
+        case token::CLASS: return "class";
+        case token::CONSTRUCTOR: return "constructor";
+        case token::DESTRUCTOR: return "destructor";
+        case token::VAR: return "var";
+        case token::NEW: return "new";
+        case token::WORLD: return "world";
+        case token::CLASSES: return "classes";
         default: return "*INTERNAL*";
     }
 }

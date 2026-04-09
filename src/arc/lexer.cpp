@@ -74,14 +74,14 @@ auto lexer::lex() -> token
 
                 if (last == '#')
                 {
-                    if (indev_)
+                    /*if (indev_)
                         throw comp_error(loc_, "cannot recurse devblock ('/#')");
 
                     if ((ctx_->build() & build::dev_blocks) != build::prod)
                     {
-                        indev_ = true;
+                        indev_ = true;*/
                         return token{ token::DEVBEGIN, spacing_, loc_ };
-                    }
+                    /*}
                     else
                     {
                         auto first = true;
@@ -105,7 +105,7 @@ auto lexer::lex() -> token
                             advance();
                             first = false;
                         }
-                    }
+                    }*/
                 }
                 else if (last == '@')
                 {
@@ -172,11 +172,12 @@ auto lexer::lex() -> token
             case '#':
                 if (curr == '/')
                 {
-                    if (!indev_)
+                    /*if (!indev_)
                         throw comp_error(loc_, "unmatched devblock end ('#/')");
 
                     advance();
-                    indev_ = false;
+                    indev_ = false;*/
+                    advance();
                     return token{ token::DEVEND, spacing_, loc_ };
                 }
 
@@ -237,7 +238,12 @@ auto lexer::lex() -> token
                     return token{ token::ASSIGN, spacing_, loc_ };
 
                 advance();
-                return token{ token::EQ, spacing_, loc_ };
+
+                if (curr != '=' || !(ctx_->features() & feature::size64))
+                    return token{ token::EQ, spacing_, loc_ };
+
+                advance();
+                return token{ token::SEQ, spacing_, loc_ };
             case '+':
                 if (curr != '+' && curr != '=')
                     return token{ token::PLUS, spacing_, loc_ };
@@ -249,13 +255,16 @@ auto lexer::lex() -> token
 
                 return token{ token::PLUSEQ, spacing_, loc_ };
             case '-':
-                if (curr != '-' && curr != '=')
+                if (curr != '-' && curr != '=' && (curr != '>' && ctx_->features() & feature::size64))
                     return token{ token::MINUS, spacing_, loc_ };
 
                 advance();
 
                 if (last == '-')
                     return token{ token::DEC, spacing_, loc_ };
+
+                if (last == '>')
+                    return token{ token::ARROW, spacing_, loc_ };
 
                 return token{ token::MINUSEQ, spacing_, loc_ };
             case '%':
@@ -300,7 +309,12 @@ auto lexer::lex() -> token
                     return token{ token::BANG, spacing_, loc_ };
 
                 advance();
-                return token{ token::NE, spacing_, loc_ };
+
+                if (curr != '=' || !(ctx_->features() & feature::size64))
+                    return token{ token::NE, spacing_, loc_ };
+
+                advance();
+                return token{ token::SNE, spacing_, loc_ };
             case '~':
                 return token{ token::TILDE, spacing_, loc_ };
             case '<':

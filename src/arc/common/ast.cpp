@@ -458,8 +458,12 @@ XSK_ARC_STMT_IS(stmt_jmp_endswitch)
 XSK_ARC_STMT_IS(stmt_jmp_dev)
 
 XSK_ARC_DECL_IS(decl_empty)
+XSK_ARC_DECL_IS(decl_list)
+XSK_ARC_DECL_IS(decl_class)
+XSK_ARC_DECL_IS(decl_variable)
 XSK_ARC_DECL_IS(decl_function)
 XSK_ARC_DECL_IS(decl_usingtree)
+XSK_ARC_DECL_IS(decl_precache)
 XSK_ARC_DECL_IS(decl_namespace)
 XSK_ARC_DECL_IS(decl_dev_begin)
 XSK_ARC_DECL_IS(decl_dev_end)
@@ -880,15 +884,31 @@ decl_empty::decl_empty(location const& loc) : decl{ type::decl_empty, loc }
 {
 }
 
+decl_list::decl_list(location const& loc) : decl{ type::decl_list, loc }
+{
+}
+
+decl_class::decl_class(location const& loc, expr_identifier::ptr name, expr_identifier::ptr base, decl_list::ptr body) : decl{ type::decl_class, loc }, name{ std::move(name) }, base{ std::move(base) }, body{ std::move(body) }
+{
+}
+
+decl_variable::decl_variable(location const& loc, expr_identifier::ptr name) : decl{ type::decl_variable, loc }, name{ std::move(name) }
+{
+}
+
 decl_function::decl_function(location const& loc, expr_identifier::ptr space, expr_identifier::ptr name, expr_parameters::ptr params, stmt_comp::ptr body, export_flags flags) : decl{ type::decl_function, loc }, space{ std::move(space) }, name{ std::move(name) }, params{ std::move(params) }, body{ std::move(body) }, flags{ flags }
 {
 }
 
-decl_namespace::decl_namespace(location const& loc, expr_string::ptr name) : decl{ type::decl_namespace, loc }, name{ std::move(name) }
+decl_usingtree::decl_usingtree(location const& loc, expr_string::ptr name) : decl{ type::decl_usingtree, loc }, name{ std::move(name) }
 {
 }
 
-decl_usingtree::decl_usingtree(location const& loc, expr_string::ptr name) : decl{ type::decl_usingtree, loc }, name{ std::move(name) }
+decl_precache::decl_precache(location const& loc, expr_arguments::ptr args) : decl{ type::decl_precache, loc }, args{ std::move(args) }
+{
+}
+
+decl_namespace::decl_namespace(location const& loc, expr_identifier::ptr name) : decl{ type::decl_namespace, loc }, name{ std::move(name) }
 {
 }
 

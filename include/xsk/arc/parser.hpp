@@ -32,11 +32,15 @@ public:
 
 private:
     auto parse_program() -> program::ptr;
-    auto parse_include() -> include::ptr;
-    auto parse_inline() -> void;
+    auto parse_include_or_using() -> include::ptr;
+    auto parse_inline_or_insert() -> void;
     auto parse_declaration() -> decl::ptr;
+    auto parse_decl_namespace() -> decl::ptr;
+    auto parse_decl_precache() -> decl::ptr;
     auto parse_decl_usingtree() -> decl::ptr;
     auto parse_decl_function() -> decl::ptr;
+    auto parse_decl_variable() -> decl::ptr;
+    auto parse_decl_class() -> decl::ptr;
     auto parse_stmt() -> stmt::ptr;
     auto parse_stmt_or_dev() -> stmt::ptr;
     auto parse_stmt_or_dev_list() -> stmt_list::ptr;
