@@ -1353,16 +1353,10 @@ auto printer::print_expr_string(expr_string const& exp) -> void
 
 auto printer::print_expr_hash(expr_hash const& exp) -> void
 {
-    char prefix = '?';
-    switch (exp.hkind)
-    {
-        case expr_hash::kind::dvar: prefix = 'd'; break;
-    }
-
     if (exp.is_raw_hex)
-        std::format_to(std::back_inserter(buf_), "#{}\"0x{}\"", prefix, exp.value);
+        std::format_to(std::back_inserter(buf_), "@\"0x{}\"", exp.value);
     else
-        std::format_to(std::back_inserter(buf_), "#{}{}", prefix, utils::string::to_literal(exp.value));
+        std::format_to(std::back_inserter(buf_), "@{}", utils::string::to_literal(exp.value));
 }
 
 auto printer::print_expr_vector(expr_vector const& exp) -> void

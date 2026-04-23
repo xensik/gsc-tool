@@ -181,6 +181,8 @@ auto lexer::lex() -> token
                 }
 
                 return token{ token::SHARP, spacing_, loc_ };
+            case '@':
+                return token{ token::AT, spacing_, loc_ };
             case '*':
                 if (curr != '=' && curr != '/')
                     return token{ token::STAR, spacing_, loc_ };

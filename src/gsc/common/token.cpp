@@ -52,6 +52,7 @@ auto token::to_string() -> std::string
         case token::QMARK: return "?";
         case token::COLON: return ":";
         case token::SHARP: return "#";
+        case token::AT: return "@";
         case token::COMMA: return ",";
         case token::DOT: return ".";
         case token::DOUBLEDOT: return "..";

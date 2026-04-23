@@ -74,6 +74,16 @@ auto preprocessor::process() -> token
             continue;
         }
 
+        if (tok.type == token::AT)
+        {
+            auto next = next_token();
+            if (next.type != token::STRING)
+                throw ppr_error(tok.pos, "'@' must be followed by a string literal (dvar hash literal)");
+
+            next.pos.begin = tok.pos.begin;
+            return token{ token::HASHSTR_DVAR, tok.space, next.pos, next.data };
+        }
+
         if (skip_) continue;
 
         if (tok.type == token::NAME)
@@ -719,19 +729,6 @@ auto preprocessor::read_hashtoken(token& tok) -> void
         if (next.data == "animtree")
         {
             return read_hashtoken_animtree(tok, next);
-        }
-
-        // iw9 hash literals: #d"dvar_name"
-        if (next.space == spacing::none && next.data == "d")
-        {
-            auto str = read_token();
-            if (str.type == token::STRING && str.space == spacing::none)
-            {
-                str.pos.begin = tok.pos.begin;
-                tokens_.push_front(token{ token::HASHSTR_DVAR, tok.space, str.pos, str.data });
-                return;
-            }
-            tokens_.push_front(std::move(str));
         }
     }
 
