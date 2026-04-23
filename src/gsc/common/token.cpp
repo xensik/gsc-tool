@@ -70,6 +70,7 @@ auto token::to_string() -> std::string
         case token::ISTRING: return data;
         case token::INT: return data;
         case token::FLT: return data;
+        case token::HASHSTR_DVAR: return data;
         case token::DEVBEGIN: return "/#";
         case token::DEVEND: return "#/";
         case token::INLINE: return "#inline";

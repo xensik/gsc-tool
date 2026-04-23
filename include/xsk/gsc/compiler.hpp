@@ -111,6 +111,7 @@ private:
     auto emit_expr_animtree(expr_animtree const& exp) -> void;
     auto emit_expr_istring(expr_istring const& exp) -> void;
     auto emit_expr_string(expr_string const& exp) -> void;
+    auto emit_expr_hash(expr_hash const& exp) -> void;
     auto emit_expr_float(expr_float const& exp) -> void;
     auto emit_expr_integer(expr_integer const& exp) -> void;
     auto emit_expr_false(expr_false const& exp) -> void;

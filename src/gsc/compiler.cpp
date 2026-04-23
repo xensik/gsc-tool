@@ -4,6 +4,7 @@
 // that can be found in the LICENSE file.
 
 #include "xsk/stdinc.hpp"
+#include "xsk/utils/hash.hpp"
 #include "xsk/gsc/compiler.hpp"
 #include "xsk/gsc/context.hpp"
 
@@ -990,6 +991,9 @@ auto compiler::emit_expr(expr const& exp, scope& scp) -> void
             break;
         case node::expr_string:
             emit_expr_string(exp.as<expr_string>());
+            break;
+        case node::expr_hash:
+            emit_expr_hash(exp.as<expr_hash>());
             break;
         case node::expr_vector:
             emit_expr_vector(exp.as<expr_vector>(), scp);
@@ -2093,6 +2097,27 @@ auto compiler::emit_expr_istring(expr_istring const& exp) -> void
 auto compiler::emit_expr_string(expr_string const& exp) -> void
 {
     emit_opcode(opcode::OP_GetString, exp.value);
+}
+
+auto compiler::emit_expr_hash(expr_hash const& exp) -> void
+{
+    if (!(ctx_->features() & feature::hash))
+        throw comp_error(exp.loc(), "hash literals require an iw9-family engine");
+
+    auto raw_hex = exp.is_raw_hex
+        || (exp.value.size() > 2 && exp.value[0] == '0' && (exp.value[1] == 'x' || exp.value[1] == 'X'));
+
+    switch (exp.hkind)
+    {
+        case expr_hash::kind::dvar:
+        {
+            auto h = raw_hex
+                ? std::stoull(exp.value, nullptr, 16)
+                : utils::hash::scr_dvar_hash(exp.value);
+            emit_opcode(opcode::OP_GetDvarHash, std::format("{:016X}", h));
+            break;
+        }
+    }
 }
 
 auto compiler::emit_expr_float(expr_float const& exp) -> void

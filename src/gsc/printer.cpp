@@ -932,6 +932,9 @@ auto printer::print_expr(expr const& exp) -> void
         case node::expr_string:
             print_expr_string(exp.as<expr_string>());
             break;
+        case node::expr_hash:
+            print_expr_hash(exp.as<expr_hash>());
+            break;
         case node::expr_vector:
             print_expr_vector(exp.as<expr_vector>());
             break;
@@ -1346,6 +1349,20 @@ auto printer::print_expr_istring(expr_istring const& exp) -> void
 auto printer::print_expr_string(expr_string const& exp) -> void
 {
     std::format_to(std::back_inserter(buf_), "{}", utils::string::to_literal(exp.value));
+}
+
+auto printer::print_expr_hash(expr_hash const& exp) -> void
+{
+    char prefix = '?';
+    switch (exp.hkind)
+    {
+        case expr_hash::kind::dvar: prefix = 'd'; break;
+    }
+
+    if (exp.is_raw_hex)
+        std::format_to(std::back_inserter(buf_), "#{}\"0x{}\"", prefix, exp.value);
+    else
+        std::format_to(std::back_inserter(buf_), "#{}{}", prefix, utils::string::to_literal(exp.value));
 }
 
 auto printer::print_expr_vector(expr_vector const& exp) -> void

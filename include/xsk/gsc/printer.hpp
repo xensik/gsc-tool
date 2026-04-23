@@ -114,6 +114,7 @@ private:
     auto print_expr_path(expr_path const& exp) -> void;
     auto print_expr_istring(expr_istring const& exp) -> void;
     auto print_expr_string(expr_string const& exp) -> void;
+    auto print_expr_hash(expr_hash const& exp) -> void;
     auto print_expr_vector(expr_vector const& exp) -> void;
     auto print_expr_float(expr_float const& exp) -> void;
     auto print_expr_integer(expr_integer const& exp) -> void;

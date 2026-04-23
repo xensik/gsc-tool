@@ -302,6 +302,7 @@ XSK_GSC_EXPR_IS(expr_float)
 XSK_GSC_EXPR_IS(expr_vector)
 XSK_GSC_EXPR_IS(expr_string)
 XSK_GSC_EXPR_IS(expr_istring)
+XSK_GSC_EXPR_IS(expr_hash)
 XSK_GSC_EXPR_IS(expr_path)
 XSK_GSC_EXPR_IS(expr_identifier)
 XSK_GSC_EXPR_IS(expr_animtree)
@@ -427,6 +428,10 @@ expr_string::expr_string(location const& loc, const std::string& value) : expr{ 
 }
 
 expr_istring::expr_istring(location const& loc, const std::string& value) : expr{ type::expr_istring, loc }, value{ std::move(value) }
+{
+}
+
+expr_hash::expr_hash(location const& loc, kind hkind, std::string const& value, bool is_raw_hex) : expr{ type::expr_hash, loc }, hkind{ hkind }, value{ value }, is_raw_hex{ is_raw_hex }
 {
 }
 
@@ -796,6 +801,7 @@ auto operator==(expr const& lhs, expr const& rhs)  -> bool
         case node::expr_vector: return lhs.as<expr_vector>() == rhs.as<expr_vector>();
         case node::expr_string: return lhs.as<expr_string>() == rhs.as<expr_string>();
         case node::expr_istring: return lhs.as<expr_istring>() == rhs.as<expr_istring>();
+        case node::expr_hash: return lhs.as<expr_hash>() == rhs.as<expr_hash>();
         case node::expr_path: return lhs.as<expr_path>() == rhs.as<expr_path>();
         case node::expr_identifier: return lhs.as<expr_identifier>() == rhs.as<expr_identifier>();
         case node::expr_animtree: return lhs.as<expr_animtree>() == rhs.as<expr_animtree>();
@@ -848,6 +854,11 @@ auto operator==(expr_string const& lhs, expr_string const& rhs) -> bool
 auto operator==(expr_istring const& lhs, expr_istring const& rhs) -> bool
 {
     return lhs.value == rhs.value;
+}
+
+auto operator==(expr_hash const& lhs, expr_hash const& rhs) -> bool
+{
+    return lhs.hkind == rhs.hkind && lhs.is_raw_hex == rhs.is_raw_hex && lhs.value == rhs.value;
 }
 
 auto operator==(expr_path const& lhs, expr_path const& rhs) -> bool

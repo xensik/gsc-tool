@@ -720,9 +720,20 @@ auto preprocessor::read_hashtoken(token& tok) -> void
         {
             return read_hashtoken_animtree(tok, next);
         }
-    }
 
-    // TODO: iw9 hash literals #d"src_game"
+        // iw9 hash literals: #d"dvar_name"
+        if (next.space == spacing::none && next.data == "d")
+        {
+            auto str = read_token();
+            if (str.type == token::STRING && str.space == spacing::none)
+            {
+                str.pos.begin = tok.pos.begin;
+                tokens_.push_front(token{ token::HASHSTR_DVAR, tok.space, str.pos, str.data });
+                return;
+            }
+            tokens_.push_front(std::move(str));
+        }
+    }
 
     // if nothing match return '#'
     tokens_.push_front(std::move(next));

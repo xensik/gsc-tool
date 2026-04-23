@@ -25,6 +25,7 @@ struct node
         expr_vector,
         expr_string,
         expr_istring,
+        expr_hash,
         expr_path,
         expr_identifier,
         expr_animtree,
@@ -327,6 +328,21 @@ struct expr_istring : public expr
     expr_istring(location const& loc, std::string const& value);
     friend auto operator==(expr_istring const& lhs, expr_istring const& rhs) -> bool;
     XSK_GSC_AST_MAKE(expr_istring)
+};
+
+struct expr_hash : public expr
+{
+    using ptr = std::unique_ptr<expr_hash>;
+
+    enum class kind : u8 { dvar };
+
+    kind hkind;
+    std::string value;
+    bool is_raw_hex;
+
+    expr_hash(location const& loc, kind hkind, std::string const& value, bool is_raw_hex);
+    friend auto operator==(expr_hash const& lhs, expr_hash const& rhs) -> bool;
+    XSK_GSC_AST_MAKE(expr_hash)
 };
 
 struct expr_path : public expr

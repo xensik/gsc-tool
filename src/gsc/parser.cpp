@@ -1394,6 +1394,13 @@ auto parser::parse_expr_primary() -> expr::ptr
             return node;
         }
 
+        case token::HASHSTR_DVAR:
+        {
+            auto val = tok_.data;
+            advance();
+            return expr_hash::make(loc, expr_hash::kind::dvar, val, false);
+        }
+
         case token::NAME:
         case token::PATH:
         {

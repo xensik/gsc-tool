@@ -1503,7 +1503,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         }
         case opcode::OP_GetDvarHash:
         {
-            stack_.push(expr_string::make(loc, std::format("dvar_{}", inst.data[0])));
+            stack_.push(expr_hash::make(loc, expr_hash::kind::dvar, inst.data[0], true));
             break;
         }
         case opcode::OP_waittillmatch2:
