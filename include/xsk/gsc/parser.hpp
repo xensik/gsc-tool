@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -18,8 +18,8 @@ private:
     preprocessor ppr_;
     token tok_;
     token next_;
-    bool has_next_;
-    u32 index_;
+    bool has_next_{ false };
+    u32 index_{ 0 };
 
 public:
     parser(context* ctx);
@@ -107,19 +107,19 @@ private:
     auto parse_expr_animation() -> expr::ptr;
     auto parse_switch(stmt_switch& stm) -> void;
     auto parse_assign_op() -> expr_assign::op;
-    auto is_assign_op() -> bool;
+    auto is_assign_op() const -> bool;
     auto is_call_start() -> bool;
     auto is_lvalue(expr const& e) -> bool;
     auto is_no_call_chain(expr const& e) -> bool;
     auto is_call_or_method(expr const& e) -> bool;
-    auto check(token::kind k) -> bool;
+    auto check(token::kind k) const -> bool;
     auto match(token::kind k) -> bool;
     auto expect(token::kind k) -> token;
     auto peek() -> token&;
     auto advance() -> token;
     auto read_token() -> token;
     [[noreturn]] auto error(location const& loc, std::string const& msg) -> void;
-    [[noreturn]] auto error(std::string const& msg) -> void;
+    [[noreturn]] auto error(std::string const& msg) const -> void;
 };
 
 } // namespace xsk::gsc

@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -28,7 +28,7 @@ context::context(gsc::feature features, gsc::engine engine, gsc::endian endian, 
 auto context::init(gsc::build build, fs_callback callback) -> void
 {
     build_ = build;
-    fs_callback_ = callback;
+    fs_callback_ = std::move(callback);
 }
 
 auto context::cleanup() -> void
@@ -42,19 +42,29 @@ auto context::engine_name() const -> std::string_view
 {
     switch (engine_)
     {
-        case engine::iw5: return "IW5";
-        case engine::iw6: return "IW6";
-        case engine::iw7: return "IW7";
-        case engine::iw8: return "IW8";
-        case engine::iw9: return "IW9";
-        case engine::s1: return "S1";
-        case engine::s2: return "S2";
-        case engine::s4: return "S4";
-        case engine::h1: return "H1";
-        case engine::h2: return "H2";
+        case engine::iw5:
+            return "IW5";
+        case engine::iw6:
+            return "IW6";
+        case engine::iw7:
+            return "IW7";
+        case engine::iw8:
+            return "IW8";
+        case engine::iw9:
+            return "IW9";
+        case engine::s1:
+            return "S1";
+        case engine::s2:
+            return "S2";
+        case engine::s4:
+            return "S4";
+        case engine::h1:
+            return "H1";
+        case engine::h2:
+            return "H2";
+        default:
+            return "";
     }
-
-    return "";
 }
 
 auto context::opcode_size(opcode op) const -> usize
@@ -229,7 +239,7 @@ auto context::opcode_size(opcode op) const -> usize
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_EvalLevelFieldVariable:
         case opcode::OP_EvalAnimFieldVariableRef:
-            return (features_ & feature::hash) ? 9 : (features_ & feature::tok4) ? 5 : 3;
+            return (features_ & feature::hash) ? 9 : ((features_ & feature::tok4) ? 5 : 3);
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
             return (features_ & feature::str4) ? 5 : 3;
@@ -370,7 +380,7 @@ auto context::func_id_v2(std::string const& name) const -> u64
     char const* str = name.data();
     u64 hash = 0x79D6530B0BB9B5D1;
 
-    while ( *str )
+    while (*str)
     {
         u8 byte = *str++;
 
@@ -478,7 +488,7 @@ auto context::meth_id_v2(std::string const& name) const -> u64
     char const* str = name.data();
     u64 hash = 0x79D6530B0BB9B5D1;
 
-    while ( *str )
+    while (*str)
     {
         u8 byte = *str++;
 
@@ -504,7 +514,6 @@ auto context::meth_name_v2(u64 id) const -> std::string
 
     return std::format("_meth_{:16X}", id);
 }
-
 
 auto context::meth_exists(std::string const& name) const -> bool
 {
@@ -587,7 +596,7 @@ auto context::path_id(std::string const& name) const -> u64
     char const* str = name.data();
     u64 hash = 0x47F5817A5EF961BA;
 
-    while ( *str )
+    while (*str)
     {
         u8 byte = *str++;
 
@@ -628,7 +637,7 @@ auto context::hash_id(std::string const& name) const -> u64
     char const* str = name.data();
     u64 hash = 0x79D6530B0BB9B5D1;
 
-    while ( *str )
+    while (*str)
     {
         u8 byte = *str++;
 
@@ -645,7 +654,7 @@ auto context::hash_id(std::string const& name) const -> u64
 
 auto context::hash_name(u64 id) const -> std::string
 {
-   auto const itr = hash_map_.find(id);
+    auto const itr = hash_map_.find(id);
 
     if (itr != hash_map_.end())
     {

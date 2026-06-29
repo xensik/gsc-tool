@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -13,7 +13,7 @@ struct locjmp
     std::string end;
     std::string cnt;
     std::string brk;
-    bool last;
+    bool last{};
 };
 
 struct scope
@@ -35,19 +35,19 @@ struct scope
         bool init;
     };
 
-    abort_type abort;
+    abort_type abort{ scope::abort_none };
     std::string loc_end;
     std::string loc_cont;
     std::string loc_break;
-    u32 create_count;
-    u32 public_count;
+    u32 create_count{ 0 };
+    u32 public_count{ 0 };
     std::vector<var> vars;
-    bool is_last;
+    bool is_last{ false };
 
     scope();
     auto transfer_dec(scope::ptr const& child) -> void;
     auto transfer(scope::ptr const& child) -> void;
-    auto copy(scope::ptr const& child) -> void;
+    auto copy(scope::ptr const& child) const -> void;
     auto append_dec(scope::ptr const& child) -> void;
     auto append(std::vector<scope*> const& childs) -> void;
     auto merge(std::vector<scope*> const& childs) -> void;

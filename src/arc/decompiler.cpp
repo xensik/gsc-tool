@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -117,7 +117,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_Return:
         {
-            auto value = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto value = pop_stack_expr();
             retbool_ = !value->is_boolean() ? false : retbool_;
             func_->body->block->list.push_back(stmt_return::make(value->loc(), std::move(value)));
             break;
@@ -255,7 +255,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
 
             if (!found)
             {
-                if (space == "")
+                if (space.empty())
                 {
                     auto dec = decl_usingtree::make(loc, expr_string::make(loc, inst.data[0]));
                     program_->declarations.push_back(std::move(dec));
@@ -324,29 +324,29 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_EvalArray:
         {
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto key = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
+            auto key = pop_stack_expr();
             stack_.push(expr_array::make(key->loc(), std::move(obj), std::move(key)));
             break;
         }
         case opcode::OP_EvalLocalArrayRefCached:
         {
-            auto key = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto key = pop_stack_expr();
             auto obj = expr_identifier::make(loc, locals_.at(std::stoi(inst.data[0])));
             stack_.push(expr_array::make(key->loc(), std::move(obj), std::move(key)));
             break;
         }
         case opcode::OP_EvalArrayRef:
         {
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto key = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
+            auto key = pop_stack_expr();
             stack_.push(expr_array::make(key->loc(), std::move(obj), std::move(key)));
             break;
         }
         case opcode::OP_ClearArray:
         {
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto key = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
+            auto key = pop_stack_expr();
             loc = key->loc();
             auto lvalue = expr_array::make(loc, std::move(obj), std::move(key));
             auto rvalue = expr_undefined::make(loc);
@@ -356,21 +356,21 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_EvalFieldVariable:
         {
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
             auto field = expr_identifier::make(loc, inst.data[0]);
             stack_.push(expr_field::make(obj->loc(), std::move(obj), std::move(field)));
             break;
         }
         case opcode::OP_EvalFieldVariableRef:
         {
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
             auto field = expr_identifier::make(loc, inst.data[0]);
             stack_.push(expr_field::make(obj->loc(), std::move(obj), std::move(field)));
             break;
         }
         case opcode::OP_ClearFieldVariable:
         {
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
             loc = obj->loc();
             auto name = expr_identifier::make(loc, inst.data[0]);
             auto field = expr_field::make(loc, std::move(obj), std::move(name));
@@ -389,12 +389,12 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             if (in_waittill_)
             {
                 auto args = expr_arguments::make(loc);
-                auto arg = std::move(stack_.top()); stack_.pop();
+                auto arg = pop_stack_node();
 
                 while (arg->kind() != node::stmt_waittill)
                 {
                     args->list.push_back(node::as<expr>(std::move(arg)));
-                    arg = std::move(stack_.top()); stack_.pop();
+                    arg = pop_stack_node();
                 }
 
                 if (arg->kind() == node::stmt_waittill)
@@ -415,8 +415,8 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_SetVariableField:
         {
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto lvalue = pop_stack_expr();
+            auto rvalue = pop_stack_expr();
             loc = rvalue->loc();
             auto exp = expr_assign::make(loc, std::move(lvalue), std::move(rvalue), expr_assign::op::eq);
             func_->body->block->list.push_back(stmt_expr::make(loc, std::move(exp)));
@@ -428,13 +428,13 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             auto path = expr_path::make(loc, inst.data[0]);
             auto name = expr_identifier::make(loc, inst.data[1]);
 
-            auto var = std::move(stack_.top()); stack_.pop();
+            auto var = pop_stack_node();
             loc = var->loc();
 
             while (var->kind() != node::node_prescriptcall)
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
-                var = std::move(stack_.top()); stack_.pop();
+                var = pop_stack_node();
                 loc = var->loc();
             }
 
@@ -443,19 +443,19 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_CallBuiltinMethod:
         {
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
             loc = obj->loc();
             auto args = expr_arguments::make(loc);
             auto path = expr_path::make(loc, inst.data[0]);
             auto name = expr_identifier::make(loc, inst.data[1]);
 
-            auto var = std::move(stack_.top()); stack_.pop();
+            auto var = pop_stack_node();
             loc = var->loc();
 
             while (var->kind() != node::node_prescriptcall)
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
-                var = std::move(stack_.top()); stack_.pop();
+                var = pop_stack_node();
                 loc = var->loc();
             }
 
@@ -464,7 +464,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_Wait:
         {
-            auto exp = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto exp = pop_stack_expr();
             func_->body->block->list.push_back(stmt_wait::make(exp->loc(), std::move(exp)));
             break;
         }
@@ -484,13 +484,13 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             auto path = expr_path::make(loc, inst.data[0]);
             auto name = expr_identifier::make(loc, inst.data[1]);
 
-            auto var = std::move(stack_.top()); stack_.pop();
+            auto var = pop_stack_node();
             loc = var->loc();
 
             while (var->kind() != node::node_prescriptcall)
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
-                var = std::move(stack_.top()); stack_.pop();
+                var = pop_stack_node();
                 loc = var->loc();
             }
 
@@ -500,14 +500,14 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_ScriptFunctionCallPointer:
         {
             auto args = expr_arguments::make(loc);
-            auto func = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto var = std::move(stack_.top()); stack_.pop();
+            auto func = pop_stack_expr();
+            auto var = pop_stack_node();
             loc = var->loc();
 
             while (var->kind() != node::node_prescriptcall)
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
-                var = std::move(stack_.top()); stack_.pop();
+                var = pop_stack_node();
                 loc = var->loc();
             }
 
@@ -516,20 +516,20 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_ScriptMethodCall:
         {
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
             loc = obj->loc();
 
             auto args = expr_arguments::make(loc);
             auto path = expr_path::make(loc, inst.data[0]);
             auto name = expr_identifier::make(loc, inst.data[1]);
 
-            auto var = std::move(stack_.top()); stack_.pop();
+            auto var = pop_stack_node();
             loc = var->loc();
 
             while (var->kind() != node::node_prescriptcall)
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
-                var = std::move(stack_.top()); stack_.pop();
+                var = pop_stack_node();
                 loc = var->loc();
             }
 
@@ -539,15 +539,15 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_ScriptMethodCallPointer:
         {
             auto args = expr_arguments::make(loc);
-            auto func = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto var = std::move(stack_.top()); stack_.pop();
+            auto func = pop_stack_expr();
+            auto obj = pop_stack_expr();
+            auto var = pop_stack_node();
             loc = var->loc();
 
             while (var->kind() != node::node_prescriptcall)
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
-                var = std::move(stack_.top()); stack_.pop();
+                var = pop_stack_node();
                 loc = var->loc();
             }
 
@@ -560,13 +560,13 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             auto path = expr_path::make(loc, inst.data[0]);
             auto name = expr_identifier::make(loc, inst.data[1]);
 
-            auto var = std::move(stack_.top()); stack_.pop();
+            auto var = pop_stack_node();
             loc = var->loc();
 
             while (var->kind() != node::node_prescriptcall)
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
-                var = std::move(stack_.top()); stack_.pop();
+                var = pop_stack_node();
                 loc = var->loc();
             }
 
@@ -576,16 +576,16 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_ScriptThreadCallPointer:
         {
             auto args = expr_arguments::make(loc);
-            auto func = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto func = pop_stack_expr();
             loc = func->loc();
 
-            auto var = std::move(stack_.top()); stack_.pop();
+            auto var = pop_stack_node();
             loc = var->loc();
 
             while (var->kind() != node::node_prescriptcall)
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
-                var = std::move(stack_.top()); stack_.pop();
+                var = pop_stack_node();
                 loc = var->loc();
             }
 
@@ -594,20 +594,20 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_ScriptMethodThreadCall:
         {
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
             loc = obj->loc();
 
             auto args = expr_arguments::make(loc);
             auto path = expr_path::make(loc, inst.data[0]);
             auto name = expr_identifier::make(loc, inst.data[1]);
 
-            auto var = std::move(stack_.top()); stack_.pop();
+            auto var = pop_stack_node();
             loc = var->loc();
 
             while (var->kind() != node::node_prescriptcall)
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
-                var = std::move(stack_.top()); stack_.pop();
+                var = pop_stack_node();
                 loc = var->loc();
             }
 
@@ -617,17 +617,17 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_ScriptMethodThreadCallPointer:
         {
             auto args = expr_arguments::make(loc);
-            auto func = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto func = pop_stack_expr();
+            auto obj = pop_stack_expr();
             loc = obj->loc();
 
-            auto var = std::move(stack_.top()); stack_.pop();
+            auto var = pop_stack_node();
             loc = var->loc();
 
             while (var->kind() != node::node_prescriptcall)
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
-                var = std::move(stack_.top()); stack_.pop();
+                var = pop_stack_node();
                 loc = var->loc();
             }
 
@@ -638,7 +638,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         {
             if (stack_.top()->kind() != node::expr_new)
             {
-                auto exp = node::as<expr>(std::move(stack_.top())); stack_.pop();
+                auto exp = pop_stack_expr();
                 func_->body->block->list.push_back(stmt_expr::make(exp->loc(), std::move(exp)));
             }
 
@@ -646,19 +646,19 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_BoolNot:
         {
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_not::make(lvalue->loc(), std::move(lvalue)));
             break;
         }
         case opcode::OP_BoolComplement:
         {
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_complement::make(lvalue->loc(), std::move(lvalue)));
             break;
         }
         case opcode::OP_JumpOnTrue:
         {
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto lvalue = pop_stack_expr();
             loc = lvalue->loc();
 
             if (inst.index > resolve_label(inst.data[0]))
@@ -674,7 +674,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_JumpOnFalse:
         {
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto lvalue = pop_stack_expr();
             loc = lvalue->loc();
 
             if (inst.index > resolve_label(inst.data[0]))
@@ -690,14 +690,14 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_JumpOnTrueExpr:
         {
-            auto test = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto test = pop_stack_expr();
             stack_.push(stmt_jmp_true::make(test->loc(), std::move(test), inst.data[0]));
             expr_labels_.push_back(inst.data[0]);
             break;
         }
         case opcode::OP_JumpOnFalseExpr:
         {
-            auto test = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto test = pop_stack_expr();
             stack_.push(stmt_jmp_false::make(test->loc(), std::move(test), inst.data[0]));
             expr_labels_.push_back(inst.data[0]);
             break;
@@ -705,7 +705,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_Jump:
         {
             func_->body->block->list.push_back(stmt_jmp::make(loc, inst.data[0]));
-            if (stack_.size() != 0) tern_labels_.push_back(inst.data[0]);
+            if (!stack_.empty()) tern_labels_.push_back(inst.data[0]);
             break;
         }
         case opcode::OP_JumpBack:
@@ -715,7 +715,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_Inc:
         {
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto lvalue = pop_stack_expr();
             loc = lvalue->loc();
             auto exp = expr_increment::make(lvalue->loc(), std::move(lvalue), false);
             func_->body->block->list.push_back(stmt_expr::make(loc, std::move(exp)));
@@ -723,7 +723,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_Dec:
         {
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto lvalue = pop_stack_expr();
             loc = lvalue->loc();
             auto exp = expr_decrement::make(loc, std::move(lvalue), false);
             func_->body->block->list.push_back(stmt_expr::make(loc, std::move(exp)));
@@ -731,146 +731,146 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_Bit_Or:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::bwor));
             break;
         }
         case opcode::OP_Bit_Xor:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::bwexor));
             break;
         }
         case opcode::OP_Bit_And:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::bwand));
             break;
         }
         case opcode::OP_SuperEqual:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::seq));
             break;
         }
         case opcode::OP_SuperNotEqual:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::sne));
             break;
         }
         case opcode::OP_Equal:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::eq));
             break;
         }
         case opcode::OP_NotEqual:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::ne));
             break;
         }
         case opcode::OP_LessThan:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::lt));
             break;
         }
         case opcode::OP_GreaterThan:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::gt));
             break;
         }
         case opcode::OP_LessThanOrEqualTo:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::le));
             break;
         }
         case opcode::OP_GreaterThanOrEqualTo:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::ge));
             break;
         }
         case opcode::OP_ShiftLeft:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::shl));
             break;
         }
         case opcode::OP_ShiftRight:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::shr));
             break;
         }
         case opcode::OP_Plus:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::add));
             break;
         }
         case opcode::OP_Minus:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::sub));
             break;
         }
         case opcode::OP_Multiply:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::mul));
             break;
         }
         case opcode::OP_Divide:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::div));
             break;
         }
         case opcode::OP_Modulus:
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::mod));
             break;
         }
         case opcode::OP_SizeOf:
         {
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto lvalue = pop_stack_expr();
             stack_.push(expr_size::make(lvalue->loc(), std::move(lvalue)));
             break;
         }
         case opcode::OP_WaitTillMatch:
         {
             auto args = expr_arguments::make(loc);
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto event = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
+            auto event = pop_stack_expr();
             loc = event->loc();
 
             for (auto i = std::stoul(inst.data[0]); i > 0; i--)
             {
-                auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+                auto arg = pop_stack_expr();
                 loc = arg->loc();
                 args->list.push_back(std::move(arg));
             }
@@ -881,8 +881,8 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_WaitTill:
         {
             auto args = expr_arguments::make(loc);
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto event = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
+            auto event = pop_stack_expr();
             stack_.push(stmt_waittill::make(event->loc(), std::move(obj), std::move(event), std::move(args)));
             in_waittill_ = true;
             break;
@@ -890,15 +890,15 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_Notify:
         {
             auto args = expr_arguments::make(loc);
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto event = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto var = std::move(stack_.top()); stack_.pop();
+            auto obj = pop_stack_expr();
+            auto event = pop_stack_expr();
+            auto var = pop_stack_node();
             loc = var->loc();
 
             while (var->kind() != ((ctx_->features() & feature::size64) ? node::node_prescriptcall : node::node_voidcodepos))
             {
                 args->list.push_back(node::as<expr>(std::move(var)));
-                var = std::move(stack_.top()); stack_.pop();
+                var = pop_stack_node();
                 loc = var->loc();
             }
 
@@ -907,8 +907,8 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_EndOn:
         {
-            auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto event = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto obj = pop_stack_expr();
+            auto event = pop_stack_expr();
             func_->body->block->list.push_back(stmt_endon::make(event->loc(), std::move(obj), std::move(event)));
             break;
         }
@@ -919,7 +919,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_Switch:
         {
-            auto test = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto test = pop_stack_expr();
             func_->body->block->list.push_back(stmt_jmp_switch::make(test->loc(), std::move(test), inst.data[0]));
             break;
         }
@@ -930,9 +930,9 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_Vector:
         {
-            auto x = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto y = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto z = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto x = pop_stack_expr();
+            auto y = pop_stack_expr();
+            auto z = pop_stack_expr();
             stack_.push(expr_vector::make(z->loc(), std::move(x), std::move(y), std::move(z)));
             break;
         }
@@ -943,65 +943,65 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_RealWait:
         {
-            auto exp = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto exp = pop_stack_expr();
             func_->body->block->list.push_back(stmt_waitrealtime::make(exp->loc(), std::move(exp)));
             break;
         }
         case opcode::OP_VectorConstant:
         {
             auto flags = static_cast<std::uint8_t>(std::stoi(inst.data[0]));
-            auto x = expr_float::make(loc, (flags & 0x20) ? "1" : (flags & 0x10) ? "-1" : "0");
-            auto y = expr_float::make(loc, (flags & 0x08) ? "1" : (flags & 0x04) ? "-1" : "0");
-            auto z = expr_float::make(loc, (flags & 0x02) ? "1" : (flags & 0x01) ? "-1" : "0");
+            auto x = expr_float::make(loc, (flags & 0x20) ? "1" : ((flags & 0x10) ? "-1" : "0"));
+            auto y = expr_float::make(loc, (flags & 0x08) ? "1" : ((flags & 0x04) ? "-1" : "0"));
+            auto z = expr_float::make(loc, (flags & 0x02) ? "1" : ((flags & 0x01) ? "-1" : "0"));
             stack_.push(expr_vector::make(loc, std::move(x), std::move(y), std::move(z)));
             break;
         }
         case opcode::OP_IsDefined:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_isdefined::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_VectorScale:
         {
-            auto arg1 = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto arg2 = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg1 = pop_stack_expr();
+            auto arg2 = pop_stack_expr();
             stack_.push(expr_vectorscale::make(arg2->loc(), std::move(arg1), std::move(arg2)));
             break;
         }
         case opcode::OP_AnglesToUp:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_anglestoup::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_AnglesToRight:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_anglestoright::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_AnglesToForward:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_anglestoforward::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_AngleClamp180:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_angleclamp180::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_VectorToAngles:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_vectortoangles::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_Abs:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_abs::make(arg->loc(), std::move(arg)));
             break;
         }
@@ -1012,49 +1012,49 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_GetDvar:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_getdvar::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_GetDvarInt:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_getdvarint::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_GetDvarFloat:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_getdvarfloat::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_GetDvarVector:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_getdvarvector::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_GetDvarColorRed:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_getdvarcolorred::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_GetDvarColorGreen:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_getdvarcolorgreen::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_GetDvarColorBlue:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_getdvarcolorblue::make(arg->loc(), std::move(arg)));
             break;
         }
         case opcode::OP_GetDvarColorAlpha:
         {
-            auto arg = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto arg = pop_stack_expr();
             stack_.push(expr_getdvarcoloralpha::make(arg->loc(), std::move(arg)));
             break;
         }
@@ -1063,7 +1063,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             auto args = expr_arguments::make(loc);
             auto path = expr_path::make(loc);
             auto name = expr_identifier::make(loc, "getfirstarraykey");
-            auto var = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto var = pop_stack_expr();
             loc = var->loc();
             args->list.push_back(std::move(var));
             stack_.push(expr_call::make(loc, expr_function::make(loc, std::move(path), std::move(name), std::move(args), call::mode::normal)));
@@ -1074,9 +1074,9 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             auto args = expr_arguments::make(loc);
             auto path = expr_path::make(loc);
             auto name = expr_identifier::make(loc, "getnextarraykey");
-            auto var = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto var = pop_stack_expr();
             args->list.push_back(std::move(var));
-            var = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            var = pop_stack_expr();
             loc = var->loc();
             args->list.push_back(std::move(var));
             stack_.push(expr_call::make(loc, expr_function::make(loc, std::move(path), std::move(name), std::move(args), call::mode::normal)));
@@ -1113,14 +1113,14 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             if (stack_.top()->kind() != node::expr_new || inst.data[0] != "__constructor")
             {
                 auto args = expr_arguments::make(loc);
-                auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
-                auto var = std::move(stack_.top()); stack_.pop();
+                auto obj = pop_stack_expr();
+                auto var = pop_stack_node();
                 loc = var->loc();
 
                 while (var->kind() != node::node_prescriptcall)
                 {
                     args->list.push_back(node::as<expr>(std::move(var)));
-                    var = std::move(stack_.top()); stack_.pop();
+                    var = pop_stack_node();
                     loc = var->loc();
                 }
 
@@ -1133,14 +1133,14 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             if (stack_.top()->kind() != node::expr_new)
             {
                 auto args = expr_arguments::make(loc);
-                auto obj = node::as<expr>(std::move(stack_.top())); stack_.pop();
-                auto var = std::move(stack_.top()); stack_.pop();
+                auto obj = pop_stack_expr();
+                auto var = pop_stack_node();
                 loc = var->loc();
 
                 while (var->kind() != node::node_prescriptcall)
                 {
                     args->list.push_back(node::as<expr>(std::move(var)));
-                    var = std::move(stack_.top()); stack_.pop();
+                    var = pop_stack_node();
                     loc = var->loc();
                 }
 
@@ -1184,8 +1184,8 @@ auto decompiler::decompile_expressions(instruction const& inst) -> void
     {
         if (exp == itr->second)
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto jump = std::move(stack_.top()); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto jump = pop_stack_node();
             auto loc = jump->loc();
 
             if (jump->kind() == node::stmt_jmp_true)
@@ -1209,8 +1209,8 @@ auto decompiler::decompile_expressions(instruction const& inst) -> void
     {
         if (tern == itr->second)
         {
-            auto rvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
-            auto lvalue = node::as<expr>(std::move(stack_.top())); stack_.pop();
+            auto rvalue = pop_stack_expr();
+            auto lvalue = pop_stack_expr();
 
             func_->body->block->list.pop_back();
             auto stm = std::move(func_->body->block->list.back());
@@ -1248,7 +1248,7 @@ auto decompiler::decompile_infinites(stmt_list& stm) -> void
     {
         if (stm.list.at(i)->is<stmt_jmp>())
         {
-            if (stm.list.at(i)->loc().begin.line < std::stol(stm.list.at(i)->as<stmt_jmp>().value.substr(4), 0, 16))
+            if (stm.list.at(i)->loc().begin.line < std::stol(stm.list.at(i)->as<stmt_jmp>().value.substr(4), nullptr, 16))
                 continue;
 
             if (stm.list.at(i)->as<stmt_jmp>().value == locs_.cnt)
@@ -1301,7 +1301,7 @@ auto decompiler::decompile_loops(stmt_list& stm) -> void
 
             if (stm.list.at(j)->is<stmt_jmp>())
             {
-                if (stm.list.at(j)->loc().begin.line < std::stol(stm.list.at(j)->as<stmt_jmp>().value.substr(4), 0, 16))
+                if (stm.list.at(j)->loc().begin.line < std::stol(stm.list.at(j)->as<stmt_jmp>().value.substr(4), nullptr, 16))
                     continue;
 
                 if (stm.list.at(i)->loc().label() == stm.list.at(j)->as<stmt_jmp>().value)
@@ -1335,15 +1335,14 @@ auto decompiler::decompile_ifelses(stmt_list& stm) -> void
         if (entry->is<stmt_jmp_cond>())
         {
             auto j = find_location_index(stm, entry->as<stmt_jmp_cond>().value) - 1;
-            auto last_loc = locs_.end;
 
             if (stm.list.at(j)->is<stmt_jmp>())
             {
                 // if block is a loop check break, continue
                 if (stm.list.at(j)->as<stmt_jmp>().value == locs_.cnt)
                 {
-                    //if its a while, continue jumps back
-                    if (stm.list.at(j)->loc().begin.line > std::stol(stm.list.at(j)->as<stmt_jmp>().value.substr(4), 0, 16))
+                    // if its a while, continue jumps back
+                    if (stm.list.at(j)->loc().begin.line > std::stol(stm.list.at(j)->as<stmt_jmp>().value.substr(4), nullptr, 16))
                     {
                         decompile_if(stm, i, j);
                     }
@@ -1397,14 +1396,14 @@ auto decompiler::decompile_ifelses(stmt_list& stm) -> void
                 else
                 {
                     // fix treyarch compiler bug: breaks outside loops or switches
-                    auto out_of_scope = stm.list.at(stm.list.size() - 1)->loc().begin.line < std::stol(stm.list.at(j)->as<stmt_jmp>().value.substr(4), 0, 16);
+                    auto out_of_scope = stm.list.at(stm.list.size() - 1)->loc().begin.line < std::stol(stm.list.at(j)->as<stmt_jmp>().value.substr(4), nullptr, 16);
 
-                    if (locs_.brk == "" && out_of_scope)
+                    if (locs_.brk.empty() && out_of_scope)
                         decompile_if(stm, i, j);
                     else
                         decompile_ifelse(stm, i, j);
 
-                    //decompile_ifelse(stm, i, j);
+                    // decompile_ifelse(stm, i, j);
                 }
             }
             else
@@ -1437,7 +1436,7 @@ auto decompiler::decompile_aborts(stmt_list& stm) -> void
             else
             {
                 // fix treyarch compiler bug: breaks outside loops or switches
-                if (locs_.brk == "")
+                if (locs_.brk.empty())
                 {
                     stm.list.erase(stm.list.begin() + i);
                     stm.list.insert(stm.list.begin() + i, stmt_break::make(loc));
@@ -1856,7 +1855,10 @@ auto decompiler::decompile_switch(stmt_list& stm, usize begin, usize end) -> voi
             auto pos = find_location_index(stm, data[index + 3]);
             auto loc = stm.list[pos]->loc();
             auto exp = (type == switch_type::integer) ? expr::ptr{ expr_integer::make(loc, data[index + 2]) } : expr::ptr{ expr_string::make(loc, data[index + 2]) };
-            while (stm.list[pos]->is<stmt_case>()) pos++;
+
+            while (stm.list[pos]->is<stmt_case>())
+                pos++;
+
             stm.list.insert(stm.list.begin() + pos, stmt_case::make(loc, std::move(exp), stmt_list::make(loc)));
             index += 4;
         }
@@ -1864,13 +1866,16 @@ auto decompiler::decompile_switch(stmt_list& stm, usize begin, usize end) -> voi
         {
             auto pos = find_location_index(stm, data[index + 1]);
             auto loc = stm.list[pos]->loc();
-            while (stm.list[pos]->is<stmt_case>()) pos++;
+
+            while (stm.list[pos]->is<stmt_case>())
+                pos++;
+
             stm.list.insert(stm.list.begin() + pos, stmt_default::make(loc, stmt_list::make(loc)));
             index += 2;
         }
         else
         {
-            decomp_error("malformed endswitch statement");
+            throw decomp_error("malformed endswitch statement");
         }
     }
 
@@ -1901,7 +1906,7 @@ auto decompiler::decompile_switch(stmt_list& stm, usize begin, usize end) -> voi
 
     auto temp = stmt::ptr{ stmt_empty::make(location{}) };
 
-    for (auto i = 0u; i < body->list.size(); )
+    for (auto i = 0u; i < body->list.size();)
     {
         if (body->list[i]->is<stmt_case>() || body->list[i]->is<stmt_default>())
         {
@@ -1928,7 +1933,7 @@ auto decompiler::decompile_switch(stmt_list& stm, usize begin, usize end) -> voi
             }
             else
             {
-                decomp_error("missing case or default before stmt inside a switch");
+                throw decomp_error("missing case or default before stmt inside a switch");
             }
         }
     }
@@ -1964,7 +1969,7 @@ auto decompiler::find_location_reference(stmt_list const& stm, usize begin, usiz
     return false;
 }
 
-auto decompiler::find_location_index(stmt_list const& stm, std::string const& loc) -> usize
+auto decompiler::find_location_index(stmt_list const& stm, std::string const& loc) const -> usize
 {
     auto index = 0u;
 
@@ -1989,8 +1994,8 @@ auto decompiler::last_location_index(stmt_list const& stm, usize index) -> bool
 
 auto decompiler::lvalues_match(stmt_expr const& stm1, stmt_expr const& stm2) -> bool
 {
-    expr* lvalue1 {};
-    expr* lvalue2 {};
+    expr* lvalue1{};
+    expr* lvalue2{};
 
     switch (stm1.value->kind())
     {
@@ -2022,10 +2027,7 @@ auto decompiler::lvalues_match(stmt_expr const& stm1, stmt_expr const& stm2) -> 
             break;
     }
 
-    if (lvalue1 && lvalue2 && *lvalue1 == *lvalue2)
-        return true;
-
-    return false;
+    return lvalue1 && lvalue2 && *lvalue1 == *lvalue2;
 }
 
 auto decompiler::resolve_label(std::string const& name) const -> usize
@@ -2715,6 +2717,18 @@ auto decompiler::process_expr_identifier(expr_identifier& exp) -> void
 {
     auto const it = vars_.find(exp.value);
     if (it != vars_.end()) vars_.erase(it);
+}
+
+auto decompiler::pop_stack_node() -> node::ptr
+{
+    auto value = std::move(stack_.top());
+    stack_.pop();
+    return value;
+}
+
+auto decompiler::pop_stack_expr() -> expr::ptr
+{
+    return node::as<expr>(pop_stack_node());
 }
 
 } // namespace xsk::arc

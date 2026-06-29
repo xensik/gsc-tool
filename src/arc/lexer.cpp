@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -11,7 +11,7 @@
 namespace xsk::arc
 {
 
-lexer::lexer(context const* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, reader_{ data, size }, loc_{ &name }, buflen_{ 0 }, spacing_{ spacing::null }, indev_{ false }
+lexer::lexer(context const* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, reader_{ data, size }, loc_{ &name }
 {
 }
 
@@ -145,7 +145,7 @@ auto lexer::lex() -> token
                             loc_.lines();
                             loc_.step();
                         }
-                        else if (last  == '*' && curr == '/' && !first)
+                        else if (last == '*' && curr == '/' && !first)
                         {
                             advance();
                             break;
@@ -339,7 +339,7 @@ auto lexer::lex() -> token
                 throw comp_error(loc_, std::format("bad token: '{}'", last));
         }
 
-lex_string:
+    lex_string:
         while (true)
         {
             if (reader_.ended())
@@ -381,11 +381,11 @@ lex_string:
         }
 
         if (localize)
-            return token{ token::ISTRING, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
+            return token{ token::ISTRING, spacing_, loc_, std::string{ buffer_.data(), buflen_ } };
 
-        return token{ token::STRING, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
+        return token{ token::STRING, spacing_, loc_, std::string{ buffer_.data(), buflen_ } };
 
-lex_name:
+    lex_name:
         push(last);
 
         while (true)
@@ -415,12 +415,12 @@ lex_name:
             if (buffer_[buflen_ - 1] == '/')
                 throw comp_error(loc_, "invalid path end '\\'");
 
-            return token{ token::PATH, spacing_, loc_, ctx_->make_token(std::string_view{ &buffer_[0], buflen_ }) };
+            return token{ token::PATH, spacing_, loc_, ctx_->make_token(std::string_view{ buffer_.data(), buflen_ }) };
         }
 
-        return token{ token::NAME, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
+        return token{ token::NAME, spacing_, loc_, std::string{ buffer_.data(), buflen_ } };
 
-lex_number:
+    lex_number:
         if (last == '.' || last != '0' || (last == '0' && (curr != 'o' && curr != 'b' && curr != 'x')))
         {
             push(last);
@@ -481,9 +481,9 @@ lex_number:
 
             // TODO: exp can be int or float
             if (dot || flt || exp)
-                return token{ token::FLT, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
+                return token{ token::FLT, spacing_, loc_, std::string{ buffer_.data(), buflen_ } };
 
-            return token{ token::INT, spacing_, loc_, std::string{ &buffer_[0], buflen_ } };
+            return token{ token::INT, spacing_, loc_, std::string{ buffer_.data(), buflen_ } };
         }
         else if (curr == 'o')
         {
@@ -515,7 +515,7 @@ lex_number:
 
             push('\0');
 
-            return token{ token::INT, spacing_, loc_, utils::string::oct_to_dec(&buffer_[0]) };
+            return token{ token::INT, spacing_, loc_, utils::string::oct_to_dec(buffer_.data()) };
         }
         else if (curr == 'b')
         {
@@ -549,7 +549,7 @@ lex_number:
 
             push('\0');
 
-            return token{ token::INT, spacing_, loc_, utils::string::bin_to_dec(&buffer_[0]) };
+            return token{ token::INT, spacing_, loc_, utils::string::bin_to_dec(buffer_.data()) };
         }
         else if (curr == 'x')
         {
@@ -583,7 +583,7 @@ lex_number:
 
             push('\0');
 
-            return token{ token::INT, spacing_, loc_, utils::string::hex_to_dec(&buffer_[0]) };
+            return token{ token::INT, spacing_, loc_, utils::string::hex_to_dec(buffer_.data()) };
         }
 
         throw error("UNEXPECTED LEXER INTERNAL ERROR");

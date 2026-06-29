@@ -1,0 +1,54 @@
+---
+# set inicial conservador. Ampliar (modernize-*, cppcoreguidelines-*)
+# cuando la primera pasada esté limpia.
+Checks: >
+  -*,
+  bugprone-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -bugprone-branch-clone,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-narrowing-conversions,
+  -cppcoreguidelines-avoid-c-arrays,
+  -cppcoreguidelines-avoid-do-while,
+  -cppcoreguidelines-avoid-goto,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-macro-to-enum,
+  -cppcoreguidelines-macro-usage,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-type-static-cast-downcast,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-narrowing-conversions,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -modernize-avoid-c-arrays,
+  -modernize-loop-convert,
+  -modernize-make-unique,
+  -modernize-pass-by-value,
+  -modernize-use-nodiscard,
+  -modernize-use-ranges,
+  -performance-enum-size,
+  -readability-avoid-nested-conditional-operator,
+  -readability-avoid-return-with-void-value,
+  -readability-braces-around-statements,
+  -readability-convert-member-functions-to-static,
+  -readability-function-cognitive-complexity,
+  -readability-function-size,
+  -readability-identifier-length,
+  -readability-implicit-bool-conversion,
+  -readability-magic-numbers,
+  -readability-uppercase-literal-suffix,
+  -readability-else-after-return
+
+HeaderFilterRegex: '.*/(include|src|test)/.*'
+ExcludeHeaderFilterRegex: '.*/(deps|engine)/.*'
+WarningsAsErrors: ''
+FormatStyle: file
+
+CheckOptions:
+  # DeMorgan sobre los rangos de char del lexer los hace menos legibles:
+  # `!(c > 47 && c < 58)` ("no es dígito") > `c <= 47 || c >= 58`.
+  readability-simplify-boolean-expr.SimplifyDeMorgan: false

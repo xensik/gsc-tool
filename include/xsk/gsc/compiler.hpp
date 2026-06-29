@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -23,13 +23,13 @@ private:
     std::vector<scope*> break_blks_;
     std::vector<scope*> continue_blks_;
     std::string animname_;
-    sourcepos debug_pos_;
-    usize index_;
-    usize label_idx_;
-    bool can_break_;
-    bool can_continue_;
-    bool developer_thread_;
-    bool animload_;
+    sourcepos debug_pos_{};
+    usize index_{};
+    usize label_idx_{};
+    bool can_break_{};
+    bool can_continue_{};
+    bool developer_thread_{};
+    bool animload_{};
 
 public:
     explicit compiler(context* ctx);
@@ -148,7 +148,7 @@ private:
     auto resolve_function_type(expr_function const& exp, std::string& path) -> call::type;
     auto resolve_reference_type(expr_reference const& exp, std::string& path, bool& method) -> call::type;
     auto is_constant_condition(expr const& exp) -> bool;
-    auto insert_label(std::string const& label) -> void;
+    auto insert_label(std::string const& name) -> void;
     auto create_label() -> std::string;
     auto insert_label() -> std::string;
 };

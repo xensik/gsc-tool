@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -25,8 +25,8 @@ private:
     std::stack<node::ptr> stack_;
     std::string namespace_;
     locjmp locs_;
-    bool in_waittill_;
-    bool retbool_;
+    bool in_waittill_{};
+    bool retbool_{};
 
 public:
     explicit decompiler(context const* ctx);
@@ -53,7 +53,7 @@ private:
     auto decompile_foreach(stmt_list& stm, usize begin, usize end) -> void;
     auto decompile_switch(stmt_list& stm, usize begin, usize end) -> void;
     auto find_location_reference(stmt_list const& stm, usize begin, usize end, std::string const& loc) -> bool;
-    auto find_location_index(stmt_list const& stm, std::string const& loc) -> usize;
+    auto find_location_index(stmt_list const& stm, std::string const& loc) const -> usize;
     auto last_location_index(stmt_list const& stm, usize index) -> bool;
     auto lvalues_match(stmt_expr const& stm1, stmt_expr const& stm2) -> bool;
     auto resolve_label(std::string const& name) const -> usize;
@@ -102,6 +102,8 @@ private:
     auto process_expr_size(expr_size& exp) -> void;
     auto process_expr_vector(expr_vector& exp) -> void;
     auto process_expr_identifier(expr_identifier& exp) -> void;
+    auto pop_stack_node() -> node::ptr;
+    auto pop_stack_expr() -> expr::ptr;
 };
 
 } // namespace xsk::arc

@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -171,12 +171,12 @@ auto printer::print_decl(decl const& dec) -> void
     }
 }
 
-auto printer::print_decl_dev_begin(decl_dev_begin const&) -> void
+auto printer::print_decl_dev_begin(decl_dev_begin const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "/#");
 }
 
-auto printer::print_decl_dev_end(decl_dev_end const&) -> void
+auto printer::print_decl_dev_end(decl_dev_end const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "#/");
 }
@@ -207,7 +207,7 @@ auto printer::print_decl_function(decl_function const& dec) -> void
     std::format_to(std::back_inserter(buf_), "\n");
 }
 
-auto printer::print_decl_empty(decl_empty const&) -> void
+auto printer::print_decl_empty(decl_empty const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), ";");
 }
@@ -332,7 +332,7 @@ auto printer::print_stmt(stmt const& stm) -> void
     }
 }
 
-auto printer::print_stmt_empty(stmt_empty const&) -> void
+auto printer::print_stmt_empty(stmt_empty const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), ";");
 }
@@ -360,10 +360,7 @@ auto printer::print_stmt_list(stmt_list const& stm) -> void
         if (&entry != &stm.list.back())
             std::format_to(std::back_inserter(buf_), "\n");
 
-        if (entry->is_special_stmt())
-            last_special = true;
-        else
-            last_special = false;
+        last_special = entry->is_special_stmt();
     }
 
     indent_ -= 4;
@@ -498,12 +495,12 @@ auto printer::print_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void
     std::format_to(std::back_inserter(buf_), ");");
 }
 
-auto printer::print_stmt_waittillframeend(stmt_waittillframeend const&) -> void
+auto printer::print_stmt_waittillframeend(stmt_waittillframeend const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "waittillframeend;");
 }
 
-auto printer::print_stmt_waitframe(stmt_waitframe const&) -> void
+auto printer::print_stmt_waitframe(stmt_waitframe const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "waitframe();");
 }
@@ -554,7 +551,7 @@ auto printer::print_stmt_ifelse(stmt_ifelse const& stm) -> void
     }
     else
     {
-        if (stm.stmt_else->is<stmt_if>() || stm.stmt_else ->is<stmt_ifelse>())
+        if (stm.stmt_else->is<stmt_if>() || stm.stmt_else->is<stmt_ifelse>())
         {
             std::format_to(std::back_inserter(buf_), " ");
             print_stmt(*stm.stmt_else);
@@ -715,12 +712,12 @@ auto printer::print_stmt_default(stmt_default const& stm) -> void
     }
 }
 
-auto printer::print_stmt_break(stmt_break const&) -> void
+auto printer::print_stmt_break(stmt_break const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "break;");
 }
 
-auto printer::print_stmt_continue(stmt_continue const&) -> void
+auto printer::print_stmt_continue(stmt_continue const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "continue;");
 }
@@ -739,7 +736,7 @@ auto printer::print_stmt_return(stmt_return const& stm) -> void
     }
 }
 
-auto printer::print_stmt_breakpoint(stmt_breakpoint const&) -> void
+auto printer::print_stmt_breakpoint(stmt_breakpoint const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "breakpoint;");
 }
@@ -824,7 +821,7 @@ auto printer::print_stmt_jmp_switch(stmt_jmp_switch const& stm) -> void
     std::format_to(std::back_inserter(buf_), "__asm_switch( {} )", stm.value);
 }
 
-auto printer::print_stmt_jmp_endswitch(stmt_jmp_endswitch const&) -> void
+auto printer::print_stmt_jmp_endswitch(stmt_jmp_endswitch const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "__asm_endswitch()");
 }
@@ -1156,7 +1153,7 @@ auto printer::print_expr_function(expr_function const& exp) -> void
     else if (exp.mode == call::mode::childthread)
         std::format_to(std::back_inserter(buf_), "childthread ");
 
-    if (exp.path->value != "")
+    if (!exp.path->value.empty())
     {
         print_expr_path(*exp.path);
         std::format_to(std::back_inserter(buf_), "::");
@@ -1283,37 +1280,37 @@ auto printer::print_expr_paren(expr_paren const& exp) -> void
     std::format_to(std::back_inserter(buf_), " )");
 }
 
-auto printer::print_expr_thisthread(expr_thisthread const&) -> void
+auto printer::print_expr_thisthread(expr_thisthread const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "thisthread");
 }
 
-auto printer::print_expr_empty_array(expr_empty_array const&) -> void
+auto printer::print_expr_empty_array(expr_empty_array const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "[]");
 }
 
-auto printer::print_expr_undefined(expr_undefined const&) -> void
+auto printer::print_expr_undefined(expr_undefined const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "undefined");
 }
 
-auto printer::print_expr_game(expr_game const&) -> void
+auto printer::print_expr_game(expr_game const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "game");
 }
 
-auto printer::print_expr_self(expr_self const&) -> void
+auto printer::print_expr_self(expr_self const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "self");
 }
 
-auto printer::print_expr_anim(expr_anim const&) -> void
+auto printer::print_expr_anim(expr_anim const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "anim");
 }
 
-auto printer::print_expr_level(expr_level const&) -> void
+auto printer::print_expr_level(expr_level const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "level");
 }
@@ -1323,7 +1320,7 @@ auto printer::print_expr_animation(expr_animation const& exp) -> void
     std::format_to(std::back_inserter(buf_), "%{}", exp.value);
 }
 
-auto printer::print_expr_animtree(expr_animtree const&) -> void
+auto printer::print_expr_animtree(expr_animtree const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "#animtree");
 }
@@ -1369,12 +1366,12 @@ auto printer::print_expr_integer(expr_integer const& exp) -> void
     std::format_to(std::back_inserter(buf_), "{}", exp.value);
 }
 
-auto printer::print_expr_false(expr_false const&) -> void
+auto printer::print_expr_false(expr_false const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "false");
 }
 
-auto printer::print_expr_true(expr_true const&) -> void
+auto printer::print_expr_true(expr_true const& /*unused*/) -> void
 {
     std::format_to(std::back_inserter(buf_), "true");
 }

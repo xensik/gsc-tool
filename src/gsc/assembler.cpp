@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -503,7 +503,7 @@ auto assembler::assemble_switch_table(instruction const& inst) -> void
             if (type == switch_type::integer)
             {
                 if (ctx_->engine() == engine::iw9)
-                    script_.write<u32>(std::stoi(inst.data[1 + (4 * i) + 2])); //signed?
+                    script_.write<u32>(std::stoi(inst.data[1 + (4 * i) + 2])); // signed?
                 else
                     script_.write<u32>((std::stoi(inst.data[1 + (4 * i) + 2]) & 0xFFFFFF) + 0x800000);
             }
@@ -558,7 +558,7 @@ auto assembler::assemble_switch_table(instruction const& inst) -> void
 
 auto assembler::assemble_offset(i32 offs) -> void
 {
-    script_.write_i24((offs << ((ctx_->features() & feature::offs8) ? 8 : (ctx_->features() & feature::offs9) ? 9 : 10)) >> 8);
+    script_.write_i24((offs << ((ctx_->features() & feature::offs8) ? 8 : ((ctx_->features() & feature::offs9) ? 9 : 10))) >> 8);
 }
 
 auto assembler::resolve_function(std::string const& name) const -> usize
@@ -600,7 +600,7 @@ auto assembler::encrypt_string(std::string const& str) -> std::string
 
     for (auto i = 8u; i < str.size(); i += 2)
     {
-        data += static_cast<char>(std::stoul(str.substr(i, 2), 0, 16));
+        data += static_cast<char>(std::stoul(str.substr(i, 2), nullptr, 16));
     }
 
     return data;

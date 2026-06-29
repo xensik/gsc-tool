@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -15,8 +15,8 @@ struct assembler
 {
 private:
     context const* ctx_;
-    function const* func_;
-    assembly const* assembly_;
+    function const* func_{};
+    assembly const* assembly_{};
     utils::writer script_;
     utils::writer devmap_;
     std::unordered_map<std::string, u16> strpool_;
@@ -24,7 +24,7 @@ private:
     std::vector<import_ref> imports_;
     std::vector<string_ref> strings_;
     std::vector<animtree_ref> anims_;
-    u32 devmap_count_;
+    u32 devmap_count_{};
 
 public:
     explicit assembler(context const* ctx);

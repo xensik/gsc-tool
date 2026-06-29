@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -35,9 +35,9 @@ enum class build : u8
     dev        = dev_blocks | dev_maps,
 };
 
-inline build operator&(build lhs, build rhs)
+inline auto operator&(build lhs, build rhs) -> build
 {
-    return static_cast<build>(static_cast<std::underlying_type<build>::type>(lhs) & static_cast<std::underlying_type<build>::type>(rhs));
+    return static_cast<build>(static_cast<std::underlying_type_t<build>>(lhs) & static_cast<std::underlying_type_t<build>>(rhs));
 }
 
 enum class endian : u8
@@ -89,17 +89,17 @@ struct feature
     feature(values value) : value_(value) {}
     operator values() { return value_; }
     operator bool() { return value_ != values::none; }
-    feature::values operator|(feature::values rhs) const { return static_cast<feature::values>(value_ | rhs); }
-    feature::values operator&(feature::values rhs) const { return static_cast<feature::values>(value_ & rhs); }
+    auto operator|(feature::values rhs) const -> feature::values { return (value_ | rhs); }
+    auto operator&(feature::values rhs) const -> feature::values { return (value_ & rhs); }
 
-    friend feature::values operator|(feature::values lhs, feature::values rhs)
+    friend auto operator|(feature::values lhs, feature::values rhs) -> feature::values
     {
-        return static_cast<feature::values>(static_cast<std::underlying_type<feature::values>::type>(lhs) | static_cast<std::underlying_type<feature::values>::type>(rhs));
+        return static_cast<feature::values>(static_cast<std::underlying_type_t<feature::values>>(lhs) | static_cast<std::underlying_type_t<feature::values>>(rhs));
     }
 
-    friend feature::values operator&(feature::values lhs, feature::values rhs)
+    friend auto operator&(feature::values lhs, feature::values rhs) -> feature::values
     {
-        return static_cast<feature::values>(static_cast<std::underlying_type<feature::values>::type>(lhs) & static_cast<std::underlying_type<feature::values>::type>(rhs));
+        return static_cast<feature::values>(static_cast<std::underlying_type_t<feature::values>>(lhs) & static_cast<std::underlying_type_t<feature::values>>(rhs));
     }
 
 private:
@@ -118,8 +118,8 @@ struct locjmp
     std::string end;
     std::string cnt;
     std::string brk;
-    bool is_dev;
-    bool is_switch;
+    bool is_dev{};
+    bool is_switch{};
 };
 
 // fordward decl for modules ref

@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -137,7 +137,7 @@ std::unordered_map<std::string_view, inst> const insts =
     { "client", inst::client },
 };
 
-auto operator |=(result& lhs, result rhs) -> void
+auto operator|=(result& lhs, result rhs) -> void
 {
     lhs = static_cast<result>(static_cast<i32>(lhs) | static_cast<i32>(rhs));
 }
@@ -175,7 +175,7 @@ std::map<game, std::map<mach, std::unique_ptr<context>>> contexts;
 std::map<mode, std::function<result(game game, mach mach, fs::path file, fs::path rel)>> funcs;
 bool zonetool = false;
 
-auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
+auto assemble_file(game game, mach mach, const fs::path& file, fs::path rel) -> result
 {
     try
     {
@@ -185,7 +185,7 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
         auto outasm = contexts[game][mach]->parser().parse_assembly(data);
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
-        if (true/*overwrite_prompt(file + (zonetool ? ".cgsc" : ".gscbin"))*/)
+        if (true /*overwrite_prompt(file + (zonetool ? ".cgsc" : ".gscbin"))*/)
         {
             if (zonetool)
             {
@@ -233,7 +233,7 @@ auto assemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
     }
 }
 
-auto disassemble_file(game game, mach mach, fs::path file, fs::path rel) -> result
+auto disassemble_file(game game, mach mach, const fs::path& file, fs::path rel) -> result
 {
     try
     {
@@ -280,7 +280,7 @@ auto disassemble_file(game game, mach mach, fs::path file, fs::path rel) -> resu
     }
 }
 
-auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
+auto compile_file(game game, mach mach, const fs::path& file, fs::path rel) -> result
 {
     try
     {
@@ -290,7 +290,7 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
         auto outasm = contexts[game][mach]->compiler().compile(file.string(), data);
         auto outbin = contexts[game][mach]->assembler().assemble(*outasm);
 
-        if (true/*overwrite_prompt(file + (zonetool ? ".cgsc" : ".gscbin"))*/)
+        if (true /*overwrite_prompt(file + (zonetool ? ".cgsc" : ".gscbin"))*/)
         {
             if (zonetool)
             {
@@ -346,7 +346,7 @@ auto compile_file(game game, mach mach, fs::path file, fs::path rel) -> result
     }
 }
 
-auto decompile_file(game game, mach mach, fs::path file, fs::path rel) -> result
+auto decompile_file(game game, mach mach, const fs::path& file, fs::path rel) -> result
 {
     try
     {
@@ -394,7 +394,7 @@ auto decompile_file(game game, mach mach, fs::path file, fs::path rel) -> result
     }
 }
 
-auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
+auto parse_file(game game, mach mach, const fs::path& file, fs::path rel) -> result
 {
     try
     {
@@ -487,9 +487,9 @@ auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, s
 {
     auto path = workdir / fs::path{ name };
 
-    auto bin_ext = ".gscbin";
-    auto gsc_ext = ".gsc";
-    auto gsh_ext = ".gsh";
+    const auto* bin_ext = ".gscbin";
+    const auto* gsc_ext = ".gsc";
+    const auto* gsh_ext = ".gsh";
 
     if (ctx->instance() == gsc::instance::client)
     {
@@ -520,16 +520,16 @@ auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, s
         asset s;
         s.deserialize(data);
         auto stk = utils::zlib::decompress(s.buffer, s.length);
-        auto res = files.insert({ path.filename().string(), std::move(s.bytecode)});
+        auto res = files.insert({ path.filename().string(), std::move(s.bytecode) });
 
         if (res.second)
         {
-            return { {res.first->second.data(), res.first->second.size() }, std::move(stk) };
+            return { { res.first->second.data(), res.first->second.size() }, stk };
         }
     }
     else
     {
-        return { {}, std::move(data) };
+        return { {}, data };
     }
 
     throw std::runtime_error("file read error");
@@ -771,7 +771,7 @@ auto init(game game, mach mach, inst inst, bool dev) -> void
     }
 }
 
-} // namespace xsk::gsc
+} // namespace gsc
 
 namespace arc
 {
@@ -791,7 +791,7 @@ auto assemble_file(game game, mach mach, fs::path const& file, fs::path rel) -> 
 
         auto data = utils::file::read(file);
 
-        if (data.size() >= 4 && !std::memcmp(&data[0], "\x80GSC", 4))
+        if (data.size() >= 4 && !std::memcmp(data.data(), "\x80GSC", 4))
         {
             std::cerr << std::format("{} at {}\n", "already assembled", file.generic_string());
             return result::success;
@@ -850,7 +850,7 @@ auto compile_file(game game, mach mach, fs::path const& file, fs::path rel) -> r
 
         auto data = utils::file::read(file);
 
-        if (data.size() >= 4 && !std::memcmp(&data[0], "\x80GSC", 4))
+        if (data.size() >= 4 && !std::memcmp(data.data(), "\x80GSC", 4))
         {
             std::cerr << std::format("{} at {}\n", "already compiled", file.generic_string());
             return result::success;
@@ -909,7 +909,7 @@ auto decompile_file(game game, mach mach, fs::path const& file, fs::path rel) ->
     }
 }
 
-auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
+auto parse_file(game game, mach mach, const fs::path& file, fs::path rel) -> result
 {
     try
     {
@@ -920,7 +920,7 @@ auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
 
         auto data = utils::file::read(file);
 
-        if (data.size() >= 4 && !std::memcmp(&data[0], "\x80GSC", 4))
+        if (data.size() >= 4 && !std::memcmp(data.data(), "\x80GSC", 4))
         {
             std::cerr << std::format("{} at {}\n", "already compiled", file.generic_string());
             return result::success;
@@ -941,7 +941,7 @@ auto parse_file(game game, mach mach, fs::path file, fs::path rel) -> result
     }
 }
 
-auto rename_file(game, mach, fs::path const&, fs::path) -> result
+auto rename_file(game /*unused*/, mach /*unused*/, fs::path const& /*unused*/, const fs::path& /*unused*/) -> result
 {
     std::cerr << std::format("not implemented for treyarch\n");
     return result::failure;
@@ -1088,7 +1088,7 @@ auto init(game game, mach mach, inst inst, bool dev) -> void
     }
 }
 
-} // namespace xsk::arc
+} // namespace arc
 
 auto extension_match(fs::path const& ext, mode mode, game game) -> bool
 {
@@ -1253,7 +1253,7 @@ auto main(u32 argc, char** argv) -> result
 
         if (argc == 1 || result.count("help"))
         {
-            std::cout << options.help() << std::endl;
+            std::cout << options.help() << '\n';
             return result::success;
         }
 
@@ -1263,7 +1263,7 @@ auto main(u32 argc, char** argv) -> result
             return result::success;
         }
 
-        if(!result.count("mode"))
+        if (!result.count("mode"))
         {
             std::cerr << "[ERROR] missing required argument <mode>\n";
             return result::failure;
@@ -1303,7 +1303,7 @@ auto main(u32 argc, char** argv) -> result
         arc::t6fixup = result["t6fixup"].as<bool>();
         dry_run = result["dry"].as<bool>();
 
-        if(!parse_mode(mode_arg, mode))
+        if (!parse_mode(mode_arg, mode))
         {
             std::cerr << "[ERROR] unknown mode '" << mode_arg << "'\n";
             return result::failure;
@@ -1340,14 +1340,22 @@ auto main(u32 argc, char** argv) -> result
     }
     catch (std::exception const& e)
     {
-        std::cerr << "[ERROR] " << e.what() << std::endl;
+        std::cerr << "[ERROR] " << e.what() << '\n';
         return result::failure;
     }
 }
 
 } // namespace xsk
 
-int main(int argc, char** argv)
+auto main(int argc, char** argv) -> int
 {
-    return static_cast<int>(xsk::main(argc, argv));
+    try
+    {
+        return static_cast<int>(xsk::main(argc, argv));
+    }
+    catch (...)
+    {
+        std::cerr << "[ERROR] unhandled exception\n";
+        return 1;
+    }
 }

@@ -1,0 +1,83 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+IndentCaseLabels: true
+IndentAccessModifiers: false
+AccessModifierOffset: -4
+NamespaceIndentation: None
+IndentPPDirectives: None
+LambdaBodyIndentation: Signature
+
+# Braces (Allman style)
+BreakBeforeBraces: Custom
+InsertBraces: false
+
+# Line width
+ColumnLimit: 0
+
+# Spaces
+Cpp11BracedListStyle: false
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeCaseColon: false
+SpaceInEmptyBlock: false
+SpacesInParens: Never
+SpacesInAngles: Never
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+
+# Alignment
+PointerAlignment: Left
+ReferenceAlignment: Left
+AlignAfterOpenBracket: Align
+AlignOperands: Align
+AlignTrailingComments: true
+
+# Includes
+SortIncludes: Never
+
+# Breaking and wrapping
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: All
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortEnumsOnASingleLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllArgumentsOnNextLine: true
+BinPackArguments: true
+BinPackParameters: true
+BreakBeforeTernaryOperators: true
+AlwaysBreakTemplateDeclarations: Yes
+
+# Other
+FixNamespaceComments: true
+MaxEmptyLinesToKeep: 1
+EmptyLineBeforeAccessModifier: Always
+EmptyLineAfterAccessModifier: Never
+InsertNewlineAtEOF: true
+SpaceAfterTemplateKeyword: true
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true

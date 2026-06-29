@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -20,7 +20,7 @@ private:
     std::vector<std::string> expr_labels_;
     std::vector<std::string> tern_labels_;
     std::stack<node::ptr> stack_;
-    bool in_waittill_;
+    bool in_waittill_{};
     locjmp locs_;
 
 public:
@@ -48,7 +48,7 @@ private:
     auto decompile_foreach(stmt_list& stm, usize begin, usize end) -> void;
     auto decompile_switch(stmt_list& stm, usize begin, usize end) -> void;
     auto find_location_reference(stmt_list const& stm, usize begin, usize end, std::string const& loc) -> bool;
-    auto find_location_index(stmt_list const& stm, std::string const& loc) -> usize;
+    auto find_location_index(stmt_list const& stm, std::string const& loc) const -> usize;
     auto last_location_index(stmt_list const& stm, usize index) -> bool;
     auto process_function(decl_function& func) -> void;
     auto process_stmt(stmt& stm, scope& scp) -> void;
@@ -96,6 +96,8 @@ private:
     auto process_expr_vector(expr_vector& exp, scope& scp) -> void;
     auto process_expr_var_create(expr::ptr& exp, scope& scp) -> void;
     auto process_expr_var_access(expr::ptr& exp, scope& scp) -> void;
+    auto pop_stack_node() -> node::ptr;
+    auto pop_stack_expr() -> expr::ptr;
 };
 
 } // namespace xsk::gsc

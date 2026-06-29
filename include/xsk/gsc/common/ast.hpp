@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -111,6 +111,10 @@ struct node
         program,
     };
 
+    node(node const&) = delete;
+    node(node&&) = delete;
+    auto operator=(node const&) -> node& = delete;
+    auto operator=(node&&) -> node& = delete;
     virtual ~node() = default;
 
     auto kind() const -> type { return kind_; }
@@ -125,8 +129,8 @@ struct node
 
     virtual auto precedence() -> u8;
 
-    template<typename T>
-    static auto as(node::ptr) -> std::unique_ptr<T>;
+    template <typename T>
+    static auto as(node::ptr /*unused*/) -> std::unique_ptr<T>;
 
 protected:
     node(type t) : kind_(t) {}
@@ -141,17 +145,15 @@ struct expr : node
 {
     using ptr = std::unique_ptr<expr>;
 
-    virtual ~expr() = default;
-
     friend auto operator==(expr const& lhs, expr const& rhs) -> bool;
 
-    template<typename T>
+    template <typename T>
     auto is() const -> bool;
 
-    template<typename T>
+    template <typename T>
     auto as() const -> T const&;
 
-    template<typename T>
+    template <typename T>
     auto as() -> T&;
 
 protected:
@@ -166,15 +168,13 @@ struct call : expr
     enum class type { local, far, builtin };
     enum class mode { normal, thread, childthread, builtin };
 
-    virtual ~call() = default;
-
-    template<typename T>
+    template <typename T>
     auto is() const -> bool;
 
-    template<typename T>
+    template <typename T>
     auto as() const -> T const&;
 
-    template<typename T>
+    template <typename T>
     auto as() -> T&;
 
 protected:
@@ -186,15 +186,13 @@ struct stmt : node
 {
     using ptr = std::unique_ptr<stmt>;
 
-    virtual ~stmt() = default;
-
-    template<typename T>
+    template <typename T>
     auto is() const -> bool;
 
-    template<typename T>
+    template <typename T>
     auto as() const -> T const&;
 
-    template<typename T>
+    template <typename T>
     auto as() -> T&;
 
 protected:
@@ -206,15 +204,13 @@ struct decl : node
 {
     using ptr = std::unique_ptr<decl>;
 
-    virtual ~decl() = default;
-
-    template<typename T>
+    template <typename T>
     auto is() const -> bool;
 
-    template<typename T>
+    template <typename T>
     auto as() const -> T const&;
 
-    template<typename T>
+    template <typename T>
     auto as() -> T&;
 
 protected:
@@ -222,12 +218,12 @@ protected:
     decl(type t, location const& loc);
 };
 
-#define XSK_GSC_AST_MAKE(node_type)                                                 \
-template<class... Args>                                                             \
-inline static auto make(Args&&... args) -> std::unique_ptr<node_type>               \
-{                                                                                   \
-    return std::unique_ptr<node_type>(new node_type(std::forward<Args>(args)...));  \
-}
+#define XSK_GSC_AST_MAKE(node_type)                                                    \
+    template <class... Args>                                                            \
+    inline static auto make(Args&&... args) -> std::unique_ptr<node_type>              \
+    {                                                                                  \
+        return std::unique_ptr<node_type>(new node_type(std::forward<Args>(args)...)); \
+    }
 
 struct node_prescriptcall : public node
 {
@@ -278,7 +274,7 @@ struct expr_integer : public expr
 
     std::string value;
 
-    expr_integer(location const& loc, std::string const& value);
+    expr_integer(location const& loc, std::string value);
     friend auto operator==(expr_integer const& lhs, expr_integer const& rhs) -> bool;
     XSK_GSC_AST_MAKE(expr_integer)
 };
@@ -289,7 +285,7 @@ struct expr_float : public expr
 
     std::string value;
 
-    expr_float(location const& loc, std::string const& value);
+    expr_float(location const& loc, std::string value);
     friend auto operator==(expr_float const& lhs, expr_float const& rhs) -> bool;
     XSK_GSC_AST_MAKE(expr_float)
 };
@@ -324,7 +320,7 @@ struct expr_istring : public expr
 
     std::string value;
 
-    expr_istring(location const& loc, std::string const& value);
+    expr_istring(location const& loc, std::string value);
     friend auto operator==(expr_istring const& lhs, expr_istring const& rhs) -> bool;
     XSK_GSC_AST_MAKE(expr_istring)
 };
@@ -641,7 +637,7 @@ struct expr_binary : public expr
 
     expr_binary(location const& loc, expr::ptr lvalue, expr::ptr rvalue, op oper);
     XSK_GSC_AST_MAKE(expr_binary)
-    auto precedence() -> u8;
+    auto precedence() -> u8 override;
 };
 
 struct expr_ternary : public expr
@@ -814,7 +810,7 @@ struct stmt_waittillmatch : public stmt
     expr::ptr event;
     expr_arguments::ptr args;
 
-    stmt_waittillmatch(location const& loc, expr::ptr obj, expr::ptr expr, expr_arguments::ptr args);
+    stmt_waittillmatch(location const& loc, expr::ptr obj, expr::ptr event, expr_arguments::ptr args);
     XSK_GSC_AST_MAKE(stmt_waittillmatch)
 };
 

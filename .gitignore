@@ -161,3 +161,4 @@ data/*
 
 # Version file
 include/xsk/version.hpp
+compile_commands.json
