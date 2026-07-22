@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -38,8 +38,8 @@ auto disassembler::disassemble(u8 const* script, usize script_size, u8 const* st
         func_ = function::make();
         func_->index = script_.pos();
         func_->size = stack_.read<u32>();
-        func_->id = (ctx_->features() & feature::hash) ? 0 : (ctx_->features() & feature::tok4) ? stack_.read<u32>() : stack_.read<u16>();
-        func_->name = (ctx_->features() & feature::hash) ? ctx_->hash_name(stack_.read<u64>()) : func_->id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(func_->id);
+        func_->id = (ctx_->features() & feature::hash) ? 0 : ((ctx_->features() & feature::tok4) ? stack_.read<u32>() : stack_.read<u16>());
+        func_->name = (ctx_->features() & feature::hash) ? ctx_->hash_name(stack_.read<u64>()) : (func_->id == 0 ? decrypt_string(stack_.read_cstr()) : ctx_->token_name(func_->id));
 
         dissasemble_function(*func_);
 
@@ -457,7 +457,7 @@ auto disassembler::disassemble_call_builtin_v2(instruction& inst, bool method, b
 
 auto disassembler::disassemble_jump(instruction& inst, bool expr, bool back) -> void
 {
-    auto addr = inst.index + (expr ? 3 + script_.read<i16>() : back ? 3 - script_.read<u16>() : 5 + script_.read<i32>());
+    auto addr = inst.index + (expr ? 3 + script_.read<i16>() : (back ? 3 - script_.read<u16>() : 5 + script_.read<i32>()));
     auto label = std::format("loc_{:X}", addr);
 
     inst.data.emplace_back(label);
@@ -497,13 +497,13 @@ auto disassembler::disassemble_switch_table(instruction& inst) -> void
             }
             else if (type == 1)
             {
-                inst.data.push_back("case");
+                inst.data.emplace_back("case");
                 inst.data.push_back(std::format("{}", static_cast<int>(switch_type::integer)));
                 inst.data.push_back(std::format("{}", data));
             }
             else if (type == 2)
             {
-                inst.data.push_back("case");
+                inst.data.emplace_back("case");
                 inst.data.push_back(std::format("{}", static_cast<int>(switch_type::string)));
                 inst.data.push_back(stack_.read_cstr());
             }
@@ -517,24 +517,24 @@ auto disassembler::disassemble_switch_table(instruction& inst) -> void
                 // Sledgehammer's shenanigans
                 if (ctx_->engine() == engine::s2 && str != "\x01")
                 {
-                    inst.data.push_back("case");
+                    inst.data.emplace_back("case");
                     inst.data.push_back(std::format("{}", static_cast<int>(switch_type::string)));
                     inst.data.push_back(decrypt_string(str));
                 }
                 else
                 {
-                    inst.data.push_back("default");
+                    inst.data.emplace_back("default");
                 }
             }
             else if (data < 0x100000)
             {
-                inst.data.push_back("case");
+                inst.data.emplace_back("case");
                 inst.data.push_back(std::format("{}", static_cast<int>(switch_type::string)));
                 inst.data.push_back(decrypt_string(stack_.read_cstr()));
             }
             else
             {
-                inst.data.push_back("case");
+                inst.data.emplace_back("case");
                 inst.data.push_back(std::format("{}", static_cast<int>(switch_type::integer)));
                 inst.data.push_back(std::format("{}", (data - 0x800000) & 0xFFFFFF));
             }
@@ -553,7 +553,7 @@ auto disassembler::disassemble_switch_table(instruction& inst) -> void
 
 auto disassembler::disassemble_offset() -> i32
 {
-    return (script_.read_i24() << 8) >> ((ctx_->features() & feature::offs8) ? 8 : (ctx_->features() & feature::offs9) ? 9 : 10);
+    return (script_.read_i24() << 8) >> ((ctx_->features() & feature::offs8) ? 8 : ((ctx_->features() & feature::offs9) ? 9 : 10));
 }
 
 auto disassembler::resolve_functions() -> void
@@ -617,9 +617,9 @@ auto disassembler::decrypt_string(std::string const& str) -> std::string
 
     data.reserve(str.size() * 2);
 
-    for (auto i = 0u; i < str.size(); i++)
+    for (char i : str)
     {
-        data += std::format("{:02X}", static_cast<u8>(str[i]));
+        data += std::format("{:02X}", static_cast<u8>(i));
     }
 
     return data;

@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -33,7 +33,7 @@ auto compiler::emit_program(program const& prog) -> void
     developer_thread_ = false;
     animtree_ = {};
     index_ = 0;
-    debug_pos_ = { 0, 0 };
+    debug_pos_ = { .line = 0, .column = 0 };
 
     for (auto const& include : prog.includes)
     {
@@ -123,12 +123,12 @@ auto compiler::emit_decl_function(decl_function const& func) -> void
 
     process_function(func);
 
-    scopes_.push_back(scope());
+    scopes_.emplace_back();
 
     emit_expr_parameters(*func.params);
     emit_stmt_comp(*func.body);
 
-    if (scopes_.back().abort == scope::abort_none || function_->labels.find(index_) != function_->labels.end())
+    if (scopes_.back().abort == scope::abort_none || function_->labels.contains(index_))
         emit_opcode(opcode::OP_End);
 
     scopes_.pop_back();
@@ -139,7 +139,7 @@ auto compiler::emit_decl_function(decl_function const& func) -> void
 
 auto compiler::emit_stmt(stmt const& stm) -> void
 {
-    debug_pos_ = { stm.loc().begin.line, stm.loc().begin.column };
+    debug_pos_ = { .line = stm.loc().begin.line, .column = stm.loc().begin.column };
 
     switch (stm.kind())
     {
@@ -246,7 +246,7 @@ auto compiler::emit_stmt_dev(stmt_dev const& stm) -> void
     emit_opcode(opcode::OP_DevblockBegin, end);
 
     auto& paren = scopes_.back();
-    scopes_.push_back(scope(paren.brk, paren.cnt));
+    scopes_.emplace_back(paren.brk, paren.cnt);
     emit_stmt_list(*stm.block);
     scopes_.pop_back();
 
@@ -342,7 +342,7 @@ auto compiler::emit_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void
     emit_opcode(opcode::OP_ClearParams);
 }
 
-auto compiler::emit_stmt_waittillframeend(stmt_waittillframeend const&) -> void
+auto compiler::emit_stmt_waittillframeend(stmt_waittillframeend const& /*unused*/) -> void
 {
     emit_opcode(opcode::OP_WaitTillFrameEnd);
 }
@@ -363,7 +363,7 @@ auto compiler::emit_stmt_if(stmt_if const& stm) -> void
     }
 
     auto& paren = scopes_.back();
-    scopes_.push_back(scope(paren.brk, paren.cnt));
+    scopes_.emplace_back(paren.brk, paren.cnt);
 
     emit_stmt(*stm.body);
 
@@ -389,7 +389,7 @@ auto compiler::emit_stmt_ifelse(stmt_ifelse const& stm) -> void
     }
 
     auto& paren = scopes_.back();
-    scopes_.push_back(scope(paren.brk, paren.cnt));
+    scopes_.emplace_back(paren.brk, paren.cnt);
     emit_stmt(*stm.stmt_if);
     scopes_.pop_back();
 
@@ -398,7 +398,7 @@ auto compiler::emit_stmt_ifelse(stmt_ifelse const& stm) -> void
     insert_label(else_loc);
 
     auto& paren2 = scopes_.back();
-    scopes_.push_back(scope(paren2.brk, paren2.cnt));
+    scopes_.emplace_back(paren2.brk, paren2.cnt);
     emit_stmt(*stm.stmt_else);
     scopes_.pop_back();
 
@@ -425,7 +425,7 @@ auto compiler::emit_stmt_while(stmt_while const& stm) -> void
         emit_opcode(opcode::OP_JumpOnFalse, break_loc);
     }
 
-    scopes_.push_back(scope(break_loc, continue_loc));
+    scopes_.emplace_back(break_loc, continue_loc);
     emit_stmt(*stm.body);
     scopes_.pop_back();
 
@@ -447,7 +447,7 @@ auto compiler::emit_stmt_dowhile(stmt_dowhile const& stm) -> void
     auto continue_loc = create_label();
     auto begin_loc = insert_label();
 
-    scopes_.push_back(scope(break_loc, continue_loc));
+    scopes_.emplace_back(break_loc, continue_loc);
     emit_stmt(*stm.body);
     scopes_.pop_back();
 
@@ -493,7 +493,7 @@ auto compiler::emit_stmt_for(stmt_for const& stm) -> void
     can_break_ = true;
     can_continue_ = true;
 
-    scopes_.push_back(scope(break_loc, continue_loc));
+    scopes_.emplace_back(break_loc, continue_loc);
     emit_stmt(*stm.body);
     scopes_.pop_back();
 
@@ -536,7 +536,7 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm) -> void
     emit_opcode(opcode::OP_EvalArray);
     emit_expr_variable_ref(*stm.value, true);
 
-    scopes_.push_back(scope(break_loc, continue_loc));
+    scopes_.emplace_back(break_loc, continue_loc);
     emit_stmt(*stm.body);
     scopes_.pop_back();
 
@@ -575,13 +575,11 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
     auto loc_default = std::string{};
     auto has_default = false;
 
-    for (auto i = 0u; i < stm.body->block->list.size(); i++)
+    for (const auto& entry : stm.body->block->list)
     {
-        auto const& entry = stm.body->block->list[i];
-
         if (entry->is<stmt_case>())
         {
-            data.push_back("case");
+            data.emplace_back("case");
 
             if (entry->as<stmt_case>().value->is<expr_integer>())
             {
@@ -601,7 +599,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
             }
 
             auto& paren = scopes_.back();
-            scopes_.push_back(scope(break_loc, paren.cnt));
+            scopes_.emplace_back(break_loc, paren.cnt);
             emit_stmt_list(*entry->as<stmt_case>().body);
             scopes_.pop_back();
         }
@@ -611,7 +609,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
             has_default = true;
 
             auto& paren = scopes_.back();
-            scopes_.push_back(scope(break_loc, paren.cnt));
+            scopes_.emplace_back(break_loc, paren.cnt);
             emit_stmt_list(*entry->as<stmt_default>().body);
             scopes_.pop_back();
         }
@@ -623,7 +621,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
 
     if (has_default)
     {
-        data.push_back("default");
+        data.emplace_back("default");
         data.push_back(loc_default);
     }
 
@@ -646,7 +644,7 @@ auto compiler::emit_stmt_default(stmt_default const& stm) -> void
 
 auto compiler::emit_stmt_break(stmt_break const& stm) -> void
 {
-    if (!can_break_ /*|| scopes_.back().abort != scope::abort_none*/ || scopes_.back().brk == "")
+    if (!can_break_ /*|| scopes_.back().abort != scope::abort_none*/ || scopes_.back().brk.empty())
         throw comp_error(stm.loc(), "illegal break statement");
 
     if (scopes_.back().abort == scope::abort_none)
@@ -657,7 +655,7 @@ auto compiler::emit_stmt_break(stmt_break const& stm) -> void
 
 auto compiler::emit_stmt_continue(stmt_continue const& stm) -> void
 {
-    if (!can_continue_ /*|| scopes_.back().abort != scope::abort_none*/ || scopes_.back().cnt == "")
+    if (!can_continue_ /*|| scopes_.back().abort != scope::abort_none*/ || scopes_.back().cnt.empty())
         throw comp_error(stm.loc(), "illegal continue statement");
 
     if (scopes_.back().abort == scope::abort_none)
@@ -680,24 +678,24 @@ auto compiler::emit_stmt_return(stmt_return const& stm) -> void
         emit_opcode(opcode::OP_End);
 }
 
-auto compiler::emit_stmt_breakpoint(stmt_breakpoint const&) -> void
+auto compiler::emit_stmt_breakpoint(stmt_breakpoint const& /*unused*/) -> void
 {
     // TODO:
 }
 
-auto compiler::emit_stmt_prof_begin(stmt_prof_begin const&) -> void
+auto compiler::emit_stmt_prof_begin(stmt_prof_begin const& /*unused*/) -> void
 {
     // TODO:
 }
 
-auto compiler::emit_stmt_prof_end(stmt_prof_end const&) -> void
+auto compiler::emit_stmt_prof_end(stmt_prof_end const& /*unused*/) -> void
 {
     // TODO:
 }
 
 auto compiler::emit_expr(expr const& exp) -> void
 {
-    debug_pos_ = { exp.loc().begin.line, exp.loc().begin.column };
+    debug_pos_ = { .line = exp.loc().begin.line, .column = exp.loc().begin.column };
 
     switch (exp.kind())
     {
@@ -1134,7 +1132,7 @@ auto compiler::emit_expr_call_pointer(expr_pointer const& exp, bool is_stmt) -> 
 
 auto compiler::emit_expr_call_function(expr_function const& exp, bool is_stmt) -> void
 {
-    if (exp.path->value != "")
+    if (!exp.path->value.empty())
     {
         bool found = false;
 
@@ -1231,7 +1229,7 @@ auto compiler::emit_expr_method_pointer(expr_pointer const& exp, expr const& obj
 
 auto compiler::emit_expr_method_function(expr_function const& exp, expr const& obj, bool is_stmt) -> void
 {
-    if (exp.path->value != "")
+    if (!exp.path->value.empty())
     {
         bool found = false;
 
@@ -1277,7 +1275,7 @@ auto compiler::emit_expr_method_function(expr_function const& exp, expr const& o
 
 auto compiler::emit_expr_parameters(expr_parameters const& exp) -> void
 {
-    if (stackframe_.size() == 0)
+    if (stackframe_.empty())
     {
         emit_opcode(opcode::OP_CheckClearParams);
     }
@@ -1358,7 +1356,7 @@ auto compiler::emit_expr_abs(expr_abs const& exp) -> void
     emit_opcode(opcode::OP_Abs);
 }
 
-auto compiler::emit_expr_gettime(expr_gettime const&) -> void
+auto compiler::emit_expr_gettime(expr_gettime const& /*unused*/) -> void
 {
     emit_opcode(opcode::OP_GetTime);
 }
@@ -1426,7 +1424,7 @@ auto compiler::emit_expr_getnextarraykey(expr_getnextarraykey const& exp) -> voi
 
 auto compiler::emit_expr_reference(expr_reference const& exp) -> void
 {
-    if (exp.path->value != "")
+    if (!exp.path->value.empty())
     {
         bool found = false;
 
@@ -1710,17 +1708,17 @@ auto compiler::emit_expr_vector(expr_vector const& exp) -> void
         if (value != 1 && value != -1 && value != 0)
             isconst = false;
         else
-            flags |= (value == 1) ? 0x20 : (value == -1) ? 0x10 : 0;
+            flags |= (value == 1) ? 0x20 : ((value == -1) ? 0x10 : 0);
     }
     else if (exp.x->is<expr_float>())
     {
-        auto value = std::stof(exp.x->as<expr_float>().value.data());
+        auto value = std::stof(exp.x->as<expr_float>().value);
         data.push_back(exp.x->as<expr_float>().value);
 
         if (value != 1.0 && value != -1.0 && value != 0.0)
             isconst = false;
         else
-            flags |= (value == 1.0) ? 0x20 : (value == -1.0) ? 0x10 : 0;
+            flags |= (value == 1.0) ? 0x20 : ((value == -1.0) ? 0x10 : 0);
     }
     else
     {
@@ -1735,17 +1733,17 @@ auto compiler::emit_expr_vector(expr_vector const& exp) -> void
         if (value != 1 && value != -1 && value != 0)
             isconst = false;
         else
-            flags |= (value == 1) ? 0x08 : (value == -1) ? 0x04 : 0;
+            flags |= (value == 1) ? 0x08 : ((value == -1) ? 0x04 : 0);
     }
     else if (exp.y->is<expr_float>())
     {
-        auto value = std::stof(exp.y->as<expr_float>().value.data());
+        auto value = std::stof(exp.y->as<expr_float>().value);
         data.push_back(exp.y->as<expr_float>().value);
 
         if (value != 1.0 && value != -1.0 && value != 0.0)
             isconst = false;
         else
-            flags |= (value == 1.0) ? 0x08 : (value == -1.0) ? 0x04 : 0;
+            flags |= (value == 1.0) ? 0x08 : ((value == -1.0) ? 0x04 : 0);
     }
     else
     {
@@ -1760,17 +1758,17 @@ auto compiler::emit_expr_vector(expr_vector const& exp) -> void
         if (value != 1 && value != -1 && value != 0)
             isconst = false;
         else
-            flags |= (value == 1) ? 0x02 : (value == -1) ? 0x01 : 0;
+            flags |= (value == 1) ? 0x02 : ((value == -1) ? 0x01 : 0);
     }
     else if (exp.z->is<expr_float>())
     {
-        auto value = std::stof(exp.z->as<expr_float>().value.data());
+        auto value = std::stof(exp.z->as<expr_float>().value);
         data.push_back(exp.z->as<expr_float>().value);
 
         if (value != 1.0 && value != -1.0 && value != 0.0)
             isconst = false;
         else
-            flags |= (value == 1.0) ? 0x02 : (value == -1.0) ? 0x01 : 0;
+            flags |= (value == 1.0) ? 0x02 : ((value == -1.0) ? 0x01 : 0);
     }
     else
     {
@@ -1793,12 +1791,12 @@ auto compiler::emit_expr_vector(expr_vector const& exp) -> void
 
 auto compiler::emit_expr_animation(expr_animation const& exp) -> void
 {
-    if (exp.space == "" && animtree_.empty())
+    if (exp.space.empty() && animtree_.empty())
     {
         throw comp_error(exp.loc(), "trying to use animation without specified using animtree");
     }
 
-    if (exp.space != "")
+    if (!exp.space.empty())
         emit_opcode(opcode::OP_GetAnimation, { exp.space, exp.value });
     else
         emit_opcode(opcode::OP_GetAnimation, { animtree_, exp.value });
@@ -1864,12 +1862,12 @@ auto compiler::emit_expr_integer(expr_integer const& exp) -> void
     }
 }
 
-auto compiler::emit_expr_false(expr_false const&) -> void
+auto compiler::emit_expr_false(expr_false const& /*unused*/) -> void
 {
     emit_opcode(opcode::OP_GetZero);
 }
 
-auto compiler::emit_expr_true(expr_true const&) -> void
+auto compiler::emit_expr_true(expr_true const& /*unused*/) -> void
 {
     emit_opcode(opcode::OP_GetByte, "1");
 }
@@ -2085,10 +2083,8 @@ auto compiler::process_stmt_foreach(stmt_foreach const& stm) -> void
 
 auto compiler::process_stmt_switch(stmt_switch const& stm) -> void
 {
-    for (auto i = 0u; i < stm.body->block->list.size(); i++)
+    for (auto& entry : stm.body->block->list)
     {
-        auto& entry = stm.body->block->list[i];
-
         if (entry->is<stmt_case>())
         {
             process_stmt_list(*entry->as<stmt_case>().body);
@@ -2131,9 +2127,9 @@ auto compiler::variable_register(expr_identifier const& exp) -> void
 {
     auto found = false;
 
-    for (auto i = 0u; i < stackframe_.size(); i++)
+    for (const auto& i : stackframe_)
     {
-        if (stackframe_[i] == exp.value)
+        if (i == exp.value)
         {
             found = true;
             break;
@@ -2186,10 +2182,10 @@ auto compiler::insert_label(std::string const& name) -> void
 
     if (itr != function_->labels.end())
     {
-       for (auto& inst : function_->instructions)
-       {
-           switch (inst->opcode)
-           {
+        for (auto& inst : function_->instructions)
+        {
+            switch (inst->opcode)
+            {
                 case opcode::OP_JumpOnFalse:
                 case opcode::OP_JumpOnTrue:
                 case opcode::OP_JumpOnFalseExpr:
@@ -2204,8 +2200,8 @@ auto compiler::insert_label(std::string const& name) -> void
                 case opcode::OP_EndSwitch:
                 default:
                     break;
-           }
-       }
+            }
+        }
     }
     else
     {
@@ -2219,7 +2215,7 @@ auto compiler::insert_label() -> std::string
 
     if (itr != function_->labels.end())
     {
-       return itr->second;
+        return itr->second;
     }
     else
     {

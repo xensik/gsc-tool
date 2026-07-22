@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -77,8 +77,7 @@ std::unordered_map<std::string_view, token::kind> const keyword_map
 parser::parser(context* ctx)
     : ctx_{ ctx }, ppr_{ preprocessor{ ctx, "", nullptr, 0 } },
       tok_{ token::EOS, spacing::null, location{} },
-      next_{ token::EOS, spacing::null, location{} },
-      has_next_{ false }, index_{ 0 }
+      next_{ token::EOS, spacing::null, location{} }
 {
     advance();
 }
@@ -97,7 +96,6 @@ auto parser::parse_assembly(u8 const* /*data*/, usize /*size*/) -> assembly::ptr
 {
     return assembly::make();
 }
-
 
 auto parser::parse_source(std::string const& name, buffer const& data) -> program::ptr
 {
@@ -966,7 +964,7 @@ auto parser::parse_expr_relational() -> expr::ptr
     while (check(token::LT) || check(token::LE) || check(token::GT) || check(token::GE))
     {
         auto loc = tok_.pos;
-        expr_binary::op op;
+        auto op = expr_binary::op{};
 
         switch (tok_.type)
         {
@@ -1024,7 +1022,7 @@ auto parser::parse_expr_multiplicative() -> expr::ptr
     while (check(token::STAR) || check(token::DIV) || check(token::MOD))
     {
         auto loc = tok_.pos;
-        expr_binary::op op;
+        auto op = expr_binary::op{};
 
         switch (tok_.type)
         {
@@ -1493,10 +1491,7 @@ auto parser::parse_expr_function(call::mode mode) -> call::ptr
         expect(token::LPAREN);
         auto args = parse_expr_arguments();
         expect(token::RPAREN);
-        return expr_function::make(loc,
-            expr_path::make(path_tok.pos, path_tok.data),
-            expr_identifier::make(name_tok.pos, name_tok.data),
-            std::move(args), mode);
+        return expr_function::make(loc, expr_path::make(path_tok.pos, path_tok.data), expr_identifier::make(name_tok.pos, name_tok.data), std::move(args), mode);
     }
 
     if (check(token::PATH) && peek().type == token::DOUBLECOLON)
@@ -1507,20 +1502,14 @@ auto parser::parse_expr_function(call::mode mode) -> call::ptr
         expect(token::LPAREN);
         auto args = parse_expr_arguments();
         expect(token::RPAREN);
-        return expr_function::make(loc,
-            expr_path::make(path_tok.pos, path_tok.data),
-            expr_identifier::make(name_tok.pos, name_tok.data),
-            std::move(args), mode);
+        return expr_function::make(loc, expr_path::make(path_tok.pos, path_tok.data), expr_identifier::make(name_tok.pos, name_tok.data), std::move(args), mode);
     }
 
     auto name_tok = expect(token::NAME);
     expect(token::LPAREN);
     auto args = parse_expr_arguments();
     expect(token::RPAREN);
-    return expr_function::make(loc,
-        expr_path::make(loc),
-        expr_identifier::make(name_tok.pos, name_tok.data),
-        std::move(args), mode);
+    return expr_function::make(loc, expr_path::make(loc), expr_identifier::make(name_tok.pos, name_tok.data), std::move(args), mode);
 }
 
 auto parser::parse_expr_pointer(call::mode mode) -> call::ptr
@@ -2070,7 +2059,7 @@ auto parser::parse_assign_op() -> expr_assign::op
     }
 }
 
-auto parser::is_assign_op() -> bool
+auto parser::is_assign_op() const -> bool
 {
     switch (tok_.type)
     {
@@ -2141,7 +2130,7 @@ auto parser::is_call_or_method(expr const& e) -> bool
     return e.is<expr_call>() || e.is<expr_method>();
 }
 
-auto parser::check(token::kind k) -> bool
+auto parser::check(token::kind k) const -> bool
 {
     return tok_.type == k;
 }
@@ -2161,8 +2150,7 @@ auto parser::expect(token::kind k) -> token
 {
     if (tok_.type != k)
     {
-        throw comp_error(tok_.pos, std::format("expected '{}', got '{}'",
-            token(k, spacing::null, location{}).to_string(), tok_.to_string()));
+        throw comp_error(tok_.pos, std::format("expected '{}', got '{}'", token(k, spacing::null, location{}).to_string(), tok_.to_string()));
     }
 
     return advance();
@@ -2220,7 +2208,7 @@ auto parser::error(location const& loc, std::string const& msg) -> void
     throw comp_error(loc, msg);
 }
 
-auto parser::error(std::string const& msg) -> void
+auto parser::error(std::string const& msg) const -> void
 {
     throw comp_error(tok_.pos, msg);
 }

@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -116,8 +116,8 @@ auto expr_binary::precedence() -> u8
     }
 }
 
-template<typename T>
-auto node::as(node::ptr) -> std::unique_ptr<T>
+template <typename T>
+auto node::as(node::ptr /*unused*/) -> std::unique_ptr<T>
 {
     static_assert(std::is_same_v<T, node>, "invalid cast");
 }
@@ -218,81 +218,81 @@ auto decl::as() -> T&
     static_assert(std::is_same_v<T, decl>, "invalid cast");
 }
 
-#define XSK_GSC_EXPR_IS(expr_type)                                    \
-template<>                                                            \
-auto expr::is<gsc::expr_type>() const -> bool                         \
-{                                                                     \
-    return kind() == type::expr_type;                                 \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto expr::as<gsc::expr_type>() -> gsc::expr_type &                   \
-{                                                                     \
-    return static_cast<gsc::expr_type &>(*this);                      \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto expr::as<gsc::expr_type>() const -> gsc::expr_type const&        \
-{                                                                     \
-    return static_cast<gsc::expr_type const&>(*this);                 \
-}                                                                     \
+#define XSK_GSC_EXPR_IS(expr_type)                                 \
+    template<>                                                     \
+    auto expr::is<gsc::expr_type>() const -> bool                  \
+    {                                                              \
+        return kind() == type::expr_type;                          \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto expr::as<gsc::expr_type>() -> gsc::expr_type&             \
+    {                                                              \
+        return static_cast<gsc::expr_type&>(*this);                \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto expr::as<gsc::expr_type>() const -> gsc::expr_type const& \
+    {                                                              \
+        return static_cast<gsc::expr_type const&>(*this);          \
+    }
 
-#define XSK_GSC_CALL_IS(expr_type)                                    \
-template<>                                                            \
-auto call::is<gsc::expr_type>() const -> bool                         \
-{                                                                     \
-    return kind() == node::type::expr_type;                           \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto call::as<gsc::expr_type>() -> gsc::expr_type &                   \
-{                                                                     \
-    return static_cast<gsc::expr_type &>(*this);                      \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto call::as<gsc::expr_type>() const -> gsc::expr_type const&        \
-{                                                                     \
-    return static_cast<gsc::expr_type const&>(*this);                 \
-}                                                                     \
+#define XSK_GSC_CALL_IS(expr_type)                                 \
+    template<>                                                     \
+    auto call::is<gsc::expr_type>() const -> bool                  \
+    {                                                              \
+        return kind() == node::type::expr_type;                    \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto call::as<gsc::expr_type>() -> gsc::expr_type&             \
+    {                                                              \
+        return static_cast<gsc::expr_type&>(*this);                \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto call::as<gsc::expr_type>() const -> gsc::expr_type const& \
+    {                                                              \
+        return static_cast<gsc::expr_type const&>(*this);          \
+    }
 
-#define XSK_GSC_STMT_IS(expr_type)                                    \
-template<>                                                            \
-auto stmt::is<gsc::expr_type>() const -> bool                         \
-{                                                                     \
-    return kind() == type::expr_type;                                 \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto stmt::as<gsc::expr_type>() -> gsc::expr_type &                   \
-{                                                                     \
-    return static_cast<gsc::expr_type &>(*this);                      \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto stmt::as<gsc::expr_type>() const -> gsc::expr_type const&        \
-{                                                                     \
-    return static_cast<gsc::expr_type const&>(*this);                 \
-}                                                                     \
+#define XSK_GSC_STMT_IS(expr_type)                                 \
+    template<>                                                     \
+    auto stmt::is<gsc::expr_type>() const -> bool                  \
+    {                                                              \
+        return kind() == type::expr_type;                          \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto stmt::as<gsc::expr_type>() -> gsc::expr_type&             \
+    {                                                              \
+        return static_cast<gsc::expr_type&>(*this);                \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto stmt::as<gsc::expr_type>() const -> gsc::expr_type const& \
+    {                                                              \
+        return static_cast<gsc::expr_type const&>(*this);          \
+    }
 
-#define XSK_GSC_DECL_IS(expr_type)                                    \
-template<>                                                            \
-auto decl::is<gsc::expr_type>() const -> bool                         \
-{                                                                     \
-    return kind() == type::expr_type;                                 \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto decl::as<gsc::expr_type>() -> gsc::expr_type &                   \
-{                                                                     \
-    return static_cast<gsc::expr_type &>(*this);                      \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto decl::as<gsc::expr_type>() const -> gsc::expr_type const&        \
-{                                                                     \
-    return static_cast<gsc::expr_type const&>(*this);                 \
-}                                                                     \
+#define XSK_GSC_DECL_IS(expr_type)                                 \
+    template<>                                                     \
+    auto decl::is<gsc::expr_type>() const -> bool                  \
+    {                                                              \
+        return kind() == type::expr_type;                          \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto decl::as<gsc::expr_type>() -> gsc::expr_type&             \
+    {                                                              \
+        return static_cast<gsc::expr_type&>(*this);                \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto decl::as<gsc::expr_type>() const -> gsc::expr_type const& \
+    {                                                              \
+        return static_cast<gsc::expr_type const&>(*this);          \
+    }
 
 XSK_GSC_EXPR_IS(expr_empty)
 XSK_GSC_EXPR_IS(expr_true)
@@ -410,11 +410,11 @@ expr_false::expr_false(location const& loc) : expr{ type::expr_false, loc }
 {
 }
 
-expr_integer::expr_integer(location const& loc, std::string const& value) : expr{ type::expr_integer, loc }, value{ std::move(value) }
+expr_integer::expr_integer(location const& loc, std::string value) : expr{ type::expr_integer, loc }, value{ std::move(value) }
 {
 }
 
-expr_float::expr_float(location const& loc, std::string const& value) : expr{ type::expr_float, loc }, value{ std::move(value) }
+expr_float::expr_float(location const& loc, std::string value) : expr{ type::expr_float, loc }, value{ std::move(value) }
 {
 }
 
@@ -426,7 +426,7 @@ expr_string::expr_string(location const& loc, const std::string& value) : expr{ 
 {
 }
 
-expr_istring::expr_istring(location const& loc, const std::string& value) : expr{ type::expr_istring, loc }, value{ std::move(value) }
+expr_istring::expr_istring(location const& loc, std::string value) : expr{ type::expr_istring, loc }, value{ std::move(value) }
 {
 }
 
@@ -782,7 +782,7 @@ program::program(location const& loc) : node{ type::program, loc }
 {
 }
 
-auto operator==(expr const& lhs, expr const& rhs)  -> bool
+auto operator==(expr const& lhs, expr const& rhs) -> bool
 {
     if (!(lhs.kind() == rhs.kind())) return false;
 
@@ -815,12 +815,12 @@ auto operator==(expr const& lhs, expr const& rhs)  -> bool
     }
 }
 
-auto operator==(expr_true const&, expr_true const&) -> bool
+auto operator==(expr_true const& /*unused*/, expr_true const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_false const&, expr_false const&) -> bool
+auto operator==(expr_false const& /*unused*/, expr_false const& /*unused*/) -> bool
 {
     return true;
 }
@@ -860,7 +860,7 @@ auto operator==(expr_identifier const& lhs, expr_identifier const& rhs) -> bool
     return lhs.value == rhs.value;
 }
 
-auto operator==(expr_animtree const&, expr_animtree const&) -> bool
+auto operator==(expr_animtree const& /*unused*/, expr_animtree const& /*unused*/) -> bool
 {
     return true;
 }
@@ -870,37 +870,37 @@ auto operator==(expr_animation const& lhs, expr_animation const& rhs) -> bool
     return lhs.value == rhs.value;
 }
 
-auto operator==(expr_level const&, expr_level const&) -> bool
+auto operator==(expr_level const& /*unused*/, expr_level const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_anim const&, expr_anim const&) -> bool
+auto operator==(expr_anim const& /*unused*/, expr_anim const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_self const&, expr_self const&) -> bool
+auto operator==(expr_self const& /*unused*/, expr_self const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_game const&, expr_game const&) -> bool
+auto operator==(expr_game const& /*unused*/, expr_game const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_undefined const&, expr_undefined const&) -> bool
+auto operator==(expr_undefined const& /*unused*/, expr_undefined const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_empty_array const&, expr_empty_array const&) -> bool
+auto operator==(expr_empty_array const& /*unused*/, expr_empty_array const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_thisthread const&, expr_thisthread const&) -> bool
+auto operator==(expr_thisthread const& /*unused*/, expr_thisthread const& /*unused*/) -> bool
 {
     return true;
 }

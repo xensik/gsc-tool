@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -9,7 +9,7 @@
 namespace xsk::utils
 {
 
-reader::reader(bool swap) : data_{ nullptr }, size_ { 0 }, swap_{ swap }
+reader::reader(bool swap) : data_{ nullptr }, size_{ 0 }, swap_{ swap }
 {
 }
 
@@ -21,7 +21,8 @@ reader::reader(u8 const* data, usize size, bool swap) : data_{ data }, size_{ si
 {
 }
 
-template<> auto reader::read() -> i8
+template <>
+auto reader::read() -> i8
 {
     if (pos_ + 1 > size_)
         throw error("reader: out of bounds");
@@ -31,7 +32,8 @@ template<> auto reader::read() -> i8
     return value;
 }
 
-template<> auto reader::read() -> u8
+template <>
+auto reader::read() -> u8
 {
     if (pos_ + 1 > size_)
         throw error("reader: out of bounds");
@@ -41,7 +43,8 @@ template<> auto reader::read() -> u8
     return value;
 }
 
-template<> auto reader::read() -> i16
+template <>
+auto reader::read() -> i16
 {
     if (pos_ + 2 > size_)
         throw error("reader: out of bounds");
@@ -60,7 +63,8 @@ template<> auto reader::read() -> i16
     return *reinterpret_cast<i16*>(bytes.data());
 }
 
-template<> auto reader::read() -> u16
+template <>
+auto reader::read() -> u16
 {
     if (pos_ + 2 > size_)
         throw error("reader: out of bounds");
@@ -79,7 +83,8 @@ template<> auto reader::read() -> u16
     return *reinterpret_cast<u16*>(bytes.data());
 }
 
-template<> auto reader::read() -> i32
+template <>
+auto reader::read() -> i32
 {
     if (pos_ + 4 > size_)
         throw error("reader: out of bounds");
@@ -100,7 +105,8 @@ template<> auto reader::read() -> i32
     return *reinterpret_cast<i32*>(bytes.data());
 }
 
-template<> auto reader::read() -> u32
+template <>
+auto reader::read() -> u32
 {
     if (pos_ + 4 > size_)
         throw error("reader: out of bounds");
@@ -121,7 +127,8 @@ template<> auto reader::read() -> u32
     return *reinterpret_cast<u32*>(bytes.data());
 }
 
-template<> auto reader::read() -> i64
+template <>
+auto reader::read() -> i64
 {
     if (pos_ + 8 > size_)
         throw error("reader: out of bounds");
@@ -146,7 +153,8 @@ template<> auto reader::read() -> i64
     return *reinterpret_cast<i64*>(bytes.data());
 }
 
-template<> auto reader::read() -> u64
+template <>
+auto reader::read() -> u64
 {
     if (pos_ + 8 > size_)
         throw error("reader: out of bounds");
@@ -171,7 +179,8 @@ template<> auto reader::read() -> u64
     return *reinterpret_cast<u64*>(bytes.data());
 }
 
-template<> auto reader::read() -> f32
+template <>
+auto reader::read() -> f32
 {
     if (pos_ + 4 > size_)
         throw error("reader: out of bounds");

@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -26,11 +26,7 @@ auto string::hex_to_dec(char const* str) -> std::string
 
 auto string::iequals(std::string const& a, std::string const& b) -> bool
 {
-    return (a.size() == b.size()) && std::equal(a.begin(), a.end(), b.begin(), b.end(),
-        [](char a, char b)
-        {
-            return std::tolower(a) == std::tolower(b);
-        });
+    return (a.size() == b.size()) && std::equal(a.begin(), a.end(), b.begin(), b.end(), [](char a, char b) { return std::tolower(a) == std::tolower(b); });
 }
 
 auto string::is_number(std::string const& str) -> bool
@@ -117,9 +113,9 @@ auto string::fordslash(std::string const& str) -> std::string
 {
     auto data = std::string{ str.begin(), str.end() };
 
-    for (auto i = 0u; i < data.size(); i++)
+    for (char& i : data)
     {
-        if (data[i] == '\\') data[i] = '/';
+        if (i == '\\') i = '/';
     }
 
     return data;
@@ -129,9 +125,9 @@ auto string::backslash(std::string const& str) -> std::string
 {
     auto data = std::string{ str.begin(), str.end() };
 
-    for (auto i = 0u; i < data.size(); i++)
+    for (char& i : data)
     {
-        if (data[i] ==  '/') data[i] = '\\';
+        if (i == '/') i = '\\';
     }
 
     return data;
@@ -223,9 +219,12 @@ auto string::float_string(float value, bool toint) -> std::string
 
     for (auto i = 1u; i < str.size(); i++)
     {
-        if (str[i] == '-') flags |= exp_neg;
-        else if (str[i] == 'e') flags |= has_exp;
-        else if ( str[i] == '.') flags &= ~integer;
+        if (str[i] == '-')
+            flags |= exp_neg;
+        else if (str[i] == 'e')
+            flags |= has_exp;
+        else if (str[i] == '.')
+            flags &= ~integer;
     }
 
     if (!(flags & has_exp))

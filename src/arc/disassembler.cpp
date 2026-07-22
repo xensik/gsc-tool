@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -88,7 +88,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
         string_pool.insert({ 0x3E, "" });
     }
 
-    script_.pos((ctx_->features() & feature::headerxx) ? header_size_v3 : (ctx_->features() & feature::header72) ? header_size_v2 : header_size_v1);
+    script_.pos((ctx_->features() & feature::headerxx) ? header_size_v3 : ((ctx_->features() & feature::header72) ? header_size_v2 : header_size_v1));
 
     while (script_.pos() < header_.include_offset)
     {
@@ -183,7 +183,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
             entry->type = script_.read<u8>();
             script_.seek(2);
 
-            for (auto j = 0; j < count; j++)
+            for (auto j = 0u; j < count; j++)
             {
                 auto ref = script_.read<u32>();
                 string_refs_.insert({ ref, entry });
@@ -197,7 +197,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
 
         for (auto i = 0u; i < header_.globalvar_count; i++)
         {
-            auto name = ctx_->hash_name(script_.read<u32>());
+            script_.read<u32>(); // todo t8 vars: hash_name(...)
             auto refs = script_.read<u32>();
 
             for (auto j = 0u; j < refs; j++)
@@ -228,7 +228,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
         entry->params = script_.read<u8>();
         entry->flags = script_.read<u8>();
 
-        for (auto j = 0; j < count; j++)
+        for (auto j = 0u; j < count; j++)
         {
             import_refs_.insert({ script_.read<u32>(), entry });
         }
@@ -278,7 +278,7 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
 
             if ((ctx_->features() & feature::size64) && script_.read<u64>() == 0)
             {
-                 entry->size -= pad_size;
+                entry->size -= pad_size;
 
                 script_.pos(end_pos - 2);
                 script_.align(2);
@@ -385,14 +385,15 @@ auto disassembler::disassemble_function(function& func) -> void
 
         auto const& inst = func.instructions.at(func.instructions.size() - i);
 
-        if (inst->opcode == opcode::OP_End ||  inst->opcode == opcode::OP_Return)
+        if (inst->opcode == opcode::OP_End || inst->opcode == opcode::OP_Return)
             last_idx = i;
 
         if (func.labels.contains(inst->index))
             break;
     }
 
-    while (last_idx-- > 1) func.instructions.pop_back();
+    while (last_idx-- > 1)
+        func.instructions.pop_back();
 }
 
 auto disassembler::disassemble_instruction(instruction& inst) -> void
@@ -472,7 +473,7 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
         case opcode::OP_GetDvarColorAlpha:
         case opcode::OP_FirstArrayKey:
         case opcode::OP_NextArrayKey:
-        //case opcode::OP_ProfileStart:
+        // case opcode::OP_ProfileStart:
         case opcode::OP_ProfileStop:
         case opcode::OP_SafeDecTop:
         case opcode::OP_Nop:
@@ -507,7 +508,7 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
             inst.data.push_back(utils::string::float_string(script_.read<f32>()));
             break;
         case opcode::OP_GetUintptr:
-        //case opcode::OP_ProfileStart:
+        // case opcode::OP_ProfileStart:
         case opcode::OP_GetAPIFunction:
             inst.size += script_.align(8);
             inst.data.push_back(std::format("0x{:016X}", script_.read<u64>()));
@@ -752,36 +753,36 @@ auto disassembler::disassemble_end_switch(instruction& inst) -> void
         {
             if (auto const str = string_refs_.find(script_.pos() - 4); str != string_refs_.end())
             {
-                inst.data.push_back("case");
+                inst.data.emplace_back("case");
                 inst.data.push_back(std::format("{}", static_cast<i32>(switch_type::string)));
                 inst.data.push_back(str->second->name);
             }
             else if (value != 0 || i != count - 1)
             {
-                inst.data.push_back("case");
+                inst.data.emplace_back("case");
                 inst.data.push_back(std::format("{}", static_cast<i32>(switch_type::integer)));
                 inst.data.push_back(std::format("{}", value));
             }
             else
             {
-                inst.data.push_back("default");
+                inst.data.emplace_back("default");
             }
         }
         else
         {
             if (value == 0)
             {
-                inst.data.push_back("default");
+                inst.data.emplace_back("default");
             }
             else if (value < 0x40000)
             {
-                inst.data.push_back("case");
+                inst.data.emplace_back("case");
                 inst.data.push_back(std::format("{}", static_cast<i32>(switch_type::string)));
                 inst.data.push_back(string_refs_.at(script_.pos() - 2)->name);
             }
             else
             {
-                inst.data.push_back("case");
+                inst.data.emplace_back("case");
                 inst.data.push_back(std::format("{}", static_cast<i32>(switch_type::integer)));
                 inst.data.push_back(std::format("{}", (value - 0x800000) & 0xFFFFFF));
             }

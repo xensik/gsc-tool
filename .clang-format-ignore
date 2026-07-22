@@ -1,0 +1,7 @@
+# Engine metadata tables: generated-style data, not hand-written code.
+src/*/engine/*_code.cpp
+src/*/engine/*_func.cpp
+src/*/engine/*_meth.cpp
+src/*/engine/*_token.cpp
+src/*/engine/*_hash.cpp
+src/*/engine/*_path.cpp

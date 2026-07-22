@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -16,10 +16,10 @@ private:
     context const* ctx_;
     lookahead reader_;
     location loc_;
-    usize buflen_;
-    spacing spacing_;
-    bool indev_;
-    std::array<char, 0x1000> buffer_;
+    usize buflen_{ 0 };
+    spacing spacing_{ spacing::null };
+    bool indev_{ false };
+    std::array<char, 0x1000> buffer_{};
 
 public:
     lexer(context const* ctx, std::string const& name, char const* data, usize size);

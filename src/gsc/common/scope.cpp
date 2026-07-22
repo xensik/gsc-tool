@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -9,7 +9,7 @@
 namespace xsk::gsc
 {
 
-scope::scope() : abort{ scope::abort_none }, create_count{ 0 }, public_count{ 0 }, is_last{ false }
+scope::scope()
 {
 }
 
@@ -40,7 +40,7 @@ auto scope::transfer(scope::ptr const& child) -> void
         }
         else
         {
-            if (pos > static_cast<i32>(i))
+            if (std::cmp_greater(pos, i))
                 std::rotate(child->vars.rend() - pos - 1, child->vars.rend() - pos, child->vars.rend() - i);
             else
                 std::rotate(child->vars.begin() + pos, child->vars.begin() + pos + 1, child->vars.begin() + i + 1);
@@ -55,7 +55,7 @@ auto scope::transfer(scope::ptr const& child) -> void
     child->create_count = create_count;
 }
 
-auto scope::copy(scope::ptr const& child) -> void
+auto scope::copy(scope::ptr const& child) const -> void
 {
     child->vars = vars;
     child->create_count = create_count;
@@ -74,7 +74,7 @@ auto scope::append(std::vector<scope*> const& childs) -> void
 {
     auto glob = true;
 
-    if (childs.size() == 0) return;
+    if (childs.empty()) return;
 
     for (auto i = usize{ 0 }; i < childs[0]->vars.size(); i++)
     {
@@ -101,11 +101,11 @@ auto scope::append(std::vector<scope*> const& childs) -> void
 
 auto scope::merge(std::vector<scope*> const& childs) -> void
 {
-    if (childs.size() == 0) return;
+    if (childs.empty()) return;
 
     for (auto i = usize{ 0 }; i < childs.size(); i++)
     {
-        auto child = childs[i];
+        auto* child = childs[i];
 
         child->public_count = static_cast<u32>(vars.size());
 
@@ -117,7 +117,7 @@ auto scope::merge(std::vector<scope*> const& childs) -> void
             {
                 child->vars.insert(child->vars.begin() + j, vars[j]);
             }
-            else if (pos > static_cast<i32>(j))
+            else if (std::cmp_greater(pos, j))
             {
                 auto& v = child->vars;
                 std::rotate(v.rend() - pos - 1, v.rend() - pos, v.rend() - j);
@@ -139,14 +139,13 @@ auto scope::init(scope::ptr const& child) -> void
 
 auto scope::init(std::vector<scope*> const& childs) -> void
 {
-    if (childs.size() == 0) return;
+    if (childs.empty()) return;
 
     auto count = childs[0]->public_count;
 
     for (auto i = usize{ 1 }; i < childs.size(); i++)
     {
-        if (childs[i]->public_count < count)
-            count = childs[i]->public_count;
+        count = std::min(childs[i]->public_count, count);
     }
 
     create_count = count;

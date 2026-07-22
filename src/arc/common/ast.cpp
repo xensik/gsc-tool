@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -83,7 +83,7 @@ auto node::is_boolean() -> bool
     {
         case type::expr_integer:
             return reinterpret_cast<arc::expr_integer*>(this)->value == "1" ||
-                reinterpret_cast<arc::expr_integer*>(this)->value == "0";
+                   reinterpret_cast<arc::expr_integer*>(this)->value == "0";
         case type::expr_true:
         case type::expr_false:
             return true;
@@ -131,33 +131,52 @@ auto expr_binary::precedence() -> u8
 {
     switch (oper)
     {
-        case op::bool_or:  return 1;
-        case op::bool_and: return 2;
-        case op::bwor:     return 3;
-        case op::bwexor:   return 4;
-        case op::bwand:    return 5;
-        case op::seq:      return 6;
-        case op::sne:      return 6;
-        case op::eq:       return 6;
-        case op::ne:       return 6;
-        case op::lt:       return 7;
-        case op::gt:       return 7;
-        case op::le:       return 7;
-        case op::ge:       return 7;
-        case op::shl:      return 8;
-        case op::shr:      return 8;
-        case op::add:      return 9;
-        case op::sub:      return 9;
-        case op::mul:      return 10;
-        case op::div:      return 10;
-        case op::mod:      return 10;
+        case op::bool_or:
+            return 1;
+        case op::bool_and:
+            return 2;
+        case op::bwor:
+            return 3;
+        case op::bwexor:
+            return 4;
+        case op::bwand:
+            return 5;
+        case op::seq:
+            return 6;
+        case op::sne:
+            return 6;
+        case op::eq:
+            return 6;
+        case op::ne:
+            return 6;
+        case op::lt:
+            return 7;
+        case op::gt:
+            return 7;
+        case op::le:
+            return 7;
+        case op::ge:
+            return 7;
+        case op::shl:
+            return 8;
+        case op::shr:
+            return 8;
+        case op::add:
+            return 9;
+        case op::sub:
+            return 9;
+        case op::mul:
+            return 10;
+        case op::div:
+            return 10;
+        case op::mod:
+            return 10;
         default: return 0;
     }
 }
 
-
-template<typename T>
-auto node::as(node::ptr) -> std::unique_ptr<T>
+template <typename T>
+auto node::as(node::ptr /*unused*/) -> std::unique_ptr<T>
 {
     static_assert(std::is_same_v<T, node>, "invalid cast");
 }
@@ -258,81 +277,81 @@ auto decl::as() -> T&
     static_assert(std::is_same_v<T, decl>, "invalid cast");
 }
 
-#define XSK_ARC_EXPR_IS(expr_type)                                    \
-template<>                                                            \
-auto expr::is<arc::expr_type>() const -> bool                         \
-{                                                                     \
-    return kind() == type::expr_type;                                 \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto expr::as<arc::expr_type>() -> arc::expr_type &                   \
-{                                                                     \
-    return static_cast<arc::expr_type &>(*this);                      \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto expr::as<arc::expr_type>() const -> arc::expr_type const&        \
-{                                                                     \
-    return static_cast<arc::expr_type const&>(*this);                 \
-}                                                                     \
+#define XSK_ARC_EXPR_IS(expr_type)                                 \
+    template<>                                                     \
+    auto expr::is<arc::expr_type>() const -> bool                  \
+    {                                                              \
+        return kind() == type::expr_type;                          \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto expr::as<arc::expr_type>() -> arc::expr_type&             \
+    {                                                              \
+        return static_cast<arc::expr_type&>(*this);                \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto expr::as<arc::expr_type>() const -> arc::expr_type const& \
+    {                                                              \
+        return static_cast<arc::expr_type const&>(*this);          \
+    }
 
-#define XSK_ARC_CALL_IS(expr_type)                                    \
-template<>                                                            \
-auto call::is<arc::expr_type>() const -> bool                         \
-{                                                                     \
-    return kind() == node::type::expr_type;                           \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto call::as<arc::expr_type>() -> arc::expr_type &                   \
-{                                                                     \
-    return static_cast<arc::expr_type &>(*this);                      \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto call::as<arc::expr_type>() const -> arc::expr_type const&        \
-{                                                                     \
-    return static_cast<arc::expr_type const&>(*this);                 \
-}                                                                     \
+#define XSK_ARC_CALL_IS(expr_type)                                 \
+    template<>                                                     \
+    auto call::is<arc::expr_type>() const -> bool                  \
+    {                                                              \
+        return kind() == node::type::expr_type;                    \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto call::as<arc::expr_type>() -> arc::expr_type&             \
+    {                                                              \
+        return static_cast<arc::expr_type&>(*this);                \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto call::as<arc::expr_type>() const -> arc::expr_type const& \
+    {                                                              \
+        return static_cast<arc::expr_type const&>(*this);          \
+    }
 
-#define XSK_ARC_STMT_IS(expr_type)                                    \
-template<>                                                            \
-auto stmt::is<arc::expr_type>() const -> bool                         \
-{                                                                     \
-    return kind() == type::expr_type;                                 \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto stmt::as<arc::expr_type>() -> arc::expr_type &                   \
-{                                                                     \
-    return static_cast<arc::expr_type &>(*this);                      \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto stmt::as<arc::expr_type>() const -> arc::expr_type const&        \
-{                                                                     \
-    return static_cast<arc::expr_type const&>(*this);                 \
-}                                                                     \
+#define XSK_ARC_STMT_IS(expr_type)                                 \
+    template<>                                                     \
+    auto stmt::is<arc::expr_type>() const -> bool                  \
+    {                                                              \
+        return kind() == type::expr_type;                          \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto stmt::as<arc::expr_type>() -> arc::expr_type&             \
+    {                                                              \
+        return static_cast<arc::expr_type&>(*this);                \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto stmt::as<arc::expr_type>() const -> arc::expr_type const& \
+    {                                                              \
+        return static_cast<arc::expr_type const&>(*this);          \
+    }
 
-#define XSK_ARC_DECL_IS(expr_type)                                    \
-template<>                                                            \
-auto decl::is<arc::expr_type>() const -> bool                         \
-{                                                                     \
-    return kind() == type::expr_type;                                 \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto decl::as<arc::expr_type>() -> arc::expr_type &                   \
-{                                                                     \
-    return static_cast<arc::expr_type &>(*this);                      \
-}                                                                     \
-                                                                      \
-template<>                                                            \
-auto decl::as<arc::expr_type>() const -> arc::expr_type const&        \
-{                                                                     \
-    return static_cast<arc::expr_type const&>(*this);                 \
-}                                                                     \
+#define XSK_ARC_DECL_IS(expr_type)                                 \
+    template<>                                                     \
+    auto decl::is<arc::expr_type>() const -> bool                  \
+    {                                                              \
+        return kind() == type::expr_type;                          \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto decl::as<arc::expr_type>() -> arc::expr_type&             \
+    {                                                              \
+        return static_cast<arc::expr_type&>(*this);                \
+    }                                                              \
+                                                                   \
+    template<>                                                     \
+    auto decl::as<arc::expr_type>() const -> arc::expr_type const& \
+    {                                                              \
+        return static_cast<arc::expr_type const&>(*this);          \
+    }
 
 XSK_ARC_EXPR_IS(expr_empty)
 XSK_ARC_EXPR_IS(expr_true)
@@ -465,11 +484,11 @@ expr_false::expr_false(location const& loc) : expr{ type::expr_false, loc }
 {
 }
 
-expr_integer::expr_integer(location const& loc, std::string const& value) : expr{ type::expr_integer, loc }, value{ std::move(value) }
+expr_integer::expr_integer(location const& loc, std::string value) : expr{ type::expr_integer, loc }, value{ std::move(value) }
 {
 }
 
-expr_float::expr_float(location const& loc, std::string const& value) : expr{ type::expr_float, loc }, value{ std::move(value) }
+expr_float::expr_float(location const& loc, std::string value) : expr{ type::expr_float, loc }, value{ std::move(value) }
 {
 }
 
@@ -485,7 +504,7 @@ expr_string::expr_string(location const& loc, const std::string& value) : expr{ 
 {
 }
 
-expr_istring::expr_istring(location const& loc, const std::string& value) : expr{ type::expr_istring, loc }, value{ std::move(value) }
+expr_istring::expr_istring(location const& loc, std::string value) : expr{ type::expr_istring, loc }, value{ std::move(value) }
 {
 }
 
@@ -893,11 +912,11 @@ program::program(location const& loc) : node{ type::program, loc }
 {
 }
 
-auto operator==(expr const& lhs, expr const& rhs)  -> bool
+auto operator==(expr const& lhs, expr const& rhs) -> bool
 {
     if (!(lhs.kind() == rhs.kind())) return false;
 
-    switch(lhs.kind())
+    switch (lhs.kind())
     {
         case node::expr_empty: return true;
         case node::expr_true: return lhs.as<expr_true>() == rhs.as<expr_true>();
@@ -929,12 +948,12 @@ auto operator==(expr const& lhs, expr const& rhs)  -> bool
     }
 }
 
-auto operator==(expr_true const&, expr_true const&) -> bool
+auto operator==(expr_true const& /*unused*/, expr_true const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_false const&, expr_false const&) -> bool
+auto operator==(expr_false const& /*unused*/, expr_false const& /*unused*/) -> bool
 {
     return true;
 }
@@ -979,7 +998,7 @@ auto operator==(expr_identifier const& lhs, expr_identifier const& rhs) -> bool
     return lhs.value == rhs.value;
 }
 
-auto operator==(expr_animtree const&, expr_animtree const&) -> bool
+auto operator==(expr_animtree const& /*unused*/, expr_animtree const& /*unused*/) -> bool
 {
     return true;
 }
@@ -989,47 +1008,47 @@ auto operator==(expr_animation const& lhs, expr_animation const& rhs) -> bool
     return lhs.space == rhs.space && lhs.value == rhs.value;
 }
 
-auto operator==(expr_classes const&, expr_classes const&) -> bool
+auto operator==(expr_classes const& /*unused*/, expr_classes const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_world const&, expr_world const&) -> bool
+auto operator==(expr_world const& /*unused*/, expr_world const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_level const&, expr_level const&) -> bool
+auto operator==(expr_level const& /*unused*/, expr_level const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_anim const&, expr_anim const&) -> bool
+auto operator==(expr_anim const& /*unused*/, expr_anim const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_self const&, expr_self const&) -> bool
+auto operator==(expr_self const& /*unused*/, expr_self const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_game const&, expr_game const&) -> bool
+auto operator==(expr_game const& /*unused*/, expr_game const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_undefined const&, expr_undefined const&) -> bool
+auto operator==(expr_undefined const& /*unused*/, expr_undefined const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_empty_array const&, expr_empty_array const&) -> bool
+auto operator==(expr_empty_array const& /*unused*/, expr_empty_array const& /*unused*/) -> bool
 {
     return true;
 }
 
-auto operator==(expr_ellipsis const&, expr_ellipsis const&) -> bool
+auto operator==(expr_ellipsis const& /*unused*/, expr_ellipsis const& /*unused*/) -> bool
 {
     return true;
 }

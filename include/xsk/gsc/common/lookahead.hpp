@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -10,10 +10,10 @@ namespace xsk::gsc
 
 struct lookahead
 {
-    char const* position;
-    usize available;
-    char last_byte;
-    char curr_byte;
+    char const* position{ nullptr };
+    usize available{ 0 };
+    char last_byte{ 0 };
+    char curr_byte{ 0 };
 
     lookahead(char const* data, usize size);
     auto advance() -> void;

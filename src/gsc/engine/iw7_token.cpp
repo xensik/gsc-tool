@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -25459,7 +25459,7 @@ extern std::array<std::pair<u32, char const*>, token_count> const token_list
     { 0x6366, "endnode" },
     { 0x6367, "endnode_pos" }, // AUTOADDED
 //  { 0x6368, "" },
-//  { 0x6369, "" }, 
+//  { 0x6369, "" },
 //  { 0x636A, "" },
 //  { 0x636B, "" },
 //  { 0x636C, "" },

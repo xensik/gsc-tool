@@ -222,5 +222,34 @@ project "xsk-gsc"
         "./include",
     }
 
+project "xsk-tests"
+    kind "ConsoleApp"
+    language "C++"
+    targetname "xsk-tests"
+
+    dependson "xsk-utils"
+    dependson "xsk-arc"
+    dependson "xsk-gsc"
+
+    files {
+        "./test/**.h",
+        "./test/**.hpp",
+        "./test/**.cpp"
+    }
+
+    links {
+        "xsk-utils",
+        "xsk-arc",
+        "xsk-gsc",
+    }
+
+    includedirs {
+        "./include",
+    }
+
+    catch2:link()
+    zlib:link()
+
 group "Dependencies"
+    catch2:project()
     zlib:project()

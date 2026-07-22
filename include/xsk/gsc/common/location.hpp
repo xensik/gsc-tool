@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -11,17 +11,16 @@ namespace xsk::gsc
 struct position
 {
 public:
-    typedef const std::string filename_type;
-    typedef i32 counter_type;
+    using filename_type = const std::string;
+    using counter_type = i32;
 
-    filename_type *filename;
+    filename_type* filename;
     counter_type line;
     counter_type column;
 
-    explicit position(filename_type *f = nullptr, counter_type l = 1, counter_type c = 1)
-        : filename(f), line(l), column(c) {}
+    explicit position(filename_type* f = nullptr, counter_type l = 1, counter_type c = 1) : filename(f), line(l), column(c) {}
 
-    void initialize(filename_type *fn = nullptr, counter_type l = 1, counter_type c = 1)
+    void initialize(filename_type* fn = nullptr, counter_type l = 1, counter_type c = 1)
     {
         filename = fn;
         line = l;
@@ -43,35 +42,35 @@ public:
     }
 
 private:
-    static counter_type add_(counter_type lhs, counter_type rhs, counter_type min)
+    static auto add_(counter_type lhs, counter_type rhs, counter_type min) -> counter_type
     {
         return lhs + rhs < min ? min : lhs + rhs;
     }
 };
 
-inline position& operator+=(position &res, position::counter_type width)
+inline auto operator+=(position& res, position::counter_type width) -> position&
 {
     res.columns(width);
     return res;
 }
 
-inline position operator+(position res, position::counter_type width)
+inline auto operator+(position res, position::counter_type width) -> position
 {
     return res += width;
 }
 
-inline position& operator-=(position &res, position::counter_type width)
+inline auto operator-=(position& res, position::counter_type width) -> position&
 {
     return res += -width;
 }
 
-inline position operator-(position res, position::counter_type width)
+inline auto operator-(position res, position::counter_type width) -> position
 {
     return res -= width;
 }
 
 template <typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T> &ostr, const position &pos)
+auto operator<<(std::basic_ostream<T>& ostr, const position& pos) -> std::basic_ostream<T>&
 {
     if (pos.filename)
         ostr << *pos.filename << ':';
@@ -81,22 +80,22 @@ std::basic_ostream<T>& operator<<(std::basic_ostream<T> &ostr, const position &p
 struct location
 {
 public:
-    typedef position::filename_type filename_type;
-    typedef position::counter_type counter_type;
+    using filename_type = position::filename_type;
+    using counter_type = position::counter_type;
 
     position begin;
     position end;
 
-    location(const position &b, const position &e)
+    location(const position& b, const position& e)
         : begin(b), end(e) {}
 
-    explicit location(const position &p = position())
+    explicit location(const position& p = position())
         : begin(p), end(p) {}
 
-    explicit location(filename_type *f, counter_type l = 1, counter_type c = 1)
+    explicit location(filename_type* f, counter_type l = 1, counter_type c = 1)
         : begin(f, l, c), end(f, l, c) {}
 
-    void initialize(filename_type *f = nullptr, counter_type l = 1, counter_type c = 1)
+    void initialize(filename_type* f = nullptr, counter_type l = 1, counter_type c = 1)
     {
         begin.initialize(f, l, c);
         end = begin;
@@ -128,40 +127,40 @@ public:
     }
 };
 
-inline location& operator+=(location &res, const location &end)
+inline auto operator+=(location& res, const location& end) -> location&
 {
     res.end = end.end;
     return res;
 }
 
-inline location operator+(location res, const location &end)
+inline auto operator+(location res, const location& end) -> location
 {
     return res += end;
 }
 
-inline location& operator+=(location &res, location::counter_type width)
+inline auto operator+=(location& res, location::counter_type width) -> location&
 {
     res.columns(width);
     return res;
 }
 
-inline location operator+(location res, location::counter_type width)
+inline auto operator+(location res, location::counter_type width) -> location
 {
     return res += width;
 }
 
-inline location& operator-=(location &res, location::counter_type width)
+inline auto operator-=(location& res, location::counter_type width) -> location&
 {
     return res += -width;
 }
 
-inline location operator-(location res, location::counter_type width)
+inline auto operator-(location res, location::counter_type width) -> location
 {
     return res -= width;
 }
 
 template <typename T>
-std::basic_ostream<T>& operator<<(std::basic_ostream<T> &ostr, const location &loc)
+auto operator<<(std::basic_ostream<T>& ostr, const location& loc) -> std::basic_ostream<T>&
 {
     location::counter_type end_col = 0 < loc.end.column ? loc.end.column - 1 : 0;
     ostr << loc.begin;

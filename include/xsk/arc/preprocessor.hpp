@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -25,9 +25,9 @@ private:
     std::vector<token> expr_;
     std::string date_;
     std::string time_;
-    usize curr_expr_;
-    u32 expand_;
-    u32 skip_;
+    usize curr_expr_{ 0 };
+    u32 expand_{ 0 };
+    u32 skip_{ 0 };
 
 public:
     preprocessor(context* ctx, std::string const& name, u8 const* data, usize size);
@@ -58,7 +58,7 @@ private:
     auto read_directive_include(token& hash, token& name) -> void;
     auto read_directive_inline(token& hash, token& name) -> void;
     auto read_directive_usingtree(token& hash, token& name) -> void;
-    auto read_hashtoken(token& hash) -> void;
+    auto read_hashtoken(token& tok) -> void;
     auto read_hashtoken_animtree(token& hash, token& name) -> void;
     auto read_hashtoken_hashstr(token& hash, token& name) -> void;
     auto expand(token& tok, define& def) -> void;
@@ -85,7 +85,7 @@ private:
     auto eval_expr_factor() -> i32;
     auto eval_expr_unary() -> i32;
     auto eval_expr_primary() -> i32;
-    auto get_local_time(std::tm& ltime) -> void;
+    auto get_local_time(std::tm& l_time) -> void;
     auto get_date_define(std::tm* time_p) -> void;
     auto get_time_define(std::tm* time_p) -> void;
 };

@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -28,7 +28,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     auto head = header{};
 
     devmap_.pos(sizeof(u32));
-    script_.pos((ctx_->features() & feature::headerxx) ? 0 : (ctx_->features() & feature::header72) ? 72 : 64);
+    script_.pos((ctx_->features() & feature::headerxx) ? 0 : ((ctx_->features() & feature::header72) ? 72 : 64));
     process_string(name);
 
     for (auto const& func : assembly_->functions)
@@ -152,7 +152,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     }
 
     head.stringtablefixup_offset = static_cast<u32>(script_.pos());
-    //head.stringtablefixup_count = static_cast<u16>(strings_.size());
+    // head.stringtablefixup_count = static_cast<u16>(strings_.size());
 
     auto stringtablecount = 0u;
 

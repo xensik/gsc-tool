@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -41,4 +41,4 @@ auto zlib::decompress(std::vector<u8> const& data, u32 length) -> std::vector<u8
     throw error(std::format("zlib decompress error {}", result));
 }
 
-} // namespace xsk::uitls
+} // namespace xsk::utils

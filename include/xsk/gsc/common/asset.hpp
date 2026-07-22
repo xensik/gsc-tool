@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -13,9 +13,9 @@ struct asset
     using ptr = std::unique_ptr<asset>;
 
     std::string name;
-    u32 compressed_length;
-    u32 length;
-    u32 bytecode_length;
+    u32 compressed_length{};
+    u32 length{};
+    u32 bytecode_length{};
     std::vector<u8> buffer;
     std::vector<u8> bytecode;
 

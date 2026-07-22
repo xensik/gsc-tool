@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -21,12 +21,12 @@ private:
     std::vector<scope> scopes_;
     std::unordered_map<std::string, expr const*> constants_;
     std::string animtree_;
-    sourcepos debug_pos_;
-    usize index_;
-    usize label_idx_;
-    bool can_break_;
-    bool can_continue_;
-    bool developer_thread_;
+    sourcepos debug_pos_{};
+    usize index_{};
+    usize label_idx_{};
+    bool can_break_{};
+    bool can_continue_{};
+    bool developer_thread_{};
 
 public:
     explicit compiler(context* ctx);
@@ -147,7 +147,7 @@ private:
     auto variable_register(expr_identifier const& exp) -> void;
     auto variable_access(expr_identifier const& exp) -> u8;
     auto is_constant_condition(expr const& exp) -> bool;
-    auto insert_label(std::string const& label) -> void;
+    auto insert_label(std::string const& name) -> void;
     auto insert_label() -> std::string;
     auto create_label() -> std::string;
 };

@@ -1,4 +1,4 @@
-// Copyright 2025 xensik. All rights reserved.
+// Copyright 2026 xensik. All rights reserved.
 //
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
@@ -96,7 +96,7 @@ struct string_ref
     using ptr = std::shared_ptr<string_ref>;
 
     std::string name;
-    u8 type;
+    u8 type{};
     std::vector<u32> refs;
 };
 
@@ -106,8 +106,8 @@ struct import_ref
 
     std::string space;
     std::string name;
-    u8 params;
-    u8 flags;
+    u8 params{};
+    u8 flags{};
     std::vector<u32> refs;
 };
 
@@ -117,11 +117,11 @@ struct export_ref
 
     std::string space;
     std::string name;
-    u32 checksum;
-    u32 offset;
-    u32 size;
-    u8 params;
-    u8 flags;
+    u32 checksum{};
+    u32 offset{};
+    u32 size{};
+    u8 params{};
+    u8 flags{};
 };
 
 } // namespace xsk::arc
