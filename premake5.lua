@@ -84,6 +84,7 @@ workspace "gsc-tool"
     cppdialect "C++20"
     staticruntime "On"
     warnings "Extra"
+    externalwarnings "Off"
 
     -- configurations
     configurations { "debug", "release" }

@@ -1,7 +1,7 @@
 catch2 = { base = path.join(dependencies.base, "catch2") }
 
 function catch2:include()
-    includedirs { path.join(catch2.base, "extras") }
+    externalincludedirs { path.join(catch2.base, "extras") }
 end
 
 function catch2:link()
@@ -14,6 +14,7 @@ function catch2:project()
     kind "StaticLib"
     language "C++"
     warnings "off"
+    defines "CATCH_AMALGAMATED_CUSTOM_MAIN"
 
     self:include()
 
