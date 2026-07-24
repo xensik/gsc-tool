@@ -87,7 +87,7 @@ note: for PS3 & Xbox 360 `.gscbin` files *(compressedLen, len, bytecodeLen)* are
 - install [*premake5*](https://premake.github.io) on your system PATH
 - clone this repository
 - update the submodules ``git submodule update --init --recursive``
-- run prebuild script ``premake5 vs2022`` (windows) or ``premake5 gmake2`` (linux/macos)
+- run prebuild script ``premake5 vs2022`` (windows) or ``premake5 gmake`` (linux/macos)
 
 ## Contribute
 If you like my work, consider sponsoring/donating! Would allow me to spend more time adding new features & fixing bugs.

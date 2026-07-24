@@ -212,9 +212,7 @@ auto printer::print_decl_namespace(decl_namespace const& dec) -> void
 auto printer::print_decl_precache(decl_precache const& dec) -> void
 {
     std::format_to(std::back_inserter(buf_), "#precache( ");
-    print_expr_string(*dec.asset_type);
-    std::format_to(std::back_inserter(buf_), ", ");
-    print_expr_string(*dec.asset_name);
+    print_expr_arguments(*dec.args);
     std::format_to(std::back_inserter(buf_), " );\n");
 }
 
