@@ -760,7 +760,7 @@ auto preprocessor::read_directive_namespace(token& hash, token& name) -> void
     tokens_.push_front(token{ token::NAMESPACE, spacing::none, name.pos });
 }
 
-auto preprocessor::read_hashtoken(token& tok) -> void
+auto preprocessor::read_hashtoken(token& hash) -> void
 {
     if (skip_) return;
 
@@ -770,17 +770,17 @@ auto preprocessor::read_hashtoken(token& tok) -> void
     {
         if (next.data == "animtree")
         {
-            return read_hashtoken_animtree(tok, next);
+            return read_hashtoken_animtree(hash, next);
         }
     }
     else if (next.type == token::STRING)
     {
-        return read_hashtoken_hashstr(tok, next);
+        return read_hashtoken_hashstr(hash, next);
     }
 
     // if nothing match return '#'
     tokens_.push_front(std::move(next));
-    tokens_.emplace_front(token::HASH, tok.space, tok.pos);
+    tokens_.emplace_front(token::HASH, hash.space, hash.pos);
 }
 
 auto preprocessor::read_hashtoken_animtree(token& hash, token& name) -> void
