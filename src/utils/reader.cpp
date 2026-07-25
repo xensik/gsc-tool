@@ -9,15 +9,15 @@
 namespace xsk::utils
 {
 
-reader::reader(bool swap) : data_{ nullptr }, size_{ 0 }, swap_{ swap }
+reader::reader(const bool swap) : data_{ nullptr }, size_{ 0 }, swap_{ swap }
 {
 }
 
-reader::reader(std::vector<u8> const& data, bool swap) : data_{ data.data() }, size_{ static_cast<u32>(data.size()) }, swap_{ swap }
+reader::reader(std::vector<u8> const& data, const bool swap) : data_{ data.data() }, size_{ static_cast<u32>(data.size()) }, swap_{ swap }
 {
 }
 
-reader::reader(u8 const* data, usize size, bool swap) : data_{ data }, size_{ size }, swap_{ swap }
+reader::reader(u8 const* data, const usize size, const bool swap) : data_{ data }, size_{ size }, swap_{ swap }
 {
 }
 
@@ -27,7 +27,7 @@ auto reader::read() -> i8
     if (pos_ + 1 > size_)
         throw error("reader: out of bounds");
 
-    auto value = *reinterpret_cast<i8 const*>(data_ + pos_);
+    auto const value = *reinterpret_cast<i8 const*>(data_ + pos_);
     pos_ += 1;
     return value;
 }
@@ -38,7 +38,7 @@ auto reader::read() -> u8
     if (pos_ + 1 > size_)
         throw error("reader: out of bounds");
 
-    auto value = *reinterpret_cast<u8 const*>(data_ + pos_);
+    auto const value = *reinterpret_cast<u8 const*>(data_ + pos_);
     pos_ += 1;
     return value;
 }
@@ -51,7 +51,7 @@ auto reader::read() -> i16
 
     if (!swap_)
     {
-        auto value = *reinterpret_cast<i16 const*>(data_ + pos_);
+        auto const value = *reinterpret_cast<i16 const*>(data_ + pos_);
         pos_ += 2;
         return value;
     }
@@ -71,7 +71,7 @@ auto reader::read() -> u16
 
     if (!swap_)
     {
-        auto value = *reinterpret_cast<u16 const*>(data_ + pos_);
+        auto const value = *reinterpret_cast<u16 const*>(data_ + pos_);
         pos_ += 2;
         return value;
     }
@@ -91,7 +91,7 @@ auto reader::read() -> i32
 
     if (!swap_)
     {
-        auto value = *reinterpret_cast<i32 const*>(data_ + pos_);
+        auto const value = *reinterpret_cast<i32 const*>(data_ + pos_);
         pos_ += 4;
         return value;
     }
@@ -113,7 +113,7 @@ auto reader::read() -> u32
 
     if (!swap_)
     {
-        auto value = *reinterpret_cast<u32 const*>(data_ + pos_);
+        auto const value = *reinterpret_cast<u32 const*>(data_ + pos_);
         pos_ += 4;
         return value;
     }
@@ -135,7 +135,7 @@ auto reader::read() -> i64
 
     if (!swap_)
     {
-        auto value = *reinterpret_cast<i64 const*>(data_ + pos_);
+        auto const value = *reinterpret_cast<i64 const*>(data_ + pos_);
         pos_ += 8;
         return value;
     }
@@ -161,7 +161,7 @@ auto reader::read() -> u64
 
     if (!swap_)
     {
-        auto value = *reinterpret_cast<u64 const*>(data_ + pos_);
+        auto const value = *reinterpret_cast<u64 const*>(data_ + pos_);
         pos_ += 8;
         return value;
     }
@@ -187,7 +187,7 @@ auto reader::read() -> f32
 
     if (!swap_)
     {
-        auto value = *reinterpret_cast<f32 const*>(data_ + pos_);
+        auto const value = *reinterpret_cast<f32 const*>(data_ + pos_);
         pos_ += 4;
         return value;
     }
@@ -208,7 +208,7 @@ auto reader::read_i24() -> i32
 
     if (!swap_)
     {
-        auto value = *reinterpret_cast<i32 const*>(data_ + pos_) & 0xFFFFFF;
+        auto const value = *reinterpret_cast<i32 const*>(data_ + pos_) & 0xFFFFFF;
         pos_ += 3;
         return value;
     }
@@ -228,7 +228,7 @@ auto reader::read_cstr() -> std::string
     return ret;
 }
 
-auto reader::read_bytes(usize pos, usize count) const -> std::string
+auto reader::read_bytes(const usize pos, const usize count) const -> std::string
 {
     auto data = std::string{};
 
@@ -249,19 +249,19 @@ auto reader::is_avail() const -> bool
     return pos_ < size_;
 }
 
-auto reader::seek(usize size) -> void
+auto reader::seek(const usize size) -> void
 {
     if (pos_ + size <= size_) pos_ += size;
 }
 
-auto reader::seek_neg(usize size) -> void
+auto reader::seek_neg(const usize size) -> void
 {
     if (pos_ >= size) pos_ -= size;
 }
 
-auto reader::align(usize size) -> usize
+auto reader::align(const usize size) -> usize
 {
-    auto pos = pos_;
+    auto const pos = pos_;
 
     pos_ = (pos_ + (size - 1)) & ~(size - 1);
 
@@ -283,7 +283,7 @@ auto reader::pos() const -> usize
     return pos_;
 }
 
-auto reader::pos(usize pos) -> void
+auto reader::pos(const usize pos) -> void
 {
     if (pos <= size_) pos_ = pos;
 }

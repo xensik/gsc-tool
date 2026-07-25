@@ -18,7 +18,7 @@ constexpr u64 header_magic = 0x38000A0D43534780;
 struct context : public arc::context
 {
 public:
-    context(arc::instance inst);
+    explicit context(arc::instance inst);
 };
 
 } // namespace xsk::arc::t9

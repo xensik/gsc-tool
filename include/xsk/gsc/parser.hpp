@@ -22,10 +22,10 @@ private:
     u32 index_{ 0 };
 
 public:
-    parser(context* ctx);
-    auto parse_assembly(buffer const& data) -> assembly::ptr;
-    auto parse_assembly(std::vector<u8> const& data) -> assembly::ptr;
-    auto parse_assembly(u8 const* data, usize size) -> assembly::ptr;
+    explicit parser(context* ctx);
+    auto parse_assembly(buffer const& data) const -> assembly::ptr;
+    auto parse_assembly(std::vector<u8> const& data) const -> assembly::ptr;
+    auto parse_assembly(u8 const* data, const usize size) const -> assembly::ptr;
     auto parse_source(std::string const& name, buffer const& data) -> program::ptr;
     auto parse_source(std::string const& name, std::vector<u8> const& data) -> program::ptr;
     auto parse_source(std::string const& name, u8 const* data, usize size) -> program::ptr;
@@ -105,20 +105,20 @@ private:
     auto parse_expr_path() -> expr_path::ptr;
     auto parse_expr_string() -> expr_string::ptr;
     auto parse_expr_animation() -> expr::ptr;
-    auto parse_switch(stmt_switch& stm) -> void;
+    auto parse_switch(stmt_switch const& stm) const -> void;
     auto parse_assign_op() -> expr_assign::op;
     auto is_assign_op() const -> bool;
     auto is_call_start() -> bool;
-    auto is_lvalue(expr const& e) -> bool;
-    auto is_no_call_chain(expr const& e) -> bool;
-    auto is_call_or_method(expr const& e) -> bool;
-    auto check(token::kind k) const -> bool;
-    auto match(token::kind k) -> bool;
-    auto expect(token::kind k) -> token;
+    auto is_lvalue(expr const& exp) const -> bool;
+    auto is_no_call_chain(expr const& exp) const -> bool;
+    auto is_call_or_method(expr const& exp) const -> bool;
+    auto check(token::kind kind) const -> bool;
+    auto match(token::kind kind) -> bool;
+    auto expect(token::kind kind) -> token;
     auto peek() -> token&;
     auto advance() -> token;
     auto read_token() -> token;
-    [[noreturn]] auto error(location const& loc, std::string const& msg) -> void;
+    [[noreturn]] auto error(location const& loc, std::string const& msg) const -> void;
     [[noreturn]] auto error(std::string const& msg) const -> void;
 };
 

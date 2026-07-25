@@ -8,37 +8,37 @@
 namespace xsk::arc
 {
 
-struct error : public std::runtime_error
+struct error final : public std::runtime_error
 {
 public:
     explicit error(std::string const& what);
 };
 
-struct asm_error : public std::runtime_error
+struct asm_error final : public std::runtime_error
 {
 public:
     explicit asm_error(std::string const& what);
 };
 
-struct disasm_error : public std::runtime_error
+struct disasm_error final : public std::runtime_error
 {
 public:
     explicit disasm_error(std::string const& what);
 };
 
-struct ppr_error : public std::runtime_error
+struct ppr_error final : public std::runtime_error
 {
 public:
     ppr_error(location const& loc, std::string const& what);
 };
 
-struct comp_error : public std::runtime_error
+struct comp_error final : public std::runtime_error
 {
 public:
     comp_error(location const& loc, std::string const& what);
 };
 
-struct decomp_error : public std::runtime_error
+struct decomp_error final : public std::runtime_error
 {
 public:
     explicit decomp_error(std::string const& what);

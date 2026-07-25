@@ -20,7 +20,7 @@ constexpr usize hash_count = 73500;
 struct context : public gsc::context
 {
 public:
-    context(gsc::instance inst);
+    explicit context(gsc::instance inst);
 };
 
 } // namespace xsk::gsc::iw9

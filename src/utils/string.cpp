@@ -159,7 +159,7 @@ auto string::unquote(std::string const& str) -> std::string
     return str;
 }
 
-auto string::split(std::string& str, char delimiter) -> std::vector<std::string>
+auto string::split(std::string& str, const char delimiter) -> std::vector<std::string>
 {
     auto tokens = std::vector<std::string>{};
     auto ss = std::stringstream{ str };
@@ -173,7 +173,7 @@ auto string::split(std::string& str, char delimiter) -> std::vector<std::string>
     return tokens;
 }
 
-auto string::clean_buffer_lines(u8 const* data, usize size) -> std::vector<std::string>
+auto string::clean_buffer_lines(u8 const* data, const usize size) -> std::vector<std::string>
 {
     auto lines = std::vector<std::string>{};
     auto current = std::string{};

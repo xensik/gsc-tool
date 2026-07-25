@@ -28,7 +28,7 @@ auto zlib::compress(std::vector<u8> const& data) -> std::vector<u8>
     throw error(std::format("zlib compress error {}", result));
 }
 
-auto zlib::decompress(std::vector<u8> const& data, u32 length) -> std::vector<u8>
+auto zlib::decompress(std::vector<u8> const& data, const u32 length) -> std::vector<u8>
 {
     auto output = std::vector<u8>{};
     output.resize(length);

@@ -133,8 +133,8 @@ struct token
     location pos;
     std::string data;
 
-    token(kind type, spacing space, location pos) : type{ type }, space{ space }, pos{ pos } {}
-    token(kind type, spacing space, location pos, std::string data) : type{ type }, space{ space }, pos{ pos }, data{ std::move(data) } {}
+    token(const kind type, const spacing space, location pos) : type{ type }, space{ space }, pos{ pos } {}
+    token(const kind type, const spacing space, location pos, std::string data) : type{ type }, space{ space }, pos{ pos }, data{ std::move(data) } {}
     auto to_string() const -> std::string;
 };
 

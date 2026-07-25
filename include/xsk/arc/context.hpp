@@ -37,7 +37,7 @@ public:
     auto compiler() -> compiler& { return compiler_; }
     auto decompiler() -> decompiler& { return decompiler_; }
 
-    auto fixup(bool value) -> void { fixup_ = value; }
+    auto fixup(const bool value) -> void { fixup_ = value; }
     auto fixup() const -> bool { return fixup_; }
 
     auto init(arc::build build, fs_callback callback) -> void;
