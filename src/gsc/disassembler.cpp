@@ -556,7 +556,7 @@ auto disassembler::disassemble_offset() -> i32
     return (script_.read_i24() << 8) >> ((ctx_->features() & feature::offs8) ? 8 : ((ctx_->features() & feature::offs9) ? 9 : 10));
 }
 
-auto disassembler::resolve_functions() -> void
+auto disassembler::resolve_functions() const -> void
 {
     for (auto const& func : assembly_->functions)
     {
