@@ -913,7 +913,7 @@ auto parse_file(game game, mach mach, const fs::path& file, fs::path rel) -> res
 {
     try
     {
-        if (game != game::t6)
+        if (game > game::t7)
             throw std::runtime_error("not implemented");
 
         rel = fs::path{ games_rev.at(game) } / rel / file.filename();

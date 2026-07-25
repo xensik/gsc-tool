@@ -70,6 +70,18 @@ std::unordered_map<std::string_view, token::kind> const keyword_map
     { "getdvarcoloralpha", token::GETDVARCOLORALPHA },
     { "getfirstarraykey", token::GETFIRSTARRAYKEY },
     { "getnextarraykey", token::GETNEXTARRAYKEY },
+// v3 keywords (size64 bits)
+    { "var", token::VAR },
+    { "class", token::CLASS },
+    { "constructor", token::CONSTRUCTOR },
+    { "destructor", token::DESTRUCTOR },
+    { "function", token::FUNCTION },
+    { "autoexec", token::AUTOEXEC },
+    { "codecall", token::CODECALL },
+    { "private", token::PRIVATE },
+    { "world", token::WORLD },
+    { "classes", token::CLASSES },
+    { "new", token::NEW },
 }};
 
 } // anonymous namespace
@@ -128,13 +140,13 @@ auto parser::parse_program() -> program::ptr
 
     while (!check(token::EOS))
     {
-        if (check(token::INCLUDE))
+        if (check(token::INCLUDE) || (check(token::USING) && ctx_->features() & feature::size64))
         {
-            prog->includes.push_back(parse_include());
+            prog->includes.push_back(parse_include_or_using());
         }
-        else if (check(token::INLINE))
+        else if (check(token::INLINE) || (check(token::INSERT) && ctx_->features() & feature::size64))
         {
-            parse_inline();
+            parse_inline_or_insert();
         }
         else if (check(token::SEMICOLON))
         {
@@ -149,19 +161,29 @@ auto parser::parse_program() -> program::ptr
     return prog;
 }
 
-auto parser::parse_include() -> include::ptr
+auto parser::parse_include_or_using() -> include::ptr
 {
     auto loc = tok_.pos;
-    expect(token::INCLUDE);
+
+    if (ctx_->features() & feature::size64)
+        expect(token::USING);
+    else
+        expect(token::INCLUDE);
+
     auto path = parse_expr_path();
     expect(token::SEMICOLON);
     return include::make(loc, std::move(path));
 }
 
-auto parser::parse_inline() -> void
+auto parser::parse_inline_or_insert() -> void
 {
     auto loc = tok_.pos;
-    expect(token::INLINE);
+
+    if (ctx_->features() & feature::size64)
+        expect(token::INSERT);
+    else
+        expect(token::INLINE);
+
     auto path = parse_expr_path();
     expect(token::SEMICOLON);
     ppr_.push_header(loc, path->value);
@@ -183,12 +205,49 @@ auto parser::parse_declaration() -> decl::ptr
         return decl_dev_end::make(loc);
     }
 
+    if (check(token::NAMESPACE))
+    {
+        return parse_decl_namespace();
+    }
+
+    if (check(token::PRECACHE))
+    {
+        return parse_decl_precache();
+    }
+
     if (check(token::USINGTREE))
     {
         return parse_decl_usingtree();
     }
 
+    if (check(token::CLASS))
+    {
+        return parse_decl_class();
+    }
+
     return parse_decl_function();
+}
+
+auto parser::parse_decl_namespace() -> decl::ptr
+{
+    auto loc = tok_.pos;
+    expect(token::NAMESPACE);
+    auto name = parse_expr_identifier();
+    expect(token::SEMICOLON);
+    ppr_.ban_header(loc);
+    return decl_namespace::make(loc, std::move(name));
+}
+
+auto parser::parse_decl_precache() -> decl::ptr
+{
+    auto loc = tok_.pos;
+    expect(token::PRECACHE);
+    expect(token::LPAREN);
+    auto args = parse_expr_arguments();
+    expect(token::RPAREN);
+    expect(token::SEMICOLON);
+    ppr_.ban_header(loc);
+    return decl_precache::make(loc, std::move(args));
 }
 
 auto parser::parse_decl_usingtree() -> decl::ptr
@@ -203,10 +262,82 @@ auto parser::parse_decl_usingtree() -> decl::ptr
     return decl_usingtree::make(loc, std::move(name));
 }
 
+auto parser::parse_decl_class() -> decl::ptr
+{
+    auto loc = tok_.pos;
+    expect(token::CLASS);
+    auto name = parse_expr_identifier();
+
+    auto base = expr_identifier::make(loc, "");
+
+    if (check(token::COLON))
+    {
+        advance();
+        base = parse_expr_identifier();
+    }
+
+    expect(token::LBRACE);
+
+    auto body = decl_list::make(loc);
+
+    while (!check(token::RBRACE))
+    {
+        if (check(token::FUNCTION))
+        {
+            body->list.push_back(parse_decl_function());
+        }
+        else if (check(token::CONSTRUCTOR))
+        {
+            auto cloc = tok_.pos;
+            advance();
+            expect(token::LPAREN);
+            auto params = parse_expr_parameters();
+            expect(token::RPAREN);
+            auto cbody = parse_stmt_comp();
+            body->list.push_back(decl_function::make(cloc, expr_identifier::make(cloc, ""),
+                expr_identifier::make(cloc, "__constructor"), std::move(params), std::move(cbody), export_flags::export_none));
+        }
+        else if (check(token::DESTRUCTOR))
+        {
+            auto dloc = tok_.pos;
+            advance();
+            expect(token::LPAREN);
+            expect(token::RPAREN);
+            auto dbody = parse_stmt_comp();
+            body->list.push_back(decl_function::make(dloc, expr_identifier::make(dloc, ""),
+                expr_identifier::make(dloc, "__destructor"), expr_parameters::make(dloc), std::move(dbody), export_flags::export_none));
+        }
+        else if (check(token::VAR))
+        {
+            body->list.push_back(parse_decl_variable());
+        }
+        else
+        {
+            error("expected class member");
+        }
+    }
+
+    expect(token::RBRACE);
+    ppr_.ban_header(loc);
+    return decl_class::make(loc, std::move(name), std::move(base), std::move(body));
+}
+
+auto parser::parse_decl_variable() -> decl::ptr
+{
+    auto loc = tok_.pos;
+    expect(token::VAR);
+    auto name = parse_expr_identifier();
+    expect(token::SEMICOLON);
+    return decl_variable::make(loc, std::move(name));
+}
+
 auto parser::parse_decl_function() -> decl::ptr
 {
     auto loc = tok_.pos;
     auto flags = export_flags::export_none;
+
+    if(ctx_->features() & feature::size64)
+        expect(token::FUNCTION);
 
     if (check(token::AUTOEXEC))
     {
@@ -613,7 +744,7 @@ auto parser::parse_stmt_waittill(expr::ptr obj) -> stmt::ptr
 
     if (match(token::COMMA))
     {
-        auto args = parse_expr_arguments_no_empty();
+        auto args = parse_expr_arguments_no_empty(); // TODO: only identifier | undefined
         expect(token::RPAREN);
         expect(token::SEMICOLON);
         return stmt_waittill::make(loc, std::move(obj), std::move(event), std::move(args));
@@ -945,10 +1076,16 @@ auto parser::parse_expr_equality() -> expr::ptr
 {
     auto lhs = parse_expr_relational();
 
-    while (check(token::EQ) || check(token::NE))
+    while (check(token::EQ) || check(token::NE) || check(token::SEQ) || check(token::SNE))
     {
         auto loc = tok_.pos;
-        auto op = check(token::EQ) ? expr_binary::op::eq : expr_binary::op::ne;
+        auto op = expr_binary::op::eq;
+
+        if (check(token::EQ))       op = expr_binary::op::eq;
+        else if (check(token::NE))  op = expr_binary::op::ne;
+        else if (check(token::SEQ)) op = expr_binary::op::seq;
+        else if (check(token::SNE)) op = expr_binary::op::sne;
+
         advance();
         auto rhs = parse_expr_relational();
         lhs = expr_binary::make(loc, std::move(lhs), std::move(rhs), op);
@@ -1103,6 +1240,21 @@ auto parser::parse_expr_unary() -> expr::ptr
         return parse_expr_animation();
     }
 
+    if (check(token::BITAND) && ctx_->features() & feature::size64)
+    {
+        advance();
+        auto name_tok = expect(token::NAME);
+
+        if (check(token::DOUBLECOLON))
+        {
+            advance();
+            auto func_tok = expect(token::NAME);
+            return expr_reference::make(loc, expr_path::make(name_tok.pos, name_tok.data), expr_identifier::make(func_tok.pos, func_tok.data));
+        }
+
+        return expr_reference::make(loc, expr_path::make(loc), expr_identifier::make(name_tok.pos, name_tok.data));
+    }
+
     return parse_expr_primary();
 }
 
@@ -1134,6 +1286,9 @@ auto parser::parse_expr_primary() -> expr::ptr
                 auto func = expr_function::make(loc, std::move(path), std::move(name), std::move(args), call::mode::normal);
                 return parse_expr_postfix(expr_call::make(loc, std::move(func)));
             }
+
+            if (ctx_->features() & feature::size64)
+                error(loc, "use '&' for function references");
 
             return expr_reference::make(loc, std::move(path), std::move(name));
         }
@@ -1277,6 +1432,30 @@ auto parser::parse_expr_primary() -> expr::ptr
             return parse_expr_postfix(std::move(base));
         }
 
+        case token::WORLD:
+        {
+            advance();
+            auto base = expr_world::make(loc);
+            return parse_expr_postfix(std::move(base));
+        }
+
+        case token::CLASSES:
+        {
+            advance();
+            auto base = expr_classes::make(loc);
+            return parse_expr_postfix(std::move(base));
+        }
+
+        case token::NEW:
+        {
+            advance();
+            auto nname = parse_expr_identifier();
+            expect(token::LPAREN);
+            auto args = parse_expr_arguments();
+            expect(token::RPAREN);
+            return expr_new::make(loc, std::move(nname));
+        }
+
         case token::SIZE:
         {
             advance();
@@ -1310,6 +1489,9 @@ auto parser::parse_expr_object() -> expr::ptr
                 auto func = expr_function::make(loc, std::move(path), std::move(name), std::move(args), call::mode::normal);
                 return parse_expr_postfix(expr_call::make(loc, std::move(func)));
             }
+
+            if (ctx_->features() & feature::size64)
+                error(loc, "use '&' for function references");
 
             return expr_reference::make(loc, std::move(path), std::move(name));
         }
@@ -1349,6 +1531,9 @@ auto parser::parse_expr_object() -> expr::ptr
                 auto func = expr_function::make(loc, std::move(path), std::move(name), std::move(args), call::mode::normal);
                 return parse_expr_postfix(expr_call::make(loc, std::move(func)));
             }
+
+            if (ctx_->features() & feature::size64)
+                error(loc, "use '&' for function references");
 
             return expr_reference::make(loc, std::move(path), std::move(name));
         }
@@ -1520,6 +1705,17 @@ auto parser::parse_expr_pointer(call::mode mode) -> call::ptr
     auto func = parse_expr();
     expect(token::RBRACKET);
     expect(token::RBRACKET);
+
+    if (check(token::ARROW))
+    {
+        advance();
+        auto name = parse_expr_identifier_nosize();
+        expect(token::LPAREN);
+        auto args = parse_expr_arguments();
+        expect(token::RPAREN);
+        return expr_member::make(loc, std::move(func), std::move(name), std::move(args), mode);
+    }
+
     expect(token::LPAREN);
     auto args = parse_expr_arguments();
     expect(token::RPAREN);
@@ -1569,6 +1765,23 @@ auto parser::parse_expr_parameters() -> expr_parameters::ptr
 
     auto parse_param = [&]() -> expr::ptr
     {
+        // &name
+        if (check(token::BITAND) && ctx_->features() & feature::size64)
+        {
+            auto rloc = tok_.pos;
+            advance();
+            auto name = parse_expr_identifier();
+            return expr_reference::make(rloc, expr_path::make(rloc), std::move(name));
+        }
+
+        // ...
+        if (check(token::ELLIPSIS) && ctx_->features() & feature::size64)
+        {
+            auto tok = expect(token::ELLIPSIS);
+            return expr_ellipsis::make(tok.pos);
+        }
+
+        // name | name = expr
         auto id = parse_expr_identifier();
 
         if (match(token::ASSIGN))
@@ -1585,6 +1798,18 @@ auto parser::parse_expr_parameters() -> expr_parameters::ptr
     while (match(token::COMMA))
     {
         params->list.push_back(parse_param());
+    }
+
+    // if 64size, ensure ... at end of parameter list
+    if (ctx_->features() & feature::size64)
+    {
+        for (const auto& param : params->list)
+        {
+            if (param->is<expr_ellipsis>() && param != params->list.back())
+            {
+                error(param->loc(), "'...' must be the last parameter");
+            }
+        }
     }
 
     return params;
@@ -1634,8 +1859,20 @@ auto parser::parse_expr_getdvarint() -> expr::ptr
     auto loc = tok_.pos;
     expect(token::GETDVARINT);
     expect(token::LPAREN);
-    auto arg = parse_expr();
+    auto arg = parse_expr_arguments();
     expect(token::RPAREN);
+
+    if (ctx_->features() & feature::size64)
+    {
+        if (arg->list.size() != 1 && arg->list.size() != 2)
+            error(loc, "expected 1 or 2 arguments to getdvarint");
+    }
+    else
+    {
+        if (arg->list.size() != 1)
+            error(loc, "expected 1 argument to getdvarint");
+    }
+
     return expr_getdvarint::make(loc, std::move(arg));
 }
 
@@ -1644,8 +1881,20 @@ auto parser::parse_expr_getdvarfloat() -> expr::ptr
     auto loc = tok_.pos;
     expect(token::GETDVARFLOAT);
     expect(token::LPAREN);
-    auto arg = parse_expr();
+    auto arg = parse_expr_arguments();
     expect(token::RPAREN);
+
+    if (ctx_->features() & feature::size64)
+    {
+        if (arg->list.size() != 1 && arg->list.size() != 2)
+            error(loc, "expected 1 or 2 arguments to getdvarfloat");
+    }
+    else
+    {
+        if (arg->list.size() != 1)
+            error(loc, "expected 1 argument to getdvarfloat");
+    }
+
     return expr_getdvarfloat::make(loc, std::move(arg));
 }
 
@@ -2196,7 +2445,28 @@ auto parser::read_token() -> token
 
         if (it != keyword_map.end())
         {
-            tok.type = it->second;
+            if (!(ctx_->features() & feature::size64))
+            {
+                switch (it->second)
+                {
+                    case token::VAR:
+                    case token::CLASS:
+                    case token::CONSTRUCTOR:
+                    case token::DESTRUCTOR:
+                    case token::FUNCTION:
+                    case token::WORLD:
+                    case token::CLASSES:
+                    case token::NEW:
+                        break;
+                    default:
+                        tok.type = it->second;
+                        break;
+                }
+            }
+            else
+            {
+                tok.type = it->second;
+            }
         }
     }
 

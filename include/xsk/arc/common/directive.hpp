@@ -29,7 +29,10 @@ struct directive
         INCLUDE,
         INLINE,
         INSERT,
-        USINGTREE
+        USING,
+        PRECACHE,
+        USINGTREE,
+        NAMESPACE
     };
 
     kind type;
