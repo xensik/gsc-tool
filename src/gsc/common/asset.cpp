@@ -9,7 +9,7 @@
 namespace xsk::gsc
 {
 
-auto asset::serialize() -> std::vector<u8>
+auto asset::serialize() const -> std::vector<u8>
 {
     auto data = std::vector<u8>{};
 

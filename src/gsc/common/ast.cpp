@@ -784,7 +784,7 @@ program::program(location const& loc) : node{ type::program, loc }
 
 auto operator==(expr const& lhs, expr const& rhs) -> bool
 {
-    if (!(lhs.kind() == rhs.kind())) return false;
+    if (lhs.kind() != rhs.kind()) return false;
 
     switch (lhs.kind())
     {

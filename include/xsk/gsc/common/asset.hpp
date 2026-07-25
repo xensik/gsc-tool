@@ -19,7 +19,7 @@ struct asset
     std::vector<u8> buffer;
     std::vector<u8> bytecode;
 
-    auto serialize() -> std::vector<u8>;
+    auto serialize() const -> std::vector<u8>;
     auto deserialize(std::vector<u8> const& data) -> void;
 };
 

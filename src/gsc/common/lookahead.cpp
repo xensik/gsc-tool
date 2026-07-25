@@ -9,7 +9,7 @@
 namespace xsk::gsc
 {
 
-lookahead::lookahead(char const* data, usize size)
+lookahead::lookahead(char const* data, const usize size)
 {
     if (data && size)
     {
