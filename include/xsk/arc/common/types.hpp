@@ -86,9 +86,9 @@ struct feature
         foreach  = 1 << 11,
     };
 
-    explicit feature(const values value) : value_(value) {}
-    explicit operator values() const { return value_; }
-    explicit operator bool() const { return value_ != values::none; }
+    feature(const values value) : value_(value) {}
+    operator values() const { return value_; }
+    operator bool() const { return value_ != values::none; }
     auto operator|(const feature::values rhs) const -> feature::values { return (value_ | rhs); }
     auto operator&(const feature::values rhs) const -> feature::values { return (value_ & rhs); }
 
