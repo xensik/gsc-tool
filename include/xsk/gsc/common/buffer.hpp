@@ -14,7 +14,7 @@ struct buffer
     usize const size;
 
     buffer() : data{ nullptr }, size{ 0 } {}
-    buffer(u8 const* data, usize size) : data{ data }, size{ size } {}
+    buffer(u8 const* data, const usize size) : data{ data }, size{ size } {}
 };
 
 } // namespace xsk::gsc

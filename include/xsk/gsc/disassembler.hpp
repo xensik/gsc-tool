@@ -40,9 +40,9 @@ private:
     auto disassemble_switch(instruction& inst) -> void;
     auto disassemble_switch_table(instruction& inst) -> void;
     auto disassemble_offset() -> i32;
-    auto resolve_functions() -> void;
-    auto resolve_function(std::string const& index) -> std::string;
-    auto decrypt_string(std::string const& str) -> std::string;
+    auto resolve_functions() const -> void;
+    auto resolve_function(std::string const& index) const -> std::string;
+    auto decrypt_string(std::string const& str) const -> std::string;
 };
 
 } // namespace xsk::gsc

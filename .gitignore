@@ -149,6 +149,9 @@ user*.bat
 # VScode
 .vscode/
 
+# JetBrains
+.idea/
+
 # Output folders
 renamed/
 parsed/

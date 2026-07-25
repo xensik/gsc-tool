@@ -25,7 +25,7 @@ auto disassembler::disassemble(std::vector<u8> const& script, std::vector<u8> co
     return disassemble(script.data(), script.size(), stack.data(), stack.size());
 }
 
-auto disassembler::disassemble(u8 const* script, usize script_size, u8 const* stack, usize stack_size) -> assembly::ptr
+auto disassembler::disassemble(u8 const* script, const usize script_size, u8 const* stack, const usize stack_size) -> assembly::ptr
 {
     stack_ = utils::reader{ stack, stack_size, ctx_->endian() == endian::big };
     script_ = utils::reader{ script, script_size, ctx_->endian() == endian::big };
@@ -324,7 +324,7 @@ auto disassembler::disassemble_field(instruction& inst) -> void
         return inst.data.push_back(ctx_->hash_name(script_.read<u64>()));
     }
 
-    if (auto id = (ctx_->features() & feature::tok4) ? script_.read<u32>() : script_.read<u16>(); id <= ctx_->string_count())
+    if (auto const id = (ctx_->features() & feature::tok4) ? script_.read<u32>() : script_.read<u16>(); id <= ctx_->string_count())
     {
         return inst.data.push_back(ctx_->token_name(id));
     }
@@ -556,7 +556,7 @@ auto disassembler::disassemble_offset() -> i32
     return (script_.read_i24() << 8) >> ((ctx_->features() & feature::offs8) ? 8 : ((ctx_->features() & feature::offs9) ? 9 : 10));
 }
 
-auto disassembler::resolve_functions() -> void
+auto disassembler::resolve_functions() const -> void
 {
     for (auto const& func : assembly_->functions)
     {
@@ -591,9 +591,9 @@ auto disassembler::resolve_functions() -> void
     }
 }
 
-auto disassembler::resolve_function(std::string const& index) -> std::string
+auto disassembler::resolve_function(std::string const& index) const -> std::string
 {
-    auto addr = static_cast<usize>(std::stoul(index));
+    auto const addr = static_cast<usize>(std::stoul(index));
 
     for (auto const& func : assembly_->functions)
     {
@@ -606,7 +606,7 @@ auto disassembler::resolve_function(std::string const& index) -> std::string
     throw disasm_error(std::format("couldn't resolve function name at index 0x{}", index));
 }
 
-auto disassembler::decrypt_string(std::string const& str) -> std::string
+auto disassembler::decrypt_string(std::string const& str) const -> std::string
 {
     if (str.empty() || ((static_cast<u8>(str[0]) & 0xC0) != 0x80))
     {
@@ -617,7 +617,7 @@ auto disassembler::decrypt_string(std::string const& str) -> std::string
 
     data.reserve(str.size() * 2);
 
-    for (char i : str)
+    for (const char i : str)
     {
         data += std::format("{:02X}", static_cast<u8>(i));
     }

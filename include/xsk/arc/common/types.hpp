@@ -86,18 +86,18 @@ struct feature
         foreach  = 1 << 11,
     };
 
-    feature(values value) : value_(value) {}
-    operator values() { return value_; }
-    operator bool() { return value_ != values::none; }
-    auto operator|(feature::values rhs) const -> feature::values { return (value_ | rhs); }
-    auto operator&(feature::values rhs) const -> feature::values { return (value_ & rhs); }
+    feature(const values value) : value_(value) {}
+    operator values() const { return value_; }
+    operator bool() const { return value_ != values::none; }
+    auto operator|(const feature::values rhs) const -> feature::values { return (value_ | rhs); }
+    auto operator&(const feature::values rhs) const -> feature::values { return (value_ & rhs); }
 
-    friend auto operator|(feature::values lhs, feature::values rhs) -> feature::values
+    friend auto operator|(const feature::values lhs, const feature::values rhs) -> feature::values
     {
         return static_cast<feature::values>(static_cast<std::underlying_type_t<feature::values>>(lhs) | static_cast<std::underlying_type_t<feature::values>>(rhs));
     }
 
-    friend auto operator&(feature::values lhs, feature::values rhs) -> feature::values
+    friend auto operator&(const feature::values lhs, const feature::values rhs) -> feature::values
     {
         return static_cast<feature::values>(static_cast<std::underlying_type_t<feature::values>>(lhs) & static_cast<std::underlying_type_t<feature::values>>(rhs));
     }

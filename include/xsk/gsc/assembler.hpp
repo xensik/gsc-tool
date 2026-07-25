@@ -41,7 +41,7 @@ private:
     auto assemble_offset(i32 offs) -> void;
     auto resolve_function(std::string const& name) const -> usize;
     auto resolve_label(std::string const& name) const -> usize;
-    auto encrypt_string(std::string const& str) -> std::string;
+    auto encrypt_string(std::string const& str) const -> std::string;
 };
 
 } // namespace xsk::gsc

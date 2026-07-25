@@ -9,12 +9,12 @@
 namespace xsk::utils
 {
 
-writer::writer(bool swap) : size_{ default_size }, swap_{ swap }
+writer::writer(const bool swap) : size_{ default_size }, swap_{ swap }
 {
     data_ = new u8[size_]();
 }
 
-writer::writer(usize size, bool swap) : size_{ size }, swap_{ swap }
+writer::writer(const usize size, const bool swap) : size_{ size }, swap_{ swap }
 {
     data_ = new u8[size_]();
 }
@@ -31,7 +31,7 @@ auto writer::clear() -> void
 }
 
 template <>
-auto writer::write(i8 data) -> void
+auto writer::write(const i8 data) -> void
 {
     if (pos_ + 1 > size_)
         throw error("writer: out of bounds");
@@ -41,7 +41,7 @@ auto writer::write(i8 data) -> void
 }
 
 template <>
-auto writer::write(u8 data) -> void
+auto writer::write(const u8 data) -> void
 {
     if (pos_ + 1 > size_)
         throw error("writer: out of bounds");
@@ -243,19 +243,19 @@ auto writer::is_avail() const -> bool
     return pos_ < size_;
 }
 
-auto writer::seek(usize size) -> void
+auto writer::seek(const usize size) -> void
 {
     if (pos_ + size <= size_) pos_ += size;
 }
 
-auto writer::seek_neg(usize size) -> void
+auto writer::seek_neg(const usize size) -> void
 {
     if (pos_ >= size) pos_ -= size;
 }
 
-auto writer::align(usize size) -> usize
+auto writer::align(const usize size) -> usize
 {
-    auto pos = pos_;
+    auto const pos = pos_;
 
     pos_ = (pos_ + (size - 1)) & ~(size - 1);
 
@@ -277,7 +277,7 @@ auto writer::pos() const -> usize
     return pos_;
 }
 
-auto writer::pos(usize pos) -> void
+auto writer::pos(const usize pos) -> void
 {
     if (pos <= size_) pos_ = pos;
 }
