@@ -3,6 +3,9 @@
 // Use of this source code is governed by a GNU GPLv3 license
 // that can be found in the LICENSE file.
 
+#include <sstream>
+#include <regex>
+
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/string.hpp"
 
@@ -213,7 +216,9 @@ auto string::float_string(float value, bool toint) -> std::string
 {
     enum flags_t : u8 { none = 0, negative = 1, integer = 2, has_exp = 4, exp_neg = 8 };
 
-    auto str = std::format("{:g}", value);
+    // '{}' is shortest-round-trip for float; '{:g}' caps at 6 significant digits and
+    // turns 17346.26 into 17346.3, which no longer compiles to the same f32.
+    auto str = std::format("{}", value);
 
     auto flags = integer | (str[0] == '-' ? negative : none);
 

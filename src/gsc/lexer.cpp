@@ -44,7 +44,7 @@ auto lexer::lex() -> token
         if (last == 0 || last == '\n')
             spacing_ = spacing::null;
         else if (last == ' ' || last == '\t')
-            spacing_ = (spacing_ == spacing::null) ? spacing::empty : spacing::back;
+            spacing_ = (spacing_ == spacing::null || spacing_ == spacing::empty) ? spacing::empty : spacing::back;
         else
             spacing_ = spacing::none;
 
@@ -77,35 +77,12 @@ auto lexer::lex() -> token
                     if (indev_)
                         throw comp_error(loc_, "cannot recurse devblock ('/#')");
 
-                    if ((ctx_->build() & build::dev_blocks) != build::prod)
-                    {
-                        indev_ = true;
-                        return token{ token::DEVBEGIN, spacing_, loc_ };
-                    }
-                    else
-                    {
-                        auto first = true;
-
-                        while (true)
-                        {
-                            if (reader_.ended())
-                                throw comp_error(loc_, "unmatched devblock start ('/#')");
-
-                            if (curr == '\n')
-                            {
-                                loc_.lines();
-                                loc_.step();
-                            }
-                            else if (last == '#' && curr == '/' && !first)
-                            {
-                                advance();
-                                break;
-                            }
-
-                            advance();
-                            first = false;
-                        }
-                    }
+                    // Always a token, in both builds. A prod build drops the block in the
+                    // compiler instead of skipping the text here, so what is inside still
+                    // goes through the lexer and a '#/' written inside a comment cannot
+                    // end the block early.
+                    indev_ = true;
+                    return token{ token::DEVBEGIN, spacing_, loc_ };
                 }
                 else if (last == '@')
                 {
@@ -458,12 +435,15 @@ auto lexer::lex() -> token
                     push(curr);
                     advance();
 
-                    // TODO: check stream end
-                    if (curr == '+' || curr == '-')
+                    if (!reader_.ended() && (curr == '+' || curr == '-'))
                     {
                         push(curr);
                         advance();
                     }
+
+                    if (reader_.ended() || !(curr > 47 && curr < 58))
+                        throw comp_error(loc_, "invalid number literal");
+
                     continue;
                 }
                 else if (!(curr > 47 && curr < 58))
@@ -479,7 +459,8 @@ auto lexer::lex() -> token
             if (dot > 1 || flt > 1 || (flt && buffer_[buflen_ - 1] != 'f'))
                 throw comp_error(loc_, "invalid number literal");
 
-            // TODO: exp can be int or float
+            // an exponent always yields a float, as in C: 1e5 is a floating literal
+            // even though its value is integral
             if (dot || flt || exp)
                 return token{ token::FLT, spacing_, loc_, std::string{ buffer_.data(), buflen_ } };
 

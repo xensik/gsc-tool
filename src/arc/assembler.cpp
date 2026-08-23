@@ -414,7 +414,10 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             break;
         case opcode::OP_GetInteger:
             script_.align(4);
-            script_.write<i32>((inst.data.size() == 2) ? -1 : std::stoi(inst.data[0]));
+            // A literal wider than 32 bits is truncated, not rejected: original source has
+            // 'best_err = 9999999999;' and 'SetExpFog( 100000000000, ... )', and the engine's
+            // integers are 32 bit. std::stoi would throw out_of_range on both.
+            script_.write<i32>((inst.data.size() == 2) ? -1 : static_cast<i32>(std::strtoll(inst.data[0].data(), nullptr, 0)));
             break;
         case opcode::OP_GetFloat:
             script_.align(4);

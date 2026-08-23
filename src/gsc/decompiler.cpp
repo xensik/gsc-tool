@@ -1254,7 +1254,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         case opcode::OP_SafeSetVariableFieldCached0:
         {
             if (func_->params->list.empty())
-                func_->params->list.push_back(expr_identifier::make(loc, "¡ERROR!"));
+                func_->params->list.push_back(expr_identifier::make(loc, "<error>"));
             else
                 func_->params->list.push_back(expr_identifier::make(loc, func_->params->list.at(func_->params->list.size() - 1)->as<expr_identifier>().value));
             break;
@@ -1262,7 +1262,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         case opcode::OP_SafeSetVariableFieldCached:
         {
             if (auto index = func_->params->list.size() - 1 - std::stoul(inst.data[0]); index > func_->params->list.size())
-                func_->params->list.push_back(expr_identifier::make(loc, "¡ERROR!"));
+                func_->params->list.push_back(expr_identifier::make(loc, "<error>"));
             else
                 func_->params->list.push_back(expr_identifier::make(loc, func_->params->list.at(index)->as<expr_identifier>().value));
             break;
@@ -1739,9 +1739,12 @@ auto decompiler::decompile_ifelses(stmt_list& stm) -> void
                 {
                     decompile_if(stm, i, j); // only one explicit return
                 }
-                else if (!stm.list.back()->is<stmt_return>())
+                else if (!stm.list.back()->is<stmt_return>() || !stm.list.back()->as<stmt_return>().value->is<expr_empty>())
                 {
-                    decompile_if(stm, i, j); // scope end is not a last return
+                    // Not a last return, or a 'return <value>;' that carries something.
+                    // decompile_ifelse_end drops the statement it ends on, which is only
+                    // safe when that statement is the implicit function end.
+                    decompile_if(stm, i, j);
                 }
                 else if (locs_.last && !stm.list.back()->is<stmt_return>())
                 {

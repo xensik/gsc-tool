@@ -38,6 +38,7 @@ public:
 
 private:
     auto emit_program(program const& prog) -> void;
+    auto drop_dev() const -> bool;
     auto emit_decl(decl const& dec) -> void;
     auto emit_decl_usingtree(decl_usingtree const& animtree) -> void;
     auto emit_decl_constant(decl_constant const& constant) -> void;

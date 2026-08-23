@@ -321,14 +321,37 @@ auto parser::parse_stmt() -> stmt::ptr
         case token::CONTINUE:         return parse_stmt_continue();
         case token::RETURN:           return parse_stmt_return();
         case token::BREAKPOINT:       return parse_stmt_breakpoint();
-        case token::PROFBEGIN:        return parse_stmt_prof_begin();
-        case token::PROFEND:          return parse_stmt_prof_end();
-        case token::ASSERT:           return parse_stmt_assert();
-        case token::ASSERTEX:         return parse_stmt_assertex();
-        case token::ASSERTMSG:        return parse_stmt_assertmsg();
+
+        // These read like calls and are only keywords when they are being called. Original
+        // source also uses them as ordinary variables — maps/_spawner.gsc has both
+        // 'assert( p == 1 );' and 'assert = false;' — the same way 'size' is allowed to be
+        // a variable name. Without a '(' they fall through and parse as an identifier.
+        case token::PROFBEGIN:
+            if (peek().type == token::LPAREN)
+                return parse_stmt_prof_begin();
+            break;
+        case token::PROFEND:
+            if (peek().type == token::LPAREN)
+                return parse_stmt_prof_end();
+            break;
+        case token::ASSERT:
+            if (peek().type == token::LPAREN)
+                return parse_stmt_assert();
+            break;
+        case token::ASSERTEX:
+            if (peek().type == token::LPAREN)
+                return parse_stmt_assertex();
+            break;
+        case token::ASSERTMSG:
+            if (peek().type == token::LPAREN)
+                return parse_stmt_assertmsg();
+            break;
+
         default:
-            return parse_stmt_call_or_assign();
+            break;
     }
+
+    return parse_stmt_call_or_assign();
 }
 
 auto parser::parse_stmt_or_dev() -> stmt::ptr
@@ -480,7 +503,7 @@ auto parser::parse_stmt_expr() -> stmt_expr::ptr
     return stmt_expr::make(loc, std::move(obj));
 }
 
-auto parser::parse_stmt_for_expr() -> stmt_expr::ptr
+auto parser::parse_stmt_for_expr() -> stmt::ptr
 {
     auto loc = tok_.pos;
 
@@ -488,6 +511,25 @@ auto parser::parse_stmt_for_expr() -> stmt_expr::ptr
     if (check(token::SEMICOLON) || check(token::RPAREN))
     {
         return stmt_expr::make(loc, expr_empty::make(loc));
+    }
+
+    // 'wait' and 'waitframe' are statements, not expressions, so they need their own
+    // arms here: 'for ( ;; wait 0.05 )' and 'for ( ; cond; waitframe() )' are both
+    // idiomatic in original source.
+    if (check(token::WAIT))
+    {
+        advance();
+        return stmt_wait::make(loc, parse_expr());
+    }
+
+    if (check(token::WAITFRAME))
+    {
+        advance();
+
+        if (match(token::LPAREN))
+            expect(token::RPAREN);
+
+        return stmt_waitframe::make(loc);
     }
 
     // prefix increment
@@ -546,7 +588,14 @@ auto parser::parse_stmt_for_expr() -> stmt_expr::ptr
         return stmt_expr::make(loc, expr_decrement::make(loc, std::move(obj), false));
     }
 
-    error("expected assignment or increment/decrement in for-loop");
+    // A bare call. Engines without feature::waitframe reach 'waitframe()' this way, since
+    // there it is an ordinary function rather than a keyword.
+    if (obj->is<expr_call>() || obj->is<expr_method>())
+    {
+        return stmt_expr::make(loc, std::move(obj));
+    }
+
+    error("expected assignment, increment/decrement, call or wait in for-loop");
 }
 
 auto parser::parse_stmt_call_or_assign() -> stmt::ptr
@@ -1428,9 +1477,17 @@ auto parser::parse_expr_primary() -> expr::ptr
         }
 
         case token::SIZE:
+        case token::PROFBEGIN:
+        case token::PROFEND:
+        case token::ASSERT:
+        case token::ASSERTEX:
+        case token::ASSERTMSG:
         {
+            // Not a call here, so it is a plain identifier. tok_.data still holds the
+            // spelling the lexer lowercased before turning it into a keyword.
+            auto name = tok_.data;
             advance();
-            return expr_identifier::make(loc, "size");
+            return parse_expr_postfix(expr_identifier::make(loc, std::move(name)));
         }
 
         default:
@@ -1840,11 +1897,21 @@ auto parser::parse_expr_paren_or_vector() -> expr::ptr
         expect(token::COMMA);
         auto third = parse_expr();
         expect(token::RPAREN);
-        return expr_vector::make(loc, std::move(first), std::move(second), std::move(third));
+        return parse_expr_postfix(expr_vector::make(loc, std::move(first), std::move(second), std::move(third)));
     }
 
     expect(token::RPAREN);
-    return expr_paren::make(loc, std::move(first));
+
+    // A parenthesised expression can be the base of a field, array or method access:
+    // '( GetAIArray() ).size', '( self GetPlayerAngles() )[ 1 ]', '( a b() ) c()'. The
+    // parens are only grouping there, so the chain is built on the inner expression and
+    // '(X).f' compiles exactly like 'X.f' — no wrapper for the compiler to see through.
+    // If nothing follows, parse_expr_postfix hands the same node straight back and the
+    // parens are kept so the printer can put them where the source had them.
+    auto const* inner = first.get();
+    auto node = parse_expr_postfix(std::move(first));
+
+    return node.get() == inner ? expr_paren::make(loc, std::move(node)) : std::move(node);
 }
 
 auto parser::parse_expr_tuple() -> expr::ptr
@@ -2116,7 +2183,7 @@ auto parser::expect(const token::kind kind) -> token
 {
     if (tok_.type != kind)
     {
-        throw comp_error(tok_.pos, std::format("expected '{}', got '{}'", token(kind, spacing::null, location{}).to_string(), tok_.to_string()));
+        throw comp_error(tok_.pos, std::format("expected '{}', got '{}'", token::name(kind), tok_.to_string()));
     }
 
     return advance();

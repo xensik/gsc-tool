@@ -673,10 +673,13 @@ auto context::make_token(std::string_view str) const -> std::string
 
     auto data = std::string{ str.begin(), str.end() };
 
+    // ASCII on purpose: std::tolower is a locale-aware libc call per character,
+    // and in the "C" locale it does exactly this for bytes < 128 and nothing
+    // for the rest. Script identifiers are ASCII.
     for (auto i = 0u; i < data.size(); i++)
     {
-        data[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(str[i])));
-        if (data[i] == '\\') data[i] = '/';
+        auto const c = static_cast<unsigned char>(str[i]);
+        data[i] = (c >= 'A' && c <= 'Z') ? static_cast<char>(c | 0x20) : (c == '\\' ? '/' : static_cast<char>(c));
     }
 
     return data;

@@ -154,6 +154,7 @@ struct token
         MACROARG,
         MACROVAOPT,
         MACROVAARGS,
+        MACROVAOPTEND,
         STRINGIZE,
         PASTE
     };
@@ -161,11 +162,17 @@ struct token
     kind type;
     spacing space;
     location pos;
+    // C11 6.10.3.4p2: a macro name left unreplaced during a rescan stops being a
+    // candidate for good, even if it later shows up in a context where it would
+    // otherwise expand. Fits in the padding after type/space.
+    bool no_expand{ false };
     std::string data;
 
     token(const kind type, const spacing space, location pos) : type{ type }, space{ space }, pos{ pos } {}
     token(const kind type, const spacing space, location pos, std::string data) : type{ type }, space{ space }, pos{ pos }, data{ std::move(data) } {}
+    static auto name(kind k) -> std::string_view;
     auto to_string() const -> std::string;
+    auto spelling() const -> std::string;
 };
 
 } // namespace xsk::arc

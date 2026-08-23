@@ -2163,11 +2163,16 @@ auto compiler::is_constant_condition(expr const& exp) -> bool
             throw comp_error(exp.loc(), "condition can't be always false");
         case node::expr_integer:
         {
-            auto num = std::stoi(exp.as<expr_integer>().value);
-            if (num != 0)
+            // Only whether the literal is non-zero matters, and a literal can be wider
+            // than int, so it must not be parsed as one: 'while ( 4294967295 )' is a
+            // perfectly good always-true condition. strtoull saturates instead of
+            // throwing, and a saturated value is non-zero either way.
+            auto const& val = exp.as<expr_integer>().value;
+
+            if (std::strtoull(val.data(), nullptr, 0) != 0)
                 return true;
-            else
-                throw comp_error(exp.loc(), "condition can't be always false");
+
+            throw comp_error(exp.loc(), "condition can't be always false");
         }
         default:
             break;

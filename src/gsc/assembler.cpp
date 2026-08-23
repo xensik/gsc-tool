@@ -168,7 +168,10 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             script_.write<u32>(static_cast<u32>(std::stoul(inst.data[0])));
             break;
         case opcode::OP_GetInteger:
-            script_.write<i32>(std::stoi(inst.data[0]));
+            // A literal wider than 32 bits is truncated, not rejected: original source has
+            // 'best_err = 9999999999;' and 'SetExpFog( 100000000000, ... )', and the engine's
+            // integers are 32 bit. std::stoi would throw out_of_range on both.
+            script_.write<i32>(static_cast<i32>(std::strtoll(inst.data[0].data(), nullptr, 0)));
             break;
         case opcode::OP_GetInteger64:
             script_.write<i64>(std::stoll(inst.data[0]));

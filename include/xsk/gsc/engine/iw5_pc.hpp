@@ -13,8 +13,8 @@ namespace xsk::gsc::iw5_pc
 // IW5 PC 1.9.388110
 constexpr usize code_count = 153;
 constexpr usize func_count = 455;
-constexpr usize meth_count = 780;
-constexpr usize token_count = 29250;
+constexpr usize meth_count = 781;
+constexpr usize token_count = 31168;
 constexpr u32 max_string_id = 33386;
 
 struct context : public gsc::context
