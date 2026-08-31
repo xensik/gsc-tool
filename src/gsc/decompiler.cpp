@@ -1735,6 +1735,12 @@ auto decompiler::decompile_ifelses(stmt_list& stm) -> void
                 {
                     decompile_if(stm, i, j); // inside a loop cant be last
                 }
+                else if (locs_.last && j + 1 == stm.list.size())
+                {
+                    // the if closes a scope the compiler emitted with 'last' set, so the OP_End
+                    // at j is that scope's epilogue and not a source return
+                    decompile_if_last(stm, i, j);
+                }
                 else if (j - i == 1)
                 {
                     decompile_if(stm, i, j); // only one explicit return
@@ -1980,6 +1986,33 @@ auto decompiler::decompile_ifelse_end(stmt_list& stm, usize begin, usize end) ->
         locs_ = save;
         stm.list.insert(stm.list.begin() + begin, stmt_ifelse::make(loc, std::move(test), stmt_comp::make(loc, std::move(body_if)), stmt_comp::make(loc, std::move(body_else))));
     }
+}
+
+auto decompiler::decompile_if_last(stmt_list& stm, usize begin, usize end) -> void
+{
+    auto save = locs_;
+    locs_.last = true;
+    locs_.end = stm.list[end]->label();
+
+    auto loc = stm.list[begin]->loc();
+    auto test = std::move(stm.list[begin]->as<stmt_jmp_cond>().test);
+
+    stm.list.erase(stm.list.begin() + begin);
+    end--;
+
+    auto body = stmt_list::make(loc);
+
+    for (auto i = begin; i < end; i++)
+    {
+        body->list.push_back(std::move(stm.list[begin]));
+        stm.list.erase(stm.list.begin() + begin);
+    }
+
+    stm.list.erase(stm.list.begin() + begin); // the epilogue the compiler added for 'last'
+
+    decompile_statements(*body);
+    locs_ = save;
+    stm.list.insert(stm.list.begin() + begin, stmt_if::make(loc, std::move(test), stmt_comp::make(loc, std::move(body))));
 }
 
 auto decompiler::decompile_inf(stmt_list& stm, usize begin, usize end) -> void

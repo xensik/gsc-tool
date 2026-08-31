@@ -780,8 +780,10 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
 
     can_break_ = true;
 
-    auto data = std::vector<std::string>{};
-    data.push_back(std::format("{}", stm.body->block->list.size()));
+    // Infinity Ward's compiler sorts the table descending by case value and puts default
+    // last -- 173 of 173 integer tables in data/bin/iw5 agree. The case bodies stay in
+    // source order, only the table is sorted, so each entry keeps its own label.
+    auto cases = std::vector<std::array<std::string, 3>>{};
 
     auto loc_default = std::string{};
     auto has_default = false;
@@ -793,19 +795,13 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
 
         if (entry->is<stmt_case>())
         {
-            data.emplace_back("case");
-
             if (entry->as<stmt_case>().value->is<expr_integer>())
             {
-                data.push_back(std::format("{}", static_cast<i32>(switch_type::integer)));
-                data.push_back(entry->as<stmt_case>().value->as<expr_integer>().value);
-                data.push_back(insert_label());
+                cases.push_back({ std::format("{}", static_cast<i32>(switch_type::integer)), entry->as<stmt_case>().value->as<expr_integer>().value, insert_label() });
             }
             else if (entry->as<stmt_case>().value->is<expr_string>())
             {
-                data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::string)));
-                data.push_back(entry->as<stmt_case>().value->as<expr_string>().value);
-                data.push_back(insert_label());
+                cases.push_back({ std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::string)), entry->as<stmt_case>().value->as<expr_string>().value, insert_label() });
             }
             else
             {
@@ -841,6 +837,26 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
         {
             throw comp_error(entry->loc(), "missing case statement");
         }
+    }
+
+    // string cases keep source order: their key is the engine's string list id, which the
+    // bytecode does not carry in a form we can reproduce -- see plan/iw5-failures.md
+    std::stable_sort(cases.begin(), cases.end(), [](auto const& a, auto const& b) {
+        if (a[0] != b[0] || a[0] != std::format("{}", static_cast<i32>(switch_type::integer)))
+            return false;
+
+        return std::stoi(a[1]) > std::stoi(b[1]);
+    });
+
+    auto data = std::vector<std::string>{};
+    data.push_back(std::format("{}", stm.body->block->list.size()));
+
+    for (auto const& entry : cases)
+    {
+        data.emplace_back("case");
+        data.push_back(entry[0]);
+        data.push_back(entry[1]);
+        data.push_back(entry[2]);
     }
 
     if (has_default)
