@@ -7,6 +7,7 @@
 
 #include "xsk/stdinc.hpp"
 #include "xsk/gsc/engine/iw5_pc.hpp"
+#include "xsk/gsc/engine/iw6_pc.hpp"
 #include "xsk/arc/engine/t6_pc.hpp"
 #include "xsk/arc/engine/t7.hpp"
 
@@ -58,6 +59,11 @@ struct fam;
 
 template <>
 struct fam<gsc::iw5_pc::context> : gsc_family
+{
+};
+
+template <>
+struct fam<gsc::iw6_pc::context> : gsc_family
 {
 };
 
