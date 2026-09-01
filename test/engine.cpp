@@ -178,6 +178,8 @@ enum class cause
     switch_strings, // IW orders string case tables by a build-wide string list id
     locals,         // local slot numbering and OP_RemoveLocalVariables placement
     vector_fold,    // vector built at runtime vs folded to OP_GetVector
+    source_bug,     // bytecode built from source the parser is right to reject
+    decompile_output, // the decompiler prints something that does not parse back -- open
 };
 
 auto describe(cause reason) -> std::string_view
@@ -192,9 +194,36 @@ auto describe(cause reason) -> std::string_view
             return "locals: local slot numbering / OP_RemoveLocalVariables placement";
         case cause::vector_fold:
             return "vector folding: a vector with a named-constant component is built at runtime, while the decompiled literal folds to OP_GetVector";
+        case cause::source_bug:
+            return "source bug: the original compiler swallowed a missing semicolon, and the bytecode cannot be expressed by source our parser should accept";
+        case cause::decompile_output:
+            return "OPEN BUG: the decompiler prints source that does not parse back -- see plan/iw5-failures.md";
     }
 
     return "";
+}
+
+// The binary corpus is walked three times, each stage a prefix of the one after it, so a
+// failure says how far the file got rather than just that it did not come back identical.
+enum class stage
+{
+    decompile, // shipped bytecode -> source
+    recompile, // that source back to bytecode
+    match,     // and the bytecode is identical
+};
+
+// The stage a cause first blocks. Everything that merely changes the bytes gets all the way
+// to the comparison; source the parser rejects never gets past the recompile.
+auto blocks_at(cause reason) -> stage
+{
+    switch (reason)
+    {
+        case cause::source_bug:
+        case cause::decompile_output:
+            return stage::recompile;
+        default:
+            return stage::match;
+    }
 }
 
 enum mode : u8
@@ -375,6 +404,180 @@ constexpr known_failure iw6_binary_failures[]{
     { "maps/mp/mp_warhawk_events.gscbin",                                 cause::locals },
 };
 
+constexpr known_failure h1_binary_failures[]{
+    { "animscripts/battlechatter.gscbin",             cause::switch_strings },
+    { "animscripts/battlechatter_ai.gscbin",          cause::switch_strings },
+    { "animscripts/combat_utility.gscbin",            cause::decompile_output },
+    { "animscripts/corner.gscbin",                    cause::switch_strings },
+    { "animscripts/cover_behavior.gscbin",            cause::locals },
+    { "animscripts/cover_multi.gscbin",               cause::locals },
+    { "animscripts/death.gscbin",                     cause::switch_strings },
+    { "animscripts/dog/dog_combat.gscbin",            cause::switch_strings },
+    { "animscripts/dog/dog_move.gscbin",              cause::locals },
+    { "animscripts/face.gscbin",                      cause::switch_strings },
+    { "animscripts/grenade_return_throw.gscbin",      cause::locals },
+    { "animscripts/init.gscbin",                      cause::locals },
+    { "animscripts/melee.gscbin",                     cause::locals },
+    { "animscripts/notetracks.gscbin",                cause::switch_strings },
+    { "animscripts/pain.gscbin",                      cause::switch_strings },
+    { "animscripts/run.gscbin",                       cause::switch_strings },
+    { "animscripts/setposemovement.gscbin",           cause::switch_strings },
+    { "animscripts/shared.gscbin",                    cause::switch_strings },
+    { "animscripts/squadmanager.gscbin",              cause::switch_strings },
+    { "animscripts/stairs_utility.gscbin",            cause::decompile_output },
+    { "animscripts/swim.gscbin",                      cause::switch_strings },
+    { "animscripts/utility.gscbin",                   cause::switch_strings },
+    { "animscripts/walk.gscbin",                      cause::switch_strings },
+    { "common_scripts/_createfx.gscbin",              cause::switch_strings },
+    { "common_scripts/_createfxmenu.gscbin",          cause::dropped_stmt },
+    { "common_scripts/_destructible.gscbin",          cause::switch_strings },
+    { "common_scripts/_destructible_types.gscbin",    cause::switch_strings },
+    { "common_scripts/_dynamic_world.gscbin",         cause::locals },
+    { "common_scripts/_exploder.gscbin",              cause::dropped_stmt },
+    { "common_scripts/_fx.gscbin",                    cause::switch_strings },
+    { "common_scripts/_pipes.gscbin",                 cause::switch_strings },
+    { "common_scripts/utility.gscbin",                cause::locals },
+    { "maps/_anim.gscbin",                            cause::locals },
+    { "maps/_animatedmodels.gscbin",                  cause::locals },
+    { "maps/_art.gscbin",                             cause::locals },
+    { "maps/_breach.gscbin",                          cause::switch_strings },
+    { "maps/_damagefeedback.gscbin",                  cause::dropped_stmt },
+    { "maps/_debug.gscbin",                           cause::dropped_stmt },
+    { "maps/_drone.gscbin",                           cause::locals },
+    { "maps/_drone_base.gscbin",                      cause::switch_strings },
+    { "maps/_equalizer.gscbin",                       cause::switch_strings },
+    { "maps/_gameskill.gscbin",                       cause::switch_strings },
+    { "maps/_helicopter_ai.gscbin",                   cause::switch_strings },
+    { "maps/_helicopter_globals.gscbin",              cause::switch_strings },
+    { "maps/_intelligence.gscbin",                    cause::locals },
+    { "maps/_interactive_objects.gscbin",             cause::switch_strings },
+    { "maps/_introscreen.gscbin",                     cause::switch_strings },
+    { "maps/_leak.gscbin",                            cause::switch_strings },
+    { "maps/_lighting.gscbin",                        cause::locals },
+    { "maps/_lights.gscbin",                          cause::locals },
+    { "maps/_load.gscbin",                            cause::locals },
+    { "maps/_loadout_code.gscbin",                    cause::switch_strings },
+    { "maps/_mgturret.gscbin",                        cause::switch_strings },
+    { "maps/_names.gscbin",                           cause::switch_strings },
+    { "maps/_nightvision.gscbin",                     cause::switch_strings },
+    { "maps/_patrol.gscbin",                          cause::switch_strings },
+    { "maps/_remotemissile.gscbin",                   cause::dropped_stmt },
+    { "maps/_sea.gscbin",                             cause::switch_strings },
+    { "maps/_shg_utility.gscbin",                     cause::switch_strings },
+    { "maps/_spawner.gscbin",                         cause::switch_strings },
+    { "maps/_stealth_behavior.gscbin",                cause::switch_strings },
+    { "maps/_stealth_logic.gscbin",                   cause::switch_strings },
+    { "maps/_treadfx.gscbin",                         cause::switch_strings },
+    { "maps/_trigger.gscbin",                         cause::locals },
+    { "maps/_utility.gscbin",                         cause::locals },
+    { "maps/_utility_code.gscbin",                    cause::switch_strings },
+    { "maps/_vehicle.gscbin",                         cause::switch_strings },
+    { "maps/_vehicle_aianim.gscbin",                  cause::dropped_stmt },
+    { "maps/_vehicle_code.gscbin",                    cause::switch_strings },
+    { "maps/_vehicle_free_drive.gscbin",              cause::locals },
+    { "maps/_weather.gscbin",                         cause::switch_strings },
+    { "maps/_wibble.gscbin",                          cause::switch_strings },
+    { "maps/_zpu.gscbin",                             cause::locals },
+    { "maps/ac130_trees.gscbin",                      cause::locals },
+    { "maps/aftermath_lighting.gscbin",               cause::locals },
+    { "maps/airlift.gscbin",                          cause::switch_strings },
+    { "maps/airlift_aud.gscbin",                      cause::switch_strings },
+    { "maps/airlift_lighting.gscbin",                 cause::switch_strings },
+    { "maps/airplane.gscbin",                         cause::switch_strings },
+    { "maps/ambush.gscbin",                           cause::locals },
+    { "maps/armada.gscbin",                           cause::switch_strings },
+    { "maps/armada_lighting.gscbin",                  cause::switch_strings },
+    { "maps/bog_a.gscbin",                            cause::locals },
+    { "maps/bog_a_aud.gscbin",                        cause::switch_strings },
+    { "maps/bog_a_backhalf.gscbin",                   cause::switch_strings },
+    { "maps/bog_a_code.gscbin",                       cause::locals },
+    { "maps/bog_b.gscbin",                            cause::switch_strings },
+    { "maps/bog_b_aud.gscbin",                        cause::switch_strings },
+    { "maps/cargoship.gscbin",                        cause::switch_strings },
+    { "maps/cargoship_code.gscbin",                   cause::switch_strings },
+    { "maps/cargoship_fx.gscbin",                     cause::switch_strings },
+    { "maps/cargoship_lighting.gscbin",               cause::switch_strings },
+    { "maps/coup.gscbin",                             cause::switch_strings },
+    { "maps/coup_anim.gscbin",                        cause::switch_strings },
+    { "maps/hunted.gscbin",                           cause::switch_strings },
+    { "maps/hunted_lighting.gscbin",                  cause::switch_strings },
+    { "maps/icbm_code.gscbin",                        cause::switch_strings },
+    { "maps/icbm_lighting.gscbin",                    cause::switch_strings },
+    { "maps/jake_tools.gscbin",                       cause::switch_strings },
+    { "maps/jeepride.gscbin",                         cause::locals },
+    { "maps/jeepride_aud.gscbin",                     cause::switch_strings },
+    { "maps/jeepride_code.gscbin",                    cause::locals },
+    { "maps/killhouse.gscbin",                        cause::switch_strings },
+    { "maps/killhouse_code.gscbin",                   cause::switch_strings },
+    { "maps/launchfacility_a.gscbin",                 cause::switch_strings },
+    { "maps/launchfacility_b.gscbin",                 cause::switch_strings },
+    { "maps/mo_fastrope.gscbin",                      cause::switch_strings },
+    { "maps/mo_tools.gscbin",                         cause::switch_strings },
+    { "maps/mp/_audio.gscbin",                        cause::locals },
+    { "maps/mp/_awards.gscbin",                       cause::switch_strings },
+    { "maps/mp/_events.gscbin",                       cause::switch_strings },
+    { "maps/mp/_fx_trigger.gscbin",                   cause::locals },
+    { "maps/mp/_matchdata.gscbin",                    cause::locals },
+    { "maps/mp/_movers.gscbin",                       cause::switch_strings },
+    { "maps/mp/_utility.gscbin",                      cause::dropped_stmt },
+    { "maps/mp/_vl_avatar.gscbin",                    cause::locals },
+    { "maps/mp/_vl_base.gscbin",                      cause::switch_strings },
+    { "maps/mp/_vl_cac.gscbin",                       cause::dropped_stmt },
+    { "maps/mp/_vl_camera.gscbin",                    cause::locals },
+    { "maps/mp/_vl_depot.gscbin",                     cause::switch_strings },
+    { "maps/mp/_water.gscbin",                        cause::locals },
+    { "maps/mp/bots/_bots.gscbin",                    cause::locals },
+    { "maps/mp/bots/_bots_gametype_common.gscbin",    cause::locals },
+    { "maps/mp/bots/_bots_gametype_dd.gscbin",        cause::locals },
+    { "maps/mp/bots/_bots_gametype_dom.gscbin",       cause::locals },
+    { "maps/mp/bots/_bots_gametype_oldschool.gscbin", cause::locals },
+    { "maps/mp/bots/_bots_gametype_sab.gscbin",       cause::locals },
+    { "maps/mp/bots/_bots_gametype_sd.gscbin",        cause::locals },
+    { "maps/mp/bots/_bots_ks.gscbin",                 cause::dropped_stmt },
+    { "maps/mp/bots/_bots_loadout.gscbin",            cause::switch_strings },
+    { "maps/mp/bots/_bots_personality.gscbin",        cause::dropped_stmt },
+    { "maps/mp/bots/_bots_strategy.gscbin",           cause::locals },
+    { "maps/mp/bots/_bots_util.gscbin",               cause::dropped_stmt },
+    { "maps/mp/gametypes/_class.gscbin",              cause::locals },
+    { "maps/mp/gametypes/_damage.gscbin",             cause::locals },
+    { "maps/mp/gametypes/_damagefeedback.gscbin",     cause::switch_strings },
+    { "maps/mp/gametypes/_gamelogic.gscbin",          cause::locals },
+    { "maps/mp/gametypes/_gameobjects.gscbin",        cause::switch_strings },
+    { "maps/mp/gametypes/_gamescores.gscbin",         cause::dropped_stmt },
+    { "maps/mp/gametypes/_hardpoints.gscbin",         cause::locals },
+    { "maps/mp/gametypes/_hodgepodge.gscbin",         cause::locals },
+    { "maps/mp/gametypes/_hodgepodge_ph.gscbin",      cause::locals },
+    { "maps/mp/gametypes/_hud_message.gscbin",        cause::dropped_stmt },
+    { "maps/mp/gametypes/_hud_util.gscbin",           cause::switch_strings },
+    { "maps/mp/gametypes/_legacyspawnlogic.gscbin",   cause::locals },
+    { "maps/mp/gametypes/_menus.gscbin",              cause::locals },
+    { "maps/mp/gametypes/_misions.gscbin",            cause::switch_strings },
+    { "maps/mp/gametypes/_oldschool.gscbin",          cause::switch_strings },
+    { "maps/mp/gametypes/_persistence.gscbin",        cause::locals },
+    { "maps/mp/gametypes/_tweakables.gscbin",         cause::switch_strings },
+    { "maps/mp/gametypes/_weapons.gscbin",            cause::locals },
+    { "maps/mp/gametypes/common_sd_sr.gscbin",        cause::dropped_stmt },
+    { "maps/mp/gametypes/dd.gscbin",                  cause::source_bug },
+    { "maps/mp/gametypes/dom.gscbin",                 cause::locals },
+    { "maps/mp/gametypes/hp.gscbin",                  cause::locals },
+    { "maps/mp/gametypes/sab.gscbin",                 cause::switch_strings },
+    { "maps/scoutsniper.gscbin",                      cause::switch_strings },
+    { "maps/scoutsniper_code.gscbin",                 cause::switch_strings },
+    { "maps/sniperescape_code.gscbin",                cause::locals },
+    { "maps/village_assault_code.gscbin",             cause::switch_strings },
+    { "soundscripts/_audio.gscbin",                   cause::switch_strings },
+    { "soundscripts/_audio_dynamic_ambi.gscbin",      cause::locals },
+    { "soundscripts/_audio_stream_manager.gscbin",    cause::locals },
+    { "soundscripts/_audio_vehicle_manager.gscbin",   cause::decompile_output },
+    { "soundscripts/_audio_whizby.gscbin",            cause::switch_strings },
+    { "soundscripts/_audio_zone_manager.gscbin",      cause::switch_strings },
+    { "soundscripts/_snd_common.gscbin",              cause::switch_strings },
+    { "soundscripts/_snd_filters.gscbin",             cause::locals },
+    { "soundscripts/_snd_playsound.gscbin",           cause::locals },
+    { "soundscripts/_snd_timescale.gscbin",           cause::locals },
+    { "vehicle_scripts/_attack_heli.gscbin",          cause::switch_strings },
+};
+
 // The lists are per game: iw5 and iw6 share plenty of script paths, so a flat table
 // keyed on the file name alone would cross-match.
 struct failure_list
@@ -446,8 +649,10 @@ auto round_trip(Ctx* c, std::string const& name, std::vector<u8> src, u8 mode, f
 //
 // The decompiler writes far calls fully qualified rather than emitting '#include', so the
 // printed source resolves nothing externally and no read callback is involved.
+// Runs the pipeline as far as 'upto' and returns whether it got there cleanly. Only the
+// match stage can return false without throwing; the earlier two either work or raise.
 template <typename Ctx>
-auto round_trip_binary(Ctx* c, std::string const& name, std::vector<u8> const& file, failure_list const& list) -> void
+auto binary_pipeline(Ctx* c, std::string const& name, std::vector<u8> const& file, stage upto, std::string& detail) -> bool
 {
     auto script = typename fam<Ctx>::asset{};
     script.deserialize(file);
@@ -465,29 +670,66 @@ auto round_trip_binary(Ctx* c, std::string const& name, std::vector<u8> const& f
     auto const base_script = as_vector(std::get<0>(base));
     auto const base_stack = as_vector(std::get<1>(base));
 
+    // The decompiler writes far calls fully qualified rather than emitting '#include', so
+    // the printed source resolves nothing externally and no read callback is involved.
     auto out = c->printer().print(*c->decompiler().decompile(*c->disassembler().disassemble(base_script, base_stack)));
+
+    if (upto == stage::decompile)
+        return true;
+
     auto redo = c->assembler().assemble(*c->compiler().compile(name, out));
+
+    if (upto == stage::recompile)
+        return true;
 
     auto const redo_script = as_vector(std::get<0>(redo));
     auto const redo_stack = as_vector(std::get<1>(redo));
 
-    auto const matched = base_script == redo_script && base_stack == redo_stack;
+    if (base_script == redo_script && base_stack == redo_stack)
+        return true;
 
-    if (report(known(list, name, both_modes), matched, list.name))
-        return;
+    // asm_diff disassembles both buffers again, so it stays on the failing path.
+    detail = std::format("{}\nscript: {}\nstack: {}", asm_diff(c, base_script, base_stack, redo_script, redo_stack), diff(base_script, std::get<0>(redo)), diff(base_stack, std::get<1>(redo)));
+    return false;
+}
 
-    if (matched)
+template <typename Ctx>
+auto run_binary_stage(Ctx* c, std::string const& name, std::vector<u8> const& file, stage upto, failure_list const& list) -> void
+{
+    auto const* issue = known(list, name, both_modes);
+    auto const expected = issue != nullptr && blocks_at(issue->reason) <= upto;
+    auto detail = std::string{};
+
+    if (!expected)
     {
-        // A clean round trip is the whole point of the corpus, so record it rather than
-        // leaving the file with no assertion at all. asm_diff stays on the failing path:
-        // it disassembles both buffers again, which is not worth doing 280 times over.
-        SUCCEED();
+        // Getting this far is the whole point of the corpus, so record it rather than
+        // leaving the file with no assertion at all.
+        if (binary_pipeline(c, name, file, upto, detail))
+        {
+            SUCCEED();
+            return;
+        }
+
+        FAIL(detail);
         return;
     }
 
-    INFO(asm_diff(c, base_script, base_stack, redo_script, redo_stack));
-    CHECK(diff(base_script, std::get<0>(redo)) == "");
-    CHECK(diff(base_stack, std::get<1>(redo)) == "");
+    // A listed file may throw rather than merely differ -- source that does not parse back
+    // never reaches the comparison -- so the whole run sits inside the guard.
+    auto reached = false;
+
+    try
+    {
+        reached = binary_pipeline(c, name, file, upto, detail);
+    }
+    catch (std::exception const&)
+    {
+    }
+
+    if (reached)
+        FAIL(std::format("gets past {} cleanly but is still listed in {} -- remove it", upto == stage::match ? "the comparison" : upto == stage::recompile ? "recompile" : "decompile", list.name));
+
+    SKIP(describe(issue->reason));
 }
 
 template <typename Ctx>
@@ -506,7 +748,7 @@ auto round_trip_corpus(std::string_view game, bool dev, failure_list const& list
 }
 
 template <typename Ctx>
-auto round_trip_binary_corpus(std::string_view game, failure_list const& list) -> void
+auto binary_corpus(std::string_view game, stage upto, failure_list const& list) -> void
 {
     auto const root = corpus_root("bin", game);
     auto* c = engine_ctx<Ctx>(game, false);
@@ -515,7 +757,7 @@ auto round_trip_binary_corpus(std::string_view game, failure_list const& list) -
     {
         DYNAMIC_SECTION(file)
         {
-            round_trip_binary(c, file, utils::file::read(root / file), list);
+            run_binary_stage(c, file, utils::file::read(root / file), upto, list);
         }
     }
 }
@@ -532,14 +774,49 @@ TEST_CASE("iw5 round trips its source (dev)", "[engine][gsc][iw5]")
     round_trip_corpus<gsc::iw5_pc::context>("iw5", true, list_of(iw5_source_failures, "iw5_source_failures"));
 }
 
+TEST_CASE("iw5 decompiles shipped bytecode", "[engine][gsc][iw5][binary]")
+{
+    binary_corpus<gsc::iw5_pc::context>("iw5", stage::decompile, list_of(iw5_binary_failures, "iw5_binary_failures"));
+}
+
+TEST_CASE("iw5 recompiles decompiled source", "[engine][gsc][iw5][binary]")
+{
+    binary_corpus<gsc::iw5_pc::context>("iw5", stage::recompile, list_of(iw5_binary_failures, "iw5_binary_failures"));
+}
+
 TEST_CASE("iw5 round trips shipped bytecode", "[engine][gsc][iw5][binary]")
 {
-    round_trip_binary_corpus<gsc::iw5_pc::context>("iw5", list_of(iw5_binary_failures, "iw5_binary_failures"));
+    binary_corpus<gsc::iw5_pc::context>("iw5", stage::match, list_of(iw5_binary_failures, "iw5_binary_failures"));
+}
+
+TEST_CASE("iw6 decompiles shipped bytecode", "[engine][gsc][iw6][binary]")
+{
+    binary_corpus<gsc::iw6_pc::context>("iw6", stage::decompile, list_of(iw6_binary_failures, "iw6_binary_failures"));
+}
+
+TEST_CASE("iw6 recompiles decompiled source", "[engine][gsc][iw6][binary]")
+{
+    binary_corpus<gsc::iw6_pc::context>("iw6", stage::recompile, list_of(iw6_binary_failures, "iw6_binary_failures"));
 }
 
 TEST_CASE("iw6 round trips shipped bytecode", "[engine][gsc][iw6][binary]")
 {
-    round_trip_binary_corpus<gsc::iw6_pc::context>("iw6", list_of(iw6_binary_failures, "iw6_binary_failures"));
+    binary_corpus<gsc::iw6_pc::context>("iw6", stage::match, list_of(iw6_binary_failures, "iw6_binary_failures"));
+}
+
+TEST_CASE("h1 decompiles shipped bytecode", "[engine][gsc][h1][binary]")
+{
+    binary_corpus<gsc::h1::context>("h1", stage::decompile, list_of(h1_binary_failures, "h1_binary_failures"));
+}
+
+TEST_CASE("h1 recompiles decompiled source", "[engine][gsc][h1][binary]")
+{
+    binary_corpus<gsc::h1::context>("h1", stage::recompile, list_of(h1_binary_failures, "h1_binary_failures"));
+}
+
+TEST_CASE("h1 round trips shipped bytecode", "[engine][gsc][h1][binary]")
+{
+    binary_corpus<gsc::h1::context>("h1", stage::match, list_of(h1_binary_failures, "h1_binary_failures"));
 }
 
 } // namespace xsk::test
