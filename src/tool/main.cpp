@@ -174,7 +174,6 @@ namespace gsc
 std::map<game, std::map<mach, std::unique_ptr<context>>> contexts;
 std::map<mode, std::function<result(game game, mach mach, fs::path file, fs::path rel)>> funcs;
 bool zonetool = false;
-bool iw5x64 = false;
 
 auto assemble_file(game game, mach mach, const fs::path& file, fs::path rel) -> result
 {
@@ -536,7 +535,7 @@ auto fs_read(context const* ctx, std::string const& name) -> std::pair<buffer, s
     throw std::runtime_error("file read error");
 }
 
-auto init_iw5(mach mach, inst inst, bool dev) -> void
+auto init_iw5(mach mach, inst inst, bool dev, bool iw5x64) -> void
 {
     if (contexts[game::iw5].contains(mach)) return;
 
@@ -742,7 +741,7 @@ auto init_h2(mach mach, inst inst, bool dev) -> void
     }
 }
 
-auto init(game game, mach mach, inst inst, bool dev) -> void
+auto init(game game, mach mach, inst inst, bool dev, bool iw5x64) -> void
 {
     funcs[mode::assemble] = assemble_file;
     funcs[mode::disassemble] = disassemble_file;
@@ -758,7 +757,7 @@ auto init(game game, mach mach, inst inst, bool dev) -> void
 
     switch (game)
     {
-        case game::iw5: init_iw5(mach, inst, dev); break;
+        case game::iw5: init_iw5(mach, inst, dev, iw5x64); break;
         case game::iw6: init_iw6(mach, inst, dev); break;
         case game::iw7: init_iw7(mach, inst, dev); break;
         case game::iw8: init_iw8(mach, inst, dev); break;
@@ -1112,9 +1111,9 @@ auto extension_match(fs::path const& ext, mode mode, game game) -> bool
     }
 }
 
-auto execute(mode mode, game game, mach mach, inst inst, fs::path const& path, bool dev) -> result
+auto execute(mode mode, game game, mach mach, inst inst, fs::path const& path, bool dev, bool iw5x64) -> result
 {
-    gsc::init(game, mach, inst, dev);
+    gsc::init(game, mach, inst, dev, iw5x64);
     arc::init(game, mach, inst, dev);
 
     if (fs::is_directory(path))
@@ -1301,8 +1300,8 @@ auto main(u32 argc, char** argv) -> result
         auto mach = mach::_;
         auto inst = inst::_;
         auto dev = result["dev"].as<bool>();
+        auto const iw5x64 = result["iw5x64"].as<bool>();
         gsc::zonetool = result["zonetool"].as<bool>();
-        gsc::iw5x64 = result["iw5x64"].as<bool>();
         arc::t6fixup = result["t6fixup"].as<bool>();
         dry_run = result["dry"].as<bool>();
 
@@ -1339,7 +1338,7 @@ auto main(u32 argc, char** argv) -> result
         }
 
         std::cout << branding();
-        return execute(mode, game, mach, inst, path, dev);
+        return execute(mode, game, mach, inst, path, dev, iw5x64);
     }
     catch (std::exception const& e)
     {
