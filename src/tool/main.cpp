@@ -174,6 +174,7 @@ namespace gsc
 std::map<game, std::map<mach, std::unique_ptr<context>>> contexts;
 std::map<mode, std::function<result(game game, mach mach, fs::path file, fs::path rel)>> funcs;
 bool zonetool = false;
+bool iw5x64 = false;
 
 auto assemble_file(game game, mach mach, const fs::path& file, fs::path rel) -> result
 {
@@ -543,7 +544,7 @@ auto init_iw5(mach mach, inst inst, bool dev) -> void
     {
         case mach::pc:
         {
-            contexts[game::iw5][mach] = std::make_unique<iw5_pc::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
+            contexts[game::iw5][mach] = std::make_unique<iw5_pc::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server, iw5x64);
             contexts[game::iw5][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -1242,6 +1243,7 @@ auto main(u32 argc, char** argv) -> result
         ("d,dev", "Enable developer mode (dev blocks & generate bytecode map).", cxxopts::value<bool>()->implicit_value("true"))
         ("z,zonetool", "Enable zonetool mode (use .cgsc files).", cxxopts::value<bool>()->implicit_value("true"))
         ("t6fixup", "Decompile t6 files from broken compilers.", cxxopts::value<bool>()->implicit_value("true"))
+        ("iw5x64", "Use the 2026 IW5 PC x64 bytecode layout.", cxxopts::value<bool>()->implicit_value("true"))
         ("h,help", "Display help.")
         ("v,version", "Display version.");
 
@@ -1300,6 +1302,7 @@ auto main(u32 argc, char** argv) -> result
         auto inst = inst::_;
         auto dev = result["dev"].as<bool>();
         gsc::zonetool = result["zonetool"].as<bool>();
+        gsc::iw5x64 = result["iw5x64"].as<bool>();
         arc::t6fixup = result["t6fixup"].as<bool>();
         dry_run = result["dry"].as<bool>();
 

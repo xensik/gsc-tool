@@ -13,8 +13,10 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list;
 extern std::array<std::pair<u16, char const*>, meth_count> const meth_list;
 extern std::array<std::pair<u32, char const*>, token_count> const token_list;
 
-context::context(gsc::instance inst) : gsc::context(feature::none, engine::iw5, endian::little, system::pc, inst, max_string_id)
+context::context(gsc::instance inst, bool x64)
+    : gsc::context(x64 ? feature::anim4 : feature::none, engine::iw5, endian::little, system::pc, inst, max_string_id)
 {
+    // The x64 build widens animation references only; regular IW5 string references remain 16-bit.
     code_map_.reserve(code_list.size());
     code_map_rev_.reserve(code_list.size());
     func_map_.reserve(func_list.size());

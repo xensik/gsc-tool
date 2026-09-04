@@ -20,7 +20,7 @@ constexpr u32 max_string_id = 33386;
 struct context : public gsc::context
 {
 public:
-    explicit context(gsc::instance inst);
+    explicit context(gsc::instance inst, bool x64 = false);
 };
 
 } // namespace xsk::gsc::iw5_pc

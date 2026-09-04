@@ -84,6 +84,7 @@ struct feature
         hash       = 1 << 9,  // iw9 identifiers
         farcall    = 1 << 10, // iw9 new call system
         foreach    = 1 << 11, // iw9 foreach
+        anim4      = 1 << 12, // animation references use 4-byte offsets
     };
 
     feature(const values value) : value_(value) {}
