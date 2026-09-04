@@ -51,6 +51,8 @@ A utility to compile & decompile IW engine game scripts.
 
     ``--t6fixup`` Decompile t6 files from broken compilers.
 
+    ``--iw5x64`` Use the updated IW5 PC x64 bytecode layout.
+
     ``-h, --help`` Display help.
 
     ``-v, --version`` Display version.

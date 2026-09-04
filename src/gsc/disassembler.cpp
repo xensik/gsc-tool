@@ -184,7 +184,7 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
             inst.data.push_back(decrypt_string(stack_.read_cstr()));
             break;
         case opcode::OP_GetAnimation:
-            script_.seek((ctx_->features() & feature::str4) ? 8 : 4);
+            script_.seek(((ctx_->features() & feature::str4) || (ctx_->features() & feature::anim4)) ? 8 : 4);
             inst.data.push_back(decrypt_string(stack_.read_cstr()));
             inst.data.push_back(decrypt_string(stack_.read_cstr()));
             break;

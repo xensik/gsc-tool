@@ -244,7 +244,7 @@ auto context::opcode_size(opcode op) const -> usize
         case opcode::OP_GetIString:
             return (features_ & feature::str4) ? 5 : 3;
         case opcode::OP_GetAnimation:
-            return (features_ & feature::str4) ? 9 : 5;
+            return ((features_ & feature::str4) || (features_ & feature::anim4)) ? 9 : 5;
         case opcode::OP_GetVector:
             return 13;
         case opcode::OP_ClearVariableField:
