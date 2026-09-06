@@ -6,6 +6,8 @@
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/reader.hpp"
 
+#include <bit>
+
 namespace xsk::utils
 {
 
@@ -23,7 +25,7 @@ auto read_scalar(u8 const* data, const usize size, usize& pos, const bool swap) 
     std::memcpy(bytes.data(), data + pos, sizeof(T));
 
     if (swap)
-        std::reverse(bytes.begin(), bytes.end());
+        std::ranges::reverse(bytes);
 
     auto value = T{};
     std::memcpy(&value, bytes.data(), sizeof(T));
@@ -167,7 +169,7 @@ auto reader::seek_neg(const usize size) -> void
 
 auto reader::align(const usize size) -> usize
 {
-    if (size == 0 || (size & (size - 1)) != 0)
+    if (!std::has_single_bit(size))
         throw error("reader: invalid alignment");
 
     auto const pos = pos_;

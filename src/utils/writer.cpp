@@ -6,6 +6,8 @@
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/writer.hpp"
 
+#include <bit>
+
 namespace xsk::utils
 {
 
@@ -23,7 +25,7 @@ auto write_scalar(u8* output, const usize size, usize& pos, T value, const bool 
     std::memcpy(bytes.data(), &value, sizeof(T));
 
     if (swap)
-        std::reverse(bytes.begin(), bytes.end());
+        std::ranges::reverse(bytes);
 
     std::memcpy(output + pos, bytes.data(), sizeof(T));
     pos += sizeof(T);
@@ -155,7 +157,7 @@ auto writer::seek_neg(const usize size) -> void
 
 auto writer::align(const usize size) -> usize
 {
-    if (size == 0 || (size & (size - 1)) != 0)
+    if (!std::has_single_bit(size))
         throw error("writer: invalid alignment");
 
     auto const pos = pos_;

@@ -5,6 +5,9 @@
 
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/zlib.hpp"
+
+// Request zlib's const-correct input pointer declaration.
+#define ZLIB_CONST
 #include "zlib.h"
 
 namespace xsk::utils
@@ -32,13 +35,12 @@ auto zlib::decompress(std::vector<u8> const& data, const u32 length) -> std::vec
 {
     // Stream into fixed chunks and reject corrupt script lengths before allocating them.
     constexpr auto chunk_size = usize{ 64 * 1024 };
-    constexpr auto max_output_size = usize{ 256 * 1024 * 1024 };
 
-    if (length > max_output_size || data.size() > std::numeric_limits<uInt>::max())
+    if (constexpr auto max_output_size = usize{ 256 * 1024 * 1024 }; length > max_output_size || data.size() > std::numeric_limits<uInt>::max())
         throw error("zlib decompress error: size limit exceeded");
 
     auto stream = z_stream{};
-    stream.next_in = const_cast<Bytef*>(reinterpret_cast<Bytef const*>(data.data()));
+    stream.next_in = reinterpret_cast<Bytef const*>(data.data());
     stream.avail_in = static_cast<uInt>(data.size());
 
     auto result = inflateInit(&stream);
