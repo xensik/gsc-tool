@@ -30,6 +30,7 @@ auto zlib::compress(std::vector<u8> const& data) -> std::vector<u8>
 
 auto zlib::decompress(std::vector<u8> const& data, const u32 length) -> std::vector<u8>
 {
+    // Stream into fixed chunks and reject corrupt script lengths before allocating them.
     constexpr auto chunk_size = usize{ 64 * 1024 };
     constexpr auto max_output_size = usize{ 256 * 1024 * 1024 };
 

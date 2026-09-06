@@ -18,6 +18,7 @@ auto read_scalar(u8 const* data, const usize size, usize& pos, const bool swap) 
     if (pos > size || sizeof(T) > size - pos)
         throw reader::error("reader: out of bounds");
 
+    // Copy through bytes so packed fields do not rely on typed pointer alignment or aliasing.
     auto bytes = std::array<u8, sizeof(T)>{};
     std::memcpy(bytes.data(), data + pos, sizeof(T));
 

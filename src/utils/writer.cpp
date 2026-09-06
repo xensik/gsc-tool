@@ -18,6 +18,7 @@ auto write_scalar(u8* output, const usize size, usize& pos, T value, const bool 
     if (pos > size || sizeof(T) > size - pos)
         throw writer::error("writer: out of bounds");
 
+    // Copy through bytes so packed fields do not rely on typed pointer alignment or aliasing.
     auto bytes = std::array<u8, sizeof(T)>{};
     std::memcpy(bytes.data(), &value, sizeof(T));
 

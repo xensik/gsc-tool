@@ -13,6 +13,7 @@ auto asset::serialize() const -> std::vector<u8>
 {
     auto data = std::vector<u8>{};
 
+    // A zero compressed length marks an uncompressed stack; otherwise it stores the buffer size.
     if ((compressed_length != buffer.size() || (compressed_length == 0 && length != buffer.size())) || bytecode_length != bytecode.size())
     {
         throw std::runtime_error("script file serialize error");
@@ -53,6 +54,7 @@ auto asset::deserialize(std::vector<std::uint8_t> const& data) -> void
 
     auto pos = usize{ 0 };
 
+    // The name terminator must leave all three u32 metadata fields inside the input.
     auto const terminator = std::find(data.begin(), data.end(), u8{ 0 });
 
     if (terminator == data.end() || static_cast<usize>(std::distance(data.begin(), terminator)) > data.size() - metadata_size - 1)
@@ -74,6 +76,7 @@ auto asset::deserialize(std::vector<std::uint8_t> const& data) -> void
 
     auto const payload_size = data.size() - pos;
 
+    // The payload contains exactly the declared stack bytes followed by the bytecode bytes.
     if (compressed_length > payload_size || bytecode_length != payload_size - compressed_length)
     {
         throw std::runtime_error("script file deserialize error");
