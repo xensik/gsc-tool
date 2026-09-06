@@ -9,6 +9,29 @@
 namespace xsk::utils
 {
 
+namespace
+{
+
+template <typename T>
+auto read_scalar(u8 const* data, const usize size, usize& pos, const bool swap) -> T
+{
+    if (pos > size || sizeof(T) > size - pos)
+        throw reader::error("reader: out of bounds");
+
+    auto bytes = std::array<u8, sizeof(T)>{};
+    std::memcpy(bytes.data(), data + pos, sizeof(T));
+
+    if (swap)
+        std::reverse(bytes.begin(), bytes.end());
+
+    auto value = T{};
+    std::memcpy(&value, bytes.data(), sizeof(T));
+    pos += sizeof(T);
+    return value;
+}
+
+} // namespace
+
 reader::reader(const bool swap) : data_{ nullptr }, size_{ 0 }, swap_{ swap }
 {
 }
@@ -24,219 +47,101 @@ reader::reader(u8 const* data, const usize size, const bool swap) : data_{ data 
 template <>
 auto reader::read() -> i8
 {
-    if (pos_ + 1 > size_)
-        throw error("reader: out of bounds");
-
-    auto const value = *reinterpret_cast<i8 const*>(data_ + pos_);
-    pos_ += 1;
-    return value;
+    return read_scalar<i8>(data_, size_, pos_, false);
 }
 
 template <>
 auto reader::read() -> u8
 {
-    if (pos_ + 1 > size_)
-        throw error("reader: out of bounds");
-
-    auto const value = *reinterpret_cast<u8 const*>(data_ + pos_);
-    pos_ += 1;
-    return value;
+    return read_scalar<u8>(data_, size_, pos_, false);
 }
 
 template <>
 auto reader::read() -> i16
 {
-    if (pos_ + 2 > size_)
-        throw error("reader: out of bounds");
-
-    if (!swap_)
-    {
-        auto const value = *reinterpret_cast<i16 const*>(data_ + pos_);
-        pos_ += 2;
-        return value;
-    }
-
-    auto bytes = std::array<u8, 2>{};
-    bytes[0] = (data_ + pos_)[1];
-    bytes[1] = (data_ + pos_)[0];
-    pos_ += 2;
-    return *reinterpret_cast<i16*>(bytes.data());
+    return read_scalar<i16>(data_, size_, pos_, swap_);
 }
 
 template <>
 auto reader::read() -> u16
 {
-    if (pos_ + 2 > size_)
-        throw error("reader: out of bounds");
-
-    if (!swap_)
-    {
-        auto const value = *reinterpret_cast<u16 const*>(data_ + pos_);
-        pos_ += 2;
-        return value;
-    }
-
-    auto bytes = std::array<u8, 2>{};
-    bytes[0] = (data_ + pos_)[1];
-    bytes[1] = (data_ + pos_)[0];
-    pos_ += 2;
-    return *reinterpret_cast<u16*>(bytes.data());
+    return read_scalar<u16>(data_, size_, pos_, swap_);
 }
 
 template <>
 auto reader::read() -> i32
 {
-    if (pos_ + 4 > size_)
-        throw error("reader: out of bounds");
-
-    if (!swap_)
-    {
-        auto const value = *reinterpret_cast<i32 const*>(data_ + pos_);
-        pos_ += 4;
-        return value;
-    }
-
-    auto bytes = std::array<u8, 4>{};
-    bytes[0] = (data_ + pos_)[3];
-    bytes[1] = (data_ + pos_)[2];
-    bytes[2] = (data_ + pos_)[1];
-    bytes[3] = (data_ + pos_)[0];
-    pos_ += 4;
-    return *reinterpret_cast<i32*>(bytes.data());
+    return read_scalar<i32>(data_, size_, pos_, swap_);
 }
 
 template <>
 auto reader::read() -> u32
 {
-    if (pos_ + 4 > size_)
-        throw error("reader: out of bounds");
-
-    if (!swap_)
-    {
-        auto const value = *reinterpret_cast<u32 const*>(data_ + pos_);
-        pos_ += 4;
-        return value;
-    }
-
-    auto bytes = std::array<u8, 4>{};
-    bytes[0] = (data_ + pos_)[3];
-    bytes[1] = (data_ + pos_)[2];
-    bytes[2] = (data_ + pos_)[1];
-    bytes[3] = (data_ + pos_)[0];
-    pos_ += 4;
-    return *reinterpret_cast<u32*>(bytes.data());
+    return read_scalar<u32>(data_, size_, pos_, swap_);
 }
 
 template <>
 auto reader::read() -> i64
 {
-    if (pos_ + 8 > size_)
-        throw error("reader: out of bounds");
-
-    if (!swap_)
-    {
-        auto const value = *reinterpret_cast<i64 const*>(data_ + pos_);
-        pos_ += 8;
-        return value;
-    }
-
-    auto bytes = std::array<u8, 8>{};
-    bytes[0] = (data_ + pos_)[7];
-    bytes[1] = (data_ + pos_)[6];
-    bytes[2] = (data_ + pos_)[5];
-    bytes[3] = (data_ + pos_)[4];
-    bytes[4] = (data_ + pos_)[3];
-    bytes[5] = (data_ + pos_)[2];
-    bytes[6] = (data_ + pos_)[1];
-    bytes[7] = (data_ + pos_)[0];
-    pos_ += 8;
-    return *reinterpret_cast<i64*>(bytes.data());
+    return read_scalar<i64>(data_, size_, pos_, swap_);
 }
 
 template <>
 auto reader::read() -> u64
 {
-    if (pos_ + 8 > size_)
-        throw error("reader: out of bounds");
-
-    if (!swap_)
-    {
-        auto const value = *reinterpret_cast<u64 const*>(data_ + pos_);
-        pos_ += 8;
-        return value;
-    }
-
-    auto bytes = std::array<u8, 8>{};
-    bytes[0] = (data_ + pos_)[7];
-    bytes[1] = (data_ + pos_)[6];
-    bytes[2] = (data_ + pos_)[5];
-    bytes[3] = (data_ + pos_)[4];
-    bytes[4] = (data_ + pos_)[3];
-    bytes[5] = (data_ + pos_)[2];
-    bytes[6] = (data_ + pos_)[1];
-    bytes[7] = (data_ + pos_)[0];
-    pos_ += 8;
-    return *reinterpret_cast<u64*>(bytes.data());
+    return read_scalar<u64>(data_, size_, pos_, swap_);
 }
 
 template <>
 auto reader::read() -> f32
 {
-    if (pos_ + 4 > size_)
-        throw error("reader: out of bounds");
-
-    if (!swap_)
-    {
-        auto const value = *reinterpret_cast<f32 const*>(data_ + pos_);
-        pos_ += 4;
-        return value;
-    }
-
-    auto bytes = std::array<u8, 4>{};
-    bytes[0] = (data_ + pos_)[3];
-    bytes[1] = (data_ + pos_)[2];
-    bytes[2] = (data_ + pos_)[1];
-    bytes[3] = (data_ + pos_)[0];
-    pos_ += 4;
-    return *reinterpret_cast<f32*>(bytes.data());
+    return read_scalar<f32>(data_, size_, pos_, swap_);
 }
 
 auto reader::read_i24() -> i32
 {
-    if (pos_ + 3 > size_)
+    if (pos_ > size_ || 3 > size_ - pos_)
         throw error("reader: out of bounds");
 
-    if (!swap_)
-    {
-        auto const value = *reinterpret_cast<i32 const*>(data_ + pos_) & 0xFFFFFF;
-        pos_ += 3;
-        return value;
-    }
-
-    auto bytes = std::array<u8, 4>{};
-    bytes[0] = (data_ + pos_)[2];
-    bytes[1] = (data_ + pos_)[1];
-    bytes[2] = (data_ + pos_)[0];
+    auto const value = !swap_
+                           ? static_cast<u32>(data_[pos_]) | (static_cast<u32>(data_[pos_ + 1]) << 8) | (static_cast<u32>(data_[pos_ + 2]) << 16)
+                           : static_cast<u32>(data_[pos_ + 2]) | (static_cast<u32>(data_[pos_ + 1]) << 8) | (static_cast<u32>(data_[pos_]) << 16);
     pos_ += 3;
-    return *reinterpret_cast<i32*>(bytes.data());
+    return static_cast<i32>(value);
 }
 
 auto reader::read_cstr() -> std::string
 {
-    auto ret = std::string{ reinterpret_cast<char const*>(data_ + pos_) };
-    pos_ += static_cast<u32>(ret.size() + 1);
+    if (pos_ > size_)
+        throw error("reader: out of bounds");
+
+    auto const begin = data_ + pos_;
+    auto const end = data_ + size_;
+    auto const terminator = std::find(begin, end, 0);
+
+    if (terminator == end)
+        throw error("reader: out of bounds");
+
+    auto ret = std::string(reinterpret_cast<char const*>(begin), static_cast<usize>(terminator - begin));
+    pos_ += ret.size() + 1;
     return ret;
 }
 
 auto reader::read_bytes(const usize pos, const usize count) const -> std::string
 {
+    if (pos > size_ || count > size_ - pos)
+        throw error("reader: out of bounds");
+
+    if (count == 0)
+        return {};
+
     auto data = std::string{};
 
     data.reserve(count * 3);
 
-    for (auto i = pos; i < pos + count; i++)
+    for (auto i = usize{}; i < count; i++)
     {
-        std::format_to(std::back_insert_iterator(data), "{:02X} ", *reinterpret_cast<u8 const*>(data_ + i));
+        std::format_to(std::back_insert_iterator(data), "{:02X} ", data_[pos + i]);
     }
 
     data.pop_back();
@@ -251,7 +156,7 @@ auto reader::is_avail() const -> bool
 
 auto reader::seek(const usize size) -> void
 {
-    if (pos_ + size <= size_) pos_ += size;
+    if (pos_ <= size_ && size <= size_ - pos_) pos_ += size;
 }
 
 auto reader::seek_neg(const usize size) -> void
@@ -261,9 +166,17 @@ auto reader::seek_neg(const usize size) -> void
 
 auto reader::align(const usize size) -> usize
 {
-    auto const pos = pos_;
+    if (size == 0 || (size & (size - 1)) != 0)
+        throw error("reader: invalid alignment");
 
-    pos_ = (pos_ + (size - 1)) & ~(size - 1);
+    auto const pos = pos_;
+    auto const remainder = pos_ & (size - 1);
+    auto const advance = remainder == 0 ? 0 : size - remainder;
+
+    if (pos_ > size_ || advance > size_ - pos_)
+        throw error("reader: out of bounds");
+
+    pos_ += advance;
 
     return pos_ - pos;
 }
