@@ -12,6 +12,11 @@ struct asset
 {
     using ptr = std::unique_ptr<asset>;
 
+    struct error final : public std::runtime_error
+    {
+        using std::runtime_error::runtime_error;
+    };
+
     std::string name;
     u32 compressed_length{};
     u32 length{};

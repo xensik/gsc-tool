@@ -5,6 +5,9 @@
 
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/zlib.hpp"
+
+// Request zlib's const-correct input pointer declaration.
+#define ZLIB_CONST
 #include "zlib.h"
 
 namespace xsk::utils
@@ -30,20 +33,55 @@ auto zlib::compress(std::vector<u8> const& data) -> std::vector<u8>
 
 auto zlib::decompress(std::vector<u8> const& data, const u32 length) -> std::vector<u8>
 {
+    // Stream into fixed chunks and reject corrupt script lengths before allocating them.
+    constexpr auto chunk_size = usize{ 64 * 1024 };
+
+    if (constexpr auto max_output_size = usize{ 256 * 1024 * 1024 }; length > max_output_size || data.size() > std::numeric_limits<uInt>::max())
+        throw error("zlib decompress error: size limit exceeded");
+
+    auto stream = z_stream{};
+    stream.next_in = reinterpret_cast<Bytef const*>(data.data());
+    stream.avail_in = static_cast<uInt>(data.size());
+
+    auto result = inflateInit(&stream);
+    if (result != Z_OK)
+        throw error(std::format("zlib decompress init error {}", result));
+
     auto output = std::vector<u8>{};
-    output.resize(length);
+    output.reserve(std::min<usize>(length, chunk_size));
+    auto chunk = std::array<u8, chunk_size>{};
 
-    // uLongf is 64-bit on LP64, do not alias it over a u32
-    auto size = static_cast<uLongf>(length);
-    auto result = uncompress(reinterpret_cast<Bytef*>(output.data()), &size, reinterpret_cast<const Bytef*>(data.data()), static_cast<uLong>(data.size()));
-
-    if (result == Z_OK)
+    while (true)
     {
-        output.resize(size);
-        return output;
+        stream.next_out = reinterpret_cast<Bytef*>(chunk.data());
+        stream.avail_out = static_cast<uInt>(chunk.size());
+        result = inflate(&stream, Z_NO_FLUSH);
+
+        auto const produced = chunk.size() - stream.avail_out;
+        if (produced > static_cast<usize>(length) - output.size())
+        {
+            inflateEnd(&stream);
+            throw error("zlib decompress error: output exceeds expected length");
+        }
+
+        output.insert(output.end(), chunk.begin(), chunk.begin() + produced);
+
+        if (result == Z_STREAM_END)
+            break;
+
+        if (result != Z_OK || (produced == 0 && stream.avail_in == 0))
+        {
+            inflateEnd(&stream);
+            throw error(std::format("zlib decompress error {}", result));
+        }
     }
 
-    throw error(std::format("zlib decompress error {}", result));
+    inflateEnd(&stream);
+
+    if (output.size() != length)
+        throw error("zlib decompress error: output length mismatch");
+
+    return output;
 }
 
 } // namespace xsk::utils
