@@ -177,7 +177,26 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             script_.write<f32>(std::stof(inst.data[0]));
             break;
         case opcode::OP_GetVector:
-            script_.align(ctx_->endian() == endian::little ? 1 : 4);
+            if (ctx_->engine() == engine::iw5 && ctx_->system() == system::xb2)
+            {
+                // When padding is required, stock IW5 Xenon bytecode uses OP_GetVector as the final
+                // alignment byte before the vector payload. Match that retail encoding.
+                auto const padding = (4 - (script_.pos() & 3)) & 3;
+
+                for (usize i = 1; i < padding; ++i)
+                {
+                    script_.write<u8>(0);
+                }
+
+                if (padding)
+                {
+                    script_.write<u8>(ctx_->opcode_id(inst.opcode));
+                }
+            }
+            else
+            {
+                script_.align(ctx_->endian() == endian::little ? 1 : 4);
+            }
             script_.write<f32>(std::stof(inst.data[0]));
             script_.write<f32>(std::stof(inst.data[1]));
             script_.write<f32>(std::stof(inst.data[2]));
