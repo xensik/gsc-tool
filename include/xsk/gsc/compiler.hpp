@@ -16,6 +16,7 @@ private:
     context* ctx_;
     assembly::ptr assembly_;
     function::ptr function_;
+    std::vector<std::string> includes_;
     std::vector<std::string> localfuncs_;
     std::vector<std::string> stackframe_;
     std::unordered_map<std::string, expr const*> constants_;
@@ -146,6 +147,7 @@ private:
     auto variable_initialize(expr_identifier const& exp, scope& scp) -> u8;
     auto variable_create(expr_identifier const& exp, scope& scp) -> u8;
     auto variable_access(expr_identifier const& exp, scope& scp) -> u8;
+    auto is_includecall(std::string const& name, std::string& path) const -> bool;
     auto resolve_function_type(expr_function const& exp, std::string& path) -> call::type;
     auto resolve_reference_type(expr_reference const& exp, std::string& path, bool& method) -> call::type;
     auto is_constant_condition(expr const& exp) -> bool;

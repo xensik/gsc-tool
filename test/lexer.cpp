@@ -300,6 +300,22 @@ TEMPLATE_TEST_CASE("lexer: line continuation", "[lexer]", BOTH)
         REQUIRE(lex_names<TestType>("a\\\n b") == "identifier identifier");
     }
 
+    SECTION("the newline may be a crlf pair")
+    {
+        auto const toks = lex_all<TestType>("a\\\r\nb");
+        REQUIRE(toks[0].type == token::NAME);
+        REQUIRE(toks[0].data == "ab");
+    }
+
+    // The crlf branch used to fall through into the lf one, which consumed the blank
+    // line's ending too and joined 'a' to 'b' across it.
+    SECTION("a crlf continuation does not swallow the line after it")
+    {
+        auto const toks = lex_all<TestType>("a\\\r\n\r\nb");
+        REQUIRE(toks[0].type == token::NAME);
+        REQUIRE(toks[0].data == "a");
+    }
+
     SECTION("a stray backslash is an error")
     {
         REQUIRE_THROWS_AS(lex_all<TestType>("a \\ b"), typename fam<TestType>::comp_error);

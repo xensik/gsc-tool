@@ -606,8 +606,7 @@ auto lexer::linewrap() -> void
             reader_.position += 3;
             reader_.available -= 3;
         }
-
-        if (reader_.position[1] == '\n')
+        else // '\n', the only other option the check above lets through
         {
             if (reader_.available == 2)
                 throw comp_error(loc_, "invalid token ('\\')");

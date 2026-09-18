@@ -68,9 +68,8 @@ public:
     auto hash_name(u64 id) const -> std::string;
     auto make_token(std::string_view str) const -> std::string;
     auto load_header(std::string const& name) -> std::tuple<std::string const*, char const*, usize>;
-    auto load_include(std::string const& name) -> bool;
-    auto init_includes() -> void;
-    auto is_includecall(std::string const& name, std::string& path) -> bool;
+    auto load_include(std::string const& name) -> void;
+    auto include_functions(std::string const& name) const -> std::vector<std::string> const&;
 
 protected:
     gsc::feature features_;
@@ -102,9 +101,8 @@ protected:
     std::unordered_map<u64, std::string_view> path_map_;
     std::unordered_map<u64, std::string_view> hash_map_;
     std::unordered_map<std::string, std::vector<u8>> header_files_;
-    // Owns its keys: the names come from expr_path nodes that die with the program,
-    // and this set outlives it. A view here dangles from the moment compile() returns.
-    std::unordered_set<std::string> includes_;
+    // Survives the program that asked for it: the same include is parsed once and
+    // reused by every later file. What each program includes is the compiler's.
     std::unordered_map<std::string, std::vector<std::string>> include_cache_;
     std::unordered_set<std::string> new_func_map_;
     std::unordered_set<std::string> new_meth_map_;

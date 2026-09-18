@@ -35,7 +35,6 @@ auto context::cleanup() -> void
 {
     header_files_.clear();
     include_cache_.clear();
-    includes_.clear();
 }
 
 auto context::engine_name() const -> std::string_view
@@ -709,19 +708,12 @@ auto context::load_header(std::string const& name) -> std::tuple<std::string con
     throw error(std::format("couldn't open gsh file '{}'", name));
 }
 
-auto context::load_include(std::string const& name) -> bool
+auto context::load_include(std::string const& name) -> void
 {
     try
     {
-        if (includes_.contains(name))
-        {
-            return false;
-        }
-
-        includes_.insert(name);
-
         if (include_cache_.contains(name))
-            return true;
+            return;
 
         auto filename = name;
         filename += (instance_ == gsc::instance::server) ? ".gsc" : ".csc";
@@ -762,8 +754,6 @@ auto context::load_include(std::string const& name) -> bool
 
             include_cache_.insert({ name, std::move(funcs) });
         }
-
-        return true;
     }
     catch (std::exception const& e)
     {
@@ -771,26 +761,9 @@ auto context::load_include(std::string const& name) -> bool
     }
 }
 
-auto context::init_includes() -> void
+auto context::include_functions(std::string const& name) const -> std::vector<std::string> const&
 {
-    includes_.clear();
-}
-
-auto context::is_includecall(std::string const& name, std::string& path) -> bool
-{
-    for (auto const& inc : includes_)
-    {
-        for (auto const& fun : include_cache_.at(inc))
-        {
-            if (name == fun)
-            {
-                path = inc;
-                return true;
-            }
-        }
-    }
-
-    return false;
+    return include_cache_.at(name);
 }
 
 extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcode_list

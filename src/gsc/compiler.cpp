@@ -29,6 +29,7 @@ auto compiler::compile(std::string const& file, std::vector<u8>& data) -> assemb
 auto compiler::emit_program(program const& prog) -> void
 {
     assembly_ = assembly::make();
+    includes_.clear();
     localfuncs_.clear();
     constants_.clear();
     developer_thread_ = false;
@@ -37,16 +38,18 @@ auto compiler::emit_program(program const& prog) -> void
     index_ = 1;
     debug_pos_ = { .line = 0, .column = 0 };
 
-    ctx_->init_includes();
-
     for (auto const& inc : prog.includes)
     {
         auto const& path = inc->path->value;
 
-        if (!ctx_->load_include(path))
+        for (auto const& entry : includes_)
         {
-            throw error(std::format("duplicated include file {}", path));
+            if (entry == path)
+                throw error(std::format("duplicated include file {}", path));
         }
+
+        ctx_->load_include(path);
+        includes_.push_back(path);
     }
 
     for (auto const& dec : prog.declarations)
@@ -2880,7 +2883,7 @@ auto compiler::resolve_function_type(expr_function const& exp, std::string& path
             return call::type::local;
     }
 
-    if (ctx_->is_includecall(name, path))
+    if (is_includecall(name, path))
         return call::type::far;
 
     throw comp_error(exp.loc(), "couldn't determine function call type");
@@ -2914,10 +2917,29 @@ auto compiler::resolve_reference_type(expr_reference const& exp, std::string& pa
             return call::type::local;
     }
 
-    if (ctx_->is_includecall(name, path))
+    if (is_includecall(name, path))
         return call::type::far;
 
     throw comp_error(exp.loc(), "couldn't determine function reference type");
+}
+
+// Searched in the order the file declares its includes, so a name defined by two of
+// them resolves to the same one on every platform.
+auto compiler::is_includecall(std::string const& name, std::string& path) const -> bool
+{
+    for (auto const& inc : includes_)
+    {
+        for (auto const& fun : ctx_->include_functions(inc))
+        {
+            if (name == fun)
+            {
+                path = inc;
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 auto compiler::is_constant_condition(expr const& exp) -> bool
