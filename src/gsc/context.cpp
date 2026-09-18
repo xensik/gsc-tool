@@ -780,7 +780,7 @@ auto context::is_includecall(std::string const& name, std::string& path) -> bool
 {
     for (auto const& inc : includes_)
     {
-        for (auto const& fun : include_cache_.at(std::string{ inc }))
+        for (auto const& fun : include_cache_.at(inc))
         {
             if (name == fun)
             {

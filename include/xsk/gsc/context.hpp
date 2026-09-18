@@ -102,7 +102,9 @@ protected:
     std::unordered_map<u64, std::string_view> path_map_;
     std::unordered_map<u64, std::string_view> hash_map_;
     std::unordered_map<std::string, std::vector<u8>> header_files_;
-    std::unordered_set<std::string_view> includes_;
+    // Owns its keys: the names come from expr_path nodes that die with the program,
+    // and this set outlives it. A view here dangles from the moment compile() returns.
+    std::unordered_set<std::string> includes_;
     std::unordered_map<std::string, std::vector<std::string>> include_cache_;
     std::unordered_set<std::string> new_func_map_;
     std::unordered_set<std::string> new_meth_map_;
