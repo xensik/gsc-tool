@@ -165,7 +165,6 @@ data/*
 # Version file
 include/xsk/version.hpp
 compile_commands.json
-t7_scripts/
 
 # Plan / scratch notes
 plan/
