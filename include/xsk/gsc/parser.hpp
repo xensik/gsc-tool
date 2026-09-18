@@ -45,7 +45,7 @@ private:
     auto parse_stmt_comp() -> stmt_comp::ptr;
     auto parse_stmt_dev() -> stmt::ptr;
     auto parse_stmt_expr() -> stmt_expr::ptr;
-    auto parse_stmt_for_expr() -> stmt_expr::ptr;
+    auto parse_stmt_for_expr() -> stmt::ptr;
     auto parse_stmt_call_or_assign() -> stmt::ptr;
     auto parse_stmt_endon(expr::ptr obj) -> stmt::ptr;
     auto parse_stmt_notify(expr::ptr obj) -> stmt::ptr;

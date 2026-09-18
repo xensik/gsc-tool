@@ -211,9 +211,9 @@ auto printer::print_decl_namespace(decl_namespace const& dec) -> void
 
 auto printer::print_decl_precache(decl_precache const& dec) -> void
 {
-    std::format_to(std::back_inserter(buf_), "#precache( ");
+    std::format_to(std::back_inserter(buf_), "#precache(");
     print_expr_arguments(*dec.args);
-    std::format_to(std::back_inserter(buf_), " );\n");
+    std::format_to(std::back_inserter(buf_), ");\n");
 }
 
 auto printer::print_decl_usingtree(decl_usingtree const& dec) -> void
@@ -714,7 +714,11 @@ auto printer::print_stmt_dowhile(stmt_dowhile const& stm) -> void
 
 auto printer::print_stmt_for(stmt_for const& stm) -> void
 {
-    if (stm.test->is<expr_empty>())
+    // 'for (;;)' is only the same loop when all three clauses are empty. The init and
+    // iteration slots take calls and waits too, and dropping those would change the loop.
+    auto const empty = [](stmt const& s) { return s.is<stmt_expr>() && s.as<stmt_expr>().value->is<expr_empty>(); };
+
+    if (stm.test->is<expr_empty>() && empty(*stm.init) && empty(*stm.iter))
     {
         std::format_to(std::back_inserter(buf_), "for (;;)\n");
     }
@@ -1252,9 +1256,34 @@ auto printer::print_expr_call(expr_call const& exp) -> void
     print_call(*exp.value);
 }
 
+auto printer::print_expr_base(expr const& exp) -> void
+{
+    // The base of '.field', '[key]', '.size' or a method call binds tighter than any
+    // operator, so an operator expression has to keep its parentheses: '( a + b ).size'
+    // is not 'a + b.size', and '( -p )[ 0 ]' is not '-p[0]'.
+    switch (exp.kind())
+    {
+        case node::expr_complement:
+        case node::expr_negate:
+        case node::expr_not:
+        case node::expr_binary:
+        case node::expr_ternary:
+        case node::expr_assign:
+        case node::expr_increment:
+        case node::expr_decrement:
+            std::format_to(std::back_inserter(buf_), "( ");
+            print_expr(exp);
+            std::format_to(std::back_inserter(buf_), " )");
+            break;
+        default:
+            print_expr(exp);
+            break;
+    }
+}
+
 auto printer::print_expr_method(expr_method const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), " ");
     print_call(*exp.value);
 }
@@ -1511,7 +1540,7 @@ auto printer::print_expr_reference(expr_reference const& exp) -> void
 
 auto printer::print_expr_array(expr_array const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), "[");
     print_expr(*exp.key);
     std::format_to(std::back_inserter(buf_), "]");
@@ -1519,14 +1548,14 @@ auto printer::print_expr_array(expr_array const& exp) -> void
 
 auto printer::print_expr_field(expr_field const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), ".");
     print_expr_identifier(*exp.field);
 }
 
 auto printer::print_expr_size(expr_size const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), ".size");
 }
 
