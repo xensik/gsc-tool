@@ -29,6 +29,7 @@ auto compiler::compile(std::string const& file, std::vector<u8>& data) -> assemb
 auto compiler::emit_program(program const& prog) -> void
 {
     assembly_ = assembly::make();
+    includes_.clear();
     localfuncs_.clear();
     constants_.clear();
     developer_thread_ = false;
@@ -37,20 +38,37 @@ auto compiler::emit_program(program const& prog) -> void
     index_ = 1;
     debug_pos_ = { .line = 0, .column = 0 };
 
-    ctx_->init_includes();
-
     for (auto const& inc : prog.includes)
     {
         auto const& path = inc->path->value;
 
-        if (!ctx_->load_include(path))
+        for (auto const& entry : includes_)
         {
-            throw error(std::format("duplicated include file {}", path));
+            if (entry == path)
+                throw error(std::format("duplicated include file {}", path));
         }
+
+        ctx_->load_include(path);
+        includes_.push_back(path);
     }
 
     for (auto const& dec : prog.declarations)
     {
+        if (dec->is<decl_dev_begin>())
+        {
+            developer_thread_ = true;
+            continue;
+        }
+
+        if (dec->is<decl_dev_end>())
+        {
+            developer_thread_ = false;
+            continue;
+        }
+
+        if (drop_dev())
+            continue;
+
         if (dec->is<decl_function>())
         {
             auto const& name = dec->as<decl_function>().name->value;
@@ -70,22 +88,40 @@ auto compiler::emit_program(program const& prog) -> void
         }
     }
 
+    developer_thread_ = false;
+
     for (auto const& dec : prog.declarations)
     {
         emit_decl(*dec);
     }
 }
 
+// A '/# #/' block is developer-only code. It is lexed and parsed in both builds so that
+// its syntax is checked either way, and a prod build drops it here instead.
+auto compiler::drop_dev() const -> bool
+{
+    return developer_thread_ && (ctx_->build() & build::dev_blocks) == build::prod;
+}
+
 auto compiler::emit_decl(decl const& dec) -> void
 {
+    if (dec.is<decl_dev_begin>())
+    {
+        developer_thread_ = true;
+        return;
+    }
+
+    if (dec.is<decl_dev_end>())
+    {
+        developer_thread_ = false;
+        return;
+    }
+
+    if (drop_dev())
+        return;
+
     switch (dec.kind())
     {
-        case node::decl_dev_begin:
-            developer_thread_ = true;
-            break;
-        case node::decl_dev_end:
-            developer_thread_ = false;
-            break;
         case node::decl_usingtree:
             emit_decl_usingtree(dec.as<decl_usingtree>());
             break;
@@ -246,9 +282,20 @@ auto compiler::emit_stmt(stmt const& stm, scope& scp, bool last) -> void
 
 auto compiler::emit_stmt_list(stmt_list const& stm, scope& scp, bool last) -> void
 {
+    // 'last' decides whether a branch ends with OP_End or jumps to the function epilogue,
+    // so a dev block a prod build is going to drop must not take the flag off the
+    // statement before it.
+    auto const* tail = static_cast<stmt const*>(nullptr);
+
     for (auto const& entry : stm.list)
     {
-        emit_stmt(*entry, scp, &entry == &stm.list.back() && last);
+        if (!(entry->is<stmt_dev>() && (ctx_->build() & build::dev_blocks) == build::prod))
+            tail = entry.get();
+    }
+
+    for (auto const& entry : stm.list)
+    {
+        emit_stmt(*entry, scp, entry.get() == tail && last);
     }
 }
 
@@ -259,6 +306,9 @@ auto compiler::emit_stmt_comp(stmt_comp const& stm, scope& scp, bool last) -> vo
 
 auto compiler::emit_stmt_dev(stmt_dev const& stm, scope& scp, bool last) -> void
 {
+    if ((ctx_->build() & build::dev_blocks) == build::prod)
+        return;
+
     emit_stmt_list(*stm.block, scp, last);
 }
 
@@ -733,8 +783,10 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
 
     can_break_ = true;
 
-    auto data = std::vector<std::string>{};
-    data.push_back(std::format("{}", stm.body->block->list.size()));
+    // Infinity Ward's compiler sorts the table descending by case value and puts default
+    // last -- 173 of 173 integer tables in data/bin/iw5 agree. The case bodies stay in
+    // source order, only the table is sorted, so each entry keeps its own label.
+    auto cases = std::vector<std::array<std::string, 3>>{};
 
     auto loc_default = std::string{};
     auto has_default = false;
@@ -746,19 +798,13 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
 
         if (entry->is<stmt_case>())
         {
-            data.emplace_back("case");
-
             if (entry->as<stmt_case>().value->is<expr_integer>())
             {
-                data.push_back(std::format("{}", static_cast<i32>(switch_type::integer)));
-                data.push_back(entry->as<stmt_case>().value->as<expr_integer>().value);
-                data.push_back(insert_label());
+                cases.push_back({ std::format("{}", static_cast<i32>(switch_type::integer)), entry->as<stmt_case>().value->as<expr_integer>().value, insert_label() });
             }
             else if (entry->as<stmt_case>().value->is<expr_string>())
             {
-                data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::string)));
-                data.push_back(entry->as<stmt_case>().value->as<expr_string>().value);
-                data.push_back(insert_label());
+                cases.push_back({ std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::string)), entry->as<stmt_case>().value->as<expr_string>().value, insert_label() });
             }
             else
             {
@@ -794,6 +840,26 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
         {
             throw comp_error(entry->loc(), "missing case statement");
         }
+    }
+
+    // string cases keep source order: their key is the engine's string list id, which the
+    // bytecode does not carry in a form we can reproduce -- see plan/iw5-failures.md
+    std::stable_sort(cases.begin(), cases.end(), [](auto const& a, auto const& b) {
+        if (a[0] != b[0] || a[0] != std::format("{}", static_cast<i32>(switch_type::integer)))
+            return false;
+
+        return std::stoi(a[1]) > std::stoi(b[1]);
+    });
+
+    auto data = std::vector<std::string>{};
+    data.push_back(std::format("{}", stm.body->block->list.size()));
+
+    for (auto const& entry : cases)
+    {
+        data.emplace_back("case");
+        data.push_back(entry[0]);
+        data.push_back(entry[1]);
+        data.push_back(entry[2]);
     }
 
     if (has_default)
@@ -1873,7 +1939,9 @@ auto compiler::emit_expr_array(expr_array const& exp, scope& scp) -> void
 {
     emit_expr(*exp.key, scp);
 
-    if (exp.obj->is<expr_identifier>())
+    // A constant is not a local, so it cannot take the cached-local shortcut: let
+    // emit_expr substitute its value the way a plain read of it would.
+    if (exp.obj->is<expr_identifier>() && !constants_.contains(exp.obj->as<expr_identifier>().value))
     {
         emit_opcode(opcode::OP_EvalLocalArrayCached, std::format("{}", variable_access(exp.obj->as<expr_identifier>(), scp)));
     }
@@ -2322,6 +2390,11 @@ auto compiler::process_stmt_comp(stmt_comp const& stm, scope& scp) -> void
 
 auto compiler::process_stmt_dev(stmt_dev const& stm, scope& scp) -> void
 {
+    // Dropped code declares no locals, so a prod build must not walk it: the variables in
+    // there would take stack slots and shift every index after them.
+    if ((ctx_->build() & build::dev_blocks) == build::prod)
+        return;
+
     process_stmt_list(*stm.block, scp);
 }
 
@@ -2810,7 +2883,7 @@ auto compiler::resolve_function_type(expr_function const& exp, std::string& path
             return call::type::local;
     }
 
-    if (ctx_->is_includecall(name, path))
+    if (is_includecall(name, path))
         return call::type::far;
 
     throw comp_error(exp.loc(), "couldn't determine function call type");
@@ -2844,10 +2917,29 @@ auto compiler::resolve_reference_type(expr_reference const& exp, std::string& pa
             return call::type::local;
     }
 
-    if (ctx_->is_includecall(name, path))
+    if (is_includecall(name, path))
         return call::type::far;
 
     throw comp_error(exp.loc(), "couldn't determine function reference type");
+}
+
+// Searched in the order the file declares its includes, so a name defined by two of
+// them resolves to the same one on every platform.
+auto compiler::is_includecall(std::string const& name, std::string& path) const -> bool
+{
+    for (auto const& inc : includes_)
+    {
+        for (auto const& fun : ctx_->include_functions(inc))
+        {
+            if (name == fun)
+            {
+                path = inc;
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 auto compiler::is_constant_condition(expr const& exp) -> bool
@@ -2861,11 +2953,16 @@ auto compiler::is_constant_condition(expr const& exp) -> bool
             throw comp_error(exp.loc(), "condition can't be always false");
         case node::expr_integer:
         {
-            auto num = std::stoi(exp.as<expr_integer>().value);
-            if (num != 0)
+            // Only whether the literal is non-zero matters, and a literal can be wider
+            // than int, so it must not be parsed as one: 'while ( 4294967295 )' is a
+            // perfectly good always-true condition. strtoull saturates instead of
+            // throwing, and a saturated value is non-zero either way.
+            auto const& val = exp.as<expr_integer>().value;
+
+            if (std::strtoull(val.data(), nullptr, 0) != 0)
                 return true;
-            else
-                throw comp_error(exp.loc(), "condition can't be always false");
+
+            throw comp_error(exp.loc(), "condition can't be always false");
         }
         default:
             break;

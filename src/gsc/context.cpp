@@ -35,7 +35,6 @@ auto context::cleanup() -> void
 {
     header_files_.clear();
     include_cache_.clear();
-    includes_.clear();
 }
 
 auto context::engine_name() const -> std::string_view
@@ -673,10 +672,13 @@ auto context::make_token(std::string_view str) const -> std::string
 
     auto data = std::string{ str.begin(), str.end() };
 
+    // ASCII on purpose: std::tolower is a locale-aware libc call per character,
+    // and in the "C" locale it does exactly this for bytes < 128 and nothing
+    // for the rest. Script identifiers are ASCII.
     for (auto i = 0u; i < data.size(); i++)
     {
-        data[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(str[i])));
-        if (data[i] == '\\') data[i] = '/';
+        auto const c = static_cast<unsigned char>(str[i]);
+        data[i] = (c >= 'A' && c <= 'Z') ? static_cast<char>(c | 0x20) : (c == '\\' ? '/' : static_cast<char>(c));
     }
 
     return data;
@@ -706,19 +708,12 @@ auto context::load_header(std::string const& name) -> std::tuple<std::string con
     throw error(std::format("couldn't open gsh file '{}'", name));
 }
 
-auto context::load_include(std::string const& name) -> bool
+auto context::load_include(std::string const& name) -> void
 {
     try
     {
-        if (includes_.contains(name))
-        {
-            return false;
-        }
-
-        includes_.insert(name);
-
         if (include_cache_.contains(name))
-            return true;
+            return;
 
         auto filename = name;
         filename += (instance_ == gsc::instance::server) ? ".gsc" : ".csc";
@@ -759,8 +754,6 @@ auto context::load_include(std::string const& name) -> bool
 
             include_cache_.insert({ name, std::move(funcs) });
         }
-
-        return true;
     }
     catch (std::exception const& e)
     {
@@ -768,26 +761,9 @@ auto context::load_include(std::string const& name) -> bool
     }
 }
 
-auto context::init_includes() -> void
+auto context::include_functions(std::string const& name) const -> std::vector<std::string> const&
 {
-    includes_.clear();
-}
-
-auto context::is_includecall(std::string const& name, std::string& path) -> bool
-{
-    for (auto const& inc : includes_)
-    {
-        for (auto const& fun : include_cache_.at(std::string{ inc }))
-        {
-            if (name == fun)
-            {
-                path = inc;
-                return true;
-            }
-        }
-    }
-
-    return false;
+    return include_cache_.at(name);
 }
 
 extern std::array<std::pair<opcode, std::string_view>, opcode_count> const opcode_list

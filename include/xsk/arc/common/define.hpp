@@ -19,6 +19,7 @@ struct define
     };
 
     kind type;
+    bool vararg;
     std::vector<token> args;
     std::vector<token> exp;
 };

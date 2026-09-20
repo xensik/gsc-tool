@@ -569,8 +569,11 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
 
     can_break_ = true;
 
-    auto data = std::vector<std::string>{};
-    data.push_back(std::format("{}", stm.body->block->list.size()));
+    // Treyarch's compiler sorts the table -- integers ascending by value, strings
+    // ascending by text, default last. Every one of the 583 tables in data/bin/t6 agrees.
+    // The case bodies stay in source order, only the table is sorted, so each entry keeps
+    // its own label.
+    auto cases = std::vector<std::array<std::string, 3>>{};
 
     auto loc_default = std::string{};
     auto has_default = false;
@@ -579,19 +582,13 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
     {
         if (entry->is<stmt_case>())
         {
-            data.emplace_back("case");
-
             if (entry->as<stmt_case>().value->is<expr_integer>())
             {
-                data.push_back(std::format("{}", static_cast<i32>(switch_type::integer)));
-                data.push_back(entry->as<stmt_case>().value->as<expr_integer>().value);
-                data.push_back(insert_label());
+                cases.push_back({ std::format("{}", static_cast<i32>(switch_type::integer)), entry->as<stmt_case>().value->as<expr_integer>().value, insert_label() });
             }
             else if (entry->as<stmt_case>().value->is<expr_string>())
             {
-                data.push_back(std::format("{}", static_cast<i32>(switch_type::string)));
-                data.push_back(entry->as<stmt_case>().value->as<expr_string>().value);
-                data.push_back(insert_label());
+                cases.push_back({ std::format("{}", static_cast<i32>(switch_type::string)), entry->as<stmt_case>().value->as<expr_string>().value, insert_label() });
             }
             else
             {
@@ -617,6 +614,26 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
         {
             throw comp_error(entry->loc(), "missing case statement");
         }
+    }
+
+    auto const integer = std::format("{}", static_cast<i32>(switch_type::integer));
+
+    std::stable_sort(cases.begin(), cases.end(), [&integer](auto const& a, auto const& b) {
+        if (a[0] != b[0])
+            return a[0] < b[0];
+
+        return (a[0] == integer) ? std::stoi(a[1]) < std::stoi(b[1]) : a[1] < b[1];
+    });
+
+    auto data = std::vector<std::string>{};
+    data.push_back(std::format("{}", stm.body->block->list.size()));
+
+    for (auto const& entry : cases)
+    {
+        data.emplace_back("case");
+        data.push_back(entry[0]);
+        data.push_back(entry[1]);
+        data.push_back(entry[2]);
     }
 
     if (has_default)
@@ -2163,11 +2180,16 @@ auto compiler::is_constant_condition(expr const& exp) -> bool
             throw comp_error(exp.loc(), "condition can't be always false");
         case node::expr_integer:
         {
-            auto num = std::stoi(exp.as<expr_integer>().value);
-            if (num != 0)
+            // Only whether the literal is non-zero matters, and a literal can be wider
+            // than int, so it must not be parsed as one: 'while ( 4294967295 )' is a
+            // perfectly good always-true condition. strtoull saturates instead of
+            // throwing, and a saturated value is non-zero either way.
+            auto const& val = exp.as<expr_integer>().value;
+
+            if (std::strtoull(val.data(), nullptr, 0) != 0)
                 return true;
-            else
-                throw comp_error(exp.loc(), "condition can't be always false");
+
+            throw comp_error(exp.loc(), "condition can't be always false");
         }
         default:
             break;
