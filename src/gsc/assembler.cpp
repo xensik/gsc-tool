@@ -194,7 +194,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             stack_.write_cstr(encrypt_string(inst.data[0]));
             break;
         case opcode::OP_GetAnimation:
-            if (ctx_->features() & feature::str4)
+            if (ctx_->features() & (feature::str4 | feature::anim8))
                 script_.write<u64>(0);
             else
                 script_.write<u32>(0);

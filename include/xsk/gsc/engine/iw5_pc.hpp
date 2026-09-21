@@ -10,7 +10,7 @@
 
 namespace xsk::gsc::iw5_pc
 {
-// IW5 PC 1.9.388110
+// IW5 PC 1.9.388110 (pc32) & re-release (pc64)
 constexpr usize code_count = 153;
 constexpr usize func_count = 455;
 constexpr usize meth_count = 781;
@@ -20,7 +20,7 @@ constexpr u32 max_string_id = 33386;
 struct context : public gsc::context
 {
 public:
-    explicit context(gsc::instance inst);
+    explicit context(gsc::instance inst, gsc::system system = gsc::system::pc32);
 };
 
 } // namespace xsk::gsc::iw5_pc

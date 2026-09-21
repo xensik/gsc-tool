@@ -48,7 +48,8 @@ enum class endian : u8
 
 enum class system : u8
 {
-    pc,
+    pc32,
+    pc64,
     ps3,
     xb2,
 };
@@ -84,6 +85,7 @@ struct feature
         hash       = 1 << 9,  // iw9 identifiers
         farcall    = 1 << 10, // iw9 new call system
         foreach    = 1 << 11, // iw9 foreach
+        anim8      = 1 << 12, // animation ref size 8
     };
 
     feature(const values value) : value_(value) {}

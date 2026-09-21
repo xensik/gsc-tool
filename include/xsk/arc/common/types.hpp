@@ -48,7 +48,8 @@ enum class endian : u8
 
 enum class system : u8
 {
-    pc,
+    pc32,
+    pc64,
     ps3,
     ps4,
     ps5,
