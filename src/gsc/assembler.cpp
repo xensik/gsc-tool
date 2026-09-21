@@ -180,7 +180,12 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             script_.write<f32>(std::stof(inst.data[0]));
             break;
         case opcode::OP_GetVector:
-            script_.align(ctx_->endian() == endian::little ? 1 : 4);
+            // Stock big endian bytecode repeats the opcode in the last alignment byte before the payload.
+            if (script_.align(ctx_->endian() == endian::little ? 1 : 4) > 0)
+            {
+                script_.pos(script_.pos() - 1);
+                script_.write<u8>(ctx_->opcode_id(inst.opcode));
+            }
             script_.write<f32>(std::stof(inst.data[0]));
             script_.write<f32>(std::stof(inst.data[1]));
             script_.write<f32>(std::stof(inst.data[2]));
