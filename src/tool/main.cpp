@@ -43,7 +43,7 @@ enum class result : i32 { success = 0, failure = 1 };
 enum class fenc { _, source, assembly, binary, src_bin };
 enum class mode { _, assemble, disassemble, compile, decompile, parse, rename };
 enum class game { _, iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9, jup };
-enum class mach { _, pc, ps3, ps4, ps5, xb2, xb3, xb4, wiiu };
+enum class mach { _, pc, pc32, pc64, ps3, ps4, ps5, xb2, xb3, xb4, wiiu };
 enum class inst { _, server, client };
 
 auto dry_run = false;
@@ -122,6 +122,8 @@ std::map<game, std::string_view> const games_rev =
 std::unordered_map<std::string_view, mach> const machs =
 {
     { "pc",   mach::pc   },
+    { "pc32", mach::pc32 },
+    { "pc64", mach::pc64 },
     { "ps3",  mach::ps3  },
     { "ps4",  mach::ps4  },
     { "ps5",  mach::ps5  },
@@ -541,9 +543,10 @@ auto init_iw5(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc32:
+        case mach::pc64:
         {
-            contexts[game::iw5][mach] = std::make_unique<iw5_pc::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
+            contexts[game::iw5][mach] = std::make_unique<iw5_pc::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server, mach == mach::pc64 ? gsc::system::pc64 : gsc::system::pc32);
             contexts[game::iw5][mach]->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
@@ -570,7 +573,7 @@ auto init_iw6(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::iw6][mach] = std::make_unique<iw6_pc::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw6][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -599,7 +602,7 @@ auto init_iw7(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::iw7][mach] = std::make_unique<iw7::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw7][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -616,7 +619,7 @@ auto init_iw8(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::iw8][mach] = std::make_unique<iw8::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw8][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -633,7 +636,7 @@ auto init_iw9(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::iw9][mach] = std::make_unique<iw9::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::iw9][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -650,7 +653,7 @@ auto init_s1(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::s1][mach] = std::make_unique<s1_pc::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::s1][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -679,7 +682,7 @@ auto init_s2(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::s2][mach] = std::make_unique<s2::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::s2][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -696,7 +699,7 @@ auto init_s4(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::s4][mach] = std::make_unique<s4::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::s4][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -713,7 +716,7 @@ auto init_h1(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::h1][mach] = std::make_unique<h1::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::h1][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -730,7 +733,7 @@ auto init_h2(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::h2][mach] = std::make_unique<h2::context>(inst == inst::client ? gsc::instance::client : gsc::instance::server);
             contexts[game::h2][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -965,7 +968,7 @@ auto init_t6(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc32:
         {
             contexts[game::t6][mach] = std::make_unique<t6::pc::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t6][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -1001,7 +1004,7 @@ auto init_t7(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::t7][mach] = std::make_unique<t7::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t7][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -1018,7 +1021,7 @@ auto init_t8(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::t8][mach] = std::make_unique<t8::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t8][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -1035,7 +1038,7 @@ auto init_t9(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::t9][mach] = std::make_unique<t9::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t9][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -1052,7 +1055,7 @@ auto init_jup(mach mach, inst inst, bool dev) -> void
 
     switch (mach)
     {
-        case mach::pc:
+        case mach::pc64:
         {
             contexts[game::jup][mach] = std::make_unique<jup::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::jup][mach]->init(dev ? build::dev : build::prod, fs_read);
@@ -1185,7 +1188,7 @@ auto parse_game(std::string const& arg, game& out) -> bool
     return false;
 }
 
-auto parse_system(std::string const& arg, mach& out) -> bool
+auto parse_system(std::string const& arg, game game, mach& out) -> bool
 {
     auto mach = utils::string::to_lower(arg);
 
@@ -1196,7 +1199,11 @@ auto parse_system(std::string const& arg, mach& out) -> bool
         out = it->second;
 
         if (out == mach::ps4 || out == mach::ps5 || out == mach::xb3 || out == mach::xb4)
-            out = mach::pc;
+            out = mach::pc64;
+
+        // bare 'pc' keeps working: it means whatever the game originally shipped as
+        if (out == mach::pc)
+            out = (game == game::iw5 || game == game::t6) ? mach::pc32 : mach::pc64;
 
         return true;
     }
@@ -1234,7 +1241,7 @@ auto main(u32 argc, char** argv) -> result
     options.add_options()
         ("m,mode","[REQUIRED] one of: asm, disasm, comp, decomp, parse, rename", cxxopts::value<std::string>(), "<mode>")
         ("g,game", "[REQUIRED] one of: iw5, iw6, iw7, iw8, iw9, s1, s2, s4, h1, h2, t6, t7, t8, t9, jup", cxxopts::value<std::string>(), "<game>")
-        ("s,system", "[REQUIRED] one of: pc, ps3, ps4, ps5, xb2 (360), xb3 (One), xb4 (Series X|S), wiiu", cxxopts::value<std::string>(), "<system>")
+        ("s,system", "[REQUIRED] one of: pc, pc32, pc64, ps3, ps4, ps5, xb2 (360), xb3 (One), xb4 (Series X|S), wiiu", cxxopts::value<std::string>(), "<system>")
         ("i,instance", "Instance to use (server, client).", cxxopts::value<std::string>()->default_value("server"), "<instance>")
         ("p,path", "File or directory to process.", cxxopts::value<std::string>())
         ("w,workdir", "Working directory for includes or headers.", cxxopts::value<std::string>()->default_value("."), "<path>")
@@ -1315,7 +1322,7 @@ auto main(u32 argc, char** argv) -> result
             return result::failure;
         }
 
-        if (!parse_system(mach_arg, mach))
+        if (!parse_system(mach_arg, game, mach))
         {
             std::cerr << "[ERROR] unknown system '" << mach_arg << "'\n";
             return result::failure;
