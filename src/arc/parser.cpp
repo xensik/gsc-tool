@@ -185,8 +185,9 @@ auto parser::parse_inline_or_insert() -> void
         expect(token::INLINE);
 
     auto path = parse_expr_path();
-    expect(token::SEMICOLON);
+    // push before consuming ';' so the next token is lexed from the header
     ppr_.push_header(loc, path->value);
+    expect(token::SEMICOLON);
 }
 
 auto parser::parse_declaration() -> decl::ptr

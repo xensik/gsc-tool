@@ -283,6 +283,39 @@ main()
 )");
 }
 
+TEMPLATE_TEST_CASE("printer: chained #inline headers", "[printer]", BOTH)
+{
+    // #288: the token after '#inline x;' must come from the header, not the outer file.
+    // ponytail: deliberate leak, same reasoning as ctx() in common.hpp.
+    static auto* c = [] {
+        auto* c = new TestType(fam<TestType>::instance::server);
+        auto const read = [](std::string const& name) {
+            auto const src = std::string_view{ name == "h1.gsh" ? "#inline h2;\nfoo(){ x = 1; }\n" : "#define HELLO \"hello\"\n" };
+            return std::vector<u8>{ src.begin(), src.end() };
+        };
+
+        if constexpr (std::is_same_v<TestType, gsc_ctx>)
+            c->init(fam<TestType>::build::prod, [read](auto const*, std::string const& name) { return std::pair<gsc::buffer, std::vector<u8>>{ {}, read(name) }; });
+        else
+            c->init(fam<TestType>::build::prod, read);
+        return c;
+    }();
+
+    auto const out = print_src<TestType>("#inline h1;\n\nmain()\n{\n    printf(HELLO);\n}\n", c);
+
+    REQUIRE(out == R"(
+foo()
+{
+    x = 1;
+}
+
+main()
+{
+    printf( "hello" );
+}
+)");
+}
+
 TEST_CASE("printer: gsc technical statements are contextual keywords", "[printer][gsc]")
 {
     // 'assert' and friends are keywords only when they are being called. maps/_spawner.gsc
