@@ -1092,3 +1092,47 @@ TEST_CASE("h1 round trips shipped bytecode", "[engine][gsc][h1][binary]")
 }
 
 } // namespace xsk::test
+
+namespace xsk::arc::t6
+{
+extern std::array<std::pair<u32, char const*>, hash_count> const hash_list;
+} // namespace xsk::arc::t6
+
+namespace xsk::arc::t7
+{
+extern std::array<std::pair<u32, char const*>, hash_count> const hash_list;
+} // namespace xsk::arc::t7
+
+namespace xsk::test
+{
+
+// #260: every name must hash back to its own id, and the context must hand it
+// back unchanged. Two entries resolving to one string (reported on msvc builds)
+// fails here on whichever platform does it.
+template <typename Ctx, typename List>
+auto check_hash_table(List const& list) -> void
+{
+    auto const* c = ctx<Ctx>();
+    auto bad = std::vector<std::string>{};
+
+    for (auto const& [id, name] : list)
+    {
+        if (c->hash_id(name) != id || c->hash_name(id) != name)
+            bad.push_back(std::format("{:08X} '{}' -> '{}'", id, name, c->hash_name(id)));
+    }
+
+    INFO(std::format("{} bad entries, first: {}", bad.size(), bad.empty() ? "" : bad.front()));
+    REQUIRE(bad.empty());
+}
+
+TEST_CASE("t6 hash table maps each id to its own name", "[engine][arc][t6]")
+{
+    check_hash_table<arc::t6::pc::context>(arc::t6::hash_list);
+}
+
+TEST_CASE("t7 hash table maps each id to its own name", "[engine][arc][t7]")
+{
+    check_hash_table<arc::t7::context>(arc::t7::hash_list);
+}
+
+} // namespace xsk::test
