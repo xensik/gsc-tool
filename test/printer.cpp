@@ -287,7 +287,7 @@ TEMPLATE_TEST_CASE("printer: chained #inline headers", "[printer]", BOTH)
 {
     // #288: the token after '#inline x;' must come from the header, not the outer file.
     // ponytail: deliberate leak, same reasoning as ctx() in common.hpp.
-    static auto* c = [] {
+    static auto* instance = [] {
         auto* c = new TestType(fam<TestType>::instance::server);
         auto const read = [](std::string const& name) {
             auto const src = std::string_view{ name == "h1.gsh" ? "#inline h2;\nfoo(){ x = 1; }\n" : "#define HELLO \"hello\"\n" };
@@ -301,7 +301,7 @@ TEMPLATE_TEST_CASE("printer: chained #inline headers", "[printer]", BOTH)
         return c;
     }();
 
-    auto const out = print_src<TestType>("#inline h1;\n\nmain()\n{\n    printf(HELLO);\n}\n", c);
+    auto const out = print_src<TestType>("#inline h1;\n\nmain()\n{\n    printf(HELLO);\n}\n", instance);
 
     REQUIRE(out == R"(
 foo()
