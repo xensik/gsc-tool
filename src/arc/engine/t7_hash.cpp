@@ -34728,7 +34728,6 @@ extern std::array<std::pair<u32, char const*>, hash_count> const hash_list
     { 0x31BB7714, "cb_fxanim" },
     { 0x87E6A3F6, "cb_radio" },
     { 0x316E516A, "cb_radio_sound" },
-    { 0x181B1223, "cbaseinteractable" },
     { 0xD63E16F5, "cbaseinteractable" },
     { 0xB43EC356, "cbeastcode" },
     { 0x67C7131C, "cbfunc" },
