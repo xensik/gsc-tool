@@ -56,4 +56,14 @@ TEMPLATE_TEST_CASE("assembler: big endian vector alignment", "[assembler][gsc]",
     REQUIRE(std::all_of(script.data + payload, script.data + script.size, [](u8 byte) { return byte == 0; }));
 }
 
+TEST_CASE("assembler: t7 wait and waitrealtime opcodes", "[assembler][arc]")
+{
+    // #282: the compiler reads the same table, so a round trip can't catch a swap.
+    // These ids are pinned against stock bytecode decompiled next to its source.
+    auto const* c = ctx<arc::t7::context>();
+
+    REQUIRE(c->opcode_enum(u16{ 0x00D5 }) == arc::opcode::OP_Wait);
+    REQUIRE(c->opcode_enum(u16{ 0x0104 }) == arc::opcode::OP_RealWait);
+}
+
 } // namespace xsk::test
