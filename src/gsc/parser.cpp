@@ -231,8 +231,9 @@ auto parser::parse_inline() -> void
     auto const loc = tok_.pos;
     expect(token::INLINE);
     auto const path = parse_expr_path();
-    expect(token::SEMICOLON);
+    // push before consuming ';' so the next token is lexed from the header
     ppr_.push_header(loc, path->value);
+    expect(token::SEMICOLON);
 }
 
 auto parser::parse_declaration() -> decl::ptr
