@@ -163765,7 +163765,6 @@ extern std::array<std::pair<u32, char const*>, hash_count> const hash_list
     { 0xCD43DFC0, "spinoff" },
     { 0xF13CE5FC, "spinouttime" },
     { 0x2668F831, "spinpickup" },
-    { 0xA5236ECF, "spinpropkey" },
     { 0x23583032, "spinrad" },
     { 0x6345ED90, "spins" },
     { 0x60D2FCE9, "spinsoundshortly" },

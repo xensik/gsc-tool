@@ -27,6 +27,11 @@ context::context(arc::instance inst) : arc::context(feature::header72 | feature:
     {
         hash_map_.insert({ entry.first, entry.second });
     }
+
+    // ponytail: msvc (19.44) emits "spinpropkey" as "ghostindemo" when both literals
+    // share a translation unit (#260), so this one lives outside t7_hash.cpp. Upgrade
+    // path if more collisions turn up: store the names as one blob plus offsets.
+    hash_map_.insert({ 0xA5236ECF, "spinpropkey" });
 }
 
 } // namespace xsk::arc::t7

@@ -1133,6 +1133,13 @@ TEST_CASE("t6 hash table maps each id to its own name", "[engine][arc][t6]")
 TEST_CASE("t7 hash table maps each id to its own name", "[engine][arc][t7]")
 {
     check_hash_table<arc::t7::context>(arc::t7::hash_list);
+
+    // The msvc workaround entry lives outside hash_list. No literal here: two colliding
+    // names in this file would get merged the same way.
+    auto const* c = ctx<arc::t7::context>();
+
+    for (auto const id : { 0xA5236ECFu, 0x1A154E32u })
+        REQUIRE(c->hash_id(c->hash_name(id)) == id);
 }
 
 } // namespace xsk::test
