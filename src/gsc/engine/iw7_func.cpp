@@ -139,7 +139,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x07F, "getbuildversion" }, // 0x140B53DF0
     { 0x080, "getclientmatchdata" }, // 0x140B58E90
     { 0x081, "getclosestnodeinsight" }, // 0x140AF30E0
-    { 0x082, "_func_082" }, // 0x14049EA10
+    { 0x082, "getcommandfromkey" }, // 0x14049EA10
     { 0x083, "getcorpsearray" }, // 0x14049D9E0
     { 0x084, "getcountertotal" }, // 0x140B57530
     { 0x085, "getcsplinecount" }, // 0x140B36CE0
@@ -389,13 +389,13 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x179, "pointonsegmentnearesttopoint" }, // 0x140B36AF0
     { 0x17A, "positionwouldtelefrag" }, // 0x140B5B8C0
     { 0x17B, "pow" }, // 0x140B361A0
-    { 0x17C, "_func_17C" }, // 0x140496D70
+    { 0x17C, "precachedigitaldistortcodeassets" }, // 0x140496D70
     { 0x17D, "precachefxontag" }, // nullptr
     { 0x17E, "precacheheadicon" }, // 0x140B48A30
     { 0x17F, "precacheitem" }, // 0x140B484A0
     { 0x180, "precacheleaderboards" }, // 0x140B48990
     { 0x181, "precacheminimapicon" }, // 0x140B53970
-    { 0x182, "_func_182" }, // 0x140497070
+    { 0x182, "precacheminimapsentrycodeassets" }, // 0x140497070
     { 0x183, "precachemodel" }, // 0x140B3F7D0
     { 0x184, "precachempanim" }, // 0x140B539E0
     { 0x185, "precachenightvisioncodeassets" }, // 0x140496C40
@@ -693,7 +693,7 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2A9, "setglobalsoundcontext" }, // 0x140B3E6E0
     { 0x2AA, "setaudiotriggerstate" }, // 0x140B3DC50
     { 0x2AB, "finishplayerdeath" }, // 0x14049F040
-    { 0x2AC, "_func_2AC" }, // 0x140442B40
+    { 0x2AC, "navisstraightlinereachable" }, // 0x140442B40
     { 0x2AD, "precachesuit" }, // 0x140B3FEE0
     { 0x2AE, "getcsplineid" }, // 0x140B364B0
     { 0x2AF, "spawnimpulsefield" }, // 0x140B54B20
@@ -758,11 +758,11 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x2EA, "loadworldweapons" }, // 0x140B5B060
     { 0x2EB, "clearworldweapons" }, // 0x140B5B130
     { 0x2EC, "anglelerpquatfrac" }, // 0x140B3A430
-    { 0x2ED, "_func_2ED" }, // 0x140B40850
-    { 0x2EE, "_func_2EE" }, // 0x140B40A10
-    { 0x2EF, "_func_2EF" }, // 0x140B41CD0
-    { 0x2F0, "_func_2F0" }, // 0x140B42050
-    { 0x2F1, "_func_2F1" }, // 0x140B35060
+    { 0x2ED, "archetypeassetloaded" }, // 0x140B40850
+    { 0x2EE, "archetypegetalias" }, // 0x140B40A10
+    { 0x2EF, "archetypegetrandomalias" }, // 0x140B41CD0
+    { 0x2F0, "archetypegetaliases" }, // 0x140B42050
+    { 0x2F1, "archetypehasstate" }, // 0x140B35060
     { 0x2F2, "computeweaponclientloadout" }, // 0x140B5B4B0
     { 0x2F3, "target_drawonradar" }, // 0x14040C540
     { 0x2F4, "target_setradarcenter" }, // 0x14040DBB0
@@ -796,8 +796,8 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list
     { 0x310, "setcodcasterclientmatchdata" }, // 0x140B56BB0
     { 0x311, "getcodcasterclientmatchdata" }, // 0x140B56CF0
     { 0x312, "sendcodcasterclientmatchdata" }, // 0x140B56E50
-    { 0x313, "_func_313" }, // 0x140441130
-    { 0x314, "_func_314" }, // 0x140441150
+    { 0x313, "createnavbadplacebybounds" }, // 0x140441130
+    { 0x314, "createnavbadplacebyent" }, // 0x140441150
     { 0x315, "_func_315" }, // 0x140441140
     { 0x316, "_func_316" }, // 0x140441160
     { 0x317, "waitforalltransients" }, // 0x140C71FE0
