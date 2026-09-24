@@ -13,9 +13,10 @@ auto asset::serialize() const -> std::vector<u8>
 {
     auto data = std::vector<u8>{};
 
+    // A zero compressed length marks an uncompressed stack; otherwise it stores the buffer size.
     if ((compressed_length != buffer.size() || (compressed_length == 0 && length != buffer.size())) || bytecode_length != bytecode.size())
     {
-        throw std::runtime_error("script file serialize error");
+        throw error("script file serialize error");
     }
 
     data.resize(name.size() + (compressed_length ? compressed_length : length) + bytecode_length + 13, 0);
@@ -25,13 +26,13 @@ auto asset::serialize() const -> std::vector<u8>
     std::memcpy(&data[pos], name.data(), name.size() + 1);
     pos += name.size() + 1;
 
-    *reinterpret_cast<u32*>(&data[pos]) = compressed_length;
+    std::memcpy(data.data() + pos, &compressed_length, sizeof(compressed_length));
     pos += 4;
 
-    *reinterpret_cast<u32*>(&data[pos]) = length;
+    std::memcpy(data.data() + pos, &length, sizeof(length));
     pos += 4;
 
-    *reinterpret_cast<u32*>(&data[pos]) = bytecode_length;
+    std::memcpy(data.data() + pos, &bytecode_length, sizeof(bytecode_length));
     pos += 4;
 
     std::memcpy(&data[pos], buffer.data(), buffer.size());
@@ -44,23 +45,39 @@ auto asset::serialize() const -> std::vector<u8>
 
 auto asset::deserialize(std::vector<std::uint8_t> const& data) -> void
 {
+    constexpr auto metadata_size = usize{ 12 };
+
+    if (data.size() < metadata_size + 1)
+    {
+        throw error("script file deserialize error");
+    }
+
     auto pos = usize{ 0 };
 
-    name = std::string{ reinterpret_cast<char const*>(data.data()) };
+    // The name terminator must leave all three u32 metadata fields inside the input.
+    auto const terminator = std::ranges::find(data, u8{ 0 });
+
+    if (terminator == data.end() || static_cast<usize>(std::distance(data.begin(), terminator)) > data.size() - metadata_size - 1)
+    {
+        throw error("script file deserialize error");
+    }
+
+    name.assign(reinterpret_cast<char const*>(data.data()), static_cast<usize>(std::distance(data.begin(), terminator)));
     pos += name.size() + 1;
 
-    compressed_length = *reinterpret_cast<u32 const*>(data.data() + pos);
+    std::memcpy(&compressed_length, data.data() + pos, sizeof(compressed_length));
     pos += 4;
 
-    length = *reinterpret_cast<u32 const*>(data.data() + pos);
+    std::memcpy(&length, data.data() + pos, sizeof(length));
     pos += 4;
 
-    bytecode_length = *reinterpret_cast<u32 const*>(data.data() + pos);
+    std::memcpy(&bytecode_length, data.data() + pos, sizeof(bytecode_length));
     pos += 4;
 
-    if ((compressed_length + bytecode_length + name.size() + 13) != data.size())
+    // The payload contains exactly the declared stack bytes followed by the bytecode bytes.
+    if (auto const payload_size = data.size() - pos; compressed_length > payload_size || bytecode_length != payload_size - compressed_length)
     {
-        throw std::runtime_error("script file deserialize error");
+        throw error("script file deserialize error");
     }
 
     buffer.resize(compressed_length);
