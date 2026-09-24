@@ -1,0 +1,96 @@
+name: MSVC literal probe
+
+# Throwaway: find where MSVC merges "spinpropkey" into "ghostindemo" (#260).
+
+on:
+  push:
+    branches:
+      - probe/msvc-literal-merge
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Compile variants
+        shell: pwsh
+        run: |
+          cl /Bv 2>&1 | Select-Object -First 2
+          $real = '/nologo /c /EHsc /DNDEBUG /Iinclude /Ox /Oi /Gy /GF /MT /W4 /bigobj /Zc:__cplusplus /std:c++20'
+          $variants = [ordered]@{
+            'real' = "$real"
+            'no-gf' = "$real /GF-"
+            'od' = '/nologo /c /EHsc /DNDEBUG /Iinclude /Od /MT /bigobj /Zc:__cplusplus /std:c++20'
+          }
+          foreach ($v in $variants.Keys) {
+            Invoke-Expression "cl $($variants[$v]) /Fo:$v.obj src\arc\engine\t7_hash.cpp" | Out-Null
+            if ($LASTEXITCODE) { throw "cl failed for $v" }
+          }
+
+          # Two entry repro: nothing else in the translation unit.
+          @'
+          #include <array>
+          #include <cstdio>
+          #include <cstdint>
+          #include <utility>
+          std::array<std::pair<std::uint32_t, char const*>, 2> const list
+          {{
+              { 0x1A154E32, "ghostindemo" },
+              { 0xA5236ECF, "spinpropkey" },
+          }};
+          int main()
+          {
+              for (auto const& [id, name] : list)
+                  std::printf("%08X %p %s\n", id, static_cast<void const*>(name), name);
+          }
+          '@ | Set-Content -Encoding ascii mini.cpp
+          cl /nologo /EHsc /Ox /GF /MT /std:c++20 /Fo:mini.obj /Fe:mini.exe mini.cpp | Out-Null
+          if ($LASTEXITCODE) { throw "cl failed for mini" }
+
+      - name: Inspect objects
+        shell: pwsh
+        run: |
+          foreach ($o in 'real', 'no-gf', 'od', 'mini') {
+            $bytes = [IO.File]::ReadAllText("$PWD\$o.obj", [Text.Encoding]::GetEncoding(28591))
+            $g = ([regex]::Matches($bytes, 'ghostindemo')).Count
+            $s = ([regex]::Matches($bytes, 'spinpropkey')).Count
+            "== $o.obj: raw 'ghostindemo' x$g, raw 'spinpropkey' x$s"
+            dumpbin /nologo /symbols "$o.obj" | Select-String -Pattern 'ghostindemo|spinpropkey' | ForEach-Object { '   ' + $_.Line.Trim() }
+          }
+
+      - name: Run two entry repro
+        shell: pwsh
+        run: .\mini.exe
+
+      - name: Link t7_hash alone and read the table back
+        shell: pwsh
+        run: |
+          @'
+          #include <array>
+          #include <cstdio>
+          #include <cstdint>
+          #include <cstring>
+          #include <utility>
+          #include "xsk/arc/engine/t7.hpp"
+          namespace xsk::arc::t7 { extern std::array<std::pair<u32, char const*>, hash_count> const hash_list; }
+          int main()
+          {
+              for (auto const& [id, name] : xsk::arc::t7::hash_list)
+                  if (!std::strcmp(name, "ghostindemo") || !std::strcmp(name, "spinpropkey"))
+                      std::printf("%08X %p %s\n", id, static_cast<void const*>(name), name);
+          }
+          '@ | Set-Content -Encoding ascii readback.cpp
+          foreach ($o in 'real', 'no-gf', 'od') {
+            cl /nologo /EHsc /DNDEBUG /Iinclude /Ox /MT /bigobj /std:c++20 /Fe:readback-$o.exe readback.cpp "$o.obj" | Out-Null
+            if ($LASTEXITCODE) { throw "link failed for $o" }
+            "== readback with $o.obj"
+            & ".\readback-$o.exe"
+          }
