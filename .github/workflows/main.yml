@@ -26,7 +26,8 @@ jobs:
     name: Build Windows
     # windows-2025 image now ships VS 18 only, premake beta8 can't
     # generate anything newer than vs2022 (v143). Move back when it can.
-    runs-on: windows-2022
+    # arm64 builds on an arm64 runner so its tests can run natively.
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -39,10 +40,13 @@ jobs:
         include:
           - arch: x86
             platform: Win32
+            os: windows-2022
           - arch: x64
             platform: x64
+            os: windows-2022
           - arch: arm64
             platform: arm64
+            os: windows-11-arm
     steps:
       - name: Check out files
         uses: actions/checkout@v7
@@ -69,7 +73,6 @@ jobs:
         run: msbuild /m /v:minimal /p:Configuration=${{matrix.config}} /p:Platform=${{matrix.platform}} build/gsc-tool.sln
 
       - name: Run tests
-        if: matrix.arch != 'arm64'
         run: build/bin/${{matrix.arch}}/${{matrix.config}}/xsk-tests.exe
 
       - name: Upload ${{matrix.arch}} ${{matrix.config}} binaries
