@@ -86,7 +86,7 @@ Raw equivalent: `premake5 gmake2` (Linux/macOS) or `premake5 vs2022` (Windows), 
 - Debug builds on non-Windows add `-Wglobal-constructors -Wexit-time-destructors` (`report_static_init()` in `premake5.lua`). **Keep static state constant-initialized** — no work before `main`, no destructors after `exit`. `pool`'s thread-locals are POD-and-zero for exactly this reason. Release skips the flags because cxxopts trips them.
 - `premake5.lua` regenerates `include/xsk/version.hpp` from git tags/branch/rev-count on every run (gitignored; don't hand-edit).
 - Five projects: apps `xsk-tool` (target `gsc-tool`) and `xsk-tests`; static libs `xsk-utils`, `xsk-gsc`, `xsk-arc`; vendored `zlib`. `cxxopts` and `catch2` are header-only/amalgamated. Deps are git submodules in `deps/` with a `.lua` module each.
-- CI (`.github/workflows/main.yml`) builds release on Windows (x86/x64/arm64), macOS (amd64/arm64) and Linux (amd64/arm64, clang-18), runs `xsk-tests` on every arch it can, and on tag push drafts a GitHub release plus a multi-arch Docker image signed with cosign.
+- CI (`.github/workflows/main.yml`) builds release on Windows (x86/x64), macOS (arm64) and Linux (amd64/arm64, clang-18), runs `xsk-tests` on every one of them, and on tag push drafts a GitHub release plus a multi-arch Docker image signed with cosign.
 
 ## Testing
 
