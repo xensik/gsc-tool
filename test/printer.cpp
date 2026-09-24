@@ -142,22 +142,28 @@ TEMPLATE_TEST_CASE("printer: for loop clauses", "[printer]", BOTH)
 {
     SECTION("the init and iteration slots take calls and waits, not just assignments")
     {
-        auto const out = print_src<TestType>("main(){ for (;; wait 0.05) x = 1; for (; a; foo()) y = 2; for (; b; self bar()) z = 3; for (;;) w = 4; }");
+        auto const out = print_src<TestType>("main(){ for (;; wait 0.05) x = 1; for (; a; foo()) y = 2; for (; b; self bar()) z = 3; for (;;) w = 4; for (i = 0; i < 3;) v = 5; for (i = 0;;) u = 6; }");
 
         REQUIRE(out == R"(
 main()
 {
-    for ( ; ; wait 0.05 )
+    for (;; wait 0.05 )
         x = 1;
 
-    for ( ; a; foo() )
+    for (; a; foo() )
         y = 2;
 
-    for ( ; b; self bar() )
+    for (; b; self bar() )
         z = 3;
 
     for (;;)
         w = 4;
+
+    for ( i = 0; i < 3;)
+        v = 5;
+
+    for ( i = 0;;)
+        u = 6;
 }
 )");
     }
