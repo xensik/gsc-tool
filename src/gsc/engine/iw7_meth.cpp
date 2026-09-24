@@ -258,7 +258,7 @@ extern std::array<std::pair<u16, char const*>, meth_count> const meth_list
     { 0x80F5, "forceviewmodelanimation" }, // 0x140480630
     { 0x80F6, "fragbuttonpressed" }, // 0x140B04B20
     { 0x80F7, "freeentitysentient" }, // 0x1405ED180
-    { 0x80F8, "freezelookcontrols" }, // 0x14042F900
+    { 0x80F8, "freevehicle" }, // 0x14042F900
     { 0x80F9, "freezecontrols" }, // 0x140B06410
     { 0x80FA, "getaimangle" }, // 0x140470A90
     { 0x80FB, "getammocount" }, // 0x140B44250
