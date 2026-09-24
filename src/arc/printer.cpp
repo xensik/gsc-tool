@@ -714,26 +714,41 @@ auto printer::print_stmt_dowhile(stmt_dowhile const& stm) -> void
 
 auto printer::print_stmt_for(stmt_for const& stm) -> void
 {
-    // 'for (;;)' is only the same loop when all three clauses are empty. The init and
-    // iteration slots take calls and waits too, and dropping those would change the loop.
-    auto const empty = [](stmt const& s) { return s.is<stmt_expr>() && s.as<stmt_expr>().value->is<expr_empty>(); };
+    // An empty clause gets no padding: 'for (;;)', 'for (; i < 3; i++ )', 'for ( i = 0; i < 3;)'. The parser marks
+    // an empty init/iter as an empty expression, the decompiler as an empty statement.
+    auto const empty = [](stmt const& s) { return s.is<stmt_empty>() || (s.is<stmt_expr>() && s.as<stmt_expr>().value->is<expr_empty>()); };
+    auto const init = !empty(*stm.init);
+    auto const test = !stm.test->is<expr_empty>();
+    auto const iter = !empty(*stm.iter);
 
-    if (stm.test->is<expr_empty>() && empty(*stm.init) && empty(*stm.iter))
+    std::format_to(std::back_inserter(buf_), "for (");
+
+    if (init)
     {
-        std::format_to(std::back_inserter(buf_), "for (;;)\n");
-    }
-    else
-    {
-        std::format_to(std::back_inserter(buf_), "for ( ");
+        buf_.push_back(' ');
         print_stmt(*stm.init);
         buf_.pop_back();
-        std::format_to(std::back_inserter(buf_), "; ");
+    }
+
+    buf_.push_back(';');
+
+    if (test)
+    {
+        buf_.push_back(' ');
         print_expr(*stm.test);
-        std::format_to(std::back_inserter(buf_), "; ");
+    }
+
+    buf_.push_back(';');
+
+    if (iter)
+    {
+        buf_.push_back(' ');
         print_stmt(*stm.iter);
         buf_.pop_back();
-        std::format_to(std::back_inserter(buf_), " )\n");
+        buf_.push_back(' ');
     }
+
+    std::format_to(std::back_inserter(buf_), ")\n");
 
     if (stm.body->is<stmt_comp>())
     {
