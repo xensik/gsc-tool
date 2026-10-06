@@ -4,6 +4,7 @@
 // that can be found in the LICENSE file.
 
 #include "xsk/stdinc.hpp"
+#include "xsk/gsc/common/asset.hpp"
 #include "xsk/utils/reader.hpp"
 #include "xsk/utils/writer.hpp"
 #include "xsk/utils/zlib.hpp"
@@ -171,6 +172,127 @@ TEST_CASE("zlib: empty data", "[utils][zlib]")
     auto compressed = zlib::compress(empty);
     auto decompressed = zlib::decompress(compressed, 0);
     REQUIRE(decompressed.empty());
+}
+
+TEST_CASE("zlib: declared output length is validated without oversized allocation", "[utils][zlib]")
+{
+    auto const input = std::vector<u8>{ 't', 'e', 's', 't' };
+    auto const compressed = zlib::compress(input);
+
+    CHECK(zlib::decompress(compressed, static_cast<u32>(input.size())) == input);
+    CHECK_THROWS_AS(zlib::decompress(compressed, static_cast<u32>(input.size() + 1)), std::runtime_error);
+    CHECK_THROWS_AS(zlib::decompress(compressed, std::numeric_limits<u32>::max()), std::runtime_error);
+}
+
+TEST_CASE("reader: unaligned scalar reads are supported", "[utils][reader]")
+{
+    auto const data = std::vector<u8>{ 0xFF, 0x34, 0x12, 0x78, 0x56, 0x34, 0x12 };
+    auto value = reader{ data };
+
+    value.seek(1);
+    CHECK(value.read<u16>() == 0x1234);
+    CHECK(value.read<u32>() == 0x12345678);
+}
+
+TEST_CASE("reader: i24 does not read beyond its three bytes", "[utils][reader]")
+{
+    auto const data = std::vector<u8>{ 0x56, 0x34, 0x12 };
+    auto little = reader{ data };
+    auto big = reader{ data, true };
+
+    CHECK(little.read_i24() == 0x123456);
+    CHECK(big.read_i24() == 0x563412);
+    CHECK(little.pos() == 3);
+}
+
+TEST_CASE("reader: malformed ranges and strings are rejected", "[utils][reader]")
+{
+    auto const data = std::vector<u8>{ 'a', 'b', 'c' };
+    auto value = reader{ data };
+
+    CHECK_THROWS_AS(value.read_cstr(), std::runtime_error);
+    CHECK(value.read_bytes(0, 0).empty());
+    CHECK_THROWS_AS(value.read_bytes(2, 2), std::runtime_error);
+    CHECK_THROWS_AS(value.align(0), std::runtime_error);
+    CHECK_THROWS_AS(value.align(3), std::runtime_error);
+}
+
+TEST_CASE("writer: unaligned scalar writes round-trip through reader", "[utils][writer]")
+{
+    auto output = writer{ usize{ 7 } };
+    output.write<u8>(0xFF);
+    output.write<u16>(0x1234);
+    output.write<u32>(0x12345678);
+
+    auto input = reader{ output.data(), output.pos() };
+    CHECK(input.read<u8>() == 0xFF);
+    CHECK(input.read<u16>() == 0x1234);
+    CHECK(input.read<u32>() == 0x12345678);
+}
+
+TEST_CASE("writer: i24 writes exactly three bytes", "[utils][writer]")
+{
+    auto output = writer{ usize{ 3 } };
+    output.write_i24(0x123456);
+
+    CHECK(output.pos() == 3);
+    CHECK(output.data()[0] == 0x56);
+    CHECK(output.data()[1] == 0x34);
+    CHECK(output.data()[2] == 0x12);
+}
+
+TEST_CASE("writer: cstr terminates overwritten data and validates alignment", "[utils][writer]")
+{
+    auto output = writer{ usize{ 4 } };
+    output.write_string("xxxx");
+    output.pos(0);
+    output.write_cstr("a");
+
+    CHECK(output.data()[0] == 'a');
+    CHECK(output.data()[1] == 0);
+    CHECK_THROWS_AS(output.align(0), std::runtime_error);
+    CHECK_THROWS_AS(output.align(3), std::runtime_error);
+}
+
+TEST_CASE("gsc asset: malformed input is rejected", "[gsc][asset]")
+{
+    auto value = gsc::asset{};
+
+    CHECK_THROWS_AS(value.deserialize({}), std::runtime_error);
+    CHECK_THROWS_AS(value.deserialize(std::vector<u8>(13, 1)), std::runtime_error);
+    CHECK_THROWS_AS(value.deserialize({ 'a', 0 }), std::runtime_error);
+}
+
+TEST_CASE("gsc asset: empty payload is accepted", "[gsc][asset]")
+{
+    auto value = gsc::asset{};
+    auto data = std::vector<u8>(13, 0);
+
+    CHECK_NOTHROW(value.deserialize(data));
+    CHECK(value.name.empty());
+    CHECK(value.buffer.empty());
+    CHECK(value.bytecode.empty());
+}
+
+TEST_CASE("gsc asset: serialization round-trip preserves metadata and payload", "[gsc][asset]")
+{
+    auto original = gsc::asset{};
+    original.name = "test";
+    original.buffer = { 1, 2, 3 };
+    original.bytecode = { 4, 5 };
+    original.compressed_length = static_cast<u32>(original.buffer.size());
+    original.length = 7;
+    original.bytecode_length = static_cast<u32>(original.bytecode.size());
+
+    auto restored = gsc::asset{};
+    restored.deserialize(original.serialize());
+
+    CHECK(restored.name == original.name);
+    CHECK(restored.compressed_length == original.compressed_length);
+    CHECK(restored.length == original.length);
+    CHECK(restored.bytecode_length == original.bytecode_length);
+    CHECK(restored.buffer == original.buffer);
+    CHECK(restored.bytecode == original.bytecode);
 }
 
 } // namespace xsk::test

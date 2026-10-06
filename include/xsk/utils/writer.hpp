@@ -11,7 +11,11 @@ namespace xsk::utils
 struct writer
 {
     using ptr = std::unique_ptr<writer>;
-    using error = std::runtime_error;
+
+    struct error final : public std::runtime_error
+    {
+        using std::runtime_error::runtime_error;
+    };
 
 private:
     static constexpr usize default_size = 0x100000;
