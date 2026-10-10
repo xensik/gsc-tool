@@ -207,6 +207,7 @@ struct assembly
 {
     using ptr = std::unique_ptr<assembly>;
 
+    std::string name;
     std::vector<std::string> includes;
     std::vector<function::ptr> functions;
 

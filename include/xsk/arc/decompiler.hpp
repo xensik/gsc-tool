@@ -13,6 +13,18 @@ namespace xsk::arc
 struct decompiler
 {
 private:
+    // A class as it is found in the bytecode: the function stock generates for it, the
+    // methods exported under its name, and the fields of self that read as members.
+    struct class_info
+    {
+        std::string base;
+        function const* init{};
+        std::vector<function const*> methods;
+        std::vector<std::string> vars;
+        std::unordered_set<std::string> members;
+        decl_list::ptr body;
+    };
+
     context const* ctx_;
     program::ptr program_;
     decl_function::ptr func_;
@@ -24,6 +36,9 @@ private:
     std::vector<param_type> params_;
     std::stack<node::ptr> stack_;
     std::string namespace_;
+    std::unordered_map<std::string, class_info> classes_;
+    std::unordered_map<function const*, class_info*> methods_;
+    class_info* class_{};
     locjmp locs_;
     bool in_waittill_{};
     bool retbool_{};
@@ -33,6 +48,10 @@ public:
     auto decompile(assembly const& data) -> program::ptr;
 
 private:
+    auto find_classes(assembly const& data) -> void;
+    auto decompile_class(class_info& info) -> void;
+    auto decompile_constants(function const& func) -> void;
+    auto find_declaration(stmt_list& list, std::string const& name) -> std::pair<stmt_list*, usize>;
     auto decompile_function(function const& func) -> void;
     auto decompile_instruction(instruction const& inst, bool last) -> void;
     auto decompile_expressions(instruction const& inst) -> void;
@@ -104,6 +123,8 @@ private:
     auto process_expr_identifier(expr_identifier& exp) -> void;
     auto pop_stack_node() -> node::ptr;
     auto pop_stack_expr() -> expr::ptr;
+    auto import_path(instruction const& inst) const -> std::string;
+    auto make_arithmetic(expr::ptr lvalue, expr::ptr rvalue, expr_binary::op oper) -> expr::ptr;
 };
 
 } // namespace xsk::arc

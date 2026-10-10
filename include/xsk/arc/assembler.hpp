@@ -19,10 +19,11 @@ private:
     assembly const* assembly_{};
     utils::writer script_;
     utils::writer devmap_;
-    std::unordered_map<std::string, u16> strpool_;
+    std::unordered_map<std::string, u32> strpool_;
     std::vector<export_ref> exports_;
     std::vector<import_ref> imports_;
     std::vector<string_ref> strings_;
+    std::vector<string_ref> devstrings_;
     std::vector<animtree_ref> anims_;
     u32 devmap_count_{};
 
@@ -31,8 +32,10 @@ public:
     auto assemble(assembly const& data, std::string const& name = {}) -> std::pair<buffer, buffer>;
 
 private:
+    auto assemble_strings(std::vector<string_ref> const& strings) -> u16;
     auto assemble_function(function& func) -> void;
     auto assemble_instruction(instruction const& inst) -> void;
+    auto assemble_import(instruction const& inst) -> void;
     auto assemble_localvars(instruction const& inst) -> void;
     auto assemble_jump(instruction const& inst) -> void;
     auto assemble_switch(instruction const& inst) -> void;
@@ -42,8 +45,9 @@ private:
     auto process_instruction(instruction const& inst) -> void;
     auto align_instruction(instruction& inst) -> void;
     auto resolve_label(std::string const& name) const -> usize;
-    auto resolve_string(std::string const& name) -> u16;
+    auto resolve_string(std::string const& name) -> u32;
     auto add_stringref(std::string const& str, string_type type, u32 ref) -> void;
+    auto is_devstring(std::string const& str) const -> bool;
     auto add_importref(std::vector<std::string> const& data, u32 ref) -> void;
     auto add_animref(std::vector<std::string> const& data, u32 ref) -> void;
 };

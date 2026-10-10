@@ -96,6 +96,9 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
         string_pool.insert({ pos, script_.read_cstr() });
     }
 
+    if (auto const itr = string_pool.find(header_.name); itr != string_pool.end())
+        assembly_->name = itr->second;
+
     script_.pos(header_.include_offset);
 
     for (auto i = 0u; i < header_.include_count; i++)
@@ -538,10 +541,13 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
             break;
         case opcode::OP_ScriptFunctionCallClass:
         case opcode::OP_ScriptThreadCallClass:
-            script_.seek(1);
+        {
+            auto const argc = script_.read<u8>();
             inst.size += script_.align(4);
             inst.data.push_back(ctx_->hash_name(script_.read<u32>()));
+            inst.data.push_back(std::format("{}", argc));
             break;
+        }
         case opcode::OP_SafeCreateLocalVariables:
             disassemble_params(inst);
             break;
@@ -648,6 +654,8 @@ auto disassembler::disassemble_import(instruction& inst) -> void
     {
         inst.data.push_back(itr->second->space);
         inst.data.push_back(itr->second->name);
+        inst.data.push_back(std::format("{}", itr->second->params));
+        inst.data.push_back(std::format("{}", itr->second->flags));
         return script_.seek((ctx_->features() & feature::size64) ? 8 : 4);
     }
 

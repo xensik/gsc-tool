@@ -815,6 +815,13 @@ auto preprocessor::read_hashtoken(token& hash) -> void
         {
             return read_hashtoken_animtree(hash, next);
         }
+
+        // not a line directive: a script that went through a preprocessor once
+        // already carries several '#precache( ... );' on one line
+        if (auto const it = directives_.find(next.data); it != directives_.end() && it->second == directive::PRECACHE)
+        {
+            return read_directive_precache(hash, next);
+        }
     }
     else if (next.type == token::STRING)
     {

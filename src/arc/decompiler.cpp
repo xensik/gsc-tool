@@ -19,6 +19,12 @@ auto decompiler::decompile(assembly const& data) -> program::ptr
 {
     program_ = program::make();
     namespace_ = {};
+    classes_.clear();
+    methods_.clear();
+    class_ = nullptr;
+
+    if (ctx_->features() & feature::spaces)
+        find_classes(data);
 
     for (auto it = data.includes.rbegin(); it != data.includes.rend(); it++)
     {
@@ -33,8 +39,174 @@ auto decompiler::decompile(assembly const& data) -> program::ptr
     return std::move(program_);
 }
 
+// Classes do not survive compilation as such. What is left of one is a 'private autoexec'
+// function named after it that fills 'classes.<name>[0].__vtable', and its methods, which
+// are ordinary functions exported under the class name right before that function.
+auto decompiler::find_classes(assembly const& data) -> void
+{
+    auto const flags = static_cast<u8>(export_flags::export_autoexec) | static_cast<u8>(export_flags::export_private);
+    auto order = std::vector<std::string const*>{};
+
+    for (auto i = 0u; i < data.functions.size(); i++)
+    {
+        auto const& init = *data.functions[i];
+
+        if (init.flags != flags)
+            continue;
+
+        auto info = class_info{};
+        auto vtable = false;
+
+        for (auto const& inst : init.instructions)
+        {
+            if (inst->opcode == opcode::OP_EvalFieldVariableRef && inst->data[0] == "__vtable")
+                vtable = true;
+
+            // slots are bound root class first, so the last foreign one belongs to the direct base
+            if (inst->opcode == opcode::OP_GetFunction && inst->data[0] != init.name)
+                info.base = inst->data[0];
+        }
+
+        if (!vtable || classes_.contains(init.name))
+            continue;
+
+        auto first = i;
+
+        while (first > 0 && data.functions[first - 1]->space == init.name && !methods_.contains(data.functions[first - 1].get()) && data.functions[first - 1]->flags != flags)
+            first--;
+
+        // A class named like the script's namespace cannot be told from the functions around
+        // it by name. A constructor that was written out, so not one of the two stock appends,
+        // is taken as the start of the class then.
+        if (init.space == init.name)
+        {
+            for (auto j = first; j + 2 < i; j++)
+            {
+                if (data.functions[j]->name == "__constructor")
+                    first = j;
+            }
+        }
+
+        info.init = &init;
+
+        for (auto j = first; j < i; j++)
+            info.methods.push_back(data.functions[j].get());
+
+        auto const res = classes_.emplace(init.name, std::move(info));
+        order.push_back(&res.first->first);
+
+        for (auto const* method : res.first->second.methods)
+            methods_.emplace(method, &res.first->second);
+
+        methods_.emplace(&init, &res.first->second);
+    }
+
+    // A field of self is written back as a member when nothing in the way stops it: assigning
+    // to a member name never makes a local, so a name some method of the class or of a class
+    // extending it uses for a local has to stay 'self.name' everywhere.
+    auto blocked = std::unordered_map<std::string, std::unordered_set<std::string>>{};
+
+    for (auto const& [name, info] : classes_)
+    {
+        for (auto const* method : info.methods)
+        {
+            if (method->instructions.empty() || method->instructions[0]->opcode != opcode::OP_SafeCreateLocalVariables)
+                continue;
+
+            auto const& data_ = method->instructions[0]->data;
+
+            for (auto k = usize{ method->params } * 2; k < data_.size(); k += 2)
+            {
+                // the local counts against the class and every class it extends
+                for (auto const* entry = &name; classes_.contains(*entry); entry = &classes_.at(*entry).base)
+                    blocked[*entry].insert(data_[k]);
+            }
+        }
+    }
+
+    // base before derived, a derived class only declares what it does not inherit
+    auto done = std::unordered_set<std::string>{};
+
+    auto const resolve = [&](auto const& self, std::string const& name) -> void {
+        if (!done.insert(name).second)
+            return;
+
+        auto& info = classes_.at(name);
+
+        if (classes_.contains(info.base))
+        {
+            self(self, info.base);
+            info.members = classes_.at(info.base).members;
+        }
+
+        for (auto const* method : info.methods)
+        {
+            for (auto const& inst : method->instructions)
+            {
+                if (inst->opcode != opcode::OP_SelfEvalFieldVariable && inst->opcode != opcode::OP_SelfEvalFieldVariableRef)
+                    continue;
+
+                if (blocked[name].contains(inst->data[0]) || !info.members.insert(inst->data[0]).second)
+                    continue;
+
+                info.vars.push_back(inst->data[0]);
+            }
+        }
+    };
+
+    for (auto const* name : order)
+        resolve(resolve, *name);
+}
+
+auto decompiler::decompile_class(class_info& info) -> void
+{
+    auto const loc = location{ nullptr, static_cast<i32>(info.init->index) };
+
+    // the generated function lives in the script's namespace, the class is declared there
+    if (namespace_ != info.init->space)
+    {
+        namespace_ = info.init->space;
+        program_->declarations.push_back(decl_namespace::make(loc, expr_identifier::make(loc, namespace_)));
+    }
+
+    auto body = decl_list::make(loc);
+
+    for (auto const& name : info.vars)
+        body->list.push_back(decl_variable::make(loc, expr_identifier::make(loc, name)));
+
+    if (info.body != nullptr)
+    {
+        auto& list = info.body->list;
+
+        // Stock appends the constructor and destructor a class does not write, in that order
+        // and with nothing in them. Those are left for the compiler to append again.
+        for (auto const* special : { "__destructor", "__constructor" })
+        {
+            if (list.empty())
+                break;
+
+            auto const& last = list.back()->as<decl_function>();
+
+            if (last.name->value == special && last.params->list.empty() && last.body->block->list.empty() && last.flags == export_flags::export_none)
+                list.pop_back();
+        }
+
+        for (auto& entry : list)
+            body->list.push_back(std::move(entry));
+    }
+
+    program_->declarations.push_back(decl_class::make(loc, expr_identifier::make(loc, info.init->name), expr_identifier::make(loc, info.base), std::move(body)));
+}
+
 auto decompiler::decompile_function(function const& func) -> void
 {
+    auto const owner = methods_.find(&func);
+    class_ = (owner != methods_.end()) ? owner->second : nullptr;
+
+    // the vtable function is the compiler's to generate again, the class goes in its place
+    if (class_ != nullptr && class_->init == &func)
+        return decompile_class(*std::exchange(class_, nullptr));
+
     expr_labels_.clear();
     tern_labels_.clear();
     locals_.clear();
@@ -88,6 +260,33 @@ auto decompiler::decompile_function(function const& func) -> void
     auto& list = func_->body->block->list;
     locs_.end = std::format("loc_{:X}", list.back()->loc().begin.line + 1);
 
+    // A devblock cannot hold another inside a function, apart from the one an assert brings
+    // along. So a function that is one devblock from start to end and still has devblocks
+    // inside was declared in '/# #/' itself: the outer one is the declaration's, not a statement.
+    auto dev = false;
+
+    if ((ctx_->features() & feature::size64) && class_ == nullptr && list.front()->is<stmt_jmp_dev>() && list.front()->as<stmt_jmp_dev>().value == list.back()->label())
+    {
+        auto const lone_assert = [&](usize i) {
+            if (i + 2 >= list.size() || !list[i + 1]->is<stmt_expr>() || list[i + 2]->label() != list[i]->as<stmt_jmp_dev>().value)
+                return false;
+
+            auto const& value = *list[i + 1]->as<stmt_expr>().value;
+
+            if (!value.is<expr_call>() || !value.as<expr_call>().value->is<expr_function>())
+                return false;
+
+            auto const& name = value.as<expr_call>().value->as<expr_function>().name->value;
+            return name == "assert" || name == "assertmsg";
+        };
+
+        for (auto i = usize{ 1 }; i < list.size() && !dev; i++)
+            dev = list[i]->is<stmt_jmp_dev>() && !lone_assert(i);
+
+        if (dev)
+            list.erase(list.begin());
+    }
+
     decompile_statements(*func_->body->block);
 
     if (!list.empty() && list.back()->is<stmt_return>())
@@ -96,9 +295,226 @@ auto decompiler::decompile_function(function const& func) -> void
             list.pop_back();
     }
 
+    if (ctx_->features() & feature::size64)
+        decompile_constants(func);
+
     process_function(*func_);
 
-    program_->declarations.push_back(std::move(func_));
+    if (dev)
+    {
+        auto& decls = program_->declarations;
+
+        // dev functions that follow each other share one block
+        if (!decls.empty() && decls.back()->is<decl_dev_end>())
+            decls.pop_back();
+        else
+            decls.push_back(decl_dev_begin::make(loc));
+
+        decls.push_back(std::move(func_));
+        return decls.push_back(decl_dev_end::make(loc));
+    }
+
+    if (class_ == nullptr)
+        return program_->declarations.push_back(std::move(func_));
+
+    // the compiler puts the call to the base back: first thing in a constructor, last in a destructor
+    auto const base_call = [&](stmt const& stm) {
+        if (!stm.is<stmt_expr>() || !stm.as<stmt_expr>().value->is<expr_call>() || !stm.as<stmt_expr>().value->as<expr_call>().value->is<expr_function>())
+            return false;
+
+        auto const& call = stm.as<stmt_expr>().value->as<expr_call>().value->as<expr_function>();
+        return !class_->base.empty() && call.path->value == class_->base && call.name->value == func.name && call.args->list.empty();
+    };
+
+    if (func.name == "__constructor" && !list.empty() && base_call(*list.front()))
+        list.erase(list.begin());
+    else if (func.name == "__destructor" && !list.empty() && base_call(*list.back()))
+        list.pop_back();
+
+    if (class_->body == nullptr)
+        class_->body = decl_list::make(loc);
+
+    class_->body->list.push_back(std::move(func_));
+}
+
+// Stock t7 gives a constant a slot in the frame and inlines every use of it, which leaves
+// a local that no instruction touches. It is declared again at the spot that keeps the
+// frame in its order. Its value is gone with the name, 'undefined' stands in for it.
+auto decompiler::decompile_constants(function const& func) -> void
+{
+    auto used = std::unordered_set<std::string>{};
+
+    for (auto const& inst : func.instructions)
+    {
+        switch (inst->opcode)
+        {
+            case opcode::OP_EvalLocalVariableCached:
+            case opcode::OP_EvalLocalVariableRefCached:
+            case opcode::OP_EvalLocalArrayRefCached:
+            case opcode::OP_SafeSetWaittillVariableFieldCached:
+                used.insert(locals_.at(std::stoul(inst->data[0])));
+                break;
+            default:
+                break;
+        }
+    }
+
+    auto& body = *func_->body->block;
+    auto const loc = func_->loc();
+
+    // locals_ is newest first, so walking it backwards is the order the frame was laid out in
+    auto const count = locals_.size() - func.params;
+
+    for (auto i = usize{ 0 }; i < count; i++)
+    {
+        auto const& name = locals_[count - 1 - i];
+
+        if (used.contains(name))
+            continue;
+
+        auto decl = stmt_expr::make(loc, expr_const::make(loc, expr_identifier::make(loc, name), expr_undefined::make(loc)));
+        auto placed = false;
+
+        // right before the statement that brings in the next local of the frame
+        for (auto j = i + 1; j < count && !placed; j++)
+        {
+            if (!used.contains(locals_[count - 1 - j]))
+                continue;
+
+            if (auto const [list, index] = find_declaration(body, locals_[count - 1 - j]); list != nullptr)
+            {
+                list->list.insert(list->list.begin() + static_cast<i64>(index), std::move(decl));
+                placed = true;
+            }
+        }
+
+        // or, when it is the last one, right after the statement that brought in the one before
+        for (auto j = i; j > 0 && !placed; j--)
+        {
+            if (auto const [list, index] = find_declaration(body, locals_[count - j]); list != nullptr)
+            {
+                list->list.insert(list->list.begin() + static_cast<i64>(index) + 1, std::move(decl));
+                placed = true;
+            }
+        }
+
+        if (!placed)
+            body.list.insert(body.list.begin(), std::move(decl));
+    }
+}
+
+// The statement that makes 'name' a local, as the list holding it and its index there. The
+// compiler registers a local at the first statement that assigns it, walking in this order.
+auto decompiler::find_declaration(stmt_list& list, std::string const& name) -> std::pair<stmt_list*, usize>
+{
+    auto const names = [&](expr const& exp) {
+        auto const* base = &exp;
+
+        // 'name[ i ] = x' and 'name.field = x' make a local of 'name' too
+        while (base->is<expr_array>() || base->is<expr_field>())
+            base = base->is<expr_array>() ? base->as<expr_array>().obj.get() : base->as<expr_field>().obj.get();
+
+        return base->is<expr_identifier>() && base->as<expr_identifier>().value == name;
+    };
+
+    auto const declares = [&](auto const& self, stmt const& stm) -> bool {
+        switch (stm.kind())
+        {
+            case node::stmt_expr:
+            {
+                auto const& value = *stm.as<stmt_expr>().value;
+
+                if (value.is<expr_assign>())
+                    return names(*value.as<expr_assign>().lvalue);
+
+                if (value.is<expr_increment>())
+                    return names(*value.as<expr_increment>().lvalue);
+
+                if (value.is<expr_decrement>())
+                    return names(*value.as<expr_decrement>().lvalue);
+
+                return value.is<expr_const>() && value.as<expr_const>().lvalue->value == name;
+            }
+            case node::stmt_waittill:
+                return std::any_of(stm.as<stmt_waittill>().args->list.begin(), stm.as<stmt_waittill>().args->list.end(), [&](auto const& arg) { return names(*arg); });
+            case node::stmt_foreach:
+                return names(*stm.as<stmt_foreach>().key) || names(*stm.as<stmt_foreach>().value);
+            case node::stmt_for:
+                return self(self, *stm.as<stmt_for>().init);
+            default:
+                return false;
+        }
+    };
+
+    // a body is either a block with a list of its own or one bare statement
+    auto const inside = [&](stmt& stm, usize index) -> std::pair<stmt_list*, usize> {
+        if (stm.is<stmt_comp>())
+            return find_declaration(*stm.as<stmt_comp>().block, name);
+
+        if (stm.is<stmt_list>())
+            return find_declaration(stm.as<stmt_list>(), name);
+
+        // a bare statement has no list, the statement it hangs off is the place then
+        return { declares(declares, stm) ? &list : nullptr, index };
+    };
+
+    for (auto i = usize{ 0 }; i < list.list.size(); i++)
+    {
+        auto& entry = *list.list[i];
+
+        if (declares(declares, entry))
+            return { &list, i };
+
+        auto bodies = std::vector<stmt*>{};
+
+        switch (entry.kind())
+        {
+            case node::stmt_comp:
+            case node::stmt_list:
+                bodies = { &entry };
+                break;
+            case node::stmt_dev:
+                bodies = { entry.as<stmt_dev>().block.get() };
+                break;
+            case node::stmt_if:
+                bodies = { entry.as<stmt_if>().body.get() };
+                break;
+            case node::stmt_ifelse:
+                bodies = { entry.as<stmt_ifelse>().stmt_if.get(), entry.as<stmt_ifelse>().stmt_else.get() };
+                break;
+            case node::stmt_while:
+                bodies = { entry.as<stmt_while>().body.get() };
+                break;
+            case node::stmt_dowhile:
+                bodies = { entry.as<stmt_dowhile>().body.get() };
+                break;
+            case node::stmt_for:
+                bodies = { entry.as<stmt_for>().body.get(), entry.as<stmt_for>().iter.get() };
+                break;
+            case node::stmt_foreach:
+                bodies = { entry.as<stmt_foreach>().body.get() };
+                break;
+            case node::stmt_switch:
+                bodies = { entry.as<stmt_switch>().body.get() };
+                break;
+            case node::stmt_case:
+                bodies = { entry.as<stmt_case>().body.get() };
+                break;
+            case node::stmt_default:
+                bodies = { entry.as<stmt_default>().body.get() };
+                break;
+            default:
+                break;
+        }
+
+        for (auto* body : bodies)
+        {
+            if (auto const found = inside(*body, i); found.first != nullptr)
+                return found;
+        }
+    }
+
+    return { nullptr, 0 };
 }
 
 auto decompiler::decompile_instruction(instruction const& inst, bool last) -> void
@@ -279,7 +695,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         }
         case opcode::OP_GetFunction:
         {
-            auto path = expr_path::make(loc, inst.data[0]);
+            auto path = expr_path::make(loc, import_path(inst));
             auto name = expr_identifier::make(loc, inst.data[1]);
             stack_.push(expr_reference::make(loc, std::move(path), std::move(name)));
             break;
@@ -425,7 +841,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_CallBuiltin:
         {
             auto args = expr_arguments::make(loc);
-            auto path = expr_path::make(loc, inst.data[0]);
+            auto path = expr_path::make(loc, import_path(inst));
             auto name = expr_identifier::make(loc, inst.data[1]);
 
             auto var = pop_stack_node();
@@ -446,7 +862,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             auto obj = pop_stack_expr();
             loc = obj->loc();
             auto args = expr_arguments::make(loc);
-            auto path = expr_path::make(loc, inst.data[0]);
+            auto path = expr_path::make(loc, import_path(inst));
             auto name = expr_identifier::make(loc, inst.data[1]);
 
             auto var = pop_stack_node();
@@ -481,7 +897,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_ScriptFunctionCall:
         {
             auto args = expr_arguments::make(loc);
-            auto path = expr_path::make(loc, inst.data[0]);
+            auto path = expr_path::make(loc, import_path(inst));
             auto name = expr_identifier::make(loc, inst.data[1]);
 
             auto var = pop_stack_node();
@@ -520,7 +936,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             loc = obj->loc();
 
             auto args = expr_arguments::make(loc);
-            auto path = expr_path::make(loc, inst.data[0]);
+            auto path = expr_path::make(loc, import_path(inst));
             auto name = expr_identifier::make(loc, inst.data[1]);
 
             auto var = pop_stack_node();
@@ -557,7 +973,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_ScriptThreadCall:
         {
             auto args = expr_arguments::make(loc);
-            auto path = expr_path::make(loc, inst.data[0]);
+            auto path = expr_path::make(loc, import_path(inst));
             auto name = expr_identifier::make(loc, inst.data[1]);
 
             auto var = pop_stack_node();
@@ -598,7 +1014,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             loc = obj->loc();
 
             auto args = expr_arguments::make(loc);
-            auto path = expr_path::make(loc, inst.data[0]);
+            auto path = expr_path::make(loc, import_path(inst));
             auto name = expr_identifier::make(loc, inst.data[1]);
 
             auto var = pop_stack_node();
@@ -653,6 +1069,11 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_BoolComplement:
         {
             auto lvalue = pop_stack_expr();
+
+            // '~256' would be folded, see make_arithmetic
+            if (lvalue->is<expr_integer>())
+                lvalue = expr_paren::make(lvalue->loc(), std::move(lvalue));
+
             stack_.push(expr_complement::make(lvalue->loc(), std::move(lvalue)));
             break;
         }
@@ -733,21 +1154,21 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         {
             auto rvalue = pop_stack_expr();
             auto lvalue = pop_stack_expr();
-            stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::bwor));
+            stack_.push(make_arithmetic(std::move(lvalue), std::move(rvalue), expr_binary::op::bwor));
             break;
         }
         case opcode::OP_Bit_Xor:
         {
             auto rvalue = pop_stack_expr();
             auto lvalue = pop_stack_expr();
-            stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::bwexor));
+            stack_.push(make_arithmetic(std::move(lvalue), std::move(rvalue), expr_binary::op::bwexor));
             break;
         }
         case opcode::OP_Bit_And:
         {
             auto rvalue = pop_stack_expr();
             auto lvalue = pop_stack_expr();
-            stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::bwand));
+            stack_.push(make_arithmetic(std::move(lvalue), std::move(rvalue), expr_binary::op::bwand));
             break;
         }
         case opcode::OP_SuperEqual:
@@ -810,49 +1231,49 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         {
             auto rvalue = pop_stack_expr();
             auto lvalue = pop_stack_expr();
-            stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::shl));
+            stack_.push(make_arithmetic(std::move(lvalue), std::move(rvalue), expr_binary::op::shl));
             break;
         }
         case opcode::OP_ShiftRight:
         {
             auto rvalue = pop_stack_expr();
             auto lvalue = pop_stack_expr();
-            stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::shr));
+            stack_.push(make_arithmetic(std::move(lvalue), std::move(rvalue), expr_binary::op::shr));
             break;
         }
         case opcode::OP_Plus:
         {
             auto rvalue = pop_stack_expr();
             auto lvalue = pop_stack_expr();
-            stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::add));
+            stack_.push(make_arithmetic(std::move(lvalue), std::move(rvalue), expr_binary::op::add));
             break;
         }
         case opcode::OP_Minus:
         {
             auto rvalue = pop_stack_expr();
             auto lvalue = pop_stack_expr();
-            stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::sub));
+            stack_.push(make_arithmetic(std::move(lvalue), std::move(rvalue), expr_binary::op::sub));
             break;
         }
         case opcode::OP_Multiply:
         {
             auto rvalue = pop_stack_expr();
             auto lvalue = pop_stack_expr();
-            stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::mul));
+            stack_.push(make_arithmetic(std::move(lvalue), std::move(rvalue), expr_binary::op::mul));
             break;
         }
         case opcode::OP_Divide:
         {
             auto rvalue = pop_stack_expr();
             auto lvalue = pop_stack_expr();
-            stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::div));
+            stack_.push(make_arithmetic(std::move(lvalue), std::move(rvalue), expr_binary::op::div));
             break;
         }
         case opcode::OP_Modulus:
         {
             auto rvalue = pop_stack_expr();
             auto lvalue = pop_stack_expr();
-            stack_.push(expr_binary::make(lvalue->loc(), std::move(lvalue), std::move(rvalue), expr_binary::op::mod));
+            stack_.push(make_arithmetic(std::move(lvalue), std::move(rvalue), expr_binary::op::mod));
             break;
         }
         case opcode::OP_SizeOf:
@@ -933,6 +1354,32 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
             auto x = pop_stack_expr();
             auto y = pop_stack_expr();
             auto z = pop_stack_expr();
+
+            // The compiler ships a vector of literals that share one magnitude as a unit vector.
+            // One that is built in full all the same had a component it could not read as a
+            // literal, a parenthesised one, and is printed with the parentheses back on.
+            auto const literal = [](expr const& exp) { return exp.is<expr_integer>() || exp.is<expr_float>(); };
+
+            if (literal(*x) && literal(*y) && literal(*z))
+            {
+                auto const value = [](expr const& exp) { return std::abs(std::stof(exp.is<expr_integer>() ? exp.as<expr_integer>().value : exp.as<expr_float>().value)); };
+                auto const vx = value(*x), vy = value(*y), vz = value(*z);
+                auto const scale = std::max({ vx, vy, vz });
+                auto unit = (vx == 0.0f || vx == scale) && (vy == 0.0f || vy == scale) && (vz == 0.0f || vz == scale);
+
+                if (ctx_->features() & feature::size64)
+                    unit = unit && !(vx == 0.0f && vy != 0.0f && vz != 0.0f);
+                else
+                    unit = unit && (scale == 0.0f || scale == 1.0f);
+
+                if (unit)
+                {
+                    if (vx != 0.0f || scale == 0.0f) x = expr_paren::make(x->loc(), std::move(x));
+                    if (vy != 0.0f) y = expr_paren::make(y->loc(), std::move(y));
+                    if (vz != 0.0f) z = expr_paren::make(z->loc(), std::move(z));
+                }
+            }
+
             stack_.push(expr_vector::make(z->loc(), std::move(x), std::move(y), std::move(z)));
             break;
         }
@@ -1093,6 +1540,13 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_SelfEvalFieldVariable:
         case opcode::OP_SelfEvalFieldVariableRef:
         {
+            // a member of the class, unless a parameter of that name hides it here
+            if (class_ != nullptr && class_->members.contains(inst.data[0]) && std::find(locals_.begin(), locals_.end(), inst.data[0]) == locals_.end())
+            {
+                stack_.push(expr_identifier::make(loc, inst.data[0]));
+                break;
+            }
+
             auto obj = expr_self::make(loc);
             auto field = expr_identifier::make(loc, inst.data[0]);
             stack_.push(expr_field::make(loc, std::move(obj), std::move(field)));
@@ -1171,6 +1625,33 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         default:
             throw decomp_error(std::format("unhandled opcode {}", ctx_->opcode_name(inst.opcode)));
     }
+}
+
+// A call written without a namespace is imported under the script's own. The import flag
+// is what tells it from one that spells the same namespace out, so the source keeps it.
+auto decompiler::import_path(instruction const& inst) const -> std::string
+{
+    if ((ctx_->features() & feature::spaces) && inst.data.size() > 3 && (std::stoi(inst.data[3]) & static_cast<u8>(import_flags::unscoped)))
+        return {};
+
+    return inst.data[0];
+}
+
+// The compilers fold arithmetic on two literals. Two literals that reach the bytecode
+// unfolded were written in parentheses, '( 240 ) * ( 240 )', and are printed that way so
+// compiling the source again leaves them unfolded too.
+auto decompiler::make_arithmetic(expr::ptr lvalue, expr::ptr rvalue, expr_binary::op oper) -> expr::ptr
+{
+    auto const literal = [](expr const& exp) { return exp.is<expr_integer>() || exp.is<expr_float>(); };
+
+    if (literal(*lvalue) && literal(*rvalue))
+    {
+        lvalue = expr_paren::make(lvalue->loc(), std::move(lvalue));
+        rvalue = expr_paren::make(rvalue->loc(), std::move(rvalue));
+    }
+
+    auto const loc = lvalue->loc();
+    return expr_binary::make(loc, std::move(lvalue), std::move(rvalue), oper);
 }
 
 auto decompiler::decompile_expressions(instruction const& inst) -> void
@@ -1473,11 +1954,15 @@ auto decompiler::decompile_devblocks(stmt_list& stm) -> void
                 continue;
             }
 
+            // an assert brings a devblock of its own, two that end together are '/# assert( x ); #/'
+            auto doubled = false;
+
             if (i + 1 < stm.list.size())
             {
                 if (stm.list.at(i + 1)->is<stmt_jmp_dev>() && stm.list.at(i + 1)->as<stmt_jmp_dev>().value == stm.list.at(i)->as<stmt_jmp_dev>().value)
                 {
                     stm.list.erase(stm.list.begin() + i + 1);
+                    doubled = true;
                 }
             }
 
@@ -1502,7 +1987,7 @@ auto decompiler::decompile_devblocks(stmt_list& stm) -> void
             decompile_statements(*list_stmt);
             locs_ = save;
 
-            if (list_stmt->list.size() == 1 && list_stmt->list.at(0)->is<stmt_expr>())
+            if (!doubled && list_stmt->list.size() == 1 && list_stmt->list.at(0)->is<stmt_expr>())
             {
                 const auto& st = list_stmt->list.at(0);
 
@@ -2048,7 +2533,8 @@ auto decompiler::process_function(decl_function& func) -> void
     process_stmt_comp(*func.body);
     process_expr_parameters(*func.params);
 
-    if (ctx_->features() & feature::spaces)
+    // a method takes its namespace from the class it is declared in
+    if ((ctx_->features() & feature::spaces) && class_ == nullptr)
     {
         if (namespace_ != func.space->value)
         {
@@ -2507,6 +2993,12 @@ auto decompiler::process_expr_ternary(expr_ternary& exp) -> void
     process_expr(exp.test);
     process_expr(exp.true_expr);
     process_expr(exp.false_expr);
+
+    if (exp.test->is<expr_ternary>())
+        exp.test = expr_paren::make(exp.loc(), std::move(exp.test));
+
+    if (exp.true_expr->is<expr_ternary>())
+        exp.true_expr = expr_paren::make(exp.loc(), std::move(exp.true_expr));
 }
 
 auto decompiler::process_expr_binary(expr_binary& exp) -> void
@@ -2516,14 +3008,15 @@ auto decompiler::process_expr_binary(expr_binary& exp) -> void
 
     auto prec = exp.lvalue->precedence();
 
-    if (prec && prec < exp.precedence())
+    // a ternary binds looser than every operator it can be an operand of
+    if ((prec && prec < exp.precedence()) || exp.lvalue->is<expr_ternary>())
     {
         exp.lvalue = expr_paren::make(exp.loc(), std::move(exp.lvalue));
     }
 
     prec = exp.rvalue->precedence();
 
-    if ((prec && prec < exp.precedence()) || (prec == exp.precedence() && exp.kind() == exp.rvalue->kind()))
+    if ((prec && prec < exp.precedence()) || (prec == exp.precedence() && exp.kind() == exp.rvalue->kind()) || exp.rvalue->is<expr_ternary>())
     {
         exp.rvalue = expr_paren::make(exp.loc(), std::move(exp.rvalue));
     }
@@ -2533,7 +3026,7 @@ auto decompiler::process_expr_complement(expr_complement& exp) -> void
 {
     process_expr(exp.rvalue);
 
-    if (exp.rvalue->is<expr_binary>())
+    if (exp.rvalue->is<expr_binary>() || exp.rvalue->is<expr_ternary>())
     {
         exp.rvalue = expr_paren::make(exp.loc(), std::move(exp.rvalue));
     }
@@ -2543,7 +3036,7 @@ auto decompiler::process_expr_not(expr_not& exp) -> void
 {
     process_expr(exp.rvalue);
 
-    if (exp.rvalue->is<expr_binary>())
+    if (exp.rvalue->is<expr_binary>() || exp.rvalue->is<expr_ternary>())
     {
         exp.rvalue = expr_paren::make(exp.loc(), std::move(exp.rvalue));
     }
@@ -2597,14 +3090,6 @@ auto decompiler::process_expr_call_pointer(expr_pointer& exp) -> void
 auto decompiler::process_expr_call_function(expr_function& exp) -> void
 {
     process_expr_arguments(*exp.args);
-
-    if (ctx_->features() & feature::spaces)
-    {
-        if (exp.path->value == namespace_)
-        {
-            exp.path->value = {};
-        }
-    }
 }
 
 auto decompiler::process_expr_method_pointer(expr_pointer& exp, expr::ptr& obj) -> void
@@ -2618,14 +3103,6 @@ auto decompiler::process_expr_method_function(expr_function& exp, expr::ptr& obj
 {
     process_expr_arguments(*exp.args);
     process_expr(obj);
-
-    if (ctx_->features() & feature::spaces)
-    {
-        if (exp.path->value == namespace_)
-        {
-            exp.path->value = {};
-        }
-    }
 }
 
 auto decompiler::process_expr_parameters(expr_parameters& exp) -> void
@@ -2679,15 +3156,8 @@ auto decompiler::process_expr_arguments(expr_arguments& exp) -> void
     }
 }
 
-auto decompiler::process_expr_reference(expr_reference& exp) -> void
+auto decompiler::process_expr_reference(expr_reference& /*unused*/) -> void
 {
-    if (ctx_->features() & feature::spaces)
-    {
-        if (exp.path->value == namespace_)
-        {
-            exp.path->value = {};
-        }
-    }
 }
 
 auto decompiler::process_expr_array(expr_array& exp) -> void

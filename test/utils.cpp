@@ -5,6 +5,7 @@
 
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/reader.hpp"
+#include "xsk/utils/string.hpp"
 #include "xsk/utils/writer.hpp"
 #include "xsk/utils/zlib.hpp"
 #include <catch_amalgamated.hpp>
@@ -171,6 +172,48 @@ TEST_CASE("zlib: empty data", "[utils][zlib]")
     auto compressed = zlib::compress(empty);
     auto decompressed = zlib::decompress(compressed, 0);
     REQUIRE(decompressed.empty());
+}
+
+// Text assembly: a bare operand is taken as it is, an awkward one is printed as a
+// literal and decoded when read back. to_operand and parse_operands have to agree.
+
+TEST_CASE("string: assembly operands round trip", "[utils][string]")
+{
+    auto const words = std::vector<std::string>{ "OP_GetFloat", "0.5", "-1024", "maps/mp/_utility", "maps\\mp\\_utility", "_id_A1B2" };
+
+    for (auto const& word : words)
+    {
+        REQUIRE(utils::string::to_operand(word) == word);
+    }
+
+    auto const awkward = std::vector<std::string>{ "", "abort forfeit", "say \"hi\"", "tab\there", "line\nbreak", "back\\slash end\\" };
+    auto line = std::string{ "  OP_Test" };
+
+    for (auto const& entry : words)
+        line += " " + utils::string::to_operand(entry);
+
+    for (auto const& entry : awkward)
+        line += "  " + utils::string::to_operand(entry);
+
+    auto const data = utils::string::parse_operands(line);
+
+    REQUIRE(data.size() == 1 + words.size() + awkward.size());
+    REQUIRE(data[0].text == "OP_Test");
+
+    for (auto i = 0u; i < words.size(); i++)
+    {
+        REQUIRE(data[1 + i].text == words[i]);
+        REQUIRE_FALSE(data[1 + i].quoted);
+    }
+
+    for (auto i = 0u; i < awkward.size(); i++)
+    {
+        REQUIRE(data[1 + words.size() + i].text == awkward[i]);
+        REQUIRE(data[1 + words.size() + i].quoted);
+    }
+
+    REQUIRE(utils::string::parse_operands("").empty());
+    REQUIRE_THROWS_AS(utils::string::parse_operands("OP_GetString \"open"), utils::string::error);
 }
 
 } // namespace xsk::test

@@ -226,8 +226,7 @@ auto print_src(std::string_view src, Ctx* c = ctx<Ctx>()) -> std::string
     return str.substr(str.find('\n', str.find('\n') + 1) + 1);
 }
 
-// Same for the assembly printer, but the assembly comes in already built: only
-// gsc parses text assembly back, arc::parser::parse_assembly is still a stub.
+// Same for the assembly printer, the assembly comes in already built.
 template <typename Ctx>
 auto print_asm(typename fam<Ctx>::assembly const& data, Ctx* c = ctx<Ctx>()) -> std::string
 {
