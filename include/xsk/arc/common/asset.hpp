@@ -46,7 +46,7 @@ enum class import_flags : u8
     meth_call        = 4,
     meth_call_thread = 5,
     developer        = 0x10,
-    unscoped         = 0x20, // no namespace written at the call site (T7, T8, T9)
+    unscoped         = 0x20,
 };
 
 struct header

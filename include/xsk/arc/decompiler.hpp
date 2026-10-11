@@ -13,8 +13,6 @@ namespace xsk::arc
 struct decompiler
 {
 private:
-    // A class as it is found in the bytecode: the function stock generates for it, the
-    // methods exported under its name, and the fields of self that read as members.
     struct class_info
     {
         std::string base;

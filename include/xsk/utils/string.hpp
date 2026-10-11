@@ -12,8 +12,6 @@ struct string
 {
     using error = std::runtime_error;
 
-    // One operand of a line of text assembly. 'quoted' tells a literal from a bare word,
-    // which is all that separates a string switch case from an integer one.
     struct operand
     {
         std::string text;

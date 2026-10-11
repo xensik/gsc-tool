@@ -46,8 +46,8 @@ private:
     auto align_instruction(instruction& inst) -> void;
     auto resolve_label(std::string const& name) const -> usize;
     auto resolve_string(std::string const& name) -> u32;
-    auto add_stringref(std::string const& str, string_type type, u32 ref) -> void;
     auto is_devstring(std::string const& str) const -> bool;
+    auto add_stringref(std::string const& str, string_type type, u32 ref) -> void;
     auto add_importref(std::vector<std::string> const& data, u32 ref) -> void;
     auto add_animref(std::vector<std::string> const& data, u32 ref) -> void;
 };

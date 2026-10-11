@@ -30,6 +30,7 @@ auto compiler::compile(std::string const& file, std::vector<u8>& data) -> assemb
     // where functions have a namespace, a script without '#namespace' gets one named after its file
     namespace_ = (ctx_->features() & feature::spaces) ? std::filesystem::path{ file }.stem().string() : std::string{};
     extension_ = std::filesystem::path{ file }.extension().string();
+
     emit_program(*prog);
     return std::move(assembly_);
 }

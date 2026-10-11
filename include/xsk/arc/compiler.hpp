@@ -13,8 +13,6 @@ namespace xsk::arc
 struct compiler
 {
 private:
-    // What a class hands down to the ones that extend it: its members are fields of
-    // self and its methods are reached through its own name.
     struct class_info
     {
         std::string base;
@@ -29,11 +27,11 @@ private:
     std::vector<std::string> stackframe_;
     std::vector<scope> scopes_;
     std::unordered_map<std::string, expr const*> constants_;
+    std::unordered_map<std::string, class_info> classes_;
     std::string animtree_;
     std::string namespace_;
     std::string extension_;
     std::string end_label_;
-    std::unordered_map<std::string, class_info> classes_;
     class_info const* class_{};
     sourcepos debug_pos_{};
     usize index_{};

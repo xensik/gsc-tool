@@ -34,7 +34,6 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
 
     if (ctx_->features() & feature::hashids)
     {
-        // stock pool order: includes as written in source, strings, script name last
         for (auto it = assembly_->includes.rbegin(); it != assembly_->includes.rend(); it++)
         {
             process_string(*it);
@@ -1043,7 +1042,7 @@ auto assembler::add_stringref(std::string const& str, string_type type, u32 ref)
     strings.push_back({ str, u8(type), { ref } });
 }
 
-// ponytail: stock builds strip devblock strings and the disassembler names every one of them
+// hint: stock builds strip devblock strings and the disassembler names every one of them
 // '__devstr__', so they share a single table entry with no text behind it. Upgrade path once
 // the compiler emits real devblock strings: mark them on the instruction and pool the text.
 auto assembler::is_devstring(std::string const& str) const -> bool
