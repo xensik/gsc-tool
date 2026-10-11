@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
@@ -20,6 +21,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <set>
 #include <stack>
@@ -28,6 +30,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 #include <vector>
 #include <version>
 

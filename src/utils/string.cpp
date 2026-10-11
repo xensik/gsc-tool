@@ -4,7 +4,6 @@
 // that can be found in the LICENSE file.
 
 #include <sstream>
-#include <regex>
 
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/string.hpp"

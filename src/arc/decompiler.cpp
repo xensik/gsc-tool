@@ -113,13 +113,13 @@ auto decompiler::find_classes(assembly const& data) -> void
             if (method->instructions.empty() || method->instructions[0]->opcode != opcode::OP_SafeCreateLocalVariables)
                 continue;
 
-            auto const& data_ = method->instructions[0]->data;
+            auto const& frame = method->instructions[0]->data;
 
-            for (auto k = usize{ method->params } * 2; k < data_.size(); k += 2)
+            for (auto k = usize{ method->params } * 2; k < frame.size(); k += 2)
             {
                 // the local counts against the class and every class it extends
                 for (auto const* entry = &name; classes_.contains(*entry); entry = &classes_.at(*entry).base)
-                    blocked[*entry].insert(data_[k]);
+                    blocked[*entry].insert(frame[k]);
             }
         }
     }
@@ -276,8 +276,8 @@ auto decompiler::decompile_function(function const& func) -> void
             if (!value.is<expr_call>() || !value.as<expr_call>().value->is<expr_function>())
                 return false;
 
-            auto const& name = value.as<expr_call>().value->as<expr_function>().name->value;
-            return name == "assert" || name == "assertmsg";
+            auto const& callee = value.as<expr_call>().value->as<expr_function>().name->value;
+            return callee == "assert" || callee == "assertmsg";
         };
 
         for (auto i = usize{ 1 }; i < list.size() && !dev; i++)
@@ -383,7 +383,7 @@ auto decompiler::decompile_constants(function const& func) -> void
 
             if (auto const [list, index] = find_declaration(body, locals_[count - 1 - j]); list != nullptr)
             {
-                list->list.insert(list->list.begin() + static_cast<i64>(index), std::move(decl));
+                list->list.insert(list->list.begin() + static_cast<std::ptrdiff_t>(index), std::move(decl));
                 placed = true;
             }
         }
@@ -393,7 +393,7 @@ auto decompiler::decompile_constants(function const& func) -> void
         {
             if (auto const [list, index] = find_declaration(body, locals_[count - j]); list != nullptr)
             {
-                list->list.insert(list->list.begin() + static_cast<i64>(index) + 1, std::move(decl));
+                list->list.insert(list->list.begin() + static_cast<std::ptrdiff_t>(index) + 1, std::move(decl));
                 placed = true;
             }
         }
