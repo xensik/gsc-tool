@@ -51,7 +51,7 @@ auto printer::print_assembly(assembly const& data) -> void
 
 auto printer::print_function(function const& func) -> void
 {
-    std::format_to(std::back_inserter(buf_), "\nsub:{}\n", func.name);
+    std::format_to(std::back_inserter(buf_), "\nsub:{}\n", utils::string::to_operand(func.name));
 
     for (auto const& inst : func.instructions)
     {
@@ -63,7 +63,7 @@ auto printer::print_function(function const& func) -> void
         print_instruction(*inst);
     }
 
-    std::format_to(std::back_inserter(buf_), "end:{}\n", func.name);
+    std::format_to(std::back_inserter(buf_), "end:{}\n", utils::string::to_operand(func.name));
 }
 
 auto printer::print_instruction(instruction const& inst) -> void
@@ -113,7 +113,7 @@ auto printer::print_instruction(instruction const& inst) -> void
         default:
             for (auto const& entry : inst.data)
             {
-                std::format_to(std::back_inserter(buf_), " {}", entry);
+                std::format_to(std::back_inserter(buf_), " {}", utils::string::to_operand(entry));
             }
             break;
     }

@@ -4,6 +4,7 @@
 // that can be found in the LICENSE file.
 
 #include "xsk/stdinc.hpp"
+#include "xsk/utils/zlib.hpp"
 #include "xsk/arc/assembler.hpp"
 #include "xsk/arc/context.hpp"
 
@@ -23,22 +24,41 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     exports_.clear();
     imports_.clear();
     strings_.clear();
+    devstrings_.clear();
     anims_.clear();
     devmap_count_ = 0;
     auto head = header{};
 
     devmap_.pos(sizeof(u32));
     script_.pos((ctx_->features() & feature::headerxx) ? 0 : ((ctx_->features() & feature::header72) ? 72 : 64));
-    process_string(name);
 
-    for (auto const& func : assembly_->functions)
+    if (ctx_->features() & feature::hashids)
     {
-        process_function(*func);
+        for (auto it = assembly_->includes.rbegin(); it != assembly_->includes.rend(); it++)
+        {
+            process_string(*it);
+        }
+
+        for (auto const& func : assembly_->functions)
+        {
+            process_function(*func);
+        }
+
+        process_string(name);
     }
-
-    for (auto const& incl : assembly_->includes)
+    else
     {
-        process_string(incl);
+        process_string(name);
+
+        for (auto const& func : assembly_->functions)
+        {
+            process_function(*func);
+        }
+
+        for (auto const& incl : assembly_->includes)
+        {
+            process_string(incl);
+        }
     }
 
     head.include_offset = static_cast<u32>(script_.pos());
@@ -76,7 +96,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         }
         else
         {
-            script_.write<u16>(resolve_string(entry.name));
+            script_.write<u16>(static_cast<u16>(resolve_string(entry.name)));
         }
 
         script_.write<u8>(entry.params);
@@ -98,8 +118,8 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         }
         else
         {
-            script_.write<u16>(resolve_string(entry.name));
-            script_.write<u16>(resolve_string(entry.space));
+            script_.write<u16>(static_cast<u16>(resolve_string(entry.name)));
+            script_.write<u16>(static_cast<u16>(resolve_string(entry.space)));
         }
 
         script_.write<u16>(static_cast<u16>(entry.refs.size()));
@@ -125,7 +145,7 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
         }
         else
         {
-            script_.write<u16>(resolve_string(entry.name));
+            script_.write<u16>(static_cast<u16>(resolve_string(entry.name)));
             script_.write<u16>(static_cast<u16>(entry.refs.size()));
             script_.write<u16>(static_cast<u16>(entry.anims.size()));
             script_.seek(2);
@@ -152,63 +172,12 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     }
 
     head.stringtablefixup_offset = static_cast<u32>(script_.pos());
-    // head.stringtablefixup_count = static_cast<u16>(strings_.size());
-
-    auto stringtablecount = 0u;
-
-    for (auto const& entry : strings_)
-    {
-        if (entry.refs.size() > 0xFF)
-        {
-            auto count = static_cast<i32>(entry.refs.size());
-
-            for (auto i = 0; i < count; i++)
-            {
-                if (i % 0xFF == 0)
-                {
-                    stringtablecount++;
-                    if (ctx_->features() & feature::size64)
-                        script_.write<u32>(resolve_string(entry.name));
-                    else
-                        script_.write<u16>(resolve_string(entry.name));
-
-                    script_.write<u8>(static_cast<u8>(std::min(0xFF, count - i)));
-                    script_.write<u8>(entry.type);
-
-                    if (ctx_->features() & feature::size64)
-                        script_.seek(2);
-                }
-
-                script_.write<u32>(entry.refs[i]);
-            }
-        }
-        else
-        {
-            stringtablecount++;
-            if (ctx_->features() & feature::size64)
-                script_.write<u32>(resolve_string(entry.name));
-            else
-                script_.write<u16>(resolve_string(entry.name));
-
-            script_.write<u8>(static_cast<u8>(entry.refs.size()));
-            script_.write<u8>(entry.type);
-
-            if (ctx_->features() & feature::size64)
-                script_.seek(2);
-
-            for (auto ref : entry.refs)
-            {
-                script_.write<u32>(ref);
-            }
-        }
-    }
-
-    head.stringtablefixup_count = static_cast<u16>(stringtablecount);
+    head.stringtablefixup_count = assemble_strings(strings_);
 
     if (ctx_->features() & feature::devstr)
     {
-        head.stringtablefixup_offset = static_cast<u32>(script_.pos());
-        head.stringtablefixup_count = 0;
+        head.devblock_stringtablefixup_offset = static_cast<u32>(script_.pos());
+        head.devblock_stringtablefixup_count = assemble_strings(devstrings_);
     }
 
     head.fixup_offset = static_cast<u32>(script_.pos());
@@ -266,6 +235,40 @@ auto assembler::assemble(assembly const& data, std::string const& name) -> std::
     return { buffer{ script_.data(), script_.pos() }, buffer{ devmap_.data(), devmap_.pos() } };
 }
 
+auto assembler::assemble_strings(std::vector<string_ref> const& strings) -> u16
+{
+    auto count = u16{ 0 };
+
+    for (auto const& entry : strings)
+    {
+        auto const name = resolve_string(entry.name);
+
+        // an entry holds 255 refs at most, the rest spills into another one
+        for (auto i = 0u; i < entry.refs.size(); i++)
+        {
+            if (i % 0xFF == 0)
+            {
+                count++;
+
+                if (ctx_->features() & feature::size64)
+                    script_.write<u32>(name);
+                else
+                    script_.write<u16>(static_cast<u16>(name));
+
+                script_.write<u8>(static_cast<u8>(std::min<usize>(0xFF, entry.refs.size() - i)));
+                script_.write<u8>(entry.type);
+
+                if (ctx_->features() & feature::size64)
+                    script_.seek(2);
+            }
+
+            script_.write<u32>(entry.refs[i]);
+        }
+    }
+
+    return count;
+}
+
 auto assembler::assemble_function(function& func) -> void
 {
     auto labels = std::unordered_map<usize, std::string>{};
@@ -298,9 +301,10 @@ auto assembler::assemble_function(function& func) -> void
     }
 
     export_ref entry;
-    entry.checksum = 0;
+    entry.checksum = utils::zlib::crc32(script_.data() + func.index, func.size);
     entry.offset = static_cast<u32>(func.index);
     entry.name = func.name;
+    entry.space = func.space;
     entry.params = func.params;
     entry.flags = func.flags;
     exports_.push_back(entry);
@@ -308,7 +312,10 @@ auto assembler::assemble_function(function& func) -> void
 
 auto assembler::assemble_instruction(instruction const& inst) -> void
 {
-    script_.write<u8>(static_cast<u8>(ctx_->opcode_id(inst.opcode)));
+    if (ctx_->features() & feature::size64)
+        script_.write<u16>(ctx_->opcode_id(inst.opcode));
+    else
+        script_.write<u8>(static_cast<u8>(ctx_->opcode_id(inst.opcode)));
 
     if ((ctx_->build() & build::dev_maps) != build::prod)
     {
@@ -402,6 +409,12 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
         case opcode::OP_ThreadObject:
         case opcode::OP_EvalLocalVariable:
         case opcode::OP_EvalLocalVariableRef:
+        case opcode::OP_GetClassesObject:
+        case opcode::OP_GetClasses:
+        case opcode::OP_GetWorldObject:
+        case opcode::OP_GetWorld:
+        case opcode::OP_SuperEqual:
+        case opcode::OP_SuperNotEqual:
             break;
         case opcode::OP_GetByte:
         case opcode::OP_GetNegByte:
@@ -431,12 +444,28 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
-            script_.align(2);
-            script_.write<u16>(0);
+            if (ctx_->features() & feature::size64)
+            {
+                script_.align(4);
+                script_.write<u32>(resolve_string(inst.data[0]));
+            }
+            else
+            {
+                script_.align(2);
+                script_.write<u16>(0);
+            }
             break;
         case opcode::OP_GetAnimation:
-            script_.align(4);
-            script_.write<u32>(0);
+            if (ctx_->features() & feature::size64)
+            {
+                script_.align(8);
+                script_.write<u64>(resolve_string(inst.data[1]));
+            }
+            else
+            {
+                script_.align(4);
+                script_.write<u32>(0);
+            }
             break;
         case opcode::OP_WaitTillMatch:
             script_.write<u8>(static_cast<u8>(std::stoi(inst.data[0])));
@@ -445,6 +474,12 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             script_.write<u8>(static_cast<u8>(std::stoi(inst.data[0])));
             break;
         case opcode::OP_GetHash:
+            script_.align(4);
+            script_.write<u32>(ctx_->hash_id(inst.data[0]));
+            break;
+        case opcode::OP_ScriptFunctionCallClass:
+        case opcode::OP_ScriptThreadCallClass:
+            script_.write<u8>(static_cast<u8>(std::stoi(inst.data[1])));
             script_.align(4);
             script_.write<u32>(ctx_->hash_id(inst.data[0]));
             break;
@@ -461,8 +496,23 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
         case opcode::OP_EvalFieldVariable:
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_ClearFieldVariable:
-            script_.align(2);
-            script_.write<u16>(0);
+        case opcode::OP_EvalLocalVariableCachedDebug:
+        case opcode::OP_EvalLocalVariableRefCachedDebug:
+        case opcode::OP_LevelEvalFieldVariableRef:
+        case opcode::OP_LevelEvalFieldVariable:
+        case opcode::OP_SelfEvalFieldVariableRef:
+        case opcode::OP_SelfEvalFieldVariable:
+        case opcode::OP_New:
+            if (ctx_->features() & feature::hashids)
+            {
+                script_.align(4);
+                script_.write<u32>(ctx_->hash_id(inst.data[0]));
+            }
+            else
+            {
+                script_.align(2);
+                script_.write<u16>(0);
+            }
             break;
         case opcode::OP_ScriptFunctionCallPointer:
         case opcode::OP_ScriptMethodCallPointer:
@@ -471,8 +521,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             script_.write<u8>(static_cast<u8>(std::stoi(inst.data[0])));
             break;
         case opcode::OP_GetFunction:
-            script_.align(4);
-            script_.write<u32>(0);
+            assemble_import(inst);
             break;
         case opcode::OP_CallBuiltin:
         case opcode::OP_CallBuiltinMethod:
@@ -481,8 +530,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
         case opcode::OP_ScriptThreadCall:
         case opcode::OP_ScriptMethodThreadCall:
             script_.write<u8>(0);
-            script_.align(4);
-            script_.write<u32>(0);
+            assemble_import(inst);
             break;
         case opcode::OP_JumpOnFalse:
         case opcode::OP_JumpOnTrue:
@@ -502,10 +550,42 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
         default:
             throw asm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
+
+    if (ctx_->features() & feature::size64)
+        script_.align(2);
+}
+
+auto assembler::assemble_import(instruction const& inst) -> void
+{
+    if (ctx_->features() & feature::size64)
+    {
+        script_.align(8);
+        script_.write<u32>(ctx_->hash_id(inst.data[1]));
+        script_.write<u32>(0);
+    }
+    else
+    {
+        script_.align(4);
+        script_.write<u32>(0);
+    }
 }
 
 auto assembler::assemble_localvars(instruction const& inst) -> void
 {
+    if (ctx_->features() & feature::hashids)
+    {
+        script_.write<u8>(static_cast<u8>(inst.data.size() / 2));
+
+        for (auto i = 0u; i < inst.data.size(); i += 2)
+        {
+            script_.align(4);
+            script_.write<u32>(ctx_->hash_id(inst.data[i]));
+            script_.write<u8>(static_cast<u8>(std::stoi(inst.data[i + 1])));
+        }
+
+        return;
+    }
+
     script_.write<u8>(static_cast<u8>(inst.data.size()));
 
     for (auto i = 0u; i < inst.data.size(); i++)
@@ -524,7 +604,9 @@ auto assembler::assemble_jump(instruction const& inst) -> void
 auto assembler::assemble_switch(instruction const& inst) -> void
 {
     script_.align(4);
-    script_.write<i32>(static_cast<i32>(((resolve_label(inst.data[0]) + 4) & 0xFFFFFFFC) - inst.index - inst.size));
+    // the table starts at the first 4 byte boundary after the OP_EndSwitch opcode
+    auto const op_size = (ctx_->features() & feature::size64) ? 2 : 1;
+    script_.write<i32>(static_cast<i32>(((resolve_label(inst.data[0]) + op_size + 3) & 0xFFFFFFFC) - inst.index - inst.size));
 }
 
 auto assembler::assemble_switch_table(instruction const& inst) -> void
@@ -540,7 +622,11 @@ auto assembler::assemble_switch_table(instruction const& inst) -> void
         {
             auto type = static_cast<switch_type>(std::stoul(inst.data[1 + (4 * i) + 1]));
 
-            script_.write<u32>((type == switch_type::integer) ? ((std::stoi(inst.data[1 + (4 * i) + 2]) & 0xFFFFFF) + 0x800000) : i + 1);
+            if (ctx_->features() & feature::size64)
+                script_.write<u32>((type == switch_type::integer) ? static_cast<u32>(std::stoll(inst.data[1 + (4 * i) + 2])) : 0);
+            else
+                script_.write<u32>((type == switch_type::integer) ? ((std::stoi(inst.data[1 + (4 * i) + 2]) & 0xFFFFFF) + 0x800000) : i + 1);
+
             script_.write<i32>(static_cast<i32>(resolve_label(inst.data[1 + (4 * i) + 3]) - script_.pos() - 4));
         }
         else if (inst.data[1 + (4 * i)] == "default")
@@ -557,9 +643,9 @@ auto assembler::assemble_switch_table(instruction const& inst) -> void
 
 auto assembler::process_string(std::string const& data) -> void
 {
-    if (!strpool_.contains(data))
+    if (!strpool_.contains(data) && !is_devstring(data))
     {
-        auto pos = static_cast<u16>(script_.pos());
+        auto pos = static_cast<u32>(script_.pos());
         script_.write_cstr(data);
         strpool_.insert({ data, pos });
     }
@@ -567,7 +653,8 @@ auto assembler::process_string(std::string const& data) -> void
 
 auto assembler::process_function(function const& func) -> void
 {
-    process_string(func.name);
+    if (!(ctx_->features() & feature::hashids))
+        process_string(func.name);
 
     for (auto const& inst : func.instructions)
     {
@@ -593,6 +680,9 @@ auto assembler::process_instruction(instruction const& inst) -> void
             break;
         case opcode::OP_SafeCreateLocalVariables:
         {
+            if (ctx_->features() & feature::hashids)
+                break;
+
             for (auto const& entry : inst.data)
             {
                 process_string(entry);
@@ -603,18 +693,21 @@ auto assembler::process_instruction(instruction const& inst) -> void
         case opcode::OP_EvalFieldVariable:
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_ClearFieldVariable:
+            if (ctx_->features() & feature::hashids)
+                break;
+
             process_string(inst.data[0]);
             break;
         case opcode::OP_GetFunction:
-            process_string(inst.data[0]);
-            process_string(inst.data[1]);
-            break;
         case opcode::OP_CallBuiltin:
         case opcode::OP_CallBuiltinMethod:
         case opcode::OP_ScriptFunctionCall:
         case opcode::OP_ScriptMethodCall:
         case opcode::OP_ScriptThreadCall:
         case opcode::OP_ScriptMethodThreadCall:
+            if (ctx_->features() & feature::hashids)
+                break;
+
             process_string(inst.data[0]);
             process_string(inst.data[1]);
             break;
@@ -643,7 +736,7 @@ auto assembler::process_instruction(instruction const& inst) -> void
 auto assembler::align_instruction(instruction& inst) -> void
 {
     inst.size = ctx_->opcode_size(inst.opcode);
-    script_.seek(1);
+    script_.seek((ctx_->features() & feature::size64) ? 2 : 1);
 
     switch (inst.opcode)
     {
@@ -729,6 +822,12 @@ auto assembler::align_instruction(instruction& inst) -> void
         case opcode::OP_ThreadObject:
         case opcode::OP_EvalLocalVariable:
         case opcode::OP_EvalLocalVariableRef:
+        case opcode::OP_GetClassesObject:
+        case opcode::OP_GetClasses:
+        case opcode::OP_GetWorldObject:
+        case opcode::OP_GetWorld:
+        case opcode::OP_SuperEqual:
+        case opcode::OP_SuperNotEqual:
             break;
         case opcode::OP_GetByte:
         case opcode::OP_GetNegByte:
@@ -755,14 +854,14 @@ auto assembler::align_instruction(instruction& inst) -> void
             break;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
-            inst.size += script_.align(2);
+            inst.size += script_.align((ctx_->features() & feature::size64) ? 4 : 2);
             add_stringref(inst.data[0], string_type::literal, static_cast<u32>(script_.pos()));
-            script_.seek(2);
+            script_.seek((ctx_->features() & feature::size64) ? 4 : 2);
             break;
         case opcode::OP_GetAnimation:
-            inst.size += script_.align(4);
+            inst.size += script_.align((ctx_->features() & feature::size64) ? 8 : 4);
             add_animref(inst.data, static_cast<u32>(script_.pos()));
-            script_.seek(4);
+            script_.seek((ctx_->features() & feature::size64) ? 8 : 4);
             break;
         case opcode::OP_WaitTillMatch:
             script_.seek(1);
@@ -774,9 +873,26 @@ auto assembler::align_instruction(instruction& inst) -> void
             inst.size += script_.align(4);
             script_.seek(4);
             break;
+        case opcode::OP_ScriptFunctionCallClass:
+        case opcode::OP_ScriptThreadCallClass:
+            script_.seek(1);
+            inst.size += script_.align(4);
+            script_.seek(4);
+            break;
         case opcode::OP_SafeCreateLocalVariables:
         {
             script_.seek(1);
+
+            if (ctx_->features() & feature::hashids)
+            {
+                for (auto i = 0u; i < inst.data.size(); i += 2)
+                {
+                    inst.size += script_.align(4) + 5;
+                    script_.seek(5);
+                }
+
+                break;
+            }
 
             for (auto i = 0u; i < inst.data.size(); i++)
             {
@@ -797,6 +913,20 @@ auto assembler::align_instruction(instruction& inst) -> void
         case opcode::OP_EvalFieldVariable:
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_ClearFieldVariable:
+        case opcode::OP_EvalLocalVariableCachedDebug:
+        case opcode::OP_EvalLocalVariableRefCachedDebug:
+        case opcode::OP_LevelEvalFieldVariableRef:
+        case opcode::OP_LevelEvalFieldVariable:
+        case opcode::OP_SelfEvalFieldVariableRef:
+        case opcode::OP_SelfEvalFieldVariable:
+        case opcode::OP_New:
+            if (ctx_->features() & feature::hashids)
+            {
+                inst.size += script_.align(4);
+                script_.seek(4);
+                break;
+            }
+
             inst.size += script_.align(2);
             add_stringref(inst.data[0], string_type::canonical, static_cast<u32>(script_.pos()));
             script_.seek(2);
@@ -808,8 +938,8 @@ auto assembler::align_instruction(instruction& inst) -> void
             script_.seek(1);
             break;
         case opcode::OP_GetFunction:
-            inst.size += script_.align(4);
-            script_.seek(4);
+            inst.size += script_.align((ctx_->features() & feature::size64) ? 8 : 4);
+            script_.seek((ctx_->features() & feature::size64) ? 8 : 4);
             add_importref(inst.data, static_cast<u32>(inst.index));
             break;
         case opcode::OP_CallBuiltin:
@@ -819,8 +949,8 @@ auto assembler::align_instruction(instruction& inst) -> void
         case opcode::OP_ScriptThreadCall:
         case opcode::OP_ScriptMethodThreadCall:
             script_.seek(1);
-            inst.size += script_.align(4);
-            script_.seek(4);
+            inst.size += script_.align((ctx_->features() & feature::size64) ? 8 : 4);
+            script_.seek((ctx_->features() & feature::size64) ? 8 : 4);
             add_importref(inst.data, static_cast<u32>(inst.index));
             break;
         case opcode::OP_JumpOnFalse:
@@ -848,7 +978,7 @@ auto assembler::align_instruction(instruction& inst) -> void
             {
                 if (inst.data[1 + (4 * i)] == "case" && static_cast<switch_type>(std::stoul(inst.data[1 + (4 * i) + 1])) == switch_type::string)
                 {
-                    add_stringref(inst.data[1 + (4 * i) + 2], string_type::literal, static_cast<u32>(script_.pos() + 2));
+                    add_stringref(inst.data[1 + (4 * i) + 2], string_type::literal, static_cast<u32>(script_.pos() + ((ctx_->features() & feature::size64) ? 0 : 2)));
                 }
 
                 inst.size += 8;
@@ -860,6 +990,9 @@ auto assembler::align_instruction(instruction& inst) -> void
         default:
             throw asm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
+
+    if (ctx_->features() & feature::size64)
+        inst.size += script_.align(2);
 }
 
 auto assembler::resolve_label(std::string const& name) const -> usize
@@ -875,11 +1008,16 @@ auto assembler::resolve_label(std::string const& name) const -> usize
     throw asm_error(std::format("couldn't resolve label address of {}", name));
 }
 
-auto assembler::resolve_string(std::string const& name) -> u16
+auto assembler::resolve_string(std::string const& name) -> u32
 {
     if (auto const itr = strpool_.find(name); itr != strpool_.end())
     {
         return itr->second;
+    }
+
+    if (is_devstring(name))
+    {
+        return 0;
     }
 
     throw asm_error(std::format("couldn't resolve string address of {}", name));
@@ -887,7 +1025,13 @@ auto assembler::resolve_string(std::string const& name) -> u16
 
 auto assembler::add_stringref(std::string const& str, string_type type, u32 ref) -> void
 {
-    for (auto& entry : strings_)
+    auto const dev = is_devstring(str);
+    auto& strings = dev ? devstrings_ : strings_;
+
+    if (dev)
+        type = string_type::devblock;
+
+    for (auto& entry : strings)
     {
         if (entry.name == str && entry.type == static_cast<u8>(type))
         {
@@ -895,7 +1039,15 @@ auto assembler::add_stringref(std::string const& str, string_type type, u32 ref)
         }
     }
 
-    strings_.push_back({ str, u8(type), { ref } });
+    strings.push_back({ str, u8(type), { ref } });
+}
+
+// hint: stock builds strip devblock strings and the disassembler names every one of them
+// '__devstr__', so they share a single table entry with no text behind it. Upgrade path once
+// the compiler emits real devblock strings: mark them on the instruction and pool the text.
+auto assembler::is_devstring(std::string const& str) const -> bool
+{
+    return (ctx_->features() & feature::devstr) && str == "__devstr__";
 }
 
 auto assembler::add_importref(std::vector<std::string> const& data, u32 ref) -> void

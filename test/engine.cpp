@@ -5,6 +5,8 @@
 
 #include <catch_amalgamated.hpp>
 #include "common.hpp"
+#include "xsk/gsc/engine/iw6_ps.hpp"
+#include "xsk/gsc/engine/iw6_xb.hpp"
 #include "xsk/utils/file.hpp"
 #include "xsk/utils/zlib.hpp"
 
@@ -177,7 +179,6 @@ enum class cause
     dropped_stmt,   // assert family / dev block emits nothing but still takes the 'last' flag
     switch_strings, // IW orders string case tables by a build-wide string list id
     locals,         // local slot numbering and OP_RemoveLocalVariables placement
-    vector_fold,    // vector built at runtime vs folded to OP_GetVector
     source_bug,     // bytecode built from source the parser is right to reject
     decompile_output, // the decompiler prints something that does not parse back -- open
 };
@@ -192,8 +193,6 @@ auto describe(cause reason) -> std::string_view
             return "switch string order: Infinity Ward orders string case tables by the engine string list id, which is build state the bytecode does not carry";
         case cause::locals:
             return "locals: local slot numbering / OP_RemoveLocalVariables placement";
-        case cause::vector_fold:
-            return "vector folding: a vector with a named-constant component is built at runtime, while the decompiled literal folds to OP_GetVector";
         case cause::source_bug:
             return "source bug: the original compiler swallowed a missing semicolon, and the bytecode cannot be expressed by source our parser should accept";
         case cause::decompile_output:
@@ -270,7 +269,6 @@ constexpr known_failure iw5_source_failures[]{
     { "maps/mp/gametypes/_weapons.gsc",      cause::locals },
     { "maps/mp/gametypes/dd.gsc",            cause::locals },
     { "maps/mp/killstreaks/_a10.gsc",        cause::locals },
-    { "maps/ny_harbor_code_sdv.gsc",         cause::vector_fold },
     { "maps/ny_harbor_code_sub.gsc",         cause::locals },
     { "maps/ny_harbor_code_zodiac.gsc",      cause::locals },
     { "maps/ny_hind.gsc",                    cause::locals },
@@ -1123,6 +1121,17 @@ auto check_hash_table(List const& list) -> void
 
     INFO(std::format("{} bad entries, first: {}", bad.size(), bad.empty() ? "" : bad.front()));
     REQUIRE(bad.empty());
+}
+
+// A table declared larger than its initializer list is zero filled, and the context
+// then builds a string_view out of a null name. iw6 on ps3 and xbox 360 declared the
+// pc method count and crashed on startup.
+TEMPLATE_TEST_CASE("iw6 console method tables match their declared size", "[engine][gsc][iw6]", gsc::iw6_ps::context, gsc::iw6_xb::context)
+{
+    auto const c = TestType{ gsc::instance::server };
+
+    REQUIRE(c.meth_name(0x8419) == "isleaning");
+    REQUIRE(c.meth_id("isleaning") == 0x8419);
 }
 
 TEST_CASE("t6 hash table maps each id to its own name", "[engine][arc][t6]")

@@ -16,6 +16,7 @@ enum class string_type : u8
 {
     literal = 0,
     canonical = 1,
+    devblock = 2,
 };
 
 enum class param_type : u8
@@ -45,7 +46,7 @@ enum class import_flags : u8
     meth_call        = 4,
     meth_call_thread = 5,
     developer        = 0x10,
-    unk              = 0x20, // T7, T8, T9
+    unscoped         = 0x20,
 };
 
 struct header

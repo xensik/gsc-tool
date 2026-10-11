@@ -11,7 +11,18 @@
 namespace xsk::arc
 {
 
-lexer::lexer(context const* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, reader_{ data, size }, loc_{ &name }
+namespace
+{
+
+// a source file saved as UTF-8 with a byte order mark starts with EF BB BF
+auto bom_size(char const* data, usize size) -> usize
+{
+    return (size >= 3 && std::memcmp(data, "\xEF\xBB\xBF", 3) == 0) ? 3 : 0;
+}
+
+} // anonymous namespace
+
+lexer::lexer(context const* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, reader_{ data + bom_size(data, size), size - bom_size(data, size) }, loc_{ &name }
 {
 }
 

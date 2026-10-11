@@ -19,7 +19,7 @@ namespace xsk
 // Only the sized form is declared on purpose: any deletion path that cannot
 // supply the size fails to compile instead of silently mismatching.
 //
-// ponytail: chunks are never handed back to the OS. Live memory is bounded by
+// hint: chunks are never handed back to the OS. Live memory is bounded by
 // peak concurrent nodes (one file's AST), not by total churn, so there is
 // nothing to reclaim between files. Revisit if a caller ever holds many
 // programs alive at once.

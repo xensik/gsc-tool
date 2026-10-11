@@ -4,6 +4,7 @@
 // that can be found in the LICENSE file.
 
 #include "xsk/stdinc.hpp"
+#include "xsk/utils/string.hpp"
 #include "xsk/gsc/compiler.hpp"
 #include "xsk/gsc/context.hpp"
 
@@ -974,6 +975,19 @@ auto compiler::emit_expr(expr const& exp, scope& scp) -> void
 {
     debug_pos_ = { .line = exp.loc().begin.line, .column = exp.loc().begin.column };
 
+    // constant arithmetic is done here: stock bytecode has '1000 * 1000' as 1000000 and
+    // not one operator left between two constants
+    if (exp.is<expr_binary>() || exp.is<expr_negate>())
+    {
+        if (auto const value = fold_expr(exp); value.has_value())
+        {
+            if (std::holds_alternative<i64>(*value))
+                return emit_expr_integer(expr_integer{ exp.loc(), std::format("{}", std::get<i64>(*value)) });
+
+            return emit_expr_float(expr_float{ exp.loc(), utils::string::float_string(std::get<f32>(*value)) });
+        }
+    }
+
     switch (exp.kind())
     {
         case node::expr_paren:
@@ -1076,6 +1090,91 @@ auto compiler::emit_expr(expr const& exp, scope& scp) -> void
             break;
         default:
             throw comp_error(exp.loc(), "unknown expression");
+    }
+}
+
+// The value of an expression made of numbers only. Original source keeps most of its
+// numbers in named constants, 'sqr8 = 8 * 8;', so those and parentheses are seen through.
+auto compiler::fold_expr(expr const& exp) const -> std::optional<std::variant<i64, f32>>
+{
+    using value = std::variant<i64, f32>;
+
+    auto const as_float = [](value const& v) { return std::holds_alternative<i64>(v) ? static_cast<f32>(std::get<i64>(v)) : std::get<f32>(v); };
+
+    switch (exp.kind())
+    {
+        case node::expr_paren:
+            return fold_expr(*exp.as<expr_paren>().value);
+        case node::expr_identifier:
+        {
+            auto const itr = constants_.find(exp.as<expr_identifier>().value);
+            return (itr != constants_.end()) ? fold_expr(*itr->second) : std::nullopt;
+        }
+        case node::expr_integer:
+            return value{ static_cast<i64>(std::atoll(exp.as<expr_integer>().value.data())) };
+        case node::expr_float:
+            return value{ std::stof(exp.as<expr_float>().value) };
+        case node::expr_negate:
+        {
+            auto const rhs = fold_expr(*exp.as<expr_negate>().rvalue);
+
+            if (!rhs.has_value())
+                return std::nullopt;
+
+            if (std::holds_alternative<i64>(*rhs))
+                return value{ -std::get<i64>(*rhs) };
+
+            return value{ -std::get<f32>(*rhs) };
+        }
+        case node::expr_binary:
+        {
+            auto const& bin = exp.as<expr_binary>();
+            auto const lhs = fold_expr(*bin.lvalue);
+            auto const rhs = fold_expr(*bin.rvalue);
+
+            if (!lhs.has_value() || !rhs.has_value())
+                return std::nullopt;
+
+            if (std::holds_alternative<i64>(*lhs) && std::holds_alternative<i64>(*rhs))
+            {
+                auto const a = std::get<i64>(*lhs);
+                auto const b = std::get<i64>(*rhs);
+
+                switch (bin.oper)
+                {
+                    case expr_binary::op::add: return value{ a + b };
+                    case expr_binary::op::sub: return value{ a - b };
+                    case expr_binary::op::mul: return value{ a * b };
+                    case expr_binary::op::shl: return value{ a << (b & 63) };
+                    case expr_binary::op::shr: return value{ a >> (b & 63) };
+                    case expr_binary::op::bwor: return value{ a | b };
+                    case expr_binary::op::bwand: return value{ a & b };
+                    case expr_binary::op::bwexor: return value{ a ^ b };
+                    case expr_binary::op::mod:
+                        if (b == 0) return std::nullopt;
+                        return value{ a % b };
+                    case expr_binary::op::div:
+                        // dividing two integers gives a float: '60 / 130' is 0.46153846
+                        break;
+                    default:
+                        return std::nullopt;
+                }
+            }
+
+            auto const a = as_float(*lhs);
+            auto const b = as_float(*rhs);
+
+            switch (bin.oper)
+            {
+                case expr_binary::op::add: return value{ a + b };
+                case expr_binary::op::sub: return value{ a - b };
+                case expr_binary::op::mul: return value{ a * b };
+                case expr_binary::op::div: return (b == 0.0f) ? std::nullopt : std::optional{ value{ a / b } };
+                default: return std::nullopt;
+            }
+        }
+        default:
+            return std::nullopt;
     }
 }
 
@@ -2074,29 +2173,20 @@ auto compiler::emit_expr_object(expr const& exp, scope& scp) -> void
 
 auto compiler::emit_expr_vector(expr_vector const& exp, scope& scp) -> void
 {
+    // A vector of numbers is one OP_GetVector. A component counts as a number once it folds
+    // to one: stock has ( 30, 15, 1000 * 12 ) and ( RUN_PAIN_LONG, 0, 0 ) as literals too.
     auto data = std::vector<std::string>{};
     auto isexpr = false;
 
-    if (exp.x->is<expr_integer>())
-        data.push_back(exp.x->as<expr_integer>().value);
-    else if (exp.x->is<expr_float>())
-        data.push_back(exp.x->as<expr_float>().value);
-    else
-        isexpr = true;
-
-    if (exp.y->is<expr_integer>())
-        data.push_back(exp.y->as<expr_integer>().value);
-    else if (exp.y->is<expr_float>())
-        data.push_back(exp.y->as<expr_float>().value);
-    else
-        isexpr = true;
-
-    if (exp.z->is<expr_integer>())
-        data.push_back(exp.z->as<expr_integer>().value);
-    else if (exp.z->is<expr_float>())
-        data.push_back(exp.z->as<expr_float>().value);
-    else
-        isexpr = true;
+    for (auto const* axis : { exp.x.get(), exp.y.get(), exp.z.get() })
+    {
+        if (auto const value = fold_expr(*axis); !value.has_value())
+            isexpr = true;
+        else if (std::holds_alternative<i64>(*value))
+            data.push_back(std::format("{}", std::get<i64>(*value)));
+        else
+            data.push_back(utils::string::float_string(std::get<f32>(*value)));
+    }
 
     if (!isexpr)
     {

@@ -97,7 +97,7 @@ make -C build config=release_arm64 -j8 && ./build/bin/arm64/release/xsk-tests
 ./build/bin/arm64/release/xsk-tests "[lexer]"     # tags: [utils] [lexer] [ppr], plus [gsc] [arc] [feature]
 ```
 
-Covered today: `utils` (reader/writer endianness, zlib), the **lexer** and the **preprocessor**. Nothing covers parser, compiler, assembler or decompiler.
+Covered today: `utils` (reader/writer endianness, zlib, assembly operands), the **lexer**, the **preprocessor**, the **assembler** (`[assembler]`, text assembly included) and the T7 **compiler** (`[compiler]`). Nothing covers the decompiler outside the corpus round trips.
 
 `test/common.hpp` carries the shared scaffolding. The lexer and preprocessor are the same code in both families modulo feature flags, so generic cases are written once and instantiated for both with `TEMPLATE_TEST_CASE`; `fam<Ctx>` is the bridge that maps a context type to its family's `token`/`lexer`/`preprocessor`/error types. Helpers: `lex_all` / `lex_names` (kinds as text, so a failure reads `expected '+' got 'integer'`), `ppr_all` / `ppr_text`. Contexts come from `ctx<C>()` / `ctx_dev<C>()`, built once and deliberately leaked — construction costs 1–19 ms depending on engine (t7 loads 180k hashes) and a static with a destructor would trip the debug `-Wexit-time-destructors`.
 
@@ -157,7 +157,7 @@ scripts/tidy.sh              # clang-tidy; --fix to apply
 Actively in flux — don't treat surprising code there as a bug to "fix" without checking intent:
 
 - **Parser rewrite** — the hand-written `lexer`/`preprocessor`/`parser` (landed in #276, replacing the ANTLR/Bison experiments) is the headline v3 work and still settling. Expect rough edges and incomplete rules.
-- **New engines** — `t8 t9 jup` are stubs: their `*_code.cpp` tables are ~15 lines of placeholder and there's no decompiler support. `t7` has full hash/opcode tables and syntax support (#280) but is decompile-oriented. `include/xsk/gsc/engine/t4.hpp` and `t5.hpp` exist with opcode enums but **no `.cpp` and no `main.cpp` registration** — early scaffolding, not wired up.
+- **New engines** — `t8 t9 jup` are stubs: their `*_code.cpp` tables are ~15 lines of placeholder and there's no decompiler support. `t7` has full hash/opcode tables and syntax support (#280) and now compiles and assembles as well: the compiler's T7 rules were read off shipped bytecode next to its original source, so check a change against `data/raw/t7` + `data/bin/t7` before trusting it. `include/xsk/gsc/engine/t4.hpp` and `t5.hpp` exist with opcode enums but **no `.cpp` and no `main.cpp` registration** — early scaffolding, not wired up.
 - **Perf work** — pooled allocation and the inlined `lookahead::advance` (#088c1a4) are recent; `lookahead.hpp` deliberately defines `advance()` in the header so it inlines without LTO.
 
 Stable enough to rely on: the IW `gsc` engines through `iw9`, `t6` in `arc`, the `utils` layer, and the `.gscbin`/`.cgsc` formats.

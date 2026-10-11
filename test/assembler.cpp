@@ -66,4 +66,170 @@ TEST_CASE("assembler: t7 wait and waitrealtime opcodes", "[assembler][arc]")
     REQUIRE(c->opcode_enum(u16{ 0x0104 }) == arc::opcode::OP_RealWait);
 }
 
+// Text assembly is the disassembler's listing read back in. The listing is not the
+// in-memory form: floats and far call paths hold characters a bare word has to keep,
+// literals come quoted, and a switch table prints without its case types and can carry
+// its default anywhere. The assembler writes offsets straight from the parsed indexes,
+// so a listing that reassembles into the same listing proves all of it.
+
+TEST_CASE("assembler: gsc text assembly round trip", "[assembler][gsc]")
+{
+    auto* c = ctx<gsc::iw5_pc::context>();
+
+    auto assemble = [c](std::string const& text)
+    {
+        auto const data = c->parser().parse_assembly(reinterpret_cast<u8 const*>(text.data()), text.size());
+        auto const [script, stack, devmap] = c->assembler().assemble(*data);
+
+        return std::pair{ std::vector<u8>{ script.data, script.data + script.size }, std::vector<u8>{ stack.data, stack.data + stack.size } };
+    };
+
+    auto list = [c](std::pair<std::vector<u8>, std::vector<u8>> const& bin)
+    {
+        return print_asm<gsc::iw5_pc::context>(*c->disassembler().disassemble(bin.first, bin.second));
+    };
+
+    // labels are named after their address, so these are renamed by the first pass
+    auto const typed = std::string{ R"(
+sub:main
+		OP_GetFloat 0.5
+		OP_GetVector 0 0.25 -1024
+		OP_GetString "say \"hi\" twice"
+		OP_ScriptFarFunctionCall2 maps/mp/_utility func
+		OP_ScriptLocalFunctionCall2 helper
+		OP_GetByte 3
+		OP_switch loc_c
+	loc_a
+		OP_jump loc_d
+	loc_b
+		OP_jump loc_d
+	loc_c
+		OP_endswitch 3
+			case "mi 28" loc_a
+			default loc_b
+			case 7 loc_a
+	loc_d
+		OP_End
+end:main
+
+sub:helper
+		OP_End
+end:helper
+)" };
+
+    auto const first = assemble(typed);
+    auto const listing = list(first);
+
+    REQUIRE(listing.find("OP_GetFloat 0.5\n") != std::string::npos);
+    REQUIRE(listing.find("OP_GetVector 0 0.25 -1024\n") != std::string::npos);
+    REQUIRE(listing.find("OP_GetString \"say \\\"hi\\\" twice\"\n") != std::string::npos);
+    REQUIRE(listing.find("OP_ScriptFarFunctionCall2 maps/mp/_utility func\n") != std::string::npos);
+    REQUIRE(listing.find("OP_ScriptLocalFunctionCall2 helper\n") != std::string::npos);
+    REQUIRE(listing.find("case \"mi 28\" loc_") != std::string::npos);
+    REQUIRE(listing.find("case 7 loc_") != std::string::npos);
+    REQUIRE(listing.find("default loc_") < listing.find("case 7 loc_"));
+
+    auto const second = assemble(listing);
+
+    REQUIRE(second == first);
+    REQUIRE(list(second) == listing);
+}
+
+// T7 writes 16 bit opcodes, hashed names, 8 byte import operands and a second string
+// table for devblock strings. The assembler has to read its own disassembly back, so
+// the script goes through assemble -> disassemble -> assemble and must not change. The
+// same holds through text: printed assembly parses back into the same bytes, including
+// the operands that need quoting, an empty namespace and a hashed name with a space.
+
+TEST_CASE("assembler: t7 reassembles its own disassembly", "[assembler][arc]")
+{
+    auto func = arc::function::make();
+    func->name = "main";
+    func->space = "delete";
+    func->params = 1;
+
+    auto add = [&func](arc::opcode op, std::vector<std::string> data = {})
+    {
+        auto inst = arc::instruction::make();
+        inst->index = func->instructions.size();
+        inst->opcode = op;
+        inst->data = std::move(data);
+        func->instructions.push_back(std::move(inst));
+    };
+
+    auto label = [&func](std::string const& name)
+    {
+        func->labels.insert({ func->instructions.size(), name });
+    };
+
+    add(arc::opcode::OP_SafeCreateLocalVariables, { "str_filename", "0" });
+    add(arc::opcode::OP_DevblockBegin, { "loc_1" });
+    add(arc::opcode::OP_PreScriptCall);
+    add(arc::opcode::OP_GetString, { "__devstr__" });
+    add(arc::opcode::OP_ScriptFunctionCall, { "delete", "println", "1", "50" });
+    add(arc::opcode::OP_DecTop);
+    add(arc::opcode::OP_PreScriptCall);
+    add(arc::opcode::OP_GetHash, { "abort forfeit" });
+    add(arc::opcode::OP_ScriptFunctionCall, { "", "assert", "1", "50" });
+    add(arc::opcode::OP_DecTop);
+    label("loc_1");
+    add(arc::opcode::OP_EvalLocalVariableCached, { "0" });
+    add(arc::opcode::OP_Switch, { "loc_3" });
+    label("loc_2");
+    add(arc::opcode::OP_GetString, { "table_end" });
+    add(arc::opcode::OP_SelfEvalFieldVariableRef, { "classname" });
+    add(arc::opcode::OP_SetVariableField);
+    label("loc_3");
+    add(arc::opcode::OP_EndSwitch, { "3", "case", "1", "4294967295", "loc_2", "case", "2", "table_end", "loc_2", "default", "loc_2" });
+    add(arc::opcode::OP_End);
+
+    auto data = arc::assembly::make();
+    data->includes.emplace_back("scripts/shared/util_shared");
+    data->functions.push_back(std::move(func));
+
+    auto* c = ctx<arc::t7::context>();
+    auto const name = std::string{ "scripts/codescripts/delete.gsc" };
+
+    // the buffer points into the assembler, copy it before assembling again
+    auto const out = c->assembler().assemble(*data, name).first;
+    auto const first = std::vector<u8>{ out.data, out.data + out.size };
+
+    auto const back = c->disassembler().disassemble(first);
+    auto const& main = *back->functions.at(0);
+
+    REQUIRE(back->includes == data->includes);
+    REQUIRE(main.name == "main");
+    REQUIRE(main.space == "delete");
+    REQUIRE(main.params == 1);
+    REQUIRE(main.index % 8 == 0);
+    REQUIRE(main.instructions.size() == 17);
+    REQUIRE(main.instructions[0]->data == std::vector<std::string>{ "str_filename", "0" });
+    REQUIRE(main.instructions[3]->data == std::vector<std::string>{ "__devstr__" });
+    REQUIRE(main.instructions[4]->data == std::vector<std::string>{ "delete", "println", "1", "50" });
+    REQUIRE(main.instructions[4]->index % 2 == 0);
+    REQUIRE(main.instructions[7]->data == std::vector<std::string>{ "abort forfeit" });
+    REQUIRE(main.instructions[8]->data == std::vector<std::string>{ "", "assert", "1", "50" });
+    REQUIRE(main.instructions[12]->data == std::vector<std::string>{ "table_end" });
+    REQUIRE(main.instructions[13]->data == std::vector<std::string>{ "classname" });
+    REQUIRE(main.instructions[15]->data.at(3) == "4294967295");
+    REQUIRE(main.instructions[15]->data.at(7) == "table_end");
+    REQUIRE(main.instructions[15]->data.at(9) == "default");
+
+    auto const text = c->printer().print(*back);
+    auto const parsed = c->parser().parse_assembly(text);
+
+    REQUIRE(parsed->name == name);
+    REQUIRE(parsed->includes == data->includes);
+
+    auto const typed = c->assembler().assemble(*parsed, parsed->name).first;
+
+    REQUIRE(typed.size == first.size());
+    REQUIRE(std::equal(first.begin(), first.end(), typed.data));
+
+    auto const again = c->assembler().assemble(*back, name).first;
+
+    REQUIRE(again.size == first.size());
+    REQUIRE(std::equal(first.begin(), first.end(), again.data));
+}
+
 } // namespace xsk::test

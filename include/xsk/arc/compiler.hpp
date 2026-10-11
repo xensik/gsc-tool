@@ -13,6 +13,13 @@ namespace xsk::arc
 struct compiler
 {
 private:
+    struct class_info
+    {
+        std::string base;
+        std::vector<std::string> vars;
+        std::vector<std::string> methods;
+    };
+
     context* ctx_;
     assembly::ptr assembly_;
     function::ptr function_;
@@ -20,7 +27,12 @@ private:
     std::vector<std::string> stackframe_;
     std::vector<scope> scopes_;
     std::unordered_map<std::string, expr const*> constants_;
+    std::unordered_map<std::string, class_info> classes_;
     std::string animtree_;
+    std::string namespace_;
+    std::string extension_;
+    std::string end_label_;
+    class_info const* class_{};
     sourcepos debug_pos_{};
     usize index_{};
     usize label_idx_{};
@@ -38,6 +50,8 @@ private:
     auto emit_include(include const& inc) -> void;
     auto emit_decl(decl const& dec) -> void;
     auto emit_decl_usingtree(decl_usingtree const& animtree) -> void;
+    auto emit_decl_class(decl_class const& cls) -> void;
+    auto emit_decl_class_vtable(std::string const& name) -> void;
     auto emit_decl_function(decl_function const& func) -> void;
     auto emit_stmt(stmt const& stm) -> void;
     auto emit_stmt_list(stmt_list const& stm) -> void;
@@ -51,6 +65,7 @@ private:
     auto emit_stmt_waittill(stmt_waittill const& stm) -> void;
     auto emit_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void;
     auto emit_stmt_waittillframeend(stmt_waittillframeend const& stm) -> void;
+    auto emit_expr_test(expr const& exp, std::string const& loc) -> void;
     auto emit_stmt_if(stmt_if const& stm) -> void;
     auto emit_stmt_ifelse(stmt_ifelse const& stm) -> void;
     auto emit_stmt_while(stmt_while const& stm) -> void;
@@ -67,6 +82,7 @@ private:
     auto emit_stmt_prof_begin(stmt_prof_begin const& stm) -> void;
     auto emit_stmt_prof_end(stmt_prof_end const& stm) -> void;
     auto emit_expr(expr const& exp) -> void;
+    auto fold_expr(expr const& exp) const -> std::optional<std::variant<i32, f32>>;
     auto emit_expr_const(expr_const const& exp) -> void;
     auto emit_expr_assign(expr_assign const& exp) -> void;
     auto emit_expr_clear(expr const& exp) -> void;
@@ -80,10 +96,12 @@ private:
     auto emit_expr_call(expr_call const& exp, bool is_stmt) -> void;
     auto emit_expr_call_pointer(expr_pointer const& exp, bool is_stmt) -> void;
     auto emit_expr_call_function(expr_function const& exp, bool is_stmt) -> void;
+    auto emit_expr_call_member(expr_member const& exp, bool is_stmt) -> void;
+    auto emit_expr_new(expr_new const& exp) -> void;
     auto emit_expr_method(expr_method const& exp, bool is_stmt) -> void;
     auto emit_expr_method_pointer(expr_pointer const& exp, expr const& obj, bool is_stmt) -> void;
     auto emit_expr_method_function(expr_function const& exp, expr const& obj, bool is_stmt) -> void;
-    auto emit_expr_parameters(expr_parameters const& exp) -> void;
+    auto emit_expr_parameters(expr_parameters const& exp, std::string const& devblock) -> void;
     auto emit_expr_arguments(expr_arguments const& exp) -> void;
     auto emit_expr_isdefined(expr_isdefined const& exp) -> void;
     auto emit_expr_vectorscale(expr_vectorscale const& exp) -> void;
@@ -105,6 +123,8 @@ private:
     auto emit_expr_getfirstarraykey(expr_getfirstarraykey const& exp) -> void;
     auto emit_expr_getnextarraykey(expr_getnextarraykey const& exp) -> void;
     auto emit_expr_reference(expr_reference const& exp) -> void;
+    auto emit_import(opcode op, std::string const& path, std::string const& name, usize args, import_flags type) -> void;
+    auto emit_expr_event(expr const& exp) -> void;
     auto emit_expr_size(expr_size const& exp) -> void;
     auto emit_expr_variable_ref(expr const& exp, bool set) -> void;
     auto emit_expr_array_ref(expr_array const& exp, bool set) -> void;
@@ -144,7 +164,11 @@ private:
     auto process_stmt_switch(stmt_switch const& stm) -> void;
     auto process_expr(expr const& exp) -> void;
     auto process_expr_parameters(expr_parameters const& exp) -> void;
-    auto variable_register(expr_identifier const& exp) -> void;
+    auto register_class(decl_class const& cls, bool compiled) -> void;
+    auto find_class(std::string const& name, location const& loc) -> class_info const&;
+    auto method_owner(std::string const& name) const -> std::string const*;
+    auto is_member(std::string const& name) const -> bool;
+    auto variable_register(expr_identifier const& exp, bool param = false) -> void;
     auto variable_access(expr_identifier const& exp) -> u8;
     auto is_constant_condition(expr const& exp) -> bool;
     auto insert_label(std::string const& name) -> void;
