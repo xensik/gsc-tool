@@ -12,8 +12,10 @@ extern std::array<std::pair<u8, opcode>, code_count> const code_list;
 extern std::array<std::pair<u16, char const*>, func_count> const func_list;
 extern std::array<std::pair<u16, char const*>, meth_count> const meth_list;
 extern std::array<std::pair<u32, char const*>, token_count> const token_list;
+extern std::array<std::pair<crypt, i32>, crypt_count> const crypt_list;
+extern std::array<u8, crypt_rots_count> const crypt_rots;
 
-context::context(gsc::instance inst) : gsc::context(feature::str4 | feature::tok4 | feature::waitframe | feature::params | feature::boolfuncs | feature::boolnotand | feature::offs8, engine::iw8, endian::little, system::pc64, inst, max_string_id)
+context::context(gsc::instance inst) : gsc::context(feature::str4 | feature::tok4 | feature::waitframe | feature::params | feature::boolfuncs | feature::boolnotand | feature::offs8 | feature::extension, engine::iw8, endian::little, system::pc64, inst, max_string_id)
 {
     code_map_.reserve(code_list.size());
     code_map_rev_.reserve(code_list.size());
@@ -47,6 +49,9 @@ context::context(gsc::instance inst) : gsc::context(feature::str4 | feature::tok
         token_map_.insert({ entry.first, entry.second });
         token_map_rev_.insert({ entry.second, entry.first });
     }
+
+    crypt_list_ = crypt_list;
+    crypt_rots_ = crypt_rots;
 }
 
 } // namespace xsk::gsc::iw8

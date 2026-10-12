@@ -46,6 +46,7 @@ Per-engine metadata lives in split files under `src/<fam>/engine/`:
 - `*_func.cpp` / `*_meth.cpp` / `*_token.cpp` — builtin function/method names and canonical string tables (**`gsc` only**)
 - `*_hash.cpp` — hashed-id lookup tables (`iw9`, and **every** `arc` engine, which resolves names purely by hash)
 - `*_path.cpp` — hashed script paths (`iw9`)
+- `*_crypt.cpp` — obfuscated string routines (`iw8`)
 
 The base `context` reads these maps; it does not branch per engine. Behavior differences are driven by **feature flags**, not `if (engine == ...)`.
 
@@ -124,7 +125,7 @@ scripts/tidy.sh              # clang-tidy; --fix to apply
 ```
 
 - `.clang-format`: LLVM base, 4 spaces, **Allman braces**, `ColumnLimit: 0` (no auto-wrapping — break lines by hand), `PointerAlignment: Left`, `SortIncludes: Never` (include order is deliberate).
-- `.clang-format-ignore` and both scripts skip `src/*/engine/*_{code,func,meth,token,hash,path}.cpp` — those are generated-style data tables, not hand-written code. Never reformat them.
+- `.clang-format-ignore` and both scripts skip `src/*/engine/*_{code,func,meth,token,hash,path,crypt}.cpp` — those are generated-style data tables, not hand-written code. Never reformat them.
 - `.clang-tidy` runs `bugprone-* cppcoreguidelines-* modernize-* performance-* readability-*` with a long opt-out list; headers are diagnosed only under `include/ src/ test/`. `tidy.sh` needs `compile_commands.json` at the repo root: `bear --output compile_commands.json -- make -C build -j8` (gitignored).
 - `.editorconfig`: UTF-8, LF, final newline, trim trailing whitespace; 4 spaces for C++, 2 for yaml/json/sh.
 

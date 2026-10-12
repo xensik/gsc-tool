@@ -684,6 +684,54 @@ auto context::make_token(std::string_view str) const -> std::string
     return data;
 }
 
+auto context::decrypt_string(std::string const& str) const -> std::string
+{
+    // [type][seed][size + 1][data]: the type picks a row of routines and the seed
+    // one of its 43 groups, the first six seeds in group zero and six per group after
+    if (crypt_list_.empty() || str.size() < 3 || static_cast<u8>(str[2]) != str.size() - 2)
+    {
+        return str;
+    }
+
+    auto const seed = static_cast<u8>(str[1]);
+    auto const [kind, value] = crypt_list_[((static_cast<u8>(str[0]) & 0x3F) * 43) + (seed < 6 ? 0 : ((seed - 6) / 6) + 1)];
+
+    if (kind == crypt::none)
+    {
+        return str;
+    }
+
+    auto const size = static_cast<i32>(str.size() - 3);
+    auto data = std::string{};
+    auto key = value;
+
+    data.reserve(str.size() - 3);
+
+    for (auto i = 0; i < size; i++)
+    {
+        auto chr = static_cast<u8>(str[i + 3]);
+
+        if (kind == crypt::rot)
+        {
+            data += static_cast<char>(std::rotl(chr, crypt_rots_[(value * 254) + i]));
+            continue;
+        }
+
+        if (kind == crypt::mul)
+            key = static_cast<i32>(static_cast<u32>(key) * static_cast<u32>(256 + i)) >> 8;
+        else
+            key += (kind == crypt::add) ? i : -i;
+
+        // a byte equal to the key is left alone, so the encrypted side never holds a zero
+        if (auto const k = static_cast<u8>(key); chr != k)
+            chr ^= k;
+
+        data += static_cast<char>(std::rotr(chr, key & 7));
+    }
+
+    return data;
+}
+
 auto context::load_header(std::string const& name) -> std::tuple<std::string const*, char const*, usize>
 {
     auto const itr = header_files_.find(name);

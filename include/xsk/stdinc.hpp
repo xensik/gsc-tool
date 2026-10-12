@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <deque>
 #include <filesystem>
 #include <format>
@@ -24,6 +25,7 @@
 #include <optional>
 #include <queue>
 #include <set>
+#include <span>
 #include <stack>
 #include <stdexcept>
 #include <string>

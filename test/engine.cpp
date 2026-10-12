@@ -7,6 +7,7 @@
 #include "common.hpp"
 #include "xsk/gsc/engine/iw6_ps.hpp"
 #include "xsk/gsc/engine/iw6_xb.hpp"
+#include "xsk/gsc/engine/iw8.hpp"
 #include "xsk/utils/file.hpp"
 #include "xsk/utils/zlib.hpp"
 
@@ -1132,6 +1133,57 @@ TEMPLATE_TEST_CASE("iw6 console method tables match their declared size", "[engi
 
     REQUIRE(c.meth_name(0x8419) == "isleaning");
     REQUIRE(c.meth_id("isleaning") == 0x8419);
+}
+
+// Shipped iw8 scripts obfuscate their strings: [type][seed][size + 1][data]. The pairs
+// below come from stock bytecode, one for each kind of routine the game uses.
+TEST_CASE("iw8 decrypts obfuscated strings", "[engine][gsc][iw8]")
+{
+    auto const c = gsc::iw8::context{ gsc::instance::server };
+
+    auto const bytes = [](std::string_view hex) {
+        auto out = std::string{};
+
+        for (auto i = 0u; i < hex.size(); i += 2)
+            out += static_cast<char>(std::stoul(std::string{ hex.substr(i, 2) }, nullptr, 16));
+
+        return out;
+    };
+
+    SECTION("multiplied key")
+    {
+        REQUIRE(c.decrypt_string(bytes("9A870CBAB0B0189E98DB118B91AB")) == "arrival_yaw");
+    }
+
+    SECTION("incremented key")
+    {
+        REQUIRE(c.decrypt_string(bytes("A2660CE0F23A77467FD989FDB513")) == "hero_salter");
+    }
+
+    SECTION("decremented key")
+    {
+        REQUIRE(c.decrypt_string(bytes("B2980B28E72ED6E96274942B0B")) == "min_height");
+    }
+
+    SECTION("rotation table")
+    {
+        REQUIRE(c.decrypt_string(bytes("8AE90BB5B4DCEB1B95E69DD1D0")) == "min_length");
+    }
+
+    SECTION("anything else is returned untouched")
+    {
+        // a type with no routine, a size byte that does not match, and plain text
+        REQUIRE(c.decrypt_string(bytes("90870CBAB0B0189E98DB118B91AB")) == bytes("90870CBAB0B0189E98DB118B91AB"));
+        REQUIRE(c.decrypt_string(bytes("9A870DBAB0B0189E98DB118B91AB")) == bytes("9A870DBAB0B0189E98DB118B91AB"));
+        REQUIRE(c.decrypt_string("arrival_yaw") == "arrival_yaw");
+    }
+
+    SECTION("other engines have no routines")
+    {
+        auto const data = bytes("9A870CBAB0B0189E98DB118B91AB");
+
+        REQUIRE(ctx<gsc::iw5_pc::context>()->decrypt_string(data) == data);
+    }
 }
 
 TEST_CASE("t6 hash table maps each id to its own name", "[engine][arc][t6]")
