@@ -110,6 +110,50 @@ main( x )
     REQUIRE(std::count(code.begin(), code.end(), "OP_vector") == 0);
 }
 
+// T6 has an opcode for each of these where later engines make an ordinary call, so each
+// one takes exactly one expression and leaves its own opcode behind it.
+
+TEST_CASE("compiler: t6 builtin opcodes", "[compiler][arc]")
+{
+    auto* c = ctx<arc::t6::pc::context>();
+    auto const src = std::string_view{ R"(
+main( x )
+{
+    a = getdvar( "d" );
+    b = getdvarint( "d" );
+    c = getdvarfloat( #"d" );
+    d = getdvarvector( "d" );
+    e = getdvarcolorred( "d" );
+    f = getdvarcolorgreen( "d" );
+    g = getdvarcolorblue( "d" );
+    h = getdvarcoloralpha( "d" );
+    i = abs( x );
+    j = anglestoup( x );
+    k = anglestoright( x );
+    l = anglestoforward( x );
+    m = angleclamp180( x );
+    n = vectortoangles( x );
+}
+)" };
+
+    auto data = std::vector<u8>{ src.begin(), src.end() };
+    auto const out = c->compiler().compile("maps/demo.gsc", data);
+    auto code = lines{};
+
+    for (auto const& inst : out->functions.at(0)->instructions)
+        code.push_back(c->opcode_name(inst->opcode));
+
+    for (auto const* name : { "OP_GetDvar", "OP_GetDvarInt", "OP_GetDvarFloat", "OP_GetDvarVector", "OP_GetDvarColorRed", "OP_GetDvarColorGreen", "OP_GetDvarColorBlue", "OP_GetDvarColorAlpha", "OP_Abs", "OP_AnglesToUp", "OP_AnglesToRight", "OP_AnglesToForward", "OP_AngleClamp180", "OP_VectorToAngles" })
+    {
+        CAPTURE(name);
+        REQUIRE(std::count(code.begin(), code.end(), name) == 1);
+    }
+
+    auto const two = std::string_view{ "main() { a = getdvarint( \"d\", 1 ); }" };
+    data.assign(two.begin(), two.end());
+    REQUIRE_THROWS_AS(c->compiler().compile("maps/demo.gsc", data), arc::comp_error);
+}
+
 TEST_CASE("compiler: t7 namespaces and imports", "[compiler][arc]")
 {
     SECTION("a script without '#namespace' is named after its file")

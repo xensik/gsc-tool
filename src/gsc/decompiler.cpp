@@ -1117,7 +1117,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
 
                 if (arg->kind() == node::stmt_waittill)
                 {
-                    std::reverse(args->list.begin(), args->list.end());
+                    std::ranges::reverse(args->list);
                     reinterpret_cast<stmt_waittill*>(arg.get())->args = std::move(args);
                     in_waittill_ = false;
                 }
@@ -1363,7 +1363,7 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
                     break;
                 }
 
-                std::reverse(vars.begin(), vars.end());
+                std::ranges::reverse(vars);
                 lvalue->vars = vars;
             }
 
@@ -1814,7 +1814,8 @@ auto decompiler::decompile_tuples(stmt_list& stm) -> void
             auto found = false;
             auto done = false;
 
-            while (j >= 0 && stm.list.at(j)->is<stmt_expr>())
+            // j is unsigned: stepping below zero wraps it past i
+            while (j < i && stm.list.at(j)->is<stmt_expr>())
             {
                 auto const& exp = stm.list.at(j)->as<stmt_expr>().value;
 

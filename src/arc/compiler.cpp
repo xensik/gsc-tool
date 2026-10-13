@@ -165,7 +165,7 @@ auto compiler::emit_decl_class(decl_class const& cls) -> void
     // stock generates whichever of the two was not written, after the written methods
     for (auto const* special : { "__constructor", "__destructor" })
     {
-        auto const written = std::any_of(cls.body->list.begin(), cls.body->list.end(), [special](auto const& entry) {
+        auto const written = std::ranges::any_of(cls.body->list, [special](auto const& entry) {
             return entry->template is<decl_function>() && entry->template as<decl_function>().name->value == special;
         });
 
@@ -830,7 +830,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
 
     auto const integer = std::format("{}", static_cast<i32>(switch_type::integer));
 
-    std::stable_sort(cases.begin(), cases.end(), [&integer](auto const& a, auto const& b) {
+    std::ranges::stable_sort(cases, [&integer](auto const& a, auto const& b) {
         if (a[0] != b[0])
             return a[0] < b[0];
 
@@ -1216,7 +1216,7 @@ auto compiler::emit_expr_const(expr_const const& exp) -> void
     if (itr != constants_.end())
         throw comp_error(exp.loc(), std::format("duplicated constant '{}'", exp.lvalue->value));
 
-    if (!(ctx_->features() & feature::size64) && std::find(stackframe_.begin(), stackframe_.end(), exp.lvalue->value) != stackframe_.end())
+    if (!(ctx_->features() & feature::size64) && std::ranges::find(stackframe_, exp.lvalue->value) != stackframe_.end())
         throw comp_error(exp.loc(), std::format("constant already defined as local variable '{}'", exp.lvalue->value));
 
     constants_.insert({ exp.lvalue->value, exp.rvalue.get() });
@@ -1812,7 +1812,7 @@ auto compiler::emit_import(opcode op, std::string const& path, std::string const
         return emit_opcode(op, { space, name, std::format("{}", args), std::format("{}", flags) });
     }
 
-    if (!path.empty() && std::find(assembly_->includes.begin(), assembly_->includes.end(), path) == assembly_->includes.end())
+    if (!path.empty() && std::ranges::find(assembly_->includes, path) == assembly_->includes.end())
     {
         assembly_->includes.push_back(path);
     }
@@ -2568,7 +2568,7 @@ auto compiler::register_class(decl_class const& cls, bool compiled) -> void
     // extends a base declared further down.
     for (auto const* special : { "__constructor", "__destructor" })
     {
-        if (compiled && std::find(info.methods.begin(), info.methods.end(), special) == info.methods.end())
+        if (compiled && std::ranges::find(info.methods, special) == info.methods.end())
             info.methods.emplace_back(special);
     }
 
@@ -2612,7 +2612,7 @@ auto compiler::find_class(std::string const& name, location const& loc) -> class
 // the base class that declares 'name', when the class being compiled inherits it
 auto compiler::method_owner(std::string const& name) const -> std::string const*
 {
-    if (class_ == nullptr || std::find(class_->methods.begin(), class_->methods.end(), name) != class_->methods.end())
+    if (class_ == nullptr || std::ranges::find(class_->methods, name) != class_->methods.end())
         return nullptr;
 
     for (auto const* base = &class_->base; !base->empty();)
@@ -2622,7 +2622,7 @@ auto compiler::method_owner(std::string const& name) const -> std::string const*
         if (itr == classes_.end())
             return nullptr;
 
-        if (std::find(itr->second.methods.begin(), itr->second.methods.end(), name) != itr->second.methods.end())
+        if (std::ranges::find(itr->second.methods, name) != itr->second.methods.end())
             return &itr->first;
 
         base = &itr->second.base;
@@ -2634,12 +2634,12 @@ auto compiler::method_owner(std::string const& name) const -> std::string const*
 // a name that is not a local reads as a field of self when the class or a base declares it
 auto compiler::is_member(std::string const& name) const -> bool
 {
-    if (class_ == nullptr || std::find(stackframe_.begin(), stackframe_.end(), name) != stackframe_.end())
+    if (class_ == nullptr || std::ranges::find(stackframe_, name) != stackframe_.end())
         return false;
 
     for (auto const* entry = class_; entry != nullptr;)
     {
-        if (std::find(entry->vars.begin(), entry->vars.end(), name) != entry->vars.end())
+        if (std::ranges::find(entry->vars, name) != entry->vars.end())
             return true;
 
         auto const itr = classes_.find(entry->base);

@@ -498,7 +498,7 @@ auto preprocessor::read_directive_define(token const& /*unused*/) -> void
                             throw ppr_error(next.pos, "misplaced name in macro param list");
                         else
                         {
-                            auto it = std::find_if(params.begin(), params.end(), [&next](token const& v) { return v.data == next.data; });
+                            auto it = std::ranges::find_if(params, [&next](token const& v) { return v.data == next.data; });
 
                             if (it != params.end())
                             {
@@ -539,7 +539,7 @@ auto preprocessor::read_directive_define(token const& /*unused*/) -> void
                 {
                     if (next.type == token::NAME)
                     {
-                        auto it = std::find_if(params.begin(), params.end(), [&next](token const& v) { return v.data == next.data; });
+                        auto it = std::ranges::find_if(params, [&next](token const& v) { return v.data == next.data; });
 
                         if (it != params.end())
                         {
@@ -649,6 +649,7 @@ auto preprocessor::read_directive_define(token const& /*unused*/) -> void
                 defines_.try_emplace(name, define{ .type = define::FUNCTION, .vararg = last_elips, .args = params, .exp = exp });
                 break;
             }
+            [[fallthrough]];
         default:
             if (next.space == spacing::back)
             {

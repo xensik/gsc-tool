@@ -2013,20 +2013,8 @@ auto parser::parse_expr_getdvarint() -> expr::ptr
     auto loc = tok_.pos;
     expect(token::GETDVARINT);
     expect(token::LPAREN);
-    auto arg = parse_expr_arguments();
+    auto arg = parse_expr();
     expect(token::RPAREN);
-
-    if (ctx_->features() & feature::size64)
-    {
-        if (arg->list.size() != 1 && arg->list.size() != 2)
-            error(loc, "expected 1 or 2 arguments to getdvarint");
-    }
-    else
-    {
-        if (arg->list.size() != 1)
-            error(loc, "expected 1 argument to getdvarint");
-    }
-
     return expr_getdvarint::make(loc, std::move(arg));
 }
 
@@ -2035,20 +2023,8 @@ auto parser::parse_expr_getdvarfloat() -> expr::ptr
     auto loc = tok_.pos;
     expect(token::GETDVARFLOAT);
     expect(token::LPAREN);
-    auto arg = parse_expr_arguments();
+    auto arg = parse_expr();
     expect(token::RPAREN);
-
-    if (ctx_->features() & feature::size64)
-    {
-        if (arg->list.size() != 1 && arg->list.size() != 2)
-            error(loc, "expected 1 or 2 arguments to getdvarfloat");
-    }
-    else
-    {
-        if (arg->list.size() != 1)
-            error(loc, "expected 1 argument to getdvarfloat");
-    }
-
     return expr_getdvarfloat::make(loc, std::move(arg));
 }
 

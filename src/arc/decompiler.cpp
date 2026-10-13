@@ -436,7 +436,7 @@ auto decompiler::find_declaration(stmt_list& list, std::string const& name) -> s
                 return value.is<expr_const>() && value.as<expr_const>().lvalue->value == name;
             }
             case node::stmt_waittill:
-                return std::any_of(stm.as<stmt_waittill>().args->list.begin(), stm.as<stmt_waittill>().args->list.end(), [&](auto const& arg) { return names(*arg); });
+                return std::ranges::any_of(stm.as<stmt_waittill>().args->list, [&](auto const& arg) { return names(*arg); });
             case node::stmt_foreach:
                 return names(*stm.as<stmt_foreach>().key) || names(*stm.as<stmt_foreach>().value);
             case node::stmt_for:
@@ -815,7 +815,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
 
                 if (arg->kind() == node::stmt_waittill)
                 {
-                    std::reverse(args->list.begin(), args->list.end());
+                    std::ranges::reverse(args->list);
                     reinterpret_cast<stmt_waittill*>(arg.get())->args = std::move(args);
                     in_waittill_ = false;
                 }
@@ -1541,7 +1541,7 @@ auto decompiler::decompile_instruction(instruction const& inst, bool last) -> vo
         case opcode::OP_SelfEvalFieldVariableRef:
         {
             // a member of the class, unless a parameter of that name hides it here
-            if (class_ != nullptr && class_->members.contains(inst.data[0]) && std::find(locals_.begin(), locals_.end(), inst.data[0]) == locals_.end())
+            if (class_ != nullptr && class_->members.contains(inst.data[0]) && std::ranges::find(locals_, inst.data[0]) == locals_.end())
             {
                 stack_.push(expr_identifier::make(loc, inst.data[0]));
                 break;
