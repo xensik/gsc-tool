@@ -1245,6 +1245,9 @@ auto decompiler::decompile_instruction(instruction const& inst) -> void
         }
         case opcode::OP_SafeSetWaittillVariableFieldCached:
         {
+            if (stack_.empty())
+                throw decomp_error("stack underflow");
+
             if (stack_.top()->kind() != node::expr_var_create)
             {
                 stack_.push(expr_var_access::make(loc, inst.data[0]));
@@ -3169,6 +3172,9 @@ auto decompiler::process_expr_var_access(expr::ptr& exp, scope& scp) -> void
 
 auto decompiler::pop_stack_node() -> node::ptr
 {
+    if (stack_.empty())
+        throw decomp_error("stack underflow");
+
     auto value = std::move(stack_.top());
     stack_.pop();
     return value;
