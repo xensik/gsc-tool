@@ -558,4 +558,183 @@ function debug( a )
     }
 }
 
+// Treyarch's compiler loses a break in two ways, and shipped scripts carry both (#259).
+// Outside a loop or switch a break is a jump to the function end. Inside one, it lands on
+// the end of a switch nested further down instead of the end of its own. Our compiler does
+// not make the second mistake, so the shapes are spelled out as assembly.
+
+TEST_CASE("decompiler: t7 breaks the original compiler misplaced", "[decompiler][arc]")
+{
+    auto* c = ctx<arc::t7::context>();
+    auto const name = std::string{ "scripts/shared/demo.gsc" };
+
+    auto const decompile = [&](std::string_view text) {
+        auto const data = std::vector<u8>{ text.begin(), text.end() };
+        auto const out = c->parser().parse_assembly(data);
+        auto const bin = c->assembler().assemble(*out, name).first;
+        auto const src = c->printer().print(*c->decompiler().decompile(*c->disassembler().disassemble(bin.data, bin.size)));
+        return std::string{ reinterpret_cast<char const*>(src.data()), src.size() };
+    };
+
+    SECTION("a stray break under nested ifs is not an else")
+    {
+        auto const text = decompile(R"(
+sub:demo think 2 0
+		OP_SafeCreateLocalVariables a 0 b 0
+		OP_EvalLocalVariableCached 1
+		OP_JumpOnFalse loc_1
+		OP_EvalLocalVariableCached 0
+		OP_JumpOnFalse loc_1
+		OP_GetByte 1
+		OP_SelfEvalFieldVariableRef done
+		OP_SetVariableField
+		OP_Jump loc_2
+	loc_1
+		OP_GetZero
+		OP_SelfEvalFieldVariableRef done
+		OP_SetVariableField
+	loc_2
+		OP_End
+end:think
+)");
+
+        INFO(text);
+        REQUIRE(text.find(R"(
+    if ( a )
+    {
+        if ( b )
+        {
+            self.done = 1;
+            break;
+        }
+    }
+
+    self.done = 0;
+}
+)") != std::string::npos);
+    }
+
+    SECTION("a case that breaks to the end of a switch nested in a later case")
+    {
+        // 'case 1' jumps to loc_3, where the inner switch ends, and not to loc_6
+        auto const text = decompile(R"(
+sub:demo think 2 0
+		OP_SafeCreateLocalVariables a 0 b 0
+		OP_EvalLocalVariableCached 1
+		OP_Switch loc_5
+	loc_0
+		OP_Jump loc_3
+	loc_1
+		OP_EvalLocalVariableCached 0
+		OP_IsDefined
+		OP_JumpOnFalse loc_4
+		OP_EvalLocalVariableCached 0
+		OP_Switch loc_22
+	loc_21
+		OP_Jump loc_3
+	loc_22
+		OP_EndSwitch 1
+			case 3 loc_21
+	loc_3
+		OP_Jump loc_41
+	loc_4
+		OP_GetZero
+		OP_SelfEvalFieldVariableRef done
+		OP_SetVariableField
+	loc_41
+		OP_Jump loc_6
+	loc_5
+		OP_EndSwitch 2
+			case 1 loc_0
+			case 2 loc_1
+	loc_6
+		OP_End
+end:think
+)");
+
+        INFO(text);
+        REQUIRE(text.find(R"(
+    switch ( a )
+    {
+        case 1:
+            break;
+        case 2:
+            if ( isdefined( b ) )
+            {
+                switch ( b )
+                {
+                    case 3:
+                        break;
+                }
+            }
+            else
+                self.done = 0;
+
+            break;
+    }
+}
+)") != std::string::npos);
+    }
+
+    SECTION("a loop break that lands on the end of a switch in the else beside it")
+    {
+        // the first jump is the break: it goes to loc_3 like the one that skips the else
+        auto const text = decompile(R"(
+sub:demo think 3 0
+		OP_SafeCreateLocalVariables a 0 b 0 c 0
+	loc_0
+		OP_GetByte 1
+		OP_JumpOnFalse loc_6
+		OP_EvalLocalVariableCached 2
+		OP_JumpOnFalse loc_4
+		OP_EvalLocalVariableCached 1
+		OP_JumpOnFalse loc_1
+		OP_Jump loc_3
+		OP_Jump loc_3
+	loc_1
+		OP_EvalLocalVariableCached 0
+		OP_Switch loc_22
+	loc_21
+		OP_Jump loc_3
+	loc_22
+		OP_EndSwitch 1
+			case 3 loc_21
+	loc_3
+		OP_Jump loc_5
+	loc_4
+		OP_GetZero
+		OP_SelfEvalFieldVariableRef done
+		OP_SetVariableField
+	loc_5
+		OP_Jump loc_0
+	loc_6
+		OP_End
+end:think
+)");
+
+        INFO(text);
+        REQUIRE(text.find(R"(
+    while ( true )
+    {
+        if ( a )
+        {
+            if ( b )
+                break;
+            else
+            {
+                switch ( c )
+                {
+                    case 3:
+                        break;
+                }
+            }
+        }
+        else
+            self.done = 0;
+    }
+}
+)") != std::string::npos);
+    }
+}
+
 } // namespace xsk::test

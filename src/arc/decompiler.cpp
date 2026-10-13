@@ -287,6 +287,16 @@ auto decompiler::decompile_function(function const& func) -> void
             list.erase(list.begin());
     }
 
+    // where each switch breaks to: the statement after its table. Collected while the
+    // function is still flat, before a block swallows the statement that carries the label.
+    switch_ends_.clear();
+
+    for (auto i = usize{ 0 }; i + 1 < list.size(); i++)
+    {
+        if (list[i]->is<stmt_jmp_endswitch>())
+            switch_ends_.insert(list[i + 1]->label());
+    }
+
     decompile_statements(*func_->body->block);
 
     if (!list.empty() && list.back()->is<stmt_return>())
@@ -1879,7 +1889,9 @@ auto decompiler::decompile_ifelses(stmt_list& stm) -> void
                     // fix treyarch compiler bug: breaks outside loops or switches
                     auto out_of_scope = stm.list.at(stm.list.size() - 1)->loc().begin.line < std::stol(stm.list.at(j)->as<stmt_jmp>().value.substr(4), nullptr, 16);
 
-                    if (locs_.brk.empty() && out_of_scope)
+                    // an else is entered by its own test alone: when a nested test skips
+                    // to the same place, the jump that ends the block is a stray break
+                    if ((locs_.brk.empty() && out_of_scope) || find_location_reference(stm, i + 1, j, entry->as<stmt_jmp_cond>().value))
                         decompile_if(stm, i, j);
                     else
                         decompile_ifelse(stm, i, j);
@@ -1922,7 +1934,15 @@ auto decompiler::decompile_aborts(stmt_list& stm) -> void
                     stm.list.erase(stm.list.begin() + i);
                     stm.list.insert(stm.list.begin() + i, stmt_break::make(loc));
                 }
-                // fix treyarch compiler bug: nested switch break locs are not preserved
+                // fix treyarch compiler bug: nested switch break locs are not preserved. A
+                // break of the enclosing loop or switch lands on the end of a switch nested
+                // further down, which by now can sit inside a block of its own.
+                else if (jmp != locs_.end && switch_ends_.contains(jmp))
+                {
+                    stm.list.erase(stm.list.begin() + i);
+                    stm.list.insert(stm.list.begin() + i, stmt_break::make(loc));
+                    continue;
+                }
                 else if (jmp != locs_.end && stm.list.at(find_location_index(stm, jmp))->is<stmt_break>())
                 {
                     stm.list.erase(stm.list.begin() + i);

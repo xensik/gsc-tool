@@ -28,6 +28,7 @@ private:
     decl_function::ptr func_;
     std::unordered_set<std::string> vars_;
     std::unordered_map<usize, std::string> labels_;
+    std::unordered_set<std::string> switch_ends_;
     std::vector<std::string> expr_labels_;
     std::vector<std::string> tern_labels_;
     std::vector<std::string> locals_;
