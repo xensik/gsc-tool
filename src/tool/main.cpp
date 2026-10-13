@@ -781,7 +781,18 @@ namespace arc
 
 std::map<game, std::map<mach, std::unique_ptr<context>>> contexts;
 std::map<mode, std::function<result(game game, mach mach, fs::path const& file, fs::path rel)>> funcs;
+std::unique_ptr<context> t7_v1b;
 bool t6fixup = false;
+
+// t7 scripts come in two bytecode versions and a directory can mix them: the header's
+// version byte picks the context that reads a file. Everything written is 0x1C.
+auto reader(game game, mach mach, std::vector<u8> const& data) -> context&
+{
+    if (game == game::t7 && data.size() > 7 && data[7] == 0x1B)
+        return *t7_v1b;
+
+    return *contexts[game][mach];
+}
 
 auto assemble_file(game game, mach mach, fs::path const& file, fs::path rel) -> result
 {
@@ -826,8 +837,9 @@ auto disassemble_file(game game, mach mach, fs::path const& file, fs::path rel) 
         rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((file.extension().string().starts_with(".gsc") ? ".gscasm" : ".cscasm"));
 
         auto data = utils::file::read(file.string());
-        auto outasm = contexts[game][mach]->disassembler().disassemble(data);
-        auto outsrc = contexts[game][mach]->printer().print(*outasm);
+        auto& ctx = reader(game, mach, data);
+        auto outasm = ctx.disassembler().disassemble(data);
+        auto outsrc = ctx.printer().print(*outasm);
 
         if (!dry_run)
             utils::file::save(fs::path{ "disassembled" } / rel, outsrc);
@@ -894,13 +906,15 @@ auto decompile_file(game game, mach mach, fs::path const& file, fs::path rel) ->
         if (game > game::t7)
             throw std::runtime_error("not implemented");
 
-        rel = fs::path{ games_rev.at(game) } / rel / file.filename();
+        // '.gscc' and '.cscc' are compiled only, the source they came from is '.gsc' and '.csc'
+        rel = fs::path{ games_rev.at(game) } / rel / file.filename().replace_extension((file.extension().string().starts_with(".gsc") ? ".gsc" : ".csc"));
 
         auto data = utils::file::read(file);
+        auto& ctx = reader(game, mach, data);
 
-        auto outasm = contexts[game][mach]->disassembler().disassemble(data);
-        auto outsrc = contexts[game][mach]->decompiler().decompile(*outasm);
-        auto output = contexts[game][mach]->printer().print(*outsrc);
+        auto outasm = ctx.disassembler().disassemble(data);
+        auto outsrc = ctx.decompiler().decompile(*outasm);
+        auto output = ctx.printer().print(*outsrc);
 
         if (!dry_run)
             utils::file::save(fs::path{ "decompiled" } / rel, output);
@@ -1011,6 +1025,9 @@ auto init_t7(mach mach, inst inst, bool dev) -> void
         {
             contexts[game::t7][mach] = std::make_unique<t7::context>(inst == inst::client ? arc::instance::client : arc::instance::server);
             contexts[game::t7][mach]->init(dev ? build::dev : build::prod, fs_read);
+            // ponytail: built up front, 0x1B file or not. Build it on first use if the second hash map costs too much.
+            t7_v1b = std::make_unique<t7::context>(inst == inst::client ? arc::instance::client : arc::instance::server, t7::version::v1b);
+            t7_v1b->init(dev ? build::dev : build::prod, fs_read);
             break;
         }
         default:
