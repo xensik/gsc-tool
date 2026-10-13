@@ -265,7 +265,10 @@ TEST_CASE("assembler: t7 0x1B one byte opcodes", "[assembler][arc][feature]")
     auto const listing = [](arc::context* c, std::vector<u8> const& bin) {
         auto out = std::vector<std::string>{};
 
-        for (auto const& func : c->disassembler().disassemble(bin)->functions)
+        // held in a local: a range-for does not keep the temporary behind '->' alive
+        auto const back = c->disassembler().disassemble(bin);
+
+        for (auto const& func : back->functions)
         {
             for (auto const& inst : func->instructions)
             {
