@@ -17,6 +17,7 @@ private:
     program::ptr program_;
     decl_function::ptr func_;
     std::unordered_map<usize, std::string> labels_;
+    std::unordered_set<std::string> iters_;
     std::vector<std::string> expr_labels_;
     std::vector<std::string> tern_labels_;
     std::stack<node::ptr> stack_;

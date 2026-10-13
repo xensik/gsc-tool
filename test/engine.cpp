@@ -678,7 +678,7 @@ constexpr known_failure iw6_binary_failures[]{
 constexpr known_failure h1_binary_failures[]{
     { "animscripts/battlechatter.gscbin",             cause::switch_strings },
     { "animscripts/battlechatter_ai.gscbin",          cause::switch_strings },
-    { "animscripts/combat_utility.gscbin",            cause::decompile_output },
+    { "animscripts/combat_utility.gscbin",            cause::locals },
     { "animscripts/corner.gscbin",                    cause::switch_strings },
     { "animscripts/cover_behavior.gscbin",            cause::locals },
     { "animscripts/cover_multi.gscbin",               cause::locals },

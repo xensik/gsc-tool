@@ -1654,7 +1654,29 @@ auto decompiler::decompile_ifelses(stmt_list& stm) -> void
             auto j = find_location_index(stm, entry->as<stmt_jmp_cond>().value) - 1;
             auto last_loc = locs_.end;
 
-            if (stm.list.at(j)->is<stmt_jmp>())
+            // An else is entered by its own test alone, and it ends inside the scope it is
+            // in. When a nested test skips to the same place, or the jump before it leaves
+            // the scope, that jump is a statement of its own and there is no else.
+            auto const nested = [&] {
+                for (auto k = i + 1; k < j; k++)
+                {
+                    if (stm.list[k]->is<stmt_jmp_cond>() && stm.list[k]->as<stmt_jmp_cond>().value == entry->as<stmt_jmp_cond>().value)
+                        return true;
+                }
+
+                return false;
+            };
+
+            auto const leaves = [&] {
+                auto const& loc = stm.list[j]->as<stmt_jmp>().value;
+                return loc != locs_.end && std::ranges::none_of(stm.list, [&](auto const& s) { return s->label() == loc; });
+            };
+
+            if (stm.list.at(j)->is<stmt_jmp>() && (nested() || leaves()))
+            {
+                decompile_if(stm, i, j);
+            }
+            else if (stm.list.at(j)->is<stmt_jmp>())
             {
                 // if scope is a loop check break, continue
                 if (stm.list.at(j)->as<stmt_jmp>().value == locs_.cnt)
@@ -1795,6 +1817,13 @@ auto decompiler::decompile_aborts(stmt_list& stm) -> void
             {
                 stm.list.erase(stm.list.begin() + i);
                 stm.list.insert(stm.list.begin() + i, stmt_continue::make(loc));
+            }
+            else if (!locs_.itr.empty() && jmp == locs_.itr)
+            {
+                // a continue of 'for ( ;; iter )', decompile_inf moves the clause out
+                stm.list.erase(stm.list.begin() + i);
+                stm.list.insert(stm.list.begin() + i, stmt_continue::make(loc));
+                iters_.insert(jmp);
             }
             else
             {
@@ -2023,6 +2052,17 @@ auto decompiler::decompile_inf(stmt_list& stm, usize begin, usize end) -> void
     locs_.brk = last_location_index(stm, end) ? locs_.end : stm.list[end + 1]->label();
     locs_.end = stm.list[end]->label();
     locs_.cnt = stm.list[end]->label();
+    locs_.itr.clear();
+
+    // 'for ( ;; wait 0.05 )' has no test to tell it from an endless loop that ends on the
+    // wait. Only a continue does: it lands on that last statement and not on the jump back.
+    if (end > begin)
+    {
+        auto const& last = stm.list[end - 1];
+
+        if (last->is<stmt_wait>() || last->is<stmt_waitframe>() || last->is<stmt_expr>())
+            locs_.itr = last->label();
+    }
 
     auto loc = stm.list[begin]->loc();
 
@@ -2037,8 +2077,20 @@ auto decompiler::decompile_inf(stmt_list& stm, usize begin, usize end) -> void
     }
 
     decompile_statements(*body);
+
+    auto iter = stmt::ptr{ stmt_empty::make(loc) };
+
+    if (!locs_.itr.empty() && iters_.erase(locs_.itr) != 0)
+    {
+        if (body->list.empty() || body->list.back()->label() != locs_.itr)
+            throw decomp_error(std::format("continue to '{}', which is not the last statement of its loop", locs_.itr));
+
+        iter = std::move(body->list.back());
+        body->list.pop_back();
+    }
+
     locs_ = save;
-    stm.list.insert(stm.list.begin() + begin, stmt_for::make(loc, stmt_empty::make(loc), expr_empty::make(loc), stmt_empty::make(loc), stmt_comp::make(loc, std::move(body))));
+    stm.list.insert(stm.list.begin() + begin, stmt_for::make(loc, stmt_empty::make(loc), expr_empty::make(loc), std::move(iter), stmt_comp::make(loc, std::move(body))));
 }
 
 auto decompiler::decompile_loop(stmt_list& stm, usize begin, usize end) -> void
@@ -2112,6 +2164,7 @@ auto decompiler::decompile_while(stmt_list& stm, usize begin, usize end) -> void
     locs_.last = false;
     locs_.end = stm.list[end]->label();
     locs_.cnt = stm.list[end]->label();
+    locs_.itr.clear();
     locs_.brk = stm.list[begin]->as<stmt_jmp_cond>().value;
 
     auto loc = stm.list[begin]->loc();
@@ -2140,6 +2193,7 @@ auto decompiler::decompile_dowhile(stmt_list& stm, usize begin, usize end) -> vo
     locs_.last = false;
     locs_.end = stm.list[begin]->label();
     locs_.cnt = stm.list[begin]->label();
+    locs_.itr.clear();
     locs_.brk = stm.list[begin]->as<stmt_jmp_cond>().value;
 
     auto test = std::move(stm.list[begin]->as<stmt_jmp_cond>().test);
@@ -2169,6 +2223,7 @@ auto decompiler::decompile_for(stmt_list& stm, usize begin, usize end) -> void
     locs_.last = false;
     locs_.end = stm.list[end - 1]->label();
     locs_.cnt = stm.list[end - 1]->label();
+    locs_.itr.clear();
     locs_.brk = stm.list[begin]->as<stmt_jmp_cond>().value;
 
     for (begin -= 1; stm.list[begin]->is<stmt_create>(); begin--);
@@ -2211,6 +2266,7 @@ auto decompiler::decompile_foreach(stmt_list& stm, usize begin, usize end) -> vo
     locs_.last = false;
     locs_.end = stm.list[end - 1]->label();
     locs_.cnt = stm.list[end - 1]->label();
+    locs_.itr.clear();
     locs_.brk = stm.list[begin]->as<stmt_jmp_cond>().value;
 
     for (begin -= 1; stm.list[begin]->is<stmt_create>(); begin--);

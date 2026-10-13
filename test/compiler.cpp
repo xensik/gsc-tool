@@ -737,4 +737,137 @@ end:think
     }
 }
 
+// Two shapes the bytecode leaves open, both settled by where a jump lands. An else is
+// entered by its own test alone, so nested tests that skip to one place rule it out and
+// the jump before it is a statement. And an endless loop that ends on a wait or a step is
+// 'for ( ;; wait t )' only when a continue lands on that statement and not on the jump back.
+
+TEST_CASE("decompiler: gsc jumps out of nested ifs", "[decompiler][gsc]")
+{
+    auto* c = ctx<gsc::iw5_pc::context>();
+
+    auto const build = [&](std::string_view src) {
+        auto data = std::vector<u8>{ src.begin(), src.end() };
+        auto const out = c->compiler().compile("maps/demo", data);
+        auto const [script, stack, devmap] = c->assembler().assemble(*out);
+        return std::pair{ std::vector<u8>{ script.data, script.data + script.size }, std::vector<u8>{ stack.data, stack.data + stack.size } };
+    };
+
+    auto const decompile = [&](std::pair<std::vector<u8>, std::vector<u8>> const& bin) {
+        auto const src = c->printer().print(*c->decompiler().decompile(*c->disassembler().disassemble(bin.first, bin.second)));
+        return std::string{ reinterpret_cast<char const*>(src.data()), src.size() };
+    };
+
+    SECTION("a continue under nested ifs is not an else")
+    {
+        auto const first = build(R"(
+main( a, b, c )
+{
+    for (;;)
+    {
+        wait 0.05;
+
+        if ( a )
+        {
+            if ( b )
+            {
+                if ( c )
+                    break;
+
+                continue;
+            }
+        }
+
+        a = undefined;
+    }
+}
+)");
+
+        auto const text = decompile(first);
+
+        INFO(text);
+        REQUIRE(text.find(R"(
+        if ( var_0 )
+        {
+            if ( var_1 )
+            {
+                if ( var_2 )
+                    break;
+
+                continue;
+            }
+        }
+
+        var_0 = undefined;
+    }
+}
+)") != std::string::npos);
+        REQUIRE(build(text) == first);
+    }
+
+    SECTION("a continue that lands on the last statement makes it the loop's clause")
+    {
+        auto const first = build(R"(
+main( a, b, t )
+{
+    for ( ;; wait t )
+    {
+        if ( a )
+        {
+            if ( b )
+                continue;
+        }
+
+        a = 1;
+    }
+
+    for ( ;; b++ )
+    {
+        if ( a )
+        {
+            if ( b > 3 )
+                continue;
+        }
+
+        a = 1;
+    }
+}
+)");
+
+        auto const text = decompile(first);
+
+        INFO(text);
+        REQUIRE(text.find("    for (;; wait( var_2 ) )\n") != std::string::npos);
+        REQUIRE(text.find("    for (;; var_1++ )\n") != std::string::npos);
+        REQUIRE(text.find("                continue;\n") != std::string::npos);
+        REQUIRE(text.find("__asm_jmp") == std::string::npos);
+        REQUIRE(build(text) == first);
+    }
+
+    SECTION("without a continue the wait stays in the body")
+    {
+        auto const first = build(R"(
+main( a, t )
+{
+    for (;;)
+    {
+        if ( a )
+            a = 0;
+        else
+            a = 1;
+
+        wait t;
+    }
+}
+)");
+
+        auto const text = decompile(first);
+
+        INFO(text);
+        REQUIRE(text.find("    for (;;)\n") != std::string::npos);
+        REQUIRE(text.find("        else\n            var_0 = 1;\n\n        wait( var_1 );\n") != std::string::npos);
+        REQUIRE(build(text) == first);
+    }
+}
+
 } // namespace xsk::test
