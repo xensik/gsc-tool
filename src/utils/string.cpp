@@ -28,17 +28,17 @@ auto string::hex_to_dec(char const* str) -> std::string
 
 auto string::iequals(std::string const& a, std::string const& b) -> bool
 {
-    return (a.size() == b.size()) && std::equal(a.begin(), a.end(), b.begin(), b.end(), [](char a, char b) { return std::tolower(a) == std::tolower(b); });
+    return (a.size() == b.size()) && std::ranges::equal(a, b, [](char a, char b) { return std::tolower(a) == std::tolower(b); });
 }
 
 auto string::is_number(std::string const& str) -> bool
 {
-    return !str.empty() && std::all_of(str.begin(), str.end(), isdigit);
+    return !str.empty() && std::ranges::all_of(str, isdigit);
 }
 
 auto string::is_hex_number(std::string const& str) -> bool
 {
-    return !str.empty() && std::all_of(str.begin(), str.end(), isxdigit);
+    return !str.empty() && std::ranges::all_of(str, isxdigit);
 }
 
 auto string::to_lower(std::string const& str) -> std::string

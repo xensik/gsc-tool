@@ -845,7 +845,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
 
     // string cases keep source order: their key is the engine's string list id, which the
     // bytecode does not carry in a form we can reproduce -- see plan/iw5-failures.md
-    std::stable_sort(cases.begin(), cases.end(), [](auto const& a, auto const& b) {
+    std::ranges::stable_sort(cases, [](auto const& a, auto const& b) {
         if (a[0] != b[0] || a[0] != std::format("{}", static_cast<i32>(switch_type::integer)))
             return false;
 
@@ -2848,7 +2848,7 @@ auto compiler::process_expr_parameters(expr_parameters const& exp, scope& scp) -
 
 auto compiler::variable_register(expr_identifier const& exp, scope& scp) -> void
 {
-    auto it = std::find_if(scp.vars.begin(), scp.vars.end(), [&](scope::var const& v) { return v.name == exp.value; });
+    auto it = std::ranges::find_if(scp.vars, [&](scope::var const& v) { return v.name == exp.value; });
 
     if (it == scp.vars.end())
     {
