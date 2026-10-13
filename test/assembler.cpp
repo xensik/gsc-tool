@@ -232,4 +232,128 @@ TEST_CASE("assembler: t7 reassembles its own disassembly", "[assembler][arc]")
     REQUIRE(std::equal(first.begin(), first.end(), again.data));
 }
 
+// T7 shipped two bytecode versions. 0x1B has the instruction set of 0x1C behind one byte
+// opcodes: nothing pads an instruction to an even address, operands still align to their
+// own size, and a jump offset is the plain distance. The same script has to come back
+// out of both, and a script that is empty but for its prologue pins the encoding.
+
+TEST_CASE("assembler: t7 0x1B one byte opcodes", "[assembler][arc][feature]")
+{
+    // ponytail: leaked like every test context, see ctx() in common.hpp
+    static auto* const old = [] {
+        auto* c = new arc::t7::context(arc::instance::server, arc::t7::version::v1b);
+        c->init(arc::build::prod, nullptr);
+        return c;
+    }();
+
+    auto* cur = ctx<arc::t7::context>();
+    auto const name = std::string{ "scripts/shared/demo.gsc" };
+
+    REQUIRE(static_cast<bool>(cur->features() & arc::feature::code16));
+    REQUIRE_FALSE(static_cast<bool>(old->features() & arc::feature::code16));
+    REQUIRE(old->opcode_size(arc::opcode::OP_End) == 1);
+    REQUIRE(old->opcode_size(arc::opcode::OP_GetString) == 5);
+    REQUIRE(cur->opcode_size(arc::opcode::OP_GetString) == 6);
+
+    auto const build = [&](arc::context* c, std::string_view src) {
+        auto data = std::vector<u8>{ src.begin(), src.end() };
+        auto const out = c->compiler().compile(name, data);
+        auto const bin = c->assembler().assemble(*out, name).first;
+        return std::vector<u8>{ bin.data, bin.data + bin.size };
+    };
+
+    auto const listing = [](arc::context* c, std::vector<u8> const& bin) {
+        auto out = std::vector<std::string>{};
+
+        // held in a local: a range-for does not keep the temporary behind '->' alive
+        auto const back = c->disassembler().disassemble(bin);
+
+        for (auto const& func : back->functions)
+        {
+            for (auto const& inst : func->instructions)
+            {
+                // a label is named after its address, which is what differs between the two
+                auto line = c->opcode_name(inst->opcode);
+
+                for (auto const& entry : inst->data)
+                    line += entry.starts_with("loc_") ? " loc" : " " + entry;
+
+                out.push_back(std::move(line));
+            }
+        }
+
+        return out;
+    };
+
+    SECTION("prologue")
+    {
+        auto const bin = build(old, "#namespace demo;\n\nfunction main()\n{\n}\n");
+        auto const back = old->disassembler().disassemble(bin);
+        auto const at = back->functions.at(0)->index;
+
+        REQUIRE(bin[7] == 0x1B);
+        REQUIRE(bin[at] == 0x0D);
+        REQUIRE(bin[at + 1] == 0x10);
+        REQUIRE(back->functions.at(0)->size == 2);
+    }
+
+    SECTION("same script out of both versions")
+    {
+        auto const src = std::string_view{ R"(
+#namespace demo;
+
+function main( a, b )
+{
+    level.count = 0;
+
+    foreach ( item in a )
+    {
+        if ( !isdefined( item ) )
+            continue;
+
+        level.count += item.size >> 1;
+    }
+
+    switch ( b )
+    {
+        case "one":
+            self thread watch( #"done", 1.5 );
+            break;
+        case 2:
+            wait 0.05;
+            break;
+        default:
+            return ( 0, 0, 1 );
+    }
+
+    return level.count;
+}
+
+function watch( event, time )
+{
+    self endon( #"death" );
+    self waittill( event, who );
+    return who;
+}
+)" };
+
+        auto const first = build(old, src);
+        auto const wide = build(cur, src);
+
+        REQUIRE(first[7] == 0x1B);
+        REQUIRE(wide[7] == 0x1C);
+        REQUIRE(listing(old, first) == listing(cur, wide));
+
+        auto const back = old->disassembler().disassemble(first);
+        auto const again = old->assembler().assemble(*back, name).first;
+
+        REQUIRE(again.size == first.size());
+        REQUIRE(std::equal(first.begin(), first.end(), again.data));
+
+        // one version's context does not read the other's file
+        REQUIRE_THROWS_AS(cur->disassembler().disassemble(first), arc::disasm_error);
+        REQUIRE_THROWS_AS(old->disassembler().disassemble(wide), arc::disasm_error);
+    }
+}
+
 } // namespace xsk::test

@@ -312,7 +312,7 @@ auto assembler::assemble_function(function& func) -> void
 
 auto assembler::assemble_instruction(instruction const& inst) -> void
 {
-    if (ctx_->features() & feature::size64)
+    if (ctx_->features() & feature::code16)
         script_.write<u16>(ctx_->opcode_id(inst.opcode));
     else
         script_.write<u8>(static_cast<u8>(ctx_->opcode_id(inst.opcode)));
@@ -551,7 +551,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             throw asm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
 
-    if (ctx_->features() & feature::size64)
+    if (ctx_->features() & feature::code16)
         script_.align(2);
 }
 
@@ -605,7 +605,7 @@ auto assembler::assemble_switch(instruction const& inst) -> void
 {
     script_.align(4);
     // the table starts at the first 4 byte boundary after the OP_EndSwitch opcode
-    auto const op_size = (ctx_->features() & feature::size64) ? 2 : 1;
+    auto const op_size = (ctx_->features() & feature::code16) ? 2 : 1;
     script_.write<i32>(static_cast<i32>(((resolve_label(inst.data[0]) + op_size + 3) & 0xFFFFFFFC) - inst.index - inst.size));
 }
 
@@ -736,7 +736,7 @@ auto assembler::process_instruction(instruction const& inst) -> void
 auto assembler::align_instruction(instruction& inst) -> void
 {
     inst.size = ctx_->opcode_size(inst.opcode);
-    script_.seek((ctx_->features() & feature::size64) ? 2 : 1);
+    script_.seek((ctx_->features() & feature::code16) ? 2 : 1);
 
     switch (inst.opcode)
     {
@@ -991,7 +991,7 @@ auto assembler::align_instruction(instruction& inst) -> void
             throw asm_error(std::format("unhandled opcode {} at index {:04X}", ctx_->opcode_name(inst.opcode), inst.index));
     }
 
-    if (ctx_->features() & feature::size64)
+    if (ctx_->features() & feature::code16)
         inst.size += script_.align(2);
 }
 

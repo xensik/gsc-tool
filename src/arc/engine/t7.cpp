@@ -9,19 +9,28 @@ namespace xsk::arc::t7
 {
 
 extern std::array<std::pair<u16, opcode>, code_count> const code_list;
+extern std::array<std::pair<u16, opcode>, code_count_1b> const code_list_1b;
 extern std::array<std::pair<u32, char const*>, hash_count> const hash_list;
 
-context::context(arc::instance inst) : arc::context(feature::header72 | feature::size64 | feature::hashids | feature::devstr | feature::spaces | feature::refvarg | feature::foreach, engine::t7, endian::little, system::pc64, inst, header_magic)
+context::context(arc::instance inst, version ver) : arc::context(feature::header72 | feature::size64 | feature::hashids | feature::devstr | feature::spaces | feature::refvarg | feature::foreach | (ver == version::v1c ? feature::code16 : feature::none), engine::t7, endian::little, system::pc64, inst, ver == version::v1c ? header_magic : header_magic_1b)
 {
-    code_map_.reserve(code_list.size());
-    code_map_rev_.reserve(code_list.size());
-    hash_map_.reserve(hash_list.size());
+    auto const fill = [this](auto const& list) {
+        code_map_.reserve(list.size());
+        code_map_rev_.reserve(list.size());
 
-    for (auto const& entry : code_list)
-    {
-        code_map_.insert({ entry.first, entry.second });
-        code_map_rev_.insert({ entry.second, entry.first });
-    }
+        for (auto const& entry : list)
+        {
+            code_map_.insert({ entry.first, entry.second });
+            code_map_rev_.insert({ entry.second, entry.first });
+        }
+    };
+
+    if (ver == version::v1c)
+        fill(code_list);
+    else
+        fill(code_list_1b);
+
+    hash_map_.reserve(hash_list.size());
 
     for (auto const& entry : hash_list)
     {
