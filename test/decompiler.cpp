@@ -5,6 +5,7 @@
 
 #include "xsk/stdinc.hpp"
 #include "xsk/arc/decompiler.hpp"
+#include "xsk/arc/engine/t6_pc.hpp"
 #include "xsk/gsc/decompiler.hpp"
 #include <catch_amalgamated.hpp>
 
@@ -54,8 +55,9 @@ TEST_CASE("arc decompiler: reject stack underflow", "[decompiler]")
     func->instructions.push_back(std::move(inst));
     data->functions.push_back(std::move(func));
 
-    auto decomp = arc::decompiler{ nullptr };
-    REQUIRE_THROWS_AS(decomp.decompile(*data), arc::decomp_error);
+    auto context = arc::t6::pc::context{ arc::instance::server };
+    context.init(arc::build::prod, nullptr);
+    REQUIRE_THROWS_AS(context.decompiler().decompile(*data), arc::decomp_error);
 }
 
 TEST_CASE("arc decompiler: reject empty stack peeks", "[decompiler]")
@@ -72,9 +74,10 @@ TEST_CASE("arc decompiler: reject empty stack peeks", "[decompiler]")
         func->instructions.push_back(std::move(inst));
         data->functions.push_back(std::move(func));
 
-        auto decomp = arc::decompiler{ nullptr };
+        auto context = arc::t6::pc::context{ arc::instance::server };
+        context.init(arc::build::prod, nullptr);
         CAPTURE(static_cast<int>(opcode));
-        REQUIRE_THROWS_AS(decomp.decompile(*data), arc::decomp_error);
+        REQUIRE_THROWS_AS(context.decompiler().decompile(*data), arc::decomp_error);
     }
 }
 
