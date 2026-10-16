@@ -4,7 +4,6 @@
 // that can be found in the LICENSE file.
 
 #include <sstream>
-#include <regex>
 
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/string.hpp"
@@ -29,17 +28,17 @@ auto string::hex_to_dec(char const* str) -> std::string
 
 auto string::iequals(std::string const& a, std::string const& b) -> bool
 {
-    return (a.size() == b.size()) && std::equal(a.begin(), a.end(), b.begin(), b.end(), [](char a, char b) { return std::tolower(a) == std::tolower(b); });
+    return (a.size() == b.size()) && std::ranges::equal(a, b, [](char a, char b) { return std::tolower(a) == std::tolower(b); });
 }
 
 auto string::is_number(std::string const& str) -> bool
 {
-    return !str.empty() && std::all_of(str.begin(), str.end(), isdigit);
+    return !str.empty() && std::ranges::all_of(str, isdigit);
 }
 
 auto string::is_hex_number(std::string const& str) -> bool
 {
-    return !str.empty() && std::all_of(str.begin(), str.end(), isxdigit);
+    return !str.empty() && std::ranges::all_of(str, isxdigit);
 }
 
 auto string::to_lower(std::string const& str) -> std::string
@@ -199,14 +198,64 @@ auto string::clean_buffer_lines(u8 const* data, const usize size) -> std::vector
     return lines;
 }
 
-auto string::parse_code(std::string& line) -> std::vector<std::string>
+// Names can be empty or hold spaces, such an operand is printed as a literal so
+// parse_operands reads it back as a single one.
+auto string::to_operand(std::string const& str) -> std::string
 {
-    auto data = std::vector<std::string>{};
-    auto exp = std::regex{ R"(([_A-Za-z0-9\-]+|\"(?:\\.|[^\"])*?\"|\'(?:\\.|[^\'])*?\')(?:\s+|$))" };
+    if (str.empty() || str.find_first_of(" \"\n\t\r") != std::string::npos)
+        return to_literal(str);
 
-    for (auto i = std::sregex_iterator{ line.begin(), line.end(), exp }; i != std::sregex_iterator{}; ++i)
+    return str;
+}
+
+// Splits a line of text assembly into its operands. A literal is decoded, the inverse
+// of to_literal; a bare word runs up to the next space and is taken as it is.
+auto string::parse_operands(std::string_view line) -> std::vector<operand>
+{
+    auto data = std::vector<operand>{};
+    auto i = usize{ 0 };
+
+    while (i < line.size())
     {
-        data.push_back(i->format("$1"));
+        if (line[i] == ' ')
+        {
+            i++;
+            continue;
+        }
+
+        auto entry = operand{ .text = {}, .quoted = line[i] == '"' };
+
+        if (!entry.quoted)
+        {
+            while (i < line.size() && line[i] != ' ')
+                entry.text += line[i++];
+        }
+        else
+        {
+            for (i++; i < line.size() && line[i] != '"'; i++)
+            {
+                if (line[i] != '\\' || i + 1 == line.size())
+                {
+                    entry.text += line[i];
+                    continue;
+                }
+
+                switch (line[++i])
+                {
+                    case 'n': entry.text += '\n'; break;
+                    case 't': entry.text += '\t'; break;
+                    case 'r': entry.text += '\r'; break;
+                    default: entry.text += line[i]; break;
+                }
+            }
+
+            if (i == line.size())
+                throw error(std::format("unterminated string literal \"{}\"", line));
+
+            i++;
+        }
+
+        data.push_back(std::move(entry));
     }
 
     return data;

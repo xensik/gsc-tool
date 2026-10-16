@@ -75,6 +75,7 @@ private:
     auto emit_stmt_assertex(stmt_assertex const& stm, scope& scp) -> void;
     auto emit_stmt_assertmsg(stmt_assertmsg const& stm, scope& scp) -> void;
     auto emit_expr(expr const& exp, scope& scp) -> void;
+    auto fold_expr(expr const& exp) const -> std::optional<std::variant<i64, f32>>;
     auto emit_expr_assign(expr_assign const& exp, scope& scp) -> void;
     auto emit_expr_clear(expr const& exp, scope& scp) -> void;
     auto emit_expr_clear_local(expr_identifier const& exp, scope& scp) -> void;

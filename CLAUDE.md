@@ -46,12 +46,13 @@ Per-engine metadata lives in split files under `src/<fam>/engine/`:
 - `*_func.cpp` / `*_meth.cpp` / `*_token.cpp` — builtin function/method names and canonical string tables (**`gsc` only**)
 - `*_hash.cpp` — hashed-id lookup tables (`iw9`, and **every** `arc` engine, which resolves names purely by hash)
 - `*_path.cpp` — hashed script paths (`iw9`)
+- `*_crypt.cpp` — obfuscated string routines (`iw8`)
 
 The base `context` reads these maps; it does not branch per engine. Behavior differences are driven by **feature flags**, not `if (engine == ...)`.
 
 Feature flags are bitfields and the two families have **different** sets:
 - `gsc::feature` (`include/xsk/gsc/common/types.hpp`): `str4 tok4 waitframe params boolfuncs boolnotand offs8 offs9 extension hash farcall foreach`.
-- `arc::feature` (`include/xsk/arc/common/types.hpp`): `v2 v3 header64 header72 headerxx size64 hashids devstr spaces globals refvarg foreach`.
+- `arc::feature` (`include/xsk/arc/common/types.hpp`): `v2 v3 header64 header72 headerxx size64 hashids devstr spaces globals refvarg foreach code16`. `size64` widens operands and `code16` the opcode in front of them; they are separate because t7 shipped both ways.
 
 When adding engine behavior, prefer a new feature flag checked in the shared stage over a per-engine branch.
 
@@ -97,7 +98,7 @@ make -C build config=release_arm64 -j8 && ./build/bin/arm64/release/xsk-tests
 ./build/bin/arm64/release/xsk-tests "[lexer]"     # tags: [utils] [lexer] [ppr], plus [gsc] [arc] [feature]
 ```
 
-Covered today: `utils` (reader/writer endianness, zlib), the **lexer** and the **preprocessor**. Nothing covers parser, compiler, assembler or decompiler.
+Covered today: `utils` (reader/writer endianness, zlib, assembly operands), the **lexer**, the **preprocessor**, the **assembler** (`[assembler]`, text assembly included) and the T7 **compiler** (`[compiler]`). Nothing covers the decompiler outside the corpus round trips.
 
 `test/common.hpp` carries the shared scaffolding. The lexer and preprocessor are the same code in both families modulo feature flags, so generic cases are written once and instantiated for both with `TEMPLATE_TEST_CASE`; `fam<Ctx>` is the bridge that maps a context type to its family's `token`/`lexer`/`preprocessor`/error types. Helpers: `lex_all` / `lex_names` (kinds as text, so a failure reads `expected '+' got 'integer'`), `ppr_all` / `ppr_text`. Contexts come from `ctx<C>()` / `ctx_dev<C>()`, built once and deliberately leaked — construction costs 1–19 ms depending on engine (t7 loads 180k hashes) and a static with a destructor would trip the debug `-Wexit-time-destructors`.
 
@@ -124,7 +125,7 @@ scripts/tidy.sh              # clang-tidy; --fix to apply
 ```
 
 - `.clang-format`: LLVM base, 4 spaces, **Allman braces**, `ColumnLimit: 0` (no auto-wrapping — break lines by hand), `PointerAlignment: Left`, `SortIncludes: Never` (include order is deliberate).
-- `.clang-format-ignore` and both scripts skip `src/*/engine/*_{code,func,meth,token,hash,path}.cpp` — those are generated-style data tables, not hand-written code. Never reformat them.
+- `.clang-format-ignore` and both scripts skip `src/*/engine/*_{code,func,meth,token,hash,path,crypt}.cpp` — those are generated-style data tables, not hand-written code. Never reformat them.
 - `.clang-tidy` runs `bugprone-* cppcoreguidelines-* modernize-* performance-* readability-*` with a long opt-out list; headers are diagnosed only under `include/ src/ test/`. `tidy.sh` needs `compile_commands.json` at the repo root: `bear --output compile_commands.json -- make -C build -j8` (gitignored).
 - `.editorconfig`: UTF-8, LF, final newline, trim trailing whitespace; 4 spaces for C++, 2 for yaml/json/sh.
 
@@ -157,7 +158,7 @@ scripts/tidy.sh              # clang-tidy; --fix to apply
 Actively in flux — don't treat surprising code there as a bug to "fix" without checking intent:
 
 - **Parser rewrite** — the hand-written `lexer`/`preprocessor`/`parser` (landed in #276, replacing the ANTLR/Bison experiments) is the headline v3 work and still settling. Expect rough edges and incomplete rules.
-- **New engines** — `t8 t9 jup` are stubs: their `*_code.cpp` tables are ~15 lines of placeholder and there's no decompiler support. `t7` has full hash/opcode tables and syntax support (#280) but is decompile-oriented. `include/xsk/gsc/engine/t4.hpp` and `t5.hpp` exist with opcode enums but **no `.cpp` and no `main.cpp` registration** — early scaffolding, not wired up.
+- **New engines** — `t8 t9 jup` are stubs: their `*_code.cpp` tables are ~15 lines of placeholder and there's no decompiler support. `t7` has full hash/opcode tables and syntax support (#280) and now compiles and assembles as well: the compiler's T7 rules were read off shipped bytecode next to its original source, so check a change against `data/raw/t7` + `data/bin/t7` before trusting it. T7 scripts come in two bytecode versions that a single directory mixes: `0x1C` (two byte scrambled opcodes, the default `t7::context`) and the older `0x1B` (one byte opcodes, `t7::version::v1b`). `main.cpp` picks the reading context from the header's version byte; everything written is `0x1C`. The `0x1B` table in `t7_code.cpp` was derived from the corpus and lists only the ids shipped scripts use. `include/xsk/gsc/engine/t4.hpp` and `t5.hpp` exist with opcode enums but **no `.cpp` and no `main.cpp` registration** — early scaffolding, not wired up.
 - **Perf work** — pooled allocation and the inlined `lookahead::advance` (#088c1a4) are recent; `lookahead.hpp` deliberately defines `advance()` in the header so it inlines without LTO.
 
 Stable enough to rely on: the IW `gsc` engines through `iw9`, `t6` in `arc`, the `utils` layer, and the `.gscbin`/`.cgsc` formats.

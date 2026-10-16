@@ -55,6 +55,10 @@ auto context::engine_name() const -> std::string_view
 
 auto context::opcode_size(opcode op) const -> u32
 {
+    // size64 widens the operands, code16 the opcode in front of them: t7 shipped both ways
+    auto const wide = static_cast<bool>(features_ & feature::size64);
+    auto const narrow = (wide && !(features_ & feature::code16)) ? 1u : 0u;
+
     switch (op)
     {
         case opcode::OP_End:
@@ -143,9 +147,9 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_GetClasses:
         case opcode::OP_SuperEqual:
         case opcode::OP_SuperNotEqual:
-            return (features_ & feature::size64) ? 2 : 1;
+            return (wide ? 2 : 1) - narrow;
         case opcode::OP_SafeSetVariableFieldCached:
-            return (features_ & feature::size64) ? 3 : 1;
+            return (wide ? 3 : 1) - narrow;
         case opcode::OP_GetByte:
         case opcode::OP_GetNegByte:
         case opcode::OP_SafeCreateLocalVariables:
@@ -160,7 +164,7 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_ScriptMethodThreadCallPointer:
         case opcode::OP_WaitTillMatch:
         case opcode::OP_VectorConstant:
-            return (features_ & feature::size64) ? 3 : 2;
+            return (wide ? 3 : 2) - narrow;
         case opcode::OP_GetUnsignedShort:
         case opcode::OP_GetNegUnsignedShort:
         case opcode::OP_JumpOnFalse:
@@ -171,13 +175,13 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_JumpBack:
         case opcode::OP_DevblockBegin:
         case opcode::OP_DevblockEnd:
-            return (features_ & feature::size64) ? 4 : 3;
+            return (wide ? 4 : 3) - narrow;
         case opcode::OP_GetString:
         case opcode::OP_GetIString:
         case opcode::OP_EvalFieldVariable:
         case opcode::OP_EvalFieldVariableRef:
         case opcode::OP_ClearFieldVariable:
-            return (features_ & feature::size64) ? 6 : 3;
+            return (wide ? 6 : 3) - narrow;
         case opcode::OP_EvalLocalVariableCachedDebug:
         case opcode::OP_EvalLocalVariableRefCachedDebug:
         case opcode::OP_LevelEvalFieldVariableRef:
@@ -185,32 +189,32 @@ auto context::opcode_size(opcode op) const -> u32
         case opcode::OP_New:
         case opcode::OP_SelfEvalFieldVariableRef:
         case opcode::OP_SelfEvalFieldVariable:
-            return 6;
+            return 6 - narrow;
         case opcode::OP_GetInteger:
         case opcode::OP_GetFloat:
         case opcode::OP_Switch:
         case opcode::OP_EndSwitch:
         case opcode::OP_GetHash:
-            return (features_ & feature::size64) ? 6 : 5;
+            return (wide ? 6 : 5) - narrow;
         case opcode::OP_ScriptFunctionCallClass:
         case opcode::OP_ScriptThreadCallClass:
-            return 7;
+            return 7 - narrow;
         case opcode::OP_GetAPIFunction:
-            return 10;
+            return 10 - narrow;
         case opcode::OP_ProfileStart:
-            return (features_ & feature::size64) ? 10 : 1;
+            return (wide ? 10 : 1) - narrow;
         case opcode::OP_GetAnimation:
         case opcode::OP_GetFunction:
-            return (features_ & feature::size64) ? 10 : 5;
+            return (wide ? 10 : 5) - narrow;
         case opcode::OP_CallBuiltin:
         case opcode::OP_CallBuiltinMethod:
         case opcode::OP_ScriptFunctionCall:
         case opcode::OP_ScriptMethodCall:
         case opcode::OP_ScriptThreadCall:
         case opcode::OP_ScriptMethodThreadCall:
-            return (features_ & feature::size64) ? 11 : 6;
+            return (wide ? 11 : 6) - narrow;
         case opcode::OP_GetVector:
-            return (features_ & feature::size64) ? 14 : 13;
+            return (wide ? 14 : 13) - narrow;
         default:
             throw error(std::format("couldn't resolve instruction size for '{}'", opcode_name(op)));
     }

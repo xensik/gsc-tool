@@ -20,7 +20,7 @@ A utility to compile & decompile IW engine game scripts.
 - **H1** *(Call of Duty: Modern Warfare Remastered)* `PC` `PS4` `Xbox One`
 - **H2** *(Call of Duty: Modern Warfare 2 Campaign Remastered)* `PC` `PS4` `PS5` `Xbox One` `Xbox Series X|S`
 - **T6** *(Call of Duty: Black Ops II)* `PC` `PS3` `Xbox 360` `Wii U`
-- **T7** *(Call of Duty: Black Ops III)* `PC` *(Decompiler)*
+- **T7** *(Call of Duty: Black Ops III)* `PC`
 - **T8** *(Call of Duty: Black Ops 4)* ***\*WIP\****
 - **T9** *(Call of Duty: Black Ops Cold War)* ***\*WIP\****
 - **T10** *(Call of Duty: Black Ops 6)* ***\*WIP\****

@@ -80,10 +80,12 @@ auto parser::parse_assembly(u8 const* data, const usize size) const -> assembly:
     auto assembly = assembly::make();
     auto func = function::ptr{ nullptr };
     auto index = usize{ 1 };
-    auto count = u16{ 0 };
+    auto count = u32{ 0 };
 
     for (auto& line : lines)
     {
+        line.erase(0, line.find_first_not_of(' '));
+
         if (line.empty() || line.starts_with("//"))
             continue;
 
@@ -92,15 +94,23 @@ auto parser::parse_assembly(u8 const* data, const usize size) const -> assembly:
             if (func != nullptr)
                 throw asm_error("unclosed function \""s + func->name + "\"");
 
+            auto const opdata = utils::string::parse_operands(std::string_view{ line }.substr(4));
+
+            if (opdata.size() != 1)
+                throw asm_error("invalid function header \""s + line + "\"");
+
             func = function::make();
             func->index = index;
-            func->name = line.substr(4);
+            func->name = opdata[0].text;
             func->id = ctx_->token_id(func->name);
             continue;
         }
 
         if (line.starts_with("end:") && func != nullptr)
         {
+            if (count)
+                throw asm_error("unclosed endswitch in function \""s + func->name + "\"");
+
             func->size = index - func->index;
             assembly->functions.push_back(std::move(func));
             func = nullptr;
@@ -116,40 +126,62 @@ auto parser::parse_assembly(u8 const* data, const usize size) const -> assembly:
         if (func == nullptr)
             throw asm_error("instruction outside function \""s + line + "\"");
 
-        auto opdata = utils::string::parse_code(line);
+        auto opdata = utils::string::parse_operands(line);
 
         if (count)
         {
-            if (opdata[0] != "case" && opdata[0] != "default")
-                throw asm_error("invalid instruction inside endswitch \""s + line + "\"");
+            auto& table = func->instructions.back()->data;
 
-            for (auto const& entry : opdata)
-                func->instructions.back()->data.push_back(entry);
+            // case value label | default label, the printer leaves the case type out
+            if (opdata.size() == 3 && opdata[0].text == "case")
+            {
+                table.emplace_back("case");
+                table.push_back(std::format("{}", static_cast<i32>(opdata[1].quoted ? switch_type::string : switch_type::integer)));
+                table.push_back(opdata[1].text);
+                table.push_back(opdata[2].text);
+            }
+            else if (opdata.size() == 2 && opdata[0].text == "default")
+            {
+                table.emplace_back("default");
+                table.push_back(opdata[1].text);
+            }
+            else
+            {
+                throw asm_error("invalid instruction inside endswitch \""s + line + "\"");
+            }
 
             count--;
             continue;
         }
 
+        // the assembler writes offsets straight from these, so index and size
+        // have to come out the way the disassembler computes them
         auto inst = instruction::make();
         inst->index = index;
-        inst->opcode = ctx_->opcode_enum(opdata[0]);
+        inst->opcode = ctx_->opcode_enum(opdata[0].text);
         inst->size = ctx_->opcode_size(inst->opcode);
-        opdata.erase(opdata.begin());
-        inst->data = std::move(opdata);
+
+        for (auto i = 1u; i < opdata.size(); i++)
+            inst->data.push_back(std::move(opdata[i].text));
 
         switch (inst->opcode)
         {
             case opcode::OP_GetVector:
                 if (ctx_->endian() == endian::big)
-                    inst->size += (inst->index + 4 & ~3) - (inst->index + 1);
+                    inst->size += ((inst->index + 4) & ~usize{ 3 }) - (inst->index + 1);
                 break;
             case opcode::OP_endswitch:
-                count = static_cast<u16>(std::stoul(inst->data[0]));
-                inst->size += usize{ 7 } * count;
+                if (inst->data.empty())
+                    throw asm_error("missing endswitch count \""s + line + "\"");
+
+                count = static_cast<u32>(std::stoul(inst->data[0]));
+                inst->size += usize{ ctx_->engine() == engine::iw9 ? 8u : 7u } * count;
                 break;
             case opcode::OP_FormalParams:
-                count = static_cast<u8>(std::stoul(inst->data[0]));
-                inst->size += ctx_->features() & feature::hash ? count * 8 : count;
+                if (inst->data.empty())
+                    throw asm_error("missing params count \""s + line + "\"");
+
+                inst->size += std::stoul(inst->data[0]) * ((ctx_->features() & feature::hash) ? 8 : 1);
                 break;
             default:
                 break;

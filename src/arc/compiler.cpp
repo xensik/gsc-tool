@@ -4,6 +4,7 @@
 // that can be found in the LICENSE file.
 
 #include "xsk/stdinc.hpp"
+#include "xsk/utils/string.hpp"
 #include "xsk/arc/compiler.hpp"
 #include "xsk/arc/context.hpp"
 
@@ -16,6 +17,8 @@ compiler::compiler(context* ctx) : ctx_{ ctx }
 
 auto compiler::compile(program const& data) -> assembly::ptr
 {
+    namespace_ = {};
+    extension_ = (ctx_->instance() == instance::server) ? ".gsc" : ".csc";
     emit_program(data);
     return std::move(assembly_);
 }
@@ -23,13 +26,21 @@ auto compiler::compile(program const& data) -> assembly::ptr
 auto compiler::compile(std::string const& file, std::vector<u8>& data) -> assembly::ptr
 {
     auto prog = ctx_->parser().parse_source(file, data);
-    return compile(*prog);
+
+    // where functions have a namespace, a script without '#namespace' gets one named after its file
+    namespace_ = (ctx_->features() & feature::spaces) ? std::filesystem::path{ file }.stem().string() : std::string{};
+    extension_ = std::filesystem::path{ file }.extension().string();
+
+    emit_program(*prog);
+    return std::move(assembly_);
 }
 
 auto compiler::emit_program(program const& prog) -> void
 {
     assembly_ = assembly::make();
     localfuncs_.clear();
+    classes_.clear();
+    class_ = nullptr;
     developer_thread_ = false;
     animtree_ = {};
     index_ = 0;
@@ -40,20 +51,34 @@ auto compiler::emit_program(program const& prog) -> void
         emit_include(*include);
     }
 
+    // a name is taken per namespace, and a script can switch namespace as it goes
+    auto space = namespace_;
+
     for (auto const& dec : prog.declarations)
     {
-        if (dec->is<decl_function>())
+        if (dec->is<decl_namespace>())
         {
-            auto const& name = dec->as<decl_function>().name->value;
+            space = dec->as<decl_namespace>().name->value;
+        }
+        else if (dec->is<decl_function>())
+        {
+            auto const name = space + "::" + dec->as<decl_function>().name->value;
 
             for (auto const& entry : localfuncs_)
             {
                 if (entry == name)
-                    throw comp_error(dec->loc(), std::format("function name '{}' already defined as local function", name));
+                    throw comp_error(dec->loc(), std::format("function name '{}' already defined as local function", dec->as<decl_function>().name->value));
             }
 
-            localfuncs_.push_back(dec->as<decl_function>().name->value);
+            localfuncs_.push_back(name);
         }
+    }
+
+    // a class can extend one declared further down
+    for (auto const& dec : prog.declarations)
+    {
+        if (dec->is<decl_class>())
+            register_class(dec->as<decl_class>(), false);
     }
 
     for (auto const& dec : prog.declarations)
@@ -70,6 +95,10 @@ auto compiler::emit_include(include const& inc) -> void
     {
         if (entry == path)
         {
+            // original t7 source repeats a '#using' now and then
+            if (ctx_->features() & feature::size64)
+                return;
+
             throw comp_error(inc.loc(), std::format("duplicated include file {}", path));
         }
     }
@@ -90,6 +119,14 @@ auto compiler::emit_decl(decl const& dec) -> void
         case node::decl_usingtree:
             emit_decl_usingtree(dec.as<decl_usingtree>());
             break;
+        case node::decl_namespace:
+            namespace_ = dec.as<decl_namespace>().name->value;
+            break;
+        case node::decl_precache:
+            break;
+        case node::decl_class:
+            emit_decl_class(dec.as<decl_class>());
+            break;
         case node::decl_function:
             emit_decl_function(dec.as<decl_function>());
             break;
@@ -106,6 +143,116 @@ auto compiler::emit_decl_usingtree(decl_usingtree const& animtree) -> void
     animtree_ = animtree.name->value;
 }
 
+auto compiler::emit_decl_class(decl_class const& cls) -> void
+{
+    auto const& name = cls.name->value;
+    auto& info = classes_.at(name);
+
+    // the whole chain has to be known before a method is compiled
+    for (auto const* entry = &info; !entry->base.empty();)
+        entry = &find_class(entry->base, cls.loc());
+
+    // inside a class its name is the namespace
+    auto const space = std::exchange(namespace_, name);
+    class_ = &info;
+
+    for (auto const& entry : cls.body->list)
+    {
+        if (entry->is<decl_function>())
+            emit_decl_function(entry->as<decl_function>());
+    }
+
+    // stock generates whichever of the two was not written, after the written methods
+    for (auto const* special : { "__constructor", "__destructor" })
+    {
+        auto const written = std::ranges::any_of(cls.body->list, [special](auto const& entry) {
+            return entry->template is<decl_function>() && entry->template as<decl_function>().name->value == special;
+        });
+
+        if (written)
+            continue;
+
+        auto const& loc = cls.loc();
+        auto const func = decl_function::make(loc, expr_identifier::make(loc, ""), expr_identifier::make(loc, special), expr_parameters::make(loc), stmt_comp::make(loc, stmt_list::make(loc)), export_flags::export_none);
+        emit_decl_function(*func);
+        info.methods.emplace_back(special);
+    }
+
+    class_ = nullptr;
+    namespace_ = space;
+
+    emit_decl_class_vtable(name);
+}
+
+// The function stock generates next to every class and runs on load:
+//
+//   classes.<name>[0] = spawnstruct();
+//   classes.<name>[0].__vtable[<hash of method>] = &<class>::<method>;
+//
+// with one line per method, inherited ones first, each list last declared first.
+auto compiler::emit_decl_class_vtable(std::string const& name) -> void
+{
+    function_ = function::make();
+    function_->index = index_;
+    function_->name = name;
+    function_->space = namespace_;
+    function_->flags = static_cast<u8>(export_flags::export_autoexec) | static_cast<u8>(export_flags::export_private);
+
+    emit_opcode(opcode::OP_CheckClearParams);
+    emit_opcode(opcode::OP_PreScriptCall);
+    emit_import(opcode::OP_ScriptFunctionCall, "", "spawnstruct", 0, import_flags::func_call);
+    emit_opcode(opcode::OP_GetZero);
+    emit_opcode(opcode::OP_GetClassesObject);
+    emit_opcode(opcode::OP_EvalFieldVariableRef, name);
+    emit_opcode(opcode::OP_EvalArrayRef);
+    emit_opcode(opcode::OP_SetVariableField);
+
+    auto const bind = [&](std::string const& space, std::string const& method) {
+        emit_import(opcode::OP_GetFunction, space, method, 0, import_flags::func_reference);
+        emit_opcode(opcode::OP_GetInteger, std::format("{}", static_cast<i32>(ctx_->hash_id(method))));
+        emit_opcode(opcode::OP_GetZero);
+        emit_opcode(opcode::OP_GetClassesObject);
+        emit_opcode(opcode::OP_EvalFieldVariable, name);
+        emit_opcode(opcode::OP_EvalArray);
+        emit_opcode(opcode::OP_CastFieldObject);
+        emit_opcode(opcode::OP_EvalFieldVariableRef, "__vtable");
+        emit_opcode(opcode::OP_EvalArrayRef);
+        emit_opcode(opcode::OP_SetVariableField);
+    };
+
+    // root class first, so a method that is overridden gets bound last
+    auto chain = std::vector<std::string const*>{};
+
+    for (auto base = &classes_.at(name).base; !base->empty(); base = &classes_.at(*base).base)
+        chain.push_back(base);
+
+    for (auto it = chain.rbegin(); it != chain.rend(); it++)
+    {
+        auto const& methods = classes_.at(**it).methods;
+
+        for (auto method = methods.rbegin(); method != methods.rend(); method++)
+            bind(**it, *method);
+    }
+
+    // The class's own list is every function exported under its name so far. That takes in
+    // a script level function when class and '#namespace' are named alike, as stock does.
+    auto own = std::vector<std::string>{};
+
+    for (auto const& func : assembly_->functions)
+    {
+        if (func->space == name)
+            own.push_back(func->name);
+    }
+
+    for (auto method = own.rbegin(); method != own.rend(); method++)
+        bind(name, *method);
+
+    emit_opcode(opcode::OP_End);
+
+    function_->size = index_ - function_->index;
+    assembly_->functions.push_back(std::move(function_));
+}
+
 auto compiler::emit_decl_function(decl_function const& func) -> void
 {
     label_idx_ = 0;
@@ -118,17 +265,50 @@ auto compiler::emit_decl_function(decl_function const& func) -> void
     function_ = function::make();
     function_->index = index_;
     function_->name = func.name->value;
+    function_->space = namespace_;
     function_->params = static_cast<u8>(func.params->list.size());
     function_->flags = static_cast<u8>(func.flags);
+
+    if (!func.params->list.empty() && func.params->list.back()->is<expr_ellipsis>())
+        function_->flags |= static_cast<u8>(export_flags::export_varargs);
 
     process_function(func);
 
     scopes_.emplace_back();
 
-    emit_expr_parameters(*func.params);
+    // a function declared inside '/# #/' runs as one devblock, default parameters included
+    auto const dev = developer_thread_ && (ctx_->features() & feature::devstr);
+    end_label_ = dev ? create_label() : std::string{};
+
+    emit_expr_parameters(*func.params, dev ? end_label_ : std::string{});
+
+    // A derived class runs the base constructor before its own. The destructor call is put
+    // last: every derived destructor in the stock scripts is empty, so its place is a guess.
+    auto const base_call = [&]() {
+        emit_opcode(opcode::OP_PreScriptCall);
+        emit_import(opcode::OP_ScriptFunctionCall, class_->base, func.name->value, 0, import_flags::func_call);
+        emit_opcode(opcode::OP_DecTop);
+    };
+
+    auto const derived = class_ != nullptr && !class_->base.empty();
+
+    if (derived && func.name->value == "__constructor")
+        base_call();
+
     emit_stmt_comp(*func.body);
 
-    if (scopes_.back().abort == scope::abort_none || function_->labels.contains(index_))
+    if (derived && func.name->value == "__destructor")
+        base_call();
+
+    // the target of a devblock, or of a break outside of a loop
+    if (!end_label_.empty())
+        insert_label(end_label_);
+
+    // t6 leaves the OP_End out once the body has returned, t7 only when a return is its last statement
+    auto const& list = func.body->block->list;
+    auto const open = (ctx_->features() & feature::size64) ? (list.empty() || !list.back()->is<stmt_return>()) : (scopes_.back().abort == scope::abort_none);
+
+    if (open || function_->labels.contains(index_))
         emit_opcode(opcode::OP_End);
 
     scopes_.pop_back();
@@ -242,6 +422,7 @@ auto compiler::emit_stmt_comp(stmt_comp const& stm) -> void
 auto compiler::emit_stmt_dev(stmt_dev const& stm) -> void
 {
     auto end = create_label();
+    auto const was_dev = developer_thread_;
     developer_thread_ = true;
     emit_opcode(opcode::OP_DevblockBegin, end);
 
@@ -251,7 +432,7 @@ auto compiler::emit_stmt_dev(stmt_dev const& stm) -> void
     scopes_.pop_back();
 
     insert_label(end);
-    developer_thread_ = false;
+    developer_thread_ = was_dev;
 }
 
 auto compiler::emit_stmt_expr(stmt_expr const& stm) -> void
@@ -285,23 +466,35 @@ auto compiler::emit_stmt_expr(stmt_expr const& stm) -> void
 
 auto compiler::emit_stmt_endon(stmt_endon const& stm) -> void
 {
-    emit_expr(*stm.event);
+    emit_expr_event(*stm.event);
     emit_expr(*stm.obj);
     emit_opcode(opcode::OP_EndOn);
 }
 
 auto compiler::emit_stmt_notify(stmt_notify const& stm) -> void
 {
-    emit_opcode(opcode::OP_VoidCodePos);
+    emit_opcode((ctx_->features() & feature::size64) ? opcode::OP_PreScriptCall : opcode::OP_VoidCodePos);
 
     for (auto it = stm.args->list.rbegin(); it != stm.args->list.rend(); it++)
     {
         emit_expr(**it);
     }
 
-    emit_expr(*stm.event);
+    emit_expr_event(*stm.event);
     emit_expr(*stm.obj);
     emit_opcode(opcode::OP_Notify);
+}
+
+auto compiler::emit_expr_event(expr const& exp) -> void
+{
+    // Engines with hashed names take an event name as a name hash, not a string. The
+    // decompiler prints one as '#"death"', which here means that same name hash.
+    if ((ctx_->features() & feature::hashids) && exp.is<expr_string>())
+        emit_opcode(opcode::OP_GetHash, exp.as<expr_string>().value);
+    else if ((ctx_->features() & feature::hashids) && exp.is<expr_hash>())
+        emit_opcode(opcode::OP_GetHash, exp.as<expr_hash>().value);
+    else
+        emit_expr(exp);
 }
 
 auto compiler::emit_stmt_wait(stmt_wait const& stm) -> void
@@ -318,7 +511,7 @@ auto compiler::emit_stmt_waitrealtime(stmt_waitrealtime const& stm) -> void
 
 auto compiler::emit_stmt_waittill(stmt_waittill const& stm) -> void
 {
-    emit_expr(*stm.event);
+    emit_expr_event(*stm.event);
     emit_expr(*stm.obj);
     emit_opcode(opcode::OP_WaitTill);
 
@@ -336,7 +529,7 @@ auto compiler::emit_stmt_waittill(stmt_waittill const& stm) -> void
 auto compiler::emit_stmt_waittillmatch(stmt_waittillmatch const& stm) -> void
 {
     emit_expr_arguments(*stm.args);
-    emit_expr(*stm.event);
+    emit_expr_event(*stm.event);
     emit_expr(*stm.obj);
     emit_opcode(opcode::OP_WaitTillMatch, std::format("{}", stm.args->list.size()));
     emit_opcode(opcode::OP_ClearParams);
@@ -347,20 +540,32 @@ auto compiler::emit_stmt_waittillframeend(stmt_waittillframeend const& /*unused*
     emit_opcode(opcode::OP_WaitTillFrameEnd);
 }
 
+// Jumps to 'loc' when the test fails. A negated test jumps on true instead of
+// evaluating the '!'; stock t7 does that through parentheses too.
+auto compiler::emit_expr_test(expr const& exp, std::string const& loc) -> void
+{
+    auto const* test = &exp;
+
+    while ((ctx_->features() & feature::size64) && test->is<expr_paren>())
+        test = test->as<expr_paren>().value.get();
+
+    if (test->is<expr_not>())
+    {
+        emit_expr(*test->as<expr_not>().rvalue);
+        emit_opcode(opcode::OP_JumpOnTrue, loc);
+    }
+    else
+    {
+        emit_expr(exp);
+        emit_opcode(opcode::OP_JumpOnFalse, loc);
+    }
+}
+
 auto compiler::emit_stmt_if(stmt_if const& stm) -> void
 {
     auto end_loc = create_label();
 
-    if (stm.test->is<expr_not>())
-    {
-        emit_expr(*stm.test->as<expr_not>().rvalue);
-        emit_opcode(opcode::OP_JumpOnTrue, end_loc);
-    }
-    else
-    {
-        emit_expr(*stm.test);
-        emit_opcode(opcode::OP_JumpOnFalse, end_loc);
-    }
+    emit_expr_test(*stm.test, end_loc);
 
     auto& paren = scopes_.back();
     scopes_.emplace_back(paren.brk, paren.cnt);
@@ -377,16 +582,7 @@ auto compiler::emit_stmt_ifelse(stmt_ifelse const& stm) -> void
     auto else_loc = create_label();
     auto end_loc = create_label();
 
-    if (stm.test->is<expr_not>())
-    {
-        emit_expr(*stm.test->as<expr_not>().rvalue);
-        emit_opcode(opcode::OP_JumpOnTrue, else_loc);
-    }
-    else
-    {
-        emit_expr(*stm.test);
-        emit_opcode(opcode::OP_JumpOnFalse, else_loc);
-    }
+    emit_expr_test(*stm.test, else_loc);
 
     auto& paren = scopes_.back();
     scopes_.emplace_back(paren.brk, paren.cnt);
@@ -414,16 +610,7 @@ auto compiler::emit_stmt_while(stmt_while const& stm) -> void
     can_break_ = true;
     can_continue_ = true;
 
-    if (stm.test->is<expr_not>())
-    {
-        emit_expr(*stm.test->as<expr_not>().rvalue);
-        emit_opcode(opcode::OP_JumpOnTrue, break_loc);
-    }
-    else
-    {
-        emit_expr(*stm.test);
-        emit_opcode(opcode::OP_JumpOnFalse, break_loc);
-    }
+    emit_expr_test(*stm.test, break_loc);
 
     scopes_.emplace_back(break_loc, continue_loc);
     emit_stmt(*stm.body);
@@ -453,7 +640,8 @@ auto compiler::emit_stmt_dowhile(stmt_dowhile const& stm) -> void
 
     insert_label(continue_loc);
 
-    if (stm.test->is<expr_not>())
+    // stock t7 does not drop the '!' of a do-while test
+    if (stm.test->is<expr_not>() && !(ctx_->features() & feature::size64))
     {
         emit_expr(*stm.test->as<expr_not>().rvalue);
         emit_opcode(opcode::OP_JumpOnFalse, begin_loc);
@@ -482,9 +670,14 @@ auto compiler::emit_stmt_for(stmt_for const& stm) -> void
 
     auto begin_loc = insert_label();
 
-    bool const_cond = is_constant_condition(*stm.test);
+    // t7 only leaves the test out when there is none: 'for ( ;; )' loops, 'for ( ; 1; )' still tests
+    bool const_cond = (ctx_->features() & feature::size64) ? stm.test->is<expr_empty>() : is_constant_condition(*stm.test);
 
-    if (!const_cond)
+    if (!const_cond && (ctx_->features() & feature::size64))
+    {
+        emit_expr_test(*stm.test, break_loc);
+    }
+    else if (!const_cond)
     {
         emit_expr(*stm.test);
         emit_opcode(opcode::OP_JumpOnFalse, break_loc);
@@ -536,6 +729,17 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm) -> void
     emit_opcode(opcode::OP_EvalArray);
     emit_expr_variable_ref(*stm.value, true);
 
+    // t7 reads the next key before the body runs and keeps it in a local of its own
+    auto const next = expr_identifier{ stm.loc(), "__new_" + stm.key->as<expr_identifier>().value };
+
+    if (ctx_->features() & feature::foreach)
+    {
+        emit_expr_variable(*stm.key);
+        emit_expr_variable(*stm.array);
+        emit_opcode(opcode::OP_NextArrayKey);
+        emit_expr_local_ref(next, true);
+    }
+
     scopes_.emplace_back(break_loc, continue_loc);
     emit_stmt(*stm.body);
     scopes_.pop_back();
@@ -545,9 +749,17 @@ auto compiler::emit_stmt_foreach(stmt_foreach const& stm) -> void
 
     insert_label(continue_loc);
 
-    emit_expr_variable(*stm.key);
-    emit_expr_variable(*stm.array);
-    emit_opcode(opcode::OP_NextArrayKey);
+    if (ctx_->features() & feature::foreach)
+    {
+        emit_expr_local(next);
+    }
+    else
+    {
+        emit_expr_variable(*stm.key);
+        emit_expr_variable(*stm.array);
+        emit_opcode(opcode::OP_NextArrayKey);
+    }
+
     emit_expr_variable_ref(*stm.key, true);
     emit_opcode(opcode::OP_Jump, begin_loc);
     insert_label(break_loc);
@@ -618,7 +830,7 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm) -> void
 
     auto const integer = std::format("{}", static_cast<i32>(switch_type::integer));
 
-    std::stable_sort(cases.begin(), cases.end(), [&integer](auto const& a, auto const& b) {
+    std::ranges::stable_sort(cases, [&integer](auto const& a, auto const& b) {
         if (a[0] != b[0])
             return a[0] < b[0];
 
@@ -662,7 +874,16 @@ auto compiler::emit_stmt_default(stmt_default const& stm) -> void
 auto compiler::emit_stmt_break(stmt_break const& stm) -> void
 {
     if (!can_break_ /*|| scopes_.back().abort != scope::abort_none*/ || scopes_.back().brk.empty())
-        throw comp_error(stm.loc(), "illegal break statement");
+    {
+        if (!(ctx_->features() & feature::size64))
+            throw comp_error(stm.loc(), "illegal break statement");
+
+        // stock t7 accepts a break outside of a loop and jumps to the end of the function
+        if (end_label_.empty())
+            end_label_ = create_label();
+
+        return emit_opcode(opcode::OP_Jump, end_label_);
+    }
 
     if (scopes_.back().abort == scope::abort_none)
         scopes_.back().abort = scope::abort_break;
@@ -713,6 +934,18 @@ auto compiler::emit_stmt_prof_end(stmt_prof_end const& /*unused*/) -> void
 auto compiler::emit_expr(expr const& exp) -> void
 {
     debug_pos_ = { .line = exp.loc().begin.line, .column = exp.loc().begin.column };
+
+    // constant arithmetic is done here, the stock compilers ship '15 * 1000' as 15000
+    if (exp.is<expr_binary>() || exp.is<expr_not>() || exp.is<expr_negate>() || exp.is<expr_complement>())
+    {
+        if (auto const value = fold_expr(exp); value.has_value())
+        {
+            if (std::holds_alternative<i32>(*value))
+                return emit_expr_integer(expr_integer{ exp.loc(), std::format("{}", std::get<i32>(*value)) });
+
+            return emit_expr_float(expr_float{ exp.loc(), utils::string::float_string(std::get<f32>(*value)) });
+        }
+    }
 
     switch (exp.kind())
     {
@@ -824,6 +1057,15 @@ auto compiler::emit_expr(expr const& exp) -> void
         case node::expr_anim:
             emit_opcode(opcode::OP_GetAnim);
             break;
+        case node::expr_world:
+            emit_opcode(opcode::OP_GetWorld);
+            break;
+        case node::expr_classes:
+            emit_opcode(opcode::OP_GetClasses);
+            break;
+        case node::expr_new:
+            emit_expr_new(exp.as<expr_new>());
+            break;
         case node::expr_level:
             emit_opcode(opcode::OP_GetLevel);
             break;
@@ -867,6 +1109,106 @@ auto compiler::emit_expr(expr const& exp) -> void
     }
 }
 
+auto compiler::fold_expr(expr const& exp) const -> std::optional<std::variant<i32, f32>>
+{
+    using value = std::variant<i32, f32>;
+
+    auto const as_float = [](value const& v) { return std::holds_alternative<i32>(v) ? static_cast<f32>(std::get<i32>(v)) : std::get<f32>(v); };
+
+    switch (exp.kind())
+    {
+        // no expr_paren: stock folds '15 * 1000' and leaves '( 240 ) * ( 240 )' alone
+        case node::expr_integer:
+            return value{ static_cast<i32>(std::strtoll(exp.as<expr_integer>().value.data(), nullptr, 0)) };
+        case node::expr_float:
+            return value{ std::stof(exp.as<expr_float>().value) };
+        case node::expr_true:
+            return value{ 1 };
+        case node::expr_false:
+            return value{ 0 };
+        case node::expr_not:
+        {
+            auto const rhs = fold_expr(*exp.as<expr_not>().rvalue);
+
+            if (!rhs.has_value())
+                return std::nullopt;
+
+            return value{ as_float(*rhs) == 0.0f ? 1 : 0 };
+        }
+        case node::expr_complement:
+        {
+            auto const rhs = fold_expr(*exp.as<expr_complement>().rvalue);
+
+            if (!rhs.has_value() || !std::holds_alternative<i32>(*rhs))
+                return std::nullopt;
+
+            return value{ ~std::get<i32>(*rhs) };
+        }
+        case node::expr_negate:
+        {
+            auto const rhs = fold_expr(*exp.as<expr_negate>().rvalue);
+
+            if (!rhs.has_value())
+                return std::nullopt;
+
+            if (std::holds_alternative<i32>(*rhs))
+                return value{ -std::get<i32>(*rhs) };
+
+            return value{ -std::get<f32>(*rhs) };
+        }
+        case node::expr_binary:
+        {
+            auto const& bin = exp.as<expr_binary>();
+            auto const lhs = fold_expr(*bin.lvalue);
+            auto const rhs = fold_expr(*bin.rvalue);
+
+            if (!lhs.has_value() || !rhs.has_value())
+                return std::nullopt;
+
+            if (std::holds_alternative<i32>(*lhs) && std::holds_alternative<i32>(*rhs))
+            {
+                // unsigned so that overflow wraps the way the engine's 32 bit integers do
+                auto const a = static_cast<u32>(std::get<i32>(*lhs));
+                auto const b = static_cast<u32>(std::get<i32>(*rhs));
+
+                switch (bin.oper)
+                {
+                    case expr_binary::op::add: return value{ static_cast<i32>(a + b) };
+                    case expr_binary::op::sub: return value{ static_cast<i32>(a - b) };
+                    case expr_binary::op::mul: return value{ static_cast<i32>(a * b) };
+                    case expr_binary::op::shl: return value{ static_cast<i32>(a << (b & 31)) };
+                    case expr_binary::op::shr: return value{ static_cast<i32>(a) >> (b & 31) };
+                    case expr_binary::op::bwor: return value{ static_cast<i32>(a | b) };
+                    case expr_binary::op::bwand: return value{ static_cast<i32>(a & b) };
+                    case expr_binary::op::bwexor: return value{ static_cast<i32>(a ^ b) };
+                    case expr_binary::op::mod:
+                        if (b == 0) return std::nullopt;
+                        return value{ std::get<i32>(*lhs) % std::get<i32>(*rhs) };
+                    case expr_binary::op::div:
+                        // dividing two integers gives a float: '250 / 1000' is 0.25 and '4000 / 1000' is 4.0
+                        break;
+                    default:
+                        return std::nullopt;
+                }
+            }
+
+            auto const a = as_float(*lhs);
+            auto const b = as_float(*rhs);
+
+            switch (bin.oper)
+            {
+                case expr_binary::op::add: return value{ a + b };
+                case expr_binary::op::sub: return value{ a - b };
+                case expr_binary::op::mul: return value{ a * b };
+                case expr_binary::op::div: return (b == 0.0f) ? std::nullopt : std::optional{ value{ a / b } };
+                default: return std::nullopt;
+            }
+        }
+        default:
+            return std::nullopt;
+    }
+}
+
 auto compiler::emit_expr_const(expr_const const& exp) -> void
 {
     auto const itr = constants_.find(exp.lvalue->value);
@@ -874,7 +1216,7 @@ auto compiler::emit_expr_const(expr_const const& exp) -> void
     if (itr != constants_.end())
         throw comp_error(exp.loc(), std::format("duplicated constant '{}'", exp.lvalue->value));
 
-    if (std::find(stackframe_.begin(), stackframe_.end(), exp.lvalue->value) != stackframe_.end())
+    if (!(ctx_->features() & feature::size64) && std::ranges::find(stackframe_, exp.lvalue->value) != stackframe_.end())
         throw comp_error(exp.loc(), std::format("constant already defined as local variable '{}'", exp.lvalue->value));
 
     constants_.insert({ exp.lvalue->value, exp.rvalue.get() });
@@ -992,16 +1334,7 @@ auto compiler::emit_expr_ternary(expr_ternary const& exp) -> void
     auto else_loc = create_label();
     auto end_loc = create_label();
 
-    if (exp.test->is<expr_not>())
-    {
-        emit_expr(*exp.test->as<expr_not>().rvalue);
-        emit_opcode(opcode::OP_JumpOnTrue, else_loc);
-    }
-    else
-    {
-        emit_expr(*exp.test);
-        emit_opcode(opcode::OP_JumpOnFalse, else_loc);
-    }
+    emit_expr_test(*exp.test, else_loc);
 
     emit_expr(*exp.true_expr);
     emit_opcode(opcode::OP_Jump, end_loc);
@@ -1040,6 +1373,12 @@ auto compiler::emit_expr_binary(expr_binary const& exp) -> void
 
         switch (exp.oper)
         {
+            case expr_binary::op::seq:
+                emit_opcode(opcode::OP_SuperEqual);
+                break;
+            case expr_binary::op::sne:
+                emit_opcode(opcode::OP_SuperNotEqual);
+                break;
             case expr_binary::op::eq:
                 emit_opcode(opcode::OP_Equal);
                 break;
@@ -1102,6 +1441,14 @@ auto compiler::emit_expr_complement(expr_complement const& exp) -> void
 
 auto compiler::emit_expr_negate(expr_negate const& exp) -> void
 {
+    // stock t7 multiplies by -1 where t6 subtracts from 0
+    if (ctx_->features() & feature::size64)
+    {
+        emit_expr(*exp.rvalue);
+        emit_opcode(opcode::OP_GetNegByte, "1");
+        return emit_opcode(opcode::OP_Multiply);
+    }
+
     emit_opcode(opcode::OP_GetZero);
     emit_expr(*exp.rvalue);
     emit_opcode(opcode::OP_Minus);
@@ -1119,8 +1466,31 @@ auto compiler::emit_expr_call(expr_call const& exp, bool is_stmt) -> void
         emit_expr_call_pointer(exp.value->as<expr_pointer>(), is_stmt);
     else if (exp.value->is<expr_function>())
         emit_expr_call_function(exp.value->as<expr_function>(), is_stmt);
+    else if (exp.value->is<expr_member>())
+        emit_expr_call_member(exp.value->as<expr_member>(), is_stmt);
     else
         throw comp_error(exp.loc(), "unknown function call expression");
+}
+
+auto compiler::emit_expr_call_member(expr_member const& exp, bool is_stmt) -> void
+{
+    emit_opcode(opcode::OP_PreScriptCall);
+    emit_expr_arguments(*exp.args);
+    emit_expr(*exp.obj);
+
+    auto const op = (exp.mode == call::mode::thread) ? opcode::OP_ScriptThreadCallClass : opcode::OP_ScriptFunctionCallClass;
+    emit_opcode(op, { exp.name->value, std::format("{}", exp.args->list.size()) });
+
+    if (is_stmt)
+        emit_opcode(opcode::OP_DecTop);
+}
+
+auto compiler::emit_expr_new(expr_new const& exp) -> void
+{
+    // the constructor takes no arguments and its result is dropped, the object stays
+    emit_opcode(opcode::OP_New, exp.name->value);
+    emit_opcode(opcode::OP_ScriptFunctionCallClass, std::vector<std::string>{ "__constructor", "0" });
+    emit_opcode(opcode::OP_DecTop);
 }
 
 auto compiler::emit_expr_call_pointer(expr_pointer const& exp, bool is_stmt) -> void
@@ -1149,29 +1519,12 @@ auto compiler::emit_expr_call_pointer(expr_pointer const& exp, bool is_stmt) -> 
 
 auto compiler::emit_expr_call_function(expr_function const& exp, bool is_stmt) -> void
 {
-    if (!exp.path->value.empty())
-    {
-        bool found = false;
-
-        for (const auto& entry : assembly_->includes)
-        {
-            if (entry == exp.path->value)
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            assembly_->includes.push_back(exp.path->value);
-        }
-    }
-
     bool as_dev = false;
+    auto const was_dev = developer_thread_;
     std::string end;
 
-    if (!developer_thread_ && is_stmt && (exp.name->value == "assert" || exp.name->value == "assertmsg"))
+    // an assert gets a devblock of its own, also when it already sits inside one
+    if (is_stmt && (exp.name->value == "assert" || exp.name->value == "assertmsg"))
     {
         as_dev = true;
         developer_thread_ = true;
@@ -1182,18 +1535,13 @@ auto compiler::emit_expr_call_function(expr_function const& exp, bool is_stmt) -
     emit_opcode(opcode::OP_PreScriptCall);
     emit_expr_arguments(*exp.args);
 
-    auto argcount = std::format("{}", exp.args->list.size());
-    auto flags = developer_thread_ ? static_cast<u8>(import_flags::developer) : 0;
-
     switch (exp.mode)
     {
         case call::mode::normal:
-            flags |= static_cast<u8>(import_flags::func_call);
-            emit_opcode(opcode::OP_ScriptFunctionCall, { exp.path->value, exp.name->value, argcount, std::format("{}", flags) });
+            emit_import(opcode::OP_ScriptFunctionCall, exp.path->value, exp.name->value, exp.args->list.size(), import_flags::func_call);
             break;
         case call::mode::thread:
-            flags |= static_cast<u8>(import_flags::func_call_thread);
-            emit_opcode(opcode::OP_ScriptThreadCall, { exp.path->value, exp.name->value, argcount, std::format("{}", flags) });
+            emit_import(opcode::OP_ScriptThreadCall, exp.path->value, exp.name->value, exp.args->list.size(), import_flags::func_call_thread);
             break;
         default:
             break;
@@ -1205,7 +1553,7 @@ auto compiler::emit_expr_call_function(expr_function const& exp, bool is_stmt) -
     if (as_dev)
     {
         insert_label(end);
-        developer_thread_ = false;
+        developer_thread_ = was_dev;
     }
 }
 
@@ -1246,41 +1594,17 @@ auto compiler::emit_expr_method_pointer(expr_pointer const& exp, expr const& obj
 
 auto compiler::emit_expr_method_function(expr_function const& exp, expr const& obj, bool is_stmt) -> void
 {
-    if (!exp.path->value.empty())
-    {
-        bool found = false;
-
-        for (const auto& entry : assembly_->includes)
-        {
-            if (entry == exp.path->value)
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            assembly_->includes.push_back(exp.path->value);
-        }
-    }
-
     emit_opcode(opcode::OP_PreScriptCall);
     emit_expr_arguments(*exp.args);
     emit_expr(obj);
 
-    auto argcount = std::format("{}", exp.args->list.size());
-    auto flags = developer_thread_ ? static_cast<u8>(import_flags::developer) : 0;
-
     switch (exp.mode)
     {
         case call::mode::normal:
-            flags |= static_cast<u8>(import_flags::meth_call);
-            emit_opcode(opcode::OP_ScriptMethodCall, { exp.path->value, exp.name->value, argcount, std::format("{}", flags) });
+            emit_import(opcode::OP_ScriptMethodCall, exp.path->value, exp.name->value, exp.args->list.size(), import_flags::meth_call);
             break;
         case call::mode::thread:
-            flags |= static_cast<u8>(import_flags::meth_call_thread);
-            emit_opcode(opcode::OP_ScriptMethodThreadCall, { exp.path->value, exp.name->value, argcount, std::format("{}", flags) });
+            emit_import(opcode::OP_ScriptMethodThreadCall, exp.path->value, exp.name->value, exp.args->list.size(), import_flags::meth_call_thread);
             break;
         default:
             break;
@@ -1290,16 +1614,38 @@ auto compiler::emit_expr_method_function(expr_function const& exp, expr const& o
         emit_opcode(opcode::OP_DecTop);
 }
 
-auto compiler::emit_expr_parameters(expr_parameters const& exp) -> void
+auto compiler::emit_expr_parameters(expr_parameters const& exp, std::string const& devblock) -> void
 {
     if (stackframe_.empty())
     {
         emit_opcode(opcode::OP_CheckClearParams);
     }
+    else if (ctx_->features() & feature::refvarg)
+    {
+        auto data = std::vector<std::string>{};
+
+        for (auto i = 0u; i < stackframe_.size(); i++)
+        {
+            auto type = param_type::value;
+
+            if (i < exp.list.size() && exp.list[i]->is<expr_reference>())
+                type = param_type::reference;
+            else if (i < exp.list.size() && exp.list[i]->is<expr_ellipsis>())
+                type = param_type::vararg;
+
+            data.push_back(stackframe_[i]);
+            data.push_back(std::format("{}", static_cast<u8>(type)));
+        }
+
+        emit_opcode(opcode::OP_SafeCreateLocalVariables, data);
+    }
     else
     {
         emit_opcode(opcode::OP_SafeCreateLocalVariables, stackframe_);
     }
+
+    if (!devblock.empty())
+        emit_opcode(opcode::OP_DevblockBegin, devblock);
 
     for (auto const& entry : exp.list)
     {
@@ -1441,31 +1787,37 @@ auto compiler::emit_expr_getnextarraykey(expr_getnextarraykey const& exp) -> voi
 
 auto compiler::emit_expr_reference(expr_reference const& exp) -> void
 {
-    if (!exp.path->value.empty())
+    emit_import(opcode::OP_GetFunction, exp.path->value, exp.name->value, 0, import_flags::func_reference);
+}
+
+auto compiler::emit_import(opcode op, std::string const& path, std::string const& name, usize args, import_flags type) -> void
+{
+    auto flags = static_cast<u8>(type);
+
+    if (developer_thread_)
+        flags |= static_cast<u8>(import_flags::developer);
+
+    if (ctx_->features() & feature::spaces)
     {
-        bool found = false;
+        // inside a class an inherited method is reached through the class that declares it
+        if (auto const* owner = path.empty() ? method_owner(name) : nullptr; owner != nullptr)
+            return emit_opcode(op, { *owner, name, std::format("{}", args), std::format("{}", flags) });
 
-        for (const auto& entry : assembly_->includes)
-        {
-            if (entry == exp.path->value)
-            {
-                found = true;
-                break;
-            }
-        }
+        // a name with no namespace is looked up from the script's own, 'assert' from none at all
+        if (path.empty())
+            flags |= static_cast<u8>(import_flags::unscoped);
 
-        if (!found)
-        {
-            assembly_->includes.push_back(exp.path->value);
-        }
+        auto const& space = (path.empty() && name != "assert" && name != "assertmsg") ? namespace_ : path;
+
+        return emit_opcode(op, { space, name, std::format("{}", args), std::format("{}", flags) });
     }
 
-    // TODO: resolve import calls path
+    if (!path.empty() && std::ranges::find(assembly_->includes, path) == assembly_->includes.end())
+    {
+        assembly_->includes.push_back(path);
+    }
 
-    auto flags = developer_thread_ ? static_cast<u8>(import_flags::developer) : 0;
-    flags |= static_cast<u8>(import_flags::func_reference);
-
-    emit_opcode(opcode::OP_GetFunction, { exp.path->value, exp.name->value, "0", std::format("{}", flags) });
+    emit_opcode(op, { path, name, std::format("{}", args), std::format("{}", flags) });
 }
 
 auto compiler::emit_expr_size(expr_size const& exp) -> void
@@ -1521,6 +1873,13 @@ auto compiler::emit_expr_field_ref(expr_field const& exp, bool set) -> void
 {
     auto const& field = exp.field->value;
 
+    if ((ctx_->features() & feature::size64) && (exp.obj->is<expr_level>() || exp.obj->is<expr_self>()))
+    {
+        emit_opcode(exp.obj->is<expr_level>() ? opcode::OP_LevelEvalFieldVariableRef : opcode::OP_SelfEvalFieldVariableRef, field);
+        if (set) emit_opcode(opcode::OP_SetVariableField);
+        return;
+    }
+
     switch (exp.obj->kind())
     {
         case node::expr_level:
@@ -1530,6 +1889,12 @@ auto compiler::emit_expr_field_ref(expr_field const& exp, bool set) -> void
             break;
         case node::expr_anim:
             emit_opcode(opcode::OP_GetAnimObject);
+            emit_opcode(opcode::OP_EvalFieldVariableRef, field);
+            if (set) emit_opcode(opcode::OP_SetVariableField);
+            break;
+        case node::expr_world:
+        case node::expr_classes:
+            emit_opcode(exp.obj->is<expr_world>() ? opcode::OP_GetWorldObject : opcode::OP_GetClassesObject);
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
@@ -1551,7 +1916,7 @@ auto compiler::emit_expr_field_ref(expr_field const& exp, bool set) -> void
             if (set) emit_opcode(opcode::OP_SetVariableField);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableCached, std::format("{}", variable_access(exp.obj->as<expr_identifier>())));
+            emit_expr_local(exp.obj->as<expr_identifier>());
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariableRef, field);
             if (set) emit_opcode(opcode::OP_SetVariableField);
@@ -1582,7 +1947,10 @@ auto compiler::emit_expr_local_ref(expr_identifier const& exp, bool set) -> void
         throw comp_error(exp.loc(), std::format("variable name already defined as constant '{}'", exp.value));
     }
 
-    emit_opcode(opcode::OP_EvalLocalVariableRefCached, std::format("{}", variable_access(exp)));
+    if (is_member(exp.value))
+        emit_opcode(opcode::OP_SelfEvalFieldVariableRef, exp.value);
+    else
+        emit_opcode(opcode::OP_EvalLocalVariableRefCached, std::format("{}", variable_access(exp)));
 
     if (set)
     {
@@ -1619,6 +1987,11 @@ auto compiler::emit_expr_field(expr_field const& exp) -> void
 {
     auto const& field = exp.field->value;
 
+    if ((ctx_->features() & feature::size64) && (exp.obj->is<expr_level>() || exp.obj->is<expr_self>()))
+    {
+        return emit_opcode(exp.obj->is<expr_level>() ? opcode::OP_LevelEvalFieldVariable : opcode::OP_SelfEvalFieldVariable, field);
+    }
+
     switch (exp.obj->kind())
     {
         case node::expr_level:
@@ -1627,6 +2000,11 @@ auto compiler::emit_expr_field(expr_field const& exp) -> void
             break;
         case node::expr_anim:
             emit_opcode(opcode::OP_GetAnimObject);
+            emit_opcode(opcode::OP_EvalFieldVariable, field);
+            break;
+        case node::expr_world:
+        case node::expr_classes:
+            emit_opcode(exp.obj->is<expr_world>() ? opcode::OP_GetWorldObject : opcode::OP_GetClassesObject);
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         case node::expr_self:
@@ -1654,7 +2032,7 @@ auto compiler::emit_expr_field(expr_field const& exp) -> void
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableCached, std::format("{}", variable_access(exp.obj->as<expr_identifier>())));
+            emit_expr_local(exp.obj->as<expr_identifier>());
             emit_opcode(opcode::OP_CastFieldObject);
             emit_opcode(opcode::OP_EvalFieldVariable, field);
             break;
@@ -1669,6 +2047,10 @@ auto compiler::emit_expr_local(expr_identifier const& exp) -> void
 
     if (it != constants_.end())
         emit_expr(*it->second);
+    else if (is_member(exp.value))
+        emit_opcode(opcode::OP_SelfEvalFieldVariable, exp.value);
+    else if ((ctx_->features() & feature::size64) && exp.value == "__function__")
+        emit_opcode(opcode::OP_GetString, std::format("{}::{}", function_->space, function_->name));
     else
         emit_opcode(opcode::OP_EvalLocalVariableCached, std::format("{}", variable_access(exp)));
 }
@@ -1682,6 +2064,12 @@ auto compiler::emit_expr_object(expr const& exp) -> void
             break;
         case node::expr_anim:
             emit_opcode(opcode::OP_GetAnimObject);
+            break;
+        case node::expr_world:
+            emit_opcode(opcode::OP_GetWorldObject);
+            break;
+        case node::expr_classes:
+            emit_opcode(opcode::OP_GetClassesObject);
             break;
         case node::expr_self:
             emit_opcode(opcode::OP_GetSelfObject);
@@ -1703,7 +2091,7 @@ auto compiler::emit_expr_object(expr const& exp) -> void
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         case node::expr_identifier:
-            emit_opcode(opcode::OP_EvalLocalVariableCached, std::format("{}", variable_access(exp.as<expr_identifier>())));
+            emit_expr_local(exp.as<expr_identifier>());
             emit_opcode(opcode::OP_CastFieldObject);
             break;
         default:
@@ -1713,97 +2101,66 @@ auto compiler::emit_expr_object(expr const& exp) -> void
 
 auto compiler::emit_expr_vector(expr_vector const& exp) -> void
 {
-    auto data = std::vector<std::string>{};
+    // A vector of literals whose non zero components share one magnitude is a unit
+    // vector, one flag pair per axis, scaled when that magnitude is not 1.
+    auto const axes = std::array<expr const*, 3>{ exp.x.get(), exp.y.get(), exp.z.get() };
     auto isconst = true;
+    auto scale = 0.0f;
     auto flags = 0;
 
-    if (exp.x->is<expr_integer>())
+    for (auto i = 0u; i < axes.size() && isconst; i++)
     {
-        auto value = std::atoi(exp.x->as<expr_integer>().value.data());
-        data.push_back(exp.x->as<expr_integer>().value);
+        // folded first: stock ships ( 0, 0, 72 / 2 ) as a scaled unit vector too
+        auto const folded = fold_expr(*axes[i]);
+        auto value = 0.0f;
 
-        if (value != 1 && value != -1 && value != 0)
+        if (!folded.has_value())
             isconst = false;
+        else if (std::holds_alternative<i32>(*folded))
+            value = static_cast<f32>(std::get<i32>(*folded));
         else
-            flags |= (value == 1) ? 0x20 : ((value == -1) ? 0x10 : 0);
-    }
-    else if (exp.x->is<expr_float>())
-    {
-        auto value = std::stof(exp.x->as<expr_float>().value);
-        data.push_back(exp.x->as<expr_float>().value);
+            value = std::get<f32>(*folded);
 
-        if (value != 1.0 && value != -1.0 && value != 0.0)
+        if (value == 0.0f)
+            continue;
+
+        if (scale == 0.0f)
+            scale = std::abs(value);
+        else if (std::abs(value) != scale)
             isconst = false;
-        else
-            flags |= (value == 1.0) ? 0x20 : ((value == -1.0) ? 0x10 : 0);
+
+        flags |= ((value > 0.0f) ? 0x20 : 0x10) >> (i * 2);
     }
-    else
+
+    if (!(ctx_->features() & feature::size64))
     {
+        // t6 only knows the unit vector itself
+        isconst = isconst && (scale == 0.0f || scale == 1.0f);
+    }
+    else if (!(flags & 0x30) && (flags & 0x0C) && (flags & 0x03))
+    {
+        // stock t7 never does this for ( 0, y, z ): all 25 shipped ( 0, 1, 1 ) are built in full
         isconst = false;
     }
 
-    if (exp.y->is<expr_integer>())
-    {
-        auto value = std::atoi(exp.y->as<expr_integer>().value.data());
-        data.push_back(exp.y->as<expr_integer>().value);
-
-        if (value != 1 && value != -1 && value != 0)
-            isconst = false;
-        else
-            flags |= (value == 1) ? 0x08 : ((value == -1) ? 0x04 : 0);
-    }
-    else if (exp.y->is<expr_float>())
-    {
-        auto value = std::stof(exp.y->as<expr_float>().value);
-        data.push_back(exp.y->as<expr_float>().value);
-
-        if (value != 1.0 && value != -1.0 && value != 0.0)
-            isconst = false;
-        else
-            flags |= (value == 1.0) ? 0x08 : ((value == -1.0) ? 0x04 : 0);
-    }
-    else
-    {
-        isconst = false;
-    }
-
-    if (exp.z->is<expr_integer>())
-    {
-        auto value = std::atoi(exp.z->as<expr_integer>().value.data());
-        data.push_back(exp.z->as<expr_integer>().value);
-
-        if (value != 1 && value != -1 && value != 0)
-            isconst = false;
-        else
-            flags |= (value == 1) ? 0x02 : ((value == -1) ? 0x01 : 0);
-    }
-    else if (exp.z->is<expr_float>())
-    {
-        auto value = std::stof(exp.z->as<expr_float>().value);
-        data.push_back(exp.z->as<expr_float>().value);
-
-        if (value != 1.0 && value != -1.0 && value != 0.0)
-            isconst = false;
-        else
-            flags |= (value == 1.0) ? 0x02 : ((value == -1.0) ? 0x01 : 0);
-    }
-    else
-    {
-        isconst = false;
-    }
-
-    if (isconst)
-    {
-        emit_opcode(opcode::OP_VectorConstant, std::format("{}", flags));
-    }
-    else
+    if (!isconst)
     {
         // OP_GetVector seems to be broken, always use OP_Vector
         emit_expr(*exp.z);
         emit_expr(*exp.y);
         emit_expr(*exp.x);
-        emit_opcode(opcode::OP_Vector);
+        return emit_opcode(opcode::OP_Vector);
     }
+
+    auto const scaled = scale != 0.0f && scale != 1.0f;
+
+    if (scaled)
+        emit_opcode(opcode::OP_GetFloat, utils::string::float_string(scale));
+
+    emit_opcode(opcode::OP_VectorConstant, std::format("{}", flags));
+
+    if (scaled)
+        emit_opcode(opcode::OP_VectorScale);
 }
 
 auto compiler::emit_expr_animation(expr_animation const& exp) -> void
@@ -1841,6 +2198,18 @@ auto compiler::emit_expr_string(expr_string const& exp) -> void
 
 auto compiler::emit_expr_hash(expr_hash const& exp) -> void
 {
+    // On engines with hashed names '#"name"' is still the older djb2 hash, not the one
+    // names are stored under. '_id_' spells out a value and passes through.
+    if ((ctx_->features() & feature::hashids) && !exp.value.starts_with("_id_"))
+    {
+        auto hash = 5381u;
+
+        for (auto const c : exp.value)
+            hash = static_cast<u32>(std::tolower(static_cast<u8>(c))) + 33 * hash;
+
+        return emit_opcode(opcode::OP_GetHash, std::format("_id_{:08X}", hash));
+    }
+
     emit_opcode(opcode::OP_GetHash, exp.value);
 }
 
@@ -1865,11 +2234,12 @@ auto compiler::emit_expr_integer(expr_integer const& exp) -> void
     {
         emit_opcode(opcode::OP_GetNegByte, exp.value.substr(1));
     }
-    else if (value > 0 && value < 65536)
+    else if (value > 0 && value < 32768)
     {
+        // the stock compilers stop at 32767 despite the opcode name, on t6 and t7 alike
         emit_opcode(opcode::OP_GetUnsignedShort, exp.value);
     }
-    else if (value < 0 && value > -65536)
+    else if (value < 0 && value > -32768)
     {
         emit_opcode(opcode::OP_GetNegUnsignedShort, exp.value.substr(1));
     }
@@ -2027,9 +2397,13 @@ auto compiler::process_stmt_expr(stmt_expr const& stm) -> void
         case node::expr_assign:
             process_expr(*stm.value->as<expr_assign>().lvalue);
             break;
+        case node::expr_const:
+            // stock t7 reserves a frame slot for a constant even though every use is inlined
+            if (ctx_->features() & feature::size64)
+                variable_register(*stm.value->as<expr_const>().lvalue);
+            break;
         case node::expr_call:
         case node::expr_method:
-        case node::expr_const:
         case node::expr_empty:
             break;
         default:
@@ -2083,6 +2457,30 @@ auto compiler::process_stmt_for(stmt_for const& stm) -> void
 
 auto compiler::process_stmt_foreach(stmt_foreach const& stm) -> void
 {
+    if (ctx_->features() & feature::foreach)
+    {
+        // stock t7 frame order: 'key, value, next, array' when the key is written out,
+        // 'value, key, array, next' when it is hidden
+        auto const next = expr_identifier{ stm.loc(), "__new_" + stm.key->as<expr_identifier>().value };
+
+        if (stm.use_key)
+        {
+            process_expr(*stm.key);
+            process_expr(*stm.value);
+            variable_register(next);
+            process_expr(*stm.array);
+        }
+        else
+        {
+            process_expr(*stm.value);
+            process_expr(*stm.key);
+            process_expr(*stm.array);
+            variable_register(next);
+        }
+
+        return process_stmt(*stm.body);
+    }
+
     if (stm.use_key)
     {
         process_expr(*stm.key);
@@ -2123,6 +2521,11 @@ auto compiler::process_expr(expr const& exp) -> void
     {
         process_expr(*exp.as<expr_array>().obj);
     }
+    else if (exp.is<expr_field>() && (ctx_->features() & feature::size64))
+    {
+        // stock t7 makes a local out of 'name.field = value' even when nothing assigns 'name'
+        process_expr(*exp.as<expr_field>().obj);
+    }
 }
 
 auto compiler::process_expr_parameters(expr_parameters const& exp) -> void
@@ -2131,17 +2534,127 @@ auto compiler::process_expr_parameters(expr_parameters const& exp) -> void
     {
         if (entry->is<expr_identifier>())
         {
-            variable_register(entry->as<expr_identifier>());
+            variable_register(entry->as<expr_identifier>(), true);
         }
         else if (entry->is<expr_assign>())
         {
-            process_expr(*entry->as<expr_assign>().lvalue);
+            variable_register(entry->as<expr_assign>().lvalue->as<expr_identifier>(), true);
+        }
+        else if (entry->is<expr_reference>())
+        {
+            variable_register(*entry->as<expr_reference>().name, true);
+        }
+        else if (entry->is<expr_ellipsis>())
+        {
+            stackframe_.emplace_back("vararg");
         }
     }
 }
 
-auto compiler::variable_register(expr_identifier const& exp) -> void
+auto compiler::register_class(decl_class const& cls, bool compiled) -> void
 {
+    auto info = class_info{ .base = cls.base->value, .vars = {}, .methods = {} };
+
+    for (auto const& entry : cls.body->list)
+    {
+        if (entry->is<decl_variable>())
+            info.vars.push_back(entry->as<decl_variable>().name->value);
+        else if (entry->is<decl_function>())
+            info.methods.push_back(entry->as<decl_function>().name->value);
+    }
+
+    // A class always ends up with both, see emit_decl_class. One of this script only gets the
+    // missing one once it is compiled: stock leaves it out of the vtable of a class that
+    // extends a base declared further down.
+    for (auto const* special : { "__constructor", "__destructor" })
+    {
+        if (compiled && std::ranges::find(info.methods, special) == info.methods.end())
+            info.methods.emplace_back(special);
+    }
+
+    // first one wins: the script's own classes are registered before any it pulls in
+    classes_.try_emplace(cls.name->value, std::move(info));
+}
+
+// A base class can live in another script. Its members and methods decide what the derived
+// class compiles to, so the scripts named by '#using' are parsed until one declares it.
+auto compiler::find_class(std::string const& name, location const& loc) -> class_info const&
+{
+    for (auto i = 0u; i < assembly_->includes.size() && !classes_.contains(name); i++)
+    {
+        try
+        {
+            auto const [file, data, size] = ctx_->load_header(assembly_->includes[i] + extension_);
+
+            if (std::string_view{ data, size }.find("class") == std::string_view::npos)
+                continue;
+
+            auto const prog = ctx_->parser().parse_source(*file, reinterpret_cast<u8 const*>(data), size);
+
+            for (auto const& dec : prog->declarations)
+            {
+                if (dec->is<decl_class>())
+                    register_class(dec->as<decl_class>(), true);
+            }
+        }
+        catch (std::exception const&)
+        {
+            // a script that is missing or does not parse cannot be the one, the error below covers it
+        }
+    }
+
+    if (auto const itr = classes_.find(name); itr != classes_.end())
+        return itr->second;
+
+    throw comp_error(loc, std::format("class '{}' not found in this script or in the ones it is #using", name));
+}
+
+// the base class that declares 'name', when the class being compiled inherits it
+auto compiler::method_owner(std::string const& name) const -> std::string const*
+{
+    if (class_ == nullptr || std::ranges::find(class_->methods, name) != class_->methods.end())
+        return nullptr;
+
+    for (auto const* base = &class_->base; !base->empty();)
+    {
+        auto const itr = classes_.find(*base);
+
+        if (itr == classes_.end())
+            return nullptr;
+
+        if (std::ranges::find(itr->second.methods, name) != itr->second.methods.end())
+            return &itr->first;
+
+        base = &itr->second.base;
+    }
+
+    return nullptr;
+}
+
+// a name that is not a local reads as a field of self when the class or a base declares it
+auto compiler::is_member(std::string const& name) const -> bool
+{
+    if (class_ == nullptr || std::ranges::find(stackframe_, name) != stackframe_.end())
+        return false;
+
+    for (auto const* entry = class_; entry != nullptr;)
+    {
+        if (std::ranges::find(entry->vars, name) != entry->vars.end())
+            return true;
+
+        auto const itr = classes_.find(entry->base);
+        entry = (itr != classes_.end()) ? &itr->second : nullptr;
+    }
+
+    return false;
+}
+
+auto compiler::variable_register(expr_identifier const& exp, bool param) -> void
+{
+    // assigning to a member does not make a local, a parameter of that name still hides it
+    if (!param && is_member(exp.value))
+        return;
+
     auto found = false;
 
     for (const auto& i : stackframe_)

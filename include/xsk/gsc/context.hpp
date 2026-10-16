@@ -67,6 +67,7 @@ public:
     auto hash_id(std::string const& name) const -> u64;
     auto hash_name(u64 id) const -> std::string;
     auto make_token(std::string_view str) const -> std::string;
+    auto decrypt_string(std::string const& str) const -> std::string;
     auto load_header(std::string const& name) -> std::tuple<std::string const*, char const*, usize>;
     auto load_include(std::string const& name) -> void;
     auto include_functions(std::string const& name) const -> std::vector<std::string> const&;
@@ -100,6 +101,8 @@ protected:
     std::unordered_map<u64, std::string_view> meth_map_v2_;
     std::unordered_map<u64, std::string_view> path_map_;
     std::unordered_map<u64, std::string_view> hash_map_;
+    std::span<std::pair<crypt, i32> const> crypt_list_;
+    std::span<u8 const> crypt_rots_;
     std::unordered_map<std::string, std::vector<u8>> header_files_;
     // Survives the program that asked for it: the same include is parsed once and
     // reused by every later file. What each program includes is the compiler's.

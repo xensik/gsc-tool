@@ -104,9 +104,122 @@ auto parser::parse_assembly(std::vector<u8> const& data) -> assembly::ptr
     return parse_assembly(data.data(), data.size());
 }
 
-auto parser::parse_assembly(u8 const* /*data*/, usize /*size*/) -> assembly::ptr
+auto parser::parse_assembly(u8 const* data, usize size) -> assembly::ptr
 {
-    return assembly::make();
+    auto lines = utils::string::clean_buffer_lines(data, size);
+    auto assembly = assembly::make();
+    auto func = function::ptr{ nullptr };
+    auto index = usize{ 0 };
+    auto count = u32{ 0 };
+
+    for (auto& line : lines)
+    {
+        line.erase(0, line.find_first_not_of(' '));
+
+        if (line.empty() || line.starts_with("//"))
+            continue;
+
+        if (line.starts_with("sub:"))
+        {
+            if (func != nullptr)
+                throw asm_error(std::format("unclosed function \"{}\"", func->name));
+
+            // sub:[space] name params flags
+            auto const opdata = utils::string::parse_operands(std::string_view{ line }.substr(4));
+            auto const space = (ctx_->features() & feature::spaces) ? usize{ 1 } : usize{ 0 };
+
+            if (opdata.size() != space + 3)
+                throw asm_error(std::format("invalid function header \"{}\"", line));
+
+            func = function::make();
+            func->index = index;
+            func->space = space ? opdata[0].text : "";
+            func->name = opdata[space].text;
+            func->params = static_cast<u8>(std::stoul(opdata[space + 1].text));
+            func->flags = static_cast<u8>(std::stoul(opdata[space + 2].text));
+            continue;
+        }
+
+        if (line.starts_with("end:") && func != nullptr)
+        {
+            if (count)
+                throw asm_error(std::format("unclosed endswitch in function \"{}\"", func->name));
+
+            func->size = index - func->index;
+            assembly->functions.push_back(std::move(func));
+            func = nullptr;
+            continue;
+        }
+
+        if (line.starts_with("loc_") && func != nullptr)
+        {
+            func->labels[index] = line;
+            continue;
+        }
+
+        auto opdata = utils::string::parse_operands(line);
+
+        if (func == nullptr)
+        {
+            if (opdata.size() == 2 && opdata[0].text == "name")
+                assembly->name = opdata[1].text;
+            else if (opdata.size() == 2 && opdata[0].text == "include")
+                assembly->includes.push_back(opdata[1].text);
+            else
+                throw asm_error(std::format("instruction outside function \"{}\"", line));
+
+            continue;
+        }
+
+        if (count)
+        {
+            auto& table = func->instructions.back()->data;
+
+            // case value label | default label, the printer leaves the case type out
+            if (opdata.size() == 3 && opdata[0].text == "case")
+            {
+                table.emplace_back("case");
+                table.push_back(std::format("{}", static_cast<i32>(opdata[1].quoted ? switch_type::string : switch_type::integer)));
+                table.push_back(opdata[1].text);
+                table.push_back(opdata[2].text);
+            }
+            else if (opdata.size() == 2 && opdata[0].text == "default")
+            {
+                table.emplace_back("default");
+                table.push_back(opdata[1].text);
+            }
+            else
+            {
+                throw asm_error(std::format("invalid instruction inside endswitch \"{}\"", line));
+            }
+
+            count--;
+            continue;
+        }
+
+        // the assembler lays the code out again, an ordinal is enough to hang labels on
+        auto inst = instruction::make();
+        inst->index = index++;
+        inst->opcode = ctx_->opcode_enum(opdata[0].text);
+
+        for (auto i = 1u; i < opdata.size(); i++)
+            inst->data.push_back(std::move(opdata[i].text));
+
+        if (inst->opcode == opcode::OP_EndSwitch)
+        {
+            if (inst->data.empty())
+                throw asm_error(std::format("missing endswitch count \"{}\"", line));
+
+            count = static_cast<u32>(std::stoul(inst->data[0]));
+        }
+
+        func->instructions.push_back(std::move(inst));
+    }
+
+    if (func != nullptr)
+        throw asm_error(std::format("unclosed function \"{}\"", func->name));
+
+    return assembly;
 }
 
 auto parser::parse_source(std::string const& name, buffer const& data) -> program::ptr
@@ -340,19 +453,14 @@ auto parser::parse_decl_function() -> decl::ptr
     if(ctx_->features() & feature::size64)
         expect(token::FUNCTION);
 
-    if (check(token::AUTOEXEC))
+    // Modifiers stack: the function stock generates for a class is 'private autoexec'.
+    // Stock t7 exports a private function with 0x04, t6 keeps the value it always had.
+    auto const priv = (ctx_->features() & feature::size64) ? export_flags::export_private : export_flags::export_private2;
+
+    while (check(token::AUTOEXEC) || check(token::CODECALL) || check(token::PRIVATE))
     {
-        flags = export_flags::export_autoexec;
-        advance();
-    }
-    else if (check(token::CODECALL))
-    {
-        flags = export_flags::export_codecall;
-        advance();
-    }
-    else if (check(token::PRIVATE))
-    {
-        flags = export_flags::export_private2;
+        auto const flag = check(token::AUTOEXEC) ? export_flags::export_autoexec : (check(token::CODECALL) ? export_flags::export_codecall : priv);
+        flags = static_cast<export_flags>(static_cast<u8>(flags) | static_cast<u8>(flag));
         advance();
     }
 
@@ -819,11 +927,12 @@ auto parser::parse_stmt_if() -> stmt::ptr
     expect(token::LPAREN);
     auto test = parse_expr();
     expect(token::RPAREN);
-    auto body = parse_stmt();
+    // original source hangs a dev block straight off the test: 'if ( false ) /# line( a, b ); #/'
+    auto body = parse_stmt_or_dev();
 
     if (match(token::ELSE))
     {
-        auto els = parse_stmt();
+        auto els = parse_stmt_or_dev();
         return stmt_ifelse::make(loc, std::move(test), std::move(body), std::move(els));
     }
 
@@ -874,6 +983,16 @@ auto parser::parse_stmt_for() -> stmt::ptr
 auto parser::parse_stmt_foreach() -> stmt::ptr
 {
     auto loc = tok_.pos;
+
+    // The hidden array and key locals. Stock t7 names them after the line the statement
+    // is on, '__a40' and '__k40', where t6 numbers them through the script.
+    auto temp = [&](char const* kind) {
+        if (ctx_->features() & feature::foreach)
+            return std::format("__{}{}", kind, loc.begin.line);
+
+        return std::format("_{}{}", kind, ++index_);
+    };
+
     expect(token::FOREACH);
     expect(token::LPAREN);
     auto ident1 = parse_expr_identifier();
@@ -885,7 +1004,7 @@ auto parser::parse_stmt_foreach() -> stmt::ptr
         auto container = parse_expr();
         expect(token::RPAREN);
         auto body = parse_stmt();
-        auto array = expr_identifier::make(loc, std::format("_a{}", ++index_));
+        auto array = expr_identifier::make(loc, temp("a"));
         return stmt_foreach::make(loc, std::move(container), std::move(ident2), std::move(array), std::move(ident1), std::move(body), true);
     }
 
@@ -893,8 +1012,8 @@ auto parser::parse_stmt_foreach() -> stmt::ptr
     auto container = parse_expr();
     expect(token::RPAREN);
     auto body = parse_stmt();
-    auto array = expr_identifier::make(loc, std::format("_a{}", ++index_));
-    auto key = expr_identifier::make(loc, std::format("_k{}", ++index_));
+    auto array = expr_identifier::make(loc, temp("a"));
+    auto key = expr_identifier::make(loc, temp("k"));
     return stmt_foreach::make(loc, std::move(container), std::move(ident1), std::move(array), std::move(key), std::move(body), false);
 }
 
@@ -1261,7 +1380,8 @@ auto parser::parse_expr_unary() -> expr::ptr
             return expr_negate::make(loc, std::move(rhs));
         }
 
-        error("expected expression after '-'");
+        // original source also negates keyword operands: '-vectorscale( a, b )', '( -size, 0, 0 )'
+        return expr_negate::make(loc, parse_expr_unary());
     }
 
     if (check(token::MOD))
@@ -1893,20 +2013,8 @@ auto parser::parse_expr_getdvarint() -> expr::ptr
     auto loc = tok_.pos;
     expect(token::GETDVARINT);
     expect(token::LPAREN);
-    auto arg = parse_expr_arguments();
+    auto arg = parse_expr();
     expect(token::RPAREN);
-
-    if (ctx_->features() & feature::size64)
-    {
-        if (arg->list.size() != 1 && arg->list.size() != 2)
-            error(loc, "expected 1 or 2 arguments to getdvarint");
-    }
-    else
-    {
-        if (arg->list.size() != 1)
-            error(loc, "expected 1 argument to getdvarint");
-    }
-
     return expr_getdvarint::make(loc, std::move(arg));
 }
 
@@ -1915,20 +2023,8 @@ auto parser::parse_expr_getdvarfloat() -> expr::ptr
     auto loc = tok_.pos;
     expect(token::GETDVARFLOAT);
     expect(token::LPAREN);
-    auto arg = parse_expr_arguments();
+    auto arg = parse_expr();
     expect(token::RPAREN);
-
-    if (ctx_->features() & feature::size64)
-    {
-        if (arg->list.size() != 1 && arg->list.size() != 2)
-            error(loc, "expected 1 or 2 arguments to getdvarfloat");
-    }
-    else
-    {
-        if (arg->list.size() != 1)
-            error(loc, "expected 1 argument to getdvarfloat");
-    }
-
     return expr_getdvarfloat::make(loc, std::move(arg));
 }
 
@@ -2509,7 +2605,28 @@ auto parser::read_token() -> token
             }
             else
             {
-                tok.type = it->second;
+                // opcodes on t6, ordinary function calls from t7 on
+                switch (it->second)
+                {
+                    case token::ABS:
+                    case token::GETDVAR:
+                    case token::GETDVARINT:
+                    case token::GETDVARFLOAT:
+                    case token::GETDVARVECTOR:
+                    case token::GETDVARCOLORRED:
+                    case token::GETDVARCOLORGREEN:
+                    case token::GETDVARCOLORBLUE:
+                    case token::GETDVARCOLORALPHA:
+                    case token::ANGLESTOUP:
+                    case token::ANGLESTORIGHT:
+                    case token::ANGLESTOFORWARD:
+                    case token::ANGLECLAMP180:
+                    case token::VECTORTOANGLES:
+                        break;
+                    default:
+                        tok.type = it->second;
+                        break;
+                }
             }
         }
     }

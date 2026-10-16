@@ -520,7 +520,7 @@ auto preprocessor::read_directive_define(token& /*unused*/) -> void
                             throw ppr_error(next.pos, "misplaced name in macro param list");
                         else
                         {
-                            auto it = std::find_if(params.begin(), params.end(), [&next](token const& v) { return v.data == next.data; });
+                            auto it = std::ranges::find_if(params, [&next](token const& v) { return v.data == next.data; });
 
                             if (it != params.end())
                             {
@@ -561,7 +561,7 @@ auto preprocessor::read_directive_define(token& /*unused*/) -> void
                 {
                     if (next.type == token::NAME)
                     {
-                        auto it = std::find_if(params.begin(), params.end(), [&next](token const& v) { return v.data == next.data; });
+                        auto it = std::ranges::find_if(params, [&next](token const& v) { return v.data == next.data; });
 
                         if (it != params.end())
                         {
@@ -671,6 +671,7 @@ auto preprocessor::read_directive_define(token& /*unused*/) -> void
                 defines_.insert({ name, define{ .type = define::FUNCTION, .vararg = last_elips, .args = params, .exp = exp } });
                 break;
             }
+            [[fallthrough]];
         default:
             if (next.space == spacing::back)
             {
@@ -814,6 +815,13 @@ auto preprocessor::read_hashtoken(token& hash) -> void
         if (next.data == "animtree")
         {
             return read_hashtoken_animtree(hash, next);
+        }
+
+        // not a line directive: a script that went through a preprocessor once
+        // already carries several '#precache( ... );' on one line
+        if (auto const it = directives_.find(next.data); it != directives_.end() && it->second == directive::PRECACHE)
+        {
+            return read_directive_precache(hash, next);
         }
     }
     else if (next.type == token::STRING)

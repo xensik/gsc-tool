@@ -409,14 +409,17 @@ TEMPLATE_TEST_CASE("printer: assembly", "[printer]", BOTH)
     auto data = assembly::make();
     data->functions.push_back(std::move(func));
 
-    REQUIRE(print_asm<TestType>(*data) == R"(
-sub:main
+    // arc exports carry the parameter count and flags, so its header prints both
+    auto const head = std::is_same_v<assembly, arc::assembly> ? "sub:main 0 0" : "sub:main";
+
+    REQUIRE(print_asm<TestType>(*data) == std::format(R"(
+{}
 	loc_1
 		OP_GetByte 1
 		OP_GetString "a"
 		OP_End
 end:main
-)");
+)", head));
 }
 
 } // namespace xsk::test

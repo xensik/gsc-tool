@@ -46,4 +46,9 @@ auto zlib::decompress(std::vector<u8> const& data, const u32 length) -> std::vec
     throw error(std::format("zlib decompress error {}", result));
 }
 
+auto zlib::crc32(u8 const* data, const usize size) -> u32
+{
+    return static_cast<u32>(::crc32(0, reinterpret_cast<const Bytef*>(data), static_cast<uInt>(size)));
+}
+
 } // namespace xsk::utils

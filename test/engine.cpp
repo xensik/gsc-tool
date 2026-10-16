@@ -5,6 +5,9 @@
 
 #include <catch_amalgamated.hpp>
 #include "common.hpp"
+#include "xsk/gsc/engine/iw6_ps.hpp"
+#include "xsk/gsc/engine/iw6_xb.hpp"
+#include "xsk/gsc/engine/iw8.hpp"
 #include "xsk/utils/file.hpp"
 #include "xsk/utils/zlib.hpp"
 
@@ -177,7 +180,6 @@ enum class cause
     dropped_stmt,   // assert family / dev block emits nothing but still takes the 'last' flag
     switch_strings, // IW orders string case tables by a build-wide string list id
     locals,         // local slot numbering and OP_RemoveLocalVariables placement
-    vector_fold,    // vector built at runtime vs folded to OP_GetVector
     source_bug,     // bytecode built from source the parser is right to reject
     decompile_output, // the decompiler prints something that does not parse back -- open
 };
@@ -192,8 +194,6 @@ auto describe(cause reason) -> std::string_view
             return "switch string order: Infinity Ward orders string case tables by the engine string list id, which is build state the bytecode does not carry";
         case cause::locals:
             return "locals: local slot numbering / OP_RemoveLocalVariables placement";
-        case cause::vector_fold:
-            return "vector folding: a vector with a named-constant component is built at runtime, while the decompiled literal folds to OP_GetVector";
         case cause::source_bug:
             return "source bug: the original compiler swallowed a missing semicolon, and the bytecode cannot be expressed by source our parser should accept";
         case cause::decompile_output:
@@ -270,7 +270,6 @@ constexpr known_failure iw5_source_failures[]{
     { "maps/mp/gametypes/_weapons.gsc",      cause::locals },
     { "maps/mp/gametypes/dd.gsc",            cause::locals },
     { "maps/mp/killstreaks/_a10.gsc",        cause::locals },
-    { "maps/ny_harbor_code_sdv.gsc",         cause::vector_fold },
     { "maps/ny_harbor_code_sub.gsc",         cause::locals },
     { "maps/ny_harbor_code_zodiac.gsc",      cause::locals },
     { "maps/ny_hind.gsc",                    cause::locals },
@@ -679,7 +678,7 @@ constexpr known_failure iw6_binary_failures[]{
 constexpr known_failure h1_binary_failures[]{
     { "animscripts/battlechatter.gscbin",             cause::switch_strings },
     { "animscripts/battlechatter_ai.gscbin",          cause::switch_strings },
-    { "animscripts/combat_utility.gscbin",            cause::decompile_output },
+    { "animscripts/combat_utility.gscbin",            cause::locals },
     { "animscripts/corner.gscbin",                    cause::switch_strings },
     { "animscripts/cover_behavior.gscbin",            cause::locals },
     { "animscripts/cover_multi.gscbin",               cause::locals },
@@ -1123,6 +1122,68 @@ auto check_hash_table(List const& list) -> void
 
     INFO(std::format("{} bad entries, first: {}", bad.size(), bad.empty() ? "" : bad.front()));
     REQUIRE(bad.empty());
+}
+
+// A table declared larger than its initializer list is zero filled, and the context
+// then builds a string_view out of a null name. iw6 on ps3 and xbox 360 declared the
+// pc method count and crashed on startup.
+TEMPLATE_TEST_CASE("iw6 console method tables match their declared size", "[engine][gsc][iw6]", gsc::iw6_ps::context, gsc::iw6_xb::context)
+{
+    auto const c = TestType{ gsc::instance::server };
+
+    REQUIRE(c.meth_name(0x8419) == "isleaning");
+    REQUIRE(c.meth_id("isleaning") == 0x8419);
+}
+
+// Shipped iw8 scripts obfuscate their strings: [type][seed][size + 1][data]. The pairs
+// below come from stock bytecode, one for each kind of routine the game uses.
+TEST_CASE("iw8 decrypts obfuscated strings", "[engine][gsc][iw8]")
+{
+    auto const c = gsc::iw8::context{ gsc::instance::server };
+
+    auto const bytes = [](std::string_view hex) {
+        auto out = std::string{};
+
+        for (auto i = 0u; i < hex.size(); i += 2)
+            out += static_cast<char>(std::stoul(std::string{ hex.substr(i, 2) }, nullptr, 16));
+
+        return out;
+    };
+
+    SECTION("multiplied key")
+    {
+        REQUIRE(c.decrypt_string(bytes("9A870CBAB0B0189E98DB118B91AB")) == "arrival_yaw");
+    }
+
+    SECTION("incremented key")
+    {
+        REQUIRE(c.decrypt_string(bytes("A2660CE0F23A77467FD989FDB513")) == "hero_salter");
+    }
+
+    SECTION("decremented key")
+    {
+        REQUIRE(c.decrypt_string(bytes("B2980B28E72ED6E96274942B0B")) == "min_height");
+    }
+
+    SECTION("rotation table")
+    {
+        REQUIRE(c.decrypt_string(bytes("8AE90BB5B4DCEB1B95E69DD1D0")) == "min_length");
+    }
+
+    SECTION("anything else is returned untouched")
+    {
+        // a type with no routine, a size byte that does not match, and plain text
+        REQUIRE(c.decrypt_string(bytes("90870CBAB0B0189E98DB118B91AB")) == bytes("90870CBAB0B0189E98DB118B91AB"));
+        REQUIRE(c.decrypt_string(bytes("9A870DBAB0B0189E98DB118B91AB")) == bytes("9A870DBAB0B0189E98DB118B91AB"));
+        REQUIRE(c.decrypt_string("arrival_yaw") == "arrival_yaw");
+    }
+
+    SECTION("other engines have no routines")
+    {
+        auto const data = bytes("9A870CBAB0B0189E98DB118B91AB");
+
+        REQUIRE(ctx<gsc::iw5_pc::context>()->decrypt_string(data) == data);
+    }
 }
 
 TEST_CASE("t6 hash table maps each id to its own name", "[engine][arc][t6]")

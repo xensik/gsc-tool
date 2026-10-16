@@ -5,3 +5,4 @@ src/*/engine/*_meth.cpp
 src/*/engine/*_token.cpp
 src/*/engine/*_hash.cpp
 src/*/engine/*_path.cpp
+src/*/engine/*_crypt.cpp
