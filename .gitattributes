@@ -1,0 +1,13 @@
+# Text is LF in the index and in the working tree. Without this, core.autocrlf on
+# Windows checks the test corpus out as CRLF, so CI there lexes different bytes than
+# macOS and Linux do and a round trip failure is not reproducible off Windows.
+* text=auto eol=lf
+
+# cmd.exe is the one thing here that wants CRLF.
+*.bat text eol=crlf
+
+# Shipped bytecode, compared byte for byte. Git's own heuristic already calls these
+# binary because of the "GSC\0" magic, but it should not be a matter of luck.
+*.gscbin binary
+*.cgsc binary
+*.stack binary

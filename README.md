@@ -20,7 +20,7 @@ A utility to compile & decompile IW engine game scripts.
 - **H1** *(Call of Duty: Modern Warfare Remastered)* `PC` `PS4` `Xbox One`
 - **H2** *(Call of Duty: Modern Warfare 2 Campaign Remastered)* `PC` `PS4` `PS5` `Xbox One` `Xbox Series X|S`
 - **T6** *(Call of Duty: Black Ops II)* `PC` `PS3` `Xbox 360` `Wii U`
-- **T7** *(Call of Duty: Black Ops III)* `PC` *(Decompiler)*
+- **T7** *(Call of Duty: Black Ops III)* `PC`
 - **T8** *(Call of Duty: Black Ops 4)* ***\*WIP\****
 - **T9** *(Call of Duty: Black Ops Cold War)* ***\*WIP\****
 - **T10** *(Call of Duty: Black Ops 6)* ***\*WIP\****
@@ -37,7 +37,7 @@ A utility to compile & decompile IW engine game scripts.
 
     ``-g, --game <game>`` [REQUIRED] one of: `iw5`, `iw6`, `iw7`, `iw8`, `iw9`, `s1`, `s2`, `s4`, `h1`, `h2`, `t6` `t7` `t8` `t9` `jup`
 
-    ``-s, --system <system>`` [REQUIRED] one of: `pc`, `ps3`, `ps4`, `ps5`, `xb2` (*360*), `xb3` (*One*), `xb4` (*Series X|S*), `wiiu`
+    ``-s, --system <system>`` [REQUIRED] one of: `pc`, `pc32`, `pc64`, `ps3`, `ps4`, `ps5`, `xb2` (*360*), `xb3` (*One*), `xb4` (*Series X|S*), `wiiu`
 
     ``-i, --instance <instance>`` Instance to use on games with .gsc/.csc (server, client). (default: server)
 

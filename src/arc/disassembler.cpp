@@ -96,6 +96,9 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
         string_pool.insert({ pos, script_.read_cstr() });
     }
 
+    if (auto const itr = string_pool.find(header_.name); itr != string_pool.end())
+        assembly_->name = itr->second;
+
     script_.pos(header_.include_offset);
 
     for (auto i = 0u; i < header_.include_count; i++)
@@ -280,13 +283,15 @@ auto disassembler::disassemble(u8 const* data, usize data_size) -> assembly::ptr
             {
                 entry->size -= pad_size;
 
-                script_.pos(end_pos - 2);
-                script_.align(2);
-                for (auto j = 0; j < 4; j++)
+                auto const wide = static_cast<bool>(ctx_->features() & feature::code16);
+
+                script_.pos(end_pos - (wide ? 2 : 1));
+                script_.align(wide ? 2 : 1);
+                for (auto j = 0; j < (wide ? 4 : 8); j++)
                 {
-                    auto op = ctx_->opcode_enum(script_.read<u16>());
+                    auto op = ctx_->opcode_enum(wide ? script_.read<u16>() : script_.read<u8>());
                     if (op == opcode::OP_End || op == opcode::OP_Return) break;
-                    script_.seek_neg(4);
+                    script_.seek_neg(wide ? 4 : 2);
                 }
 
                 entry->size -= static_cast<u32>(end_pos - script_.pos());
@@ -339,7 +344,7 @@ auto disassembler::disassemble_function(function& func) -> void
         auto inst = instruction::make();
         inst->index = script_.pos();
 
-        if (ctx_->features() & feature::size64)
+        if (ctx_->features() & feature::code16)
         {
             auto index = script_.read<u16>();
 
@@ -355,8 +360,11 @@ auto disassembler::disassemble_function(function& func) -> void
         {
             auto index = script_.read<u8>();
 
-            if (size < 4 && ctx_->opcode_enum(index) == opcode::OP_Invalid)
+            if (size < ((ctx_->features() & feature::size64) ? 8u : 4u) && ctx_->opcode_enum(index) == opcode::OP_Invalid)
                 break;
+
+            if (ctx_->opcode_enum(index) == opcode::OP_Invalid)
+                throw disasm_error(std::format("invalid opcode index 0x{:X} at pos '{:04X}'!", index, inst->index));
 
             inst->opcode = ctx_->opcode_enum(index);
         }
@@ -365,7 +373,7 @@ auto disassembler::disassemble_function(function& func) -> void
 
         disassemble_instruction(*inst);
 
-        if (ctx_->features() & feature::size64)
+        if (ctx_->features() & feature::code16)
             inst->size += script_.align(2);
 
         if (inst->size > size || inst->index + inst->size != script_.pos())
@@ -538,10 +546,13 @@ auto disassembler::disassemble_instruction(instruction& inst) -> void
             break;
         case opcode::OP_ScriptFunctionCallClass:
         case opcode::OP_ScriptThreadCallClass:
-            script_.seek(1);
+        {
+            auto const argc = script_.read<u8>();
             inst.size += script_.align(4);
             inst.data.push_back(ctx_->hash_name(script_.read<u32>()));
+            inst.data.push_back(std::format("{}", argc));
             break;
+        }
         case opcode::OP_SafeCreateLocalVariables:
             disassemble_params(inst);
             break;
@@ -648,6 +659,8 @@ auto disassembler::disassemble_import(instruction& inst) -> void
     {
         inst.data.push_back(itr->second->space);
         inst.data.push_back(itr->second->name);
+        inst.data.push_back(std::format("{}", itr->second->params));
+        inst.data.push_back(std::format("{}", itr->second->flags));
         return script_.seek((ctx_->features() & feature::size64) ? 8 : 4);
     }
 
@@ -702,7 +715,7 @@ auto disassembler::disassemble_jump(instruction& inst) -> void
 {
     inst.size += script_.align(2);
 
-    auto addr = ((ctx_->features() & feature::size64) ? ((script_.read<i16>() + 1) & ~1) : script_.read<i16>()) + script_.pos();
+    auto addr = ((ctx_->features() & feature::code16) ? ((script_.read<i16>() + 1) & ~1) : script_.read<i16>()) + script_.pos();
     auto label = std::format("loc_{:X}", addr);
 
     inst.data.emplace_back(label);

@@ -44,9 +44,14 @@ auto printer::print(program const& data) -> std::vector<u8>
 
 auto printer::print_assembly(assembly const& data) -> void
 {
+    if (!data.name.empty())
+    {
+        std::format_to(std::back_inserter(buf_), "name {}\n", utils::string::to_operand(data.name));
+    }
+
     for (auto const& inc : data.includes)
     {
-        std::format_to(std::back_inserter(buf_), "include {}\n", inc);
+        std::format_to(std::back_inserter(buf_), "include {}\n", utils::string::to_operand(inc));
     }
 
     for (auto const& func : data.functions)
@@ -57,7 +62,14 @@ auto printer::print_assembly(assembly const& data) -> void
 
 auto printer::print_function(function const& func) -> void
 {
-    std::format_to(std::back_inserter(buf_), "\nsub:{}\n", func.name);
+    std::format_to(std::back_inserter(buf_), "\nsub:");
+
+    if (ctx_->features() & feature::spaces)
+    {
+        std::format_to(std::back_inserter(buf_), "{} ", utils::string::to_operand(func.space));
+    }
+
+    std::format_to(std::back_inserter(buf_), "{} {} {}\n", utils::string::to_operand(func.name), func.params, func.flags);
 
     for (auto const& inst : func.instructions)
     {
@@ -69,7 +81,7 @@ auto printer::print_function(function const& func) -> void
         print_instruction(*inst);
     }
 
-    std::format_to(std::back_inserter(buf_), "end:{}\n", func.name);
+    std::format_to(std::back_inserter(buf_), "end:{}\n", utils::string::to_operand(func.name));
 }
 
 auto printer::print_instruction(instruction const& inst) -> void
@@ -118,7 +130,7 @@ auto printer::print_instruction(instruction const& inst) -> void
         default:
             for (auto const& entry : inst.data)
             {
-                std::format_to(std::back_inserter(buf_), " {}", entry);
+                std::format_to(std::back_inserter(buf_), " {}", utils::string::to_operand(entry));
             }
             break;
     }
@@ -211,9 +223,9 @@ auto printer::print_decl_namespace(decl_namespace const& dec) -> void
 
 auto printer::print_decl_precache(decl_precache const& dec) -> void
 {
-    std::format_to(std::back_inserter(buf_), "#precache( ");
+    std::format_to(std::back_inserter(buf_), "#precache(");
     print_expr_arguments(*dec.args);
-    std::format_to(std::back_inserter(buf_), " );\n");
+    std::format_to(std::back_inserter(buf_), ");\n");
 }
 
 auto printer::print_decl_usingtree(decl_usingtree const& dec) -> void
@@ -226,6 +238,18 @@ auto printer::print_decl_usingtree(decl_usingtree const& dec) -> void
 auto printer::print_decl_function(decl_function const& dec) -> void
 {
     auto save = indent_;
+
+    // the parser names the two special members of a class like this, they have keywords of their own
+    if (dec.name->value == "__constructor" || dec.name->value == "__destructor")
+    {
+        std::format_to(std::back_inserter(buf_), "{}(", dec.name->value.substr(2));
+        print_expr_parameters(*dec.params);
+        std::format_to(std::back_inserter(buf_), ")\n");
+        print_stmt_comp(*dec.body);
+        std::format_to(std::back_inserter(buf_), "\n");
+        indent_ = save;
+        return;
+    }
 
     if (ctx_->features() & feature::spaces)
         std::format_to(std::back_inserter(buf_), "function ");
@@ -279,7 +303,7 @@ auto printer::print_decl_class(decl_class const& dec) -> void
     std::format_to(std::back_inserter(buf_), "\n");
     std::format_to(std::back_inserter(buf_), "{: >{}}\n", "{", indent_ + 1);
     print_decl_list(*dec.body);
-    std::format_to(std::back_inserter(buf_), "\n{: >{}}", "}", indent_ + 1);
+    std::format_to(std::back_inserter(buf_), "{: >{}}", "}", indent_ + 1);
     std::format_to(std::back_inserter(buf_), "\n");
 
     indent_ = save;
@@ -289,11 +313,20 @@ auto printer::print_decl_list(decl_list const& dec) -> void
 {
     indent_ += 4;
 
-    for (auto const& entry : dec.list)
+    for (auto i = 0u; i < dec.list.size(); i++)
     {
+        auto const func = dec.list[i]->is<decl_function>();
+
+        // members first, a blank line, then the functions with a blank line between them
+        if (i > 0 && (func || dec.list[i - 1]->is<decl_function>()))
+            std::format_to(std::back_inserter(buf_), "\n");
+
         std::format_to(std::back_inserter(buf_), "{: >{}}", "", indent_);
-        print_decl(*entry);
-        std::format_to(std::back_inserter(buf_), "\n");
+        print_decl(*dec.list[i]);
+
+        // a function ends its own line
+        if (!func)
+            std::format_to(std::back_inserter(buf_), "\n");
     }
 
     indent_ -= 4;
@@ -714,22 +747,41 @@ auto printer::print_stmt_dowhile(stmt_dowhile const& stm) -> void
 
 auto printer::print_stmt_for(stmt_for const& stm) -> void
 {
-    if (stm.test->is<expr_empty>())
+    // An empty clause gets no padding: 'for (;;)', 'for (; i < 3; i++ )', 'for ( i = 0; i < 3;)'. The parser marks
+    // an empty init/iter as an empty expression, the decompiler as an empty statement.
+    auto const empty = [](stmt const& s) { return s.is<stmt_empty>() || (s.is<stmt_expr>() && s.as<stmt_expr>().value->is<expr_empty>()); };
+    auto const init = !empty(*stm.init);
+    auto const test = !stm.test->is<expr_empty>();
+    auto const iter = !empty(*stm.iter);
+
+    std::format_to(std::back_inserter(buf_), "for (");
+
+    if (init)
     {
-        std::format_to(std::back_inserter(buf_), "for (;;)\n");
-    }
-    else
-    {
-        std::format_to(std::back_inserter(buf_), "for ( ");
+        buf_.push_back(' ');
         print_stmt(*stm.init);
         buf_.pop_back();
-        std::format_to(std::back_inserter(buf_), "; ");
+    }
+
+    buf_.push_back(';');
+
+    if (test)
+    {
+        buf_.push_back(' ');
         print_expr(*stm.test);
-        std::format_to(std::back_inserter(buf_), "; ");
+    }
+
+    buf_.push_back(';');
+
+    if (iter)
+    {
+        buf_.push_back(' ');
         print_stmt(*stm.iter);
         buf_.pop_back();
-        std::format_to(std::back_inserter(buf_), " )\n");
+        buf_.push_back(' ');
     }
+
+    std::format_to(std::back_inserter(buf_), ")\n");
 
     if (stm.body->is<stmt_comp>())
     {
@@ -1139,7 +1191,6 @@ auto printer::print_expr_const(expr_const const& exp) -> void
     print_expr_identifier(*exp.lvalue);
     std::format_to(std::back_inserter(buf_), " = ");
     print_expr(*exp.rvalue);
-    std::format_to(std::back_inserter(buf_), ";");
 }
 
 auto printer::print_expr_ternary(expr_ternary const& exp) -> void
@@ -1252,9 +1303,34 @@ auto printer::print_expr_call(expr_call const& exp) -> void
     print_call(*exp.value);
 }
 
+auto printer::print_expr_base(expr const& exp) -> void
+{
+    // The base of '.field', '[key]', '.size' or a method call binds tighter than any
+    // operator, so an operator expression has to keep its parentheses: '( a + b ).size'
+    // is not 'a + b.size', and '( -p )[ 0 ]' is not '-p[0]'.
+    switch (exp.kind())
+    {
+        case node::expr_complement:
+        case node::expr_negate:
+        case node::expr_not:
+        case node::expr_binary:
+        case node::expr_ternary:
+        case node::expr_assign:
+        case node::expr_increment:
+        case node::expr_decrement:
+            std::format_to(std::back_inserter(buf_), "( ");
+            print_expr(exp);
+            std::format_to(std::back_inserter(buf_), " )");
+            break;
+        default:
+            print_expr(exp);
+            break;
+    }
+}
+
 auto printer::print_expr_method(expr_method const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), " ");
     print_call(*exp.value);
 }
@@ -1511,7 +1587,7 @@ auto printer::print_expr_reference(expr_reference const& exp) -> void
 
 auto printer::print_expr_array(expr_array const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), "[");
     print_expr(*exp.key);
     std::format_to(std::back_inserter(buf_), "]");
@@ -1519,14 +1595,14 @@ auto printer::print_expr_array(expr_array const& exp) -> void
 
 auto printer::print_expr_field(expr_field const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), ".");
     print_expr_identifier(*exp.field);
 }
 
 auto printer::print_expr_size(expr_size const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), ".size");
 }
 

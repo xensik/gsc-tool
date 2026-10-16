@@ -48,7 +48,8 @@ enum class endian : u8
 
 enum class system : u8
 {
-    pc,
+    pc32,
+    pc64,
     ps3,
     ps4,
     ps5,
@@ -84,6 +85,7 @@ struct feature
         globals  = 1 << 9,
         refvarg  = 1 << 10,
         foreach  = 1 << 11,
+        code16   = 1 << 12,
     };
 
     feature(const values value) : value_(value) {}

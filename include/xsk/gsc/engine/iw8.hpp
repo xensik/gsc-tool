@@ -16,6 +16,8 @@ constexpr usize func_count = 1065;
 constexpr usize meth_count = 2032;
 constexpr usize token_count = 72014;
 constexpr u32 max_string_id = 0x1472F;
+constexpr usize crypt_count = 2752;
+constexpr usize crypt_rots_count = 123444;
 
 struct context : public gsc::context
 {

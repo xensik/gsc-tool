@@ -20,21 +20,4 @@ lookahead::lookahead(char const* data, const usize size)
     }
 }
 
-auto lookahead::advance() -> void
-{
-    ++position;
-
-    if (available-- == 1)
-    {
-        available = 0;
-        last_byte = curr_byte;
-        curr_byte = 0;
-    }
-    else
-    {
-        last_byte = curr_byte;
-        curr_byte = *position;
-    }
-}
-
 } // namespace xsk::gsc

@@ -184,7 +184,7 @@ auto disassembler::dissasemble_instruction(instruction& inst) -> void
             inst.data.push_back(decrypt_string(stack_.read_cstr()));
             break;
         case opcode::OP_GetAnimation:
-            script_.seek((ctx_->features() & feature::str4) ? 8 : 4);
+            script_.seek((ctx_->features() & (feature::str4 | feature::anim8)) ? 8 : 4);
             inst.data.push_back(decrypt_string(stack_.read_cstr()));
             inst.data.push_back(decrypt_string(stack_.read_cstr()));
             break;
@@ -611,6 +611,11 @@ auto disassembler::decrypt_string(std::string const& str) const -> std::string
     if (str.empty() || ((static_cast<u8>(str[0]) & 0xC0) != 0x80))
     {
         return str;
+    }
+
+    if (auto data = ctx_->decrypt_string(str); data != str)
+    {
+        return data;
     }
 
     auto data = "_encstr_"s;

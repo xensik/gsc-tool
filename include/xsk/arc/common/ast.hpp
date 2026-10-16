@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "xsk/pool.hpp"
+
 namespace xsk::arc
 {
 
@@ -134,6 +136,8 @@ struct node
     auto operator=(node const&) -> node& = delete;
     auto operator=(node&&) -> node& = delete;
     virtual ~node() = default;
+
+    XSK_POOLED
 
     auto kind() const -> type { return kind_; }
     auto loc() const -> location const& { return loc_; }

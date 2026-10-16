@@ -13,6 +13,7 @@ struct locjmp
     std::string end;
     std::string cnt;
     std::string brk;
+    std::string itr;
     bool last{};
 };
 

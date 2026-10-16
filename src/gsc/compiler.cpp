@@ -4,6 +4,7 @@
 // that can be found in the LICENSE file.
 
 #include "xsk/stdinc.hpp"
+#include "xsk/utils/string.hpp"
 #include "xsk/gsc/compiler.hpp"
 #include "xsk/gsc/context.hpp"
 
@@ -29,6 +30,7 @@ auto compiler::compile(std::string const& file, std::vector<u8>& data) -> assemb
 auto compiler::emit_program(program const& prog) -> void
 {
     assembly_ = assembly::make();
+    includes_.clear();
     localfuncs_.clear();
     constants_.clear();
     developer_thread_ = false;
@@ -37,20 +39,37 @@ auto compiler::emit_program(program const& prog) -> void
     index_ = 1;
     debug_pos_ = { .line = 0, .column = 0 };
 
-    ctx_->init_includes();
-
     for (auto const& inc : prog.includes)
     {
         auto const& path = inc->path->value;
 
-        if (!ctx_->load_include(path))
+        for (auto const& entry : includes_)
         {
-            throw error(std::format("duplicated include file {}", path));
+            if (entry == path)
+                throw error(std::format("duplicated include file {}", path));
         }
+
+        ctx_->load_include(path);
+        includes_.push_back(path);
     }
 
     for (auto const& dec : prog.declarations)
     {
+        if (dec->is<decl_dev_begin>())
+        {
+            developer_thread_ = true;
+            continue;
+        }
+
+        if (dec->is<decl_dev_end>())
+        {
+            developer_thread_ = false;
+            continue;
+        }
+
+        if (drop_dev())
+            continue;
+
         if (dec->is<decl_function>())
         {
             auto const& name = dec->as<decl_function>().name->value;
@@ -70,22 +89,40 @@ auto compiler::emit_program(program const& prog) -> void
         }
     }
 
+    developer_thread_ = false;
+
     for (auto const& dec : prog.declarations)
     {
         emit_decl(*dec);
     }
 }
 
+// A '/# #/' block is developer-only code. It is lexed and parsed in both builds so that
+// its syntax is checked either way, and a prod build drops it here instead.
+auto compiler::drop_dev() const -> bool
+{
+    return developer_thread_ && (ctx_->build() & build::dev_blocks) == build::prod;
+}
+
 auto compiler::emit_decl(decl const& dec) -> void
 {
+    if (dec.is<decl_dev_begin>())
+    {
+        developer_thread_ = true;
+        return;
+    }
+
+    if (dec.is<decl_dev_end>())
+    {
+        developer_thread_ = false;
+        return;
+    }
+
+    if (drop_dev())
+        return;
+
     switch (dec.kind())
     {
-        case node::decl_dev_begin:
-            developer_thread_ = true;
-            break;
-        case node::decl_dev_end:
-            developer_thread_ = false;
-            break;
         case node::decl_usingtree:
             emit_decl_usingtree(dec.as<decl_usingtree>());
             break;
@@ -246,9 +283,20 @@ auto compiler::emit_stmt(stmt const& stm, scope& scp, bool last) -> void
 
 auto compiler::emit_stmt_list(stmt_list const& stm, scope& scp, bool last) -> void
 {
+    // 'last' decides whether a branch ends with OP_End or jumps to the function epilogue,
+    // so a dev block a prod build is going to drop must not take the flag off the
+    // statement before it.
+    auto const* tail = static_cast<stmt const*>(nullptr);
+
     for (auto const& entry : stm.list)
     {
-        emit_stmt(*entry, scp, &entry == &stm.list.back() && last);
+        if (!(entry->is<stmt_dev>() && (ctx_->build() & build::dev_blocks) == build::prod))
+            tail = entry.get();
+    }
+
+    for (auto const& entry : stm.list)
+    {
+        emit_stmt(*entry, scp, entry.get() == tail && last);
     }
 }
 
@@ -259,6 +307,9 @@ auto compiler::emit_stmt_comp(stmt_comp const& stm, scope& scp, bool last) -> vo
 
 auto compiler::emit_stmt_dev(stmt_dev const& stm, scope& scp, bool last) -> void
 {
+    if ((ctx_->build() & build::dev_blocks) == build::prod)
+        return;
+
     emit_stmt_list(*stm.block, scp, last);
 }
 
@@ -733,8 +784,10 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
 
     can_break_ = true;
 
-    auto data = std::vector<std::string>{};
-    data.push_back(std::format("{}", stm.body->block->list.size()));
+    // Infinity Ward's compiler sorts the table descending by case value and puts default
+    // last -- 173 of 173 integer tables in data/bin/iw5 agree. The case bodies stay in
+    // source order, only the table is sorted, so each entry keeps its own label.
+    auto cases = std::vector<std::array<std::string, 3>>{};
 
     auto loc_default = std::string{};
     auto has_default = false;
@@ -746,19 +799,13 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
 
         if (entry->is<stmt_case>())
         {
-            data.emplace_back("case");
-
             if (entry->as<stmt_case>().value->is<expr_integer>())
             {
-                data.push_back(std::format("{}", static_cast<i32>(switch_type::integer)));
-                data.push_back(entry->as<stmt_case>().value->as<expr_integer>().value);
-                data.push_back(insert_label());
+                cases.push_back({ std::format("{}", static_cast<i32>(switch_type::integer)), entry->as<stmt_case>().value->as<expr_integer>().value, insert_label() });
             }
             else if (entry->as<stmt_case>().value->is<expr_string>())
             {
-                data.push_back(std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::string)));
-                data.push_back(entry->as<stmt_case>().value->as<expr_string>().value);
-                data.push_back(insert_label());
+                cases.push_back({ std::format("{}", static_cast<std::underlying_type_t<switch_type>>(switch_type::string)), entry->as<stmt_case>().value->as<expr_string>().value, insert_label() });
             }
             else
             {
@@ -794,6 +841,26 @@ auto compiler::emit_stmt_switch(stmt_switch const& stm, scope& scp) -> void
         {
             throw comp_error(entry->loc(), "missing case statement");
         }
+    }
+
+    // string cases keep source order: their key is the engine's string list id, which the
+    // bytecode does not carry in a form we can reproduce -- see plan/iw5-failures.md
+    std::ranges::stable_sort(cases, [](auto const& a, auto const& b) {
+        if (a[0] != b[0] || a[0] != std::format("{}", static_cast<i32>(switch_type::integer)))
+            return false;
+
+        return std::stoi(a[1]) > std::stoi(b[1]);
+    });
+
+    auto data = std::vector<std::string>{};
+    data.push_back(std::format("{}", stm.body->block->list.size()));
+
+    for (auto const& entry : cases)
+    {
+        data.emplace_back("case");
+        data.push_back(entry[0]);
+        data.push_back(entry[1]);
+        data.push_back(entry[2]);
     }
 
     if (has_default)
@@ -908,6 +975,19 @@ auto compiler::emit_expr(expr const& exp, scope& scp) -> void
 {
     debug_pos_ = { .line = exp.loc().begin.line, .column = exp.loc().begin.column };
 
+    // constant arithmetic is done here: stock bytecode has '1000 * 1000' as 1000000 and
+    // not one operator left between two constants
+    if (exp.is<expr_binary>() || exp.is<expr_negate>())
+    {
+        if (auto const value = fold_expr(exp); value.has_value())
+        {
+            if (std::holds_alternative<i64>(*value))
+                return emit_expr_integer(expr_integer{ exp.loc(), std::format("{}", std::get<i64>(*value)) });
+
+            return emit_expr_float(expr_float{ exp.loc(), utils::string::float_string(std::get<f32>(*value)) });
+        }
+    }
+
     switch (exp.kind())
     {
         case node::expr_paren:
@@ -1010,6 +1090,91 @@ auto compiler::emit_expr(expr const& exp, scope& scp) -> void
             break;
         default:
             throw comp_error(exp.loc(), "unknown expression");
+    }
+}
+
+// The value of an expression made of numbers only. Original source keeps most of its
+// numbers in named constants, 'sqr8 = 8 * 8;', so those and parentheses are seen through.
+auto compiler::fold_expr(expr const& exp) const -> std::optional<std::variant<i64, f32>>
+{
+    using value = std::variant<i64, f32>;
+
+    auto const as_float = [](value const& v) { return std::holds_alternative<i64>(v) ? static_cast<f32>(std::get<i64>(v)) : std::get<f32>(v); };
+
+    switch (exp.kind())
+    {
+        case node::expr_paren:
+            return fold_expr(*exp.as<expr_paren>().value);
+        case node::expr_identifier:
+        {
+            auto const itr = constants_.find(exp.as<expr_identifier>().value);
+            return (itr != constants_.end()) ? fold_expr(*itr->second) : std::nullopt;
+        }
+        case node::expr_integer:
+            return value{ static_cast<i64>(std::atoll(exp.as<expr_integer>().value.data())) };
+        case node::expr_float:
+            return value{ std::stof(exp.as<expr_float>().value) };
+        case node::expr_negate:
+        {
+            auto const rhs = fold_expr(*exp.as<expr_negate>().rvalue);
+
+            if (!rhs.has_value())
+                return std::nullopt;
+
+            if (std::holds_alternative<i64>(*rhs))
+                return value{ -std::get<i64>(*rhs) };
+
+            return value{ -std::get<f32>(*rhs) };
+        }
+        case node::expr_binary:
+        {
+            auto const& bin = exp.as<expr_binary>();
+            auto const lhs = fold_expr(*bin.lvalue);
+            auto const rhs = fold_expr(*bin.rvalue);
+
+            if (!lhs.has_value() || !rhs.has_value())
+                return std::nullopt;
+
+            if (std::holds_alternative<i64>(*lhs) && std::holds_alternative<i64>(*rhs))
+            {
+                auto const a = std::get<i64>(*lhs);
+                auto const b = std::get<i64>(*rhs);
+
+                switch (bin.oper)
+                {
+                    case expr_binary::op::add: return value{ a + b };
+                    case expr_binary::op::sub: return value{ a - b };
+                    case expr_binary::op::mul: return value{ a * b };
+                    case expr_binary::op::shl: return value{ a << (b & 63) };
+                    case expr_binary::op::shr: return value{ a >> (b & 63) };
+                    case expr_binary::op::bwor: return value{ a | b };
+                    case expr_binary::op::bwand: return value{ a & b };
+                    case expr_binary::op::bwexor: return value{ a ^ b };
+                    case expr_binary::op::mod:
+                        if (b == 0) return std::nullopt;
+                        return value{ a % b };
+                    case expr_binary::op::div:
+                        // dividing two integers gives a float: '60 / 130' is 0.46153846
+                        break;
+                    default:
+                        return std::nullopt;
+                }
+            }
+
+            auto const a = as_float(*lhs);
+            auto const b = as_float(*rhs);
+
+            switch (bin.oper)
+            {
+                case expr_binary::op::add: return value{ a + b };
+                case expr_binary::op::sub: return value{ a - b };
+                case expr_binary::op::mul: return value{ a * b };
+                case expr_binary::op::div: return (b == 0.0f) ? std::nullopt : std::optional{ value{ a / b } };
+                default: return std::nullopt;
+            }
+        }
+        default:
+            return std::nullopt;
     }
 }
 
@@ -1873,7 +2038,9 @@ auto compiler::emit_expr_array(expr_array const& exp, scope& scp) -> void
 {
     emit_expr(*exp.key, scp);
 
-    if (exp.obj->is<expr_identifier>())
+    // A constant is not a local, so it cannot take the cached-local shortcut: let
+    // emit_expr substitute its value the way a plain read of it would.
+    if (exp.obj->is<expr_identifier>() && !constants_.contains(exp.obj->as<expr_identifier>().value))
     {
         emit_opcode(opcode::OP_EvalLocalArrayCached, std::format("{}", variable_access(exp.obj->as<expr_identifier>(), scp)));
     }
@@ -2006,29 +2173,20 @@ auto compiler::emit_expr_object(expr const& exp, scope& scp) -> void
 
 auto compiler::emit_expr_vector(expr_vector const& exp, scope& scp) -> void
 {
+    // A vector of numbers is one OP_GetVector. A component counts as a number once it folds
+    // to one: stock has ( 30, 15, 1000 * 12 ) and ( RUN_PAIN_LONG, 0, 0 ) as literals too.
     auto data = std::vector<std::string>{};
     auto isexpr = false;
 
-    if (exp.x->is<expr_integer>())
-        data.push_back(exp.x->as<expr_integer>().value);
-    else if (exp.x->is<expr_float>())
-        data.push_back(exp.x->as<expr_float>().value);
-    else
-        isexpr = true;
-
-    if (exp.y->is<expr_integer>())
-        data.push_back(exp.y->as<expr_integer>().value);
-    else if (exp.y->is<expr_float>())
-        data.push_back(exp.y->as<expr_float>().value);
-    else
-        isexpr = true;
-
-    if (exp.z->is<expr_integer>())
-        data.push_back(exp.z->as<expr_integer>().value);
-    else if (exp.z->is<expr_float>())
-        data.push_back(exp.z->as<expr_float>().value);
-    else
-        isexpr = true;
+    for (auto const* axis : { exp.x.get(), exp.y.get(), exp.z.get() })
+    {
+        if (auto const value = fold_expr(*axis); !value.has_value())
+            isexpr = true;
+        else if (std::holds_alternative<i64>(*value))
+            data.push_back(std::format("{}", std::get<i64>(*value)));
+        else
+            data.push_back(utils::string::float_string(std::get<f32>(*value)));
+    }
 
     if (!isexpr)
     {
@@ -2322,6 +2480,11 @@ auto compiler::process_stmt_comp(stmt_comp const& stm, scope& scp) -> void
 
 auto compiler::process_stmt_dev(stmt_dev const& stm, scope& scp) -> void
 {
+    // Dropped code declares no locals, so a prod build must not walk it: the variables in
+    // there would take stack slots and shift every index after them.
+    if ((ctx_->build() & build::dev_blocks) == build::prod)
+        return;
+
     process_stmt_list(*stm.block, scp);
 }
 
@@ -2685,7 +2848,7 @@ auto compiler::process_expr_parameters(expr_parameters const& exp, scope& scp) -
 
 auto compiler::variable_register(expr_identifier const& exp, scope& scp) -> void
 {
-    auto it = std::find_if(scp.vars.begin(), scp.vars.end(), [&](scope::var const& v) { return v.name == exp.value; });
+    auto it = std::ranges::find_if(scp.vars, [&](scope::var const& v) { return v.name == exp.value; });
 
     if (it == scp.vars.end())
     {
@@ -2810,7 +2973,7 @@ auto compiler::resolve_function_type(expr_function const& exp, std::string& path
             return call::type::local;
     }
 
-    if (ctx_->is_includecall(name, path))
+    if (is_includecall(name, path))
         return call::type::far;
 
     throw comp_error(exp.loc(), "couldn't determine function call type");
@@ -2844,10 +3007,29 @@ auto compiler::resolve_reference_type(expr_reference const& exp, std::string& pa
             return call::type::local;
     }
 
-    if (ctx_->is_includecall(name, path))
+    if (is_includecall(name, path))
         return call::type::far;
 
     throw comp_error(exp.loc(), "couldn't determine function reference type");
+}
+
+// Searched in the order the file declares its includes, so a name defined by two of
+// them resolves to the same one on every platform.
+auto compiler::is_includecall(std::string const& name, std::string& path) const -> bool
+{
+    for (auto const& inc : includes_)
+    {
+        for (auto const& fun : ctx_->include_functions(inc))
+        {
+            if (name == fun)
+            {
+                path = inc;
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 auto compiler::is_constant_condition(expr const& exp) -> bool
@@ -2861,11 +3043,16 @@ auto compiler::is_constant_condition(expr const& exp) -> bool
             throw comp_error(exp.loc(), "condition can't be always false");
         case node::expr_integer:
         {
-            auto num = std::stoi(exp.as<expr_integer>().value);
-            if (num != 0)
+            // Only whether the literal is non-zero matters, and a literal can be wider
+            // than int, so it must not be parsed as one: 'while ( 4294967295 )' is a
+            // perfectly good always-true condition. strtoull saturates instead of
+            // throwing, and a saturated value is non-zero either way.
+            auto const& val = exp.as<expr_integer>().value;
+
+            if (std::strtoull(val.data(), nullptr, 0) != 0)
                 return true;
-            else
-                throw comp_error(exp.loc(), "condition can't be always false");
+
+            throw comp_error(exp.loc(), "condition can't be always false");
         }
         default:
             break;

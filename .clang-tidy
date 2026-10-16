@@ -1,6 +1,4 @@
 ---
-# set inicial conservador. Ampliar (modernize-*, cppcoreguidelines-*)
-# cuando la primera pasada esté limpia.
 Checks: >
   -*,
   bugprone-*,
@@ -49,6 +47,6 @@ WarningsAsErrors: ''
 FormatStyle: file
 
 CheckOptions:
-  # DeMorgan sobre los rangos de char del lexer los hace menos legibles:
-  # `!(c > 47 && c < 58)` ("no es dígito") > `c <= 47 || c >= 58`.
+  # DeMorgan makes the lexer's char-range checks less readable:
+  # `!(c > 47 && c < 58)` ("not a digit") reads better than `c <= 47 || c >= 58`.
   readability-simplify-boolean-expr.SimplifyDeMorgan: false

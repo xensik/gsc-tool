@@ -16,6 +16,7 @@ private:
     context* ctx_;
     assembly::ptr assembly_;
     function::ptr function_;
+    std::vector<std::string> includes_;
     std::vector<std::string> localfuncs_;
     std::vector<std::string> stackframe_;
     std::unordered_map<std::string, expr const*> constants_;
@@ -38,6 +39,7 @@ public:
 
 private:
     auto emit_program(program const& prog) -> void;
+    auto drop_dev() const -> bool;
     auto emit_decl(decl const& dec) -> void;
     auto emit_decl_usingtree(decl_usingtree const& animtree) -> void;
     auto emit_decl_constant(decl_constant const& constant) -> void;
@@ -73,6 +75,7 @@ private:
     auto emit_stmt_assertex(stmt_assertex const& stm, scope& scp) -> void;
     auto emit_stmt_assertmsg(stmt_assertmsg const& stm, scope& scp) -> void;
     auto emit_expr(expr const& exp, scope& scp) -> void;
+    auto fold_expr(expr const& exp) const -> std::optional<std::variant<i64, f32>>;
     auto emit_expr_assign(expr_assign const& exp, scope& scp) -> void;
     auto emit_expr_clear(expr const& exp, scope& scp) -> void;
     auto emit_expr_clear_local(expr_identifier const& exp, scope& scp) -> void;
@@ -145,6 +148,7 @@ private:
     auto variable_initialize(expr_identifier const& exp, scope& scp) -> u8;
     auto variable_create(expr_identifier const& exp, scope& scp) -> u8;
     auto variable_access(expr_identifier const& exp, scope& scp) -> u8;
+    auto is_includecall(std::string const& name, std::string& path) const -> bool;
     auto resolve_function_type(expr_function const& exp, std::string& path) -> call::type;
     auto resolve_reference_type(expr_reference const& exp, std::string& path, bool& method) -> call::type;
     auto is_constant_condition(expr const& exp) -> bool;

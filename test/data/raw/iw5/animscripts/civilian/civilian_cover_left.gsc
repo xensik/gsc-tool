@@ -1,0 +1,4 @@
+main()
+{
+	animscripts\civilian::cover();
+}

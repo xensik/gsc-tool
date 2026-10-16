@@ -17,6 +17,7 @@ private:
     program::ptr program_;
     decl_function::ptr func_;
     std::unordered_map<usize, std::string> labels_;
+    std::unordered_set<std::string> iters_;
     std::vector<std::string> expr_labels_;
     std::vector<std::string> tern_labels_;
     std::stack<node::ptr> stack_;
@@ -40,6 +41,7 @@ private:
     auto decompile_if(stmt_list& stm, usize begin, usize end) -> void;
     auto decompile_ifelse(stmt_list& stm, usize begin, usize end) -> void;
     auto decompile_ifelse_end(stmt_list& stm, usize begin, usize end) -> void;
+    auto decompile_if_last(stmt_list& stm, usize begin, usize end) -> void;
     auto decompile_inf(stmt_list& stm, usize begin, usize end) -> void;
     auto decompile_loop(stmt_list& stm, usize begin, usize end) -> void;
     auto decompile_while(stmt_list& stm, usize begin, usize end) -> void;

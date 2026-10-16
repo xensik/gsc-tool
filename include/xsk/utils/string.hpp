@@ -10,6 +10,14 @@ namespace xsk::utils
 
 struct string
 {
+    using error = std::runtime_error;
+
+    struct operand
+    {
+        std::string text;
+        bool quoted;
+    };
+
     static auto oct_to_dec(char const* str) -> std::string;
     static auto bin_to_dec(char const* str) -> std::string;
     static auto hex_to_dec(char const* str) -> std::string;
@@ -25,7 +33,8 @@ struct string
     static auto unquote(std::string const& str) -> std::string;
     static auto split(std::string& str, char delimiter) -> std::vector<std::string>;
     static auto clean_buffer_lines(u8 const* data, usize size) -> std::vector<std::string>;
-    static auto parse_code(std::string& line) -> std::vector<std::string>;
+    static auto to_operand(std::string const& str) -> std::string;
+    static auto parse_operands(std::string_view line) -> std::vector<operand>;
     static auto float_string(float value, bool toint = false) -> std::string;
 };
 

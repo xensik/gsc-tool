@@ -16,7 +16,23 @@ struct lookahead
     char curr_byte{ 0 };
 
     lookahead(char const* data, usize size);
-    auto advance() -> void;
+
+    auto advance() -> void
+    {
+        ++position;
+        last_byte = curr_byte;
+
+        if (available == 0 || --available == 0) [[unlikely]]
+        {
+            available = 0;
+            curr_byte = 0;
+        }
+        else
+        {
+            curr_byte = *position;
+        }
+    }
+
     auto ended() const { return available == 0; };
 };
 

@@ -13,7 +13,9 @@ extern std::array<std::pair<u16, char const*>, func_count> const func_list;
 extern std::array<std::pair<u16, char const*>, meth_count> const meth_list;
 extern std::array<std::pair<u32, char const*>, token_count> const token_list;
 
-context::context(gsc::instance inst) : gsc::context(feature::none, engine::iw5, endian::little, system::pc, inst, max_string_id)
+// The re-release is the same engine built 64 bit: same builtins, same string ids,
+// only the animation reference in the bytecode grew from 4 to 8 bytes.
+context::context(gsc::instance inst, gsc::system system) : gsc::context(system == gsc::system::pc64 ? feature::anim8 : feature::none, engine::iw5, endian::little, system, inst, max_string_id)
 {
     code_map_.reserve(code_list.size());
     code_map_rev_.reserve(code_list.size());

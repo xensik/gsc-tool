@@ -5,12 +5,14 @@
 
 #pragma once
 
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <deque>
 #include <filesystem>
 #include <format>
@@ -20,16 +22,17 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <queue>
-#include <regex>
 #include <set>
-#include <sstream>
+#include <span>
 #include <stack>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 #include <vector>
 #include <version>
 

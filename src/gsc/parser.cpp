@@ -80,10 +80,12 @@ auto parser::parse_assembly(u8 const* data, const usize size) const -> assembly:
     auto assembly = assembly::make();
     auto func = function::ptr{ nullptr };
     auto index = usize{ 1 };
-    auto count = u16{ 0 };
+    auto count = u32{ 0 };
 
     for (auto& line : lines)
     {
+        line.erase(0, line.find_first_not_of(' '));
+
         if (line.empty() || line.starts_with("//"))
             continue;
 
@@ -92,15 +94,23 @@ auto parser::parse_assembly(u8 const* data, const usize size) const -> assembly:
             if (func != nullptr)
                 throw asm_error("unclosed function \""s + func->name + "\"");
 
+            auto const opdata = utils::string::parse_operands(std::string_view{ line }.substr(4));
+
+            if (opdata.size() != 1)
+                throw asm_error("invalid function header \""s + line + "\"");
+
             func = function::make();
             func->index = index;
-            func->name = line.substr(4);
+            func->name = opdata[0].text;
             func->id = ctx_->token_id(func->name);
             continue;
         }
 
         if (line.starts_with("end:") && func != nullptr)
         {
+            if (count)
+                throw asm_error("unclosed endswitch in function \""s + func->name + "\"");
+
             func->size = index - func->index;
             assembly->functions.push_back(std::move(func));
             func = nullptr;
@@ -116,40 +126,62 @@ auto parser::parse_assembly(u8 const* data, const usize size) const -> assembly:
         if (func == nullptr)
             throw asm_error("instruction outside function \""s + line + "\"");
 
-        auto opdata = utils::string::parse_code(line);
+        auto opdata = utils::string::parse_operands(line);
 
         if (count)
         {
-            if (opdata[0] != "case" && opdata[0] != "default")
-                throw asm_error("invalid instruction inside endswitch \""s + line + "\"");
+            auto& table = func->instructions.back()->data;
 
-            for (auto const& entry : opdata)
-                func->instructions.back()->data.push_back(entry);
+            // case value label | default label, the printer leaves the case type out
+            if (opdata.size() == 3 && opdata[0].text == "case")
+            {
+                table.emplace_back("case");
+                table.push_back(std::format("{}", static_cast<i32>(opdata[1].quoted ? switch_type::string : switch_type::integer)));
+                table.push_back(opdata[1].text);
+                table.push_back(opdata[2].text);
+            }
+            else if (opdata.size() == 2 && opdata[0].text == "default")
+            {
+                table.emplace_back("default");
+                table.push_back(opdata[1].text);
+            }
+            else
+            {
+                throw asm_error("invalid instruction inside endswitch \""s + line + "\"");
+            }
 
             count--;
             continue;
         }
 
+        // the assembler writes offsets straight from these, so index and size
+        // have to come out the way the disassembler computes them
         auto inst = instruction::make();
         inst->index = index;
-        inst->opcode = ctx_->opcode_enum(opdata[0]);
+        inst->opcode = ctx_->opcode_enum(opdata[0].text);
         inst->size = ctx_->opcode_size(inst->opcode);
-        opdata.erase(opdata.begin());
-        inst->data = std::move(opdata);
+
+        for (auto i = 1u; i < opdata.size(); i++)
+            inst->data.push_back(std::move(opdata[i].text));
 
         switch (inst->opcode)
         {
             case opcode::OP_GetVector:
                 if (ctx_->endian() == endian::big)
-                    inst->size += (inst->index + 4 & ~3) - (inst->index + 1);
+                    inst->size += ((inst->index + 4) & ~usize{ 3 }) - (inst->index + 1);
                 break;
             case opcode::OP_endswitch:
-                count = static_cast<u16>(std::stoul(inst->data[0]));
-                inst->size += usize{ 7 } * count;
+                if (inst->data.empty())
+                    throw asm_error("missing endswitch count \""s + line + "\"");
+
+                count = static_cast<u32>(std::stoul(inst->data[0]));
+                inst->size += usize{ ctx_->engine() == engine::iw9 ? 8u : 7u } * count;
                 break;
             case opcode::OP_FormalParams:
-                count = static_cast<u8>(std::stoul(inst->data[0]));
-                inst->size += ctx_->features() & feature::hash ? count * 8 : count;
+                if (inst->data.empty())
+                    throw asm_error("missing params count \""s + line + "\"");
+
+                inst->size += std::stoul(inst->data[0]) * ((ctx_->features() & feature::hash) ? 8 : 1);
                 break;
             default:
                 break;
@@ -231,8 +263,9 @@ auto parser::parse_inline() -> void
     auto const loc = tok_.pos;
     expect(token::INLINE);
     auto const path = parse_expr_path();
-    expect(token::SEMICOLON);
+    // push before consuming ';' so the next token is lexed from the header
     ppr_.push_header(loc, path->value);
+    expect(token::SEMICOLON);
 }
 
 auto parser::parse_declaration() -> decl::ptr
@@ -321,14 +354,37 @@ auto parser::parse_stmt() -> stmt::ptr
         case token::CONTINUE:         return parse_stmt_continue();
         case token::RETURN:           return parse_stmt_return();
         case token::BREAKPOINT:       return parse_stmt_breakpoint();
-        case token::PROFBEGIN:        return parse_stmt_prof_begin();
-        case token::PROFEND:          return parse_stmt_prof_end();
-        case token::ASSERT:           return parse_stmt_assert();
-        case token::ASSERTEX:         return parse_stmt_assertex();
-        case token::ASSERTMSG:        return parse_stmt_assertmsg();
+
+        // These read like calls and are only keywords when they are being called. Original
+        // source also uses them as ordinary variables — maps/_spawner.gsc has both
+        // 'assert( p == 1 );' and 'assert = false;' — the same way 'size' is allowed to be
+        // a variable name. Without a '(' they fall through and parse as an identifier.
+        case token::PROFBEGIN:
+            if (peek().type == token::LPAREN)
+                return parse_stmt_prof_begin();
+            break;
+        case token::PROFEND:
+            if (peek().type == token::LPAREN)
+                return parse_stmt_prof_end();
+            break;
+        case token::ASSERT:
+            if (peek().type == token::LPAREN)
+                return parse_stmt_assert();
+            break;
+        case token::ASSERTEX:
+            if (peek().type == token::LPAREN)
+                return parse_stmt_assertex();
+            break;
+        case token::ASSERTMSG:
+            if (peek().type == token::LPAREN)
+                return parse_stmt_assertmsg();
+            break;
+
         default:
-            return parse_stmt_call_or_assign();
+            break;
     }
+
+    return parse_stmt_call_or_assign();
 }
 
 auto parser::parse_stmt_or_dev() -> stmt::ptr
@@ -480,7 +536,7 @@ auto parser::parse_stmt_expr() -> stmt_expr::ptr
     return stmt_expr::make(loc, std::move(obj));
 }
 
-auto parser::parse_stmt_for_expr() -> stmt_expr::ptr
+auto parser::parse_stmt_for_expr() -> stmt::ptr
 {
     auto loc = tok_.pos;
 
@@ -488,6 +544,25 @@ auto parser::parse_stmt_for_expr() -> stmt_expr::ptr
     if (check(token::SEMICOLON) || check(token::RPAREN))
     {
         return stmt_expr::make(loc, expr_empty::make(loc));
+    }
+
+    // 'wait' and 'waitframe' are statements, not expressions, so they need their own
+    // arms here: 'for ( ;; wait 0.05 )' and 'for ( ; cond; waitframe() )' are both
+    // idiomatic in original source.
+    if (check(token::WAIT))
+    {
+        advance();
+        return stmt_wait::make(loc, parse_expr());
+    }
+
+    if (check(token::WAITFRAME))
+    {
+        advance();
+
+        if (match(token::LPAREN))
+            expect(token::RPAREN);
+
+        return stmt_waitframe::make(loc);
     }
 
     // prefix increment
@@ -546,7 +621,14 @@ auto parser::parse_stmt_for_expr() -> stmt_expr::ptr
         return stmt_expr::make(loc, expr_decrement::make(loc, std::move(obj), false));
     }
 
-    error("expected assignment or increment/decrement in for-loop");
+    // A bare call. Engines without feature::waitframe reach 'waitframe()' this way, since
+    // there it is an ordinary function rather than a keyword.
+    if (obj->is<expr_call>() || obj->is<expr_method>())
+    {
+        return stmt_expr::make(loc, std::move(obj));
+    }
+
+    error("expected assignment, increment/decrement, call or wait in for-loop");
 }
 
 auto parser::parse_stmt_call_or_assign() -> stmt::ptr
@@ -1428,9 +1510,17 @@ auto parser::parse_expr_primary() -> expr::ptr
         }
 
         case token::SIZE:
+        case token::PROFBEGIN:
+        case token::PROFEND:
+        case token::ASSERT:
+        case token::ASSERTEX:
+        case token::ASSERTMSG:
         {
+            // Not a call here, so it is a plain identifier. tok_.data still holds the
+            // spelling the lexer lowercased before turning it into a keyword.
+            auto name = tok_.data;
             advance();
-            return expr_identifier::make(loc, "size");
+            return parse_expr_postfix(expr_identifier::make(loc, std::move(name)));
         }
 
         default:
@@ -1840,11 +1930,21 @@ auto parser::parse_expr_paren_or_vector() -> expr::ptr
         expect(token::COMMA);
         auto third = parse_expr();
         expect(token::RPAREN);
-        return expr_vector::make(loc, std::move(first), std::move(second), std::move(third));
+        return parse_expr_postfix(expr_vector::make(loc, std::move(first), std::move(second), std::move(third)));
     }
 
     expect(token::RPAREN);
-    return expr_paren::make(loc, std::move(first));
+
+    // A parenthesised expression can be the base of a field, array or method access:
+    // '( GetAIArray() ).size', '( self GetPlayerAngles() )[ 1 ]', '( a b() ) c()'. The
+    // parens are only grouping there, so the chain is built on the inner expression and
+    // '(X).f' compiles exactly like 'X.f' — no wrapper for the compiler to see through.
+    // If nothing follows, parse_expr_postfix hands the same node straight back and the
+    // parens are kept so the printer can put them where the source had them.
+    auto const* inner = first.get();
+    auto node = parse_expr_postfix(std::move(first));
+
+    return node.get() == inner ? expr_paren::make(loc, std::move(node)) : std::move(node);
 }
 
 auto parser::parse_expr_tuple() -> expr::ptr
@@ -2116,7 +2216,7 @@ auto parser::expect(const token::kind kind) -> token
 {
     if (tok_.type != kind)
     {
-        throw comp_error(tok_.pos, std::format("expected '{}', got '{}'", token(kind, spacing::null, location{}).to_string(), tok_.to_string()));
+        throw comp_error(tok_.pos, std::format("expected '{}', got '{}'", token::name(kind), tok_.to_string()));
     }
 
     return advance();

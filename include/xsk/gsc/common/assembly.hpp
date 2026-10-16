@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "xsk/pool.hpp"
+
 namespace xsk::gsc
 {
 
@@ -229,6 +231,8 @@ struct sourcepos
 struct instruction
 {
     using ptr = std::unique_ptr<instruction>;
+
+    XSK_POOLED
 
     usize index{};
     usize size{};

@@ -11,7 +11,18 @@
 namespace xsk::arc
 {
 
-lexer::lexer(context const* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, reader_{ data, size }, loc_{ &name }
+namespace
+{
+
+// a source file saved as UTF-8 with a byte order mark starts with EF BB BF
+auto bom_size(char const* data, usize size) -> usize
+{
+    return (size >= 3 && std::memcmp(data, "\xEF\xBB\xBF", 3) == 0) ? 3 : 0;
+}
+
+} // anonymous namespace
+
+lexer::lexer(context const* ctx, std::string const& name, char const* data, usize size) : ctx_{ ctx }, reader_{ data + bom_size(data, size), size - bom_size(data, size) }, loc_{ &name }
 {
 }
 
@@ -44,7 +55,7 @@ auto lexer::lex() -> token
         if (last == 0 || last == '\n')
             spacing_ = spacing::null;
         else if (last == ' ' || last == '\t')
-            spacing_ = (spacing_ == spacing::null) ? spacing::empty : spacing::back;
+            spacing_ = (spacing_ == spacing::null || spacing_ == spacing::empty) ? spacing::empty : spacing::back;
         else
             spacing_ = spacing::none;
 
@@ -80,7 +91,7 @@ auto lexer::lex() -> token
                     if ((ctx_->build() & build::dev_blocks) != build::prod)
                     {
                         indev_ = true;*/
-                        return token{ token::DEVBEGIN, spacing_, loc_ };
+                    return token{ token::DEVBEGIN, spacing_, loc_ };
                     /*}
                     else
                     {
@@ -255,7 +266,7 @@ auto lexer::lex() -> token
 
                 return token{ token::PLUSEQ, spacing_, loc_ };
             case '-':
-                if (curr != '-' && curr != '=' && (curr != '>' && ctx_->features() & feature::size64))
+                if (curr != '-' && curr != '=' && !(curr == '>' && (ctx_->features() & feature::size64)))
                     return token{ token::MINUS, spacing_, loc_ };
 
                 advance();
@@ -472,12 +483,15 @@ auto lexer::lex() -> token
                     push(curr);
                     advance();
 
-                    // TODO: check stream end
-                    if (curr == '+' || curr == '-')
+                    if (!reader_.ended() && (curr == '+' || curr == '-'))
                     {
                         push(curr);
                         advance();
                     }
+
+                    if (reader_.ended() || !(curr > 47 && curr < 58))
+                        throw comp_error(loc_, "invalid number literal");
+
                     continue;
                 }
                 else if (!(curr > 47 && curr < 58))
@@ -493,7 +507,8 @@ auto lexer::lex() -> token
             if (dot > 1 || flt > 1 || (flt && buffer_[buflen_ - 1] != 'f'))
                 throw comp_error(loc_, "invalid number literal");
 
-            // TODO: exp can be int or float
+            // an exponent always yields a float, as in C: 1e5 is a floating literal
+            // even though its value is integral
             if (dot || flt || exp)
                 return token{ token::FLT, spacing_, loc_, std::string{ buffer_.data(), buflen_ } };
 
@@ -639,8 +654,7 @@ auto lexer::linewrap() -> void
             reader_.position += 3;
             reader_.available -= 3;
         }
-
-        if ((reader_.position[1] == '\n'))
+        else // '\n', the only other option the check above lets through
         {
             if (reader_.available == 2)
                 throw comp_error(loc_, "invalid token ('\\')");

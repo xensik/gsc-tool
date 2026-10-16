@@ -168,7 +168,10 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             script_.write<u32>(static_cast<u32>(std::stoul(inst.data[0])));
             break;
         case opcode::OP_GetInteger:
-            script_.write<i32>(std::stoi(inst.data[0]));
+            // A literal wider than 32 bits is truncated, not rejected: original source has
+            // 'best_err = 9999999999;' and 'SetExpFog( 100000000000, ... )', and the engine's
+            // integers are 32 bit. std::stoi would throw out_of_range on both.
+            script_.write<i32>(static_cast<i32>(std::strtoll(inst.data[0].data(), nullptr, 0)));
             break;
         case opcode::OP_GetInteger64:
             script_.write<i64>(std::stoll(inst.data[0]));
@@ -177,7 +180,12 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             script_.write<f32>(std::stof(inst.data[0]));
             break;
         case opcode::OP_GetVector:
-            script_.align(ctx_->endian() == endian::little ? 1 : 4);
+            // Stock big endian bytecode repeats the opcode in the last alignment byte before the payload.
+            if (script_.align(ctx_->endian() == endian::little ? 1 : 4) > 0)
+            {
+                script_.pos(script_.pos() - 1);
+                script_.write<u8>(ctx_->opcode_id(inst.opcode));
+            }
             script_.write<f32>(std::stof(inst.data[0]));
             script_.write<f32>(std::stof(inst.data[1]));
             script_.write<f32>(std::stof(inst.data[2]));
@@ -191,7 +199,7 @@ auto assembler::assemble_instruction(instruction const& inst) -> void
             stack_.write_cstr(encrypt_string(inst.data[0]));
             break;
         case opcode::OP_GetAnimation:
-            if (ctx_->features() & feature::str4)
+            if (ctx_->features() & (feature::str4 | feature::anim8))
                 script_.write<u64>(0);
             else
                 script_.write<u32>(0);
@@ -457,7 +465,8 @@ auto assembler::assemble_call_builtin(instruction const& inst, const bool method
 
     if (ctx_->features() & feature::hash)
     {
-        stack_.write_cstr(std::format("#xS{:x}", ctx_->hash_id(inst.data[0])));
+        // not hash_id: an unnamed builtin prints as _func_<hash> or _meth_<hash>
+        stack_.write_cstr(std::format("#xS{:x}", method ? ctx_->meth_id_v2(inst.data[0]) : ctx_->func_id_v2(inst.data[0])));
         script_.write<u16>(0);
     }
     else
@@ -491,30 +500,31 @@ auto assembler::assemble_switch_table(instruction const& inst) -> void
 {
     auto const count = std::stoul(inst.data[0]);
     auto index = inst.index + 3u;
+    auto entry = usize{ 1 };
 
     script_.write<u16>(static_cast<u16>(count));
 
     for (auto i = 0u; i < count; i++)
     {
-        if (inst.data[1 + 4 * i] == "case")
+        if (inst.data[entry] == "case")
         {
-            auto type = static_cast<switch_type>(std::stoul(inst.data[1 + 4 * i + 1]));
+            auto type = static_cast<switch_type>(std::stoul(inst.data[entry + 1]));
 
             if (type == switch_type::integer)
             {
                 if (ctx_->engine() == engine::iw9)
-                    script_.write<u32>(std::stoi(inst.data[1 + 4 * i + 2])); // signed?
+                    script_.write<u32>(std::stoi(inst.data[entry + 2])); // signed?
                 else
-                    script_.write<u32>((std::stoi(inst.data[1 + 4 * i + 2]) & 0xFFFFFF) + 0x800000);
+                    script_.write<u32>((std::stoi(inst.data[entry + 2]) & 0xFFFFFF) + 0x800000);
             }
             else
             {
                 // TODO: Sledgehammer's shenanigans (string id == 0)
                 script_.write<u32>((ctx_->engine() == engine::iw9) ? 0 : i + 1);
-                stack_.write_cstr(encrypt_string(inst.data[1 + 4 * i + 2]));
+                stack_.write_cstr(encrypt_string(inst.data[entry + 2]));
             }
 
-            auto const addr = resolve_label(inst.data[1 + 4 * i + 3]);
+            auto const addr = resolve_label(inst.data[entry + 3]);
 
             if (ctx_->engine() == engine::iw9)
             {
@@ -528,10 +538,12 @@ auto assembler::assemble_switch_table(instruction const& inst) -> void
                 assemble_offset(static_cast<i32>(addr - index - 4));
                 index += 7;
             }
+
+            entry += 4;
         }
-        else if (inst.data[1 + 4 * i] == "default")
+        else if (inst.data[entry] == "default")
         {
-            auto const addr = resolve_label(inst.data[1 + 4 * i + 1]);
+            auto const addr = resolve_label(inst.data[entry + 1]);
 
             if (ctx_->engine() == engine::iw9)
             {
@@ -548,6 +560,10 @@ auto assembler::assemble_switch_table(instruction const& inst) -> void
                 assemble_offset(static_cast<i32>(addr - index - 4));
                 index += 7;
             }
+
+            // a default holds two fields where a case holds four, and stock tables
+            // do not always put it last
+            entry += 2;
         }
         else
         {

@@ -13,7 +13,7 @@ namespace xsk::gsc::iw6_xb
 
 constexpr usize code_count = 153;
 constexpr usize func_count = 591;
-constexpr usize meth_count = 1066;
+constexpr usize meth_count = 1050;
 constexpr usize token_count = 36604;
 constexpr u32 max_string_id = 0x95A1;
 

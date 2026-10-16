@@ -48,7 +48,8 @@ enum class endian : u8
 
 enum class system : u8
 {
-    pc,
+    pc32,
+    pc64,
     ps3,
     xb2,
 };
@@ -80,10 +81,11 @@ struct feature
         boolnotand = 1 << 5,  // !&& expr opcode
         offs8      = 1 << 6,  // offset shift by 8
         offs9      = 1 << 7,  // offset shift by 9
-        extension  = 1 << 8,  // s4 extension
+        extension  = 1 << 8,  // farcall paths keep extension
         hash       = 1 << 9,  // iw9 identifiers
         farcall    = 1 << 10, // iw9 new call system
         foreach    = 1 << 11, // iw9 foreach
+        anim8      = 1 << 12, // animation ref size 8
     };
 
     feature(const values value) : value_(value) {}
@@ -104,6 +106,16 @@ struct feature
 
 private:
     values value_;
+};
+
+// string obfuscation routines
+enum class crypt : u8
+{
+    none,
+    mul,
+    add,
+    sub,
+    rot,
 };
 
 enum class switch_type

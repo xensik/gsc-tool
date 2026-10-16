@@ -14,7 +14,7 @@ extern std::array<std::pair<u64, char const*>, meth_count> const meth_list;
 extern std::array<std::pair<u64, char const*>, path_count> const path_list;
 extern std::array<std::pair<u64, char const*>, hash_count> const hash_list;
 
-context::context(gsc::instance inst) : gsc::context(feature::str4 | feature::waitframe | feature::params | feature::boolfuncs | feature::boolnotand | feature::hash | feature::farcall | feature::foreach, engine::iw9, endian::little, system::pc, inst, 0)
+context::context(gsc::instance inst) : gsc::context(feature::str4 | feature::waitframe | feature::params | feature::boolfuncs | feature::boolnotand | feature::hash | feature::farcall | feature::foreach, engine::iw9, endian::little, system::pc64, inst, 0)
 {
     code_map_.reserve(code_list.size());
     code_map_rev_.reserve(code_list.size());

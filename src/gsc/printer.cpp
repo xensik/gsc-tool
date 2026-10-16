@@ -51,7 +51,7 @@ auto printer::print_assembly(assembly const& data) -> void
 
 auto printer::print_function(function const& func) -> void
 {
-    std::format_to(std::back_inserter(buf_), "\nsub:{}\n", func.name);
+    std::format_to(std::back_inserter(buf_), "\nsub:{}\n", utils::string::to_operand(func.name));
 
     for (auto const& inst : func.instructions)
     {
@@ -63,7 +63,7 @@ auto printer::print_function(function const& func) -> void
         print_instruction(*inst);
     }
 
-    std::format_to(std::back_inserter(buf_), "end:{}\n", func.name);
+    std::format_to(std::back_inserter(buf_), "end:{}\n", utils::string::to_operand(func.name));
 }
 
 auto printer::print_instruction(instruction const& inst) -> void
@@ -113,7 +113,7 @@ auto printer::print_instruction(instruction const& inst) -> void
         default:
             for (auto const& entry : inst.data)
             {
-                std::format_to(std::back_inserter(buf_), " {}", entry);
+                std::format_to(std::back_inserter(buf_), " {}", utils::string::to_operand(entry));
             }
             break;
     }
@@ -373,9 +373,11 @@ auto printer::print_stmt_comp(stmt_comp const& stm) -> void
 
 auto printer::print_stmt_dev(stmt_dev const& stm) -> void
 {
+    indent_ -= 4;
     std::format_to(std::back_inserter(buf_), "/#\n");
     print_stmt_list(*stm.block);
     std::format_to(std::back_inserter(buf_), "\n#/");
+    indent_ += 4;
 }
 
 auto printer::print_stmt_expr(stmt_expr const& stm) -> void
@@ -620,22 +622,41 @@ auto printer::print_stmt_dowhile(stmt_dowhile const& stm) -> void
 
 auto printer::print_stmt_for(stmt_for const& stm) -> void
 {
-    if (stm.test->is<expr_empty>())
+    // An empty clause gets no padding: 'for (;;)', 'for (; i < 3; i++ )', 'for ( i = 0; i < 3;)'. The parser marks
+    // an empty init/iter as an empty expression, the decompiler as an empty statement.
+    auto const empty = [](stmt const& s) { return s.is<stmt_empty>() || (s.is<stmt_expr>() && s.as<stmt_expr>().value->is<expr_empty>()); };
+    auto const init = !empty(*stm.init);
+    auto const test = !stm.test->is<expr_empty>();
+    auto const iter = !empty(*stm.iter);
+
+    std::format_to(std::back_inserter(buf_), "for (");
+
+    if (init)
     {
-        std::format_to(std::back_inserter(buf_), "for (;;)\n");
-    }
-    else
-    {
-        std::format_to(std::back_inserter(buf_), "for ( ");
+        buf_.push_back(' ');
         print_stmt(*stm.init);
         buf_.pop_back();
-        std::format_to(std::back_inserter(buf_), "; ");
+    }
+
+    buf_.push_back(';');
+
+    if (test)
+    {
+        buf_.push_back(' ');
         print_expr(*stm.test);
-        std::format_to(std::back_inserter(buf_), "; ");
+    }
+
+    buf_.push_back(';');
+
+    if (iter)
+    {
+        buf_.push_back(' ');
         print_stmt(*stm.iter);
         buf_.pop_back();
-        std::format_to(std::back_inserter(buf_), " )\n");
+        buf_.push_back(' ');
     }
+
+    std::format_to(std::back_inserter(buf_), ")\n");
 
     if (stm.body->is<stmt_comp>())
     {
@@ -1122,9 +1143,34 @@ auto printer::print_expr_call(expr_call const& exp) -> void
     print_call(*exp.value);
 }
 
+auto printer::print_expr_base(expr const& exp) -> void
+{
+    // The base of '.field', '[key]', '.size' or a method call binds tighter than any
+    // operator, so an operator expression has to keep its parentheses: '( a + b ).size'
+    // is not 'a + b.size', and '( -p )[ 0 ]' is not '-p[0]'.
+    switch (exp.kind())
+    {
+        case node::expr_complement:
+        case node::expr_negate:
+        case node::expr_not:
+        case node::expr_binary:
+        case node::expr_ternary:
+        case node::expr_assign:
+        case node::expr_increment:
+        case node::expr_decrement:
+            std::format_to(std::back_inserter(buf_), "( ");
+            print_expr(exp);
+            std::format_to(std::back_inserter(buf_), " )");
+            break;
+        default:
+            print_expr(exp);
+            break;
+    }
+}
+
 auto printer::print_expr_method(expr_method const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), " ");
     print_call(*exp.value);
 }
@@ -1252,7 +1298,7 @@ auto printer::print_expr_tuple(expr_tuple const& exp) -> void
 
 auto printer::print_expr_array(expr_array const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), "[");
     print_expr(*exp.key);
     std::format_to(std::back_inserter(buf_), "]");
@@ -1260,14 +1306,14 @@ auto printer::print_expr_array(expr_array const& exp) -> void
 
 auto printer::print_expr_field(expr_field const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), ".");
     print_expr_identifier(*exp.field);
 }
 
 auto printer::print_expr_size(expr_size const& exp) -> void
 {
-    print_expr(*exp.obj);
+    print_expr_base(*exp.obj);
     std::format_to(std::back_inserter(buf_), ".size");
 }
 
