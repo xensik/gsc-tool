@@ -6,8 +6,32 @@
 #include "xsk/stdinc.hpp"
 #include "xsk/utils/writer.hpp"
 
+#include <bit>
+
 namespace xsk::utils
 {
+
+namespace
+{
+
+template <typename T>
+auto write_scalar(u8* output, const usize size, usize& pos, T value, const bool swap) -> void
+{
+    if (pos > size || sizeof(T) > size - pos)
+        throw writer::error("writer: out of bounds");
+
+    // Copy through bytes so packed fields do not rely on typed pointer alignment or aliasing.
+    auto bytes = std::array<u8, sizeof(T)>{};
+    std::memcpy(bytes.data(), &value, sizeof(T));
+
+    if (swap)
+        std::ranges::reverse(bytes);
+
+    std::memcpy(output + pos, bytes.data(), sizeof(T));
+    pos += sizeof(T);
+}
+
+} // namespace
 
 writer::writer(const bool swap) : size_{ default_size }, swap_{ swap }
 {
@@ -33,196 +57,73 @@ auto writer::clear() -> void
 template <>
 auto writer::write(const i8 data) -> void
 {
-    if (pos_ + 1 > size_)
-        throw error("writer: out of bounds");
-
-    *reinterpret_cast<i8*>(data_ + pos_) = data;
-    pos_ += 1;
+    write_scalar(data_, size_, pos_, data, false);
 }
 
 template <>
 auto writer::write(const u8 data) -> void
 {
-    if (pos_ + 1 > size_)
-        throw error("writer: out of bounds");
-
-    *reinterpret_cast<u8*>(data_ + pos_) = data;
-    pos_ += 1;
+    write_scalar(data_, size_, pos_, data, false);
 }
 
 template <>
 auto writer::write(i16 data) -> void
 {
-    if (pos_ + 2 > size_)
-        throw error("writer: out of bounds");
-
-    if (!swap_)
-    {
-        *reinterpret_cast<i16*>(data_ + pos_) = data;
-    }
-    else
-    {
-        (data_ + pos_)[0] = reinterpret_cast<u8*>(&data)[1];
-        (data_ + pos_)[1] = reinterpret_cast<u8*>(&data)[0];
-    }
-
-    pos_ += 2;
+    write_scalar(data_, size_, pos_, data, swap_);
 }
 
 template <>
 auto writer::write(u16 data) -> void
 {
-    if (pos_ + 2 > size_)
-        throw error("writer: out of bounds");
-
-    if (!swap_)
-    {
-        *reinterpret_cast<u16*>(data_ + pos_) = data;
-    }
-    else
-    {
-        (data_ + pos_)[0] = reinterpret_cast<u8*>(&data)[1];
-        (data_ + pos_)[1] = reinterpret_cast<u8*>(&data)[0];
-    }
-
-    pos_ += 2;
+    write_scalar(data_, size_, pos_, data, swap_);
 }
 
 template <>
 auto writer::write(i32 data) -> void
 {
-    if (pos_ + 4 > size_)
-        throw error("writer: out of bounds");
-
-    if (!swap_)
-    {
-        *reinterpret_cast<i32*>(data_ + pos_) = data;
-    }
-    else
-    {
-        (data_ + pos_)[0] = reinterpret_cast<u8*>(&data)[3];
-        (data_ + pos_)[1] = reinterpret_cast<u8*>(&data)[2];
-        (data_ + pos_)[2] = reinterpret_cast<u8*>(&data)[1];
-        (data_ + pos_)[3] = reinterpret_cast<u8*>(&data)[0];
-    }
-
-    pos_ += 4;
+    write_scalar(data_, size_, pos_, data, swap_);
 }
 
 template <>
 auto writer::write(u32 data) -> void
 {
-    if (pos_ + 4 > size_)
-        throw error("writer: out of bounds");
-
-    if (!swap_)
-    {
-        *reinterpret_cast<u32*>(data_ + pos_) = data;
-    }
-    else
-    {
-        (data_ + pos_)[0] = reinterpret_cast<u8*>(&data)[3];
-        (data_ + pos_)[1] = reinterpret_cast<u8*>(&data)[2];
-        (data_ + pos_)[2] = reinterpret_cast<u8*>(&data)[1];
-        (data_ + pos_)[3] = reinterpret_cast<u8*>(&data)[0];
-    }
-
-    pos_ += 4;
+    write_scalar(data_, size_, pos_, data, swap_);
 }
 
 template <>
 auto writer::write(i64 data) -> void
 {
-    if (pos_ + 8 > size_)
-        throw error("writer: out of bounds");
-
-    if (!swap_)
-    {
-        *reinterpret_cast<i64*>(data_ + pos_) = data;
-    }
-    else
-    {
-        (data_ + pos_)[0] = reinterpret_cast<u8*>(&data)[7];
-        (data_ + pos_)[1] = reinterpret_cast<u8*>(&data)[6];
-        (data_ + pos_)[2] = reinterpret_cast<u8*>(&data)[5];
-        (data_ + pos_)[3] = reinterpret_cast<u8*>(&data)[4];
-        (data_ + pos_)[4] = reinterpret_cast<u8*>(&data)[3];
-        (data_ + pos_)[5] = reinterpret_cast<u8*>(&data)[2];
-        (data_ + pos_)[6] = reinterpret_cast<u8*>(&data)[1];
-        (data_ + pos_)[7] = reinterpret_cast<u8*>(&data)[0];
-    }
-
-    pos_ += 8;
+    write_scalar(data_, size_, pos_, data, swap_);
 }
 
 template <>
 auto writer::write(u64 data) -> void
 {
-    if (pos_ + 8 > size_)
-        throw error("writer: out of bounds");
-
-    if (!swap_)
-    {
-        *reinterpret_cast<u64*>(data_ + pos_) = data;
-    }
-    else
-    {
-        (data_ + pos_)[0] = reinterpret_cast<u8*>(&data)[7];
-        (data_ + pos_)[1] = reinterpret_cast<u8*>(&data)[6];
-        (data_ + pos_)[2] = reinterpret_cast<u8*>(&data)[5];
-        (data_ + pos_)[3] = reinterpret_cast<u8*>(&data)[4];
-        (data_ + pos_)[4] = reinterpret_cast<u8*>(&data)[3];
-        (data_ + pos_)[5] = reinterpret_cast<u8*>(&data)[2];
-        (data_ + pos_)[6] = reinterpret_cast<u8*>(&data)[1];
-        (data_ + pos_)[7] = reinterpret_cast<u8*>(&data)[0];
-    }
-
-    pos_ += 8;
+    write_scalar(data_, size_, pos_, data, swap_);
 }
 
 template <>
 auto writer::write(f32 data) -> void
 {
-    if (pos_ + 4 > size_)
-        throw error("writer: out of bounds");
-
-    if (!swap_)
-    {
-        *reinterpret_cast<f32*>(data_ + pos_) = data;
-    }
-    else
-    {
-        (data_ + pos_)[0] = reinterpret_cast<u8*>(&data)[3];
-        (data_ + pos_)[1] = reinterpret_cast<u8*>(&data)[2];
-        (data_ + pos_)[2] = reinterpret_cast<u8*>(&data)[1];
-        (data_ + pos_)[3] = reinterpret_cast<u8*>(&data)[0];
-    }
-
-    pos_ += 4;
+    write_scalar(data_, size_, pos_, data, swap_);
 }
 
 auto writer::write_i24(i32 data) -> void
 {
-    if (pos_ + 3 > size_)
+    if (pos_ > size_ || 3 > size_ - pos_)
         throw error("writer: out of bounds");
 
-    if (!swap_)
-    {
-        *reinterpret_cast<i32*>(data_ + pos_) = data & 0xFFFFFF;
-    }
-    else
-    {
-        (data_ + pos_)[0] = reinterpret_cast<u8*>(&data)[2];
-        (data_ + pos_)[1] = reinterpret_cast<u8*>(&data)[1];
-        (data_ + pos_)[2] = reinterpret_cast<u8*>(&data)[0];
-    }
+    auto const value = static_cast<u32>(data) & 0xFFFFFF;
+    data_[pos_] = static_cast<u8>(swap_ ? value >> 16 : value);
+    data_[pos_ + 1] = static_cast<u8>(value >> 8);
+    data_[pos_ + 2] = static_cast<u8>(swap_ ? value : value >> 16);
 
     pos_ += 3;
 }
 
 auto writer::write_string(std::string const& data) -> void
 {
-    if (pos_ + data.size() > size_)
+    if (pos_ > size_ || data.size() > size_ - pos_)
         throw error("writer: out of bounds");
 
     std::memcpy(reinterpret_cast<void*>(data_ + pos_), data.data(), data.size());
@@ -231,10 +132,11 @@ auto writer::write_string(std::string const& data) -> void
 
 auto writer::write_cstr(std::string const& data) -> void
 {
-    if (pos_ + data.size() >= size_)
+    if (pos_ > size_ || data.size() >= size_ - pos_)
         throw error("writer: out of bounds");
 
     std::memcpy(reinterpret_cast<void*>(data_ + pos_), data.data(), data.size());
+    data_[pos_ + data.size()] = 0;
     pos_ += data.size() + 1;
 }
 
@@ -245,7 +147,7 @@ auto writer::is_avail() const -> bool
 
 auto writer::seek(const usize size) -> void
 {
-    if (pos_ + size <= size_) pos_ += size;
+    if (pos_ <= size_ && size <= size_ - pos_) pos_ += size;
 }
 
 auto writer::seek_neg(const usize size) -> void
@@ -255,9 +157,17 @@ auto writer::seek_neg(const usize size) -> void
 
 auto writer::align(const usize size) -> usize
 {
-    auto const pos = pos_;
+    if (!std::has_single_bit(size))
+        throw error("writer: invalid alignment");
 
-    pos_ = (pos_ + (size - 1)) & ~(size - 1);
+    auto const pos = pos_;
+    auto const remainder = pos_ & (size - 1);
+    auto const advance = remainder == 0 ? 0 : size - remainder;
+
+    if (pos_ > size_ || advance > size_ - pos_)
+        throw error("writer: out of bounds");
+
+    pos_ += advance;
 
     return pos_ - pos;
 }
