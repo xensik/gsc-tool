@@ -115,7 +115,7 @@ auto reader::read_i24() -> i32
 
 auto reader::read_cstr() -> std::string
 {
-    if (pos_ > size_)
+    if (pos_ >= size_)
         throw error("reader: out of bounds");
 
     auto const begin = data_ + pos_;

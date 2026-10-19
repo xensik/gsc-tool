@@ -252,8 +252,10 @@ TEST_CASE("reader: malformed ranges and strings are rejected", "[utils][reader]"
 {
     auto const data = std::vector<u8>{ 'a', 'b', 'c' };
     auto value = reader{ data };
+    auto empty = reader{};
 
     CHECK_THROWS_AS(value.read_cstr(), std::runtime_error);
+    CHECK_THROWS_AS(empty.read_cstr(), std::runtime_error);
     CHECK(value.read_bytes(0, 0).empty());
     CHECK_THROWS_AS(value.read_bytes(2, 2), std::runtime_error);
     CHECK_THROWS_AS(value.align(0), std::runtime_error);

@@ -13,7 +13,6 @@ auto asset::serialize() const -> std::vector<u8>
 {
     auto data = std::vector<u8>{};
 
-    // A zero compressed length marks an uncompressed stack; otherwise it stores the buffer size.
     if ((compressed_length != buffer.size() || (compressed_length == 0 && length != buffer.size())) || bytecode_length != bytecode.size())
     {
         throw error("script file serialize error");
