@@ -62,7 +62,7 @@ private:
     auto read_hashtoken_animtree(token const& hash, token& name) -> void;
     auto expandable(token& tok) -> define*;
     auto paste(token const& lhs, token const& rhs) -> token;
-    auto expand(token& tok, define& def) -> void;
+    auto expand(token& tok, define& def) -> bool;
     auto expand_arg(std::vector<token> const& arg) -> std::vector<token>;
     auto expand_params(token const& tok, define const& def) -> std::vector<std::vector<token>>;
     auto expect(token const& tok, const token::kind expected, spacing space = spacing::none) const -> void;

@@ -84,11 +84,8 @@ auto preprocessor::process() -> token
 
         if (skip_) continue;
 
-        if (auto* def = expandable(tok); def != nullptr)
-        {
-            expand(tok, *def);
+        if (auto* def = expandable(tok); def != nullptr && expand(tok, *def))
             continue;
-        }
 
         if (tok.type == token::NEWLINE)
             continue;
@@ -914,10 +911,10 @@ auto preprocessor::paste(token const& lhs, token const& rhs) -> token
     throw ppr_error(lhs.pos, std::format("pasting '{}' and '{}' does not give a valid token", lhs.spelling(), rhs.spelling()));
 }
 
-auto preprocessor::expand(token& tok, define& def) -> void
+auto preprocessor::expand(token& tok, define& def) -> bool
 {
     if (def.type == define::PLAIN)
-        return;
+        return true;
 
     if (def.type == define::BUILTIN)
     {
@@ -949,15 +946,34 @@ auto preprocessor::expand(token& tok, define& def) -> void
     }
     else if (def.type == define::FUNCTION)
     {
+        // C11 6.10.3.4: the '(' may lie past the end of the expansion that produced
+        // the name, so the markers in between are held back until it shows up
+        auto ends = std::vector<token>{};
         auto next = next_token();
+
+        while (next.type == token::MACROEND)
+        {
+            ends.push_back(std::move(next));
+            next = next_token();
+        }
 
         if (next.type != token::LPAREN)
         {
-            tokens_.push_front(next);
-            tokens_.emplace_front(token::MACROEND, tok.space, tok.pos, tok.data);
-            tokens_.push_front(tok);
-            tokens_.emplace_front(token::MACROBEGIN, tok.space, tok.pos, tok.data);
-            return;
+            // not an invocation: the caller emits the name unpainted, so a rescan
+            // that does find a '(' behind it, e.g. after it is passed as a macro
+            // argument, still expands it
+            tokens_.push_front(std::move(next));
+
+            for (auto it = ends.rbegin(); it != ends.rend(); ++it)
+                tokens_.push_front(std::move(*it));
+
+            return false;
+        }
+
+        for (auto const& end : ends)
+        {
+            reject_.erase(end.data);
+            expand_--;
         }
 
         auto args = expand_params(tok, def);
@@ -1121,6 +1137,8 @@ auto preprocessor::expand(token& tok, define& def) -> void
 
         tokens_.emplace_front(token::MACROBEGIN, tok.space, tok.pos, tok.data);
     }
+
+    return true;
 }
 
 auto preprocessor::expand_arg(std::vector<token> const& arg) -> std::vector<token>
@@ -1164,11 +1182,8 @@ auto preprocessor::expand_arg(std::vector<token> const& arg) -> std::vector<toke
             continue;
         }
 
-        if (auto* def = expandable(tok); def != nullptr)
-        {
-            expand(tok, *def);
+        if (auto* def = expandable(tok); def != nullptr && expand(tok, *def))
             continue;
-        }
 
         out.push_back(std::move(tok));
     }
@@ -1320,11 +1335,8 @@ auto preprocessor::evaluate() -> bool
                 last_def = false;
                 last_paren = false;
 
-                if (auto* def = expandable(tok); def != nullptr)
-                {
-                    expand(tok, *def);
-                }
-                else // macro not defined, or painted by the blue paint
+                // macro not defined, painted by the blue paint, or a function-like one with no '('
+                if (auto* def = expandable(tok); def == nullptr || !expand(tok, *def))
                 {
                     expr_.emplace_back(token::FALSE, tok.space, tok.pos);
                 }

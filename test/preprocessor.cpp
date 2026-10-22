@@ -84,6 +84,19 @@ TEMPLATE_TEST_CASE("ppr: pre-expanded arguments", "[ppr]", BOTH)
         auto const src = "#define V 9\n#define P(...) q(__VA_ARGS__)\n#define X(...) P(__VA_ARGS__)\nX(V, V)\n";
         REQUIRE(ppr_text<TestType>(src) == "q ( 9 , 9 )");
     }
+
+    // #303: a function-like name with no '(' is not an invocation, and is not painted
+    SECTION("a function-like macro passed by name expands once the body calls it")
+    {
+        REQUIRE(ppr_text<TestType>("#define G(a) [a]\n#define F(m) m(1)\nF(G)\n") == "[ 1 ]");
+        REQUIRE(ppr_text<TestType>("#define NOOP(a, b)\n#define F(m) m(1, 2);\nF(NOOP)\n") == ";");
+    }
+
+    SECTION("the '(' can come after the end of the expansion that produced the name")
+    {
+        REQUIRE(ppr_text<TestType>("#define F(x) [x]\n#define G F\nG(1)\n") == "[ 1 ]");
+        REQUIRE(ppr_text<TestType>("#define f(a) a*g\n#define g(a) f(a)\nf(2)(9)\n") == "2 * 9 * g");
+    }
 }
 
 TEMPLATE_TEST_CASE("ppr: blue paint", "[ppr]", BOTH)
