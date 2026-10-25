@@ -16398,8 +16398,7 @@ extern std::array<std::pair<u16, opcode>, code_count> const code_list
 }};
 
 // Version 0x1B, read off shipped scripts lined up with their source. An id no shipped
-// script uses is not listed. 0x00CD is a guess: one script uses it once, to push the
-// object of a method call, which leaves OP_GetAnim, OP_GetWorld and OP_GetClasses.
+// script uses is not listed.
 extern std::array<std::pair<u16, opcode>, code_count_1b> const code_list_1b
 {{
     { 0x0008, opcode::OP_EvalLocalVariableCachedDebug },
@@ -16486,7 +16485,7 @@ extern std::array<std::pair<u16, opcode>, code_count_1b> const code_list_1b
     { 0x00C8, opcode::OP_GetGameRef },
     { 0x00C9, opcode::OP_GetWorldObject },
     { 0x00CC, opcode::OP_GetNegUnsignedShort },
-    { 0x00CD, opcode::OP_GetAnim },
+    { 0x00CD, opcode::OP_GetWorld },
     { 0x00CE, opcode::OP_GetAnimObject },
     { 0x00D1, opcode::OP_CastFieldObject },
     { 0x00D4, opcode::OP_GetLevel },
